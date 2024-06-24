@@ -207,7 +207,20 @@
     "subject": "Betreff",
     "template_content": "Vorlageninhalt",
     "define_template": "Vorlage definieren",
-    "save_details": "Details speichern"
+    "save_details": "Details speichern",
+    "system_roles": "Systemrollen",
+    "select_role": "Rolle auswählen",
+    "email": "E-Mail",
+    "sms": "SMS",
+    "define_role": "Rolle definieren",
+    "role_name": "Rollenname",
+    "created_date": "Erstellungsdatum",
+    "authorize": "Autorisieren",
+    "inactive": "Inaktiv",
+    "confirm_delete": "Löschen bestätigen",
+    "are_you_sure": "Bist du sicher?",
+    "cancel": "Abbrechen",
+    "delete": "Löschen"
   },
   "entities": {
     "account_number": "Kontonummer",

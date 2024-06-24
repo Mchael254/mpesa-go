@@ -207,7 +207,20 @@
     "subject": "Sujet",
     "template_content": "Contenu du Modèle",
     "define_template": "Définir un modèle",
-    "save_details": "Enregistrer les Détails"
+    "save_details": "Enregistrer les Détails",
+    "system_roles": "Rôles du système",
+    "select_role": "Sélectionner un rôle",
+    "email": "E-mail",
+    "sms": "SMS",
+    "define_role": "Définir un rôle",
+    "role_name": "Nom du rôle",
+    "created_date": "Date de création",
+    "authorize": "Autoriser",
+    "inactive": "Inactif",
+    "confirm_delete": "Confirmer la suppression",
+    "are_you_sure": "Êtes-vous sûr?",
+    "cancel": "Annuler",
+    "delete": "Supprimer"
   },
   "entities": {
     "account_number": "Numéro de compte",

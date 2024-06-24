@@ -207,7 +207,20 @@
     "subject": "Mada",
     "template_content": "Maudhui ya Kiolezo",
     "define_template": "Fafanua kiolezo",
-    "save_details": "Hifadhi Maelezo"
+    "save_details": "Hifadhi Maelezo",
+    "system_roles": "Majukumu ya mfumo",
+    "select_role": "Chagua jukumu",
+    "email": "Barua pepe",
+    "sms": "SMS",
+    "define_role": "Tafsiri jukumu",
+    "role_name": "Jina la jukumu",
+    "created_date": "Tarehe ya kuundwa",
+    "authorize": "Ruhusu",
+    "inactive": "Haifanyi kazi",
+    "confirm_delete": "Thibitisha kufuta",
+    "are_you_sure": "Una uhakika?",
+    "cancel": "Ghairi",
+    "delete": "Futa"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",
