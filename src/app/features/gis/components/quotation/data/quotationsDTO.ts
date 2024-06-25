@@ -147,7 +147,22 @@ export interface QuotationDetails {
         tonnage: string,
         carryCapacity: number,
         logBook: string,
-        value: number
+        value: number,
+        age:number,
+        itemNo:number,
+        terrorismApplicable:string,
+        securityDevice1:string,
+        motorAccessories:string,
+        model:string,
+        securityDevice:string,
+        regularDriverName:string,
+        schActive:string,
+        licenceNo:string,
+        driverLicenceDate:string,
+        driverSmsNo:number,
+        driverRelationInsured:string,
+        driverEmailAddress:string
+
       }
   },
   riskCode: number,
