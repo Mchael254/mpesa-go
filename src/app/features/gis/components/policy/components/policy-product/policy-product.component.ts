@@ -818,7 +818,7 @@ export class PolicyProductComponent {
 
   // }
   createPolicy() {
-    this.spinner.show()
+    // this.spinner.show()
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
     this.policyProductForm.get('clientCode').setValue(this.clientCode);
