@@ -3,7 +3,7 @@
 
 <div class="mx-4 my-4">
 
-  
+
   <div class="row">
     <div>
       <button type="button" class="btn float-end" id="btn-help">
@@ -31,7 +31,7 @@
     </div>
   </form>
 
-  <div class="col-md-12 col-lg-12 col-xxxl-12">
+  <!--<div class="col-md-12 col-lg-12 col-xxxl-12">
     <div class="card">
       <div class="card-body">
         <p-table #employeeTable
@@ -66,12 +66,12 @@
 
             </tr>
             <tr>
-              <!--&lt;!&ndash;<th>
+              &lt;!&ndash;&lt;!&ndash;<th>
                 <span class="p-input-icon-left ml-auto">
                     <i class="pi pi-search"></i>
                     <input pInputText type="text" (input)="employeeTable.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" />
                 </span>
-              </th>&ndash;&gt;-->
+              </th>&ndash;&gt;&ndash;&gt;
               <th>
                 <p-columnFilter type="text" field="staffs.name" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
@@ -105,6 +105,110 @@
               <td class="body">{{aggregatedEmployee?.staffs?.emailAddress | lowercase }}</td>
               <td class="body">{{aggregatedEmployee?.transaction?.totalCount === null ? 0 : aggregatedEmployee?.transaction?.totalCount }}</td>
               <td class="body" style="text-align: right">{{aggregatedEmployee?.transaction?.totalAmount === null ? 0 : aggregatedEmployee?.transaction?.totalAmount | number:'1.2-2'}}</td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6">{{ 'entities.no_employees_found' | translate }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>-->
+
+  <div class="col-md-12 col-lg-12 col-xxxl-12">
+    <div class="card">
+      <div class="card-body">
+        <p-table #employeeTable
+
+                 [paginator]="true"
+                 [rowHover]="true"
+                 [showCurrentPageReport]="true"
+                 [rows]="pageSize"
+                 [totalRecords]="aggregatedEmployeeData?.numberOfElements"
+                 [value]="aggregatedEmployeeData.content"
+                 [(selection)]="selectedEmployee"
+                 (sortFunction)="customSortEmployees($event)"
+                 [customSort]="true"
+                 [globalFilterFields]="['staffs.name','department.departmentName', 'transaction.module', 'staffs.emailAddress', 'transaction.totalCount','transaction.totalAmount']"
+                 [sortField]="'name'" [sortOrder]="1"
+                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                 [scrollable]="true"
+                 scrollHeight="400px"
+                 selectionMode="single"
+                 dataKey="ticketID"
+                 styleClass="p-datatable-sm"
+                 responsiveLayout="scroll" class='ui-datatable'
+                 currentPageReportTemplate="{first} - {last} of {totalRecords}">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name" class="head">{{ 'entities.name' | translate }}<p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="emailAddress" class="head">{{ 'entities.email' | translate }}<p-sortIcon field="emailAddress"></p-sortIcon></th>
+              <th pSortableColumn="departmentName" class="head">{{ 'entities.department' | translate }}<p-sortIcon field="departmentName"></p-sortIcon></th>
+              <th pSortableColumn="module" class="head">{{ 'entities.module' | translate }}<p-sortIcon field="module"></p-sortIcon></th>
+              <th pSortableColumn="totalCount" class="head">{{ 'entities.transactions' | translate }}<p-sortIcon field="totalCount"></p-sortIcon></th>
+              <th pSortableColumn="totalAmount" class="head">{{ 'entities.total_amount' | translate }}<p-sortIcon field="totalAmount"></p-sortIcon></th>
+              <th style="width: 3%;"></th>
+
+            </tr>
+            <tr>
+              <th>
+                <p-columnFilter type="text" field="staffs.name" matchMode="contains" [showMenu]="false"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="staffs.emailAddress" matchMode="contains" [showMenu]="false"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="department.departmentName" matchMode="contains" [showMenu]="false"></p-columnFilter>
+              </th>
+              <th>
+<!--                <p-columnFilter type="text" field="transaction.module" matchMode="contains" [showMenu]="false"></p-columnFilter>-->
+              </th>
+              <th>
+<!--                <p-columnFilter type="text" field="transaction.totalCount" matchMode="contains" [showMenu]="false"></p-columnFilter>-->
+              </th>
+              <th>
+<!--                <p-columnFilter type="text" field="transaction.totalAmount" matchMode="contains" [showMenu]="false"></p-columnFilter>-->
+              </th>
+              <th style="width: 3%;"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-aggregatedEmployee>
+            <tr>
+              <td class="body">
+                {{aggregatedEmployee?.staffs?.name | titlecase}}
+              </td>
+              <td class="body">{{aggregatedEmployee?.staffs?.emailAddress | lowercase }}</td>
+              <td class="body">{{aggregatedEmployee?.department?.departmentName | titlecase}}</td>
+              <td class="body" colspan="3">
+                <table class="nested-table">
+                  <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let transaction of aggregatedEmployee?.transaction">
+                    <td>
+                      {{transaction.module === 'U' ? 'Underwrite Policy' :
+                      transaction.module === 'Q' ? 'Quotation' :
+                        transaction.module === 'C' ? 'Claims' : ''
+                        === '' ? 'N/A' : 'N/A' }}
+                    </td>
+                    <td>{{transaction?.totalCount }}</td>
+                    <td>{{transaction?.totalAmount | number:'1.2-2'}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td>
+                <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username,
+              aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name, aggregatedEmployee?.transaction?.totalCount)"></i>
+              </td>
 
             </tr>
           </ng-template>
