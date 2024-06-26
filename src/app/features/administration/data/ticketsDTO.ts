@@ -128,7 +128,7 @@ export interface TransactionsCountDTO {
   totalCount: number
 }
 export interface AggregatedEmployeeData{
-  transaction?: TransactionsCountDTO;
+  transaction?: TransactionsCountDTO[];
   staffs?: StaffResDto;
   department?: DepartmentDto;
 }

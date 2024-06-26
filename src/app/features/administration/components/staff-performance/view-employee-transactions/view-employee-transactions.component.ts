@@ -27,7 +27,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
   businessTransactions: BusinessTransactionsDTO[];
   page = 0;
 
-  pageSize = 5;
+  pageSize = 10;
   event: LazyLoadEvent;
   totalRecords: number;
   systemsData : SystemsDto[];
@@ -43,7 +43,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  dateFrom = `${this.year-2}-${this.month}-${this.day}`;
+  dateFrom = `${this.year-14}-${this.month}-${this.day}`;
 
   module: string;
   queryColumn: string;
