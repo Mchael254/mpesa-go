@@ -28,7 +28,8 @@ export const environment = {
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
-    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment']
+    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment'],
+    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims']
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']

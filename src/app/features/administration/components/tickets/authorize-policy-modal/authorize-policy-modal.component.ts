@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {StaffDto} from "../../../../entities/data/StaffDto";
 import {Logger} from "../../../../../shared/services";
@@ -8,6 +8,7 @@ import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 import {DmsService} from "../../../../../shared/services/dms/dms.service";
+import {EtimsDTO} from "../../../../gis/data/policies-dto";
 
 const log = new Logger('AuthorizePolicyModalComponent');
 @Component({
@@ -52,6 +53,8 @@ export class AuthorizePolicyModalComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
+  etimsData: EtimsDTO;
+  eTimsArrData: EtimsDTO[] = [];
 
   constructor(private fb: FormBuilder,
               private policiesService: PoliciesService,
@@ -299,9 +302,11 @@ export class AuthorizePolicyModalComponent implements OnInit {
           this.scheduleData = data;
           log.info('save schedule>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized policy');
+          this.saveToEtims();
           this.isLoading = false;
           this.closeScheduleModal();
           this.closeDebtOwnerModal();
+          this.policiesService.updateEtimsFetchDetails(data);
 
         },
         error: err => {
@@ -478,6 +483,27 @@ export class AuthorizePolicyModalComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
+  saveToEtims() {
+    log.info("etims check>", this.policiesService.eTimsCheckUncheck());
+    const checkboxChecked: any = this.policiesService.eTimsCheckUncheck();
+
+    if (checkboxChecked?.fromAuthTabScreen) {
+      this.policiesService.postToEtims(this.batchNo)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully posted to ETIMS');
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    }
+    else {
+      return;
+    }
+  }
+
   ngOnDestroy(): void {
   }
 }
