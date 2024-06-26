@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 import {Logger} from "../../../../../shared/services";
@@ -10,6 +10,7 @@ import {
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {NgxSpinnerService} from "ngx-spinner";
 import {Table} from "primeng/table";
+import {EtimsDTO} from "../../../../gis/data/policies-dto";
 
 const log = new Logger('AuthorizationTabComponent');
 
@@ -18,7 +19,7 @@ const log = new Logger('AuthorizationTabComponent');
   templateUrl: './authorization-tab.component.html',
   styleUrls: ['./authorization-tab.component.css']
 })
-export class AuthorizationTabComponent implements OnInit{
+export class AuthorizationTabComponent implements OnInit, OnChanges{
   @Input() policyDetails:any;
   @ViewChild('exceptionsTable') exceptionsTable: Table;
   @Output() undoOrMakeReady: EventEmitter<any> = new EventEmitter<any>();
@@ -48,7 +49,8 @@ export class AuthorizationTabComponent implements OnInit{
 
   showDropdownForException: any;
 
-  eTimsData: any[];
+  eTimsArrData: any[] = [];
+  etimsData: EtimsDTO;
 
   constructor(private policiesService: PoliciesService,
               private globalMessagingService: GlobalMessagingService,
@@ -64,6 +66,18 @@ export class AuthorizationTabComponent implements OnInit{
     this.getReceipts();
     this.getCompletionRemarks();
     log.info('policy', this.policyDetails?.authorizedStatus)
+  }
+
+  ngOnChanges() {
+    this.subscribeToEtimsFetchDetails();
+  }
+
+  subscribeToEtimsFetchDetails() {
+    this.policiesService.eTimsFetchDetails().subscribe(signal => {
+      if (signal) {
+        this.fetchEtimsDetails(this.policyDetails?.batchNo);
+      }
+    });
   }
 
   /**
@@ -294,5 +308,39 @@ export class AuthorizationTabComponent implements OnInit{
     } else {
       this.showDropdownForException = exception; // Show the dropdown for the clicked exception
     }
+  }
+
+  fetchEtimsDetails(batchNo: number) {
+
+    this.eTimsArrData = [];
+    this.policiesService.fetchPolicyEtimsDetails(batchNo)
+      .subscribe({
+        next: (data) => {
+          this.etimsData = data;
+
+          // const etimsRes: EtimsDTO = {}
+          this.eTimsArrData.push(this.etimsData);
+          log.info('etims>>', this.etimsData, this.eTimsArrData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+
+  }
+
+  postToEtims() {
+    const checkbox = document.getElementById('flexCheckDefault') as HTMLInputElement;
+
+    checkbox.addEventListener('click', () => {
+      if (checkbox.checked) {
+        log.info('Checkbox is checked');
+        this.policiesService.eTimsCheckUncheck.set({checkbox, fromAuthTabScreen: true});
+
+      } else {
+        log.info('Checkbox is unchecked');
+
+      }
+    });
   }
 }

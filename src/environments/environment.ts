@@ -7,7 +7,7 @@
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
-import { API_CONFIG } from './api_service_config';
+import {API_CONFIG} from './api_service_config';
 
 export const environment = {
   production: false,
@@ -39,6 +39,7 @@ export const environment = {
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
     [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.NONE_BASE_URL, 'api'],
-    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment']
+    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment'],
+    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims']
   ]),
 };

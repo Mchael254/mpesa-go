@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpParams} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
-import { PoliciesDTO } from '../../data/policies-dto';
+import {EtimsDTO, PoliciesDTO} from '../../data/policies-dto';
 import {API_CONFIG} from "../../../../../environments/api_service_config";
 import {ApiService} from "../../../../shared/services/api/api.service";
 import {AuthService} from "../../../../shared/services/auth.service";
@@ -12,10 +12,22 @@ import {AuthService} from "../../../../shared/services/auth.service";
 })
 export class PoliciesService {
 
+  public eTimsCheckUncheck = signal({});
+
+  private etimsFetchDetailsSubject = new BehaviorSubject<any>(null);
+
   constructor(
     private api:ApiService,
     private authService: AuthService,
   ) { }
+
+  eTimsFetchDetails(): Observable<any> {
+    return this.etimsFetchDetailsSubject.asObservable();
+  }
+
+  updateEtimsFetchDetails(data: any) {
+    this.etimsFetchDetailsSubject.next(data);
+  }
 
   getPolicyByBatchNo(batchNo: string) {
     return this.api.GET<any[]>(`v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
@@ -172,5 +184,17 @@ export class PoliciesService {
       `v2/electronic-document-status/unprepare-documents?${params}`,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
+  }
+
+  postToEtims(batchNo: number) {
+    return this.api.POST<any>(
+      `api/turnkey/etims/postTransaction?policyBatchNumber=${batchNo}`, null,
+      API_CONFIG.ETIMS_SERVICE_BASE_URL
+    );
+  }
+
+  fetchPolicyEtimsDetails(batchNo: number): Observable<EtimsDTO> {
+    return this.api.GET<EtimsDTO>(`api/turnkey/etims/details?policyBatchNumber=${batchNo}`,
+      API_CONFIG.ETIMS_SERVICE_BASE_URL);
   }
 }

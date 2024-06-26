@@ -83,6 +83,12 @@
       "logLevel": "debug"
       },
   "/fms": {
+    "target": "http://10.176.18.215:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/etims": {
     "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
