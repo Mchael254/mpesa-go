@@ -37,6 +37,7 @@ export class PolicySummaryComponent {
 
   insureds:any;
 
+  policySummary:any
 
   constructor(
     public policyService:PolicyService,
@@ -49,6 +50,7 @@ export class PolicySummaryComponent {
 
   ngOnInit(): void {
     this.getUtil();
+    this.getPolicyDetails();
   }
   ngOnDestroy(): void { }
 
@@ -217,4 +219,12 @@ getClient() {
     });
 }
 
+getPolicyDetails(){
+  this.policyService.getbypolicyNo(this.policyDetails.policyNumber).subscribe({
+    next:(res)=>{
+      this.policySummary = res
+      console.log(res)
+    }
+  })
+}
 }

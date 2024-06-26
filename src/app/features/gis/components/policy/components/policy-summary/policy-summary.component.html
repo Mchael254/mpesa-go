@@ -104,6 +104,288 @@
                                         <th >Business</th>
                                         <th >Other interested parties</th>
                                         <th >ID no.</th>
+        <div class="card">
+            <div class="card-body">
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <button class="btn btn-primary float-end mt-4 me-4 " (click)="computePremium()">Compute Premium</button>
+                           
+                        <p class="title">{{'gis.policy.policy_details' | translate}}</p>
+                        <br class="mb-4">
+                        <br>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Policy no.</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.policyNo}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Endorsement no.</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.endorsementNo}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Product</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Policy type</p>
+                                        
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.policyType}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Branch</p>
+                                         
+                                    </div>
+                                    <div class="col-6">
+                                        <!-- {{policySummary.endorsementNo}} -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label"> Sum Insured</p>
+                                      
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">Example</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Premium.</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.premium}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Expected premium</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.basicPremium}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Policy status</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.policyStatus}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Cover From</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.wefDt}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Cover To</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.wetDt}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Reinsurance authorized</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.authorizedStatus}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">U/W year</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">TBD</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">U/W only</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.underWritingOnly}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Currency</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.currency}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Currency fixed rate</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">TBD</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Currency rate</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">TBD</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Transaction type</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.transactionType}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Renewal Date</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">{{policySummary.renewalDate}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Renewable</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">tbd</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Scheme policy</p>
+                                       
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Receive prem on</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">TBD</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="label">Premium deposit balance</p>  
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="detail">TBD</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
 
                                       
                                     </tr>
