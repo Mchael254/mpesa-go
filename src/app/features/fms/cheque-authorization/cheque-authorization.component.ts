@@ -744,7 +744,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.spinner.show();
 
     this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate,
-      this.pageNumber, this.pageSize, '', '', '',
+      pageNo? pageNo : this.pageNumber, pageSize ? pageSize : this.pageSize, '', '', '',
       '', sortField, sortDirection)
       .subscribe({
         next: (res) => {
@@ -765,7 +765,7 @@ export class ChequeAuthorizationComponent implements OnInit {
    * based on the provided event parameters.
    */
   lazyLoadEft(event?: LazyLoadEvent | TableLazyLoadEvent) {
-    const pageIndex = event?.first / event?.rows;
+    const pageIndex = event?.first / event?.rows + 1;
     const pageSize = event?.rows;
     const sortField = event?.sortField ? event?.sortField : '';
     const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
@@ -815,15 +815,14 @@ export class ChequeAuthorizationComponent implements OnInit {
         this.documentList = claimDocs;
         log.info('documents', this.documentList)
         this.openDocViewerModal();
+        this.fetchSelectedDoc();
       });
   }
 
   /**
    * The function fetches documents based on a selected document from a list.
    */
-  fetchSelectedDoc(doc: any) {
-
-    console.log('rpt>', doc);
+  fetchSelectedDoc() {
     this.documentList.forEach(doc => {
 
       this.fetchDocuments(doc.id)
