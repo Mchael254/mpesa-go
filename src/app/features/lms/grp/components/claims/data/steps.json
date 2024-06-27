@@ -1,0 +1,22 @@
+[
+    {
+      "number": 1,
+      "title": "Claim initiation",
+      "link": "/home/lms/grp/claims/initiation"
+    },  
+    {
+        "number": 2,
+        "title": "Claim admission",
+        "link": "/home/lms/grp/claims/admission"
+      },
+      {
+        "number": 3,
+        "title": "Claim investigation",
+        "link": "/home/lms/grp/claims/investigation"
+      },
+      {
+        "number": 4,
+        "title": "Payment processing",
+        "link": "/home/lms/grp/claims/payment"
+      }
+    ]
