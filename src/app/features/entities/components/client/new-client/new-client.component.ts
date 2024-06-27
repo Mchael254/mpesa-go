@@ -173,14 +173,15 @@ export class NewClientComponent implements OnInit{
     const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
     this.getPartyDetails(partyId)
 
+    const organizationId = undefined;
     this.fetchCountries();
     // this.getCountries();
-    this.getSectors(2);
+    this.getSectors(organizationId);
     this.getCurrencies();
-    this.getClientTitles(2);
+    this.getClientTitles(organizationId);
     this.getIdentityType();
-    this.getOccupation(2);
-    this.getClientType(2);
+    this.getOccupation(organizationId);
+    this.getClientType(organizationId);
     this.getClientBranch();
 
     const passedTimestampString = sessionStorage.getItem('Timestamp');
