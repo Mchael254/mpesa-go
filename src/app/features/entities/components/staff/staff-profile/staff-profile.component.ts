@@ -150,7 +150,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
     this.fetchDepartments();
     this.fetchBranches();
     // this.createUserRegForm();
-    
+
   }
 
   /**
@@ -210,7 +210,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
     });
 
     this.defineSmsNumberFormat();
-    
+
   }
 
   defineSmsNumberFormat(): void {
@@ -228,7 +228,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
           log.info('parameters>>>', this.phoneNumberRegex)
         });
         this.setMandatoryFields();
-      });      
+      });
   }
 
 
@@ -337,7 +337,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
 
   /**
    * This method gets party from DB  to auto-populate Primary Identity
-   * @param id 
+   * @param id
    * @returns void
    */
   fetchEntityById(id: number): void {
@@ -679,7 +679,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
         partyTypeShortDesc: "STAFF",
         modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
         modeOfIdentityNumber: staffFormValues.idNumber,
-        organizationId: 2,
+        organizationId: null,
         firstName: staffFormValues.firstName,
         lastName: staffFormValues.lastName,
         status: "A",
@@ -804,7 +804,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
 
   /**
    * This method is used to patch the form with the values from the temp data stored in the form state service
-   * @param 
+   * @param
    * @private
    */
 

@@ -135,10 +135,7 @@ export class EntityService {
       .set('size', `${size}`)
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`)
-      .set(
-        'organizationId',
-        2
-      ); /*TODO: Find proper way to fetch organizationId*/
+      /*.set('organizationId',2);*/ /*TODO: Find proper way to fetch organizationId*/
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({
@@ -190,8 +187,12 @@ export class EntityService {
     );
   }
 
-  getIdentityType(): Observable<IdentityModeDTO[]> {
-    const params = new HttpParams().set('organizationId', 2);
+  getIdentityType(organizationId?): Observable<IdentityModeDTO[]> {
+    const params = new HttpParams();
+
+    if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }
 
     return this.api.GET<IdentityModeDTO[]>(
       `identity-modes`,
@@ -200,8 +201,12 @@ export class EntityService {
     );
   }
 
-  getPartiesType(organizationId: number = 2): Observable<PartyTypeDto[]> {
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+  getPartiesType(organizationId: number = null): Observable<PartyTypeDto[]> {
+    const params = new HttpParams();
+
+    if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }
 
     return this.api.GET<PartyTypeDto[]>(
       `party-types`,

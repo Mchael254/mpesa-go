@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicFormButtons } from '../../../../../shared/utils/dynamic.form.button';
 import { DynamicFormFields } from '../../../../../shared/utils/dynamic.form.fields';
 import { EntityService } from '../../../services/entity/entity.service';
-import { EntityDetails } from '../../../data/entity-details-data';
 import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
@@ -322,7 +321,7 @@ export class NewEntityComponent implements OnInit {
        modeOfIdentityId: entityFormValues.mode_of_identity,
        identityNumber: entityFormValues.identity_number,
        name: entityFormValues.entity_name,
-       organizationId: 2,
+       organizationId: null,
        partyTypeId: partyTypeId,
        pinNumber: entityFormValues.pin_number,
        profileImage: entityFormValues.profileImage,
