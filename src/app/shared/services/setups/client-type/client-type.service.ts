@@ -25,14 +25,14 @@ export class ClientTypeService {
   getClientTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
     return this.api.GET<any[]>(
-      `client-types?organizationId=2`,
+      `client-types`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
   getIdentifierTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
     return this.api.GET<any[]>(
-      `identity-modes?organizationId=2`,
+      `identity-modes?organizationId=null`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }

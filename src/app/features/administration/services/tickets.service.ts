@@ -268,7 +268,7 @@ export class TicketsService {
 
   // get all departments
   getAllDepartments(
-    organizationId : number = 2
+    organizationId : number = undefined
   ): Observable<DepartmentDto[]> {
 
     const headers = new HttpHeaders({
@@ -276,7 +276,10 @@ export class TicketsService {
       'Accept': 'application/json',
     })
     const params = new HttpParams()
-      .set('organizationId', `${organizationId}`)
+
+    if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }
 
     return this.http.get<DepartmentDto[]>(`/${this.baseUrlSetup}/setups/departments`,
       {

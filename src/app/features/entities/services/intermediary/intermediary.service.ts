@@ -29,7 +29,7 @@ export class IntermediaryService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2)
+      // .set('organizationId', 2)
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`);
 
@@ -56,9 +56,12 @@ export class IntermediaryService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2)
       .set('columnName', `${columnName}`)
       .set('columnValue', `${columnValue}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<AgentDTO>>(
@@ -69,7 +72,12 @@ export class IntermediaryService {
   }
 
   getIdentityType(): Observable<IdentityModeDTO[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams();
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
+
     return this.api.GET<IdentityModeDTO[]>(
       `identity-modes`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
@@ -78,7 +86,10 @@ export class IntermediaryService {
   }
 
   getAccountType(): Observable<AccountTypeDTO[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams();
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
     return this.api.GET<AccountTypeDTO[]>(
       `account-types`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,

@@ -475,7 +475,11 @@ export class AccountService {
 
   getClientTitles(organizationId: number): Observable<ClientTitleDTO[]> {
     log.info('Fetching Client Title');
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    const params = new HttpParams();
+
+    if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }
 
     return this.api.GET<ClientTitleDTO[]>(
       `client-titles`,

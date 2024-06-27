@@ -171,7 +171,7 @@ export class CreateDashboardComponent implements OnInit {
       log.info('rep id', formValues.reportName[0].id);
 
       const loggedInUser = this.authService.getCurrentUser();
-            
+
       let selectedReports = formValues.reportName;
 
       const report: DashboardReports[] = selectedReports.map((selectedReport, index) => {

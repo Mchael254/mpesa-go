@@ -66,7 +66,7 @@ export class IdentityTypeService {
 
 
   getIdentityType(){
-    return this.api.GET<any>('identity-modes?organizationId=2', API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
+    return this.api.GET<any>('identity-modes', API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
   }
 
   // Validate identity number based on provided pattern

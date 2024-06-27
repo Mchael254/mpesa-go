@@ -16,7 +16,7 @@ export class PaymentModesService {
   constructor(private api: ApiService) {}
 
   getPaymentModes(): Observable<PaymentModesDto[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams().set('organizationId', null);
 
     return this.api.GET<PaymentModesDto[]>(
       `payment-modes`,
@@ -52,7 +52,8 @@ export class PaymentModesService {
   }
 
   getClaimsPaymentModes(): Observable<ClaimsPaymentModesDto[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams()
+      // .set('organizationId', 2);
 
     return this.api.GET<ClaimsPaymentModesDto[]>(
       `claim-payment-modes`,

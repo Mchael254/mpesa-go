@@ -27,9 +27,12 @@ export class ClientService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2)
       .set('sortListFields', `${sortField}`)
       .set('order', `${order}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
 
     return this.api.GET<Pagination<ClientDTO>>(
       `clients`,
@@ -47,9 +50,12 @@ export class ClientService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2)
       .set('sortListFields', `${sortField}`)
       .set('order', `${order}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) { todo: add organizationId to parameters
+      params['organizationId'] = organizationId.toString();
+    }*/
 
     return this.api.GET<Pagination<ClientDTO>>(
       `agents`,
@@ -77,10 +83,13 @@ export class ClientService {
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('name', `${name}`)
-      .set('organizationId', 2)
       .set('modeOfIdentity', `${modeOfIdentity}`)
       .set('idNumber', `${idNumber}`)
       .set('clientTypeName', `${clientTypeName}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
@@ -92,7 +101,12 @@ export class ClientService {
   }
 
   getIdentityType(): Observable<any[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams();
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
+
     return this.api.GET<any[]>(
       `identity-modes`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
@@ -180,7 +194,8 @@ export class ClientService {
   }
 
   getClientTitles(organizationId: number): Observable<any[]> {
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    const params = new HttpParams()
+      // .set('organizationId', `${organizationId}`);
     return this.api.GET<ClientTypeDTO[]>(
       `client-titles`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,

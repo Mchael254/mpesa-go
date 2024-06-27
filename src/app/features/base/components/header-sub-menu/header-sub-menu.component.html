@@ -197,7 +197,7 @@
                 <label
                   for="top-right"
                   class="label-text"
-                  (click)="navLink('/home/entity/new')"
+                  (click)="navLink('/home/entity/new');dynamicSideBarMenu(accountSubMenuList[0])"
                   >{{ 'base.new_entity' | translate }}
                   <i class="fa-solid fa-plus"></i></label>
               </div>
@@ -248,7 +248,8 @@
 
               <div class="d-flex justify-content-end">
                 <label
-                  (click)="navLink('/home/entity/list')"
+                  (click)="
+                    navLink('/home/entity/list');dynamicSideBarMenu(accountSubMenuList[0]);"
                   class="text-plain"
                   for="bottom-right"
                   >
