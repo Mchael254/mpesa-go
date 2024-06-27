@@ -19,6 +19,7 @@ export interface ContextPath {
   gis_reinsurance: string;
   gis_quotation_service: string;
   fms_payments_service: string;
+  etims_service: string;
 
 }
 

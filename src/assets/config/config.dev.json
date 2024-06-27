@@ -14,7 +14,8 @@
     "json":"json",
     "gis_reinsurance": "gis/reinsurance",
     "gis_quotation_service": "quotation",
-    "fms_payments_service": "fms/payment"
+    "fms_payments_service": "fms/payment",
+    "etims_service" : "etims"
 
   },
   "organization": {

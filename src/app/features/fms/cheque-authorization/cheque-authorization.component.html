@@ -8,7 +8,7 @@
       },
       {
         label: 'Cheques',
-        url: '#',
+        url: '/home/fms/cheque-authorization',
       },
       {
         label: 'Signing',
@@ -656,7 +656,9 @@
               <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
                 <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
                 <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
-                      (click)="fetchSelectedDoc(doc?.id)" >
+                       data-bs-target="#documentCarousel"
+                       [attr.data-bs-slide-to]="i"
+                       >
                   <span *ngIf = "doc?.actualName" class="doc-name" title="{{doc?.actualName | titlecase}}">
                         {{doc?.actualName?.substring(0,18) | titlecase}}...
                       </span>
@@ -670,10 +672,23 @@
 
             <!-- carousel -->
             <div id="documentCarousel" class="carousel slide">
+              <div class="carousel-indicators">
+                <ng-container *ngFor="let doc of docsList; let i = index" >
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleIndicators"
+                    [attr.data-bs-slide-to]="i"
+                    class="{{ i === 0 ? 'active' : '' }}"
+                  ></button>
+                </ng-container>
+              </div>
               <div class="carousel-inner">
                 <ng-container *ngIf="docsList.length > 0">
-                  <div class="carousel-item" *ngFor="let doc of docsList; let i = index" [class.active]="i === 0">
-                    <label class="form-label w-100 text-center">Preview: {{ doc.fileName }}</label><br>
+                  <div
+                    *ngFor="let doc of docsList; let i = index"
+                    class="{{ i === 0 ? 'carousel-item active' : 'carousel-item' }}"
+                  >
+                    <label class="form-label w-100 justify-content-center">Preview: {{ doc.fileName }}</label><br>
                     <ngx-doc-viewer
                       [isBase64]="!!doc.isBase64"
                       [base64String]="doc?.base64String"

@@ -25,7 +25,7 @@ export class ViewEmployeeComponent  implements OnInit {
   selectedEmployee: any[] = [];
   page = 1;
 
-  pageSize = 5;
+  pageSize = 10;
   event: LazyLoadEvent;
   totalRecords: number;
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -38,7 +38,7 @@ export class ViewEmployeeComponent  implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  dateFrom = `${this.year-2}-${this.month}-${this.day}`;
+  dateFrom = `${this.year-14}-${this.month}-${this.day}`;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -117,7 +117,7 @@ export class ViewEmployeeComponent  implements OnInit {
    * The function `getGrpEmployeeData()` retrieves data for staff, transactions, and departments, aggregates the data based
    * on certain conditions, and updates the `aggregatedEmployeeData` property.
    */
-  getGrpEmployeeData() {
+  /*getGrpEmployeeData() {
     forkJoin(([
       this.staffService.getStaffWithSupervisor(0, 10, null, 'dateCreated', 'desc'),
       this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
@@ -130,7 +130,7 @@ export class ViewEmployeeComponent  implements OnInit {
           for(const staffData of staff.content){
             const transaction = transactions.find(value => value.authorizedBy === staffData.username);
             const department = departments.find(value => value.id === staffData.departmentCode)
-  
+
             // if (transactions.length != 0 ) {
               result.push({
                 staffs: staffData,
@@ -155,6 +155,44 @@ export class ViewEmployeeComponent  implements OnInit {
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     })
+  }*/
+
+  getGrpEmployeeData() {
+    forkJoin(([
+      this.staffService.getStaffWithSupervisor(0, 10, null, 'dateCreated', 'desc'),
+      this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
+      this.ticketsService.getAllDepartments(2)
+    ]))
+      .subscribe({
+        next: ([staff, transactions, departments]) => {
+          if (staff.totalElements > 0) {
+            const result: AggregatedEmployeeData[] = [];
+            for (const staffData of staff.content) {
+              const staffTransactions = transactions.filter(value => value.authorizedBy === staffData.username);
+              const department = departments.find(value => value.id === staffData.departmentCode)
+
+              result.push({
+                staffs: staffData,
+                transaction: staffTransactions,  // Collect all transactions
+                department: department
+              });
+            }
+            console.log('aggregated data', result);
+            this.aggregatedEmployeeData.content = result;
+            this.aggregatedEmployeeData.numberOfElements = staff?.numberOfElements;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          let errorMessage = '';
+          if (err?.error?.message) {
+            errorMessage = err.error.message;
+          } else {
+            errorMessage = err.message;
+          }
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        }
+      });
   }
 
   /**
