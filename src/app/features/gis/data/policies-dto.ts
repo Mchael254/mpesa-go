@@ -84,3 +84,27 @@ export interface PoliciesDTO {
   wef_dt: string,
   wet_dt: string
 }
+export interface EtimsDTO {
+  Status: string,
+  isSuccess: boolean,
+  etim_pol_batch_no: number,
+  etims_queue_status: string,
+  etim_time: string,
+  etim_trader_invoice_number: string,
+  etim_date_captured: string,
+  etim_original_invoice_number: number,
+  etim_tax_amount_a: number,
+  etim_tax_amount_b: number,
+  etim_tax_amount_c: number,
+  etim_tax_amount_d: number,
+  etim_tax_rate_a: number,
+  etim_tax_rate_b: number,
+  etim_tax_rate_c: number,
+  etim_tax_rate_d: number,
+  etim_taxable_amount_a: number,
+  etim_taxable_amount_b: number,
+  etim_taxable_amount_c: number,
+  etim_taxable_amount_d: number,
+  etim_unit_price: number,
+  etim_error: string
+}
