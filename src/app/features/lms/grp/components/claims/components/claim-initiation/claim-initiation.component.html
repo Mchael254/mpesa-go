@@ -1,0 +1,241 @@
+<div class="main">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+  </div>
+  <div class="container">
+    <div class="title">Claim initiation</div>
+    <form [formGroup]="claimInitForm">
+      <div class="row" style="padding-top: 10px;">
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="product" style="color: black;">Select a product</label>
+            <select class="form-select" [id]="'product'" formControlName="product">
+              <option selected="true" disabled="disabled"></option>
+              <option *ngFor="let prod of " [value]="">{{ prod }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="policy" style="color: black;">Select a policy</label>
+            <select class="form-select" [id]="'policy'" formControlName="policy">
+              <option selected="true" disabled="disabled"></option>
+              <option *ngFor="let pol of " [value]="">{{ pol }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="policyMember" style="color: black;">Select a policy member</label>
+            <select class="form-select" [id]="'policyMember'" formControlName="policyMember">
+              <option selected="true" disabled="disabled"></option>
+              <option *ngFor="let mem of " [value]="">{{ mem }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="padding-top: 10px;">
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="causationType" style="color: black;">Select a causation type</label>
+            <select class="form-select" [id]="'causationType'" formControlName="causationType">
+              <option selected="true" disabled="disabled"></option>
+              <option *ngFor="let causation of " [value]="">{{ causation }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="actualCause" style="color: black;">Select the actual cause</label>
+            <select class="form-select" id="actualCause" formControlName="actualCause" (click)="onSelectClick($event)">
+              <option selected="true" disabled="disabled">Select an option</option>
+              <option *ngFor="let actualCause of actualCauses" [value]="actualCause">{{ actualCause }}</option>
+              <option class="add-causation-link" [value]="'addCausation'">Add causation
+              </option>
+              <p-overlayPanel #op>
+                <div class="">
+                  <div>
+                    <label for="causationId" style="color: black;">Causation Id</label>
+                  </div>
+                  <div class="form-group">
+                    <div>
+                      <input type="text" pInputText class="form-control" id="causationId" [style]="{ width: '100%' }"
+                        formControlName="causationId">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-2">
+                  <div>
+                    <label for="causationDesc" style="color: black;">Causation description</label>
+                  </div>
+                  <div class="form-group">
+                    <div>
+                      <textarea rows="2" cols="5" pInputTextarea id="causationId" [style]="{ width: '100%' }"
+                        formControlName="causationDesc">
+                      </textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-2">
+                  <div class="col-md-12">
+                    <div>
+                      <label for="gender" style="color: black;">Gender</label>
+                    </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" value="male" formControlName="gender"
+                              id="inlineRadio1" name="gender" />
+                          <label class="form-check-label" for="inlineRadio1">Male</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" value="female" formControlName="gender"
+                              id="inlineRadio2" name="gender" />
+                          <label class="form-check-label" for="inlineRadio2">Female</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="both" formControlName="gender"
+                            id="inlineRadio2" name="gender" />
+                        <label class="form-check-label" for="inlineRadio2">Both</label>
+                    </div>
+                  </div>
+              </div>
+
+                <div class="mt-2">
+                  <div>
+                    <label for="claimableMonths" style="color: black;">Minimum claimable months</label>
+                  </div>
+                  <div class="form-group">
+                    <div>
+                      <input type="number" pInputText class="form-control" id="claimableMonths" [style]="{ width: '100%' }"
+                        formControlName="claimableMonths">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="button-container">
+                  <button class="book-claim" (click)="submitClaimInitFormData()">Add actual type</button>
+                </div>
+                
+              </p-overlayPanel>
+
+            </select>
+          </div>
+        </div>
+
+
+        <div class="col-md-4">
+          <div>
+            <div>
+              <label for="reportDate" style="color: black;">Claim report date</label>
+            </div>
+            <div class="form-group">
+              <div>
+                <p-calendar formControlName="reportDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+                  placeholder="dd/mm/yy">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="padding-top: 10px;">
+        <div class="col-md-4">
+          <div>
+            <div>
+              <label for="occurenceDate" style="color: black;">Incident occurence date</label>
+            </div>
+            <div class="form-group">
+              <div>
+                <p-calendar formControlName="occurenceDate" dateFormat="dd/mm/yy" [showIcon]="true"
+                  [showButtonBar]="true" placeholder="dd/mm/yy">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div>
+            <label for="locationOfIncident" style="color: black;">Location of incident</label>
+          </div>
+          <div class="form-group">
+            <div>
+              <input type="text" pInputText class="form-control" id="locationOfIncident" [style]="{ width: '100%' }"
+                formControlName="locationOfIncident">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="container mt-2">
+    <div class="title">Upload documents</div>
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="nationalId" class="fixed-width-label" style="color: black;">National identification<span
+              style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput style="display: none;">
+            <button class="choose-file">
+              <span class="file-text">Choose file</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="documentC" class="fixed-width-label" style="color: black;">Document C<span
+              style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput style="display: none;">
+            <button class="choose-file">
+              <span class="file-text">Choose file</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top: 10px;">
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="deathCertificate" class="fixed-width-label" style="color: black;">Death certificate<span
+              style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput style="display: none;">
+            <button class="choose-file">
+              <span class="file-text">Choose file</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="documentD" class="fixed-width-label" style="color: black;">Document D<span
+              style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput style="display: none;">
+            <button class="choose-file">
+              <span class="file-text">Choose file</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="button-container">
+    <button class="book-claim" (click)="submitClaimInitFormData()">Book claim</button>
+  </div>
+</div>

@@ -123,6 +123,13 @@ const routes: Routes = [
                 (m) => m.MedicalsModule
               ),
           },
+          {
+            path: 'claims',
+            loadChildren: () =>
+              import('./grp/components/claims/claims.module').then(
+                (m) => m.ClaimsModule
+              ),
+          },
         ],
       },
 

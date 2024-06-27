@@ -1,0 +1,128 @@
+.main {
+  background: #F5F6F8;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.container {
+  background: #FFF;
+  border: 1px solid rgba(220, 220, 220, 0.85);
+  border-radius: 5px;
+  flex: 1;
+  padding: 48px;
+}
+
+label {
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+button.book-claim {
+  background-color: #00529B;
+  color: #FFFFFF;
+  border-color: #00529B;
+}
+
+button.book-claim:hover {
+  background-color: #65b2f5;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.choose-file {
+  display: inline-flex;
+  height: 24px;
+  padding: 12px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  background-color: #FFF;
+}
+
+.file-text {
+  color: #00529B;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.fixed-width-label {
+  width: 150px;
+  margin-right: 40px;
+}
+
+.add-causation-link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: blue;
+}
+
+.add-causation-link:hover {
+  cursor: pointer;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (max-width: 1000px) {
+  .main {
+    width: 100%;
+    overflow: auto;
+    align-items: center;
+  }
+
+
+  .container {
+    flex-direction: column;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .btns-container {
+    margin-top: 20px;
+    margin-left: unset;
+    width: 100%;
+  }
+
+  .book-claim {
+    width: 100%;
+  }
+
+  .label {
+    overflow-x: auto;
+  }
+}
