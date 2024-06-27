@@ -27,7 +27,7 @@ export class ServiceProviderService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2) //TODO:Find proper way to fetch organization Id
+      /*.set('organizationId', null)*/ //TODO:Find proper way to fetch organization Id
       .set('sortListFields', `${sortFields}`)
       .set('order', `${sortOrder}`);
 
@@ -47,7 +47,7 @@ export class ServiceProviderService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('organizationId', 2)
+      .set('organizationId', null)
       .set('columnName', `${columnName}`)
       .set('columnValue', `${columnValue}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
@@ -69,7 +69,7 @@ export class ServiceProviderService {
   }
 
   getClientTitles(): Observable<ClientTitlesDto[]> {
-    const params = new HttpParams().set('organizationId', 2);
+    const params = new HttpParams().set('organizationId', null);
     return this.api.GET<ClientTitlesDto[]>(
       `client-titles`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
