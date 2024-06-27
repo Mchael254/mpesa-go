@@ -65,11 +65,15 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Causation type
+              <label for="causationType" class="quote-label text-black fw-medium" style="font-size:1rem;">
+                Causation Type
               </label>
-              <select class="form-select form-select mb-1 w-75" placement="right">
+              <select class="form-select form-select mb-1 w-75" id="causationType" placement="right">
                 <option selected="true" disabled="disabled"></option>
+                <option *ngFor="let data of causationTypes | sort : 'asc' : 'name' "
+                        [value]="data.code">
+                      {{ data?.name | titlecase }}  
+                </option>
               </select>
             </div>
 
