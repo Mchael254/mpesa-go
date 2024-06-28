@@ -8,7 +8,7 @@ import { PolicyContent, PolicyResponseDTO } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
-
+import { ProductService } from 'src/app/features/gis/services/product/product.service';
 const log = new Logger("RiskDetailsComponent");
 
 
@@ -24,31 +24,33 @@ export class PolicySummaryComponent {
   premiumResponse:any;
   premium:any;
   selectedItem: number = 1; 
-
+  show: boolean = true;
   policySectionDetails:any;
   errorMessage: string;
   errorOccurred: boolean;
   batchNo:any;
   policyResponse: PolicyResponseDTO;
   policyDetailsData: PolicyContent;
-
+  product:any
   clientDetails:ClientDTO;
   allClients:any;
 
   insureds:any;
 
+  policySummary:any
 
   constructor(
     public policyService:PolicyService,
     private globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
-
+    public productService:ProductService
 
   ){}
 
   ngOnInit(): void {
     this.getUtil();
+    this.getPolicyDetails();
   }
   ngOnDestroy(): void { }
 
@@ -215,6 +217,23 @@ getClient() {
         );
       }
     });
+}
+
+getPolicyDetails(){
+  this.policyService.getbypolicyNo(this.policyDetails.policyNumber).subscribe({
+    next:(res)=>{
+      this.policySummary = res
+      const productCode = this.policySummary.proCode
+      this.productService.getProductByCode(productCode).subscribe({
+        next:(res)=>{
+          this.product = res
+          
+        }
+      })
+     
+      console.log(res)
+    }
+  })
 }
 
 }
