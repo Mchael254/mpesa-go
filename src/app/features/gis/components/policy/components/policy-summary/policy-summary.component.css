@@ -1,6 +1,7 @@
 .title {
     color: #00529B;
     font-size: 16px;
+    font-weight: 500;
 }
 
 .tab-content-details {
@@ -43,4 +44,21 @@
     line-height: 24px;
     text-align: left;
 
+}
+.label{
+    font-weight: 400;
+    font-size: 14px;
+}
+.detail{
+    font-weight: 700;
+    font-size: 14px;
+}
+.more {
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
 }
