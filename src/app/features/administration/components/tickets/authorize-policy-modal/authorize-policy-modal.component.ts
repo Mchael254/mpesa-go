@@ -74,7 +74,9 @@ export class AuthorizePolicyModalComponent implements OnInit {
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
     this.getDispatchReasons();
-    this.getReportsToPrepare();
+    if (this.policyDetails) {
+      this.getReportsToPrepare();
+    }
   }
 
   /**
