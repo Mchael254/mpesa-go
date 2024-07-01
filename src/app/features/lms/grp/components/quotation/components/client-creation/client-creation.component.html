@@ -419,11 +419,16 @@
       </div>
         
 </div>
-<div class="cont-button" style="display: flex; justify-content: end; padding-top: 12px;">
+<!-- <div class="cont-button" style="display: flex; justify-content: end; padding-top: 12px;">
     <button class="finish-button" (click)="createAdmin ? continueAfterAddingAdmin() : onContinue()">
         <span class="finish-text">
             Continue
         </span>
+    </button>
+</div> -->
+<div class="button-cont">
+    <button type="button" class="btn btn-primary button"
+        (click)="createAdmin ? continueAfterAddingAdmin() : onContinue()">Continue
     </button>
 </div>
 </div>
