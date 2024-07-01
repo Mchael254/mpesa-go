@@ -63,8 +63,8 @@ export class DashboardService {
     return this.api.GET(`admin/${policyCode}/endorsements`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   } 
 
-  getCategorySummary(policyCode: number) {
-    return this.api.GET(`group/category/${policyCode}/categories`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  getCategorySummary(endorsement_code: number) {
+    return this.api.GET(`group/category/${endorsement_code}/categories`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
   getDependentLimits(endorsement_code: number, categoryCode: number) {
