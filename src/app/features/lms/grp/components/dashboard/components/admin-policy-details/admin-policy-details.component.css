@@ -9,6 +9,7 @@
     padding: 20px;
     background: #FFF;
     border-radius: 6px;
+    overflow: auto;
 }
 
 .box {
