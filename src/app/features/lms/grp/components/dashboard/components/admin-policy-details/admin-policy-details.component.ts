@@ -22,10 +22,12 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   selectedColumnsMemberDets: string[];
   columnOptionsDepLimits: SelectItem[];
   selectedColumnsDepLimits: string[];
+  columnOptionsCatDets: SelectItem[];
+  selectedColumnsCatDets: string[];
   selectedRowIndex: number;
-  endorsementCode: number = /*20241004*/ 20241036;
+  endorsementCode: number = /*20241036*/ 20241004;
   policyCode: number = 2024833;
-  categoryCode: number = 202430003;
+  categoryCode: number;
   adminPolicyDetails: AdminPolicyDetailsDTO;
   endorsements: EndorsementDetailsDTO[] = [];
   endorsementForm: FormGroup;
@@ -47,7 +49,7 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
     this.createEndorsementForm();
     this.onEndorsementChange();
     this.getCategorySummary();
-    this.getDependentLimits();
+    this.categoryDetailsColumns();
     this.depLimitsColumns();
     
   }
@@ -94,6 +96,18 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   ];
 
   this.selectedColumnsDepLimits = this.columnOptionsDepLimits.map(option => option.value);
+  }
+
+  categoryDetailsColumns() {
+    this.columnOptionsCatDets = [
+      { label: 'Category', value: 'category_category' },
+      { label: 'Multiple of earning', value: 'period' },
+      { label: 'Access group', value: 'policy_access_group' },
+      { label: 'Select rates', value: 'use_cvr_rate' },
+      { label: 'Premium mask', value: 'premium_mask_desc' },
+  ];
+
+  this.selectedColumnsCatDets = this.columnOptionsCatDets.map(option => option.value);
   }
 
 
@@ -234,6 +248,15 @@ onEndorsementChange() {
     }
   }
 
+  onCategoryDetailsTableRowClick(categorySummary: CategorySummaryDTO[], index: number) {
+    this.selectedRowIndex = index;
+    if(categorySummary){
+      this.categoryCode = categorySummary["policy-category-code"];
+      log.info("catCode from row click", this.categoryCode)
+      this.getDependentLimits();
+    }
+  }
+
   getAdminPolicyDetails() {
     this.dasboardService.getAdminPolicyDetails(this.endorsementCode).subscribe((res: AdminPolicyDetailsDTO) => {
       this.adminPolicyDetails = res;
@@ -249,7 +272,7 @@ onEndorsementChange() {
   }
 
   getCategorySummary() {
-    this.dasboardService.getCategorySummary(this.policyCode).subscribe((res: CategorySummaryDTO[]) => {
+    this.dasboardService.getCategorySummary(this.endorsementCode).subscribe((res: CategorySummaryDTO[]) => {
       this.categorySummary = res;
       log.info("getCategorySummary", this.categorySummary)
     });
