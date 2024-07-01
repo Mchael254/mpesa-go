@@ -156,27 +156,27 @@
                 <table style="width: 100%">
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Claim number: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">123456</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_no }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Claim status: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Active</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_status }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Claim on life: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Doe Jnr</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.claim_life }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Causation: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Illness</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.caus_desc }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Death date: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">12/02/2024</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_date_death_accident }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Death reported: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">12/02/2024</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_date_claim_reported }}</td>
                   </tr>
                 </table>
               </div>
@@ -184,15 +184,15 @@
                 <table style="width: 100%">
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Indemnity claim type: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">some text</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_indmty_wks }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Indemnity days: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">100</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_hosp_days }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Amount claimed: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 20,000</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_amt_claimed }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">But pay: </td>
@@ -200,11 +200,11 @@
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">But pay amount: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 0</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_but_pay_amount }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">But pay reason: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">N/A</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_but_pay_reason }}</td>
                   </tr>
                 </table>
               </div>
@@ -212,15 +212,15 @@
                 <table style="width: 100%">
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Amount to be paid: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 50,000</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_amt_to_pay }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Claim charge: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 10,000</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_amt_claimed }}</td>
                   </tr>
                   <tr>
                     <td style="align-items: left; color:grey; font-size:16px;">Initiator: </td>
-                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Jane Doe</td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">{{ claims?.clm_prepared_by }}</td>
                   </tr>
                 </table>
               </div>

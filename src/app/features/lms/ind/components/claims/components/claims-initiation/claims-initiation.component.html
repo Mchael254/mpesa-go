@@ -24,8 +24,8 @@
                 <select class="form-select form-select mb-1 w-75" id="policySelection" placement="right">
                   <option selected="true" disabled="disabled"></option>
                   <option 
-                          *ngFor="let data of [] | sort : 'asc' : 'nationality'"[value]="data.id"> 
-                          {{ data?.nationality | titlecase }}
+                          *ngFor="let data of policy | sort : 'asc' : 'name'" [value]="data.value"> 
+                          {{ data?.name | titlecase }}
                   </option>
                 </select>
               </div>
@@ -36,8 +36,8 @@
                 </label>
                 <select class="form-select form-select mb-1 w-75" id="claimType" placement="right">
                   <option selected="true" disabled="disabled"></option>
-                  <option *ngFor="let data of [] | sort : 'asc' : 'nationality'" [value]="data.id">
-                          {{ data?.nationality | titlecase }}
+                  <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value" >
+                          {{ data?.name | titlecase }}
                   </option>
                 </select>
               </div>
