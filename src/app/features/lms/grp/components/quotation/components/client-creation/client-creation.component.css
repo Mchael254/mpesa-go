@@ -112,7 +112,24 @@ p-multiSelect {
 }
 /* End of CSS for X button, to close modal */
 
-  .finish-button {
+.button {
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: #00529B;
+  color: white;
+  float: right;
+  margin-top: 10px;
+}
+
+.button:hover {
+  background-color: #7eb9ec
+}
+
+  /* .finish-button {
     display: inline-flex;
     height: 40px;
     padding: 12px 16px;
@@ -135,7 +152,7 @@ p-multiSelect {
 
 .finish-button:hover {
     background: #70b7f4;
-}
+} */
 
 .accordion-button {
   background-color: white;
@@ -261,6 +278,10 @@ td {
   }
 
   .cont-button {
+    width: 100%;
+  }
+
+  .button-cont {
     width: 100%;
   }
   
