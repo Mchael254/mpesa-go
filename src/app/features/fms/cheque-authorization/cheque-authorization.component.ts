@@ -471,6 +471,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully signed');
           this.isLoadingSignSelected = false;
           this.lazyLoadEft();
+          this.selectedEftPaymentTypes = [];
 
         },
         error: err => {
@@ -528,7 +529,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully rejected');
           this.isLoadingReject = false;
           this.lazyLoadEft();
-
+          this.selectedEftPaymentTypes = [];
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -584,7 +585,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully sent for correction');
           this.isLoadingSendCorrection = false;
           this.lazyLoadEft();
-
+          this.selectedEftPaymentTypes = [];
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
