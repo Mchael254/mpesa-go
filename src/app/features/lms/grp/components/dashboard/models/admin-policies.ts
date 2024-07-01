@@ -118,3 +118,16 @@ export class CategorySummaryDTO {
   total_students: any;
   use_cvr_rate: any;
 }
+
+export class DependentLimitDTO {
+  coverType: string;
+  dependentType: string;
+  livesCovered: number;
+  minimumAmt: number;
+  maximumAmt: number;
+  rate: number;
+  divFactor: number;
+  percentageOfSa: number;
+  inBuilt: string;
+  accelerated: string;
+}
