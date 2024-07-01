@@ -344,37 +344,37 @@ currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             <div class="mt-5">
                 <h6>Dependent limit</h6>
                 <div class="multiselect-add">
-                    <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                    <p-multiSelect [options]="columnOptionsDepLimits" [(ngModel)]="selectedColumnsDepLimits" [filter]="false">
                     </p-multiSelect>
                   </div>
-                <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                <p-table [value]="dependentLimit" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Cover type</th>
-                            <th>Dependent type</th>
-                            <th>Lives covered</th>
-                            <th>Min amount</th>
-                            <th>Max limit amount</th>
-                            <th>Rate</th>
-                            <th>Division factor</th>
-                            <th>% of main/yr SA</th>
-                            <th>Inbuilt</th>
-                            <th>Accelerated</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('cover_type')">Cover type</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('dependent_type')">Dependent type</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('lives_covered')">Lives covered</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('minimum_amt')">Min amount</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('maximum_amt')">Max limit amount</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('rate')">Rate</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('div_factor')">Division factor</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('percentage_of_sa')">% of main/yr SA</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('in_built')">Inbuilt</th>
+                            <th *ngIf="selectedColumnsDepLimits.includes('accelerated')">Accelerated</th>
 
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-memberCoverTypeSummaryDto>
+                    <ng-template pTemplate="body" let-item>
                         <tr>
-                            <td id="tdStyle">{{ memberCoverTypeSummaryDto.cvt_desc | titlecase }}</td>
-                            <td style="text-align: right;"> {{memberCoverTypeSummaryDto.premium | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('cover_type')" id="tdStyle">{{ item.cover_type | titlecase }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('dependent_type')" id="tdStyle"> {{item.dependent_type | titlecase  }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('lives_covered')" style="text-align: right;">{{ item.lives_covered | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('minimum_amt')" style="text-align: right;">{{ item.minimum_amt | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('maximum_amt')" style="text-align: right;">{{ item.maximum_amt | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('rate')" id="tdStyle">{{ item.rate }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('div_factor')" id="tdStyle">{{ item.div_factor | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('percentage_of_sa')" style="text-align: right;">{{ item.percentage_of_sa | number }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('in_built')" id="tdStyle">{{ item.in_built }}</td>
+                            <td *ngIf="selectedColumnsDepLimits.includes('accelerated')" id="tdStyle">{{ item.accelerated }}</td>
                             
                         </tr>
                     </ng-template>

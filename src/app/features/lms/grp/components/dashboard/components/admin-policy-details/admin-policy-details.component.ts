@@ -5,7 +5,7 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { DashboardService } from '../../services/dashboard.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
-import { AdminPolicyDetailsDTO, CategorySummaryDTO, EndorsementDetailsDTO } from '../../models/admin-policies';
+import { AdminPolicyDetailsDTO, CategorySummaryDTO, DependentLimitDTO, EndorsementDetailsDTO } from '../../models/admin-policies';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 const log = new Logger("AdminPolicyDetailsComponent");
@@ -20,13 +20,17 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   selectedPolicyNumber: string = 'PL/009/IUIU';
   columnOptionsMemberDets: SelectItem[];
   selectedColumnsMemberDets: string[];
+  columnOptionsDepLimits: SelectItem[];
+  selectedColumnsDepLimits: string[];
   selectedRowIndex: number;
-  endorsementCode: number = 20241004;
+  endorsementCode: number = /*20241004*/ 20241036;
   policyCode: number = 2024833;
+  categoryCode: number = 202430003;
   adminPolicyDetails: AdminPolicyDetailsDTO;
   endorsements: EndorsementDetailsDTO[] = [];
   endorsementForm: FormGroup;
   categorySummary: CategorySummaryDTO[] = []; 
+  dependentLimit: DependentLimitDTO[] = [];
 
   constructor(
     private router: Router,
@@ -43,6 +47,8 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
     this.createEndorsementForm();
     this.onEndorsementChange();
     this.getCategorySummary();
+    this.getDependentLimits();
+    this.depLimitsColumns();
     
   }
 
@@ -71,6 +77,23 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   ];
 
   this.selectedColumnsMemberDets = this.columnOptionsMemberDets.map(option => option.value);
+  }
+
+  depLimitsColumns() {
+    this.columnOptionsDepLimits = [
+      { label: 'Cover type', value: 'cover_type' },
+      { label: 'Dependent type', value: 'dependent_type' },
+      { label: 'Lives covered', value: 'lives_covered' },
+      { label: 'Min amount', value: 'minimum_amt' },
+      { label: 'Max limit amount', value: 'maximum_amt' },
+      { label: 'Rate', value: 'rate' },
+      { label: 'Division factor', value: 'div_factor' },
+      { label: '% of main/yr SA', value: 'percentage_of_sa' },
+      { label: 'Inbuilt', value: 'in_built' },
+      { label: 'Accelerated', value: 'accelerated' },
+  ];
+
+  this.selectedColumnsDepLimits = this.columnOptionsDepLimits.map(option => option.value);
   }
 
 
@@ -229,6 +252,13 @@ onEndorsementChange() {
     this.dasboardService.getCategorySummary(this.policyCode).subscribe((res: CategorySummaryDTO[]) => {
       this.categorySummary = res;
       log.info("getCategorySummary", this.categorySummary)
+    });
+  }
+
+  getDependentLimits() {
+    this.dasboardService.getDependentLimits(this.endorsementCode, this.categoryCode).subscribe((res: DependentLimitDTO[]) => {
+      this.dependentLimit = res;
+      log.info("getDependentLimits", this.dependentLimit)
     });
   }
 
