@@ -1,0 +1,972 @@
+
+    <div class="row">
+        <div class="col-sm-5">   
+            <p class="title">{{'gis.policy.policy_details' | translate}}</p>
+        </div>
+        <div class="col-sm-7 float-end">
+            <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
+            <i class="fa-solid fa-pencil"></i>
+            </button>
+            <button class="btn btn-primary me-4">Reassign</button>
+            <button class="btn btn-primary me-4">Generate cover note</button>
+            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
+        </div>
+    </div>
+   
+       
+ 
+    <br class="mb-4">
+    <br>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy no.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.policyNo}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Endorsement no.</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.endorsementNo}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Product</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{product.description}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy type</p>
+                    
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.policyType}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Branch</p>
+                     
+                </div>
+                <div class="col-6">
+                    <!-- {{policySummary.endorsementNo}} -->
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label"> Sum Insured</p>
+                  
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.totalSumInsured}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Premium.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{premium}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Expected premium</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.basicPremium}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy status</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.policyStatus}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Cover From</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.wefDt}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Cover To</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.wetDt}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Reinsurance authorized</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.authorizedStatus}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">U/W year</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">U/W only</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.underWritingOnly}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Currency</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.currency}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Currency fixed rate</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Currency rate</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Transaction type</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.transactionType}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Renewal Date</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail">{{policySummary.renewalDate}}</p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Renewable</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Scheme policy</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Receive prem on</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Premium deposit balance</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+    <p class="title">Client Information</p>
+
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Client Name</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Other Interested Parties</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy joint client</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Joint Client Name</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Joint account</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            
+        </div>
+    </div>
+
+   
+
+    <!-- more details -->
+    <div class="collapse" id="collapseMoreSummaryDetails">
+    <p class="title">Agent Information</p>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Agent</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Sub Agent Name</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Sub Agent Allowed</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Marketer</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Introducer</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">RI Agent</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Commission allowed</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Agent discounted</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Agent discount</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Expected comm. amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Marketer commission</p>  
+                </div>
+                <div class="col-6">
+                    <p class="detail"> </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Commission</p>
+                   
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Other intermediary amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          
+        </div>
+        <div class="col-4">
+      
+        </div>
+    </div>
+
+    <p class="title">Financial Information</p>
+    
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy holders fund</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Extra</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Stamp duty</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Future annual premium</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Training levy</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Other client charges</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Debited Installment amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Current installment amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Cashback applicable</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Certificate charge</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Financier</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Admin fee allowed</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Admin fee amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Endorsement discount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            
+        </div>
+    </div>
+
+    <p class="title">Co-insurance Information</p>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Coinsured</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Coin-leader combined</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Coinsurance Premium</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Coinsurance FAP</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Coinsurance SI</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Coinsurance deductible amount</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <p class="title">Transaction Details</p>
+
+
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy interface type</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Holding co.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Payment mode</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Policy level debit</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Payment reference</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Payment date</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Binder policy</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Binder name</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Ref no.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Multi-agency policy</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Payment frequency</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Debiting type</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">IPF installments</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+                <div class="col-6">
+                    <p class="label">Check-off installments</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Old agent no.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label">Old policy no.</p>
+                </div>
+                <div class="col-6">
+                    <p class="detail"></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+         
+        </div>
+        <div class="col-4">
+           
+        </div>
+    </div>
+    </div>
+
+
+
+
+     <p class="more" (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseMoreSummaryDetails"
+    aria-expanded="false" aria-controls="collapseMoreSummaryDetails"> {{'gis.policy.more_details' |
+    translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapseMoreSummaryDetails"
+        aria-expanded="false" aria-controls="collapseMoreSummaryDetails"> <i class="pi pi-angle-double-up"
+            style="font-size:13px" *ngIf="!show" data-toggle="collapse"
+            data-target="#collapseMoreSummaryDetails"></i><i class="pi pi-angle-double-down"
+            style="font-size:13px" *ngIf="show" data-toggle="collapse"
+            data-target="#collapseMoreSummaryDetails"></i></span> </p>
