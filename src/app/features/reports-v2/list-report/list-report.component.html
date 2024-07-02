@@ -30,22 +30,23 @@
         </div>
       </div>
 
-      <div class="row mx-0 mt-3 p-0 dragDropBoundary" *ngFor="let reportdata of dashboard"
-           cdkDropList [cdkDropListData]="dashboard"
-           (cdkDropListDropped)="drop($event)">
-        <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
-          <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-            <div class="row card-header border-0 text-sm-start bg-transparent">
-              <div class="col-md-10 col-10">
+      <ng-container  *ngFor="let reportdata of dashboard">
+        <div class="row mx-0 mt-3 p-0 dragDropBoundary"
+             cdkDropList [cdkDropListData]="dashboard"
+             (cdkDropListDropped)="drop($event)">
+          <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
+            <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+              <div class="row card-header border-0 text-sm-start bg-transparent">
+                <div class="col-md-10 col-10">
                 <span *ngIf="!isEditable"
                       style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">{{reportName?.name | titlecase }}</span>
 
-                <div class="mb-3" *ngIf="isEditable">
-                  <input type="text" class="form-control" id="id" [value]="reportName?.name"
-                         [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
+                  <div class="mb-3" *ngIf="isEditable">
+                    <input type="text" class="form-control" id="id" [value]="reportName?.name"
+                           [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-2 col-2">
+                <div class="col-md-2 col-2">
                 <span class="float-end"
                       (click)="selectedDashboard = reportdata.id;
                       selectedReportId = reportName.id;
@@ -54,30 +55,31 @@
                       style="cursor: pointer;">
                   <i class="fa fa-ellipsis-v clickable"></i>
                 </span>
-                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
+                  <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
+                </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div
-                *ngIf="reportName?.charts[0]?.type==='table';
+              <div class="card-body">
+                <div
+                  *ngIf="reportName?.charts[0]?.type==='table';
                else showChart"
-              >
-              <app-dynamic-table
-                [tableDetails]="tableDetails"
-              ></app-dynamic-table>
-            </div>
+                >
+                  <app-dynamic-table
+                    [tableDetails]="tableDetails"
+                  ></app-dynamic-table>
+                </div>
 
-            <ng-template #showChart>
-              <app-dynamic-chart
-                [basicData]="chartData"
-                [chartType]="reportName?.charts[0]?.type"
-              ></app-dynamic-chart>
-            </ng-template>
+                <ng-template #showChart>
+                  <app-dynamic-chart
+                    [basicData]="chartData"
+                    [chartType]="reportName?.charts[0]?.type"
+                  ></app-dynamic-chart>
+                </ng-template>
 
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </ng-container>
 
     </div>
   </div>
