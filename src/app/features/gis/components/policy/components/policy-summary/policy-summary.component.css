@@ -33,6 +33,16 @@
     border: none;
 }
 
+.deleteMessage {
+    color: #000;
+    font-size: 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
+}
+
 #icon i {
     color: #00529B;
 }
@@ -43,16 +53,21 @@
     font-weight: 500;
     line-height: 24px;
     text-align: left;
+    color: rgba(0, 82, 155, 1);
+
 
 }
-.label{
+
+.label {
     font-weight: 400;
     font-size: 14px;
 }
-.detail{
+
+.detail {
     font-weight: 700;
     font-size: 14px;
 }
+
 .more {
     color: #00529B;
     font-family: Roboto;
