@@ -10,15 +10,14 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { Router } from '@angular/router';
-const log = new Logger("PolicySummary");
-
+const log = new Logger("PolicySummaryDetails");
 
 @Component({
-  selector: 'app-policy-summary',
-  templateUrl: './policy-summary.component.html',
-  styleUrls: ['./policy-summary.component.css']
+  selector: 'app-policy-summary-details',
+  templateUrl: './policy-summary-details.component.html',
+  styleUrls: ['./policy-summary-details.component.css']
 })
-export class PolicySummaryComponent {
+export class PolicySummaryDetailsComponent {
   steps = underwritingSteps
   policyDetails:any
   computationDetails: Object;
@@ -53,6 +52,7 @@ export class PolicySummaryComponent {
   ngOnInit(): void {
     this.getUtil();
     this.getPolicyDetails();
+    this.getPolicy()
   }
   ngOnDestroy(): void { }
 
@@ -103,21 +103,7 @@ getPolicy() {
           log.debug("Policy Details data get policy", this.policyDetailsData)
           this.insureds = this.policyDetailsData.insureds
           log.debug("Insureds", this.insureds)
-          if (this.insureds){
-            this.getClient()
-          }
-
-          // this.productCode = this.policyDetails.product.code;
-          // log.debug("Product Code", this.productCode)
-          // this.passedCoverFrom = this.policyDetails.wefDt;
-          // log.debug("COVER FROM", this.passedCoverFrom);
-          // this.passedCoverTo = this.policyDetails.wetDt;
-          // log.debug("COVER TO", this.passedCoverTo);
-          // this.passedClientCode = this.policyDetails.clientCode
-          // log.debug("CLIENT CODE", this.passedClientCode);
-
-
-          // Calculate cover days
+        
        
           this.cdr.detectChanges();
 
@@ -140,86 +126,8 @@ getPolicy() {
       },
     });
 }
-getoClient() {
-  for (const insured of this.insureds) {
-    const clientRequests = [];
-    const prpCode = insured.prpCode; // Assuming each insured object has prpCode
-    log.debug("PRPCODE", prpCode)
-    this.clientService
-      .getClientById(prpCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (data: any) => {
-          if (data ) {
-            log.debug('Client Details',data)
-          this.clientDetails =data;
-            
-            // Process clientDetails as needed
-            
-            this.cdr.detectChanges(); // Trigger change detection if needed
-          } else {
-            // Handle case where client details are not found
-            console.error(`Client details not found for prpCode: ${prpCode}`);
-          }
-        },
-        error: (err) => {
-          // Handle error fetching client details
-          console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
-        },
-      });
-  }
-}
-getClient() {
-  const clientRequests = [];
 
-  for (const insured of this.insureds) {
-    const prpCode = insured.prpCode; // Assuming each insured object has prpCode
 
-    const clientRequest = this.clientService.getClientById(prpCode)
-      .pipe(
-        map((data: any) => {
-          if (data ) {
-            return data; // Assuming only one client is expected
-          } else {
-            throw new Error(`Client details not found for prpCode: ${prpCode}`);
-          }
-        }),
-        catchError(err => {
-          console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
-          return of(null); // Return null or appropriate fallback value on error
-        })
-      );
-
-    clientRequests.push(clientRequest);
-  }
-
-  // Use forkJoin to combine all requests into a single observable
-  forkJoin(clientRequests)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (clients: any[]) => {
-        console.log('All client details fetched:', clients);
-
-        // Process the array of client details as needed
-        // For example, assign it to a component property
-        this.allClients = clients;
-        log.debug('ALL CLIENTS',this.allClients)
-
-        this.cdr.detectChanges(); // Trigger change detection if needed
-      },
-      error: (err) => {
-        // Handle error fetching any client details
-        console.error('Error fetching client details:', err);
-
-        this.errorOccurred = true;
-        this.errorMessage = 'Error fetching client details';
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-      }
-    });
-}
 
 getPolicyDetails(){
   this.policyService.getbypolicyNo(this.policyDetails.policyNumber).subscribe({
@@ -241,5 +149,4 @@ editPolicyDetails(){
   this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNumber}`]);
 
 }
-
 }
