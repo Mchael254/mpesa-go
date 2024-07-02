@@ -47,7 +47,7 @@ export class PolicyService {
     return this.api.POST(`v1/policies?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  getPolicy(batchNo: number) {
+   getPolicy(batchNo: number) {
     return this.api.GET(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
