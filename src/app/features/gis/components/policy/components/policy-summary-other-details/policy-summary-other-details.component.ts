@@ -10,6 +10,8 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { Router } from '@angular/router';
+import { Table } from 'primeng/table';
+import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
 const log = new Logger("PolicySummaryOtherDetails");
 
 @Component({
@@ -34,10 +36,41 @@ export class PolicySummaryOtherDetailsComponent {
   product:any
   clientDetails:ClientDTO;
   allClients:any;
+  clientList: any;
+  clientName: any;
+  clientCode: any;
+  clientData: ClientDTO[];
 
   insureds:any;
 
-  policySummary:any
+  policySummary:any;
+  // insureds: any;
+  selectedInsured: ClientDTO;
+  selectedFollower:any;
+
+
+  filteredClients: any[] = [];
+  columns: any[] = [
+    { label: 'Name', value: 'firstName' },
+    { label: 'Address', value: 'physicalAddress' },
+    { label: 'Town', value: 'town' },
+    { label: 'Pin', value: 'pinNumber' },
+    { label: 'Passport no.', value: 'passportNumber' },
+    { label: 'Business', value: 'business' },
+    { label: 'Other interested parties', value: 'otherParties' },
+    { label: 'ID no.', value: 'idNumber' }
+  ];
+  selectedColumn: any;
+  searchQuery: any;
+
+
+  @ViewChild('dt1') dt1: Table | undefined;
+
+
+  @ViewChild('clientModal') clientModal: any;
+  @ViewChild('closebutton') closebutton;
+
+
 
   constructor(
     public policyService:PolicyService,
@@ -50,6 +83,7 @@ export class PolicySummaryOtherDetailsComponent {
   ){}
   ngOnInit(): void {
     this.getUtil();
+    this.loadAllClients();
   }
   ngOnDestroy(): void { }
 
@@ -162,7 +196,7 @@ getClient() {
     const clientRequest = this.clientService.getClientById(prpCode)
       .pipe(
         map((data: any) => {
-          if (data ) {
+          if (data) {
             return data; // Assuming only one client is expected
           } else {
             throw new Error(`Client details not found for prpCode: ${prpCode}`);
@@ -187,7 +221,8 @@ getClient() {
         // Process the array of client details as needed
         // For example, assign it to a component property
         this.allClients = clients;
-        log.debug('ALL CLIENTS',this.allClients)
+        log.debug('ALL CLIENTS', this.allClients)
+        this.filteredClients = this.allClients;
 
         this.cdr.detectChanges(); // Trigger change detection if needed
       },
@@ -204,6 +239,154 @@ getClient() {
       }
     });
 }
+onInsuredEditSave(insured) {
+  log.debug("SELECTED CLIENT", insured)
+  this.selectedInsured = insured
 
+  function transformToDTO(data: any): PersonalDetailsUpdateDTO {
+    return {
+      accountId: data.id,
+      dob: data.dateOfBirth,
+      emailAddress: data.emailAddress,
+      identityNumber: data.idNumber,
+      // Assuming modeOfIdentityId is mapped from modeOfIdentity
+      modeOfIdentityId: data.modeOfIdentity === "NATIONAL_ID" ? 1 : undefined, 
+      name: `${data.firstName} ${data.lastName}`,
+      passportNo: data.passportNumber,
+      phoneNumber: data.phoneNumber,
+      physicalAddress: data.physicalAddress,
+      pinNumber: data.pinNumber,
+      titleShortDescription: data.shortDescription,
+      // title: { /* Map to ClientTitleDTO if needed */ },
+      category: data.category,
+      modeOfIdentity: { /* Map to IdentityModeDTO if needed */ },
+      // occupation: { /* Map to OccupationDTO if needed */ }
+    };
+  }
+  
+  // Transform the input data to DTO format
+  const personalDetailsUpdateDTO = transformToDTO(this.selectedInsured);
+  console.log("Transformed Data",personalDetailsUpdateDTO);
+  this.clientService
+    .updateClient(this.selectedInsured.id, this.selectedInsured)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data: any) => {
 
+        if (data) {
+          log.debug("Client Edited", data)
+          this.cdr.detectChanges();
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
 }
+loadAllClients() {
+  this.clientService
+    .getClients(0, 100)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+
+        if (data) {
+          this.clientList = data;
+          log.debug("CLIENT DATA:", this.clientList)
+          this.clientData = this.clientList.content
+          log.debug("CLIENT DATA:", this.clientData)
+         
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
+}
+loadClientDetails(id) {
+  log.info("Client Id:", id)
+  this.clientService.getClientById(id).subscribe(data => {
+    this.clientDetails = data;
+    log.debug("Selected Client Details:", this.clientDetails)
+    this.allClients = this.allClients.concat(this.clientDetails);
+    this.filteredClients = this.allClients;
+
+    log.debug("Added Insured:", this.allClients)
+
+    // this.getCountries();
+    this.saveclient()
+    this.closebutton.nativeElement.click();
+  })
+}
+saveclient() {
+  this.clientCode = this.clientDetails.id;
+  this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+  sessionStorage.setItem('clientCode', this.clientCode);
+  log.debug("Client Code:", this.clientCode)
+}
+applyFilterGlobal($event, stringVal) {
+  this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+}
+openDeleteModal(){
+  log.debug("Selected insured", this.selectedInsured)
+  if(!this.selectedInsured){
+    this.globalMessagingService.displayInfoMessage('Error', 'Select Insured to continue');
+  }else{
+    document.getElementById("openModalButtonDelete").click();
+
+  }
+}
+
+filterTable() {
+  log.debug("SELECTED COLUMN:", this.selectedColumn);
+  log.debug("SEARCH Query:", this.searchQuery);
+
+  if (this.selectedColumn && this.searchQuery) {
+    if (this.selectedColumn === 'name') {
+      this.filteredClients = this.allClients.filter(client => {
+        const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+        return (
+          fullName.includes(this.searchQuery.toLowerCase()) ||
+          client.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          client.lastName.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      });
+    } else {
+      this.filteredClients = this.allClients.filter(client => {
+        return client[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
+    }
+  } else {
+    this.filteredClients = this.allClients;
+  }
+}
+}
+
+
+

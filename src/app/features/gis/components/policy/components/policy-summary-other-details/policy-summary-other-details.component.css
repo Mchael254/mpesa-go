@@ -62,3 +62,52 @@
     line-height: normal;
     text-decoration-line: underline;
 }
+.flex .search-input {
+    /* padding-bottom: 6px; */
+    padding-left: 30px;
+    border: 1px solid #ccc;
+    background: rgba(245, 246, 248, 1);
+    border-radius: 5px;
+    height: 40px;
+    width: 100% !important;
+    font-size: 13px;
+}
+
+.search-icon {
+    margin-top: -12px
+}
+
+.flex .search-input-insured {
+    padding-left: 35px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 30px;
+    width: 100% !important;
+    font-size: 13px;
+
+}
+
+::ng-deep .p-dropdown {
+    height: 30px;
+    /* Adjust the height as needed */
+    font-size: 12px;
+    /* Adjust the font size as needed */
+    padding: 2px;
+    /* Adjust the padding as needed */
+    width: 100%;
+}
+
+::ng-deep .p-dropdown-label {
+    font-size: 13px;
+    /* line-height: 0px; */
+}
+
+::ng-deep .p-dropdown-item {
+    font-size: 12px;
+    /* Adjust the font size of dropdown items as needed */
+}
+
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    padding: 4px 8px;
+    /* Adjust the padding of dropdown items */
+}
