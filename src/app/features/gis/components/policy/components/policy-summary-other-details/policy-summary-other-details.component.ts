@@ -10,15 +10,14 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { Router } from '@angular/router';
-const log = new Logger("PolicySummary");
-
+const log = new Logger("PolicySummaryOtherDetails");
 
 @Component({
-  selector: 'app-policy-summary',
-  templateUrl: './policy-summary.component.html',
-  styleUrls: ['./policy-summary.component.css']
+  selector: 'app-policy-summary-other-details',
+  templateUrl: './policy-summary-other-details.component.html',
+  styleUrls: ['./policy-summary-other-details.component.css']
 })
-export class PolicySummaryComponent {
+export class PolicySummaryOtherDetailsComponent {
   steps = underwritingSteps
   policyDetails:any
   computationDetails: Object;
@@ -49,10 +48,8 @@ export class PolicySummaryComponent {
     private router: Router
 
   ){}
-
   ngOnInit(): void {
     this.getUtil();
-    this.getPolicyDetails();
   }
   ngOnDestroy(): void { }
 
@@ -73,20 +70,7 @@ export class PolicySummaryComponent {
     }
   })
 }
-computePremium(){
-  this.policyService.computePremium(this.computationDetails).subscribe({
-    next:(res)=>{
-      this.premiumResponse = res
-      this.premium = this.premiumResponse.premiumAmount
-      this.globalMessagingService.displaySuccessMessage('Success','Premium computed successfully ')
-      console.log(this.premium)
-    }, error : (error) => {
-     
-      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
 
-      }
-  })
-}
 getPolicy() {
   this.batchNo = this.policyDetails.batchNumber;
   log.debug("Batch No:", this.batchNo)
@@ -221,25 +205,5 @@ getClient() {
     });
 }
 
-getPolicyDetails(){
-  this.policyService.getbypolicyNo(this.policyDetails.policyNumber).subscribe({
-    next:(res)=>{
-      this.policySummary = res
-      const productCode = this.policySummary.proCode
-      this.productService.getProductByCode(productCode).subscribe({
-        next:(res)=>{
-          this.product = res
-          
-        }
-      })
-     
-      console.log(res)
-    }
-  })
-}
-editPolicyDetails(){
-  this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNumber}`]);
-
-}
 
 }
