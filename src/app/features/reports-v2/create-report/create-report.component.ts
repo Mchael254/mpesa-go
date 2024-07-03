@@ -40,7 +40,7 @@ export class CreateReportComponent implements OnInit {
   public subjectAreas: SubjectArea[] = [];
   public selectedSubjectArea: string = null;
   public subjectAreaCategories: SubjectAreaCategory[] = [];
-  public showSubjectAreas: boolean = false;
+  public showSubjectAreas: boolean = true;
   public queryObject: Criteria = {};
   public criteria: Criteria[] = [];
   public measures: string[] = [];
@@ -60,6 +60,8 @@ export class CreateReportComponent implements OnInit {
 
   private currentUser: Profile;
   public showChatBot: boolean = false;
+
+  selectedSubCategory: any;
 
   constructor(
     private fb: FormBuilder,
@@ -141,7 +143,7 @@ export class CreateReportComponent implements OnInit {
    */
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
     this.selectedSubjectArea = s.subjectAreaName;
-    this.subjectAreaCategories = null;
+    this.subjectAreaCategories = [];
     this.showSubjectAreas = false;
     this.searchForm.reset();
     this.reportService.getCategoriesBySubjectAreaId(s.id)
@@ -216,9 +218,9 @@ export class CreateReportComponent implements OnInit {
       queryName: query.name
     }
 
-    // console.log(`category<metrics> ==> `, category);
-    // console.log(`subCategory ==> `, subCategory);
-    // console.log(`query ==> `, query);
+    console.log(`category<metrics> ==> `, category);
+    console.log(`subCategory ==> `, subCategory);
+    console.log(`query ==> `, query);
     // console.log(`queryObject ==> `, this.queryObject);
 
     const criterion = `${this.queryObject.transaction}.${this.queryObject.query}`;
@@ -299,8 +301,9 @@ export class CreateReportComponent implements OnInit {
 
   }
 
-  updateSubCategoryCategoryAreas(subCategoryElement: any[]): void {
+  updateSubCategoryCategoryAreas(subCategoryElement: any[], subCategory: any): void {
     this.subCategoryCategoryAreas = subCategoryElement;
+    this.selectedSubCategory = subCategory;
   }
 
   /**
@@ -339,10 +342,17 @@ export class CreateReportComponent implements OnInit {
       createdBy: this.selectedReport?.createdBy,
     }
     this.sessionStorageService.setItem(`reportParams`, reportParams);
-    log.info(`report params >>>`, reportParams);
 
     const measures = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensions = this.criteria.filter(measure => measure.category !== 'metrics');
+
+    if (measures.length === 0) {
+      this.globalMessagingService.displayErrorMessage("No Measure Selected", "Select measure to continue");
+      return;
+    } else if(dimensions.length === 0) {
+      this.globalMessagingService.displayErrorMessage("No Filter selected", "Select filters to continue");
+      return;
+    }
 
     // let charts = [{
     //   backgroundColor: "",
@@ -378,6 +388,7 @@ export class CreateReportComponent implements OnInit {
       width: 0,
       sort: JSON.stringify(this.sort)
     }
+    log.info(`report >>>`, report);
 
     this.createReport(report);
   }
