@@ -5,8 +5,9 @@ import { Logger } from 'src/app/shared/services';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { CausationTypesDTO } from '../../models/causation-types';
 import { PoliciesClaimModuleDTO } from '../../models/claim-inititation';
+import { Subject, takeUntil } from 'rxjs';
 
-const log = new Logger ('ClaimsInitiationComponent')
+const log = new Logger ('ClaimsInitiationComponent');
 
 @Component({
   selector: 'app-claims-initiation',
@@ -15,6 +16,8 @@ const log = new Logger ('ClaimsInitiationComponent')
 })
 
 export class ClaimsInitiationComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   breadCrumbs: BreadCrumbItem [] = [
     { label: 'Home', url: '/home/dashboard' },
     { label: 'Claims', url: '/home/lms/ind/claims/claims-initiation',},
@@ -37,9 +40,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       "name": "Maturities",
       "value": "MATURITIES"
     }
-  ]
+  ];
 
-  constructor( private claims_service:ClaimsService){}
+  constructor(private claims_service:ClaimsService){}
 
   ngOnInit(): void {
     this.getCausationTypes();
@@ -47,14 +50,20 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getCausationTypes () {
-    this.claims_service.getCausationTypes().subscribe((causationTypes: CausationTypesDTO []) => {
+    this.claims_service.getCausationTypes().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (causationTypes: CausationTypesDTO []) => {
       this.causationTypes = causationTypes;
       log.info("Causation Types:", this.causationTypes);
-    });
+    },
+    error: (error) => {
+      log.error("Error Fetching Causation Types:", error);
+    }
+  });
   }
   
     getClaimModules(){
