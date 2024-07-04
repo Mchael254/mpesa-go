@@ -134,4 +134,8 @@ export class PolicyService {
   getbyRiskId(riskId){
     return this.api.GET(`v2/policies/filter-risks?riskId=${riskId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
+  deleteRisk(ipuCode:number,batchNo:number,productCode :number){
+    return this.api.DELETE(`v1/policies/delete-risks?ipuCode=${ipuCode}&polBatchNo=${batchNo}&proCode=${productCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
