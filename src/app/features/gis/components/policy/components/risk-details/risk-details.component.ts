@@ -11,7 +11,7 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
-import { PolicyResponseDTO, PolicyContent, RiskSection } from '../../data/policy-dto';
+import { PolicyResponseDTO, PolicyContent, RiskSection, RiskInformation } from '../../data/policy-dto';
 import { CountryDto, StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
 import { StaffService } from '../../../../../entities/services/staff/staff.service';
@@ -105,7 +105,7 @@ export class RiskDetailsComponent {
   statesList: StateDto[];
   selectedStateId: any;
   townList: TownDto[];
-  quakeZoneList:QuakeZone[]=[];
+  quakeZoneList: QuakeZone[] = [];
   countryList: CountryDto[];
   userCountryName: any;
 
@@ -128,31 +128,46 @@ export class RiskDetailsComponent {
   fileSelected: boolean = false;
   uploadedFileName: string = '';
   uploading: string = '';
-  selectedPolicy:any;
-  selectedRisk:any;
-  policyRisks:any;
-  policyRiskDetails:any;
-  policySectionDetails:any;
+  selectedPolicy: any;
+  selectedRisk: any;
+  policyRisks: any;
+  policyRiskDetails: any;
+  policySectionDetails: any;
   premiumList: any[] = [];
   premiumListIndex = 0;
   currentYear: any;
   riskForm: any;
   selectedTransactionType: any
-  csvRisksList:any;
+  csvRisksList: any;
   editing = false;
 
   riskCode: any;
 
-  scheduleDetailsForm:FormGroup;
-  scheduleData:any;
-  scheduleList:any;
-  selectedSchedule:any;
-  updatedSchedule:any;
-  updatedScheduleData:any;
-  modelYear:any;
+  scheduleDetailsForm: FormGroup;
+  scheduleData: any;
+  scheduleList: any;
+  selectedSchedule: any;
+  updatedSchedule: any;
+  updatedScheduleData: any;
+  modelYear: any;
+
+  passedPolicyRiskDetails: RiskInformation;
+  subclass: any;
+  binder: any;
+  coverType: any;
+  riskId: any;
+  riskDescription: any;
+  vehicleMake: any;
+  vehicleModel: any;
+  passedModelYear: any;
+
+  binderDescription: any;
+  passedBinder: any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
+
+
 
 
   constructor(
@@ -175,7 +190,7 @@ export class RiskDetailsComponent {
     public premiumRateService: PremiumRateService,
     public authService: AuthService,
 
-    public quotationService:QuotationsService,
+    public quotationService: QuotationsService,
     public quakeZoneService: QuakeZonesService,
 
 
@@ -193,9 +208,9 @@ export class RiskDetailsComponent {
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     this.createScheduleDetailsForm();
     this.getModelYear()
+
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
-    log.debug("Passed Policy Details:", this.passedPolicyDetails);
 
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.passedUserDetails = JSON.parse(passedUserDetailsString);
@@ -212,6 +227,14 @@ export class RiskDetailsComponent {
         'Error',
         'User ID not found'
       );
+    }
+    const passedPolicyRiskString = sessionStorage.getItem('passedRiskPolicyDetails');
+    this.passedPolicyRiskDetails = JSON.parse(passedPolicyRiskString);
+    log.debug("Passed Policy Risk Details:", this.passedPolicyRiskDetails);
+    if (this.passedPolicyRiskDetails) {
+      // this.policyRiskForm.patchValue(this.passedPolicyRiskDetails)
+      this.patchValues();
+
     }
     this.getImportedRisk()
     this.createPolicyRiskForm();
@@ -258,11 +281,18 @@ export class RiskDetailsComponent {
   }
   createPolicyRiskForm() {
     this.policyRiskForm = this.fb.group({
+      addOrEdit: [''],
       allowedCommissionRate: [''],
+      // autogenerateCert: [''],
       basicPremium: [''],
       binderCode: [''],
+      // cashApplicable: [''],
+      cashLevel: [''],
       commissionAmount: [''],
       commissionRate: [''],
+      computeMaxExposure: [''],
+      conveyanceType: [''],
+      coverDays: [''],
       coverTypeCode: [''],
       coverTypeShortDescription: [''],
       currencyCode: [''],
@@ -270,6 +300,8 @@ export class RiskDetailsComponent {
       dateCoverTo: [''],
       delSect: [''],
       grossPremium: [''],
+      installmentPaymentPercentage: [''],
+
       insureds: this.fb.group({
         client: this.fb.group({
           firstName: [''],
@@ -278,22 +310,42 @@ export class RiskDetailsComponent {
         }),
         prpCode: ['']
       }),
+      installmentPeriod: [''],
+
       ipuNcdCertNo: [''],
       loaded: [''],
+      logbook: [''],
+      logbookAvailable: [''],
+      // logbookUnderInsuredName: [''],
       ltaCommission: [''],
+      maintenanceCover: [''],
+      maxExposureAmount: [''],
+      modelYear: [''],
+      ncdApplicable: [''],
+      ncdLevel: [''],
       netPremium: [''],
+      newRisk: [''],
+      // netPremium: [''],
       paidPremium: [''],
       policyBatchNo: [''],
       policyNumber: [''],
       policyStatus: [''],
+      periodRate: [''],
       productCode: [''],
       propertyDescription: [''],
       propertyId: [''],
+      quakeFloodZone: [''],
       quantity: [''],
       reinsuranceEndorsementNumber: [''],
       renewalArea: [''],
+      retroactiveCover: [''],
+      riskAddress: [''],
+      riskClass:[''],
+      riskDetails: [''],
+      // regularDriver: [''],
       riskFpOverride: [''],
       riskIpuCode: [''],
+      riskLocation: [''],
       sections: this.fb.array([
         this.fb.group({
           divFactor: [0],
@@ -316,8 +368,105 @@ export class RiskDetailsComponent {
       transactionType: [''],
       underwritingYear: [''],
       value: [''],
-      coverDays: ['']
+      vehicleMake: [''],
+      vehicleModel: [''],
+      surveyDate: [''],
+      territory: [''],
+      topLocationLevel: [''],
+      // town: [''],
+     
     });
+    // this.policyRiskForm = this.fb.group({
+    //   addOrEdit: [''],
+    //   allowedCommissionRate: [''],
+    //   autogenerateCert: [''],
+    //   basicPremium: [''],
+    //   binderCode: [''],
+    //   cashApplicable: [''],
+    //   cashLevel: [''],
+    //   commissionAmount: [''],
+    //   commissionRate: [''],
+    //   computeMaxExposure: [''],
+    //   conveyanceType: [''],
+    //   coverDays: [''],
+    //   coverTypeCode: [''],
+    //   coverTypeShortDescription: [''],
+    //   currencyCode: [''],
+    //   dateCoverFrom: [''],
+    //   dateCoverTo: [''],
+    //   delSect: [''],
+    //   grossPremium: [''],
+    //   installmentPaymentPercentage: [''],
+    //   installmentPeriod: [''],
+    //   insureds: this.fb.group({
+    //     client: this.fb.group({
+    //       firstName: [''],
+    //       id: [''],
+    //       lastName: ['']
+    //     }),
+    //     prpCode: ['']
+    //   }),
+    //   ipuNcdCertNo: [''],
+    //   loaded: [''],
+    //   logbook: [''],
+    //   logbookAvailable: [''],
+    //   // logbookUnderInsuredName: [''],
+    //   ltaCommission: [''],
+    //   maintenanceCover: [''],
+    //   maxExposureAmount: [''],
+    //   modelYear: [''],
+    //   ncdApplicable: [''],
+    //   ncdLevel: [''],
+    //   netPremium: [''],
+    //   newRisk:[''],
+    //   paidPremium: [''],
+    //   periodRate: [''],
+    //   policyNumber: [''],
+    //   policyStatus: [''],
+    //   productCode: [''],
+    //   propertyDescription: [''],
+    //   propertyId: [''],
+    //   quakeFloodZone: [''],
+    //   quantity: [''],
+    //   regularDriver: [''],
+    //   reinsuranceEndorsementNumber: [''],
+    //   renewalArea: [''],
+    //   retroactiveCover: [''],
+    //   riskAddress: [''],
+    //   riskClass:[''],
+    //   riskDetails: [''],
+    //   riskFpOverride: [''],
+    //   riskIpuCode:[''],
+    //   riskLocation: [''],
+    //   sections: this.fb.array([
+    //     this.fb.group({
+    //       divFactor: [0],
+    //       freeLimit: [0],
+    //       limitAmount: [0],
+    //       multiplierRate: [0],
+    //       pilPremRate: [0],
+    //       premium: [0],
+    //       rateType: [''],
+    //       sectCode: [0],
+    //       sectIpuCode: [0],
+    //       sectionCode: [0],
+    //       sectionDesc: [''],
+    //       sectionShortDesc: ['']
+    //     })
+    //   ]),
+    //   stampDuty: [''],
+    //   subClassCode: [''],
+    //   subClassDescription: [''],
+    //   surveyDate: [''],
+    //   territory: [''],
+    //   topLocationLevel: [''],
+    //   town: [''],
+    //   transactionType: [''],
+    //   underwritingYear: [''],
+    //   value: [''],
+    //   vehicleMake: [''],
+    //   vehicleModel: ['']
+    // });
 
   }
   toggleNcdApplicableFields(checked: boolean) {
@@ -381,6 +530,41 @@ export class RiskDetailsComponent {
           log.info(`error >>>`, err);
         },
       });
+  }
+  patchValues() {
+    log.debug('PATCH FUNCTION CALLED')
+    this.subclass = this.passedPolicyRiskDetails.subClassDescription;
+    log.debug('Sub Desc', this.subclass)
+
+    this.binder = this.passedPolicyRiskDetails.binderCode;
+    const binderNumber = parseInt(this.binder)
+    log.debug("BINDER NUMBER", binderNumber)
+    log.debug("BINDER details", this.binderListDetails)
+
+    // this.passedBinder = this.binderListDetails.filter(binder => binder.code === this.binder )
+    // const selectedClient = this.clientData.find(client => client.id === this.passedClientCode);
+
+    // log.debug("BINDER ",this.passedBinder)
+
+    // log.debug('Binder Desc ',this.passedBinder)
+    // this.binderDescription = this.passedBinder.binder_short_description;
+    this.coverType = this.passedPolicyRiskDetails.coverTypeShortDescription;
+    log.debug('cover type', this.coverType)
+    log.debug('Property ID', this.riskId)
+
+    this.riskId = this.passedPolicyRiskDetails.propertyId;
+    this.riskDescription = this.passedPolicyRiskDetails.propertyDescription;
+    this.vehiclemakeModel = this.riskDescription;
+    log.debug('Property Desc', this.vehiclemakeModel)
+
+    this.vehicleMake = this.passedPolicyRiskDetails.vehicleMake;
+    log.debug('Veh Make', this.vehicleMake)
+    // const passedVehModel = this.vehicleMakeList.find(vehicle => vehicle.code === this.vehicleMake);
+    // log.debug('Veh Make object', passedVehModel)
+
+    this.vehicleModel = this.passedPolicyRiskDetails.vehicleModel;
+    log.debug('VEH MODEL ', this.vehicleMake)
+    this.passedModelYear = this.passedPolicyRiskDetails.modelYear;
   }
   loadAllSubclass() {
     this.subclassService
@@ -529,8 +713,12 @@ export class RiskDetailsComponent {
     this.passedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     log.debug("another insured chosen:", this.passedClientName)
   }
-  onSubclassSelected(event: any) {
-    const selectedValue = event.target.value;
+  onSubclassSelected(selectedValue: any) {
+
+    this.selectedSubclassCode = parseInt(selectedValue);
+    log.debug("SELECTEDSubclass", this.selectedSubclassCode)
+
+    // const selectedValue = event.target.value;
     this.selectedSubclassCode = parseInt(selectedValue);
     // Perform your action based on the selected value
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code')
@@ -610,9 +798,10 @@ export class RiskDetailsComponent {
         },
       });
   }
-  onCoverTypeSelected(event: any) {
-    const selectedValue = event.target.value;
+  onCoverTypeSelected(selectedValue: any) {
+
     this.coverTypeCode = parseInt(selectedValue);
+
     log.debug("Cover Type Code:", this.coverTypeCode)
     const selectedCover = this.subclassCoverType.find(cover => cover.code === this.coverTypeCode)
 
@@ -900,6 +1089,14 @@ export class RiskDetailsComponent {
       });
   }
   addPolicyRisk() {
+    if (this.passedPolicyRiskDetails){
+      this.policyRiskForm.get('addOrEdit').setValue("E");
+    }
+    else{
+      this.policyRiskForm.get('addOrEdit').setValue("A");
+
+    }
+    log.debug("Policy batch no:", this.policyDetails.batchNo)
     this.policyRiskForm.get('insureds.client.firstName').setValue(this.passedClient?.firstName);
     this.policyRiskForm.get('insureds.client.lastName').setValue(this.passedClient?.lastName);
     this.policyRiskForm.get('insureds.client.id').setValue(this.passedClient?.id);
@@ -938,6 +1135,38 @@ export class RiskDetailsComponent {
     this.policyRiskForm.get('transactionType').setValue(this.selectedTransactionType);
     this.policyRiskForm.get('underwritingYear').setValue(this.currentYear);
     this.policyRiskForm.get('value').setValue(0);
+    this.policyRiskForm.get('autogenerateCert');
+    this.policyRiskForm.get('cashApplicable');
+    this.policyRiskForm.get('cashLevel');
+    this.policyRiskForm.get('computeMaxExposure');
+    this.policyRiskForm.get('conveyanceType');
+    this.policyRiskForm.get('coverDays');
+    this.policyRiskForm.get('installmentPaymentPercentage');
+    this.policyRiskForm.get('installmentPeriod');
+    this.policyRiskForm.get('ipu_ncd_cert_no');
+    this.policyRiskForm.get('logbookAvailable');
+    this.policyRiskForm.get('logbookUnderInsuredName');
+    this.policyRiskForm.get('maintenanceCover');
+    this.policyRiskForm.get('maxExposureAmount');
+    this.policyRiskForm.get('modelYear');
+    this.policyRiskForm.get('ncdApplicable');
+    this.policyRiskForm.get('ncdLevel');
+    this.policyRiskForm.get('newRisk');
+    this.policyRiskForm.get('periodRate');
+    this.policyRiskForm.get('quakeFloodZone');
+    this.policyRiskForm.get('regularDriver');
+    this.policyRiskForm.get('retroactiveCover');
+    this.policyRiskForm.get('riskAddress');
+    this.policyRiskForm.get('riskClass');
+    this.policyRiskForm.get('riskDetails');
+    this.policyRiskForm.get('riskLocation');
+    this.policyRiskForm.get('surveyDate');
+    this.policyRiskForm.get('territory');
+    this.policyRiskForm.get('topLocationLevel');
+    this.policyRiskForm.get('town');
+    this.policyRiskForm.get('vehicleMake');
+    this.policyRiskForm.get('vehicleModel');
+
     // const riskForm = this.policyRiskForm.value;
     const riskForm = this.policyRiskForm.value;
     this.riskForm = [riskForm];
@@ -1130,20 +1359,20 @@ export class RiskDetailsComponent {
   // }
   onCheckboxChange(section: any) {
     const index = this.selectedSections.findIndex((s) => s.code === section.code);
-  
+
     if (index === -1) {
       // Section is not yet selected, add it to the array
       this.selectedSections.push(section);
       log.debug("Checked Sections Data", this.selectedSections);
       this.allTransformedSections = [];
-  
+
       // Filter sections based on the selected cover type
       this.selectedSections.forEach(element => {
-        const changedSections = this.covertypeSections?.filter(section => 
+        const changedSections = this.covertypeSections?.filter(section =>
           section.sectionCode === element.code &&
           section.coverTypeShortDescription === this.selectedCoverType?.coverTypeShortDescription
         );
-  
+
         if (changedSections) {
           this.allTransformedSections.push(...changedSections);
           log.debug("Transformed Sections Data", this.allTransformedSections);
@@ -1151,7 +1380,7 @@ export class RiskDetailsComponent {
           log.debug("No matching sections found for", element);
         }
       });
-  
+
       this.getPremium(this.allTransformedSections);
       // this.createRiskSection();
     } else {
@@ -1159,7 +1388,7 @@ export class RiskDetailsComponent {
       this.selectedSections.splice(index, 1);
     }
   }
-  
+
   isSelected(section: any): boolean {
     return this.selectedSections.some((s) => s.code === section.code);
 
@@ -1222,27 +1451,27 @@ export class RiskDetailsComponent {
   // }
   createRiskSection() {
     const section = this.sectionDetailsForm.value;
-  log.debug("Premium List:",this.premiumList);
+    log.debug("Premium List:", this.premiumList);
     // Check if premiumList has data and if the index is within bounds
     if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
       console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
-  
+
       // Log the current premiumListIndex before incrementing
       console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
-  
+
       // Increment the premiumListIndex and wrap around using modulo
       this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
-  
+
       // Log the updated premiumListIndex after incrementing
       console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
-  
+
       section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
     } else {
       // Handle scenario when premiumList is empty or index is out of bounds
       console.error('Premium list is empty or index is out of bounds.');
       return; // or throw an error, handle as per your requirement
     }
-  
+
     // Set other properties for section
     this.sectionArray = [section];
     section.bindCode = this.selectedBinder;
@@ -1254,7 +1483,7 @@ export class RiskDetailsComponent {
     section.riskCode = this.riskCode;
     section.row = 0;
     section.subClassCode = this.selectedSubclassCode;
-  
+
     this.policyService
       .createRiskSection(this.sectionArray)
       .pipe(untilDestroyed(this))
@@ -1275,39 +1504,39 @@ export class RiskDetailsComponent {
         },
       });
   }
-  getQuakeZone(){
+  getQuakeZone() {
     this.quakeZoneService
-    .getQuakeZone()
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data) => {
+      .getQuakeZone()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-        if (data) {
-          this.quakeZoneList = data;
-          log.debug("Quake Zone list", this.quakeZoneList)
+          if (data) {
+            this.quakeZoneList = data;
+            log.debug("Quake Zone list", this.quakeZoneList)
 
-          this.cdr.detectChanges();
+            this.cdr.detectChanges();
 
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Something went wrong. Please try Again'
+            this.errorMessage
           );
-        }
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
+          log.info(`error >>>`, err);
+        },
+      });
   }
-  
+
   downloadCSVTemplate(): void {
     console.log("TEST")
     const templateFilePath = '/assets/data/Template.csv';
@@ -1319,7 +1548,7 @@ export class RiskDetailsComponent {
     link.click();
     document.body.removeChild(link);
   }
-  
+
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
@@ -1328,14 +1557,14 @@ export class RiskDetailsComponent {
 
       Papa.parse(file, {
         complete: (result: any) => {
-          console.log('file result',result.data[0])
+          console.log('file result', result.data[0])
           this.csvRisksList = result.data
           // Assuming CSV has header row, you can access data with result.data
 
           try {
-       
+
             this.uploadedFileName = file.name;
-            sessionStorage.setItem('uploadedFileName',this.uploadedFileName)
+            sessionStorage.setItem('uploadedFileName', this.uploadedFileName)
             this.uploading = 'success';
           } catch (e) {
             console.log(`file upload failed >>> `, e);
@@ -1343,7 +1572,7 @@ export class RiskDetailsComponent {
         },
         header: true // Set to true if CSV file has a header row
       });
-    }else{
+    } else {
       this.fileSelected = false;
       this.uploadedFileName = '';
       this.uploading = '';
@@ -1353,136 +1582,136 @@ export class RiskDetailsComponent {
 
   // EDIT SCHEDULE DETAILS FUNCTIONALITY 
 
-    // This method Clears the Schedule Detail form by resetting the form model
-    clearForm() {
-      this.scheduleDetailsForm.reset();
-  
-    }
+  // This method Clears the Schedule Detail form by resetting the form model
+  clearForm() {
+    this.scheduleDetailsForm.reset();
 
-    updateSchedule(){
-      const schedule = this.scheduleDetailsForm.value;
-      schedule.riskCode = this.riskCode;
-      schedule.transactionType = "Q";
-      schedule.version = 0;
-      this.quotationService.updateSchedule(schedule).subscribe(data=>{
-        this.updatedScheduleData=data;
-        console.log('Updated Schedule Data:', this.updatedScheduleData);
-        this.updatedSchedule=this.updatedScheduleData._embedded;
-        console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
-        const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
-        if (index !== -1) {
-          this.scheduleList[index] = this.updatedSchedule;
-          this.cdr.detectChanges();
-        }
-  
-        try{
-  
-          this.scheduleDetailsForm.reset()
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-        }catch(error){
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-        
-          this.scheduleDetailsForm.reset()
-        }
-      })
-      this.cdr.detectChanges();
-  
-    }
-    createScheduleDetailsForm() {
-      this.scheduleDetailsForm = this.fb.group({
-        details: this.fb.group({
-          level1: this.fb.group({
-            bodyType: [''],
-            yearOfManufacture: [''],
-            color: [''],
-            engineNumber: [''],
-            cubicCapacity: [''],
-            Make: [''],
-            coverType: [''],
-            registrationNumber: [''],
-            chasisNumber: [''],
-            tonnage: [''],
-            carryCapacity: [''],
-            logBook: [''],
-            value: [''],
-          }),
+  }
+
+  updateSchedule() {
+    const schedule = this.scheduleDetailsForm.value;
+    schedule.riskCode = this.riskCode;
+    schedule.transactionType = "Q";
+    schedule.version = 0;
+    this.quotationService.updateSchedule(schedule).subscribe(data => {
+      this.updatedScheduleData = data;
+      console.log('Updated Schedule Data:', this.updatedScheduleData);
+      this.updatedSchedule = this.updatedScheduleData._embedded;
+      console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+      const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+      if (index !== -1) {
+        this.scheduleList[index] = this.updatedSchedule;
+        this.cdr.detectChanges();
+      }
+
+      try {
+
+        this.scheduleDetailsForm.reset()
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+      } catch (error) {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        this.scheduleDetailsForm.reset()
+      }
+    })
+    this.cdr.detectChanges();
+
+  }
+  createScheduleDetailsForm() {
+    this.scheduleDetailsForm = this.fb.group({
+      details: this.fb.group({
+        level1: this.fb.group({
+          bodyType: [''],
+          yearOfManufacture: [''],
+          color: [''],
+          engineNumber: [''],
+          cubicCapacity: [''],
+          Make: [''],
+          coverType: [''],
+          registrationNumber: [''],
+          chasisNumber: [''],
+          tonnage: [''],
+          carryCapacity: [''],
+          logBook: [''],
+          value: [''],
         }),
-        riskCode: [''],
-        transactionType: [''],
-        version: [''],
-      });
-    }
+      }),
+      riskCode: [''],
+      transactionType: [''],
+      version: [''],
+    });
+  }
 
-    getImportedRisk(){
-      const policyNo = sessionStorage.getItem('selectedPolicyforRisk')
-      if (policyNo){
-        console.log(policyNo)
-        this.policyService.getPolicyRisks(policyNo).pipe(untilDestroyed(this))
+  getImportedRisk() {
+    const policyNo = sessionStorage.getItem('selectedPolicyforRisk')
+    if (policyNo) {
+      console.log(policyNo)
+      this.policyService.getPolicyRisks(policyNo).pipe(untilDestroyed(this))
         .subscribe({
           next: (data) => {
             this.policyRisks = data
-            this.policyRiskDetails= this.policyRisks.content
+            this.policyRiskDetails = this.policyRisks.content
             this.policyRiskDetails.forEach(element => {
               this.policySectionDetails = element.sections
-              console.log('section test',element.sections)
+              console.log('section test', element.sections)
             });
-            console.log('risks',this.policyRiskDetails.coverTypeShortDescription)
+            console.log('risks', this.policyRiskDetails.coverTypeShortDescription)
           }
 
 
-      })
+        })
     }
-}
-getModelYear(){
-  this.productService.getYearOfManufacture().subscribe({
-    next:(data)=>{
-      const model = data._embedded
-      this.modelYear =  model[0]["List of cover years"]
-      console.log("model year", this.modelYear)
-    } ,error: (err) => {
-      this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
-      console.error(err);
-    }
-  })
-}
-filterPolicies(policyNo){
-  if(policyNo){
-    this.policyService.getbypolicyNo(policyNo).subscribe({
-      next:(data)=>{
-        if(data === null ){
+  }
+  getModelYear() {
+    this.productService.getYearOfManufacture().subscribe({
+      next: (data) => {
+        const model = data._embedded
+        this.modelYear = model[0]["List of cover years"]
+        console.log("model year", this.modelYear)
+      }, error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
+        console.error(err);
+      }
+    })
+  }
+  filterPolicies(policyNo) {
+    if (policyNo) {
+      this.policyService.getbypolicyNo(policyNo).subscribe({
+        next: (data) => {
+          if (data === null) {
+            this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+          }
+          this.selectedPolicy = [data];
+
+
+          console.log(this.selectedPolicy)
+        }, error: (err) => {
           this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+          console.error(err);
         }
-        this.selectedPolicy = [data];
+      })
+    } else {
+      this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+    }
 
 
-        console.log(this.selectedPolicy)
-      },error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
-        console.error(err);
-      }
-    })
-  }else{
-    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
   }
-
-
-}
-filterRisk(riskId){ 
-  if(riskId){
-    this.policyService.getbyRiskId(riskId).subscribe({
-      next:(data)=>{
-        if(data === null){
+  filterRisk(riskId) {
+    if (riskId) {
+      this.policyService.getbyRiskId(riskId).subscribe({
+        next: (data) => {
+          if (data === null) {
+            this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+          }
+          this.selectedRisk = [data];
+        }, error: (err) => {
           this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+          console.error(err);
         }
-        this.selectedRisk = [data];
-      },error:(err) =>{
-        this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
-        console.error(err);
-      }
-    })
-  }else{
-    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
-  }
+      })
+    } else {
+      this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+    }
 
-}
+  }
 }

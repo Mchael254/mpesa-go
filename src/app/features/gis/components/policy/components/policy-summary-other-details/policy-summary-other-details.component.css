@@ -43,6 +43,7 @@
     font-weight: 500;
     line-height: 24px;
     text-align: left;
+    color: #00529B;
 
 }
 .label{
@@ -110,4 +111,14 @@
 ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
     padding: 4px 8px;
     /* Adjust the padding of dropdown items */
+}
+.flex .search-input-Risk {
+    /* padding-bottom: 6px; */
+    padding-left: 30px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 5px;
+    height: 40px;
+    width: 100% !important;
+    font-size: 13px;
 }
