@@ -4,7 +4,7 @@ import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Sidebar } from 'primeng/sidebar';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
-import { PolicyContent, PolicyResponseDTO } from '../../data/policy-dto';
+import { PolicyContent, PolicyResponseDTO, RiskInformation } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -21,32 +21,32 @@ const log = new Logger("PolicySummaryOtherDetails");
 })
 export class PolicySummaryOtherDetailsComponent {
   steps = underwritingSteps
-  policyDetails:any
+  policyDetails: any
   computationDetails: Object;
-  premiumResponse:any;
-  premium:number = 0;
-  selectedItem: number = 1; 
+  premiumResponse: any;
+  premium: number = 0;
+  selectedItem: number = 1;
   show: boolean = true;
-  policySectionDetails:any;
+  policySectionDetails: any;
   errorMessage: string;
   errorOccurred: boolean;
-  batchNo:any;
+  batchNo: any;
   policyResponse: PolicyResponseDTO;
   policyDetailsData: PolicyContent;
-  product:any
-  clientDetails:ClientDTO;
-  allClients:any;
+  product: any
+  clientDetails: ClientDTO;
+  allClients: any;
   clientList: any;
   clientName: any;
   clientCode: any;
   clientData: ClientDTO[];
 
-  insureds:any;
+  insureds: any;
 
-  policySummary:any;
+  policySummary: any;
   // insureds: any;
   selectedInsured: ClientDTO;
-  selectedFollower:any;
+  selectedFollower: any;
 
 
   filteredClients: any[] = [];
@@ -62,9 +62,13 @@ export class PolicySummaryOtherDetailsComponent {
   ];
   selectedColumn: any;
   searchQuery: any;
-
+  riskDetails: RiskInformation[];
+  selectedRisk: any;
+  riskCode: any;
+  productCode: any;
 
   @ViewChild('dt1') dt1: Table | undefined;
+  @ViewChild('dt2') dt2: Table | undefined;
 
 
   @ViewChild('clientModal') clientModal: any;
@@ -72,15 +76,16 @@ export class PolicySummaryOtherDetailsComponent {
 
 
 
+
   constructor(
-    public policyService:PolicyService,
+    public policyService: PolicyService,
     private globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
-    public productService:ProductService,
+    public productService: ProductService,
     private router: Router
 
-  ){}
+  ) { }
   ngOnInit(): void {
     this.getUtil();
     this.loadAllClients();
@@ -92,223 +97,321 @@ export class PolicySummaryOtherDetailsComponent {
   }
 
 
-  getUtil(){
-   this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
-   this.getPolicy();
+  getUtil() {
+    this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
+    this.getPolicy();
 
-   this.policyService.policyUtils(this.policyDetails.batchNumber).subscribe({
-    next :(res) =>{
-     this.computationDetails = res
-     console.log( 'computation details',this.computationDetails)
-     log.debug("Policy Details", this.policyDetails);
-    }
-  })
-}
+    this.policyService.policyUtils(this.policyDetails.batchNumber).subscribe({
+      next: (res) => {
+        this.computationDetails = res
+        console.log('computation details', this.computationDetails)
+        log.debug("Policy Details", this.policyDetails);
+      }
+    })
+  }
 
-getPolicy() {
-  this.batchNo = this.policyDetails.batchNumber;
-  log.debug("Batch No:", this.batchNo)
-  this.policyService
-    .getPolicy(this.batchNo)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data: any) => {
-
-        if (data && data.content && data.content.length > 0) {
-          this.policyResponse = data;
-          log.debug("Get Policy Endpoint Response", this.policyResponse)
-          this.policyDetailsData = this.policyResponse.content[0]
-          log.debug("Policy Details data get policy", this.policyDetailsData)
-          this.insureds = this.policyDetailsData.insureds
-          log.debug("Insureds", this.insureds)
-          if (this.insureds){
-            this.getClient()
-          }
-
-          // this.productCode = this.policyDetails.product.code;
-          // log.debug("Product Code", this.productCode)
-          // this.passedCoverFrom = this.policyDetails.wefDt;
-          // log.debug("COVER FROM", this.passedCoverFrom);
-          // this.passedCoverTo = this.policyDetails.wetDt;
-          // log.debug("COVER TO", this.passedCoverTo);
-          // this.passedClientCode = this.policyDetails.clientCode
-          // log.debug("CLIENT CODE", this.passedClientCode);
-
-
-          // Calculate cover days
-       
-          this.cdr.detectChanges();
-
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Something went wrong. Please try Again'
-          );
-        }
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
-}
-getoClient() {
-  for (const insured of this.insureds) {
-    const clientRequests = [];
-    const prpCode = insured.prpCode; // Assuming each insured object has prpCode
-    log.debug("PRPCODE", prpCode)
-    this.clientService
-      .getClientById(prpCode)
+  getPolicy() {
+    this.batchNo = this.policyDetails.batchNumber;
+    log.debug("Batch No:", this.batchNo)
+    this.policyService
+      .getPolicy(this.batchNo)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data: any) => {
-          if (data ) {
-            log.debug('Client Details',data)
-          this.clientDetails =data;
-            
-            // Process clientDetails as needed
-            
-            this.cdr.detectChanges(); // Trigger change detection if needed
+
+          if (data && data.content && data.content.length > 0) {
+            this.policyResponse = data;
+            log.debug("Get Policy Endpoint Response", this.policyResponse)
+            this.policyDetailsData = this.policyResponse.content[0]
+            log.debug("Policy Details data get policy", this.policyDetailsData)
+            this.insureds = this.policyDetailsData.insureds
+            log.debug("Insureds", this.insureds)
+            if (this.insureds) {
+              this.getClient()
+            }
+            this.riskDetails = this.policyDetailsData.riskInformation
+            log.debug("RISK INFORMATION", this.riskDetails)
+
+            this.cdr.detectChanges();
+
           } else {
-            // Handle case where client details are not found
-            console.error(`Client details not found for prpCode: ${prpCode}`);
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
           }
         },
         error: (err) => {
-          // Handle error fetching client details
-          console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
         },
       });
   }
-}
-getClient() {
-  const clientRequests = [];
+  getoClient() {
+    for (const insured of this.insureds) {
+      const clientRequests = [];
+      const prpCode = insured.prpCode; // Assuming each insured object has prpCode
+      log.debug("PRPCODE", prpCode)
+      this.clientService
+        .getClientById(prpCode)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (data: any) => {
+            if (data) {
+              log.debug('Client Details', data)
+              this.clientDetails = data;
 
-  for (const insured of this.insureds) {
-    const prpCode = insured.prpCode; // Assuming each insured object has prpCode
+              // Process clientDetails as needed
 
-    const clientRequest = this.clientService.getClientById(prpCode)
-      .pipe(
-        map((data: any) => {
-          if (data) {
-            return data; // Assuming only one client is expected
-          } else {
-            throw new Error(`Client details not found for prpCode: ${prpCode}`);
-          }
-        }),
-        catchError(err => {
-          console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
-          return of(null); // Return null or appropriate fallback value on error
-        })
-      );
-
-    clientRequests.push(clientRequest);
+              this.cdr.detectChanges(); // Trigger change detection if needed
+            } else {
+              // Handle case where client details are not found
+              console.error(`Client details not found for prpCode: ${prpCode}`);
+            }
+          },
+          error: (err) => {
+            // Handle error fetching client details
+            console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
+          },
+        });
+    }
   }
+  getClient() {
+    const clientRequests = [];
 
-  // Use forkJoin to combine all requests into a single observable
-  forkJoin(clientRequests)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (clients: any[]) => {
-        console.log('All client details fetched:', clients);
+    for (const insured of this.insureds) {
+      const prpCode = insured.prpCode; // Assuming each insured object has prpCode
 
-        // Process the array of client details as needed
-        // For example, assign it to a component property
-        this.allClients = clients;
-        log.debug('ALL CLIENTS', this.allClients)
-        this.filteredClients = this.allClients;
-
-        this.cdr.detectChanges(); // Trigger change detection if needed
-      },
-      error: (err) => {
-        // Handle error fetching any client details
-        console.error('Error fetching client details:', err);
-
-        this.errorOccurred = true;
-        this.errorMessage = 'Error fetching client details';
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
+      const clientRequest = this.clientService.getClientById(prpCode)
+        .pipe(
+          map((data: any) => {
+            if (data) {
+              return data; // Assuming only one client is expected
+            } else {
+              throw new Error(`Client details not found for prpCode: ${prpCode}`);
+            }
+          }),
+          catchError(err => {
+            console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
+            return of(null); // Return null or appropriate fallback value on error
+          })
         );
-      }
-    });
-}
-onInsuredEditSave(insured) {
-  log.debug("SELECTED CLIENT", insured)
-  this.selectedInsured = insured
 
-  function transformToDTO(data: any): PersonalDetailsUpdateDTO {
-    return {
-      accountId: data.id,
-      dob: data.dateOfBirth,
-      emailAddress: data.emailAddress,
-      identityNumber: data.idNumber,
-      // Assuming modeOfIdentityId is mapped from modeOfIdentity
-      modeOfIdentityId: data.modeOfIdentity === "NATIONAL_ID" ? 1 : undefined, 
-      name: `${data.firstName} ${data.lastName}`,
-      passportNo: data.passportNumber,
-      phoneNumber: data.phoneNumber,
-      physicalAddress: data.physicalAddress,
-      pinNumber: data.pinNumber,
-      titleShortDescription: data.shortDescription,
-      // title: { /* Map to ClientTitleDTO if needed */ },
-      category: data.category,
-      modeOfIdentity: { /* Map to IdentityModeDTO if needed */ },
-      // occupation: { /* Map to OccupationDTO if needed */ }
-    };
-  }
-  
-  // Transform the input data to DTO format
-  const personalDetailsUpdateDTO = transformToDTO(this.selectedInsured);
-  console.log("Transformed Data",personalDetailsUpdateDTO);
-  this.clientService
-    .updateClient(this.selectedInsured.id, this.selectedInsured)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data: any) => {
+      clientRequests.push(clientRequest);
+    }
 
-        if (data) {
-          log.debug("Client Edited", data)
-          this.cdr.detectChanges();
+    // Use forkJoin to combine all requests into a single observable
+    forkJoin(clientRequests)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (clients: any[]) => {
+          console.log('All client details fetched:', clients);
 
-        } else {
+          // Process the array of client details as needed
+          // For example, assign it to a component property
+          this.allClients = clients;
+          log.debug('ALL CLIENTS', this.allClients)
+          this.filteredClients = this.allClients;
+
+          this.cdr.detectChanges(); // Trigger change detection if needed
+        },
+        error: (err) => {
+          // Handle error fetching any client details
+          console.error('Error fetching client details:', err);
+
           this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
+          this.errorMessage = 'Error fetching client details';
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Something went wrong. Please try Again'
+            this.errorMessage
           );
         }
-      },
-      error: (err) => {
+      });
+  }
+  onInsuredEditSave(insured) {
+    log.debug("SELECTED CLIENT", insured)
+    this.selectedInsured = insured
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
-}
-loadAllClients() {
-  this.clientService
-    .getClients(0, 100)
+    function transformToDTO(data: any): PersonalDetailsUpdateDTO {
+      return {
+        accountId: data.id,
+        dob: data.dateOfBirth,
+        emailAddress: data.emailAddress,
+        identityNumber: data.idNumber,
+        // Assuming modeOfIdentityId is mapped from modeOfIdentity
+        modeOfIdentityId: data.modeOfIdentity === "NATIONAL_ID" ? 1 : undefined,
+        name: `${data.firstName} ${data.lastName}`,
+        passportNo: data.passportNumber,
+        phoneNumber: data.phoneNumber,
+        physicalAddress: data.physicalAddress,
+        pinNumber: data.pinNumber,
+        titleShortDescription: data.shortDescription,
+        // title: { /* Map to ClientTitleDTO if needed */ },
+        category: data.category,
+        modeOfIdentity: { /* Map to IdentityModeDTO if needed */ },
+        // occupation: { /* Map to OccupationDTO if needed */ }
+      };
+    }
+
+    // Transform the input data to DTO format
+    const personalDetailsUpdateDTO = transformToDTO(this.selectedInsured);
+    console.log("Transformed Data", personalDetailsUpdateDTO);
+    this.clientService
+      .updateClient(this.selectedInsured.id, this.selectedInsured)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+
+          if (data) {
+            log.debug("Client Edited", data)
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  loadAllClients() {
+    this.clientService
+      .getClients(0, 100)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.clientList = data;
+            log.debug("CLIENT DATA:", this.clientList)
+            this.clientData = this.clientList.content
+            log.debug("CLIENT DATA:", this.clientData)
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  loadClientDetails(id) {
+    log.info("Client Id:", id)
+    this.clientService.getClientById(id).subscribe(data => {
+      this.clientDetails = data;
+      log.debug("Selected Client Details:", this.clientDetails)
+      this.allClients = this.allClients.concat(this.clientDetails);
+      this.filteredClients = this.allClients;
+
+      log.debug("Added Insured:", this.allClients)
+
+      // this.getCountries();
+      this.saveclient()
+      this.closebutton.nativeElement.click();
+    })
+  }
+  saveclient() {
+    this.clientCode = this.clientDetails.id;
+    this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    sessionStorage.setItem('clientCode', this.clientCode);
+    log.debug("Client Code:", this.clientCode)
+  }
+  applyFilterGlobal($event, stringVal) {
+    this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  openDeleteModal() {
+    log.debug("Selected insured", this.selectedInsured)
+    if (!this.selectedInsured) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Insured to continue');
+    } else {
+      document.getElementById("openModalButtonDelete").click();
+
+    }
+  }
+
+  filterTable() {
+    log.debug("SELECTED COLUMN:", this.selectedColumn);
+    log.debug("SEARCH Query:", this.searchQuery);
+
+    if (this.selectedColumn && this.searchQuery) {
+      if (this.selectedColumn === 'name') {
+        this.filteredClients = this.allClients.filter(client => {
+          const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+          return (
+            fullName.includes(this.searchQuery.toLowerCase()) ||
+            client.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            client.lastName.toLowerCase().includes(this.searchQuery.toLowerCase())
+          );
+        });
+      } else {
+        this.filteredClients = this.allClients.filter(client => {
+          return client[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
+        });
+      }
+    } else {
+      this.filteredClients = this.allClients;
+    }
+  }
+  addAnotherRisk() {
+    this.router.navigate([`/home/gis/policy/risk-details/`]);
+
+  }
+  applyFilterGlobalRisk($event, stringVal) {
+    this.dt2.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  openRiskDeleteModal() {
+    log.debug("Selected Risk", this.selectedRisk)
+    if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+    } else {
+      document.getElementById("openRiskModalButtonDelete").click();
+
+    }
+  }
+  deleteRisk() {
+    this.productCode=this.policyDetailsData.product.code
+    log.debug('PRODUCT CODE:',this.productCode)
+    this.riskCode= this.selectedRisk.riskIpuCode;
+    log.debug('Risk CODE:',this.riskCode)
+
+    this.policyService
+    .deleteRisk(this.riskCode,this.batchNo,this.productCode)
     .pipe(untilDestroyed(this))
     .subscribe({
       next: (data) => {
 
         if (data) {
-          this.clientList = data;
-          log.debug("CLIENT DATA:", this.clientList)
-          this.clientData = this.clientList.content
-          log.debug("CLIENT DATA:", this.clientData)
          
+          log.debug("Response Deleting Risk:", data)
 
         } else {
           this.errorOccurred = true;
@@ -328,64 +431,14 @@ loadAllClients() {
         log.info(`error >>>`, err);
       },
     });
-}
-loadClientDetails(id) {
-  log.info("Client Id:", id)
-  this.clientService.getClientById(id).subscribe(data => {
-    this.clientDetails = data;
-    log.debug("Selected Client Details:", this.clientDetails)
-    this.allClients = this.allClients.concat(this.clientDetails);
-    this.filteredClients = this.allClients;
-
-    log.debug("Added Insured:", this.allClients)
-
-    // this.getCountries();
-    this.saveclient()
-    this.closebutton.nativeElement.click();
-  })
-}
-saveclient() {
-  this.clientCode = this.clientDetails.id;
-  this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
-  sessionStorage.setItem('clientCode', this.clientCode);
-  log.debug("Client Code:", this.clientCode)
-}
-applyFilterGlobal($event, stringVal) {
-  this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
-}
-openDeleteModal(){
-  log.debug("Selected insured", this.selectedInsured)
-  if(!this.selectedInsured){
-    this.globalMessagingService.displayInfoMessage('Error', 'Select Insured to continue');
-  }else{
-    document.getElementById("openModalButtonDelete").click();
+  }
+  editRisk(){
+    log.debug("SELECTED RISK",this.selectedRisk)
+    const passedPolicyRiskString = JSON.stringify(this.selectedRisk);
+    sessionStorage.setItem('passedRiskPolicyDetails', passedPolicyRiskString);
+    this.router.navigate([`/home/gis/policy/risk-details/`]);
 
   }
-}
-
-filterTable() {
-  log.debug("SELECTED COLUMN:", this.selectedColumn);
-  log.debug("SEARCH Query:", this.searchQuery);
-
-  if (this.selectedColumn && this.searchQuery) {
-    if (this.selectedColumn === 'name') {
-      this.filteredClients = this.allClients.filter(client => {
-        const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
-        return (
-          fullName.includes(this.searchQuery.toLowerCase()) ||
-          client.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          client.lastName.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-      });
-    } else {
-      this.filteredClients = this.allClients.filter(client => {
-        return client[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
-      });
-    }
-  } else {
-    this.filteredClients = this.allClients;
-  }
-}
 }
 
 

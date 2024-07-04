@@ -240,44 +240,77 @@ export interface Product {
 }
 
 
+
 export interface RiskInformation {
+  addOrEdit: string;
   allowedCommissionRate: number;
+  autogenerateCert: string;
   basicPremium: number;
   binderCode: number;
+  cashApplicable: string;
+  cashLevel: number;
   commissionAmount: number;
   commissionRate: number;
+  computeMaxExposure: string;
+  conveyanceType: string;
+  coverDays: number;
   coverTypeCode: number;
   coverTypeShortDescription: string;
   currencyCode: number;
   dateCoverFrom: string;
   dateCoverTo: string;
-  delSect: string;
+  delSect: string; 
   grossPremium: number;
+  installmentPaymentPercentage: string;
+  installmentPeriod: number;
   insureds: Insured;
-  ipuNcdCertNo: string;
+  ipuNcdCertNo: string; 
   loaded: string;
+  logbook: string;
+  logbookAvailable: string;
+  logbookUnderInsuredName: string;
   ltaCommission: number;
+  maintenanceCover: string;
+  maxExposureAmount: number;
+  modelYear: number;
+  ncdApplicable: number;
+  ncdLevel: number;
   netPremium: number;
+  newRisk: boolean;
   paidPremium: number;
-  policyBatchNo: number;
+  periodRate: string;
   policyNumber: string;
   policyStatus: string;
   productCode: number;
   propertyDescription: string;
   propertyId: string;
+  quakeFloodZone: number;
   quantity: number;
+  regularDriver: string;
   reinsuranceEndorsementNumber: string;
   renewalArea: string;
+  retroactiveCover: string;
+  riskAddress: string;
+  riskClass: number;
+  riskDetails: string;
   riskFpOverride: number;
   riskIpuCode: number;
+  riskLocation: string;
   sections: Section[];
   stampDuty: number;
   subClassCode: number;
   subClassDescription: string;
+  surveyDate: string;
+  territory: string;
+  topLocationLevel: string;
+  town: string;
   transactionType: string;
   underwritingYear: number;
   value: number;
+  vehicleMake: string;
+  vehicleModel: string;
 }
+
 
 
 export interface Section {
