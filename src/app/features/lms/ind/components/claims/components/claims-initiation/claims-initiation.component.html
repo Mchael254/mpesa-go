@@ -4,21 +4,20 @@
   </div>
 
   <!-- Claims Initiation -->
-   <div class="row">
+  <div class="row">
     <div class="col-sm-12">
-      <div class="full-border" style="position: relative">
+      <div class="full-border position-relative">
         <!-- Title -->
-         <div class="transactions d-flex justify-content-center fw-medium" 
-              style="font-size: 1.25rem; padding-bottom: 1rem;">
+        <div class="transactions d-flex justify-content-center fw-medium title">
           {{ "Claims" }}
-         </div>
+        </div>
          <!-- Initiation Elements -->
           <!-- Client Details -->
           <div class="row g-3">
-            <div class="fw-medium" style="font-size: 1.25rem;">Client details</div>
+            <div class="fw-medium section-title">Client details</div>
 
               <div class="col-lg-4 col-md-6">
-                <label for="policySelection" class="quote-label text-black fw-medium" style="font-size:1rem;">
+                <label for="policySelection" class="quote-label text-black fw-medium">
                   Policy
                 </label>
                 <select class="form-select form-select mb-1 w-75" id="policySelection" placement="right">
@@ -31,7 +30,7 @@
               </div>
 
               <div class="col-lg-4 col-md-6">
-                <label for="claimType" class="quote-label text-black fw-medium" style="font-size:1rem;">
+                <label for="claimType" class="quote-label text-black fw-medium">
                   Claim Type
                 </label>
                 <select class="form-select form-select mb-1 w-75" id="claimType" placement="right">
@@ -45,29 +44,29 @@
           </div>
       </div>
     </div>
-   </div>
+  </div>
           <!-- End of Client Details -->
 
           <!-- Claim Details -->
-   <div class="row">
+  <div class="row">
     <div class="col-sm-12">
-      <div class="full-border" style="position: relative">
+      <div class="full-border position-relative">
         <div class="row g-3">
-          <div class="fw-medium" style="font-size: 1.25rem;">Claim Details</div>
+          <div class="fw-medium section-title">Claim Details</div>
 
-            <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Claim on Life
-              </label>
-              <select class="form-select form-select mb-1 w-75" placement="right">
-                <option selected="true" disabled="disabled"></option>
-              </select>
-            </div>
+          <div class="col-lg-4 col-md-6">
+            <label for="" class="quote-label text-black fw-medium">
+              Claim on Life
+            </label>
+            <select class="form-select form-select mb-1 w-75" placement="right">
+              <option selected="true" disabled="disabled"></option>
+            </select>
+          </div>
 
-            <div class="col-lg-4 col-md-6">
-              <label for="causationType" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Causation Type
-              </label>
+          <div class="col-lg-4 col-md-6">
+            <label for="causationType" class="quote-label text-black fw-medium">
+              Causation Type
+            </label>
               <select class="form-select form-select mb-1 w-75" id="causationType" placement="right">
                 <option selected="true" disabled="disabled"></option>
                 <option *ngFor="let data of causationTypes | sort : 'asc' : 'name' "
@@ -75,138 +74,134 @@
                       {{ data?.name | titlecase }}  
                 </option>
               </select>
-            </div>
+          </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              <label for="causationCause" class="quote-label text-black fw-medium">
                 Causation Cause
               </label>
               <select class="form-select form-select mb-1 w-75" placement="right">
                 <option selected="true" disabled="disabled"></option>
+                <option *ngFor="let data of causationCauses | sort : 'asc' : 'caus_desc' "
+                        [value]="data.caus_code">
+                      {{ data?.caus_desc | titlecase}} 
+                </option> 
               </select>
             </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              <label for="" class="quote-label text-black fw-medium">
                 Date of Incident
               </label>
               <input type="date" class="form-control mb-1" id="">
             </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              <label for="" class="quote-label text-black fw-medium">
                 Date Reported
               </label>
               <input type="date" class="form-control mb-1" id="">
             </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              <label for="" class="quote-label text-black fw-medium">
                 Location of Incident
               </label>
               <input type="text" class="form-control mb-1" id="">
             </div>
 
             <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              <label for="" class="quote-label text-black fw-medium">
                 Override Incubation Period
               </label>
-              <div class="form-check radio-group" id="">
-                <input class="form-check-input box" type="radio">
-                <label class="form-check-label pl-2" for="">Yes</label>
-              </div>
-              <div class="form-check radio-group" id="">
-                <input class="form-check-input box" type="radio">
-                <label class="form-check-label pl-2" for="">No</label>
+              <div class="d-flex justify-content-between">
+                <div class="form-check radio-group" id="">
+                  <input class="form-check-input box" type="radio" name="overrideIncubation" id="overrideYes">
+                  <label class="form-check-label pl-2" for="overrideYes">Yes</label>
+                </div> 
+                <div class="form-check radio-group" id="">
+                  <input class="form-check-input box" type="radio" name="overrideIncubation" id="overrideNo">
+                  <label class="form-check-label pl-2" for="overrideNo">No</label>
+                </div>
               </div>
             </div>
 
         </div>
       </div>
     </div>
-   </div>
+  </div>
           <!-- End of Claim Details -->
 
           <!-- Upload Documents -->
-   <div class="row">
+  <div class="row">
     <div class="col-sm-12">
-      <div class="full-border" style="position: relative">
+      <div class="full-border position-relative">
         <div class="row g-3">
-          <div class="fw-medium" style="font-size: 1.25rem;">Upload documents</div>
+          <div class="fw-medium section-title">Upload documents</div>
 
-          <div class="row">
-            <div class="col-lg-4 col-md-6">
-              <div class="label">
-                <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                  National Identification <span style="color: red;">*</span>
-                </label>
-              </div>
+          <div class="row mb-3">
+
+            <div class="col-lg-6 col-md-6 mb-3">
+              <label for="idCard" class="quote-label text-black fw-medium">
+                National Identification <span class="text-danger">*</span>
+              </label>
               
-                <button style="font-size: 0.7rem" class="btn"
-                        type="button"
-                        [ngClass]="{
-                                    'btn-danger': false,
-                                    'btn-primary': true
-                                   }"
-                       class="btn btn-sm">Choose File
-                </button>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="label">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Document C <span style="color: red;">*</span>
-              </label>
-            </div>
-            
-              <button style="font-size: 0.7rem" class="btn"
+              <button class="btn btn-outline-primary btn-sm choose-file-btn"
                       type="button"
                       [ngClass]="{
                                   'btn-danger': false,
-                                  'btn-primary': true
-                                 }"
-                     class="btn btn-sm">Choose File
+                                  'btn-primary': false,
+                                  'btn-outline-primary': true
+                                  }">Choose File
               </button>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="label">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Death Certificate <span style="color: red;">*</span>
-              </label>
             </div>
-            
-              <button style="font-size: 0.7rem" class="btn"
+
+            <div class="col-lg-6 col-md-6 mb-3">
+              <label for="docC" class="quote-label text-black fw-medium me-2">
+                Document C <span class="text-danger">*</span>
+              </label>       
+              <button class="btn btn-outline-primary btn-sm choose-file-btn"
                       type="button"
                       [ngClass]="{
                                   'btn-danger': false,
-                                  'btn-primary': true
-                                 }"
-                     class="btn btn-sm">Choose File
+                                  'btn-primary': false,
+                                  'btn-outline-primary': true
+                                 }">Choose File
               </button>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="label">
-              <label for="" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                Document D <span style="color: red;">*</span>
-              </label>
             </div>
-            
-              <button style="font-size: 0.7rem" class="btn"
+
+            <div class="col-lg-6 col-md-6 mb-3">
+              <label for="deathCert" class="quote-label text-black fw-medium me-2">
+                Death Certificate <span class="text-danger">*</span>
+              </label>
+              <button class="btn btn-outline-primary btn-sm choose-file-btn"
                       type="button"
                       [ngClass]="{
                                   'btn-danger': false,
-                                  'btn-primary': true
-                                 }"
-                     class="btn btn-sm">Choose File
+                                  'btn-primary': false,
+                                  'btn-outline-primary': true
+                                 }">Choose File
+              </button>
+            </div>
+
+            <div class="col-lg-6 col-md-6 mb-3">
+              <label for="docD" class="quote-label text-black fw-medium me-2">
+                Document D <span class="text-danger">*</span>
+              </label>       
+              <button class="btn btn-outline-primary btn-sm choose-file-btn"
+                      type="button"
+                      [ngClass]="{
+                                  'btn-danger': false,
+                                  'btn-primary': false,
+                                  'btn-outline-primary': true
+                                 }">Choose File
               </button>
             </div>  
           </div>
         </div>
       </div>
     </div>
-   </div>
+  </div>
 
          <!-- End of Upload Documents -->
 
@@ -214,13 +209,12 @@
           <div class="d-flex justify-content-between py-1">
             <div></div>
              <div>
-              <button style="font-size: 0.7rem" class="btn"
+              <button class="btn btn-primary btn-sm proceed-btn"
                       type="button"
                       [ngClass]="{
                                   'btn-danger': false,
                                   'btn-primary': true
-                                 }"
-                      class="btn btn-sm">Proceed              
+                                 }">Proceed              
               </button>
              </div>
           </div>

@@ -1,0 +1,28 @@
+.title {
+    font-size: 1.25rem;
+    padding-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+  }
+  
+  .quote-label {
+    font-size: 1rem;
+  }
+  
+  .full-border {
+    position: relative;
+  }
+  
+  .choose-file-btn {
+    font-size: 0.7rem;
+  }
+  
+  .proceed-btn {
+    font-size: 0.7rem;
+  }
+  
+  .text-danger {
+    color: red;
+  }

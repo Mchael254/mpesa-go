@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import {ApiService} from "../../../../shared/services/api/api.service";
 import {API_CONFIG} from "../../../../../environments/api_service_config";
-import { Observable } from 'rxjs';
-import { CausationTypesDTO } from '../../ind/components/claims/models/causation-types';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +17,11 @@ export class ClaimsService {
     return this.api.GET(`individual/claims?clm_no=${clm_no}`, API_CONFIG.CLAIMS_SERVICE_BASE_URL)
   }
 
-  getCausationTypes(): Observable<CausationTypesDTO[]> {
-    return this.api.GET<CausationTypesDTO[]>(`individual/claims/enums/causation-types`, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  getCausationTypes(){
+    return this.api.GET(`individual/claims/enums/causation-types`, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
+
+  getCausationCauses() {
+    return this.api.GET(`individual/claims/causations?caus_type=ILL`, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }     
 }

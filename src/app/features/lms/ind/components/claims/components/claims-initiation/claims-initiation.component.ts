@@ -5,7 +5,8 @@ import { Logger } from 'src/app/shared/services';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { CausationTypesDTO } from '../../models/causation-types';
 import { PoliciesClaimModuleDTO } from '../../models/claim-inititation';
-import { Subject, takeUntil } from 'rxjs';
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { CausationCausesDTO } from '../../models/causation-causes';
 
 const log = new Logger ('ClaimsInitiationComponent');
 
@@ -16,8 +17,6 @@ const log = new Logger ('ClaimsInitiationComponent');
 })
 
 export class ClaimsInitiationComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-
   breadCrumbs: BreadCrumbItem [] = [
     { label: 'Home', url: '/home/dashboard' },
     { label: 'Claims', url: '/home/lms/ind/claims/claims-initiation',},
@@ -26,6 +25,7 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   steps = stepData;
   causationTypes: CausationTypesDTO[] = [];
   policy: PoliciesClaimModuleDTO[] = [];
+  causationCauses: CausationCausesDTO [] = [];
 
   claim_types = [
     {
@@ -47,15 +47,15 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getCausationTypes();
     this.getClaimModules();
+    this.getCausationCauses();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+
   }
 
   getCausationTypes () {
-    this.claims_service.getCausationTypes().pipe(takeUntil(this.destroy$)).subscribe({
+    this.claims_service.getCausationTypes().pipe(untilDestroyed(this)).subscribe({
       next: (causationTypes: CausationTypesDTO []) => {
       this.causationTypes = causationTypes;
       log.info("Causation Types:", this.causationTypes);
@@ -72,5 +72,16 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
         log.info("Claim Modules:", this.policy)
       });
     }
- 
-}
+
+    getCausationCauses (){
+      this.claims_service.getCausationCauses().pipe(untilDestroyed(this)).subscribe({
+        next: (causationCauses: CausationCausesDTO[]) => {
+          this.causationCauses = causationCauses;
+          log.info("Causation Causes:", this.causationCauses);
+        },
+        error: (error) => {
+          log.error("Error Fetching Causation Causes:", error);
+        }
+      });
+    }
+  }
