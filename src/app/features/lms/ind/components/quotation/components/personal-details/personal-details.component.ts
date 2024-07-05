@@ -34,7 +34,7 @@ import {
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
-import { ClientService as CRMClientService } from '../../../../../../entities/services/client/client.service';
+import { ClientService as CRMClientService, ClientService } from '../../../../../../entities/services/client/client.service';
 import { ClientService as LMSClientService } from '../../../../../service/client/client.service';
 import { ClientDTO } from '../../../../../../entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
@@ -104,6 +104,8 @@ export class PersonalDetailsComponent implements OnInit {
   minDate = DataManipulation.getMinDate();
   occupationsData: any[] = [];
   util: Utils;
+  clientTypeCode: number;
+  organizationId: number;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -127,6 +129,7 @@ export class PersonalDetailsComponent implements OnInit {
     private quotation_service: QuotationService,
     private identity_service: IdentityTypeService,
     // private occu_service: SectorOccupationComponent
+    private clientService: ClientService
   ) {}
 
   ngOnInit() {
@@ -142,6 +145,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.getCountryList();
     this.getBranchList();
     this.getBankList();
+    this.getClientType();
 
 
     this.util = new Utils(this.session_storage);
@@ -565,6 +569,22 @@ export class PersonalDetailsComponent implements OnInit {
     });
   }
 
+  getClientType() {
+    this.clientService.getClientType(this.organizationId).subscribe((data) => {
+      // Filter the data to find the 'INDIVIDUAL' client type
+      const filteredClientType = data.filter((item: { clientTypeName: string }) => item.clientTypeName === 'Individual');
+  
+      // Check if we found any matching client type
+      if (filteredClientType.length > 0) {
+        this.clientType = filteredClientType[0];
+        this.clientTypeCode = this.clientType.code;
+        console.log('Client Type', this.clientType, this.clientTypeCode);
+      } else {
+        console.log('No INDIVIDUAL client type found');
+      }
+    });
+  }
+
   getBankList() {
     this.bank_service.getBanks(165).subscribe((data) => {
       this.bankList = data;
@@ -803,7 +823,7 @@ export class PersonalDetailsComponent implements OnInit {
       },
       nextOfKinDetailsList: null,
       branchName: branch?.name,
-      clientTypeId: 21,
+      clientTypeId: this.clientTypeCode,
       organizationId: 2
     };
   }
