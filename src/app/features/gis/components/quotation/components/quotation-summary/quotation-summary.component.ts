@@ -626,7 +626,80 @@ onFileSelected(event: Event): void {
   if (input.files && input.files.length > 0) {
     for (let i = 0; i < input.files.length; i++) {
       const file = input.files[i];
-      this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+        // Read the file as a data URL
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Convert the file to Base64 string
+          const base64String = reader.result?.toString().split(',')[1];
+
+          // Add the file to your files array with additional properties
+          this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType, base64: base64String });
+          console.log("File:",this.clientDetails)
+          let payload ={
+            agentCode: "",
+            agentName: "",
+            brokerCode: "",
+            brokerName: "",
+            brokerType: "",
+            cbpCode: "",
+            cbpName: "",
+            claimNo: "",
+            claimantNo: "",
+            clientCode: this.clientDetails.id,
+            clientFullname:this.clientDetails.firstName + this.clientDetails.lastName ,
+            clientName:this.clientDetails.firstName,
+            dateReceived: "",
+            department: "",
+            deptName: "",
+            docData: "",
+            docDescription: "",
+            docId: "",
+            docReceivedDate: "",
+            docRefNo: "",
+            docRemark: "",
+            docType:this.selectedDocumentType,
+            document: base64String,
+            documentName: file.name,
+            documentType:this.selectedDocumentType,
+            endorsementNo: "",
+            fileName: file.name,
+            folderId: "",
+            memberName: "",
+            memberNo: "",
+            module: "",
+            originalFileName: "",
+            paymentType: "",
+            policyNo: "",
+            policyNumber: "",
+            processName: "",
+            proposalNo: "",
+            providerCode: "",
+            providerName: "",
+            qouteCode: "",
+            rdCode: "",
+            referenceNo: "",
+            riskID: "",
+            spCode: "",
+            spName: "",
+            subject: "",
+            transNo: "",
+            transType: "",
+            userName: "",
+            username: "",
+            valuerDate: "",
+            valuerName: "",
+            voucherNo: ""
+          }
+          this.quotationService.postDocuments(payload).subscribe({
+            next:(res)=>{
+              this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+            
+            }
+          })
+        };
+         // Read the file as data URL
+         reader.readAsDataURL(file);  
+      // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
     }
   }
 }
@@ -658,6 +731,7 @@ onDocumentTypeChange(event: Event): void {
     this.selectedDocumentType = selectedData.description;
   }
 }
+
 // end document upload functionality
 
 onResize(event: any) {
