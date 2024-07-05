@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../../../../core/config/app-config-service';
+import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
@@ -339,7 +339,9 @@ addProductClause(clauseCode,productCode,quotationCode){
 
   return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
 }
-
+postDocuments(data){
+  return this.api.POST(`uploadClientDocument`, JSON.stringify(data),API_CONFIG.DMS_SERVICE)
+}
 }
 
   
