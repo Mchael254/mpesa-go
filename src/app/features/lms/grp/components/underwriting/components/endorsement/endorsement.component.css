@@ -168,6 +168,7 @@
   flex-shrink: 0;
   border-radius: 4px;
   border: 1px solid #00529B;
+  background-color: #FFF;
 }
 
 .file-text {
@@ -175,7 +176,7 @@
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
 }
 
@@ -225,6 +226,95 @@
 ::ng-deep .col-lg-12.col-md-12.col-sm-12 p-calendar {
   border-radius: 10px;
   overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 8px;
+  background-color: #BAD0E4;
+  white-space: nowrap;
+}
+
+td {
+  padding: 2px;
+  white-space: nowrap;
+}
+
+tr {
+  border-bottom: none !important;
+  height: 40px;
+}
+
+   /* CSS for X button, to close modal */
+   .modal-header,
+   .modal-footer {
+       border: none;
+       /* Removes the border between header/footer and body of modal */
+   }
+  
+   .modal-content {
+    padding: 0 40px;
+   }
+
+   .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+}
+
+.custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+/* End of CSS for X button, to close modal */
+
+/* overlay popup*/
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-wrapper {
+  width: 100%;
+}
+/* overlay popup*/
+
+.action-column {
+  width: 4px;
+  text-align: right;
+}
+
+.button-container {
+  display: inline-block;
+}
+
+.hover-button {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.hover-button:hover {
+  background-color: #b8bbb9;
 }
 
 @media screen and (max-width: 800px) {
