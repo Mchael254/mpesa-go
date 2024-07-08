@@ -1186,7 +1186,7 @@ export class RiskDetailsComponent {
                 this.riskCode = embedded['IPU_CODE[0]'];
                 log.debug('Risk Code:', this.riskCode);
                 this.createRiskSection();
-
+                this.createSchedule();
               }
             }
 
@@ -1713,5 +1713,52 @@ export class RiskDetailsComponent {
       this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
     }
 
+  }
+  createSchedule() {
+    const schedule = this.scheduleDetailsForm.value;
+    const riskID = this.policyRiskForm.get('propertyId').value;
+    log.debug("passedriskid", riskID);
+    
+  log.debug("passedcovertype",this.selectedCoverType)
+
+    // Set specific default values for some fields
+    schedule.details.level1.bodyType = null;
+    schedule.details.level1.yearOfManufacture = null;
+    schedule.details.level1.color = "red";
+    schedule.details.level1.engineNumber = null;
+    schedule.details.level1.cubicCapacity = null;
+    schedule.details.level1.Make =this.selectedVehicleMakeName;
+    schedule.details.level1.coverType = this.selectedCoverType;
+    schedule.details.level1.registrationNumber = riskID;
+    schedule.details.level1.chasisNumber = null;
+    schedule.details.level1.tonnage = null;
+    schedule.details.level1.carryCapacity = null;
+    schedule.details.level1.logBook = null;
+    schedule.details.level1.value = null;
+    schedule.riskCode = this.riskCode;
+    schedule.transactionType = "Q";
+    schedule.version = 0;
+
+    this.quotationService.createSchedule(schedule).subscribe(
+      (data) => {
+        try {
+          this.scheduleData = data;
+          this.scheduleList=this.scheduleData._embedded;
+
+          this.csvRisksList =this.scheduleList;
+          console.log("Schedule Data:", this.scheduleData);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
+
+        } catch (error) {
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
+        }
+      },
+      (error) => {
+        console.error('Error creating schedule:', error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
+      }
+    );
   }
 }

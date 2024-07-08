@@ -12,6 +12,9 @@ import { ProductService } from 'src/app/features/gis/services/product/product.se
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
+
 const log = new Logger("PolicySummaryOtherDetails");
 
 @Component({
@@ -47,7 +50,9 @@ export class PolicySummaryOtherDetailsComponent {
   // insureds: any;
   selectedInsured: ClientDTO;
   selectedFollower: any;
-
+  policyNumber: any;
+  endorsementNo: any;
+  selectedClientCode: any;
 
   filteredClients: any[] = [];
   columns: any[] = [
@@ -67,12 +72,21 @@ export class PolicySummaryOtherDetailsComponent {
   riskCode: any;
   productCode: any;
 
+  scheduleDetailsForm: FormGroup;
+  scheduleData: any;
+  scheduleList: any;
+  selectedSchedule: any;
+  updatedSchedule: any;
+  updatedScheduleData: any;
+
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
 
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
+  policyInsuredCode: number;
+  
 
 
 
@@ -83,12 +97,18 @@ export class PolicySummaryOtherDetailsComponent {
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
     public productService: ProductService,
-    private router: Router
+    private router: Router,
+    public fb: FormBuilder,
+    public quotationService: QuotationsService,
+
+
 
   ) { }
   ngOnInit(): void {
     this.getUtil();
     this.loadAllClients();
+    this.createScheduleDetailsForm();
+
   }
   ngOnDestroy(): void { }
 
@@ -335,6 +355,7 @@ export class PolicySummaryOtherDetailsComponent {
       log.debug("Added Insured:", this.allClients)
 
       // this.getCountries();
+      this.addInsured();
       this.saveclient()
       this.closebutton.nativeElement.click();
     })
@@ -398,20 +419,196 @@ export class PolicySummaryOtherDetailsComponent {
     }
   }
   deleteRisk() {
-    this.productCode=this.policyDetailsData.product.code
-    log.debug('PRODUCT CODE:',this.productCode)
-    this.riskCode= this.selectedRisk.riskIpuCode;
-    log.debug('Risk CODE:',this.riskCode)
+    this.productCode = this.policyDetailsData.product.code
+    log.debug('PRODUCT CODE:', this.productCode)
+    this.riskCode = this.selectedRisk.riskIpuCode;
+    log.debug('Risk CODE:', this.riskCode)
 
     this.policyService
-    .deleteRisk(this.riskCode,this.batchNo,this.productCode)
+      .deleteRisk(this.riskCode, this.batchNo, this.productCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+
+            log.debug("Response Deleting Risk:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted risk"');
+              // Remove the deleted risk from the riskDetails array
+          const index = this.riskDetails.findIndex(risk => risk.riskIpuCode === this.riskCode);
+          if (index !== -1) {
+            this.riskDetails.splice(index, 1);
+          }
+          // Clear the selected risk
+          this.selectedRisk = null;
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  editRisk() {
+    log.debug("SELECTED RISK", this.selectedRisk)
+    const passedPolicyRiskString = JSON.stringify(this.selectedRisk);
+    sessionStorage.setItem('passedRiskPolicyDetails', passedPolicyRiskString);
+    this.router.navigate([`/home/gis/policy/risk-details/`]);
+
+  }
+  // EDIT SCHEDULE DETAILS FUNCTIONALITY 
+
+  // This method Clears the Schedule Detail form by resetting the form model
+  clearForm() {
+    this.scheduleDetailsForm.reset();
+
+  }
+
+  updateSchedule() {
+    const schedule = this.scheduleDetailsForm.value;
+    schedule.riskCode = this.riskCode;
+    schedule.transactionType = "Q";
+    schedule.version = 0;
+    this.quotationService.updateSchedule(schedule).subscribe(data => {
+      this.updatedScheduleData = data;
+      console.log('Updated Schedule Data:', this.updatedScheduleData);
+      this.updatedSchedule = this.updatedScheduleData._embedded;
+      console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+      const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+      if (index !== -1) {
+        this.scheduleList[index] = this.updatedSchedule;
+        this.cdr.detectChanges();
+      }
+
+      try {
+
+        this.scheduleDetailsForm.reset()
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+      } catch (error) {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        this.scheduleDetailsForm.reset()
+      }
+    })
+    this.cdr.detectChanges();
+
+  }
+  createScheduleDetailsForm() {
+    this.scheduleDetailsForm = this.fb.group({
+      details: this.fb.group({
+        level1: this.fb.group({
+          bodyType: [''],
+          yearOfManufacture: [''],
+          color: [''],
+          engineNumber: [''],
+          cubicCapacity: [''],
+          Make: [''],
+          coverType: [''],
+          registrationNumber: [''],
+          chasisNumber: [''],
+          tonnage: [''],
+          carryCapacity: [''],
+          logBook: [''],
+          value: [''],
+        }),
+      }),
+      riskCode: [''],
+      transactionType: [''],
+      version: [''],
+    });
+  }
+  openRiskEditModal() {
+    log.debug("Selected Risk", this.selectedSchedule)
+    if (!this.selectedSchedule) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Schedule to continue');
+    } else {
+      document.getElementById("openRiskModalButtonEdit").click();
+
+    }
+  }
+  addInsured(){
+    this.policyNumber= this.policyDetailsData.policyNo;
+    this.endorsementNo = this.policyDetailsData.endorsementNo;
+    this.selectedClientCode = this.clientDetails.id;
+    // this.policyService
+      // .addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode)
+      // .pipe(untilDestroyed(this))
+      // .subscribe({
+      //   next: (data) => {
+
+      //     if (data) {
+
+      //       log.debug("Response Adding Insured:", data);
+      //       this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  Added Insured"');
+           
+
+      //     } else {
+      //       this.errorOccurred = true;
+      //       this.errorMessage = 'Something went wrong. Please try Again';
+      //       this.globalMessagingService.displayErrorMessage(
+      //         'Error',
+      //         'Something went wrong. Please try Again'
+      //       );
+      //     }
+      //   },
+      //   error: (err) => {
+
+      //     this.globalMessagingService.displayErrorMessage(
+      //       'Error',
+      //       this.errorMessage
+      //     );
+      //     log.info(`error >>>`, err);
+      //   },
+      // });
+      this.policyService.addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode).subscribe(data => {
+       
+        console.log('Added client Insured Data:', data);
+        
+       
+  
+        try {
+  
+          this.scheduleDetailsForm.reset()
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+        } catch (error) {
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+  
+          this.scheduleDetailsForm.reset()
+        }
+      })
+  }
+  deleteInsured(){
+    this.policyInsuredCode = this.selectedInsured.id;
+
+    this.policyService
+    .deleteInsured(this.policyInsuredCode)
     .pipe(untilDestroyed(this))
     .subscribe({
       next: (data) => {
 
         if (data) {
-         
-          log.debug("Response Deleting Risk:", data)
+
+          log.debug("Response Deleting Risk:", data);
+          this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Insured"');
+            // Remove the deleted risk from the riskDetails array
+        // const index = this.riskDetails.findIndex(risk => risk.riskIpuCode === this.riskCode);
+        // if (index !== -1) {
+        //   this.riskDetails.splice(index, 1);
+        // }
+        // // Clear the selected risk
+        // this.selectedRisk = null;
 
         } else {
           this.errorOccurred = true;
@@ -431,13 +628,6 @@ export class PolicySummaryOtherDetailsComponent {
         log.info(`error >>>`, err);
       },
     });
-  }
-  editRisk(){
-    log.debug("SELECTED RISK",this.selectedRisk)
-    const passedPolicyRiskString = JSON.stringify(this.selectedRisk);
-    sessionStorage.setItem('passedRiskPolicyDetails', passedPolicyRiskString);
-    this.router.navigate([`/home/gis/policy/risk-details/`]);
-
   }
 }
 
