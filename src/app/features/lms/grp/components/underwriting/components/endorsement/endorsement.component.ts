@@ -2,7 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import stepData from '../../data/steps.json';
+import { UnderwritingService } from '../../service/underwriting.service';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { Logger } from 'src/app/shared/services';
+import { CategoryDTO, CoinsuranceDetailsDTO, CoverTypesDTO, EndorsementDetailsDTO, PolicyDocumentsDTO } from '../../models/underwriting';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
+const log = new Logger("UnderwritingComponent")
+@AutoUnsubscribe
 @Component({
   selector: 'app-endorsement',
   templateUrl: './endorsement.component.html',
@@ -18,10 +25,21 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   coInsuranceForm: FormGroup;
   quotationCalcType = 'D';
   steps = stepData;
+  endorsementCode: number = 20241036;
+  categoryCode: number;
+  endorsementDetails: EndorsementDetailsDTO;
+  policyDocuments: PolicyDocumentsDTO[] = [];
+  coverTypes: CoverTypesDTO[] = [];
+  coinsuranceDetails: CoinsuranceDetailsDTO[] = [];
+  categories: CategoryDTO[] = [];
+  isEditMode: boolean =  false;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
+    private underwritingService: UnderwritingService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit(): void {
@@ -31,6 +49,11 @@ export class EndorsementComponent implements OnInit, OnDestroy {
     this.categoryDetailsForm();
     this.endorsementDetailsForm();
     this.CoInsuranceDetailsForm();
+    this.getEndorsementDetails();
+    this.getPolicyDocuments();
+    this.getCoverTypes();
+    this.getCoinsurersDetails();
+    this.getCategories();
 
   }
 
@@ -154,6 +177,26 @@ export class EndorsementComponent implements OnInit, OnDestroy {
 
   }
 
+  showEditCatDetailsModal(categories) {
+    this.isEditMode = true;
+    this.categoryCode = categories["policy-category-code"];
+    log.info("categoriesToEdit", categories, this.categoryCode)
+    const modal = document.getElementById('categoryDetsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+    if (categories) {
+      this.categoryDetailForm.patchValue({
+        description: categories.category_category,
+        shortDescription: categories.short_description,
+        premiumMask: categories.pmas_sht_desc,
+        multiplesOfEarnings: categories.period,
+      });
+    }
+  }
+
   closeCategoryDetstModal() {
     const modal = document.getElementById('categoryDetsModal');
     if (modal) {
@@ -235,4 +278,120 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   onBack() {
     this.router.navigate(['/home/lms/grp/underwriting/underwriting']);
   }
-}
+
+  getEndorsementDetails() {
+    this.underwritingService.getEndorsementDetails(this.endorsementCode).subscribe((res: EndorsementDetailsDTO) =>{
+      this.endorsementDetails =  res;
+      log.info("getEndorsementDetails", this.endorsementDetails)
+    });
+  }
+
+  updateEndorsementDetails() {}
+
+  getPolicyDocuments() {
+    this.underwritingService.getPolicyDocuments(this.endorsementCode).subscribe((res: PolicyDocumentsDTO[]) => {
+      this.policyDocuments = res;
+      log.info("getPolicyDocuments", this.policyDocuments)
+    })
+  }
+
+  getCoverTypes() {
+    this.underwritingService.getCoverTypes(this.endorsementCode).subscribe((res: CoverTypesDTO[]) => {
+      this.coverTypes = res;
+      log.info("getCoverTypes", this.coverTypes)
+    });
+  }
+
+  saveCoverType() {
+
+  }
+
+  updateCoverType() {
+
+  }
+
+  getCoinsurersDetails() {
+    this.underwritingService.getCoinsurersDetails(this.endorsementCode).subscribe((res: CoinsuranceDetailsDTO[]) => {
+      this.coinsuranceDetails =  res;
+      log.info("getCoinsuranceDetails", this.coinsuranceDetails)
+    });
+  }
+
+  getCoinsurersList() {
+    this.underwritingService.getCoinsurersList(this.endorsementCode).subscribe((res) => {
+      log.info("getCoinsurersList", res)
+    });
+  }
+
+  saveCoinsure() {
+
+  }
+
+  deleteCoinsurer() {
+
+  }
+
+  getCategories() {
+    this.underwritingService.getCategories(this.endorsementCode).subscribe((res: CategoryDTO[]) => {
+      this.categories = res;
+      log.info("getCategories", this.categories)
+    });
+  }
+
+  onSaveCatDets() {
+    const catDets = this.categoryDetailForm.value;
+    const catDetCaptured = {
+      category_category : catDets.description,
+      short_description : catDets.shortDescription,
+      pmas_sht_desc : catDets.premiumMask,
+      period : catDets.multiplesOfEarnings,
+    }
+
+    this.underwritingService.saveCategory(catDetCaptured).subscribe((res) => {
+      log.info("catDetCaptured", catDetCaptured)
+    });
+  }
+
+  updateCategory() {
+    const catDets = this.categoryDetailForm.value;
+    const newCatDetCaptured = {
+      category_category : catDets.description,
+      short_description : catDets.shortDescription,
+      pmas_sht_desc : catDets.premiumMask,
+      period : catDets.multiplesOfEarnings,
+    }
+    log.info("about to update category", newCatDetCaptured)
+    this.underwritingService.updateCategory(this.categoryCode, newCatDetCaptured).subscribe((res) => {
+      log.info("about to update category", res)
+      this.getCategories();
+    })
+  }
+
+  deleteCategory(categories, event: Event) {
+    this.categoryCode = categories["policy-category-code"];
+
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure that you want to Delete this Category?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      accept: () => {
+        this.underwritingService.deletCategory(this.categoryCode).subscribe((res) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Category deleted'
+          });
+          this.getCategories();
+        });
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Cancelled', life: 3000 });
+      }
+    });
+  }
+
+ }

@@ -5,6 +5,7 @@
         </div>
       </div>
     <div class="container">
+        <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, used more than once -->
         <div style="padding-left: 25px; padding-top: 20px;"><span class="quote-text">Policy details</span></div>
         <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
             <div class="col-md-4 col-xs-12">
@@ -60,28 +61,28 @@
         <div style="padding-left: 25px; padding-top: 20px;"><span class="quote-text">Endorsement details</span>&nbsp;
             <i class="pi pi-pencil" (click)="showEndorsementDetsModal()"></i>
         </div>
-        <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
+        <div class="row col-12 mt-1" style="color: black; padding-left: 25px; white-space: nowrap;">
             <div class="col-md-4 col-xs-12">
                 <table style="width: 100%; min-height: 133px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Endorsement number: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_no }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Mask: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.mask_display | titlecase }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Status: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_status }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Date to: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_cover_to_date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Facultative type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_facultative_type }}</td>
                     </tr>
                 </table>
             </div>
@@ -89,23 +90,23 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Endorsement type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_duration_type }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Duration: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_duration_term_type }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_effective_date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Calc type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_calc_type }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Investement type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_investment_term }}</td>
                     </tr>
                 </table>
             </div>
@@ -113,23 +114,23 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Intermediary: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.agent_display | titlecase }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">payment frequency: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_freq_of_payment }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Date from: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_cover_from_date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">FCL calc type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_fcl_calc_type }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Single/gross rates: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                        <td style="width: 50%; align-items: right;">{{ endorsementDetails?.endr_single_gross_rate }}</td>
                     </tr>
                 </table>
             </div>
@@ -142,7 +143,7 @@
                     <button class="btn btn-success m-1 rounded-circle"
                         (click)="showDetailedCoverDetailsModal()">&plus;</button>
                 </div>
-                <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="coverTypes" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Cover type</th>
@@ -152,41 +153,99 @@
                             <th>Average earning per member</th>
                             <th>Sum assured</th>
                             <th>Dependant type</th>
+                            <th class="action-column"></th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body">
+                    <ng-template pTemplate="body" let-cover>
                         <tr>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td><i class="fas fa-ellipsis-v"></i></td>
+                            <td>{{ cover.pcvt_cvt_sht_desc | titlecase }}</td>
+                            <td>{{ cover.pcvt_override_ret_limit }}</td>
+                            <td>{{ cover.pcvt_avg_anb }}</td>
+                            <td>{{ cover.pcvt_tot_members }}</td>
+                            <td>{{ cover.pcvt_avg_mem_earn }}</td>
+                            <td style="text-align: right;">{{ cover.pcvt_sa | number }}</td>
+                            <td>{{ cover.cvt_depend_disp }}</td>
+                            <td class="action-column">
+                                <div class="flex justify-content-center">
+                                    <p-overlayPanel #op>
+                                        <div class="action-buttons">
+                                            <!-- Edit button -->
+                                            <div class="button-wrapper">
+                                                <!-- <p-button label="Edit" icon="pi pi-pencil" (click)="showEditCoverDetailsModal(cover)" -->
+                                                    <p-button label="Edit" icon="pi pi-pencil"
+                                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                                            </div>
+                                        
+                                            <!-- Delete button -->
+                                            <div class="button-wrapper">
+                                                <!-- <p-button label="Delete" icon="pi pi-trash" (click)="deleteCover(cover, $event)" -->
+                                                    <p-button label="Delete" icon="pi pi-trash"
+                                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                                            </div>
+                                        </div>
+                                        
+                                    </p-overlayPanel>
+                                    <!-- Ellipsis container -->
+                                    <div class="button-container">
+                                        <button class="hover-button" (click)="op.toggle($event)">
+                                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
 
             </p-tabPanel>
             <p-tabPanel header="Category">
-                <div class="add-client-button-container">
+                <div class="add-client-button-container" style="max-width: 50rem;">
                     <button class="btn btn-success m-1 rounded-circle"
                         (click)="showCategoryDetstModal()">&plus;</button>
                 </div>
-                <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="categories" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'max-width': '50rem'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Short description</th>
-                            <th>Description</th>
-                            <th>Premium mask</th>
-                            <th>Multiple of earnings</th>
+                            <th style="width: calc(100% / 4);">Short description</th>
+                            <th style="width: calc(100% / 4);">Description</th>
+                            <th style="width: calc(100% / 4);">Premium mask</th>
+                            <th style="width: calc(100% / 4);">Multiple of earnings</th>
+                            <th class="action-column"></th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body">
+                    <ng-template pTemplate="body" let-cats>
                         <tr>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td><i class="fas fa-ellipsis-v"></i></td>
+                            <td>{{ cats.short_description }}</td>
+                            <td>{{ cats.category_category  | titlecase }}</td>
+                            <td>{{ cats.pmas_sht_desc }}</td>
+                            <td>{{ cats.period }}</td>
+                            <td class="action-column">
+                                <div class="flex justify-content-center">
+                                    <p-overlayPanel #op>
+                                        <div class="action-buttons">
+                                            <!-- Edit button -->
+                                            <div class="button-wrapper">
+                                                <!-- <p-button label="Edit" icon="pi pi-pencil" (click)="showEditCatDetailsModal(cats)" -->
+                                                    <p-button label="Edit" icon="pi pi-pencil"
+                                                    styleClass="p-button-rounded p-button-text" severity="warning" (click)="showEditCatDetailsModal(cats)"></p-button>
+                                            </div>
+                                        
+                                            <!-- Delete button -->
+                                            <div class="button-wrapper">
+                                                    <p-button label="Delete" icon="pi pi-trash"
+                                                    styleClass="p-button-rounded p-button-text" severity="danger" (click)="deleteCategory(cats, $event)"></p-button>
+                                            </div>
+                                        </div>
+                                        
+                                    </p-overlayPanel>
+                                    <!-- Ellipsis container -->
+                                    <div class="button-container">
+                                        <button class="hover-button" (click)="op.toggle($event)">
+                                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -346,31 +405,59 @@
 
             <p-tabPanel header="Co-insurance">
 
-                <div class="add-client-button-container">
+                <div class="add-client-button-container" style="max-width: 50rem;">
                     <button class="btn btn-success m-1 rounded-circle" (click)="showCoInsurerModal()">&plus;</button>
                 </div>
-                <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="coinsuranceDetails" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'max-width': '50rem'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Co-insurer</th>
-                            <th>Leader/follower</th>
-                            <th>Co-insurer share</th>
-                            <th>Service charge</th>
+                            <th style="width: calc(100% / 4);">Co-insurer</th>
+                            <th style="width: calc(100% / 4);">Leader/follower</th>
+                            <th style="width: calc(100% / 4);">Co-insurer share</th>
+                            <th style="width: calc(100% / 4);">Service charge</th>
+                            <th class="action-column"></th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body">
+                    <ng-template pTemplate="body" let-coinsurance>
                         <tr>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td><i class="fas fa-ellipsis-v"></i></td>
+                            <td>{{ coinsurance.coinsurer_display }}</td>
+                            <td>{{ coinsurance.follower_leader }}</td>
+                            <td>{{ coinsurance.pol_coinsure_leader_share }}</td>
+                            <td>{{ coinsurance.pol_coin_srvce_fee }}</td>
+                            <td class="action-column">
+                                <div class="flex justify-content-center">
+                                    <p-overlayPanel #op>
+                                        <div class="action-buttons">
+                                            <!-- Edit button -->
+                                            <div class="button-wrapper">
+                                                <!-- <p-button label="Edit" icon="pi pi-pencil" (click)="showEditCoinsuranceDetailsModal(coinsurance)" -->
+                                                    <p-button label="Edit" icon="pi pi-pencil"
+                                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                                            </div>
+                                        
+                                            <!-- Delete button -->
+                                            <div class="button-wrapper">
+                                                <!-- <p-button label="Delete" icon="pi pi-trash" (click)="deleteCoinsurance(coinsurance, $event)" -->
+                                                    <p-button label="Delete" icon="pi pi-trash"
+                                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                                            </div>
+                                        </div>
+                                        
+                                    </p-overlayPanel>
+                                    <!-- Ellipsis container -->
+                                    <div class="button-container">
+                                        <button class="hover-button" (click)="op.toggle($event)">
+                                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
             </p-tabPanel>
             <p-tabPanel header="Documents">
-                <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="policyDocuments" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'max-width': '50rem'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Document</th>
@@ -378,13 +465,16 @@
                             <th>Upload</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body">
+                    <ng-template pTemplate="body" let-polDocs>
                         <tr>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td>row1</td>
-                            <td><i class="fas fa-ellipsis-v"></i></td>
+                            <td>{{ polDocs.document_display | titlecase }}</td>
+                            <td>{{ polDocs.gpd_is_doc_submitted }}</td>
+                            <td>
+                                <input type="file" #fileInput style="display: none;">
+                                <button class="choose-file">
+                                    <span class="file-text">Choose file</span>
+                                </button>
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -817,8 +907,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                             (click)="closeCategoryDetstModal()">Close</button>
-                        <!-- <button type="button" class="btn btn-primary" (click)="onSaveCatDets()">Save</button> -->
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-primary" (click)="isEditMode ? updateCategory() : onSaveCatDets()">Save</button>
                     </div>
                 </div>
             </div>
@@ -873,7 +962,7 @@
                                             <label class="label"
                                                 for="multiplesOfEarnings">Leader/follower?<span></span></label>
                                         </div>
-                                        <div class="mt-2" style="padding-top: 5px;">
+                                        <div class="mt-2" style="padding-top: 5px; white-space: nowrap;">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="leaderFollower"
                                                     id="leader" value="leader" formControlName="leaderFollower">
@@ -930,7 +1019,7 @@
                                     <!-- Content A (left side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="intermediary">Client Name<span></span></label>
+                                            <label class="label" for="intermediary">Intermediary<span></span></label>
                                         </div>
                                         <select class="form-select" id="intermediary"
                                                 formControlName="intermediary">
