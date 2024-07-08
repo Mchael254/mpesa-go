@@ -13,6 +13,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { UnderwritingRoutingModule } from './underwriting-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -31,7 +33,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     DropdownModule,
     CalendarModule,
     RadioButtonModule,
-    SharedModule
+    SharedModule,
+    OverlayPanelModule,
+    ConfirmDialogModule,
   ]
 })
 export class UnderwritingModule { }
