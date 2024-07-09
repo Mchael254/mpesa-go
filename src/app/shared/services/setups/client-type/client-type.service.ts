@@ -6,6 +6,7 @@ import { HttpParams } from '@angular/common/http';
 import { ClientTypeDTO } from 'src/app/shared/data/common/client-type';
 import { ApiService } from '../../api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import { IdentityModeDTO } from 'src/app/features/entities/data/entityDto';
 
 const log = new Logger('ClientTypeService');
 
@@ -22,18 +23,31 @@ export class ClientTypeService {
       { id: 2, description: 'Individual' },
     ];
   }
-  getClientTypes(): Observable<any[]> {
+  getClientTypes(organizationId?:number): Observable<ClientTypeDTO[]> {
     log.info('Fetching Client Types');
-    return this.api.GET<any[]>(
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET<ClientTypeDTO[]>(
       `client-types`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
     );
   }
-  getIdentifierTypes(): Observable<any[]> {
+  
+  getIdentifierTypes(organizationId?:number): Observable<IdentityModeDTO[]> {
     log.info('Fetching Client Types');
-    return this.api.GET<any[]>(
-      `identity-modes?organizationId=null`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET<IdentityModeDTO[]>(
+      `identity-modes`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
     );
   }
 

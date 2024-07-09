@@ -151,7 +151,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.util = new Utils(this.session_storage);
 
 
-    this.fetchOccupations(2)
+    this.fetchOccupations()
 
     this.formValidation()
     .pipe(concatMap((data) => {
@@ -174,7 +174,7 @@ export class PersonalDetailsComponent implements OnInit {
   }
 
 
-  fetchOccupations(organizationId: number) {
+  fetchOccupations(organizationId?: number) {
     this.occupation_service
       .getOccupations(organizationId)
       .subscribe( (data) => {
@@ -550,9 +550,9 @@ export class PersonalDetailsComponent implements OnInit {
         );
       });
   }
-  getBranchList() {
+  getBranchList(organizationId?:number, regionId?:number) {
     this.branch_Service
-      .getBranches(2, 46)
+      .getAllBranches(organizationId, regionId)
       .pipe(
         map((data) => {
           return this.returnLowerCase(data);
@@ -563,14 +563,14 @@ export class PersonalDetailsComponent implements OnInit {
       });
   }
 
-  getIdentifierTypeList() {
-    this.clientType_service.getIdentifierTypes().subscribe((data) => {
+  getIdentifierTypeList(organizationId?:number) {
+    this.clientType_service.getIdentifierTypes(organizationId).subscribe((data) => {
       this.identifierTypeList = data;
     });
   }
 
-  getClientType() {
-    this.clientService.getClientType(this.organizationId).subscribe((data) => {
+  getClientType(organizationId?:number) {
+    this.clientService.getClientType(organizationId).subscribe((data) => {
       // Filter the data to find the 'INDIVIDUAL' client type
       const filteredClientType = data.filter((item: { clientTypeName: string }) => item.clientTypeName === 'Individual');
   
