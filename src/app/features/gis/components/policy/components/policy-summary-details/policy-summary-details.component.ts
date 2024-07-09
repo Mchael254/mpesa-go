@@ -149,4 +149,46 @@ editPolicyDetails(){
   this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNumber}`]);
 
 }
+generateCoverNote(){
+  const payload ={
+    "encode_format": "BASE64",
+    "params": [
+      {
+        "name": "V_BATCHNO",
+        "value": this.policyDetails.batchNumber
+      }
+    ],
+    "report_format": "PDF",
+    "rpt_code": 25439,
+    "system": "GIS"
+  }
+  this.policyService.generateCoverNote(payload).subscribe({
+    next:(res)=>{
+      console.log(res)
+      this.downloadBase64File(res, 'cover_note.pdf');
+    }
+  })
+}
+
+// Method to decode and trigger file download 
+downloadBase64File(base64, filename: string): void {
+  // Decode the base64 string
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: 'application/pdf' }); // Adjust the MIME type as needed
+
+  // Create a URL for the blob and trigger the download
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
+}
 }
