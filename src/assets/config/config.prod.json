@@ -10,8 +10,8 @@
     "computation_service":"premium/computation",
     "ticket_services": "turnquest",
     "lms": "lms",
-    "api":"api"
-
+    "api":"api",
+     "reports":"turnquest/reports"
   },
 
   "organization": {
