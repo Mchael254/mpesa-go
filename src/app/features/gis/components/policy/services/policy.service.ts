@@ -139,8 +139,8 @@ export class PolicyService {
     return this.api.DELETE(`v1/policies/delete-risks?ipuCode=${ipuCode}&polBatchNo=${batchNo}&proCode=${productCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  addInsured(batchNo:number,endorsementNo:string,policyNo :string,clientCode :number){
-    return this.api.POST(`v1/policies/add-insured?polBatchNo=${batchNo}&polEndosNo=${endorsementNo}&polNo=${policyNo}&prpCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  addInsured(batchNo:number,endorsementNo:string,policyNo :string,clientCode:number){
+    return this.api.POST(`v1/policies/add-insured?polBatchNo=${batchNo}&polEndosNo=${endorsementNo}&polNo=${policyNo}&prpCode=${clientCode}`,"placeholder data", API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
  
   deleteInsured(policyInsuredCode :number){
