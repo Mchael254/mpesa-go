@@ -20,7 +20,7 @@ export class ApiService {
   constructor(private http: HttpClient, private appConfig: AppConfigService, private session_storage: SessionStorageService ) {}
 
   private getHeaders(): HttpHeaders {
-    console.log(this.session_storage.getItem('SESSION_TOKEN'));
+    // console.log(this.session_storage.getItem('SESSION_TOKEN'));
 
     let headers = new HttpHeaders()
     .set('Accept', 'application/json')

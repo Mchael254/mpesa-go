@@ -87,7 +87,7 @@
                               (click)="selectRole(role)"
                             >
                             <label class="form-check-label" for="{{ role.id }}">
-                              {{ role.roleName | sentenceCase }}
+                              {{ role.roleName | titlecase }}
                             </label>
                           </div>
                         </div>
@@ -118,17 +118,17 @@
                   <div class="col-sm-6">
                     <p class="fw-bold">Role areas</p>
                     <p-scrollPanel [style]="{ width: '100%', height: '380px' }" styleClass="custombar1">
-                      <ng-container *ngFor="let role of systemRoles">
+                      <ng-container *ngFor="let roleArea of roleAreas">
                         <div class="mt-2">
                           <div class="form-check">
                             <input
                               class="form-check-input"
                               type="checkbox"
-                              value="{{role}}"
-                              [checked]="selectedRole===role"
+                              value="{{roleArea}}"
+                              [checked]="selectedRoleArea===roleArea"
                             >
-                            <label class="form-check-label" for="roleArea">
-                              {{ role.roleName | sentenceCase }}
+                            <label class="form-check-label" id="fetchProcessArea" for="roleArea" (click)="fetchProcessAreas(roleArea)">
+                              {{ roleArea.name | sentenceCase }}
                             </label>
                           </div>
                         </div>
@@ -138,39 +138,85 @@
                   <div class="col-sm-6">
                     <p class="fw-bold">Process areas and sub areas</p>
                     <p-scrollPanel [style]="{ width: '100%', height: '380px' }" styleClass="custombar1">
-                      <ng-container *ngFor="let role of processesAndSubareas">
+
+                      <div class="accordion" id="processAreaAccordion">
+                        <ng-container *ngFor="let processArea of processAreas">
+                          <div class="accordion-item mt-2">
+                            <div class="accordion-header">
+                              <div class="form-check">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  value="{{ processArea.id }}"
+                                >
+                                <label
+                                  class="form-check-label"
+                                  id="fetchProcessSubAreas"
+                                  data-bs-toggle="collapse"
+                                  [attr.data-bs-target]="'#'+processArea.shortDesc"
+                                  aria-expanded="false"
+                                  [attr.aria-controls]="processArea.shortDesc"
+                                >
+                                  {{ processArea.name | titlecase }}
+                                  <i class="fa-solid fa-caret-down"></i>
+                                </label>
+                              </div>
+                            </div>
+                            <div [id]="processArea.shortDesc" class="accordion-collapse collapse" data-bs-parent="#processAreaAccordion">
+                              <div class="accordion-body">
+                                <ng-container *ngFor="let subArea of processArea.processSubAreas">
+                                  <div class="form-check ms-3">
+                                    <input
+                                      class="form-check-input"
+                                      type="checkbox"
+                                      value="{{subArea.id}}"
+                                    >
+                                    <label class="form-check-label" for="roleArea">
+                                      {{ subArea.name }}
+                                    </label>
+                                  </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
+
+                      <!--<ng-container *ngFor="let processArea of processAreas">
                         <div class="mt-2">
                           <div class="form-check">
                             <input
                               class="form-check-input"
                               type="checkbox"
-                              value="{{role}}"
+                              value="{{ processArea.id }}"
                             >
                             <span
                               class="form-check-label" for="roleArea"
-                              data-bs-toggle="collapse" [attr.href]="'#'+role"
+                              data-bs-toggle="collapse" [attr.href]="'#'+processArea.shortDesc"
                               role="button" aria-expanded="false"
                               aria-controls="collapseExample"
+                              (click)="fetchProcessSubAreas(processArea)"
                             >
-                            {{ role }} <i class="fa-solid fa-caret-down"></i>
-                        </span>
+                            {{ processArea.name | titlecase }}
+                              <i class="fa-solid fa-caret-down"></i>
+                            </span>
                           </div>
-                          <div class="collapse" [id]="role">
-                            <ng-container *ngFor="let subArea of subAreas">
+                          <div class="collapse" [id]="processArea.shortDesc">
+                            <ng-container *ngFor="let subArea of processSubAreas">
                               <div class="form-check ms-3">
                                 <input
                                   class="form-check-input"
                                   type="checkbox"
-                                  value="{{subArea}}"
+                                  value="{{subArea.id}}"
                                 >
                                 <label class="form-check-label" for="roleArea">
-                                  {{ subArea }}
+                                  {{ subArea.shortDesc }}
                                 </label>
                               </div>
                             </ng-container>
                           </div>
                         </div>
-                      </ng-container>
+                      </ng-container>-->
                     </p-scrollPanel>
                   </div>
                 </div>
@@ -190,7 +236,7 @@
                             (click)="selectRole(role)"
                           >
                           <label class="form-check-label" for="roleArea">
-                            {{ role.roleName | sentenceCase }}
+                            {{ role.roleName | titlecase }}
                           </label>
                         </div>
                       </div>
