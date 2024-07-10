@@ -8,6 +8,7 @@ import stepData from '../../data/steps.json';
 })
 export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   steps = stepData;
+  claimDetails = 'claim'
 
   constructor() {}
   
@@ -18,4 +19,11 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     
   }
+
+  documents = [
+    { label: 'National ID', path: 'assets/documents/id.pdf', name: 'id.pdf' },
+    { label: 'Passport', path: 'assets/documents/passport.pdf', name: 'passportpassportpassport.pdf' },
+    { label: 'Driver\'s License', path: 'assets/documents/license.pdf', name: 'ilicense.pdf' },
+    { label: 'Social Security Card', path: 'assets/documents/ssc.pdf', name: 'card.pdf' }
+  ];
 }
