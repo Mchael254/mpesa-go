@@ -14,6 +14,7 @@ import { Table } from 'primeng/table';
 import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
+import { Clause, subclassClauses } from '../../../setups/data/gisDTO';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -79,6 +80,18 @@ export class PolicySummaryOtherDetailsComponent {
   updatedSchedule: any;
   updatedScheduleData: any;
 
+  selectedClauseList:Clause[];
+  selectedRiskClause:Clause;
+  clauseList:Clause[];
+  SubclauseList:subclassClauses[];
+  selectedSubClauseList:subclassClauses[];
+  selectedClauseCode:any;
+  // clauseDetail:any;
+  selectedClauses:any
+  modalHeight: number = 200; // Initial height
+
+
+
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
 
@@ -104,6 +117,10 @@ export class PolicySummaryOtherDetailsComponent {
 
 
   ) { }
+  public isCollapsibleOpen = false;
+  public isScheduleDetailOpen = false;
+  public isRiskClauseDetailsOpen = false;
+  public isRiskDetailsOpen = false;
   ngOnInit(): void {
     this.getUtil();
     this.loadAllClients();
@@ -629,6 +646,33 @@ export class PolicySummaryOtherDetailsComponent {
       },
     });
   }
+  toggleRiskClauseDetails() {
+    this.isRiskClauseDetailsOpen = !this.isRiskClauseDetailsOpen;
+  }
+  toggleScheduleDetails() {
+    this.isScheduleDetailOpen = !this.isScheduleDetailOpen;
+  }
+  toggleRiskDetails() {
+    this.isRiskDetailsOpen = !this.isRiskDetailsOpen;
+  }
+  onSelectRiskClauses(event: any){
+    this.selectedRiskClause=event;
+    // log.info("Patched Risk Section",this.selectedRiskClause);
+    // this.selectedRiskClauseCode=this.selectedRiskClause.code;
+    // log.debug("SELECTED RISK CLAUSE CODE:",this.selectedRiskClauseCode);
+    // log.debug("SELECTED PRODUCT CODE:",this.selectProductCode);
+    // log.debug("SELECTED RISK CODE:",this.riskCode);
+    // log.debug("SELECTED Quote CODE:",this.quotationCode);
+
+    // this.captureRiskClause();
+  }
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+}
+onResize(event: any) {
+  this.modalHeight = event.height;
+}
 }
 
 
