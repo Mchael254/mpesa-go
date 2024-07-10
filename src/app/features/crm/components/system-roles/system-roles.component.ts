@@ -7,6 +7,9 @@ import {SystemRole} from "../../../../shared/data/common/system-role";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {ProcessArea} from "../../../../shared/data/common/process-area";
+import {ProcessSubArea} from "../../../../shared/data/common/process-sub-area";
+import {RoleArea} from "../../../../shared/data/common/role-area";
 
 const log = new Logger('SystemRolesComponent');
 
@@ -40,9 +43,12 @@ export class SystemRolesComponent implements OnInit {
   shouldShowRoles: boolean = false;
   rolesErrorMessage: string = '';
 
-  processesAndSubareas: string[] = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
-  subAreas: string[] = ['Access(AMA)', 'Clients (AMAC)', 'Holding companies (AMHC)'];
+  roleAreas: RoleArea[] = [];
+  selectedRoleArea: RoleArea;
   shouldShowRoleAreas: boolean = false;
+
+  processAreas: ProcessArea[] = [];
+  processSubAreas: ProcessSubArea[] = [];
 
   roleForm: FormGroup;
 
@@ -128,6 +134,15 @@ export class SystemRolesComponent implements OnInit {
    */
   selectRole(role: SystemRole): void {
     this.selectedRole = role;
+    this.systemsService.getRolesAreas(role.systemCode).subscribe({
+      next: (res) => {
+        this.roleAreas = res;
+      },
+      error: (error) => {
+        const errorMessage = error?.error?.message ?? error.message
+        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+      }
+    })
     this.shouldShowRoleAreas = true;
   }
 
@@ -196,7 +211,15 @@ export class SystemRolesComponent implements OnInit {
   }
 
   deleteRole(): void {
-    this.systemsService.deleteRole(this.selectedRole.id).subscribe({
+    try {
+      this.systemsService.deleteRole(this.selectedRole.id);
+      this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
+      this.fetchSystemRoles(this.selectedSystem.id);
+    } catch (err) {
+      this.rolesErrorMessage = err?.error?.message ?? err.message
+      this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
+    }
+      /*this.systemsService.deleteRole(this.selectedRole.id).subscribe({
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
         this.fetchSystemRoles(this.selectedSystem.id);
@@ -205,8 +228,33 @@ export class SystemRolesComponent implements OnInit {
         this.rolesErrorMessage = err?.error?.message ?? err.message
         this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
       }
-    });
+    });*/
     this.closeDeleteButton.nativeElement.click();
   }
+
+  fetchProcessAreas(roleArea: RoleArea): void {
+    this.selectedRoleArea = roleArea;
+    this.systemsService.getProcessAreas(roleArea.id).subscribe({
+      next: (res: ProcessArea[]) => {
+        this.processAreas = res;
+      },
+      error: (error) => {
+        const errorMessage = error?.error?.message ?? error.message
+        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+      }
+    })
+  }
+
+  /*fetchProcessSubAreas(processArea: ProcessArea): void {
+    this.systemsService.getProcessSubAreas(processArea.id).subscribe({
+      next: (res: ProcessSubArea[]) => {
+        this.processSubAreas= res;
+      },
+      error: (error) => {
+        const errorMessage = error?.error?.message ?? error.message
+        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+      }
+    })
+  }*/
 
 }
