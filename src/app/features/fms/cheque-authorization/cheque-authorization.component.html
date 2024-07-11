@@ -22,21 +22,21 @@
   <div class="card mb-2" style="box-shadow:none">
     <div class="row px-3 d-flex justify-content-center">
       <div class="col-lg-3 d-flex">
-        <label  class="form-label text-black align-content-center m-0" style="width: 35%;">Organization:</label>
+        <label  class="form-label text-black align-content-center m-0" style="width: 35%;">{{'fms.org' | translate }}:</label>
         <select class="form-control form-select text-black border-0 fw-medium" id="organization" style="width: 62%;">
           <option value="" disabled >Select option</option>
           <option value="" selected>Mutual Benefits Assurance PLC</option>
         </select>
       </div>
       <div class="col-lg-3 d-flex">
-        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Branch:</label>
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.branch' | translate }}:</label>
         <select class="form-control form-select text-black border-0 fw-medium" id="branch" style="width: 62%;">
           <option value="" disabled >Select option</option>
           <option value="" selected>Head Office</option>
         </select>
       </div>
       <div class="col-lg-2 d-flex">
-        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Year:</label>
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.yr' | translate }}:</label>
         <select class="form-control form-select text-black border-0 fw-medium" id="year" style="width: 50%;">
           <option value="" disabled >Select option</option>
           <option value="" selected>2022</option>
@@ -45,7 +45,7 @@
         </select>
       </div>
       <div class="col-lg-2 d-flex">
-        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Period:</label>
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.period' | translate }}:</label>
         <select class="form-control form-select text-black border-0 fw-medium" id="period" style="width: 50%;">
           <option value="" disabled >Select option</option>
           <option value="" selected>APR</option>
@@ -58,7 +58,7 @@
 
     <div class="card mb-3" style="box-shadow:none">
       <div class="card-header bg-transparent border-bottom-0 mb-0">
-        <span class="justify-content-center mt-3 text-primary">Cheque authorization</span>
+        <span class="justify-content-center mt-3 text-primary">{{'fms.chequeAuth' | translate }}</span>
       </div>
       <div class="card-body pt-0">
 
@@ -67,7 +67,7 @@
             <form [formGroup]="sortingForm" style="background: none; display: contents">
               <div class="row">
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
-                  <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
+                  <label for="paymentType" class="form-label text-black fw-medium">{{'fms.bankAC' | translate }}</label>
 
                   <p-dropdown
                     [options]="bankAccount"
@@ -90,7 +90,7 @@
                   </p-dropdown>
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6">
-                  <label for="paymentType" class="form-label text-black fw-medium">Payment type</label>
+                  <label for="paymentType" class="form-label text-black fw-medium">{{'fms.paymentType' | translate }}</label>
                   <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
                     <option value="" disabled selected>Select option</option>
                     <!--                <option value="">All</option>-->
@@ -99,11 +99,11 @@
                   </select>
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
-                  <label class="form-label text-black fw-medium">Date from</label><br>
+                  <label class="form-label text-black fw-medium">{{'fms.dateFrom' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
-                  <label class="form-label text-black fw-medium">Date to</label><br>
+                  <label class="form-label text-black fw-medium">{{'fms.dateTo' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="toDate" (change)="sortChequePayments()">
                 </div>
               </div>
@@ -138,14 +138,14 @@
                     <th style="width: 3%;">
                       <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                     </th>
-                    <th pSortableColumn="chequeRef">Ref No<p-sortIcon field="chequeRef"></p-sortIcon></th>
-                    <th pSortableColumn="chequeRefDate">Date<p-sortIcon field="chequeRefDate"></p-sortIcon></th>
-                    <th pSortableColumn="reqDate">Request date<p-sortIcon field="reqDate"></p-sortIcon></th>
-                    <th pSortableColumn="pymtType">Type<p-sortIcon field="pymtType"></p-sortIcon></th>
-                    <th pSortableColumn="chequeNarrative">Narrative<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
-                    <th pSortableColumn="bnkName">Bank account<p-sortIcon field="bnkName"></p-sortIcon></th>
-                    <th pSortableColumn="chequeNo">Cheque number<p-sortIcon field="chequeNo"></p-sortIcon></th>
-                    <th pSortableColumn="chequeAmount">Amount<p-sortIcon field="chequeAmount"></p-sortIcon></th>
+                    <th pSortableColumn="chequeRef">{{'fms.refNo' | translate }}<p-sortIcon field="chequeRef"></p-sortIcon></th>
+                    <th pSortableColumn="chequeRefDate">{{'fms.date' | translate }}<p-sortIcon field="chequeRefDate"></p-sortIcon></th>
+                    <th pSortableColumn="reqDate">{{'fms.reqDate' | translate }}<p-sortIcon field="reqDate"></p-sortIcon></th>
+                    <th pSortableColumn="pymtType">{{'fms.paymentType' | translate }}<p-sortIcon field="pymtType"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNarrative">{{'fms.narrative' | translate }}<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
+                    <th pSortableColumn="bnkName">{{'fms.bankAC' | translate }}<p-sortIcon field="bnkName"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNo">{{'fms.chequeNo' | translate }}<p-sortIcon field="chequeNo"></p-sortIcon></th>
+                    <th pSortableColumn="chequeAmount">{{'fms.amt' | translate }}<p-sortIcon field="chequeAmount"></p-sortIcon></th>
                     <th style="width: 3%;"></th>
                   </tr>
                   <tr>
@@ -242,7 +242,7 @@
             <form [formGroup]="sortingForm" style="background: none; display: contents">
               <div class="row">
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
-                  <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
+                  <label for="paymentType" class="form-label text-black fw-medium">{{'fms.bankAC' | translate }}</label>
 
                   <p-dropdown
                     [options]="bankAccount"
@@ -265,7 +265,7 @@
                   </p-dropdown>
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6">
-                  <label for="paymentType" class="form-label text-black fw-medium">Payment type</label>
+                  <label for="paymentType" class="form-label text-black fw-medium">{{'fms.paymentType' | translate }}</label>
                   <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
                     <option value="" disabled selected>Select option</option>
                     <!--                <option value="">All</option>-->
@@ -274,11 +274,11 @@
                   </select>
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
-                  <label class="form-label text-black fw-medium">Date from</label><br>
+                  <label class="form-label text-black fw-medium">{{'fms.dateFrom' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
                 </div>
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
-                  <label class="form-label text-black fw-medium">Date to</label><br>
+                  <label class="form-label text-black fw-medium">{{'fms.dateTo' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="toDate" (change)="sortChequePayments()">
                 </div>
               </div>
@@ -313,14 +313,14 @@
                     <th style="width: 3%;">
                       <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                     </th>
-                    <th pSortableColumn="chequeRef">Ref No<p-sortIcon field="chequeRef"></p-sortIcon></th>
-                    <th pSortableColumn="cqrRefDate">Date<p-sortIcon field="cqrRefDate"></p-sortIcon></th>
-                    <th pSortableColumn="chequeNarrative">Narrative<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
-                    <th pSortableColumn="bnkBankName">Bank<p-sortIcon field="bnkBankName"></p-sortIcon></th>
-                    <th pSortableColumn="pyAccNo">Account Number<p-sortIcon field="pyAccNo"></p-sortIcon></th>
-                    <th pSortableColumn="chequeAmount">Amount<p-sortIcon field="chequeAmount"></p-sortIcon></th>
-                    <th pSortableColumn="eftStatus">Status<p-sortIcon field="eftStatus"></p-sortIcon></th>
-                    <th pSortableColumn="date">Remarks<p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="chequeRef">{{'fms.refNo' | translate }}<p-sortIcon field="chequeRef"></p-sortIcon></th>
+                    <th pSortableColumn="cqrRefDate">{{'fms.date' | translate }}<p-sortIcon field="cqrRefDate"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNarrative">{{'fms.narrative' | translate }}<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
+                    <th pSortableColumn="bnkBankName">{{'fms.bank' | translate }}<p-sortIcon field="bnkBankName"></p-sortIcon></th>
+                    <th pSortableColumn="pyAccNo">{{'fms.acNo' | translate }}<p-sortIcon field="pyAccNo"></p-sortIcon></th>
+                    <th pSortableColumn="chequeAmount">{{'fms.amt' | translate }}<p-sortIcon field="chequeAmount"></p-sortIcon></th>
+                    <th pSortableColumn="eftStatus">{{'fms.status' | translate }}<p-sortIcon field="eftStatus"></p-sortIcon></th>
+                    <th pSortableColumn="date">{{'fms.remarks' | translate }}<p-sortIcon field="date"></p-sortIcon></th>
                     <th style="width: 3%;"></th>
                   </tr>
                   <tr>
@@ -406,10 +406,10 @@
                             <i class="pi pi-ellipsis-v"></i>
                           </a>
                           <ul class="dropdown-menu">
-                            <li (click)="openEligibleAuthModal(eftAuth)">Eligible authorizers</li>
-                            <li (click)="openSignedByModal(eftAuth)">Signed by</li>
-                            <li (click)="openTransactionSummaryModal(eftAuth)">Transaction details</li>
-                            <li (click)="fetchDocs(eftAuth?.chequeRef2)">Documents</li>
+                            <li (click)="openEligibleAuthModal(eftAuth)">{{'fms.eligibleAuth' | translate }}</li>
+                            <li (click)="openSignedByModal(eftAuth)">{{'fms.signedBy' | translate }}</li>
+                            <li (click)="openTransactionSummaryModal(eftAuth)">{{'fms.transDetails' | translate }}</li>
+                            <li (click)="fetchDocs(eftAuth?.chequeRef2)">{{'fms.docs' | translate }}</li>
                           </ul>
                         </div>
                       </div>
@@ -431,28 +431,28 @@
 
   <button class="btn btn-outline-primary float-start mb-3" (click)="generateOtp()"
           [disabled]="isGenerateOtpButtonDisabled || isLoadingGenerateOtp">
-    <span *ngIf="!isLoadingGenerateOtp || countdown !== null; else loading">Generate OTP</span>
+    <span *ngIf="!isLoadingGenerateOtp || countdown !== null; else loading">{{'fms.genOtp' | translate }}</span>
     <ng-template #loading>
       <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
     </ng-template>
   </button>
   <button class="btn btn-primary float-end mb-3" (click)="saveSignChequeMandate()"
           [disabled]="isButtonDisabled || isLoadingSignSelected">
-    <span *ngIf="!isLoadingSignSelected; else loadingSignSelected">Sign selected</span>
+    <span *ngIf="!isLoadingSignSelected; else loadingSignSelected">{{'fms.signSelect' | translate }}</span>
     <ng-template #loadingSignSelected>
       <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
     </ng-template>
   </button>
   <button class="btn btn-primary float-end mb-3" (click)="sendToCorrectionChequeMandate()"
           [disabled]="isButtonDisabled || isLoadingSendCorrection">
-    <span *ngIf="!isLoadingSendCorrection; else loading">Send for correction</span>
+    <span *ngIf="!isLoadingSendCorrection; else loading">{{'fms.correction' | translate }}</span>
     <ng-template #loading>
       <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
     </ng-template>
   </button>
   <button class="btn btn-danger float-end mb-3 me-2" (click)="rejectSignChequeMandate()"
           [disabled]="isButtonDisabled || isLoadingReject">
-    <span *ngIf="!isLoadingReject; else loading">Reject</span>
+    <span *ngIf="!isLoadingReject; else loading">{{'fms.reject' | translate }}</span>
     <ng-template #loading>
       <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
     </ng-template>
