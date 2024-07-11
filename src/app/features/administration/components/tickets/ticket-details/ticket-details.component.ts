@@ -94,7 +94,8 @@ export class TicketDetailsComponent implements OnInit {
     this.ticketModule = this.activatedRoute.snapshot.params['module'];
     this.currentTicket = this.ticketService.currentTicketDetail();
 
-    this.activeIndex = this.selectedSpringTickets?.ticket?.sysModule === 'P' ? 2 : 0;
+    this.activeIndex = (this.selectedSpringTickets?.ticket?.sysModule === 'P' ||
+      this.selectedSpringTickets?.ticket?.sysModule === 'RT' || this.selectedSpringTickets?.ticket?.sysModule === 'E') ? 2 : 0;
     if (this.selectedSpringTickets?.ticket?.sysModule === 'C') {
       this.fetchClaimDetails(this.selectedSpringTickets?.ticket?.claimNo);
     }

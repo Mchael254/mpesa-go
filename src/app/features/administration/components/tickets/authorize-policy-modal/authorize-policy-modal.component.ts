@@ -67,16 +67,19 @@ export class AuthorizePolicyModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.showDefaultUser = false;
-    this.policyDetails = this.localStorageService.getItem('policyDetails');
-    log.info('policy>>', this.policyDetails);
-    this.batchNo = this.policyDetails?.batchNo;
-    log.info('batchNo>>', this.batchNo);
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
-    this.getDispatchReasons();
-    if (this.policyDetails) {
-      this.getReportsToPrepare();
-    }
+    setTimeout(() => {
+      this.policyDetails = this.localStorageService.getItem('policyDetails');
+      log.info('policy>>', this.policyDetails);
+      this.batchNo = this.policyDetails?.batchNo;
+      log.info('batchNo>>', this.batchNo);
+
+      this.getDispatchReasons();
+      if (this.policyDetails) {
+        this.getReportsToPrepare();
+      }
+    }, 1500);
   }
 
   /**
