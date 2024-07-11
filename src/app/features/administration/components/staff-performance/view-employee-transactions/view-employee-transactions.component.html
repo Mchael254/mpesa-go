@@ -131,10 +131,22 @@
               <td class="body">{{ viewTransactions?.TRANSACTIONDATE }}</td>
               <td class="body">{{viewTransactions?.POLICYNO}}</td>
               <td class="body">{{viewTransactions?.RENEWALENDORSEMENTNO}}</td>
-              <td class="body">{{viewTransactions?.CLIENTNAME | uppercase}}</td>
-              <td class="body">{{viewTransactions?.AGENTNAME | uppercase}}</td>
+              <td class="body">
+                <span *ngIf = "viewTransactions?.CLIENTNAME" title="{{viewTransactions?.CLIENTNAME | titlecase}}">
+                  {{viewTransactions?.CLIENTNAME?.substring(0,15) | titlecase}}...
+                </span>
+              </td>
+              <td class="body">
+                <span *ngIf = "viewTransactions?.AGENTNAME" title="{{viewTransactions?.AGENTNAME | titlecase}}">
+                  {{viewTransactions?.AGENTNAME?.substring(0,15) | titlecase}}...
+                </span>
+              </td>
               <td class="body">{{viewTransactions?.STATUS | titlecase}}</td>
-              <td class="body">{{viewTransactions?.BRANCHNAME | titlecase}}</td>
+              <td class="body">
+                <span *ngIf = "viewTransactions?.BRANCHNAME" title="{{viewTransactions?.BRANCHNAME | titlecase}}">
+                  {{viewTransactions?.BRANCHNAME?.substring(0,15) | titlecase}}...
+                </span>
+              </td>
               <td class="body" style="text-align: right">{{viewTransactions?.PREMIUM | number:'1.2-2' }}</td>
               <td class="body">{{ (viewTransactions?.AUTHORIZATIONDATE !== null) ? (viewTransactions?.AUTHORIZATIONDATE | date: 'd-MMM-y') : null}}</td>
 
