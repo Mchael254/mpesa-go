@@ -267,11 +267,11 @@
     <div class="form-check">
       <input class="form-check-input" type="checkbox" id="flexCheckDefault">
       <label class="form-check-label" for="flexCheckDefault" (click)="postToEtims()" style="cursor:pointer">
-        Post to Etims
+        {{'mngt_wrkflw.eTims.postToEtims' | translate }}
       </label>
       <label class="text-dark fw-medium offset-lg-4"
       *ngIf="this.policyDetails?.premium > 0 && this.eTimsArrData.length > 0"
-      >Debit note: <span class="fw-normal">{{eTimsArrData[0]?.etim_trader_invoice_number}}</span> </label>
+      >{{'mngt_wrkflw.eTims.debitNote' | translate }}: <span class="fw-normal">{{eTimsArrData[0]?.etim_trader_invoice_number}}</span> </label>
     </div>
   </div>
 
@@ -292,24 +292,24 @@
 
     <ng-template pTemplate="header">
       <tr>
-        <th>Ref no</th>
-        <th>Amount posted</th>
-        <th>Date posted</th>
-        <th>Time posted</th>
-        <th>Etims status</th>
-        <th>Taxable amount A</th>
-        <th>Taxable amount B</th>
-        <th>Taxable amount C</th>
-        <th>Taxable amount D</th>
-        <th>Tax amount A</th>
-        <th>Tax amount B</th>
-        <th>Tax amount C</th>
-        <th>Tax amount D</th>
-        <th>Tax rate A</th>
-        <th>Tax rate B</th>
-        <th>Tax rate C</th>
-        <th>Tax rate D</th>
-        <th>Error message</th>
+        <th>{{'mngt_wrkflw.eTims.refNo' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.amountPosted' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.datePosted' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.timePosted' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.etimsStatus' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxableAmountA' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxableAmountB' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxableAmountC' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxableAmountD' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxAmountA' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxAmountB' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxAmountC' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxAmountD' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxRateA' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxRateB' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxRateC' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.taxRateD' | translate }}</th>
+        <th>{{'mngt_wrkflw.eTims.errorMessage' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-eTims>
