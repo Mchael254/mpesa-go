@@ -14,7 +14,8 @@
 
       <div class="col-sm-12 col-md-6 d-flex justify-content-end">
         <button
-          class="btn btn-primary me-2" style="font-size: 12px;" (click)="makeReady()" [disabled]="isLoadingMakeUndo">
+          class="btn btn-primary me-2" style="font-size: 12px;" (click)="makeReady()" [disabled]="isLoadingMakeUndo"
+          id="makeReadyBtn">
           <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Make ready</span>
           <ng-template #loadingMakeUndo>
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>

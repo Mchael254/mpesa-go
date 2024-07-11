@@ -328,7 +328,7 @@ export class MassDocumentDispatchComponent implements OnInit {
   fetchPreparedDocs(ticket: TicketsDTO) {
     this.policiesService.fetchReportsDispatched(ticket?.ticket?.policyCode)
       .subscribe((data) => {
-        this.docsPrepared = data.embedded;
+        this.docsPrepared = data._embedded;
         this.fetchUnPreparedDocs(ticket?.ticket?.policyCode, ticket?.ticket?.endorsment);
       })
   }

@@ -313,9 +313,6 @@ export class RevisionDetailsComponent implements OnInit {
    */
   getAuthorizationLevels() {
     this.policiesService.getPolicyAuthorizationLevels(this.selectedSpringTickets?.ticket?.policyCode)
-      .pipe(
-        untilDestroyed(this),
-      )
       .subscribe({
         next: (data) => {
           this.authorizationLevelsData = data.embedded && data.embedded.length > 0 ? data.embedded[0] : [];

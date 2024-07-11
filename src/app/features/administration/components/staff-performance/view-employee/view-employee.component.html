@@ -207,7 +207,7 @@
               </td>
               <td>
                 <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username,
-              aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name, aggregatedEmployee?.transaction?.totalCount)"></i>
+              aggregatedEmployee?.transaction[0]?.module, aggregatedEmployee?.staffs?.name, aggregatedEmployee?.transaction[0]?.totalCount)"></i>
               </td>
 
             </tr>

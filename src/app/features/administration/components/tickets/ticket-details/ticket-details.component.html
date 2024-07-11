@@ -25,7 +25,9 @@
       <span class="text-primary">{{selectedSpringTickets?.task?.activityName}}</span>
     </label>
 
-    <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'P' || selectedSpringTickets?.ticket?.sysModule === 'RT'">
+    <ng-container
+      *ngIf="selectedSpringTickets?.ticket?.sysModule === 'P' || selectedSpringTickets?.ticket?.sysModule === 'RT'
+      || selectedSpringTickets?.ticket?.sysModule === 'E'">
       <p-tabPanel header="Policy details">
 
         <label class="text-primary mb-3 fw-medium">{{'mngt_wrkflw.policyDetails.policyDetails' | translate | titlecase }}</label>
@@ -182,7 +184,8 @@
       <button
         class="btn btn-success ms-2"
         (click)="onClickAuthorize()"
-        *ngIf="activeIndex === 2 && selectedSpringTickets?.ticket?.sysModule === 'P' "
+        *ngIf="activeIndex === 2 && (selectedSpringTickets?.ticket?.sysModule === 'P'
+        || selectedSpringTickets?.ticket?.sysModule === 'RT' || selectedSpringTickets?.ticket?.sysModule === 'E')"
       >
         {{'mngt_wrkflw.tickets.authorize' | translate | titlecase }}
       </button>
@@ -190,7 +193,8 @@
       <button
         class="btn btn-primary ms-2 reinsure-btn"
         (click)="onClickReinsure()"
-        *ngIf="activeIndex === 1 && selectedSpringTickets?.ticket?.sysModule === 'P' "
+        *ngIf="activeIndex === 1 && (selectedSpringTickets?.ticket?.sysModule === 'P'
+        || selectedSpringTickets?.ticket?.sysModule === 'RT' || selectedSpringTickets?.ticket?.sysModule === 'E')"
       >
         {{'mngt_wrkflw.policyDetails.reinsure' | translate | titlecase }}
       </button>

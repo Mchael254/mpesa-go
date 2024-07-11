@@ -69,7 +69,7 @@ export class StaffService {
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('userType', `${userType}`)
-      .set('groupId', 1) /*TODO: Find proper way to fetch groupId*/
+      // .set('groupId', 1) /*TODO: Find proper way to fetch groupId*/
       .set('sortList', `${sortList}`)
       .set('order', `${order}`)
       .set('supervisor', `${supervisor}`);
