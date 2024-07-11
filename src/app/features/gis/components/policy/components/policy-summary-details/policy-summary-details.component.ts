@@ -164,9 +164,17 @@ generateCoverNote(){
   }
   this.policyService.generateCoverNote(payload).subscribe({
     next:(res)=>{
-      console.log(res)
       this.downloadBase64File(res, 'cover_note.pdf');
-    }
+      this.globalMessagingService.displaySuccessMessage('Success','Cover note generated successfully ')
+    },
+    error: (err) => {
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error', 'Something went wrong, try again later'
+      );
+      log.info(`error >>>`, err);
+    },
+
   })
 }
 

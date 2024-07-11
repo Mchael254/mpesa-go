@@ -771,7 +771,7 @@
                                     </div>
                                     <div class="col-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="from_csv">
+                                            <input class="form-check-input"  (change)="importFromCsvChange($event);" type="checkbox" value="" id="from_csv">
                                             <label class="form-check-label" for="from_csv">
                                                 {{'gis.policy.from_csv' | translate}}
                                             </label>

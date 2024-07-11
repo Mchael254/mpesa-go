@@ -889,9 +889,12 @@ export class PolicyProductComponent {
               log.debug("NAVIGATING TO COINSUARANCE PAGE")
               this.spinner.hide()
               this.router.navigate(['/home/gis/policy/coinsuarance-details'])
-            }else if(this.importedPolicy){
+            }else if(this.importedPolicy == true){
               log.debug("NAVIGATING TO IMPORT RISKS PAGE")
               this.spinner.hide()
+              sessionStorage.setItem('coverFrom',this.policyProductForm.value.withEffectiveFromDate)
+              sessionStorage.setItem('coverTo',this.policyProductForm.value.withEffectiveToDate)
+              sessionStorage.setItem('productCode',this.policyProductForm.value.productCode)
               this.router.navigate(['/home/gis/policy/import-risks'])
             }else{
               this.spinner.hide()
@@ -965,6 +968,10 @@ export class PolicyProductComponent {
   onAnotherPolicyChange(event: any) {
     log.debug("Value passed by the checkbox for import generate policy:", event.target.checked)
     this.isriskImportedAnotherPolicy = event.target.checked;
+  }
+  importFromCsvChange(event: any) {
+    log.debug("Value passed by the checkbox for import generate policy:", event.target.checked)
+    this.importedPolicy = event.target.checked;
   }
   getProductDocument(){
     this.productDocumentService
