@@ -12,7 +12,7 @@
                                 <p class="summary-label">Policy number</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{policyNumber}}</p>
                             </div>
                         </div>
                     </div>
@@ -23,7 +23,7 @@
                                 <p class="summary-label">Client</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{client}}</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                 <p class="summary-label">Cover from</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{coverFrom}}</p>
                             </div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                                 <p class="summary-label">Cover To</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{coverTo}}</p>
                             </div>
                         </div>
                     </div>
@@ -58,11 +58,8 @@
                                 <p class="summary-label">Subclass</p>
                             </div>
                             <div class="col-6" id="value">
-                                <select class="form-select form-control-sm summary-value" id="subclassSelect"
-                                    formControlName="proInterfaceType">
-                                    <option value=""></option>
-
-                                </select>
+                                <p-dropdown [options]="allMatchingSubclasses" optionValue="code" optionLabel="description"
+                                formControlName="subClassCode" [placeholder]="'subclass'" [filterBy]="'description'" [filter]="true"></p-dropdown>
                             </div>
                         </div>
                     </div>
