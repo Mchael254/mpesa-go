@@ -71,4 +71,32 @@ export class DashboardService {
     return this.api.GET(`group/category/${endorsement_code}/limits?policyCategoryCode=${categoryCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
+  getCoverTypes(endorsement_code: number) {
+    return this.api.GET(`group/policy-covers/${endorsement_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getPolicyMemberDetails(endorsement_code: number) {
+    return this.api.GET(`admin/${endorsement_code}/fcl`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getMemberDetailsList(policyCode: number, endorsement_code: number) {
+    return this.api.GET(`group/policies/${policyCode}/policy-members?endorsementCode=${endorsement_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  } 
+
+  getMemberDetsSummary(endorsement_code: number, memberUniqueCode: number) {
+    return this.api.GET(`admin/${endorsement_code}/member-covers?policyMemberUniqueCode=${memberUniqueCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getPolicyValuations(policy_code: number) {
+    return this.api.GET(`group/policies/annual-valuations?policy_code=${policy_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getReceipts(policy_code: number) {
+    return this.api.GET(`group/receipts/${policy_code}?allocated=Y`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getPartialWithdrawals(policy_code: number) {
+    return this.api.GET(`group/policies/partial-withdrawals?policy_code=${policy_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
 }

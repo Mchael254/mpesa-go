@@ -52,10 +52,11 @@ export class AdminPensionListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  navigateToPensionDets(policy_code) {
+  navigateToPensionDets(policy_code, policy_number) {
     this.router.navigate(['/home/lms/grp/dashboard/admin-pension-summary'], {
       queryParams: {
         policyCode: policy_code,
+        policyNumber: policy_number,
       }
     });
   }

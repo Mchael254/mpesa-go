@@ -153,7 +153,8 @@
                 </select>
                 <input type="text" pInputText class="form-control" id='otherNames'>
             </div>
-            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+            <p-table [value]="valuations" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+            [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: calc(100% / 7);">Year</th>
@@ -168,13 +169,13 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
                     <tr>
-                        <td>{{ item.year }}</td>
-                        <td>{{ item.period }}</td>
-                        <td id="table-align">{{ item.balance_bf | number }}</td>
-                        <td id="table-align">{{ item.employer_amount | number }}</td>
-                        <td id="table-align">{{ item.rate }}</td>
-                        <td id="table-align">{{ item.total_interest | number }}</td>
-                        <td id="table-align">{{ item.balance_cf | number }}</td>
+                        <td>{{ item.valuation_year }}</td>
+                        <td>{{ item.wef }} - {{ item.wet }}</td>
+                        <td id="table-align">{{ item.employer_bal_bf | number }}</td>
+                        <td id="table-align">{{ item.employee_amt | number }}</td>
+                        <td id="table-align">{{ item.interest_rate }}</td>
+                        <td id="table-align">{{ item.total_amount | number }}</td>
+                        <td id="table-align">{{ item.employer_balance_cf | number }}</td>
                         <td class="action-column">
                             <div class="flex justify-content-center">
                                 <p-overlayPanel #op>
@@ -216,7 +217,7 @@
                     </select>
                 </div>
 
-                <p-table [value]="adminPensionDepReceipts" styleClass="p-datatable-striped"
+                <p-table [value]="receipts" styleClass="p-datatable-striped"
                     [tableStyle]="{'max-width': '100%'}" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
                     [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
@@ -233,14 +234,14 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
                         <tr>
-                            <td>{{ item.pension_member_dep_code }}</td>
-                            <td>{{ item.pnmdp_date }}</td>
-                            <td id="table-align">{{ item.employee_amount | number }}</td>
-                            <td id="table-align">{{ item.voluntary_contribution_amount | number }}</td>
-                            <td id="table-align">{{ item.total_transfer_amount }}</td>
-                            <td id="table-align">{{ item.cost_of_past_benefits }}</td>
-                            <td id="table-align">{{ item.total_amount | number }}</td>
-                            <td id="table-align">{{ item.pnmdp_amount | number }}</td>
+                            <td>{{ item.receipt_no }}</td>
+                            <td>{{ item.receipt_date }}</td>
+                            <td id="table-align">{{ item.amount | number }}</td>
+                            <td id="table-align">{{ item.gross_amount | number }}</td>
+                            <td id="table-align">{{ item.policy_fee }}</td>
+                            <td id="table-align">{{ item.premium_allocate| number }}</td>
+                            <td id="table-align">{{ item.pension_allocate | number }}</td>
+                            <td id="table-align">{{ item.pension_payment_amount | number }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -263,7 +264,7 @@
                     </select>
                 </div>
 
-                <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <p-table [value]="partialWithdrawals" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th style="width: calc(100% / 6);">Date</th>
@@ -276,12 +277,12 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                         <tr>
-                            <td>{{ item.year }}</td>
-                            <td>{{ item.period }}</td>
-                            <td>{{ item.balanceBF }}</td>
-                            <td>{{ item.contribution }}</td>
-                            <td>{{ item.rate }}%</td>
-                            <td style="text-align: right;">{{ item.interest }}</td>
+                            <td>{{ item.notification_date }}</td>
+                            <td>{{ item.pay_method }}</td>
+                            <td>{{ item.bank_name }}</td>
+                            <td>{{ item.bank_account_no }}</td>
+                            <td>{{ item.payee }}</td>
+                            <td style="text-align: right;">{{ item.amount | number }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -312,8 +313,8 @@
                     </p-multiSelect> -->
                 </div>
             </div>
-            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
-                [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+            <p-table [value]="memberList" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+                [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                 [rowsPerPageOptions]="[10,25,50]">
                 <ng-template pTemplate="header">
@@ -330,14 +331,14 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
                     <tr>
-                        <td>{{ item.year }}</td>
-                        <td>{{ item.period }}</td>
-                        <td>{{ item.balanceBF }}</td>
-                        <td>{{ item.contribution }}</td>
-                        <td>{{ item.rate }}%</td>
-                        <td>{{ item.balanceBF }}</td>
-                        <td>{{ item.balanceBF }}</td>
-                        <td style="text-align: right;">{{ item.interest }}</td>
+                        <td>{{ item.surname }}</td>
+                        <td>{{ item.other_names }}</td>
+                        <td>{{ item.date_of_birth }}</td>
+                        <td>{{ item.sex }}</td>
+                        <td>{{ item.member_number }}</td>
+                        <td>{{ item.category | titlecase }}</td>
+                        <td>{{ item.dependent_types | titlecase }}</td>
+                        <td style="text-align: right;">{{ 'To add' }}</td>
                     </tr>
                 </ng-template>
             </p-table>
