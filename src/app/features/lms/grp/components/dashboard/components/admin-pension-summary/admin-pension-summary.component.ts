@@ -6,6 +6,7 @@ import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { memberBalancesDTO, MemberCoversDTO, MemberPensionDepReceiptsDTO, MemberDetailsDTO, DetailedMemContrReceiptsDTO } from '../../models/member-policies';
 import { DashboardService } from '../../services/dashboard.service';
+import { MemberListDTO, PartialWithdrawalsDTO, ReceiptsDTO, ValuationsDTO } from '../../models/admin-policies';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
@@ -16,16 +17,30 @@ const log = new Logger("PolicyDetailsComponent")
 })
 export class AdminPensionSummaryComponent implements OnInit, OnDestroy {
   selectedContent: string = 'summary'
-  selectedPolicyNumber: string = 'PEN/006/005';
+  selectedPolicyNumber: string;
   breadCrumbItems: BreadCrumbItem[] = [];
   years: number[] = [];
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  policyCode: number;
+  endorsementCode: number = 	20241004;
+  partialWithdrawals: PartialWithdrawalsDTO[] = [];
+  receipts: ReceiptsDTO[] = [];
+  valuations: ValuationsDTO[] =[];
+  memberList: MemberListDTO[] = [];
 
-  constructor() { }
+  constructor(
+    private dashboardService: DashboardService,
+    private activatedRoute: ActivatedRoute,
+  ) { }
 
   ngOnInit(): void {
+    this.getParams();
     this.populateBreadCrumbItems();
     this.populateYears();
+    this.getPolicyValuations();
+    this.getPartialWithdrawals();
+    this.getReceipts();
+    this.getMemberDetailsList();
   }
 
   ngOnDestroy(): void {
@@ -54,6 +69,12 @@ export class AdminPensionSummaryComponent implements OnInit, OnDestroy {
     } else if (content === 'members') {
       this.selectedContent = 'members';
     }
+  }
+
+  getParams() {
+    this.policyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
+    this.selectedPolicyNumber = this.activatedRoute.snapshot.queryParams['policyNumber'];
+    log.info("getParamsPolCode", this.policyCode, this.selectedPolicyNumber)
   }
 
   adminPensionDepReceipts = [
@@ -150,6 +171,35 @@ export class AdminPensionSummaryComponent implements OnInit, OnDestroy {
       balanceCF: 17881.25
     }
   ];
+
+  getPolicyValuations() {
+    this.dashboardService.getPolicyValuations(2022169).subscribe((res: ValuationsDTO[]) => {
+      this.valuations = res;
+      log.info("getPolicyValuations", this.valuations)
+    });
+  }
+
+  getReceipts() {
+    this.dashboardService.getReceipts(this.policyCode).subscribe((res: ReceiptsDTO[]) => {
+      this.receipts =  res;
+      log.info("getReceipts", res)
+    });
+  }
+
+  getPartialWithdrawals() {
+    this.dashboardService.getPartialWithdrawals(this.policyCode).subscribe((res: PartialWithdrawalsDTO[]) => {
+      this.partialWithdrawals =  res;
+      log.info("getPartialWithdrawals", this.partialWithdrawals)
+    });
+  }
+
+  getMemberDetailsList() {
+    // this.dashboardService.getMemberDetailsList(this.policyCode, this.endorsementCode).subscribe((res: MemberListDTO[]) => {
+      this.dashboardService.getMemberDetailsList(2024833, this.endorsementCode).subscribe((res: MemberListDTO[]) => {
+      this.memberList = res
+      log.info("getMemberDetailsList", this.memberList)
+    });
+  }
 
 
 }
