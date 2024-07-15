@@ -121,70 +121,72 @@
             </div>
         </div>
 
-        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box" (click)="showMembersSummary()">
-            <label class="active-label">{{ memberPolicies[0]?.status }}</label>
+        <div *ngIf="memberDetails && memberDetails.length >= 0" class="box" (click)="showMembersSummary()">
+            <label class="active-label">{{ 'Member details' }}</label>
             <div class="scroll-content" style="margin-top: 40px;">
                 <table>
                     <tr>
                         <td>Members:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
+                        <td class="td-data">{{ memberDetails[0]?.endr_nof_members }}</td>
                     </tr>
                     <tr>
                         <td>Overide FCL amount:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.policy_number | titlecase }}</td>
+                        <td class="td-data">{{ memberDetails[0]?.endr_override_fcl_amt | number }}</td>
                     </tr>
                     <tr>
                         <td>Members above overide FCL:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.policy_members }}</td>
+                        <td class="td-data">{{ memberDetails[0]?.mem_above_override_fcl }}</td>
                     </tr>
                     <tr>
                         <td>Reinsurance retention limit:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ 'to fill' }}</td>
                     </tr>
                     <tr>
                         <td>Members above retention limit:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ memberDetails[0]?.mem_above_existing_fcl }}</td>
                     </tr>
                     <tr>
                         <td>Computed FCL amount:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ memberDetails[0]?.endr_fcl_amt | number }}</td>
                     </tr>
                 </table>
             </div>
         </div>
 
 
-        <div *ngIf="memberPolicies" class="box">
-            <label class="active-label">{{ memberPolicies[1]?.status }}</label>
+        <div *ngIf="coverTypes" class="box">
+            <label class="active-label">{{ 'Cover types' }}</label>
 
             <div class="scroll-content">
-                <div style="margin-top: 40px; margin-left: 20px;">Group Life</div>
+                <div style="margin-top: 40px; margin-left: 20px;">{{ coverTypes[0]?.pcvt_cvt_sht_desc | titlecase }}</div>
                 <table>
                     <tr>
                         <td class="td-data">Sum assured:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ coverTypes[0]?.pcvt_sa | number }}</td>
                     </tr>
                     <tr>
                         <td class="td-data">Premium:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ coverTypes[0]?.pcvt_premium | number }}</td>
                     </tr>
                 </table>
-                <div style="margin-left: 20px;">Group credit Life</div>
+                <ng-container *ngIf="coverTypes && coverTypes.length > 1" >
+                <div style="margin-left: 20px;">{{ coverTypes[1]?.pcvt_cvt_sht_desc | titlecase }}</div>
                 <table>
                     <tr>
                         <td class="td-data">Sum assured:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ coverTypes[1]?.pcvt_sa | number }}</td>
                     </tr>
                     <tr>
                         <td class="td-data">Premium:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                        <td class="td-data">{{ coverTypes[1]?.pcvt_premium | number }}</td>
                     </tr>
                 </table>
+            </ng-container>
             </div>
 
         </div>
 
-        <div *ngIf="categorySummary && categorySummary.length > 0" class="box" (click)="showCategorySummary()">
+        <div *ngIf="categorySummary && categorySummary.length >= 0" class="box" (click)="showCategorySummary()">
             <label class="active-label">Category summary</label>
             <div class="scroll-content">
                 <div style="margin-top: 40px; margin-left: 20px;">{{ categorySummary[0]?.category_category | titlecase }}</div>
@@ -232,7 +234,7 @@ aria-labelledby="memberSummaryModal" aria-hidden="true" (click)="onBackdropClick
               </div>
             
             <div class="">
-                <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                <p-table [value]="memberList" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
 [tableStyle]="{'min-width': '50rem'}"
 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 [rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-striped">
@@ -240,26 +242,26 @@ currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 <tr>
 <th *ngIf="selectedColumnsMemberDets.includes('surname')">Surname</th>
 <th *ngIf="selectedColumnsMemberDets.includes('other_names')">Other names</th>
-<th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Premium</th>
-<th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Sum Assured</th>
+<th *ngIf="selectedColumnsMemberDets.includes('premium')">Premium</th>
+<th *ngIf="selectedColumnsMemberDets.includes('sum_assured')">Sum Assured</th>
 <th *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">Date of birth</th>
-<th *ngIf="selectedColumnsMemberDets.includes('gender')">Gender</th>
+<th *ngIf="selectedColumnsMemberDets.includes('sex')">Gender</th>
 <th *ngIf="selectedColumnsMemberDets.includes('member_number')">Payroll/Member no.</th>
-<th *ngIf="selectedColumnsMemberDets.includes('description')">Category</th>
-<th *ngIf="selectedColumnsMemberDets.includes('dty_description')">Dependant type</th>
+<th *ngIf="selectedColumnsMemberDets.includes('category')">Category</th>
+<th *ngIf="selectedColumnsMemberDets.includes('dependent_types')">Dependant type</th>
 </tr>
 </ng-template>
-<ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
-<tr (click)="onMemberTableRowClick(membersDetails, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
-<td *ngIf="selectedColumnsMemberDets.includes('surname')" id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('other_names')" id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
-<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')" id="tdStyle">{{ membersDetails.premium | number }}</td>
-<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')" id="tdStyle">{{ membersDetails.total_sum_assured | number }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('date_of_birth')" id="tdStyle">{{ membersDetails.date_of_birth }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('gender')" id="tdStyle">{{ membersDetails.gender }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('description')" id="tdStyle">{{ membersDetails.description | titlecase }}</td>
-<td *ngIf="selectedColumnsMemberDets.includes('dty_description')" id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
+<ng-template pTemplate="body" let-memList let-rowIndex="rowIndex">
+<tr (click)="onMemberTableRowClick(memList, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+<td *ngIf="selectedColumnsMemberDets.includes('surname')" id="tdStyle">{{ memList.surname | titlecase }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('other_names')" id="tdStyle">{{ memList.other_names | titlecase }}</td>
+<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('premium')" id="tdStyle">{{ memList.premium | number }}</td>
+<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('sum_assured')" id="tdStyle">{{ memList.sum_assured | number }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('date_of_birth')" id="tdStyle">{{ memList.date_of_birth }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('sex')" id="tdStyle">{{ memList.sex }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('member_number')" id="tdStyle">{{ memList.member_number }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('category')" id="tdStyle">{{ memList.category | titlecase }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('dependent_types')" id="tdStyle">{{ memList.dependent_types | titlecase }}</td>
 </tr>
 </ng-template>
 </p-table>
@@ -268,7 +270,7 @@ currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 
             <div class="mt-5">
                 <h6>Member summary</h6>
-                <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}" styleClass="p-datatable-striped">
+                <p-table [value]="memberDetailsSummary" [tableStyle]="{'max-width': '35rem'}" styleClass="p-datatable-striped">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Cover type</th>
@@ -278,11 +280,11 @@ currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-memberCoverTypeSummaryDto>
+                    <ng-template pTemplate="body" let-memSummary>
                         <tr>
-                            <td id="tdStyle">{{ memberCoverTypeSummaryDto.cvt_desc | titlecase }}</td>
-                            <td style="text-align: right;"> {{memberCoverTypeSummaryDto.premium | number }}</td>
-                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td id="tdStyle">{{ memSummary.cover_type | titlecase }}</td>
+                            <td style="text-align: right;"> {{memSummary.premium | number }}</td>
+                            <td style="text-align: right;">{{ memSummary.sum_assured | number }}</td>
                             
                         </tr>
                     </ng-template>

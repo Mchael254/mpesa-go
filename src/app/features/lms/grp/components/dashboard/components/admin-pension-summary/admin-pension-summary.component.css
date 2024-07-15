@@ -114,6 +114,7 @@ td {
 
 tr {
     border-bottom: none !important;
+    white-space: nowrap;
     /* height: 40px; */
 }
 
