@@ -6,7 +6,7 @@
     <div class="container">
         <div class="title"><span id="title">Pension</span></div>
         <ng-container *ngIf="pensionList && pensionList.length > 0">
-            <div *ngFor="let pension of pensionList; let i = index" class="box" (click)="navigateToPensionDets(pension.policy_code)">
+            <div *ngFor="let pension of pensionList; let i = index" class="box" (click)="navigateToPensionDets(pension.policy_code, pension.policy_number)">
                 <label class="active-label">{{ getStatusDescription(pension.pol_status) }}</label>
                 <div class="scroll-content">
                     <table>
