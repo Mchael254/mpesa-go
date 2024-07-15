@@ -13,10 +13,10 @@
             </button>
         </div>
         <div class="row mx-0 mt-3 p-0 dragDropBoundary" cdkDropList (cdkDropListDropped)="drop($event)">
-          <div 
-            class="col-sm-4 mt-3 move" 
-            cdkDragBoundary=".dragDropBoundary" 
-            cdkDrag 
+          <div
+            class="col-sm-4 mt-3 move"
+            cdkDragBoundary=".dragDropBoundary"
+            cdkDrag
             *ngFor="let dashboard of filteredDashboards; let i = index"
           >
             <div class="card">
