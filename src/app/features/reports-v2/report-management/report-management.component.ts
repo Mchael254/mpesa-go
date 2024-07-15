@@ -1,12 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { ReportServiceV2 } from '../services/report.service';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ReportServiceV2} from '../services/report.service';
 import {Logger} from "../../../shared/services";
-import { Observable, take } from 'rxjs';
-import { ReportService } from '../../reports/services/report.service';
-import { Chart, ReportV2 } from '../../../shared/data/reports/report';
-import { SaveReportModalComponent } from '../save-report-modal/save-report-modal.component';
-import { Router } from '@angular/router';
-import { GlobalMessagingService } from '../../../shared/services/messaging/global-messaging.service';
+import {Observable, take} from 'rxjs';
+import {ReportService} from '../../reports/services/report.service';
+import {ReportV2} from '../../../shared/data/reports/report';
+import {SaveReportModalComponent} from '../save-report-modal/save-report-modal.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {GlobalMessagingService} from '../../../shared/services/messaging/global-messaging.service';
 
 const log = new Logger('ReportManagementComponent');
 
@@ -35,7 +35,8 @@ export class ReportManagementComponent implements OnInit{
     private reportService: ReportService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private activatedRoute: ActivatedRoute
   ) {
 
   }
@@ -44,7 +45,15 @@ export class ReportManagementComponent implements OnInit{
    * Initializes the app by getting all reports from the DB
    */
   ngOnInit(): void {
-    this.getReports();
+    this.activatedRoute.params.subscribe(params => {
+      console.log(params['id']);
+      const folder = params['id'] ? params['id'] : '';
+      this.getReports(folder);
+    });
+    /*const id: string = this.activatedRoute.snapshot.paramMap.get('id');
+    const reportCategory = id ? id : '';
+    console.log(`report category >>> `, reportCategory);
+    this.getReports(reportCategory);*/
     this.getDashboards();
   }
 
@@ -52,22 +61,27 @@ export class ReportManagementComponent implements OnInit{
    * Gets all reports from the DB
    * @returns void
    */
-  getReports(): void {
+  getReports(reportCategory: string): void {
     this.reports = { content: []};
     this.reportServiceV2.getReports()
     .pipe(take(1))
     .subscribe({
       next: (res) => {
-        this.reports = res;
+        this.reports.content = this.filterReportsByCategory(res.content, reportCategory);
         this.totalRecords = res.totalElements;
         this.shouldShowTable = true;
-        // log.info(`reports >>>`, res)
       },
       error: (e) => {
         log.debug(`error: `, e);
         this.shouldShowTable = true;
       }
     })
+  }
+
+  filterReportsByCategory(reports: ReportV2[], reportCategory: string): ReportV2[] {
+    if (!reportCategory) return reports;
+    return  reports.filter(report => report.folder === reportCategory);
+    // log.info(`filtered reports `, filteredReports);
   }
 
 
@@ -134,7 +148,7 @@ export class ReportManagementComponent implements OnInit{
           // log.info(`report udpate successfully`, res);
           this.shouldShowTable = false;
           this.closebutton.nativeElement.click();
-          this.getReports();
+          this.getReports(res.folder);
         },
         error: (e) => {
 

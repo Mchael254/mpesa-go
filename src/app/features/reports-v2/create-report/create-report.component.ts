@@ -29,7 +29,7 @@ export class CreateReportComponent implements OnInit {
   createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Criteria',
-      url: 'reportsv2/create-report'
+      url: '/home/reportsv2/create-report'
     },
     {
       label: 'Preview',
@@ -83,8 +83,8 @@ export class CreateReportComponent implements OnInit {
    */
   ngOnInit(): void {
     const isFromPreview = this.activatedRoute.snapshot.queryParams['fromPreview'];
-    this.reportId = +this.activatedRoute.snapshot.params['id'];
-    const reportParams = this.sessionStorageService.getItem(`reportParams`);
+    this.reportId = this.activatedRoute.snapshot.queryParams['reportId'];
+    // const reportParams = this.sessionStorageService.getItem(`reportParams`);
 
     // todo: fix when a report is being edited from next screen
     /*if (isFromPreview && reportParams) {
@@ -95,6 +95,10 @@ export class CreateReportComponent implements OnInit {
     } else if (this.reportId) {
       // this.getReport(this.reportId)
     }*/
+
+    if (this.reportId) {
+      this.getReport(this.reportId)
+    }
 
     this.getSubjectAreas();
     this.createSearchForm();
@@ -118,22 +122,22 @@ export class CreateReportComponent implements OnInit {
    * @param id of type number
    * @return void
    */
-  // getReport(id: number): void {
-  //   this.reportServiceV2.getReportById(id)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (res) => {
-  //         this.selectedReport = res;
-  //         this.measures = JSON.parse(res.measures);
-  //         this.dimensions = JSON.parse(res.dimensions);
-  //         this.filters = JSON.parse(res.filter);
-  //         this.criteria = [...this.measures, ...this.dimensions];
-  //         this.reportNameRec = res.name;
-  //         log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
-  //       },
-  //       error: (e) => { log.info(`error >>>`, e)}
-  //     })
-  // }
+  getReport(id: number): void {
+    this.reportServiceV2.getReportById(id)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.selectedReport = res;
+          this.measures = JSON.parse(res.measures);
+          this.dimensions = JSON.parse(res.dimensions);
+          this.filters = JSON.parse(res.filter);
+          this.criteria = [...this.measures, ...this.dimensions];
+          this.reportNameRec = res.name;
+          log.info(`report from preview >>> `, res, this.measures, this.dimensions, this.filters);
+        },
+        error: (e) => { log.info(`error >>>`, e)}
+      })
+  }
 
   /**
    * The function `getCategoriesBySubjectAreaId` retrieves categories based on a subject area ID and updates the selected

@@ -384,11 +384,11 @@ export class MenuService {
         name: 'Analytics',
         nameSlug: 'analytics',
         icon: 'fa-solid fa-chart-pie',
-        link: 'home/reportsv2/create-dashboard',
+        link: '',
         menuItems: [
-          { name: 'Dashboards', link: 'home/reportsv2' },
-          { name: 'My Reports', link: 'home/reportsv2/report-management' },
-          { name: 'Shared Reports', link: 'home/reportsv2/report-management' },
+          { name: 'Dashboards', link: 'home/reportsv2/create-dashboard' },
+          { name: 'My Reports', link: 'home/reportsv2/report-management/M' },
+          { name: 'Shared Reports', link: 'home/reportsv2/report-management/S' },
         ],
 
         collapsed: true,

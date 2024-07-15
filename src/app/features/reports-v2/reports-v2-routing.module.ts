@@ -57,7 +57,12 @@ const routes: Routes = [
   {
     path: 'report-management',
     component: ReportManagementComponent
-  },]}
+  },
+  {
+    path: 'report-management/:id',
+    component: ReportManagementComponent
+  },
+    ]}
 ];
 
 @NgModule({
