@@ -419,6 +419,38 @@ export interface CoinsuranceEdit{
     policyNo: string
   
 }
+export interface Insured {
+  code: number;
+  prpCode: number;
+  name: string;
+  newInsured: string;
+  interestedParties: string;
+  clientShortDescription: string;
+  address: string | null;
+  pinNo: string;
+  otherNames: string;
+  telephoneNo: string | null;
+  emailAddress: string;
+  dateOfBirth: string;
+  business: string | null;
+  idNo: string;
+  town: string | null;
+  passPortNumber: string | null;
+}
+
+export interface InsuredApiResponse {
+  status: string;
+  message: string;
+  _embedded: Insured[][];
+}
+export interface editInsured {
+  clientCode: number,
+  idNo: string,
+  passportNo: string,
+  pinNo: string,
+  // type: string
+}
+
 
 
 
