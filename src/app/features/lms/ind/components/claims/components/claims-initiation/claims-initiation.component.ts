@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { ClaimsService } from 'src/app/features/lms/service/claims/claims.service';
 import { Logger } from 'src/app/shared/services';
@@ -7,6 +7,10 @@ import { CausationTypesDTO } from '../../models/causation-types';
 import { PoliciesClaimModuleDTO } from '../../models/claim-inititation';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { CausationCausesDTO } from '../../models/causation-causes';
+import { ClaimClientsDTO } from '../../models/claim-clients';
+import { FormGroup } from '@angular/forms';
+import { Table } from 'primeng/table';
+import { PolicyClaimsDTO } from 'src/app/features/lms/grp/components/policy/models/policy-summary';
 
 const log = new Logger ('ClaimsInitiationComponent');
 
@@ -23,8 +27,11 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   ];
 
   steps = stepData;
-  causationTypes: CausationTypesDTO[] = [];
+  claimInitForm: FormGroup;
+
   policy: PoliciesClaimModuleDTO[] = [];
+  claimClients: ClaimClientsDTO [] = [];
+  causationTypes: CausationTypesDTO[] = [];
   causationCauses: CausationCausesDTO [] = [];
 
   claim_types = [
@@ -45,8 +52,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   constructor(private claims_service:ClaimsService){}
 
   ngOnInit(): void {
-    this.getCausationTypes();
     this.getClaimModules();
+    this.getClaimClients();
+    this.getCausationTypes();
     this.getCausationCauses();
   }
 
@@ -54,34 +62,32 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   }
 
-  getCausationTypes () {
-    this.claims_service.getCausationTypes().pipe(untilDestroyed(this)).subscribe({
-      next: (causationTypes: CausationTypesDTO []) => {
-      this.causationTypes = causationTypes;
-      log.info("Causation Types:", this.causationTypes);
-    },
-    error: (error) => {
-      log.error("Error Fetching Causation Types:", error);
-    }
-  });
+  submitClaimInitFormData () {
+    
   }
-  
-    getClaimModules(){
-      this.claims_service.getClaimModules().subscribe((policy: PoliciesClaimModuleDTO[])=>{
-        this.policy = policy
-        log.info("Claim Modules:", this.policy)
-      });
-    }
 
-    getCausationCauses (){
-      this.claims_service.getCausationCauses().pipe(untilDestroyed(this)).subscribe({
-        next: (causationCauses: CausationCausesDTO[]) => {
-          this.causationCauses = causationCauses;
-          log.info("Causation Causes:", this.causationCauses);
-        },
-        error: (error) => {
-          log.error("Error Fetching Causation Causes:", error);
-        }
-      });
-    }
+  getClaimModules () {
+    this.claims_service.getClaimModules().subscribe(data=>{
+      this.policy = data
+    })
+  }
+
+  getClaimClients () {
+    this.claims_service.getClaimClients().subscribe(data=>{
+      this.claimClients = data
+    })
+  }
+
+  getCausationTypes () {
+    this.claims_service.getCausationTypes().subscribe(data=>{
+      this.causationTypes = data
+    })
+  }
+
+  getCausationCauses() {
+    this.claims_service.getCausationCauses().subscribe(data=>{
+      this.causationCauses = data
+    })
+  }
+
   }
