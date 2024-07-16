@@ -181,42 +181,6 @@
                           </div>
                         </ng-container>
                       </div>
-
-                      <!--<ng-container *ngFor="let processArea of processAreas">
-                        <div class="mt-2">
-                          <div class="form-check">
-                            <input
-                              class="form-check-input"
-                              type="checkbox"
-                              value="{{ processArea.id }}"
-                            >
-                            <span
-                              class="form-check-label" for="roleArea"
-                              data-bs-toggle="collapse" [attr.href]="'#'+processArea.shortDesc"
-                              role="button" aria-expanded="false"
-                              aria-controls="collapseExample"
-                              (click)="fetchProcessSubAreas(processArea)"
-                            >
-                            {{ processArea.name | titlecase }}
-                              <i class="fa-solid fa-caret-down"></i>
-                            </span>
-                          </div>
-                          <div class="collapse" [id]="processArea.shortDesc">
-                            <ng-container *ngFor="let subArea of processSubAreas">
-                              <div class="form-check ms-3">
-                                <input
-                                  class="form-check-input"
-                                  type="checkbox"
-                                  value="{{subArea.id}}"
-                                >
-                                <label class="form-check-label" for="roleArea">
-                                  {{ subArea.shortDesc }}
-                                </label>
-                              </div>
-                            </ng-container>
-                          </div>
-                        </div>
-                      </ng-container>-->
                     </p-scrollPanel>
                   </div>
                 </div>

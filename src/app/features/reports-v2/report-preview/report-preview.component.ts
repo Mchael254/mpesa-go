@@ -17,7 +17,6 @@ import {AuthService} from "../../../shared/services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import _default from "chart.js/dist/core/core.interaction";
-import dataset = _default.modes.dataset;
 import { ColorScheme } from '../../../shared/data/reports/color-scheme';
 import {Profile} from "../../../shared/data/auth/profile";
 
@@ -35,7 +34,7 @@ export class ReportPreviewComponent implements OnInit{
   public createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Criteria',
-      url: '/reportsv2/create-report'
+      url: '/home/reportsv2/create-report'
     },
     {
       label: 'Preview',
@@ -92,7 +91,7 @@ export class ReportPreviewComponent implements OnInit{
   public dashboards: any[] = [];
 
   private defaultColorScheme: ColorScheme = {
-    name: 'Defaul',
+    name: 'Default',
     colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'],
   }
 
@@ -134,11 +133,10 @@ export class ReportPreviewComponent implements OnInit{
   ngOnInit(): void {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
     const isEditing = this.activatedRoute.snapshot.queryParams['isEditing'];
-    log.info(`params id & isEditing >>> `, this.reportId,);
+    log.info(`params id & isEditing >>> `, this.reportId, isEditing);
     this.fetchReportDetails(this.reportId);
 
     this.currentUser = this.authService.getCurrentUser();
-
     // if(!isEditing) {
     //   const chart: Chart = {
     //     backgroundColor: '',
@@ -158,7 +156,6 @@ export class ReportPreviewComponent implements OnInit{
     // } else {
     //   this.fetchReportDetails(this.reportId);
     // }
-
   }
 
   fetchReportDetails(id: number) {
@@ -199,7 +196,7 @@ export class ReportPreviewComponent implements OnInit{
           const index = this.chartTypes.indexOf(
             this.chartTypes.filter((item) => item.name === chart.type)[0]
           );
-          this.colorScheme[chart.type] = '';
+          this.colorScheme[chart.type] = this.defaultColorScheme;
           this.chartTypes[index].isSelected = true;
           this.displayChartTypes.push(chart);
         });
@@ -401,7 +398,6 @@ export class ReportPreviewComponent implements OnInit{
    */
   showStyles(): void {
     this.shouldShowStyles = !this.shouldShowStyles;
-    // log.info(`should show styles >>> `, this.shouldShowStyles);
   }
 
   /**
@@ -492,7 +488,7 @@ export class ReportPreviewComponent implements OnInit{
       measures: this.measures,
       dimensions: this.dimensions,
       filters,
-      order: this.sort,
+      order: this.sort ? this.sort : [],
       limit: 20,
       // offset: 20
     }
@@ -532,7 +528,7 @@ export class ReportPreviewComponent implements OnInit{
    * @returns chartData
    */
   setChartColors(chartType, chartData) {
-    let colorScheme;
+    let colorScheme: ColorScheme = { colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'] };
 
     switch(chartType) {
       case 'bar':
@@ -556,7 +552,6 @@ export class ReportPreviewComponent implements OnInit{
       default:
         colorScheme = { colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'] }
     }
-
 
     if(chartType === 'bar' || chartType === 'line') {
       chartData.datasets.forEach((dataset, index) => {
@@ -677,7 +672,10 @@ export class ReportPreviewComponent implements OnInit{
    * Go back to report configuration page
    */
   backToCreateReport() {
-    this.router.navigate(['/home/reportsv2/create-report'], {queryParams:{fromPreview: true}})
+    this.router.navigate(['/home/reportsv2/create-report'],
+      {queryParams:
+          {fromPreview: true, reportId: this.reportId}
+      })
   }
 
   /**

@@ -29,7 +29,7 @@ export class ReportsComponent implements OnInit  {
   constructor(
     private router: Router,
   ) { }
-  
+
   ngOnInit(): void {
   }
 
@@ -54,6 +54,7 @@ export class ReportsComponent implements OnInit  {
    */
   myReports() {
     this.activeTab = 'myReports';
+    this.router.navigate(['/home/reportsv2/report-management/M']);
   }
 
   /**
@@ -61,6 +62,7 @@ export class ReportsComponent implements OnInit  {
    */
   sharedReports() {
     this.activeTab = 'sharedReports';
+    this.router.navigate(['/home/reportsv2/report-management/S'])
   }
 
   viewReports() {

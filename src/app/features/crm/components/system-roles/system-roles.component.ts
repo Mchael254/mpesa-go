@@ -211,15 +211,15 @@ export class SystemRolesComponent implements OnInit {
   }
 
   deleteRole(): void {
-    try {
+    /*try {
       this.systemsService.deleteRole(this.selectedRole.id);
       this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
       this.fetchSystemRoles(this.selectedSystem.id);
     } catch (err) {
       this.rolesErrorMessage = err?.error?.message ?? err.message
       this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
-    }
-      /*this.systemsService.deleteRole(this.selectedRole.id).subscribe({
+    }*/
+    this.systemsService.deleteRole(this.selectedRole.id).subscribe({
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
         this.fetchSystemRoles(this.selectedSystem.id);
@@ -228,7 +228,7 @@ export class SystemRolesComponent implements OnInit {
         this.rolesErrorMessage = err?.error?.message ?? err.message
         this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
       }
-    });*/
+    });
     this.closeDeleteButton.nativeElement.click();
   }
 

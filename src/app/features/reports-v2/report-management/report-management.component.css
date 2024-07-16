@@ -22,8 +22,9 @@ ul.dropdown-menu li:hover {
 }
 
 .p-datatable-tbody tr td,
-p-table tr > th {
-    font-size: 0.9em1rem!important;
+p-table tr > th,
+::ng-deep  .p-datatable .p-datatable-tbody > tr > td {
+    font-size: 0.9em!important;
 }
 
 .dropend .btn-link {
