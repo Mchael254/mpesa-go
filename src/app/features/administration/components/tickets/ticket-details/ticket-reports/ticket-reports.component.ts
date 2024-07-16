@@ -47,6 +47,8 @@ export class TicketReportsComponent implements OnInit {
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
 
+  reportList: any[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private reportService: ReportsService,
@@ -259,6 +261,12 @@ export class TicketReportsComponent implements OnInit {
     ];
   }
 
+  onLabelClick() {
+    this.reportsWithLinks.forEach(doc => {
+      this.fetchReport(doc)
+    })
+  }
+
   /**
    * The fetchReport function fetches a report in either PDF or HTML format, displays it in a modal, and handles error
    * messages.
@@ -277,9 +285,13 @@ export class TicketReportsComponent implements OnInit {
         (response) => {
           // this.apiService.DOWNLOADFROMBYTES(response, 'fname.pdf', 'application/pdf')
           const blob = new Blob([response], { type: 'application/pdf' });
-          this.filePath  = window.URL.createObjectURL(blob);
+          const filePath  = window.URL.createObjectURL(blob);
 
-          this.openReportsModal();
+          this.reportList.push({
+            fileName: report?.name?.name,
+            srcUrl: filePath
+          })
+          log.info('report list', this.reportList)
           this.isLoadingReport = false;
         },
         err=>{
@@ -298,6 +310,7 @@ export class TicketReportsComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
       const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      this.onLabelClick();
       if (modalBackdrop) {
         modalBackdrop.classList.add('show');
       }

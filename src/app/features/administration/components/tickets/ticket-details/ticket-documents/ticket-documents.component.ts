@@ -340,5 +340,6 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
    */
   processActionEmitted(event) {
     this.toggleDocumentModal(false);
+    this.selectedDocumentData = null;
   }
 }
