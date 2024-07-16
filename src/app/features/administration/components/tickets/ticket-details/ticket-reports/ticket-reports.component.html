@@ -8,7 +8,7 @@
 </div>
 <ul class="list-group list-group-horizontal mb-3">
   <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
-    <a target="_blank" class="report-link" (click)="fetchReport(report)">{{ report?.name?.name }}</a>
+    <a target="_blank" class="report-link" (click)="openReportsModal()">{{ report?.name?.name }}</a>
   </li>
   <div>
     <span *ngIf="!isLoadingReport; else loadingReport"></span>
@@ -22,18 +22,83 @@
 
 <!-- Modal -->
 <div class="modal fade" id="reportsModalToggle" tabindex="-1" aria-labelledby="reportsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="height: 300px !important;">
+  <div class="modal-dialog modal-xl" style="height: 300px !important;">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6" id="exampleModalLabel">{{ selectedReportName }}</h1>
+        <h1 class="modal-title fs-6" id="exampleModalLabel">Reports</h1>
         <button type="button" class="btn-close" (click)="closeReportsModal()"></button>
       </div>
       <div class="modal-body">
-        <ngx-doc-viewer
+        <!--<ngx-doc-viewer
           [fileName]="fileName ?? ''"
           [srcUrl]="filePath ?? ''"
           class="doc-viewer"
-        ></ngx-doc-viewer>
+        ></ngx-doc-viewer>-->
+        <div class="row col-12 mb-3">
+          <div class="col-3 border-end border-secondary-subtle">
+
+            <div class="form-check mt-2 form-check-item" *ngFor="let doc of reportsWithLinks;  let i = index">
+              <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
+                     data-bs-target="#documentCarousel"
+                     [attr.data-bs-slide-to]="i"
+              >
+                  <span *ngIf = "doc?.name?.name" class="doc-name" title="{{doc?.name?.name | titlecase}}">
+                        {{doc?.name?.name?.substring(0,18) | titlecase}}...
+                      </span>
+                <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;"></i>
+              </label><br>
+
+            </div>
+            <div class="form-check float-start">
+              <span *ngIf="!isLoadingReport; else loadingReport"></span>
+              <ng-template #loadingReport>
+                <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+              </ng-template>
+            </div>
+          </div>
+          <div class="col-9">
+
+            <!-- carousel -->
+            <div id="documentCarousel" class="carousel slide">
+              <div class="carousel-indicators">
+                <ng-container *ngFor="let doc of reportsWithLinks; let i = index" >
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleIndicators"
+                    [attr.data-bs-slide-to]="i"
+                    class="{{ i === 0 ? 'active' : '' }}"
+                  ></button>
+                </ng-container>
+              </div>
+              <div class="carousel-inner">
+                <ng-container *ngIf="reportsWithLinks.length > 0">
+                  <div
+                    *ngFor="let doc of reportList; let i = index"
+                    class="{{ i === 0 ? 'carousel-item active' : 'carousel-item' }}">
+                    <label class="form-label w-100 text-center">Preview: {{ doc.fileName }}</label><br>
+                    <ngx-doc-viewer
+                      [fileName]="doc.fileName ?? ''"
+                      [srcUrl]="doc.srcUrl ?? ''"
+                      class="doc-viewer"
+                    ></ngx-doc-viewer>
+                  </div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="reportList.length > 0">
+                <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </ng-container>
+            </div>
+
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
