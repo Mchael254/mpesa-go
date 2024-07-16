@@ -1,222 +1,222 @@
-<div class="base-content-section lms">
-  <div class="fw-medium col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<div class="main">
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   </div>
 
-  <!-- Claims Initiation -->
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="full-border position-relative">
-        <!-- Title -->
-        <div class="transactions d-flex justify-content-center fw-medium title">
-          {{ "Claims" }}
-        </div>
-         <!-- Initiation Elements -->
-          <!-- Client Details -->
-          <div class="row g-3">
-            <div class="fw-medium section-title">Client details</div>
+  <form [formGroup]="claimInitForm">
+    <!-- Claims Initiation -->
+    <div class="container">
+      <!-- Title -->
+      <div class="transactions d-flex justify-content-center fw-medium title">{{ "lms.ind.claims" | translate }}</div>
+      <!-- Initiation Elements -->
+      <!-- Client Details -->
+      <div class="row">
+        <div class="fw-medium section-title">{{ "lms.ind.client_details" | translate }}</div>
 
-              <div class="col-lg-4 col-md-6">
-                <label for="policySelection" class="quote-label text-black fw-medium">
-                  Policy
-                </label>
-                <select class="form-select form-select mb-1 w-75" id="policySelection" placement="right">
-                  <option selected="true" disabled="disabled"></option>
-                  <option 
-                          *ngFor="let data of policy | sort : 'asc' : 'name'" [value]="data.value"> 
-                          {{ data?.name | titlecase }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="col-lg-4 col-md-6">
-                <label for="claimType" class="quote-label text-black fw-medium">
-                  Claim Type
-                </label>
-                <select class="form-select form-select mb-1 w-75" id="claimType" placement="right">
-                  <option selected="true" disabled="disabled"></option>
-                  <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value" >
-                          {{ data?.name | titlecase }}
-                  </option>
-                </select>
-              </div>
-
-          </div>
-      </div>
-    </div>
-  </div>
-          <!-- End of Client Details -->
-
-          <!-- Claim Details -->
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="full-border position-relative">
-        <div class="row g-3">
-          <div class="fw-medium section-title">Claim Details</div>
-
-          <div class="col-lg-4 col-md-6">
-            <label for="" class="quote-label text-black fw-medium">
-              Claim on Life
-            </label>
-            <select class="form-select form-select mb-1 w-75" placement="right">
-              <option selected="true" disabled="disabled"></option>
-            </select>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <label for="causationType" class="quote-label text-black fw-medium">
-              Causation Type
-            </label>
-              <select class="form-select form-select mb-1 w-75" id="causationType" placement="right">
-                <option selected="true" disabled="disabled"></option>
-                <option *ngFor="let data of causationTypes | sort : 'asc' : 'name' "
-                        [value]="data.code">
-                      {{ data?.name | titlecase }}  
+          <div class="col-md-4">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <label for="policySelection">{{ "lms.ind.policy" | translate }}</label>
+              <select class="form-select" [id]="'policySelection'" formControlName="policySelection">
+                <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+                <option *ngFor="let data of policy | sort : 'asc' : 'prp_code'" [value]="data.value"> 
+                        {{ data?.prp_code}}
                 </option>
               </select>
+            </div>
           </div>
 
-            <div class="col-lg-4 col-md-6">
-              <label for="causationCause" class="quote-label text-black fw-medium">
-                Causation Cause
-              </label>
-              <select class="form-select form-select mb-1 w-75" placement="right">
-                <option selected="true" disabled="disabled"></option>
-                <option *ngFor="let data of causationCauses | sort : 'asc' : 'caus_desc' "
-                        [value]="data.caus_code">
-                      {{ data?.caus_desc | titlecase}} 
-                </option> 
+          <div class="col-md-4">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <label for="claimType">{{ "lms.ind.claim_type" | translate }}</label>
+              <select class="form-select" [id]="'claimType'" formControlName="claimType">
+                <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+                <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value">
+                        {{ data?.name | titlecase }}
+                </option>
               </select>
             </div>
+          </div>
+      </div>
+      <!-- End of Client Details -->
+    </div>
 
-            <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium">
-                Date of Incident
-              </label>
-              <input type="date" class="form-control mb-1" id="">
+    <div class="container mt-2">
+      <!-- Claim Details -->
+      <div class="row">
+        <div class="fw-medium section-title">{{ "lms.ind.claim_details" | translate }}</div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="claimClients">{{ "lms.ind.claim_on_life" | translate }}</label>
+            <select class="form-select" [id]="'claimClients'" formControlName="claimClients">
+              <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+              <option *ngFor="let data of claimClients | sort : 'asc' : 'name' "
+                      [value]="data.name">
+                      {{ data?.name | titlecase}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="causationType">{{ "lms.ind.causation_type" | translate }}</label>
+            <select class="form-select" [id]="'causationType'" formControlName="causationType">
+              <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+              <option *ngFor="let data of causationTypes | sort : 'asc' : 'name' "
+                      [value]="data.code">
+                      {{ data?.name | titlecase }}  
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="causationCause">{{ "lms.ind.causation_cause" | translate }}</label>
+            <select class="form-select" [id]="'causationCause'" formControlName="causationCause">
+              <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+              <option *ngFor="let data of causationCauses | sort : 'asc' : 'caus_desc' "
+                  [value]="data.caus_code">
+                {{ data?.caus_desc | titlecase}} 
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-4">
+          <div>
+            <div>
+              <label for="incidentDate">{{ "lms.ind.incident_date" | translate }}</label>
             </div>
-
-            <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium">
-                Date Reported
-              </label>
-              <input type="date" class="form-control mb-1" id="">
-            </div>
-
-            <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium">
-                Location of Incident
-              </label>
-              <input type="text" class="form-control mb-1" id="">
-            </div>
-
-            <div class="col-lg-4 col-md-6">
-              <label for="" class="quote-label text-black fw-medium">
-                Override Incubation Period
-              </label>
-              <div class="d-flex justify-content-between">
-                <div class="form-check radio-group" id="">
-                  <input class="form-check-input box" type="radio" name="overrideIncubation" id="overrideYes">
-                  <label class="form-check-label pl-2" for="overrideYes">Yes</label>
-                </div> 
-                <div class="form-check radio-group" id="">
-                  <input class="form-check-input box" type="radio" name="overrideIncubation" id="overrideNo">
-                  <label class="form-check-label pl-2" for="overrideNo">No</label>
-                </div>
+            <div class="form-group">
+              <div>
+                <p-calendar formControlName="incidentDate" dateFormat="dd/mm/yy" [showIcon]="true" 
+                  [showButtonBar]="true" placeholder="dd/mm/yy">
+                </p-calendar>
               </div>
             </div>
-
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-          <!-- End of Claim Details -->
 
-          <!-- Upload Documents -->
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="full-border position-relative">
-        <div class="row g-3">
-          <div class="fw-medium section-title">Upload documents</div>
-
-          <div class="row mb-3">
-
-            <div class="col-lg-6 col-md-6 mb-3">
-              <label for="idCard" class="quote-label text-black fw-medium">
-                National Identification <span class="text-danger">*</span>
-              </label>
-              
-              <button class="btn btn-outline-primary btn-sm choose-file-btn"
-                      type="button"
-                      [ngClass]="{
-                                  'btn-danger': false,
-                                  'btn-primary': false,
-                                  'btn-outline-primary': true
-                                  }">Choose File
-              </button>
+        <div class="col-md-4">
+          <div>
+            <div>
+              <label for="dateReported">{{ "lms.ind.date_reported" | translate }}</label>
             </div>
-
-            <div class="col-lg-6 col-md-6 mb-3">
-              <label for="docC" class="quote-label text-black fw-medium me-2">
-                Document C <span class="text-danger">*</span>
-              </label>       
-              <button class="btn btn-outline-primary btn-sm choose-file-btn"
-                      type="button"
-                      [ngClass]="{
-                                  'btn-danger': false,
-                                  'btn-primary': false,
-                                  'btn-outline-primary': true
-                                 }">Choose File
-              </button>
+            <div class ="form-group">
+              <div>
+                <p-calendar formControlName="dateReported" dateFormat="dd/mm/yy" [showIcon]="true" 
+                  [showButtonBar]="true" placeholder="dd/mm/yy">
+                </p-calendar>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div class="col-lg-6 col-md-6 mb-3">
-              <label for="deathCert" class="quote-label text-black fw-medium me-2">
-                Death Certificate <span class="text-danger">*</span>
-              </label>
-              <button class="btn btn-outline-primary btn-sm choose-file-btn"
-                      type="button"
-                      [ngClass]="{
-                                  'btn-danger': false,
-                                  'btn-primary': false,
-                                  'btn-outline-primary': true
-                                 }">Choose File
-              </button>
+        <div class="col-md-4">
+          <div>
+            <label for="incidentLocation">{{ "lms.ind.incident_location" | translate }}</label>
+          </div>
+          <div class ="form-group">
+            <div>
+              <input type="text" pInputText class="form-control" id="incidentLocation" [style]="{ width: '100%' }"
+                formControlName="incidentLocation">
             </div>
-
-            <div class="col-lg-6 col-md-6 mb-3">
-              <label for="docD" class="quote-label text-black fw-medium me-2">
-                Document D <span class="text-danger">*</span>
-              </label>       
-              <button class="btn btn-outline-primary btn-sm choose-file-btn"
-                      type="button"
-                      [ngClass]="{
-                                  'btn-danger': false,
-                                  'btn-primary': false,
-                                  'btn-outline-primary': true
-                                 }">Choose File
-              </button>
-            </div>  
           </div>
         </div>
       </div>
+
+      <div class="row">
+
+        <div class="col-md-4">
+          <div>
+            <label for="incubationPeriod">{{ "lms.ind.incubation_period" | translate }}</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="yes" formControlName="incubationPeriod"
+              id="inlineRadio1" name="incubationPeriod" />
+              <label class="form-check-label" for="inlineRadio1">{{ "lms.ind.yes" | translate }}</label>  
+          </div>
+          <div class="form-check form-check-inline">
+            <input  class="form-check-input" type="radio" value="no" formControlName="incubationPeriod"
+              id="inlineRadio2" name="incubationPeriod" />
+              <label class="form-check-label" for="inlineRadio2">{{ "lms.ind.no" | translate }}</label>
+          </div>
+        </div>
+
+      </div>
+      <!-- End of Claim Details -->
     </div>
+  </form>
+
+  <div class="container mt-3">
+    <!-- Upload Documents -->
+    <div class="row">
+      <div class="fw-medium section-title">{{ "lms.ind.upload_documents" | translate }}</div>
+
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="nationalId" class="fixed-width-label">{{ "lms.ind.national_identification" | translate }}<span style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" id="inputProfileImg" formControlName="uploadFile" hidden />
+            <button class="choose-file">
+              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="docC" class="fixed-width-label">{{ "lms.ind.document_c" | translate }}<span style="color: red;">*</span>
+          </label>
+          <div class="form-group">
+            <input type="file" #fileInput id="inputProfileImg" formControlName="uploadFile" hidden />
+            <button class="choose-file">
+              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="deathCert" class="fixed-width-label">{{ "lms.ind.death_certificate" | translate }}<span style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput id="inputProfileImg" formControlName="uploadFile" hidden />
+            <button class="choose-file">
+              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="docD" class="fixed-width-label">{{ "lms.ind.document_d" | translate }}<span style="color: red;">*</span></label>
+          <div class="form-group">
+            <input type="file" #fileInput  id="inputProfileImg" formControlName="uploadFile" hidden />
+            <button class="choose-file">
+              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <!-- End of Upload Documents -->
   </div>
 
-         <!-- End of Upload Documents -->
-
-         <!-- Proceed Button -->
-          <div class="d-flex justify-content-between py-1">
-            <div></div>
-             <div>
-              <button class="btn btn-primary btn-sm proceed-btn"
-                      type="button"
-                      [ngClass]="{
-                                  'btn-danger': false,
-                                  'btn-primary': true
-                                 }">Proceed              
-              </button>
-             </div>
-          </div>
-         <!-- End of Proceed Button -->
+  <!-- Proceed Button -->
+  <div class="button-container">
+    <button class="proceed-btn" (click)="submitClaimInitFormData()">{{ "lms.ind.proceed" | translate }}</button>
+  </div>
+  <!-- End of Proceed Button -->
 </div>

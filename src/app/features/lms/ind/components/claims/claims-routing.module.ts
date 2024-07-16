@@ -8,7 +8,7 @@ import { PolicyAndClaimsDetailsComponent } from './components/policy-and-claims-
 
 const routes: Routes = [
   {
-    path: 'claims-initiation',
+    path: 'initiation',
     component: ClaimsInitiationComponent
   },
   {

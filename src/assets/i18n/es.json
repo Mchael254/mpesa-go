@@ -866,7 +866,30 @@
   },
   "lms": {
     "common": {},
-    "ind": {},
+    "ind": {
+      "causation_cause": "Causa de la causalidad",
+      "causation_type": "Tipo de causalidad",
+      "choose_file": "Elegir archivo",
+      "claims": "Reclamaciones",
+      "claim_details": "Detalles de la reclamación",
+      "claim_on_life": "Reclamación de vida",
+      "claim_type": "Tipo de reclamación",
+      "client_details": "Detalles del cliente",
+      "date_reported": "Fecha reportada",
+      "death_certificate": "Certificado de defunción",
+      "document_c": "Documento C",
+      "document_d": "Documento D",
+      "incident_date": "Fecha del incidente",
+      "incident_location": "Lugar del incidente",
+      "incubation_period": "Sobrescribir período de incubación",
+      "national_identification": "Identificación nacional",
+      "no": "No",
+      "policy": "Política",
+      "proceed": "Proceder",
+      "select_an_option": "Seleccione una opción",
+      "upload_documents": "Subir documentos",
+      "yes": "Sí"
+    },
     "grp": {}
   },
   "report": {

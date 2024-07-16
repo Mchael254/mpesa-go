@@ -875,9 +875,33 @@
   },
   "lms": {
     "common": {},
-    "ind": {},
+    "ind": {
+      "causation_cause": "Causation Cause",
+      "causation_type": "Causation Type",
+      "choose_file": "Choose File",
+      "claims" : "Claims",
+      "claim_details": "Claim Details",
+      "claim_on_life": "Claim on Life",
+      "claim_type": "Claim Type",
+      "client_details": "Client Details",
+      "date_reported": "Date Reported",
+      "death_certificate": "Death Certificate",
+      "document_c": "Document C",
+      "document_d": "Document D",
+      "incident_date": "Date of Incident",
+      "incident_location": "Location of Incident",
+      "incubation_period": "Override Incubation Period",
+      "national_identification": "National Identification",
+      "no": "No",
+      "policy": "Policy",
+      "proceed": "Proceed",
+      "select_an_option": "Select an Option",
+      "upload_documents": "Upload Documents",
+      "yes": "Yes"
+    },
     "grp": {}
   },
+
   "report": {
     "action": "Action",
     "add": "Add",

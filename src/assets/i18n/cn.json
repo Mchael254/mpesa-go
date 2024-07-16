@@ -867,7 +867,30 @@
   },
   "lms": {
     "common": {},
-    "ind": {},
+    "ind": {
+        "causation_cause": "因果原因",
+        "causation_type": "因果类型",
+        "choose_file": "选择文件",
+        "claims": "索赔",
+        "claim_details": "索赔详情",
+        "claim_on_life": "人寿索赔",
+        "claim_type": "索赔类型",
+        "client_details": "客户详情",
+        "date_reported": "报告日期",
+        "death_certificate": "死亡证明",
+        "document_c": "文件C",
+        "document_d": "文件D",
+        "incident_date": "事件日期",
+        "incident_location": "事件地点",
+        "incubation_period": "覆盖潜伏期",
+        "national_identification": "国家身份证明",
+        "no": "否",
+        "policy": "政策",
+        "proceed": "继续",
+        "select_an_option": "选择一个选项",
+        "upload_documents": "上传文件",
+        "yes": "是"   
+    },
     "grp": {}
   },
   "report": {

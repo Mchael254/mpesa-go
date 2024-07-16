@@ -1,4 +1,4 @@
-export interface PoliciesClaimModuleDTO{
+export interface ClaimClientsDTO {
     prp_code: number,
 	name: string,
 	id_reg_no: null,
