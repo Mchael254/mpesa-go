@@ -869,7 +869,30 @@
   },
   "lms": {
     "common": {},
-    "ind": {},
+    "ind": {
+        "causation_cause": "Sababu ya kisa",
+        "causation_type": "Aina ya kisa",
+        "choose_file": "Chagua faili",
+        "claims": "Madai",
+        "claim_details": "Maelezo ya madai",
+        "claim_on_life": "Madai ya maisha",
+        "claim_type": "Aina ya madai",
+        "client_details": "Maelezo ya mteja",
+        "date_reported": "Tarehe iliyoripotiwa",
+        "death_certificate": "Cheti cha kifo",
+        "document_c": "Hati C",
+        "document_d": "Hati D",
+        "incident_date": "Tarehe ya tukio",
+        "incident_location": "Mahali pa tukio",
+        "incubation_period": "Override Kipindi cha incubation",
+        "national_identification": "Kitambulisho cha taifa",
+        "no": "Hapana",
+        "policy": "Sera",
+        "proceed": "Endelea",
+        "select_an_option": "Chagua chaguo",
+        "upload_documents": "Pakia hati",
+        "yes": "Ndio"      
+    },
     "grp": {}
   },
   "report": {
