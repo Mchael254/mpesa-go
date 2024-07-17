@@ -7,6 +7,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
 import { CategoryDTO, CoinsuranceDetailsDTO, CoverTypesDTO, EndorsementDetailsDTO, PolicyDocumentsDTO } from '../../models/underwriting';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger("UnderwritingComponent")
 @AutoUnsubscribe
@@ -40,6 +41,7 @@ export class EndorsementComponent implements OnInit, OnDestroy {
     private underwritingService: UnderwritingService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
+    private spinner_Service: NgxSpinnerService,
   ) { }
 
   ngOnInit(): void {
@@ -59,6 +61,12 @@ export class EndorsementComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
 
+  }
+
+  /* Method to call when closing modal and reseting form fields */
+  closeAndResetForms() {
+    this.closeCategoryDetstModal();
+    this.categoryDetailForm.reset();
   }
 
   searchFormMember() {
@@ -345,10 +353,14 @@ export class EndorsementComponent implements OnInit, OnDestroy {
       short_description : catDets.shortDescription,
       pmas_sht_desc : catDets.premiumMask,
       period : catDets.multiplesOfEarnings,
+      // policy_code: 2024858,
+      endorsement_code: this.endorsementCode
     }
 
     this.underwritingService.saveCategory(catDetCaptured).subscribe((res) => {
       log.info("catDetCaptured", catDetCaptured)
+      this.getCategories();
+      this.closeAndResetForms();
     });
   }
 
@@ -359,11 +371,15 @@ export class EndorsementComponent implements OnInit, OnDestroy {
       short_description : catDets.shortDescription,
       pmas_sht_desc : catDets.premiumMask,
       period : catDets.multiplesOfEarnings,
+      category_unique_code: this.categoryCode,
+      // policy_code: 2024858,
+      endorsement_code: this.endorsementCode
     }
     log.info("about to update category", newCatDetCaptured)
     this.underwritingService.updateCategory(this.categoryCode, newCatDetCaptured).subscribe((res) => {
       log.info("about to update category", res)
       this.getCategories();
+      this.closeAndResetForms();
     })
   }
 
@@ -379,6 +395,7 @@ export class EndorsementComponent implements OnInit, OnDestroy {
       rejectIcon: "none",
       rejectButtonStyleClass: "p-button-text",
       accept: () => {
+        this.spinner_Service.show('download_view');
         this.underwritingService.deletCategory(this.categoryCode).subscribe((res) => {
           this.messageService.add({
             severity: 'success',
@@ -386,6 +403,7 @@ export class EndorsementComponent implements OnInit, OnDestroy {
             detail: 'Category deleted'
           });
           this.getCategories();
+          this.spinner_Service.hide('download_view');
         });
       },
       reject: () => {
