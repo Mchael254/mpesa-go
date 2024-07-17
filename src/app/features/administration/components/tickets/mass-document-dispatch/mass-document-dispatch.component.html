@@ -118,7 +118,7 @@
 
 <!--DOC Dispatch modal-->
 <div class="modal fade" id="docDispatchToggle" aria-hidden="true" aria-labelledby="docDispatchToggleLabel" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-6 text-primary" id="docDispatchToggleLabel">Documents viewer</h1>
@@ -126,23 +126,28 @@
       </div>
       <div class="modal-body">
         <div class="row col-12 mb-3">
-          <div class="col-4 border-end border-secondary-subtle">
+          <div class="col-3 border-end border-secondary-subtle">
 
               <label class="col-form-label text-dark fw-medium w-100">Documents</label>
             <form [formGroup]="docDispatchForm">
               <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
-                <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
                 <input class="form-check-input" type="checkbox" value="" [id]="'flexCheckChecked' + i"
                        [checked]="doc?.doneBy !== null && doc?.doneBy !== undefined"
                        (click)="selectDocs($event, doc)">
                 <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
-                       (click)="onLabelClick($event)">
+                       (click)="onLabelClick($event)" [attr.data-bs-slide-to]="i">
                   {{doc?.docName}}
                 </label><br>
               </div>
+              <div class="form-check float-start">
+                <span *ngIf="!isLoadingReport; else loadingReport"></span>
+                <ng-template #loadingReport>
+                  <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+                </ng-template>
+              </div>
             </form>
           </div>
-          <div class="col-8">
+          <div class="col-9">
 
             <!-- carousel -->
             <div id="documentCarousel" class="carousel slide">
