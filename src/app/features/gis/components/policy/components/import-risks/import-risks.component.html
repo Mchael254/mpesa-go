@@ -12,7 +12,7 @@
                                 <p class="summary-label">Policy number</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{policyNumber}}</p>
                             </div>
                         </div>
                     </div>
@@ -23,7 +23,7 @@
                                 <p class="summary-label">Client</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{client}}</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                 <p class="summary-label">Cover from</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{coverFrom}}</p>
                             </div>
                         </div>
                     </div>
@@ -47,22 +47,19 @@
                                 <p class="summary-label">Cover To</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ">234</p>
+                                <p class="summary-value ">{{coverTo}}</p>
                             </div>
                         </div>
                     </div>
                     <div class=" mb-1 col-sm-4 col-12">
                         <div class="row">
 
-                            <div class="col-6">
+                            <div class="col-4">
                                 <p class="summary-label">Subclass</p>
                             </div>
-                            <div class="col-6" id="value">
-                                <select class="form-select form-control-sm summary-value" id="subclassSelect"
-                                    formControlName="proInterfaceType">
-                                    <option value=""></option>
-
-                                </select>
+                            <div class="col-8" id="value">
+                                <p-dropdown [options]="allMatchingSubclasses" optionValue="code" optionLabel="description"
+                                formControlName="subClassCode" [placeholder]="'subclass'" [filterBy]="'description'" [filter]="true"></p-dropdown>
                             </div>
                         </div>
                     </div>
@@ -88,12 +85,8 @@
 
                                     <label for="fileInput" class="custom-file-upload mb-4">{{'gis.policy.upload_template' |translate}}</label>
 
-                                    <span *ngIf="uploading === 'progress'" class="mx-3">
-                                      <i class="pi pi-spin pi-spinner" style="color: #cccccc"></i>
-                                    </span>
-                                    <span *ngIf="uploading === 'success'" class="mx-1" style="color: #fff">
-                                      <!--<i class="pi pi-check" ></i>--> File uploaded
-                                    </span>
+                                   
+                                  
                               
                                     <input type="file" id="fileInput" accept=".csv" (change)="onFileSelected($event)">
                             </div>
@@ -147,10 +140,10 @@
                         <td>{{importedRisk.WEF}}</td>
                         <td>{{importedRisk.WET}}</td>
                         <td>{{importedRisk.riskDuplicated}}</td>
-                        <td>{{importedRisk.Class}}</td>
+                        <td>{{importedRisk.class}}</td>
                         <td>{{importedRisk.coverType}}</td>
-                        <td>{{importedRisk.Premium}}</td>
-                        <td>{{importedRisk.Taxes}}</td>
+                        <td>{{importedRisk.premium}}</td>
+                        <td>{{importedRisk.taxes}}</td>
 
                     </tr>
                 </ng-template>
