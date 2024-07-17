@@ -93,12 +93,6 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-  },
-  "/document": {
-    "target": "http://10.176.18.101:9080/alfrescoServices",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
   }
 
 }

@@ -106,6 +106,8 @@ export class PolicyProductComponent {
   defaultProductDocument:any;
   premiumFinanciers:PremiumFinanciers[]=[];
 
+  policyRiskDetails:any;
+  riskDetailsData:any
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -889,11 +891,25 @@ export class PolicyProductComponent {
               log.debug("NAVIGATING TO COINSUARANCE PAGE")
               this.spinner.hide()
               this.router.navigate(['/home/gis/policy/coinsuarance-details'])
-            }else if(this.importedPolicy){
+            }else if(this.importedPolicy == true){
               log.debug("NAVIGATING TO IMPORT RISKS PAGE")
               this.spinner.hide()
+              sessionStorage.setItem('coverFrom',this.policyProductForm.value.withEffectiveFromDate)
+              sessionStorage.setItem('coverTo',this.policyProductForm.value.withEffectiveToDate)
+              sessionStorage.setItem('productCode',this.policyProductForm.value.productCode)
               this.router.navigate(['/home/gis/policy/import-risks'])
             }else{
+              
+              const batchNo = this.policyResponse
+              console.log(batchNo)
+              // if(this.policyRiskDetails){
+              //   this.policyService.addPolicyRisk(batchNo,this.policyRiskDetails,this.user).subscribe({
+              //     next:(res)=>{
+              //       this.globalMessagingService.displaySuccessMessage('success','Imported Risks added successfully')
+                 
+              //     }
+              //   })
+              // }
               this.spinner.hide()
               this.router.navigate(['/home/gis/policy/risk-details']);
 
@@ -965,6 +981,10 @@ export class PolicyProductComponent {
   onAnotherPolicyChange(event: any) {
     log.debug("Value passed by the checkbox for import generate policy:", event.target.checked)
     this.isriskImportedAnotherPolicy = event.target.checked;
+  }
+  importFromCsvChange(event: any) {
+    log.debug("Value passed by the checkbox for import generate policy:", event.target.checked)
+    this.importedPolicy = event.target.checked;
   }
   getProductDocument(){
     this.productDocumentService
@@ -1054,6 +1074,23 @@ export class PolicyProductComponent {
     console.log('policy for risk',this.policyForm.value.importRiskfromPolicy)
     sessionStorage.setItem('selectedPolicyforRisk',this.policyForm.value.importRiskfromPolicy)
   }
+
+  getPolicy(){
+    const policy =  this.policyForm.value.importRiskfromPolicy
+    console.log(policy)
+   
+    this.policyService.getPolicyRisks(policy).subscribe({
+      next:(res)=>{
+        this.policyRiskDetails = res
+        this.policyRiskDetails = this.policyRiskDetails.content
+        console.log(this.policyRiskDetails)
+        if(this.policyRiskDetails.length < 1){
+          this.globalMessagingService.displayErrorMessage('Error','This policy does not have any risks.Select another policy number')
+        }
+      }
+    })
+  }
+  
   
   }
 

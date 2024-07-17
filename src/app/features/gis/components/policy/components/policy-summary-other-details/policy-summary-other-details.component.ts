@@ -79,6 +79,7 @@ export class PolicySummaryOtherDetailsComponent {
   selectedSchedule: any;
   updatedSchedule: any;
   updatedScheduleData: any;
+  sectionsDetails:any;
 
   selectedClauseList: Clause[];
   selectedRiskClause: Clause;
@@ -173,7 +174,8 @@ export class PolicySummaryOtherDetailsComponent {
             //   this.getInsureds()
             // }
             this.riskDetails = this.policyDetailsData.riskInformation
-            log.debug("RISK INFORMATION", this.riskDetails)
+            this.sectionsDetails = this.riskDetails[0].sections
+            log.debug("RISK INFORMATION", this.sectionsDetails)
 
             this.cdr.detectChanges();
 
