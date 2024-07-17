@@ -32,6 +32,7 @@ export class MassDocumentDispatchComponent implements OnInit {
   documentsToDispatchData: any[];
   isLoading: boolean = false;
   isLoadingDispatch: boolean = false;
+  isLoadingReport: boolean = false;
   reportsDispatchedData: any[];
 
   filePath: any;
@@ -431,7 +432,7 @@ export class MassDocumentDispatchComponent implements OnInit {
    * and adds the report to a list with file name and source URL.
    */
   fetchReport(report: any) {
-    // this.isLoadingReport = true;
+    this.isLoadingReport = true;
 
     console.log('rpt>', report);
     if (!report.reportCode) {
@@ -451,12 +452,12 @@ export class MassDocumentDispatchComponent implements OnInit {
             srcUrl: filePath
           })
           log.info('report list', this.reportList)
-          // this.isLoadingReport = false;
+          this.isLoadingReport = false;
         },
         err=>{
           this.filePath= null;
           this.globalMessagingService.displayErrorMessage('Error', err.statusText);
-          // this.isLoadingReport = false;
+          this.isLoadingReport = false;
         })
   }
 
