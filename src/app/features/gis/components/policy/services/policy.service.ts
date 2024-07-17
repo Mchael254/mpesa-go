@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 
@@ -69,7 +69,7 @@ export class PolicyService {
 
   }
   addPolicyRisk(batchNo: number, data: RiskInformation, user) {
-    return this.api.POST(`/v1/policy-Risks-Controller?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`v1/policy-Risks-Controller?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getPolicyRisks(policyNo:String){
@@ -144,7 +144,7 @@ export class PolicyService {
   }
  
   deleteInsured(policyInsuredCode :number){
-    return this.api.DELETE(`v1/policies/delete-risks?polinCode=${policyInsuredCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.DELETE(`v1/policies/delete-insured?polinCode=${policyInsuredCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   generateCoverNote(data){
@@ -160,5 +160,15 @@ export class PolicyService {
       responseType: 'text' as 'json' // Cast 'json' is required for Angular's HttpClient
     };
     return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
+  }
+  // getInsureds(batchNo:number){
+  //   return this.api.GET(`v2/policies/get-insureds?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  // }
+
+  getInsureds(batchNo: number): Observable<InsuredApiResponse> {
+    return this.api.GET(`v2/policies/get-insureds?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL) as Observable<InsuredApiResponse>;
+  }
+  editInsureds(data:editInsured){
+    return this.api.PUT(`v1/policies/edit-insured?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
 }
