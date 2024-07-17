@@ -4,7 +4,7 @@ import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Sidebar } from 'primeng/sidebar';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
-import { PolicyContent, PolicyResponseDTO, RiskInformation } from '../../data/policy-dto';
+import { Insured, PolicyContent, PolicyResponseDTO, RiskInformation } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -49,7 +49,7 @@ export class PolicySummaryOtherDetailsComponent {
 
   policySummary: any;
   // insureds: any;
-  selectedInsured: ClientDTO;
+  selectedInsured: any;
   selectedFollower: any;
   policyNumber: any;
   endorsementNo: any;
@@ -80,17 +80,19 @@ export class PolicySummaryOtherDetailsComponent {
   updatedSchedule: any;
   updatedScheduleData: any;
 
-  selectedClauseList:Clause[];
-  selectedRiskClause:Clause;
-  clauseList:Clause[];
-  SubclauseList:subclassClauses[];
-  selectedSubClauseList:subclassClauses[];
-  selectedClauseCode:any;
+  selectedClauseList: Clause[];
+  selectedRiskClause: Clause;
+  clauseList: Clause[];
+  SubclauseList: subclassClauses[];
+  selectedSubClauseList: subclassClauses[];
+  selectedClauseCode: any;
   // clauseDetail:any;
-  selectedClauses:any
+  selectedClauses: any
   modalHeight: number = 200; // Initial height
 
-
+  policyInsuredCode: number;
+  // insuredResponse:  any[] = [];
+  insuredDetails: Insured[] = [];
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -98,8 +100,7 @@ export class PolicySummaryOtherDetailsComponent {
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
-  policyInsuredCode: number;
-  
+
 
 
 
@@ -150,6 +151,10 @@ export class PolicySummaryOtherDetailsComponent {
   getPolicy() {
     this.batchNo = this.policyDetails.batchNumber;
     log.debug("Batch No:", this.batchNo)
+    if (this.batchNo) {
+      log.debug("CALLED GET INSURED")
+      this.getInsureds()
+    }
     this.policyService
       .getPolicy(this.batchNo)
       .pipe(untilDestroyed(this))
@@ -161,11 +166,12 @@ export class PolicySummaryOtherDetailsComponent {
             log.debug("Get Policy Endpoint Response", this.policyResponse)
             this.policyDetailsData = this.policyResponse.content[0]
             log.debug("Policy Details data get policy", this.policyDetailsData)
-            this.insureds = this.policyDetailsData.insureds
-            log.debug("Insureds", this.insureds)
-            if (this.insureds) {
-              this.getClient()
-            }
+            // this.insureds = this.policyDetailsData.insureds
+            // log.debug("Insureds", this.insureds)
+            // if (this.insureds) {
+            //   this.getClient()
+            //   this.getInsureds()
+            // }
             this.riskDetails = this.policyDetailsData.riskInformation
             log.debug("RISK INFORMATION", this.riskDetails)
 
@@ -190,35 +196,35 @@ export class PolicySummaryOtherDetailsComponent {
         },
       });
   }
-  getoClient() {
-    for (const insured of this.insureds) {
-      const clientRequests = [];
-      const prpCode = insured.prpCode; // Assuming each insured object has prpCode
-      log.debug("PRPCODE", prpCode)
-      this.clientService
-        .getClientById(prpCode)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (data: any) => {
-            if (data) {
-              log.debug('Client Details', data)
-              this.clientDetails = data;
+  // getoClient() {
+  //   for (const insured of this.insureds) {
+  //     const clientRequests = [];
+  //     const prpCode = insured.prpCode; // Assuming each insured object has prpCode
+  //     log.debug("PRPCODE", prpCode)
+  //     this.clientService
+  //       .getClientById(prpCode)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (data: any) => {
+  //           if (data) {
+  //             log.debug('Client Details', data)
+  //             this.clientDetails = data;
 
-              // Process clientDetails as needed
+  //             // Process clientDetails as needed
 
-              this.cdr.detectChanges(); // Trigger change detection if needed
-            } else {
-              // Handle case where client details are not found
-              console.error(`Client details not found for prpCode: ${prpCode}`);
-            }
-          },
-          error: (err) => {
-            // Handle error fetching client details
-            console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
-          },
-        });
-    }
-  }
+  //             this.cdr.detectChanges(); // Trigger change detection if needed
+  //           } else {
+  //             // Handle case where client details are not found
+  //             console.error(`Client details not found for prpCode: ${prpCode}`);
+  //           }
+  //         },
+  //         error: (err) => {
+  //           // Handle error fetching client details
+  //           console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
+  //         },
+  //       });
+  //   }
+  // }
   getClient() {
     const clientRequests = [];
 
@@ -366,10 +372,10 @@ export class PolicySummaryOtherDetailsComponent {
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
       log.debug("Selected Client Details:", this.clientDetails)
-      this.allClients = this.allClients.concat(this.clientDetails);
-      this.filteredClients = this.allClients;
+      // this.allClients = this.allClients.concat(this.clientDetails);
+      // this.filteredClients = this.allClients;
 
-      log.debug("Added Insured:", this.allClients)
+      // log.debug("Added Insured:", this.allClients)
 
       // this.getCountries();
       this.addInsured();
@@ -451,13 +457,13 @@ export class PolicySummaryOtherDetailsComponent {
 
             log.debug("Response Deleting Risk:", data);
             this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted risk"');
-              // Remove the deleted risk from the riskDetails array
-          const index = this.riskDetails.findIndex(risk => risk.riskIpuCode === this.riskCode);
-          if (index !== -1) {
-            this.riskDetails.splice(index, 1);
-          }
-          // Clear the selected risk
-          this.selectedRisk = null;
+            // Remove the deleted risk from the riskDetails array
+            const index = this.riskDetails.findIndex(risk => risk.riskIpuCode === this.riskCode);
+            if (index !== -1) {
+              this.riskDetails.splice(index, 1);
+            }
+            // Clear the selected risk
+            this.selectedRisk = null;
 
           } else {
             this.errorOccurred = true;
@@ -555,96 +561,95 @@ export class PolicySummaryOtherDetailsComponent {
 
     }
   }
-  addInsured(){
-    this.policyNumber= this.policyDetailsData.policyNo;
+  addInsured() {
+    this.policyNumber = this.policyDetailsData.policyNo;
     this.endorsementNo = this.policyDetailsData.endorsementNo;
     this.selectedClientCode = this.clientDetails.id;
     // this.policyService
-      // .addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode)
-      // .pipe(untilDestroyed(this))
-      // .subscribe({
-      //   next: (data) => {
+    // .addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode)
+    // .pipe(untilDestroyed(this))
+    // .subscribe({
+    //   next: (data) => {
 
-      //     if (data) {
+    //     if (data) {
 
-      //       log.debug("Response Adding Insured:", data);
-      //       this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  Added Insured"');
-           
+    //       log.debug("Response Adding Insured:", data);
+    //       this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  Added Insured"');
 
-      //     } else {
-      //       this.errorOccurred = true;
-      //       this.errorMessage = 'Something went wrong. Please try Again';
-      //       this.globalMessagingService.displayErrorMessage(
-      //         'Error',
-      //         'Something went wrong. Please try Again'
-      //       );
-      //     }
-      //   },
-      //   error: (err) => {
 
-      //     this.globalMessagingService.displayErrorMessage(
-      //       'Error',
-      //       this.errorMessage
-      //     );
-      //     log.info(`error >>>`, err);
-      //   },
-      // });
-      this.policyService.addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode).subscribe(data => {
-       
-        console.log('Added client Insured Data:', data);
-        
-       
-  
-        try {
-  
-          this.scheduleDetailsForm.reset()
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-        } catch (error) {
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-  
-          this.scheduleDetailsForm.reset()
-        }
-      })
+    //     } else {
+    //       this.errorOccurred = true;
+    //       this.errorMessage = 'Something went wrong. Please try Again';
+    //       this.globalMessagingService.displayErrorMessage(
+    //         'Error',
+    //         'Something went wrong. Please try Again'
+    //       );
+    //     }
+    //   },
+    //   error: (err) => {
+
+    //     this.globalMessagingService.displayErrorMessage(
+    //       'Error',
+    //       this.errorMessage
+    //     );
+    //     log.info(`error >>>`, err);
+    //   },
+    // });
+    this.policyService.addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode).subscribe(data => {
+
+      console.log('Added client Insured Data:', data);
+      this.getInsureds()
+
+
+      try {
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully added Insured');
+      } catch (error) {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+
+      }
+    })
   }
-  deleteInsured(){
-    this.policyInsuredCode = this.selectedInsured.id;
-
+  deleteInsured() {
+    this.policyInsuredCode = this.selectedInsured.code;
+    log.debug("INSURED CODE:", this.policyInsuredCode)
     this.policyService
-    .deleteInsured(this.policyInsuredCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data) => {
+      .deleteInsured(this.policyInsuredCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-        if (data) {
+          if (data) {
 
-          log.debug("Response Deleting Risk:", data);
-          this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Insured"');
-            // Remove the deleted risk from the riskDetails array
-        // const index = this.riskDetails.findIndex(risk => risk.riskIpuCode === this.riskCode);
-        // if (index !== -1) {
-        //   this.riskDetails.splice(index, 1);
-        // }
-        // // Clear the selected risk
-        // this.selectedRisk = null;
+            log.debug("Response Deleting Insured:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Insured"');
+            // Remove the deleted Insured from the Insured Details array
+            const index = this.insuredDetails.findIndex(insured => insured.code === this.policyInsuredCode);
+            if (index !== -1) {
+              this.insuredDetails.splice(index, 1);
+            }
+            // Clear the selected risk
+            this.selectedInsured = null;
 
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Something went wrong. Please try Again'
+            this.errorMessage
           );
-        }
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
+          log.info(`error >>>`, err);
+        },
+      });
   }
   toggleRiskClauseDetails() {
     this.isRiskClauseDetailsOpen = !this.isRiskClauseDetailsOpen;
@@ -655,8 +660,8 @@ export class PolicySummaryOtherDetailsComponent {
   toggleRiskDetails() {
     this.isRiskDetailsOpen = !this.isRiskDetailsOpen;
   }
-  onSelectRiskClauses(event: any){
-    this.selectedRiskClause=event;
+  onSelectRiskClauses(event: any) {
+    this.selectedRiskClause = event;
     // log.info("Patched Risk Section",this.selectedRiskClause);
     // this.selectedRiskClauseCode=this.selectedRiskClause.code;
     // log.debug("SELECTED RISK CLAUSE CODE:",this.selectedRiskClauseCode);
@@ -669,10 +674,57 @@ export class PolicySummaryOtherDetailsComponent {
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
-}
-onResize(event: any) {
-  this.modalHeight = event.height;
-}
+  }
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
+  getInsureds() {
+    this.policyService.getInsureds(this.batchNo).subscribe(data => {
+
+      log.debug('Added client Insured Data:', data);
+      if (data.status === 'SUCCESS') {
+        this.insuredDetails = data._embedded[0];
+        log.debug("INSURED DETAILS LIST:", this.insuredDetails)
+        // this.filteredClients = this.insuredDetails;
+
+      }
+
+
+      try {
+
+        // this.scheduleDetailsForm.reset()
+        // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+      } catch (error) {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        // this.scheduleDetailsForm.reset()
+      }
+    })
+  }
+  editInsureds(data) {
+    log.debug("Insured Data Edited", data)
+    const payload = {
+      clientCode: data.prpCode,
+      idNo: data.idNo,
+      passportNo: data.passPortNumber,
+      pinNo: data.pinNo,
+      // type: string
+    };
+    console.log(payload);
+    this.policyService
+      .editInsureds(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Coinsurers updated successfully');
+
+          console.log('Success:', response);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update coinsurer.Try again later');
+        }
+      });
+  }
 }
 
 
