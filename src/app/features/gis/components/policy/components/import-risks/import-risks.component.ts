@@ -93,13 +93,14 @@ export class ImportRisksComponent {
       Papa.parse(file, {
         complete: (result: any) => {
          
-          const expectedHeaders = ['clientId', 'clientName', 'WEF','WET', 'riskDuplicated', 'Class','coverType', 'Premium', 'Taxes'];
+          const expectedHeaders = ['clientId', 'clientName', 'WEF','WET', 'riskDuplicated', 'class','coverType', 'premium', 'taxes'];
           const actualHeaders = result.meta.fields;
           console.log(actualHeaders)
           // Assuming CSV has header row, you can access data with result.data
           if (this.validateHeaders(expectedHeaders, actualHeaders)) {
             this.importedRisk = result.data;
             console.log(result.data);
+            this.globalMessagingService.displaySuccessMessage('Success','Risks successfully added')
   
             try {
               this.uploadedFileName = file.name;
