@@ -14,7 +14,10 @@ import { Table } from 'primeng/table';
 import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
-import { Clause, subclassClauses } from '../../../setups/data/gisDTO';
+import { Clause, subclassClauses, subclassCoverTypeSection } from '../../../setups/data/gisDTO';
+import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -56,15 +59,16 @@ export class PolicySummaryOtherDetailsComponent {
   selectedClientCode: any;
 
   filteredClients: any[] = [];
-  columns: any[] = [
-    { label: 'Name', value: 'firstName' },
-    { label: 'Address', value: 'physicalAddress' },
+
+  columns = [
+    { label: 'Name', value: 'name' },
+    { label: 'Address', value: 'address' },
     { label: 'Town', value: 'town' },
-    { label: 'Pin', value: 'pinNumber' },
+    { label: 'Pin', value: 'pinNo' },
     { label: 'Passport no.', value: 'passportNumber' },
     { label: 'Business', value: 'business' },
     { label: 'Other interested parties', value: 'otherParties' },
-    { label: 'ID no.', value: 'idNumber' }
+    { label: 'ID no.', value: 'idNo' }
   ];
   selectedColumn: any;
   searchQuery: any;
@@ -79,7 +83,7 @@ export class PolicySummaryOtherDetailsComponent {
   selectedSchedule: any;
   updatedSchedule: any;
   updatedScheduleData: any;
-  sectionsDetails:any;
+  sectionsDetails: any;
 
   selectedClauseList: Clause[];
   selectedRiskClause: Clause;
@@ -94,6 +98,31 @@ export class PolicySummaryOtherDetailsComponent {
   policyInsuredCode: number;
   // insuredResponse:  any[] = [];
   insuredDetails: Insured[] = [];
+  filteredInsuredDetails: any[] = [];
+
+  subclassSectionCoverList: subclassCoverTypeSection[];
+  allMatchingSections: any;
+  mandatorySections: any;
+  filteredMandatorySections: any;
+  filteredAllMatchingSections: any;
+
+  sectionList:any;
+  selectedSection: any;
+  SelectedRiskCode:any;
+  selectedSubclassCode: any;
+  selectedCoverTypeDesc: any;
+  selectedCoverTypeCode:any;
+  covertypeSections:any;
+  searchText: string = '';
+  selectedSections: any[] = [];
+  allTransformedSections: any;
+
+  selectedBindercode:any;
+  premiumList: any[] = [];
+  premiumListIndex = 0;
+  sectionArray: any;
+  sectionDetailsForm: FormGroup;
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -115,6 +144,10 @@ export class PolicySummaryOtherDetailsComponent {
     private router: Router,
     public fb: FormBuilder,
     public quotationService: QuotationsService,
+    public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
+    public sectionService: SectionsService,
+    public premiumRateService: PremiumRateService,
+
 
 
 
@@ -123,10 +156,14 @@ export class PolicySummaryOtherDetailsComponent {
   public isScheduleDetailOpen = false;
   public isRiskClauseDetailsOpen = false;
   public isRiskDetailsOpen = false;
+  public isPremiumDetailOpen = false;
+
   ngOnInit(): void {
     this.getUtil();
     this.loadAllClients();
     this.createScheduleDetailsForm();
+    this.getAllSection();
+    this.createSectionDetailsForm()
 
   }
   ngOnDestroy(): void { }
@@ -149,84 +186,90 @@ export class PolicySummaryOtherDetailsComponent {
     })
   }
 
-  getPolicy() {
-    this.batchNo = this.policyDetails.batchNumber;
-    log.debug("Batch No:", this.batchNo)
-    if (this.batchNo) {
-      log.debug("CALLED GET INSURED")
-      this.getInsureds()
-    }
-    this.policyService
-      .getPolicy(this.batchNo)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (data: any) => {
+  // getPolicy() {
+  //   this.batchNo = this.policyDetails.batchNumber;
+  //   log.debug("Batch No:", this.batchNo)
+  //   if (this.batchNo) {
+  //     log.debug("CALLED GET INSURED")
+  //     this.getInsureds()
+  //   }
+  //   this.policyService
+  //     .getPolicy(this.batchNo)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (data: any) => {
 
-          if (data && data.content && data.content.length > 0) {
+  //         if (data && data.content && data.content.length > 0) {
+  //           this.policyResponse = data;
+  //           log.debug("Get Policy Endpoint Response", this.policyResponse)
+  //           this.policyDetailsData = this.policyResponse.content[0]
+  //           log.debug("Policy Details data get policy", this.policyDetailsData)
+  //           // this.insureds = this.policyDetailsData.insureds
+  //           // log.debug("Insureds", this.insureds)
+  //           // if (this.insureds) {
+  //           //   this.getClient()
+  //           //   this.getInsureds()
+  //           // }
+  //           this.riskDetails = this.policyDetailsData.riskInformation
+  //           this.sectionsDetails = this.riskDetails[0].sections
+  //           // log.debug("RISK INFORMATION", this.sectionsDetails)
+            
+  //           this.cdr.detectChanges();
+
+  //         } else {
+  //           this.errorOccurred = true;
+  //           this.errorMessage = 'Something went wrong. Please try Again';
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Error',
+  //             'Something went wrong. Please try Again'
+  //           );
+  //         }
+  //       },
+  //       error: (err) => {
+
+  //         this.globalMessagingService.displayErrorMessage(
+  //           'Error',
+  //           this.errorMessage
+  //         );
+  //         log.info(`error >>>`, err);
+  //       },
+  //     });
+  // }
+  async getPolicy() {
+    this.batchNo = this.policyDetails.batchNumber;
+    console.debug("Batch No:", this.batchNo); // Changed from log.debug to console.debug
+    if (this.batchNo) {
+        console.debug("CALLED GET INSURED"); // Changed from log.debug to console.debug
+        this.getInsureds();
+    }
+
+    try {
+        const data:any = await this.policyService.getPolicy(this.batchNo)
+            .pipe(untilDestroyed(this))
+            .toPromise();
+
+        if (data && data.content && data.content.length > 0) {
             this.policyResponse = data;
-            log.debug("Get Policy Endpoint Response", this.policyResponse)
-            this.policyDetailsData = this.policyResponse.content[0]
-            log.debug("Policy Details data get policy", this.policyDetailsData)
-            // this.insureds = this.policyDetailsData.insureds
-            // log.debug("Insureds", this.insureds)
-            // if (this.insureds) {
-            //   this.getClient()
-            //   this.getInsureds()
-            // }
-            this.riskDetails = this.policyDetailsData.riskInformation
-            this.sectionsDetails = this.riskDetails[0].sections
-            log.debug("RISK INFORMATION", this.sectionsDetails)
+            console.debug("Get Policy Endpoint Response", this.policyResponse); // Changed from log.debug to console.debug
+            this.policyDetailsData = this.policyResponse.content[0];
+            console.debug("Policy Details data get policy", this.policyDetailsData); // Changed from log.debug to console.debug
+
+            this.riskDetails = this.policyDetailsData.riskInformation;
+            this.sectionsDetails = this.riskDetails[0].sections;
 
             this.cdr.detectChanges();
-
-          } else {
+        } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Something went wrong. Please try Again'
-            );
-          }
-        },
-        error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong. Please try Again');
+        }
+    } catch (err) {
+        this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+        console.info(`error >>>`, err); // Changed from log.info to console.info
+    }
+}
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            this.errorMessage
-          );
-          log.info(`error >>>`, err);
-        },
-      });
-  }
-  // getoClient() {
-  //   for (const insured of this.insureds) {
-  //     const clientRequests = [];
-  //     const prpCode = insured.prpCode; // Assuming each insured object has prpCode
-  //     log.debug("PRPCODE", prpCode)
-  //     this.clientService
-  //       .getClientById(prpCode)
-  //       .pipe(untilDestroyed(this))
-  //       .subscribe({
-  //         next: (data: any) => {
-  //           if (data) {
-  //             log.debug('Client Details', data)
-  //             this.clientDetails = data;
-
-  //             // Process clientDetails as needed
-
-  //             this.cdr.detectChanges(); // Trigger change detection if needed
-  //           } else {
-  //             // Handle case where client details are not found
-  //             console.error(`Client details not found for prpCode: ${prpCode}`);
-  //           }
-  //         },
-  //         error: (err) => {
-  //           // Handle error fetching client details
-  //           console.error(`Error fetching client details for prpCode ${prpCode}:`, err);
-  //         },
-  //       });
-  //   }
-  // }
+ 
   getClient() {
     const clientRequests = [];
 
@@ -404,29 +447,56 @@ export class PolicySummaryOtherDetailsComponent {
     }
   }
 
+  // filterTable() {
+  //   log.debug("SELECTED COLUMN:", this.selectedColumn);
+  //   log.debug("SEARCH Query:", this.searchQuery);
+
+  //   if (this.selectedColumn && this.searchQuery) {
+  //     if (this.selectedColumn === 'name') {
+  //       this.filteredClients = this.allClients.filter(client => {
+  //         const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+  //         return (
+  //           fullName.includes(this.searchQuery.toLowerCase()) ||
+  //           client.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+  //           client.lastName.toLowerCase().includes(this.searchQuery.toLowerCase())
+  //         );
+  //       });
+  //     } else {
+  //       this.filteredClients = this.allClients.filter(client => {
+  //         return client[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
+  //       });
+  //     }
+  //   } else {
+  //     this.filteredClients = this.allClients;
+  //   }
+  // }
+
   filterTable() {
     log.debug("SELECTED COLUMN:", this.selectedColumn);
     log.debug("SEARCH Query:", this.searchQuery);
 
     if (this.selectedColumn && this.searchQuery) {
       if (this.selectedColumn === 'name') {
-        this.filteredClients = this.allClients.filter(client => {
-          const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+        this.filteredInsuredDetails = this.insuredDetails.filter(insured => {
+          const fullName = `${insured.newInsured} ${insured.otherNames}`.toLowerCase();
           return (
             fullName.includes(this.searchQuery.toLowerCase()) ||
-            client.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            client.lastName.toLowerCase().includes(this.searchQuery.toLowerCase())
+            insured.newInsured.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+            insured.otherNames.toLowerCase().includes(this.searchQuery.toLowerCase())
           );
         });
       } else {
-        this.filteredClients = this.allClients.filter(client => {
-          return client[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
+        this.filteredInsuredDetails = this.insuredDetails.filter(insured => {
+          return insured[this.selectedColumn]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
         });
       }
     } else {
-      this.filteredClients = this.allClients;
+      this.filteredInsuredDetails = this.insuredDetails;
     }
   }
+
+
+
   addAnotherRisk() {
     this.router.navigate([`/home/gis/policy/risk-details/`]);
 
@@ -680,28 +750,42 @@ export class PolicySummaryOtherDetailsComponent {
   onResize(event: any) {
     this.modalHeight = event.height;
   }
+  // getInsureds() {
+  //   this.policyService.getInsureds(this.batchNo).subscribe(data => {
+
+  //     log.debug('Added client Insured Data:', data);
+  //     if (data.status === 'SUCCESS') {
+  //       this.insuredDetails = data._embedded[0];
+  //       log.debug("INSURED DETAILS LIST:", this.insuredDetails)
+
+  //     }
+
+
+  //     try {
+
+  //       // this.scheduleDetailsForm.reset()
+  //       // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+  //     } catch (error) {
+  //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+  //     }
+  //   })
+  // }
   getInsureds() {
     this.policyService.getInsureds(this.batchNo).subscribe(data => {
-
       log.debug('Added client Insured Data:', data);
       if (data.status === 'SUCCESS') {
         this.insuredDetails = data._embedded[0];
-        log.debug("INSURED DETAILS LIST:", this.insuredDetails)
-        // this.filteredClients = this.insuredDetails;
-
+        this.filteredInsuredDetails = this.insuredDetails; // Initialize filtered list
+        log.debug("INSURED DETAILS LIST:", this.insuredDetails);
       }
-
 
       try {
-
-        // this.scheduleDetailsForm.reset()
-        // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+        // Handle success
       } catch (error) {
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-        // this.scheduleDetailsForm.reset()
       }
-    })
+    });
   }
   editInsureds(data) {
     log.debug("Insured Data Edited", data)
@@ -726,6 +810,311 @@ export class PolicySummaryOtherDetailsComponent {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to update coinsurer.Try again later');
         }
       });
+  }
+//   togglePremiumDetails() {
+//     console.log("selected risk", this.selectedRisk);
+//     if (!this.selectedRisk) {
+//       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+//     } else {
+//       this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+//       const risk = this.riskDetails.filter(risk => risk.riskIpuCode === this.SelectedRiskCode);
+//       log.debug('FILTERED RISK',risk)
+//       this.sectionsDetails = risk[0].sections
+//      log.debug("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
+
+//       this.isPremiumDetailOpen = !this.isPremiumDetailOpen; // Toggle collapse state
+//     }
+  
+// }
+togglePremiumDetails() {
+  console.log("selected risk", this.selectedRisk);
+  
+  if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
+  }
+  
+  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  
+  if (!risk) {
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
+  }
+  
+  this.sectionsDetails = risk.sections;
+  console.log("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
+  this.selectedSubclassCode = risk.subClassCode;
+            log.debug("subclass code:", this.selectedSubclassCode)
+            if (this.selectedSubclassCode) {
+              this.loadSubclassSectionCovertype()
+            }
+            this.selectedCoverTypeDesc = risk.coverTypeShortDescription
+            log.debug("subclass covertype:", this.selectedCoverTypeDesc)
+            this.selectedCoverTypeCode = risk.coverTypeCode;
+            this.selectedBindercode = risk.binderCode
+
+
+  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+  this.isPremiumDetailOpen = !this.isPremiumDetailOpen;
+}
+
+
+
+  
+  
+  getAllSection() {
+    this.sectionService
+      .getAllSections()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.sectionList = data;
+            log.debug("Section List", this.sectionList)
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  loadSubclassSectionCovertype() {
+    this.subclassSectionCovertypeService
+      .getSubclassCovertypeSections()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            this.subclassSectionCoverList = data;
+            log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+            this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
+            log.debug("Mandatory Section Covertype:", this.mandatorySections);
+
+            this.covertypeSections = this.subclassSectionCoverList?.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode )
+            log.debug("All section for a selected Cover Type:", this.covertypeSections)
+
+            if (this.sectionList && this.covertypeSections) {
+              this.allMatchingSections = [];
+              this.covertypeSections.forEach(element => {
+                const matchingSections = this.sectionList.filter(section => section.code === element.sectionCode);
+                this.allMatchingSections.push(...matchingSections);
+              });
+        
+              log.debug("Retrieved All matching sections", this.allMatchingSections);
+            }
+           if(this.allMatchingSections){
+            this.filterMandatorySections()
+           } 
+          }
+          else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      })
+
+  }
+  filterMandatorySections() {
+    log.debug("selectedCover  coverdesc", this.selectedCoverTypeDesc)
+    // const coverType = this.selectedCoverType?.coverTypeShortDescription
+    if (this.selectedCoverTypeDesc) {
+      // this.filteredMandatorySections = this.mandatorySections.filter(section =>
+      //   section.coverTypeShortDescription === (this.selectedCoverTypeDesc === "COMP" ? "COMP" : this.selectedCoverTypeDesc));
+      // log.debug("Filtered Section", this.filteredMandatorySections);
+
+      // this.filteredAllMatchingSections = this.allMatchingSections.filter(section =>
+      //   !this.filteredMandatorySections.some(filteredSection => filteredSection.sectionCode === section.code)
+      // );
+      this.filteredAllMatchingSections = this.allMatchingSections.filter(section =>
+        !this.sectionsDetails.some(detail => detail.sectionCode === section.code)
+      );
+      console.log('Filtered Matching Sections:', this.filteredAllMatchingSections);
+
+      // this.getPremium(this.filteredMandatorySections);
+    } else {
+      this.filteredMandatorySections = this.mandatorySections;
+    }
+  }
+
+  matchesSearch(description: string): boolean {
+    return description.toLowerCase().includes(this.searchText.toLowerCase());
+  }
+  
+  isSelected(section: any): boolean {
+    return this.selectedSections.some((s) => s.code === section.code);
+
+  }
+  onCheckboxChange(section: any) {
+    const index = this.selectedSections.findIndex((s) => s.code === section.code);
+
+    if (index === -1) {
+      // Section is not yet selected, add it to the array
+      this.selectedSections.push(section);
+      log.debug("Checked Sections Data", this.selectedSections);
+      this.allTransformedSections = [];
+
+      // Filter sections based on the selected cover type
+      this.selectedSections.forEach(element => {
+        const changedSections = this.covertypeSections?.filter(section =>
+          section.sectionCode === element.code &&
+          section.coverTypeShortDescription === "COMP"
+        );
+
+        if (changedSections) {
+          this.allTransformedSections.push(...changedSections);
+          log.debug("Transformed Sections Data", this.allTransformedSections);
+        } else {
+          log.debug("No matching sections found for", element);
+        }
+      });
+
+      this.getPremium(this.selectedSections);
+      // this.createRiskSection();
+    } else {
+      // Section is already selected, remove it from the array
+      this.selectedSections.splice(index, 1);
+    }
+  }
+  getPremium(passedSections: any[]) {
+    // this.selectedBinder = parseInt(selectedBinder);
+
+    log.debug("Selected Binder:", this.selectedBindercode);
+    log.debug("Selected Subclass code:", this.selectedSubclassCode);
+
+    const sections = passedSections;
+    log.debug("Sections passed to premium service:", sections);
+
+    // Create an array to store observables returned by each service call
+    const observables = sections?.map(section => {
+      return this.premiumRateService.getAllPremiums(section.code, this.selectedBindercode, this.selectedSubclassCode);
+    });
+
+    // Use forkJoin to wait for all observables to complete
+    forkJoin(observables).subscribe((data: any[]) => {
+      // data is an array containing the results of each service call
+      const newPremiumList = data.flat(); // Flatten the array if needed
+      log.debug("New Premium List", newPremiumList);
+
+      // Check if premiumList is an array (safeguard against initialization issues)
+      if (!Array.isArray(this.premiumList)) {
+        this.premiumList = [];
+      }
+
+      // Append newPremiumList to existing premiumList
+      this.premiumList = [...this.premiumList, ...newPremiumList];
+      log.debug("Updated Premium List", this.premiumList);
+    });
+  }
+  createSectionDetailsForm() {
+    this.sectionDetailsForm = this.fb.group({
+      bindCode: [''],
+      coverTypeCode: [''],
+      group: [''],
+      limit: [''],
+      ncdLevel: [''],
+      renewal: [''],
+      riskCode: [''],
+      row: [''],
+      sectionCode: [''],
+      subClassCode: ['']
+    });
+  }
+  createRiskSection() {
+    const section = this.sectionDetailsForm.value;
+    log.debug("Premium List:", this.premiumList);
+    // Check if premiumList has data and if the index is within bounds
+    if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
+      console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+
+      // Log the current premiumListIndex before incrementing
+      console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+
+      // Increment the premiumListIndex and wrap around using modulo
+      this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
+
+      // Log the updated premiumListIndex after incrementing
+      console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+
+      section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
+    } else {
+      // Handle scenario when premiumList is empty or index is out of bounds
+      console.error('Premium list is empty or index is out of bounds.');
+      return; // or throw an error, handle as per your requirement
+    }
+
+    // Set other properties for section
+    this.sectionArray = [section];
+    section.bindCode = this.selectedBindercode;
+    section.coverTypeCode = this.selectedCoverTypeCode;
+    section.group = 1;
+    section.limit = 0;
+    section.ncdLevel = null;
+    section.renewal = null;
+    section.riskCode = this.selectedRisk.riskIpuCode;
+    section.row = 0;
+    section.subClassCode = this.selectedSubclassCode;
+
+    this.policyService
+      .createRiskSection(this.sectionArray)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: async (data: any) => {
+          if (data) {
+            console.log("Risk Section Created data:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
+        
+            await this.getPolicy(); // Wait for getPolicy() to finish
+        
+            if (this.riskDetails) {
+                const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+                const sections = risk.sections;
+                this.sectionsDetails = sections;
+                console.debug("SECTIONS:", this.sectionsDetails); // Changed from log.debug to console.debug
+            }
+        
+        
+        
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'An error occurred.');
+          console.error(`Error >>>`, err);
+        },
+      });
+  }
+  addPremiumItem(){
+
   }
 }
 
