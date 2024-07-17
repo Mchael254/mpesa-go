@@ -797,7 +797,7 @@
                                     <label for="policy_interface" class=" product-label"
                                         id="policy_interface">{{'gis.policy.policy_no' | translate}}</label>
                                     <p-dropdown  [options]="policyList.content" formControlName="importRiskfromPolicy"  optionLabel="policyNo"
-                                        optionValue="policyNo" [filterBy]="'policyNo'" placeholder="Select a policy" [filter]="true">
+                                        optionValue="policyNo" [filterBy]="'policyNo'" placeholder="Select a policy" (onChange)="getPolicy()" [filter]="true">
                                     </p-dropdown>
     
                                 </div>

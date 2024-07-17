@@ -56,7 +56,8 @@
 .custom-file-upload {
     display: inline-block;
     padding: 6px ;
-    width: 140%;
+    width: 133%;
+    margin-left: 14px;
     cursor: pointer;
     background-color: #00529B; /* Blue color */
     color: #fff; /* White text color */
@@ -72,7 +73,7 @@
     display: none;
   }
   ::ng-deep .p-dropdown{
-    /* height: 53%; */
+    height: 90%;
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;

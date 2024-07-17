@@ -161,14 +161,15 @@ export class PolicyService {
     };
     return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
   }
-  // getInsureds(batchNo:number){
-  //   return this.api.GET(`v2/policies/get-insureds?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
-  // }
+
 
   getInsureds(batchNo: number): Observable<InsuredApiResponse> {
     return this.api.GET(`v2/policies/get-insureds?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL) as Observable<InsuredApiResponse>;
   }
   editInsureds(data:editInsured){
     return this.api.PUT(`v1/policies/edit-insured?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  reassignTicket(data){
+    return this.api.POST(`api/v1/tickets`,JSON.stringify(data),API_CONFIG.MNGT_WORKFLOW_BASE_URL)
   }
 }
