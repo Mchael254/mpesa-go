@@ -1,69 +1,69 @@
-<label class="text-primary mb-3 fw-medium">Claim details</label>
+<label class="text-primary mb-3 fw-medium">{{'mngt_wrkflw.claimDetails.claimDetails' | translate }}</label>
 <div class="row">
   <div class="col-sm-4">
     <p>
-      <label class="ticketLabel">Claim no.:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.claimNo' | translate }}.:</label>
       <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimNo}}</span>
     </p>
     <p>
-      <label class="ticketLabel">Insured:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.insured' | translate }}:</label>
       <span class="ticketDesc">{{ selectedSpringTickets?.clientName | titlecase}}</span>
     </p>
     <p>
-      <label class="ticketLabel">Risk WEF:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.riskWEF' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.risk_wef }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Next review date:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.nextReviewDate' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.next_review_date }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Intermediary:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.intermediary' | translate }}:</label>
       <span class="ticketDesc">{{ selectedSpringTickets?.agentName | titlecase}}</span>
     </p>
   </div>
 
   <div class="col-sm-4">
     <p >
-      <label class="ticketLabel">Client name:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.clientName' | translate }}:</label>
       <span class="ticketDesc">{{ selectedSpringTickets?.clientName | titlecase}}</span>
     </p>
     <p>
-      <label class="ticketLabel">Risk:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.risk' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.risk_property_id }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Risk WET:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.riskWET' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.risk_wet }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Loss description:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.lossDescription' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.loss_description }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Claim remarks:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.claimRemarks' | translate }}:</label>
       <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
     </p>
   </div>
   <div class="col-sm-4">
     <p>
-      <label class="ticketLabel">Product:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.product' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.product?.description | titlecase}}</span>
     </p>
     <p>
-      <label class="ticketLabel">Risk value:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.riskValue' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.risk[0]?.value}}</span>
     </p>
     <p>
-      <label class="ticketLabel">Claim loss date:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.claimLossDate' | translate }}:</label>
       <span class="ticketDesc">{{ claim?.loss_date }}</span>
     </p>
     <p>
-      <label class="ticketLabel">Claim notification date:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.claimNotificationDate' | translate }}:</label>
       <span class="ticketDesc"></span>
     </p>
     <p>
-      <label class="ticketLabel">Currency:</label>
+      <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.currency' | translate }}:</label>
       <span class="ticketDesc">{{claimPaymentTransaction?.currency_symbol}}</span>
     </p>
   </div>
@@ -71,7 +71,7 @@
 </div>
 
 <div class="mt-4">
-  <label class="text-primary mb-3 fw-medium">Claim transaction details</label>
+  <label class="text-primary mb-3 fw-medium">{{'mngt_wrkflw.claimDetails.claimTransactionDetails' | translate }}</label>
   <!--<button
     class="btn btn-primary float-end"
     *ngIf ="claimPaymentTransaction?.transaction_type === 'CFO' || claimPaymentTransaction?.transaction_type === 'CFI' ||
@@ -135,107 +135,107 @@
       claimPaymentTransaction?.transaction_type === 'CPI' || claimPaymentTransaction?.transaction_type === 'CPO'">
       <div class="col-sm-4">
         <p>
-          <label class="ticketLabel">Transaction type:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.transactionType' | translate }}:</label>
           <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimTransactionType }}</span>
         </p>
         <p>
-          <label class="ticketLabel">Voucher no.:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.voucherNo' | translate }}.:</label>
           <span class="ticketDesc">{{claimTransaction?.code}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Payment date:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.paymentDate' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.date}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Authorised date:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.authorisedDate' | translate }}:</label>
           <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Invoice no.:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.invoiceNo' | translate }}.:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.invoice_no}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Payment type.:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.paymentType' | translate }}.:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.payment_type}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Bank account:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.bankAccount' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.bank_account}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Cheque no.:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.chequeNo' | translate }}.:</label>
           <span class="ticketDesc">{{claimTransaction?.chequeNumber}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Excise duty:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.exciseDuty' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.exercise_duty_amount | number}}</span>
         </p>
       </div>
       <div class="col-sm-4">
         <p >
-          <label class="ticketLabel">Payee:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.payee' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.payee | titlecase}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Payment mode:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.paymentMode' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.payment_mode}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Authorised:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.authorised' | translate }}:</label>
           <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Own gross amount:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.ownGrossAmount' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.amount | number}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Voucher currency:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.voucherCurrency' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.currency_description | titlecase}}</span>
         </p>
         <p>
-          <label class="ticketLabel">WHTX amount:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.wHTXAmount' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.witholding_tax_amount | number}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Net paid:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.netPaid' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.net_pay | number}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Retention:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.retention' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.company_retention | number}}</span>
         </p>
       </div>
       <div class="col-sm-4">
         <p>
-          <label class="ticketLabel">Correspondent:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.correspondent' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.claimant_provider | titlecase}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Coin amount:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.coinAmount' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.coinsurance_total_amount | number}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Authorised by:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.authorisedBy' | translate }}:</label>
           <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Account type:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.accountType' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.account_type}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Base currency:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.baseCurrency' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.amount_base_currency}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Invoice amount:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.invoiceAmount' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.invoice_amount | number}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Payment desc:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.paymentDesc' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.payment_description | titlecase}}</span>
         </p>
         <p>
-          <label class="ticketLabel">Reinstatement amt:</label>
+          <label class="ticketLabel">{{'mngt_wrkflw.claimDetails.reinstatementAmt' | translate }}:</label>
           <span class="ticketDesc">{{claimPaymentTransaction?.reinsurance_amount | number}}</span>
         </p>
       </div>
