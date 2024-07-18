@@ -14,7 +14,7 @@
             <span class="mb-3 light-bold">Select a System</span>
             <div class="mb-3">
               <div class="row">
-                <div class="col-md-4" *ngFor="let system of systems">
+                <div class="col-md-4 my-2" *ngFor="let system of systems">
                   <div class="form-check form-check-inline">
                     <input
                       class="form-check-input"
@@ -26,7 +26,7 @@
                       (ngModelChange)="onSystemChange()"
                     />
                     <label class="form-check-label" [for]="system.id">{{
-                      system.systemName
+                      system.systemName | titlecase
                     }}</label>
                   </div>
                 </div>
@@ -129,6 +129,13 @@
                   </div>
                   <!-- SMS History Table -->
                   <div class="col-sm-12 col-12">
+                    <ngx-spinner
+                      type="ball-clip-rotate-multiple"
+                      [fullScreen]="false"
+                      color="#00529B"
+                      size="medium"
+                      bdColor="rgba(255, 255, 255, 0.966)"
+                    ></ngx-spinner>
                     <p-table
                       #smsHistoryTable
                       [value]="smsHistoryData.content"
@@ -144,40 +151,40 @@
                     >
                       <ng-template pTemplate="header">
                         <tr>
-                          <th class="head">
+                          <th>
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                           </th>
-                          <th class="head" pSortableColumn="systemModule">
+                          <th pSortableColumn="systemModule">
                             Module<p-sortIcon field="systemModule"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="policyNo">
+                          <th pSortableColumn="policyNo">
                             Policy No.<p-sortIcon field="policyNo"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="clientName">
+                          <th pSortableColumn="clientName">
                             Client Name<p-sortIcon
                               field="clientName"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="telephoneNumber">
+                          <th pSortableColumn="telephoneNumber">
                             Tel No.<p-sortIcon
                               field="telephoneNumber"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="message">
+                          <th pSortableColumn="message">
                             Message<p-sortIcon field="message"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="status">
+                          <th pSortableColumn="status">
                             SMS Status<p-sortIcon field="status"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="sendDate">
+                          <th pSortableColumn="sendDate">
                             Send Date<p-sortIcon field="sendDate"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="policyStatus">
+                          <th pSortableColumn="policyStatus">
                             Policy Status<p-sortIcon
                               field="policyStatus"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="transaction">
+                          <th pSortableColumn="transaction">
                             Transaction Level<p-sortIcon
                               field="transaction"
                             ></p-sortIcon>
@@ -250,6 +257,13 @@
                   </div>
                   <!-- Email History Table -->
                   <div class="col-sm-12 col-12">
+                    <ngx-spinner
+                      type="ball-clip-rotate-multiple"
+                      [fullScreen]="false"
+                      color="#00529B"
+                      size="medium"
+                      bdColor="rgba(255, 255, 255, 0.966)"
+                    ></ngx-spinner>
                     <p-table
                       #emailHistoryTable
                       [value]="emailHistoryData.content"
@@ -265,45 +279,45 @@
                     >
                       <ng-template pTemplate="header">
                         <tr>
-                          <th class="head">
+                          <th>
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                           </th>
-                          <th class="head" pSortableColumn="policyNo">
+                          <th pSortableColumn="policyNo">
                             Policy No.<p-sortIcon field="policyNo"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="claimNo">
+                          <th pSortableColumn="claimNo">
                             Claim No.<p-sortIcon field="claimNo"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="telephoneNumber">
+                          <th pSortableColumn="telephoneNumber">
                             Tel No.<p-sortIcon
                               field="telephoneNumber"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="message">
+                          <th pSortableColumn="message">
                             Message<p-sortIcon field="message"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="status">
+                          <th pSortableColumn="status">
                             Status<p-sortIcon field="status"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="preparedBy">
+                          <th pSortableColumn="preparedBy">
                             Prepared By<p-sortIcon
                               field="preparedBy"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="preparedDate">
+                          <th pSortableColumn="preparedDate">
                             Prepared Date<p-sortIcon
                               field="preparedDate"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="sendOn">
+                          <th pSortableColumn="sendOn">
                             Send Date<p-sortIcon field="sendOn"></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="quotationNo">
+                          <th pSortableColumn="quotationNo">
                             Quotation No.<p-sortIcon
                               field="quotationNo"
                             ></p-sortIcon>
                           </th>
-                          <th class="head" pSortableColumn="response">
+                          <th pSortableColumn="response">
                             Send Response<p-sortIcon
                               field="response"
                             ></p-sortIcon>
