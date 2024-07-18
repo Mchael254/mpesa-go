@@ -28,6 +28,11 @@
 ::ng-deep .p-tabview .p-tabview-nav {
   border: none;
   border-width: none;
+  font-size: 14px;
+}
+
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+  font-size: 14px;
 }
 
 .light-bold {
