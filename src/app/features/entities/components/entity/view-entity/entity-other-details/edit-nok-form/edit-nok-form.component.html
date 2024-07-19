@@ -1,0 +1,46 @@
+
+<form [formGroup]="nokForm">
+  <div class="row g-3">
+    <div class="col">
+      <label for="identityType" class="form-label">{{ 'entities.identity_type' | translate }}</label>
+      <select formControlName="identityType" id="identityType" class="form-select" aria-label="Bank Name">
+        <option value="" selected>{{ 'entities.identity_type' | translate }}</option>
+        <option *ngFor="let type of modeIdentityType" [value]="type.id">{{ type.name }}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="idNo" class="form-label">{{ 'entities.id' | translate }}</label>
+      <input formControlName="idNo" type="text" id="idNo" class="form-control" aria-label="ID number">
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col">
+      <label for="fullNames" class="form-label">{{ 'entities.full_names' | translate }}</label>
+      <input formControlName="fullNames" type="text" id="fullNames" class="form-control" aria-label="Full names">
+    </div>
+    <div class="col">
+      <label for="email" class="form-label">{{ 'entities.email_address' | translate }}</label>
+      <input formControlName="email" type="text" id="email" class="form-control" aria-label="Email address">
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col">
+      <label for="relation" class="form-label">{{ 'entities.relation' | translate }}</label>
+      <input formControlName="relation" type="text" id="relation" class="form-control" aria-label="Relation">
+    </div>
+    <div class="col">
+      <label for="mobile" class="form-label">{{ 'entities.mobile_number' | translate }}</label>
+      <input formControlName="mobile" type="text" id="mobile" class="form-control" aria-label="Mobile number">
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-6">
+      <label for="dob" class="form-label">{{ 'entities.dob' | translate }}</label>
+      <input formControlName="dob" type="date" id="dob" class="form-control" aria-label="date of birth">
+    </div>
+  </div>
+</form>
+
+<div class="modal-footer border-0 mt-1">
+  <button type="button" class="btn btn-primary" (click)="updateDetails()">Update details</button>
+</div>

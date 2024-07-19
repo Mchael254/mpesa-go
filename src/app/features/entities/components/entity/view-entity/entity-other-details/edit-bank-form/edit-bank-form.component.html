@@ -1,0 +1,52 @@
+<ng-container *ngIf="!shouldShowEditForm">
+  <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" [style]="'width:' + progressBarWidth + '%'"></div>
+  </div>
+</ng-container>
+
+<ng-container>
+  <form [formGroup]="bankForm">
+    <div class="row g-3">
+      <div class="col">
+        <label for="bank" class="form-label">{{ 'entities.bank' | translate }}</label>
+        <select formControlName="bank" id="bank" class="form-select" aria-label="Bank Name" (change)="updateBankBranches()">
+          <option value="" selected>{{ 'entities.bank' | translate }}</option>
+          <option *ngFor="let bank of banksData" [value]="bank.id">{{ bank.name }}</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="accountNo" class="form-label">Account No</label>
+        <input formControlName="accountNo" type="text" id="accountNo" class="form-control" aria-label="account number">
+      </div>
+    </div>
+    <div class="row g-3 mt-1">
+      <div class="col">
+        <label for="accountType" class="form-label">{{ 'entities.select_account_type' | translate }}</label>
+        <input formControlName="accountType" type="text" id="accountType" class="form-control" aria-label="Value">
+      </div>
+      <div class="col">
+        <label for="branch" class="form-label">Branch</label>
+        <select formControlName="branch" id="branch" class="form-select" aria-label="Bank branch">
+          <option value="">{{ 'entities.branch' | translate }}</option>
+          <option *ngFor="let branch of branchesData" [value]="branch.id">
+            {{ branch.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="row g-3 mt-1">
+      <div class="col-6">
+        <label for="branch" class="form-label">{{ 'entities.preferred_payment_account' | translate }}</label>
+        <select formControlName="paymentMethod" id="paymentMethody" class="form-select" aria-label="Preferred payment method">
+          <option value="">{{ 'entities.preferred_payment_account' | translate }}</option>
+          <option value="mobile-money">{{ 'entities.mobile_money' | translate }}</option>
+          <option value="bank">{{ 'entities.bank' | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="modal-footer border-0 mt-1">
+    <button type="button" class="btn btn-primary" (click)="updateDetails()">{{ 'entities.update_details' | translate }}</button>
+  </div>
+</ng-container>

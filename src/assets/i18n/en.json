@@ -547,7 +547,8 @@
     "withholding_tax_applicable_required": "Withholding Tax Applicable required",
     "withholding_tax_required": "Withholding Tax is required",
     "yes": "Yes",
-    "zero": "Zero"
+    "zero": "Zero",
+    "update_details": "Update details"
   },
   "gis": {
     "quotation": {

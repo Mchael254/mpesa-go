@@ -2,16 +2,20 @@
   <div class="col-sm-12">
     <h5 class=" mt-5">
         Additional Information
-        <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%;">
-            <i
-                class="fa fa-pencil"
-                style="color:#00529B; font-size: 0.8em;"
-            ></i>
-        </button>
+        <ng-container *ngIf="activeTab !== 'contact'">
+          <button
+            class="btn btn-light btn-sm ms-4"
+            style="border-radius: 100%;" data-bs-toggle="modal"
+            data-bs-target="#editModal"
+            (click)="prepareBankDetailsForEdit()"
+          >
+            <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
+          </button>
+        </ng-container>
     </h5>
 </div>
 </div>
-<p-tabView>
+<p-tabView (onChange)="setActiveTab($event)">
   <p-tabPanel header="Contact Details">
       <div class="row">
           <div class="col-sm-3">
@@ -67,11 +71,11 @@
                     <tbody>
                       <tr>
                         <td>Bank</td>
-                        <th>{{ bankDetails?.bank }}</th>
+                        <th>{{ bankDetails?.bankName }}</th>
                       </tr>
                       <tr>
                         <td>Branch</td>
-                        <th>{{ bankDetails?.branch }}</th>
+                        <th>{{ bankDetails?.branchName }} {{ bankDetails?.id}}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -103,7 +107,17 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel id="get-wealth-aml-details" header="Wealth Details" *ngIf="wealthAmlDetails" (click)="getWealthAmlDetails()" >
+    <p-tabPanel
+      id="get-wealth-aml-details"
+      header="Wealth Details"
+      *ngIf="wealthAmlDetails"
+      (click)="getWealthAmlDetails()"
+    >
+  <!--<p-tabPanel
+    id="get-wealth-aml-details"
+    header="Wealth Details"
+    (click)="getWealthAmlDetails()"
+  >-->
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -151,6 +165,7 @@
     </p-tabPanel>
 
     <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails">
+<!--    <p-tabPanel header="AML Details">-->
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -201,7 +216,8 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="Next of kin" *ngIf="nokList.length > 0">
+    <p-tabPanel header="Next of kin" *ngIf="nokList?.length > 0">
+<!--    <p-tabPanel header="Next of kin" >-->
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -240,4 +256,38 @@
         <li>Birth Certificate</li>
         <li>Passport</li>
     </ul>
+</div>
+
+
+<!--Edit Modal-->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="editModalContent">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Edit {{ activeTab }} details</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalButton></button>
+      </div>
+      <div class="modal-body">
+        <ng-container *ngIf="activeTab==='contact'">
+          contact details
+        </ng-container>
+
+        <ng-container *ngIf="activeTab==='bank'">
+          <app-edit-bank-form (closeEditModal)="closeEditModal()"></app-edit-bank-form>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab==='wealth'">
+          <app-edit-wealth-form></app-edit-wealth-form>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab==='aml'">
+          <app-edit-aml-form></app-edit-aml-form>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab==='nok'">
+          <app-edit-nok-form></app-edit-nok-form>
+        </ng-container>
+      </div>
+    </div>
+  </div>
 </div>

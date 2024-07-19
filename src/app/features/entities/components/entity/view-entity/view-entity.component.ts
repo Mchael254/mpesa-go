@@ -102,6 +102,7 @@ export class ViewEntityComponent implements OnInit {
     this.getEntityByPartyId();
     this.getEntityAccountById();
     this.getCountries();
+    this.spinner.hide();
   }
 
 
@@ -438,24 +439,30 @@ export class ViewEntityComponent implements OnInit {
   }
 
   getPaymentDetails(): void {
-    if (this.partyAccountDetails?.paymentDetails) {
+    if (this.partyAccountDetails?.paymentDetails?.id) {
       const id: number  = this.partyAccountDetails?.paymentDetails?.bank_branch_id;
       this.entityService.fetchBankDetailsByBranchId(id)
         .subscribe({
           next: (bank: Bank) => {
             this.bankDetails = {
-              bankId: bank.bankId,
-              bank: bank.bankName,
-              branch: bank.name,
+              ...bank,
               accountNo: this.partyAccountDetails?.paymentDetails?.account_number,
               paymentMethod: 'xxx',
-              accountType: 'xxx'
+              accountType: 'xxx',
+              partyAccountId: this.partyAccountDetails?.paymentDetails?.partyAccountId,
             }
             log.info(`Bank details ==> `, this.bankDetails);
           },
           error: (err) => {}
         });
     }
+  }
+
+  /**
+   * Refresh data by calling the OnInit method
+   */
+  refreshData(): void {
+    this.ngOnInit();
   }
 
 }
