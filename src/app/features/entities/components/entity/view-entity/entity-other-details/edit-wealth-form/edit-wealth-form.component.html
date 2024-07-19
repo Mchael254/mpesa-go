@@ -1,0 +1,57 @@
+
+<form [formGroup]="wealthForm">
+  <div class="row g-3">
+    <div class="col">
+      <label for="nationality" class="form-label">{{ 'entities.nationality' | translate }}</label>
+      <select formControlName="nationality" id="nationality" class="form-select" aria-label="Nationality">
+        <option value="">{{ 'entities.nationality' | translate }}</option>
+        <option *ngFor="let country of countryData" [value]="country.id">
+          {{ country.name }}
+        </option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="sourceOfFunds" class="form-label">{{ 'entities.source_of_funds' | translate }}</label>
+      <select formControlName="sourceOfFunds" id="sourceOfFunds" class="form-select" aria-label="sourceOfFunds">
+        <option value="">{{ 'entities.source_of_funds' | translate }}</option>
+        <option *ngFor="let source of fundSource" [value]="source.code">
+          {{ source.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col">
+      <label for="typeOfEmployment" class="form-label">{{ 'entities.type_of_employment' | translate }}</label>
+      <select formControlName="typeOfEmployment" id="typeOfEmployment" class="form-select" aria-label="Type of Employment">
+        <option value="">{{ 'entities.type_of_employment' | translate }}</option>
+        <option value="Y">{{ 'entities.employed' | translate }}</option>
+        <option value="N">{{ 'entities.self_employed' | translate }}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="citizenship" class="form-label">{{ 'entities.citizenship' | translate }}</label>
+      <select formControlName="citizenship" id="citizenship" class="form-select" aria-label="citizenship">
+        <option value="">{{ 'entities.citizenship' | translate }}</option>
+        <option *ngFor="let country of countryData" [value]="country.id">
+          {{ country.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-6">
+      <label for="sector" class="form-label">{{ 'entities.sector' | translate }}</label>
+      <select formControlName="sector" id="sector" class="form-select" aria-label="Sector">
+        <option value="">{{ 'entities.sector' | translate }}</option>
+        <option *ngFor="let sector of sectorData" [value]="sector.id">
+          {{ sector.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+</form>
+
+<div class="modal-footer border-0 mt-1">
+<!--  <button type="button" class="btn btn-primary" (click)="updateDetails()">Update details</button>-->
+</div>

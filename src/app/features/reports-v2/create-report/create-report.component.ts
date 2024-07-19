@@ -60,6 +60,7 @@ export class CreateReportComponent implements OnInit {
 
   private currentUser: Profile;
   public showChatBot: boolean = false;
+  isFromPreview: boolean = false;
 
   selectedSubCategory: any;
 
@@ -83,6 +84,7 @@ export class CreateReportComponent implements OnInit {
    */
   ngOnInit(): void {
     const isFromPreview = this.activatedRoute.snapshot.queryParams['fromPreview'];
+    this.isFromPreview = !!isFromPreview;
     this.reportId = this.activatedRoute.snapshot.queryParams['reportId'];
     // const reportParams = this.sessionStorageService.getItem(`reportParams`);
 
@@ -133,7 +135,10 @@ export class CreateReportComponent implements OnInit {
           this.filters = JSON.parse(res.filter);
           this.criteria = [...this.measures, ...this.dimensions];
           this.reportNameRec = res.name;
-          log.info(`report from preview >>> `, res, this.measures, this.dimensions, this.filters);
+          log.info(`report from preview >>> `, res);
+          log.info(`measures preview >>> `, this.measures);
+          log.info(`dimensions from preview >>> `, this.dimensions);
+          log.info(`filters from preview >>> `, this.filters);
         },
         error: (e) => { log.info(`error >>>`, e)}
       })
@@ -249,9 +254,11 @@ export class CreateReportComponent implements OnInit {
   splitDimensionsAndMeasures(queryObject: Criteria): void {
     const criterion = `${queryObject.transaction}.${queryObject.query}`;
     if (queryObject.category === 'metrics') {
-      this.measures.push(criterion);
+      // this.measures.push(criterion);
+      this.measures.push(JSON.stringify(queryObject));
     } else {
-      this.dimensions.push(criterion);
+      // this.dimensions.push(criterion);
+      this.dimensions.push(JSON.stringify(queryObject));
     }
   }
 
@@ -392,15 +399,24 @@ export class CreateReportComponent implements OnInit {
       width: 0,
       sort: JSON.stringify(this.sort)
     }
-    log.info(`report >>>`, report);
+    // log.info(`report >>>`, report);
 
-    this.createReport(report);
+
+    if (!this.isFromPreview) {
+      this.createReport(report);
+    } else {
+      this.updateReport(report)
+    }
   }
 
 
+  /**
+   *1. create report and save to backend
+   * @return void
+   */
   createReport(report: ReportV2): void {
     log.info(`created report >>> `, report);
-    this.reportServiceV2.createReport(report)
+    /*this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
@@ -412,7 +428,18 @@ export class CreateReportComponent implements OnInit {
         error: (e) => {
           this.globalMessagingService.displayErrorMessage('error', `${e.status}: ${e.message}`);
         }
-      });
+      });*/
+  }
+
+  /**
+   *1. update the report on backend
+   * @return void
+   */
+  updateReport(report) {
+    console.log(`updating report >>> `, report, this.measures, this.dimensions);
+    /*this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
+      { queryParams: { isEditing: true }
+      });*/
   }
 
   /**

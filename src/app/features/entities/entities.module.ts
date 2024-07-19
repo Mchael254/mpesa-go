@@ -32,6 +32,10 @@ import { StaffModalComponent } from './components/staff/staff-modal/staff-modal.
 import { EntityBasicInfoComponent } from './components/entity/view-entity/entity-basic-info/entity-basic-info.component';
 import { EntityOtherDetailsComponent } from './components/entity/view-entity/entity-other-details/entity-other-details.component';
 import { EntityTransactionsComponent } from './components/entity/view-entity/entity-transactions/entity-transactions.component';
+import { EditBankFormComponent } from './components/entity/view-entity/entity-other-details/edit-bank-form/edit-bank-form.component';
+import { EditWealthFormComponent } from './components/entity/view-entity/entity-other-details/edit-wealth-form/edit-wealth-form.component';
+import { EditAmlFormComponent } from './components/entity/view-entity/entity-other-details/edit-aml-form/edit-aml-form.component';
+import { EditNokFormComponent } from './components/entity/view-entity/entity-other-details/edit-nok-form/edit-nok-form.component';
 @NgModule({
     declarations: [
         NewClientComponent,
@@ -54,6 +58,10 @@ import { EntityTransactionsComponent } from './components/entity/view-entity/ent
         EntityBasicInfoComponent,
         EntityOtherDetailsComponent,
         EntityTransactionsComponent,
+        EditBankFormComponent,
+        EditWealthFormComponent,
+        EditAmlFormComponent,
+        EditNokFormComponent,
     ],
     imports: [
         CommonModule,

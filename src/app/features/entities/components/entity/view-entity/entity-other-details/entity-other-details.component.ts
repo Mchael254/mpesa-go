@@ -6,11 +6,11 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges, ViewChild
 } from '@angular/core';
 import {CountryDto} from "../../../../../../shared/data/common/countryDto";
-import {EntityService} from "../../../../services/entity/entity.service";
 import {Logger} from "../../../../../../shared/services";
+import {EditBankFormComponent} from "./edit-bank-form/edit-bank-form.component";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -18,9 +18,13 @@ const log = new Logger('EntityOtherDetails');
   selector: 'app-entity-other-details',
   templateUrl: './entity-other-details.component.html',
   styleUrls: ['./entity-other-details.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntityOtherDetailsComponent implements OnInit, OnChanges {
+
+  @ViewChild('closeModalButton') closeModalButton;
+
+  @ViewChild(EditBankFormComponent) editBankFormComponent!: EditBankFormComponent;
 
   @Input() partyAccountDetails: any;
   @Input() countries: CountryDto[];
@@ -29,9 +33,19 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   nokList: any[]
   @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> = new EventEmitter<any>();
   @Output('fetchPaymentDetails') fetchPaymentDetails: EventEmitter<any> = new EventEmitter<any>();
+  @Output('refreshData') refreshData: EventEmitter<any> = new EventEmitter<any>();
+  activeTab: string = 'contact';
 
+  additionalInfoTabs: { index: number, tabName: string }[] = [
+    { index: 0, tabName: 'contact' },
+    { index: 1, tabName: 'bank' },
+    { index: 2, tabName: 'wealth' },
+    { index: 3, tabName: 'aml' },
+    { index: 4, tabName: 'nok' },
+  ];
 
-  constructor() {}
+  constructor() {
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     // this.getNokList();
@@ -44,13 +58,8 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   getCountryName(id: number): string {
     if (this.countries?.length > 0) {
       const country: CountryDto = this.countries.filter((item: CountryDto):boolean => item.id === id)[0];
-      // log.info(`country name ==> `, country);
       return country?.name
     }
-  }
-
-  getPaymentDetails(): void {
-    this.fetchPaymentDetails.emit();
   }
 
   getWealthAmlDetails(): void {
@@ -60,8 +69,40 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   getNokList(): void {
     if (this.partyAccountDetails?.nextOfKinDetailsList) {
       this.nokList = this.partyAccountDetails?.nextOfKinDetailsList;
-      // log.info(`nok list ==> `, this.nokList);
     }
+  }
+
+  /**
+   * Set the selected tab as active for edit purpose
+   * @param event
+   */
+  setActiveTab(event): void {
+    const index = event.index;
+    this.activeTab = this.additionalInfoTabs[index].tabName;
+  }
+
+  /**
+   * Prepare the details to be edited and send to the required component
+   */
+  prepareBankDetailsForEdit(): void {
+    if (this.activeTab === 'bank') { // todo: use switch for different tabs
+      const extras = {
+        partyAccountId: this.partyAccountDetails.id
+      };
+      this.editBankFormComponent.prepareUpdateDetails(this.bankDetails, extras);
+    }
+  }
+
+  getPaymentDetails(): void {
+    this.fetchPaymentDetails.emit();
+  }
+
+  /**
+   * Upon successful update, close modal and refresh page data
+   */
+  closeEditModal(): void {
+    this.closeModalButton.nativeElement.click();
+    this.refreshData.emit();
   }
 
 }
