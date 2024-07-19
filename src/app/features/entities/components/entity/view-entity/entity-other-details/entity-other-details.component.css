@@ -9,3 +9,12 @@ ul li {
     font-weight: 500;
     line-height: 2;
 }
+
+
+#editModalContent {
+  margin-top: 30vh!important;
+}
+
+.modal-header {
+  border-bottom: none;
+}

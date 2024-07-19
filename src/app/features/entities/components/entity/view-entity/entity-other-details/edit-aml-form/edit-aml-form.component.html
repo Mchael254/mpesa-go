@@ -1,0 +1,58 @@
+
+<form [formGroup]="amlForm">
+  <div class="row g-3">
+    <div class="col">
+      <label for="tradingNames" class="form-label">{{ 'entities.trading_names' | translate }}</label>
+      <input formControlName="tradingNames" type="text" id="tradingNames" class="form-control" aria-label="Trading Names">
+    </div>
+    <div class="col">
+      <label for="entitiesCompany" class="form-label">{{ 'entities.company' | translate }}</label>
+      <input formControlName="entitiesCompany" type="text" id="entitiesCompany" class="form-control" aria-label="entities company">
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col">
+      <label for="certRegYear" class="form-label">{{ 'entities.cert_reg_year' | translate }}</label>
+      <input formControlName="certRegYear" type="text" id="certRegYear" class="form-control" aria-label="Cert Reg Year">
+    </div>
+    <div class="col">
+      <label for="operationCountry" class="form-label">{{ 'entities.operation_country' | translate }}</label>
+      <select formControlName="operationCountry" id="operationCountry" class="form-select" aria-label="operation country">
+        <option value="">{{ 'entities.operation_country' | translate }}</option>
+        <option *ngFor="let country of countryData" [value]="country.id">
+          {{ country.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col">
+      <label for="certRegNo" class="form-label">{{ 'entities.cert_reg_no' | translate }}</label>
+      <input type="text" class="form-control" id="certRegNo" formControlName="certRegNo">
+    </div>
+    <div class="col">
+      <label for="sourceOfWealth" class="form-label">{{ 'entities.source_of_wealth' | translate }}</label>
+      <select formControlName="sourceOfWealth" id="sourceOfWealth" class="form-select" aria-label="Source of Wealth">
+        <option value="">{{ 'entities.source_of_wealth' | translate }}</option>
+        <option *ngFor="let source of fundSource" [value]="source.code">
+          {{ source.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-6">
+      <label for="parentCompany" class="form-label">{{ 'entities.parentCompany' | translate }}</label>
+      <select formControlName="parentCompany" id="parentCompany" class="form-select" aria-label="Parent company">
+        <option value="">{{ 'entities.source_of_wealth' | translate }}</option>
+        <option *ngFor="let source of fundSource" [value]="source.code">
+          {{ source.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+</form>
+
+<div class="modal-footer border-0 mt-1">
+  <button type="button" class="btn btn-primary" (click)="updateDetails()">Update details</button>
+</div>
