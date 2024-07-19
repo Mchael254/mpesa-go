@@ -13,7 +13,7 @@ import {
   ReqPartyById
 } from '../../data/entityDto';
 import {PartyTypeDto} from '../../data/partyTypeDto';
-import {PartyAccountsDetails} from '../../data/accountDTO';
+import {BankDetailsUpdateDTO, PartyAccountsDetails} from '../../data/accountDTO';
 import {UtilService} from "../../../../shared/services/util/util.service";
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {Bank} from "../../data/BankDto";
@@ -263,6 +263,14 @@ export class EntityService {
 
   fetchBankDetailsByBranchId(id: number): Observable<Bank> {
     return this.api.GET<Bank>(`bank-branches/${id}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
+  }
+
+  updateBankDetails(partyAccountId: number, bankDetails: BankDetailsUpdateDTO): Observable<BankDetailsUpdateDTO> {
+    return this.api.POST<BankDetailsUpdateDTO>(
+      `accounts/${partyAccountId}/bank-details`,
+      bankDetails,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
 }
