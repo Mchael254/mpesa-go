@@ -55,7 +55,7 @@ export class BankService {
     );
   }
 
-  getBankBranchById(id: any): Observable<BankBranchDTO[]> {
+  getBankBranchById(id: number): Observable<BankBranchDTO[]> {
     log.info('Fetching Bank Branches');
     const params = new HttpParams().set('bankId', `${id}`);
 
