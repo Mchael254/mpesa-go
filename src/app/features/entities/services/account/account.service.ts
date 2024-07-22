@@ -494,7 +494,7 @@ export class AccountService {
 
     return this.api.GET<IdentityModeDTO[]>(
       `identity-modes`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       params
     );
   }

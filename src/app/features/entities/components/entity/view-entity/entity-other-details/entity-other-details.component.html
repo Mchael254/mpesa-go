@@ -2,7 +2,7 @@
   <div class="col-sm-12">
     <h5 class=" mt-5">
         Additional Information
-        <ng-container *ngIf="activeTab !== 'contact'">
+        <ng-container *ngIf="!['contact', 'nok'].includes(activeTab)">
           <button
             class="btn btn-light btn-sm ms-4"
             style="border-radius: 100%;" data-bs-toggle="modal"
@@ -222,6 +222,7 @@
                     <th>Date of birth</th>
                     <th>Mobile no.</th>
                     <th>Email address</th>
+                  <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -230,9 +231,19 @@
                 <td>{{ nok?.identityNumber }}</td>
                 <td>{{ nok?.fullName | titlecase }}</td>
                 <td>{{ nok?.relationship | titlecase }}</td>
-                <td>xxx</td>
+                <td>[Not provided]</td>
                 <td>{{ nok?.smsNumber }}</td>
                 <td>{{ nok?.emailAddress | lowercase }}</td>
+                <td>
+                  <button
+                    class="btn btn-light btn-sm ms-4"
+                    style="border-radius: 100%;" data-bs-toggle="modal"
+                    data-bs-target="#editModal"
+                    (click)="prepareNokForEdit(nok)"
+                  >
+                    <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
         </table>
@@ -279,7 +290,7 @@
         </ng-container>
 
         <ng-container *ngIf="activeTab==='nok'">
-          <app-edit-nok-form></app-edit-nok-form>
+          <app-edit-nok-form (closeEditModal)="closeEditModal()"></app-edit-nok-form>
         </ng-container>
       </div>
     </div>
