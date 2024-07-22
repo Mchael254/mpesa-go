@@ -11,6 +11,7 @@ import {
 import {CountryDto} from "../../../../../../shared/data/common/countryDto";
 import {Logger} from "../../../../../../shared/services";
 import {EditBankFormComponent} from "./edit-bank-form/edit-bank-form.component";
+import {EditWealthFormComponent} from "./edit-wealth-form/edit-wealth-form.component";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -25,6 +26,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   @ViewChild('closeModalButton') closeModalButton;
 
   @ViewChild(EditBankFormComponent) editBankFormComponent!: EditBankFormComponent;
+  @ViewChild(EditWealthFormComponent) editWealthFormComponent!: EditWealthFormComponent;
 
   @Input() partyAccountDetails: any;
   @Input() countries: CountryDto[];
@@ -63,6 +65,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   }
 
   getWealthAmlDetails(): void {
+    log.info(`fetch wealth aml details`)
     this.fetchWealthAmlDetails.emit();
   }
 
@@ -84,13 +87,34 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   /**
    * Prepare the details to be edited and send to the required component
    */
-  prepareBankDetailsForEdit(): void {
-    if (this.activeTab === 'bank') { // todo: use switch for different tabs
+  prepareDetailsForEdit(): void {
+    const extras = {
+      partyAccountId: this.partyAccountDetails.id
+    };
+
+    switch(this.activeTab) {
+      case 'bank':
+        this.editBankFormComponent.prepareUpdateDetails(this.bankDetails, extras);
+        break;
+      case 'wealth':
+        this.editWealthFormComponent.prepareUpdateDetails(this.wealthAmlDetails, extras);
+        break;
+      case 'aml':
+        // code block
+        break;
+      case 'nok':
+        // code block
+        break;
+      default:
+      // code block
+    }
+
+    /*if (this.activeTab === 'bank') { // todo: use switch for different tabs
       const extras = {
         partyAccountId: this.partyAccountDetails.id
       };
       this.editBankFormComponent.prepareUpdateDetails(this.bankDetails, extras);
-    }
+    }*/
   }
 
   getPaymentDetails(): void {

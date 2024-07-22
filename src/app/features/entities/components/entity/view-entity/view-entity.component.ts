@@ -160,6 +160,7 @@ export class ViewEntityComponent implements OnInit {
           // this.accountService.setCurrentAccounts(accountType);
           this.accountService.setCurrentAccounts(this.partyAccountDetails);
           this.getPaymentDetails();
+          this.wealthAmlDetails = this.partyAccountDetails.wealthAmlDetails;
           this.cdr.detectChanges();
         })
 
@@ -423,6 +424,7 @@ export class ViewEntityComponent implements OnInit {
   }
 
   getWealthAmlDetails(): void {
+    log.info(`fetching wealth AML details`);
     if (this.partyAccountDetails.wealthAmlDetails) {
       this.wealthAmlDetails = {
         citizenship_country_id:  this.partyAccountDetails?.wealthAmlDetails?.citizenship_country_id,

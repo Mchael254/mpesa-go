@@ -72,8 +72,8 @@ export class EditBankFormComponent implements OnInit{
       paymentMethod: null,
       partyAccountId: extras.partyAccountId
     });
-    console.log(`bank details >>> `, bankDetails, extras);
-    this.progressBarWidth = 75;
+    this.progressBarWidth = 50;
+    this.cdr.detectChanges();
   }
 
   /**
@@ -85,7 +85,8 @@ export class EditBankFormComponent implements OnInit{
       next: (banksData) => {
         this.banksData = banksData;
         this.fetchBranches(this.bankDetails?.bankId);
-        this.progressBarWidth = 85;
+        this.progressBarWidth = 75;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         log.info(`could not fetch banks`, err);
@@ -108,7 +109,6 @@ export class EditBankFormComponent implements OnInit{
         this.cdr.detectChanges();
       },
       error: (err) => {
-        log.info(`could not fetch branches`, err);
         const errorMessage = err?.error?.message ?? err.message
         this.globalMessagingService.displayErrorMessage("Error", errorMessage);
       }
