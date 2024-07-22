@@ -1,3 +1,8 @@
+<ng-container *ngIf="!shouldShowEditForm">
+  <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" [style]="'width:' + progressBarWidth + '%'"></div>
+  </div>
+</ng-container>
 
 <form [formGroup]="nokForm">
   <div class="row g-3">
@@ -26,7 +31,13 @@
   <div class="row g-3 mt-1">
     <div class="col">
       <label for="relation" class="form-label">{{ 'entities.relation' | translate }}</label>
-      <input formControlName="relation" type="text" id="relation" class="form-control" aria-label="Relation">
+      <!--<input formControlName="relation" type="text" id="relation" class="form-control" aria-label="Relation">-->
+      <select formControlName="relation" id="relation" class="form-select" aria-label="relation">
+        <option value="">{{ 'entities.relation' | translate }}</option>
+        <option *ngFor="let relation of relationships" [value]="relation.name">
+          {{ relation.name | titlecase }}
+        </option>
+      </select>
     </div>
     <div class="col">
       <label for="mobile" class="form-label">{{ 'entities.mobile_number' | translate }}</label>

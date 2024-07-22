@@ -15,7 +15,7 @@ import {
 import {PartyTypeDto} from '../../data/partyTypeDto';
 import {
   AmlWealthDetailsUpdateDTO,
-  BankDetailsUpdateDTO,
+  BankDetailsUpdateDTO, NextKinDetailsUpdateDTO,
   PartyAccountsDetails,
   WealthDetailsUpdateDTO
 } from '../../data/accountDTO';
@@ -290,6 +290,14 @@ export class EntityService {
     return this.api.POST<AmlWealthDetailsUpdateDTO>(
       `accounts/${partyAccountId}/aml-details`,
       amlDetails,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateNokDetails(partyAccountId: number, nokDetails: NextKinDetailsUpdateDTO): Observable<NextKinDetailsUpdateDTO> {
+    return this.api.POST<NextKinDetailsUpdateDTO>(
+      `accounts/${partyAccountId}/next-of-kin-details`,
+      nokDetails,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
