@@ -12,6 +12,8 @@ import {CountryDto} from "../../../../../../shared/data/common/countryDto";
 import {Logger} from "../../../../../../shared/services";
 import {EditBankFormComponent} from "./edit-bank-form/edit-bank-form.component";
 import {EditWealthFormComponent} from "./edit-wealth-form/edit-wealth-form.component";
+import {EditAmlFormComponent} from "./edit-aml-form/edit-aml-form.component";
+import {EditNokFormComponent} from "./edit-nok-form/edit-nok-form.component";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -27,6 +29,8 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   @ViewChild(EditBankFormComponent) editBankFormComponent!: EditBankFormComponent;
   @ViewChild(EditWealthFormComponent) editWealthFormComponent!: EditWealthFormComponent;
+  @ViewChild(EditAmlFormComponent) editAmlFormComponent!: EditAmlFormComponent;
+  @ViewChild(EditNokFormComponent) editNokFormComponent!: EditNokFormComponent;
 
   @Input() partyAccountDetails: any;
   @Input() countries: CountryDto[];
@@ -100,7 +104,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
         this.editWealthFormComponent.prepareUpdateDetails(this.wealthAmlDetails, extras);
         break;
       case 'aml':
-        // code block
+        this.editAmlFormComponent.prepareUpdateDetails(this.wealthAmlDetails, extras);
         break;
       case 'nok':
         // code block

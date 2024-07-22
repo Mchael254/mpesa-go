@@ -275,7 +275,7 @@
         </ng-container>
 
         <ng-container *ngIf="activeTab==='aml'">
-          <app-edit-aml-form></app-edit-aml-form>
+          <app-edit-aml-form (closeEditModal)="closeEditModal()"></app-edit-aml-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='nok'">
