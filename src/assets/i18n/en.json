@@ -548,7 +548,8 @@
     "withholding_tax_required": "Withholding Tax is required",
     "yes": "Yes",
     "zero": "Zero",
-    "update_details": "Update details"
+    "update_details": "Update details",
+    "company": "Company"
   },
   "gis": {
     "quotation": {

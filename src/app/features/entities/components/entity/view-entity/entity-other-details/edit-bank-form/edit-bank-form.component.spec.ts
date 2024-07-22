@@ -4,6 +4,7 @@ import { EditBankFormComponent } from './edit-bank-form.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {AppConfigService} from "../../../../../../../core/config/app-config-service";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
+import {TranslateModule} from "@ngx-translate/core";
 
 export class MockAppConfigService {
   get config() {
@@ -33,7 +34,8 @@ describe('EditBankFormComponent', () => {
     TestBed.configureTestingModule({
       declarations: [EditBankFormComponent],
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        TranslateModule.forRoot(),
       ],
       providers: [
         { provide: AppConfigService, useClass: MockAppConfigService },

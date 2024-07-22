@@ -227,11 +227,6 @@ export class CreateReportComponent implements OnInit {
       queryName: query.name
     }
 
-    console.log(`category<metrics> ==> `, category);
-    console.log(`subCategory ==> `, subCategory);
-    console.log(`query ==> `, query);
-    // console.log(`queryObject ==> `, this.queryObject);
-
     const criterion = `${this.queryObject.transaction}.${this.queryObject.query}`;
     const checkCriterion = this.checkIfCriterionExists(criterion, this.measures, this.dimensions);
     if (checkCriterion) {
@@ -436,7 +431,6 @@ export class CreateReportComponent implements OnInit {
    * @return void
    */
   updateReport(report) {
-    console.log(`updating report >>> `, report, this.measures, this.dimensions);
     /*this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
       { queryParams: { isEditing: true }
       });*/
@@ -450,11 +444,9 @@ export class CreateReportComponent implements OnInit {
   updateFilter(filter): void {
     log.info(`filter to save ==> `, filter);
     this.criteria.forEach((criterion) => {
-      console.log(`criterion ==> `, criterion, criterion.query == filter.queryObject.query)
       if (criterion.query == filter.queryObject.query && filter.filter !== null) {
         criterion.filter = filter.queryObject.filter
         this.filters.push(filter)
-        console.log(`pushing filter to this.filters ==> `, this.filters)
       } else if (criterion.query == filter.queryObject.query && filter.filter === null) {
         this.filters = this.filters.filter(item => item.queryObject.queryName === filter.queryObject.queryName ? null : item);
         delete criterion.filter
