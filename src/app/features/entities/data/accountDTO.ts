@@ -188,7 +188,7 @@ export interface BankDetailsUpdateDTO {
     citizenship_country_id?: number;
     funds_source?: string;
     id?: number;
-    is_employed?: number;
+    is_employed?: string;
     is_self_employed?: number;
     marital_status?: string;
     nationality_country_id?: number;
