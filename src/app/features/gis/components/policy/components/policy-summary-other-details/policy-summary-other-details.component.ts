@@ -122,6 +122,7 @@ export class PolicySummaryOtherDetailsComponent {
   premiumListIndex = 0;
   sectionArray: any;
   sectionDetailsForm: FormGroup;
+  selectedPremiumItem:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -157,6 +158,8 @@ export class PolicySummaryOtherDetailsComponent {
   public isRiskClauseDetailsOpen = false;
   public isRiskDetailsOpen = false;
   public isPremiumDetailOpen = false;
+  public isRequiredDocDetailOpen = false;
+
 
   ngOnInit(): void {
     this.getUtil();
@@ -255,7 +258,7 @@ export class PolicySummaryOtherDetailsComponent {
             console.debug("Policy Details data get policy", this.policyDetailsData); // Changed from log.debug to console.debug
 
             this.riskDetails = this.policyDetailsData.riskInformation;
-            this.sectionsDetails = this.riskDetails[0].sections;
+            // this.sectionsDetails = this.riskDetails[0].sections;
 
             this.cdr.detectChanges();
         } else {
@@ -1115,6 +1118,18 @@ togglePremiumDetails() {
   }
   addPremiumItem(){
 
+  }
+  openPremiumDeleteModal() {
+    log.debug("Selected PremiumItem", this.selectedPremiumItem)
+    if (!this.selectedPremiumItem) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Premium item to continue');
+    } else {
+      document.getElementById("openModalPremiumButtonDelete").click();
+
+    }
+  }
+  toggleRequiredDocDetails() {
+    this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
   }
 }
 
