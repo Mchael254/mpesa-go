@@ -89,7 +89,6 @@ export class EditBankFormComponent implements OnInit{
         this.cdr.detectChanges();
       },
       error: (err) => {
-        log.info(`could not fetch banks`, err);
         const errorMessage = err?.error?.message ?? err.message
         this.globalMessagingService.displayErrorMessage("Error", errorMessage);
       }

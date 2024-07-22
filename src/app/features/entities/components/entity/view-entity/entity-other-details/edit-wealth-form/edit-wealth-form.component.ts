@@ -153,6 +153,7 @@ export class EditWealthFormComponent implements OnInit{
       sector_id: formValues.sector,
       source_of_funds_id: formValues.sourceOfFunds,
     }
+
     this.entityService.updateWealthDetails(this.extras.partyAccountId, wealthDetailsToUpdate)
       .subscribe({
         next: (res) => {

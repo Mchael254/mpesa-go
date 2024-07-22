@@ -13,7 +13,12 @@ import {
   ReqPartyById
 } from '../../data/entityDto';
 import {PartyTypeDto} from '../../data/partyTypeDto';
-import {BankDetailsUpdateDTO, PartyAccountsDetails, WealthDetailsUpdateDTO} from '../../data/accountDTO';
+import {
+  AmlWealthDetailsUpdateDTO,
+  BankDetailsUpdateDTO,
+  PartyAccountsDetails,
+  WealthDetailsUpdateDTO
+} from '../../data/accountDTO';
 import {UtilService} from "../../../../shared/services/util/util.service";
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {Bank} from "../../data/BankDto";
@@ -277,6 +282,14 @@ export class EntityService {
     return this.api.POST<WealthDetailsUpdateDTO>(
       `accounts/${partyAccountId}/wealth-details`,
       wealthDetails,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateAmlDetails(partyAccountId: number, amlDetails: AmlWealthDetailsUpdateDTO): Observable<AmlWealthDetailsUpdateDTO> {
+    return this.api.POST<AmlWealthDetailsUpdateDTO>(
+      `accounts/${partyAccountId}/aml-details`,
+      amlDetails,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
