@@ -7,7 +7,7 @@
             class="btn btn-light btn-sm ms-4"
             style="border-radius: 100%;" data-bs-toggle="modal"
             data-bs-target="#editModal"
-            (click)="prepareBankDetailsForEdit()"
+            (click)="prepareDetailsForEdit()"
           >
             <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
           </button>
@@ -110,14 +110,9 @@
     <p-tabPanel
       id="get-wealth-aml-details"
       header="Wealth Details"
-      *ngIf="wealthAmlDetails"
+      *ngIf="wealthAmlDetails?.id"
       (click)="getWealthAmlDetails()"
     >
-  <!--<p-tabPanel
-    id="get-wealth-aml-details"
-    header="Wealth Details"
-    (click)="getWealthAmlDetails()"
-  >-->
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -164,8 +159,7 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails">
-<!--    <p-tabPanel header="AML Details">-->
+    <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails?.id">
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -277,11 +271,11 @@
         </ng-container>
 
         <ng-container *ngIf="activeTab==='wealth'">
-          <app-edit-wealth-form></app-edit-wealth-form>
+          <app-edit-wealth-form (closeEditModal)="closeEditModal()"></app-edit-wealth-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='aml'">
-          <app-edit-aml-form></app-edit-aml-form>
+          <app-edit-aml-form (closeEditModal)="closeEditModal()"></app-edit-aml-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='nok'">

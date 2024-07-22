@@ -1,3 +1,8 @@
+<ng-container *ngIf="!shouldShowEditForm">
+  <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" [style]="'width:' + progressBarWidth + '%'"></div>
+  </div>
+</ng-container>
 
 <form [formGroup]="wealthForm">
   <div class="row g-3">
@@ -12,6 +17,7 @@
     </div>
     <div class="col">
       <label for="sourceOfFunds" class="form-label">{{ 'entities.source_of_funds' | translate }}</label>
+<!--      <input formControlName="sourceOfFunds" type="text" id="sourceOfFunds" class="form-control" aria-label="Source of funds">-->
       <select formControlName="sourceOfFunds" id="sourceOfFunds" class="form-select" aria-label="sourceOfFunds">
         <option value="">{{ 'entities.source_of_funds' | translate }}</option>
         <option *ngFor="let source of fundSource" [value]="source.code">
@@ -53,5 +59,5 @@
 </form>
 
 <div class="modal-footer border-0 mt-1">
-<!--  <button type="button" class="btn btn-primary" (click)="updateDetails()">Update details</button>-->
+  <button type="button" class="btn btn-primary" (click)="updateDetails()">{{ 'entities.update_details' | translate }}</button>
 </div>
