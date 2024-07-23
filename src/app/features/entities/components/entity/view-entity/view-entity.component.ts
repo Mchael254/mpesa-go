@@ -80,6 +80,7 @@ export class ViewEntityComponent implements OnInit {
 
   wealthAmlDetails: any;
   bankDetails: any;
+  nokDetails: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -156,11 +157,12 @@ export class ViewEntityComponent implements OnInit {
         )
         .subscribe((data: PartyAccountsDetails) => {
           this.partyAccountDetails = data
-          log.info('This is the selected account data >>>>>', this.partyAccountDetails);
+          log.info('This is the selected account data >>>>>', this.accountCode, this.partyAccountDetails);
           // this.accountService.setCurrentAccounts(accountType);
           this.accountService.setCurrentAccounts(this.partyAccountDetails);
           this.getPaymentDetails();
           this.wealthAmlDetails = this.partyAccountDetails.wealthAmlDetails;
+          this.nokDetails = this.partyAccountDetails.nextOfKinDetailsList;
           this.cdr.detectChanges();
         })
 

@@ -15,7 +15,7 @@ import {
 import {PartyTypeDto} from '../../data/partyTypeDto';
 import {
   AmlWealthDetailsUpdateDTO,
-  BankDetailsUpdateDTO,
+  BankDetailsUpdateDTO, NextKinDetailsUpdateDTO,
   PartyAccountsDetails,
   WealthDetailsUpdateDTO
 } from '../../data/accountDTO';
@@ -31,7 +31,7 @@ import {ClaimsDTO} from "../../../gis/data/claims-dto";
 })
 export class EntityService {
 
-  baseUrl = this.appConfig.config.contextPath.setup_services;
+  // baseUrl = this.appConfig.config.contextPath.setup_services;
   private entity$ = new BehaviorSubject<EntityDto>({
     partyTypeId: 0,
     profilePicture: '',
@@ -290,6 +290,14 @@ export class EntityService {
     return this.api.POST<AmlWealthDetailsUpdateDTO>(
       `accounts/${partyAccountId}/aml-details`,
       amlDetails,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateNokDetails(partyAccountId: number, nokDetails: NextKinDetailsUpdateDTO): Observable<NextKinDetailsUpdateDTO> {
+    return this.api.POST<NextKinDetailsUpdateDTO>(
+      `accounts/${partyAccountId}/next-of-kin-details`,
+      nokDetails,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
