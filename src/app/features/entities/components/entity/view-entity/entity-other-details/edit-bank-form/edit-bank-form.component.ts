@@ -127,7 +127,6 @@ export class EditBankFormComponent implements OnInit{
    */
   updateDetails(): void {
     const formValues = this.bankForm.getRawValue();
-    log.info(`bank form values >>> `, formValues);
     const bankDetailsToUpdate: BankDetailsUpdateDTO = {
       account_number: formValues.accountNo,
       bank_branch_id: formValues.branch,
