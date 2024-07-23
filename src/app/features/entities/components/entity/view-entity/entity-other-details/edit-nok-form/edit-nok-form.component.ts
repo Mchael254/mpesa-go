@@ -88,12 +88,11 @@ export class EditNokFormComponent implements OnInit {
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
   prepareUpdateDetails(nokDetails: any, extras: any): void {
-    log.info(`nok details to update >>>`, nokDetails);
     this.shouldShowEditForm = false;
     this.nokDetails = nokDetails;
     this.extras = extras;
     this.nokForm.patchValue({
-      identityType: nokDetails.modeOfIdentity.id,
+      identityType: nokDetails.modeOfIdentity?.id,
       idNo: nokDetails.identityNumber,
       fullNames: nokDetails.fullName,
       email: nokDetails.emailAddress,
@@ -111,7 +110,7 @@ export class EditNokFormComponent implements OnInit {
   updateDetails(): void {
     const formValues = this.nokForm.getRawValue();
     const nokDetailsToUpdate: NextKinDetailsUpdateDTO = {
-      id: this.nokDetails.id,
+      id: this.nokDetails?.id,
       fullName: formValues.fullNames,
       modeOfIdentityId: formValues.identityType,
       identityNumber: formValues.idNo,
@@ -122,7 +121,7 @@ export class EditNokFormComponent implements OnInit {
       accountId: this.extras.partyAccountId,
     };
 
-    this.entityService.updateNokDetails(417, nokDetailsToUpdate)
+    this.entityService.updateNokDetails(this.extras.partyAccountId, nokDetailsToUpdate)
       .subscribe({
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Next-of-Kin Details');

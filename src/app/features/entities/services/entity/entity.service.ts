@@ -31,7 +31,7 @@ import {ClaimsDTO} from "../../../gis/data/claims-dto";
 })
 export class EntityService {
 
-  baseUrl = this.appConfig.config.contextPath.setup_services;
+  // baseUrl = this.appConfig.config.contextPath.setup_services;
   private entity$ = new BehaviorSubject<EntityDto>({
     partyTypeId: 0,
     profilePicture: '',
