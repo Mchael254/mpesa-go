@@ -171,3 +171,41 @@
   .section-label{
     color: #000;
   }
+  .form-check {
+    display: flex;
+    align-items: left;
+}
+.form-check-input {
+    margin-left: 0px; /* Adjust as needed */
+}
+#sectionLabel{
+    color: #000;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#sectionInput{
+    color: #000;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#sectionRows{
+    margin-left:16px;
+    margin-right:16px;
+}
+#editScheduleLabel{
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 30px;
+    margin-left:26px;
+
+}
