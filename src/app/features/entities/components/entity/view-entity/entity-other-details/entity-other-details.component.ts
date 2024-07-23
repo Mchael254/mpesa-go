@@ -93,7 +93,8 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
    */
   prepareDetailsForEdit(): void {
     const extras = {
-      partyAccountId: this.partyAccountDetails.id
+      partyAccountId: this.partyAccountDetails.id,
+      countryId: this.partyAccountDetails.country.id,
     };
 
     switch(this.activeTab) {
@@ -113,12 +114,6 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
       // code block
     }
 
-    /*if (this.activeTab === 'bank') { // todo: use switch for different tabs
-      const extras = {
-        partyAccountId: this.partyAccountDetails.id
-      };
-      this.editBankFormComponent.prepareUpdateDetails(this.bankDetails, extras);
-    }*/
   }
 
   getPaymentDetails(): void {
