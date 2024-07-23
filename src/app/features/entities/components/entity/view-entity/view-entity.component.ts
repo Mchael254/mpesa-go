@@ -157,7 +157,7 @@ export class ViewEntityComponent implements OnInit {
         )
         .subscribe((data: PartyAccountsDetails) => {
           this.partyAccountDetails = data
-          log.info('This is the selected account data >>>>>', this.partyAccountDetails);
+          log.info('This is the selected account data >>>>>', this.accountCode, this.partyAccountDetails);
           // this.accountService.setCurrentAccounts(accountType);
           this.accountService.setCurrentAccounts(this.partyAccountDetails);
           this.getPaymentDetails();

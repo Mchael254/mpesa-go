@@ -31,7 +31,6 @@
   <div class="row g-3 mt-1">
     <div class="col">
       <label for="relation" class="form-label">{{ 'entities.relation' | translate }}</label>
-      <!--<input formControlName="relation" type="text" id="relation" class="form-control" aria-label="Relation">-->
       <select formControlName="relation" id="relation" class="form-select" aria-label="relation">
         <option value="">{{ 'entities.relation' | translate }}</option>
         <option *ngFor="let relation of relationships" [value]="relation.name">
@@ -53,5 +52,5 @@
 </form>
 
 <div class="modal-footer border-0 mt-1">
-  <button type="button" class="btn btn-primary" (click)="updateDetails()">Update details</button>
+  <button type="button" class="btn btn-primary" id="update-details" (click)="updateDetails()">{{ 'entities.update_details' | translate }}</button>
 </div>
