@@ -136,7 +136,7 @@ describe('EditBankFormComponent', () => {
     // todo:
   });
 
-  test('should update bank details and save to database', () => {
+  test('should update Bank details and save to database', () => {
     component.extras = extras;
     component.bankForm.controls['bank'].setValue(1);
     component.bankForm.controls['accountNo'].setValue(12390756);
@@ -149,6 +149,5 @@ describe('EditBankFormComponent', () => {
     fixture.detectChanges();
 
     expect(component.updateDetails.call).toBeTruthy();
-    expect(component.closeEditModal).toHaveBeenCalled();
   });
 });

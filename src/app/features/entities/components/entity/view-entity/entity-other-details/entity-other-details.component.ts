@@ -36,7 +36,8 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   @Input() countries: CountryDto[];
   @Input() bankDetails: any;
   @Input() wealthAmlDetails: any;
-  nokList: any[]
+  // @Input() nokDetails: any;
+  @Input() nokList: any[]
   @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> = new EventEmitter<any>();
   @Output('fetchPaymentDetails') fetchPaymentDetails: EventEmitter<any> = new EventEmitter<any>();
   @Output('refreshData') refreshData: EventEmitter<any> = new EventEmitter<any>();
@@ -94,7 +95,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   prepareDetailsForEdit(): void {
     const extras = {
       partyAccountId: this.partyAccountDetails.id,
-      countryId: this.partyAccountDetails.country.id,
+      countryId: this.partyAccountDetails?.country?.id,
     };
 
     switch(this.activeTab) {
@@ -126,6 +127,15 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   closeEditModal(): void {
     this.closeModalButton.nativeElement.click();
     this.refreshData.emit();
+  }
+
+  prepareNokForEdit(nok: any): void {
+    const extras = {
+      partyAccountId: this.partyAccountDetails.id,
+      countryId: this.partyAccountDetails?.country?.id,
+    };
+    const nokToUpdate = this.nokList.filter(el => el.id === nok.id)[0];
+    this.editNokFormComponent.prepareUpdateDetails(nokToUpdate, extras);
   }
 
 }
