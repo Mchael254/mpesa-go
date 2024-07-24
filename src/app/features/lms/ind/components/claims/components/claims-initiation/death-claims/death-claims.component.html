@@ -1,0 +1,112 @@
+<form [formGroup]="claimInitForm">
+  <div class="container mt-2">
+  <!-- Claim Details -->
+  <div class="row">
+    <div class="fw-medium section-title">{{ "lms.ind.claim_details" | translate }}</div>
+
+    <div class="col-md-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <label for="claimClients">{{ "lms.ind.claim_on_life" | translate }}</label>
+        <select class="form-select" [id]="'claimClients'" formControlName="claimClients">
+          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+          <option *ngFor="let data of (claimClients | async) | sort : 'asc' : 'name' "
+                  [value]="data.name">
+            {{ data?.name | titlecase}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <label for="causationType">{{ "lms.ind.causation_type" | translate }}</label>
+        <select class="form-select" [id]="'causationType'" formControlName="causationType">
+          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+          <option *ngFor="let data of (causationTypes | async) | sort : 'asc' : 'name' "
+                  [value]="data.code">
+            {{ data?.name | titlecase }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <label for="causationCause">{{ "lms.ind.causation_cause" | translate }}</label>
+        <select class="form-select" [id]="'causationCause'" formControlName="causationCause">
+          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+          <option *ngFor="let data of (causationCauses | async) | sort : 'asc' : 'caus_desc' "
+                  [value]="data.caus_code">
+            {{ data?.caus_desc | titlecase}}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-md-4">
+      <div>
+        <div>
+          <label for="incidentDate">{{ "lms.ind.incident_date" | translate }}</label>
+        </div>
+        <div class="form-group">
+          <div>
+            <p-calendar formControlName="incidentDate" dateFormat="dd/mm/yy" [showIcon]="true"
+                        [showButtonBar]="true" placeholder="dd/mm/yy">
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div>
+        <div>
+          <label for="dateReported">{{ "lms.ind.date_reported" | translate }}</label>
+        </div>
+        <div class ="form-group">
+          <div>
+            <p-calendar formControlName="dateReported" dateFormat="dd/mm/yy" [showIcon]="true"
+                        [showButtonBar]="true" placeholder="dd/mm/yy">
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div>
+        <label for="incidentLocation">{{ "lms.ind.incident_location" | translate }}</label>
+      </div>
+      <div class ="form-group">
+        <div>
+          <input type="text" pInputText class="form-control" id="incidentLocation" [style]="{ width: '100%' }"
+                 formControlName="incidentLocation">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-md-4">
+      <div>
+        <label for="incubationPeriod">{{ "lms.ind.incubation_period" | translate }}</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" value="yes" formControlName="incubationPeriod"
+               id="inlineRadio1" name="incubationPeriod" />
+        <label class="form-check-label" for="inlineRadio1">{{ "lms.ind.yes" | translate }}</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input  class="form-check-input" type="radio" value="no" formControlName="incubationPeriod"
+                id="inlineRadio2" name="incubationPeriod" />
+        <label class="form-check-label" for="inlineRadio2">{{ "lms.ind.no" | translate }}</label>
+      </div>
+    </div>
+
+  </div>
+  <!-- End of Claim Details -->
+</div>
+</form>

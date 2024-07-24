@@ -7,18 +7,19 @@ import { BaseComponent } from './base/base.component';
 import { EndorsementTypePipe } from './pipe/endorsement-type/endorsement-type.pipe';
 
 @NgModule({
-  declarations: [
-    PolicyListComponent,
-    BaseComponent,
-    EndorsementTypePipe,
-
+    declarations: [
+        PolicyListComponent,
+        BaseComponent,
+        EndorsementTypePipe,
+    ],
+  exports: [
   ],
-  imports: [
-    CommonModule,
-    LmsRoutingModule,
-    SharedModule,
+    imports: [
+        CommonModule,
+        LmsRoutingModule,
+        SharedModule,
 
 
-  ]
+    ]
 })
 export class LmsModule { }
