@@ -8,12 +8,13 @@ import {
   Output,
   SimpleChanges, ViewChild
 } from '@angular/core';
-import {CountryDto} from "../../../../../../shared/data/common/countryDto";
+import {CountryDto, StateDto} from "../../../../../../shared/data/common/countryDto";
 import {Logger} from "../../../../../../shared/services";
 import {EditBankFormComponent} from "./edit-bank-form/edit-bank-form.component";
 import {EditWealthFormComponent} from "./edit-wealth-form/edit-wealth-form.component";
 import {EditAmlFormComponent} from "./edit-aml-form/edit-aml-form.component";
 import {EditNokFormComponent} from "./edit-nok-form/edit-nok-form.component";
+import {BankBranchDTO} from "../../../../../../shared/data/common/bank-dto";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -35,7 +36,9 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   @Input() partyAccountDetails: any;
   @Input() countries: CountryDto[];
   @Input() bankDetails: any;
+  @Input() bankBranch: BankBranchDTO;
   @Input() wealthAmlDetails: any;
+  @Input() states: StateDto[];
   // @Input() nokDetails: any;
   @Input() nokList: any[]
   @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> = new EventEmitter<any>();
@@ -117,10 +120,6 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   }
 
-  getPaymentDetails(): void {
-    this.fetchPaymentDetails.emit();
-  }
-
   /**
    * Upon successful update, close modal and refresh page data
    */
@@ -138,4 +137,5 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
     this.editNokFormComponent.prepareUpdateDetails(nokToUpdate, extras);
   }
 
+  protected readonly status = status;
 }

@@ -3,6 +3,7 @@ import {AccountReqPartyId, ReqPartyById} from 'src/app/features/entities/data/en
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
 import {Logger} from "../../../../../../shared/services";
 import {PartyTypeDto} from "../../../../data/partyTypeDto";
+import {StateDto} from "../../../../../../shared/data/common/countryDto";
 
 const log = new Logger('EntityBasicInfoComponent');
 
