@@ -1,18 +1,10 @@
-.main {
-  background: #F5F6F8;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  padding: 20px;
-}
 
 .container {
   background: #FFF;
   border: 1px solid rgba(220, 220, 220, 0.85);
   border-radius: 5px;
   flex: 1;
-  padding: 48px;
+  padding: 20px 48px;
 }
 
 .button-container {
@@ -20,7 +12,6 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 10px;
-  padding: 48px;
 }
 
 button {
@@ -47,7 +38,7 @@ button.choose-file:hover {
 }
 
 .title {
-  padding-bottom: 1rem;
+  //padding-bottom: 1rem;
   font-size: 1.25rem;
   font-weight: 500;
 }
@@ -66,29 +57,6 @@ label {
   white-space: nowrap;
 }
 
-.choose-file {
-  display: inline-flex;
-  height: 24px;
-  padding: 12px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  border-radius: 4px;
-  border: 1px solid #00529B;
-  background-color: #FFF;
-}
-
-.file-text {
-  color: #00529B;
-  font-family: 'Roboto', sans-serif;
-  padding: 0px;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-}
-
 .fixed-width-label {
   width: 150px;
   margin-right: 40px;
@@ -101,12 +69,6 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 @media (max-width: 1000px) {
-  .main {
-    width: 100%;
-    overflow: auto;
-    align-items: center;
-  }
-
   .container {
     flex-direction: column;
     width: 100%;
@@ -116,10 +78,6 @@ input[type="number"]::-webkit-outer-spin-button {
   .btns-container {
     margin-top: 20px;
     margin-left: unset;
-    width: 100%;
-  }
-
-  .proceed-btn {
     width: 100%;
   }
 

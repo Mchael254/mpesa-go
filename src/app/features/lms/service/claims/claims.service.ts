@@ -23,11 +23,11 @@ export class ClaimsService {
     return this.api.GET<PoliciesClaimModuleDTO[]>(
       `individual/parties/claim-clients?policy_no=&name=an`,
       API_CONFIG.UNDERWRITING_SERVICE_BASE_URL
-    );  
+    );
   }
 
   getClaimDetails(clm_no:string){
-    return this.api.GET(`individual/claims?clm_no=${clm_no}`, 
+    return this.api.GET(`individual/claims?clm_no=${clm_no}`,
       API_CONFIG.CLAIMS_SERVICE_BASE_URL)
   }
 
