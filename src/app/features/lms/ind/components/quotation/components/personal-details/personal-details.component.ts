@@ -573,7 +573,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.clientService.getClientType(organizationId).subscribe((data) => {
       // Filter the data to find the 'INDIVIDUAL' client type
       const filteredClientType = data.filter((item: { clientTypeName: string }) => item.clientTypeName === 'Individual');
-  
+
       // Check if we found any matching client type
       if (filteredClientType.length > 0) {
         this.clientType = filteredClientType[0];

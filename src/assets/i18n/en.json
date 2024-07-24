@@ -899,7 +899,15 @@
       "proceed": "Proceed",
       "select_an_option": "Select an Option",
       "upload_documents": "Upload Documents",
-      "yes": "Yes"
+      "yes": "Yes",
+      "policy_member": "Policy Member",
+      "claim_reason": "Claim Reason",
+      "request_date": "Request Date",
+      "surrender_date": "Surrender Date",
+      "surrender_type": "Surrender Type",
+      "offset_premium": "Offset Premium",
+      "within_system": "Within System",
+      "outside_system": "Outside System"
     },
     "grp": {}
   },

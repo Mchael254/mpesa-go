@@ -1,0 +1,50 @@
+
+<form [formGroup]="claimInitForm">
+  <div class="container">
+    <!-- Title -->
+    <div class="transactions d-flex justify-content-center fw-medium title">{{ "lms.ind.claims" | translate }}</div>
+    <!-- Initiation Elements -->
+    <!-- Client Details -->
+    <div class="fw-medium section-title">{{ "lms.ind.client_details" | translate }}</div>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <label for="policySelection">{{ "lms.ind.policy" | translate }}</label>
+          <select class="form-select" [id]="'policySelection'" formControlName="policySelection">
+
+            <option *ngFor="let data of (policy | async) | sort : 'asc' : 'prp_code'" [value]="data.value">
+              {{ data?.prp_code}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+
+
+      <div class="col-md-4">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <label for="policyMember">{{ "lms.ind.policy_member" | translate }}</label>
+          <select class="form-select" [id]="'clientDetails'" formControlName="policyMember">
+            <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+            <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value">
+              {{ data?.name | titlecase }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <label for="claimType">{{ "lms.ind.claim_type" | translate }}</label>
+          <select class="form-select" [id]="'claimType'" formControlName="claimType">
+            <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
+            <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value">
+              {{ data?.name | titlecase }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- End of Client Details -->
+  </div>
+</form>

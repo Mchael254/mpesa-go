@@ -20,6 +20,7 @@
             <div>{{ step.number }}</div>
           </div>
           <div class="title step-link">{{ step.title }}</div>
+          <div *ngIf="i < stepperData.length - 1" class="border-line position-absolute"></div>
         </div>
         <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
       </ng-container>

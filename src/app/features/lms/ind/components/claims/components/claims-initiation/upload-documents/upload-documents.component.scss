@@ -1,0 +1,62 @@
+.container {
+  background: #FFF;
+  border: 1px solid rgba(220, 220, 220, 0.85);
+  border-radius: 5px;
+  flex: 1;
+  padding: 48px;
+}
+
+button.choose-file:hover {
+  transform: translateY(2px);
+}
+
+
+.section-title {
+  font-size: 1rem;
+}
+
+.row {
+  padding-top: 10px;
+}
+
+label {
+  color: black;
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+
+.choose-file {
+  display: inline-flex;
+  height: 24px;
+  padding: 12px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  background-color: #FFF;
+}
+
+.file-text {
+  color: #00529B;
+  font-family: 'Roboto', sans-serif;
+  padding: 0px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.fixed-width-label {
+  width: 150px;
+  margin-right: 40px;
+}
+
+
+@media (max-width: 1000px) {
+  .label {
+    overflow-x: auto;
+  }
+
+}
