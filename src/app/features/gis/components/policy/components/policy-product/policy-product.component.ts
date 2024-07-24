@@ -143,7 +143,7 @@ export class PolicyProductComponent {
   ) { }
 
   ngOnInit(): void {
-
+    this.spinner.show()
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     log.debug("Passed Transaction type:", this.selectedTransactionType);
     this.loadAllClients();
@@ -225,12 +225,14 @@ export class PolicyProductComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
-
+          this.spinner.hide()
           if (data) {
             this.clientList = data;
             log.debug("CLIENT DATA:", this.clientList)
             this.clientData = this.clientList.content
             log.debug("CLIENT DATA:", this.clientData)
+
+
 
           } else {
             this.errorOccurred = true;
@@ -245,7 +247,7 @@ export class PolicyProductComponent {
 
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            this.errorMessage
+            'Something went wrong. Please try Again'
           );
           log.info(`error >>>`, err);
         },
@@ -332,7 +334,7 @@ export class PolicyProductComponent {
             this.errorMessage = 'Something went wrong. Please try Again';
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              'Something went wrong. Please try Again'
+              'Something went wrong while trying to get the products. Please try Again'
             );
           }
         },
