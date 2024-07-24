@@ -54,7 +54,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.claimsService.getClaimModules().subscribe(data => console.log('getClaimModules', data))
     this.createForm();
     this.getClaimModules();
     this.getClaimClients();
@@ -96,7 +95,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   }
 
   getClaimModules() {
-    this.claimsService.getClaimModules().subscribe(data => console.log('getClaimModules', data))
     this.policy$ = this.claimsService.getClaimModules().pipe(
       tap(data => log.info('PoliciesClaimModuleDTO>>>>', data)),
       catchError(error => {
