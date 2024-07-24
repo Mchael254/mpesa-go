@@ -20,6 +20,7 @@ import { SectionsService } from '../../../setups/services/sections/sections.serv
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
+import { RequiredDocumentService } from '../../../setups/services/required-documents/required-document.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -126,6 +127,9 @@ export class PolicySummaryOtherDetailsComponent {
   sectionDetailsForm: FormGroup;
   selectedPremiumItem:any;
 
+  filteredRequiredDocs:any[]=[];
+  selectedDocument:any;
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -152,6 +156,8 @@ export class PolicySummaryOtherDetailsComponent {
     public premiumRateService: PremiumRateService,
     public subclassService:SubclassesService,
     public riskClauseService:RiskClausesService,
+    public requiredDocumentService: RequiredDocumentService,
+
 
 
   ) { }
@@ -168,8 +174,8 @@ export class PolicySummaryOtherDetailsComponent {
     this.loadAllClients();
     this.createScheduleDetailsForm();
     this.getAllSection();
-    this.createSectionDetailsForm()
-
+    this.createSectionDetailsForm();
+    this.getRequiredDocuments();
   }
   ngOnDestroy(): void { }
 
@@ -1188,10 +1194,52 @@ openPremiumDeleteModal() {
 
   }
 }
-toggleRequiredDocDetails() {
-  this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
-}
 
+
+   
+  toggleRequiredDocDetails() {
+    this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
+  }
+  getRequiredDocuments(){
+    this.requiredDocumentService
+      .getRequiredDoc()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+
+            log.debug("Required document list:", data);
+            this.filteredRequiredDocs= data.filter(doc => doc.isNewBusinessDocument === "Y");
+            log.debug("New Business Documents",this.filteredRequiredDocs)
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  openRequiredDocDeleteModal() {
+    log.debug("Selected Document", this.selectedDocument)
+    if (!this.selectedDocument) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a document to continue');
+    } else {
+      document.getElementById("openRequiredDocModalButtonDelete").click();
+
+    }
+  }
 }
 
 

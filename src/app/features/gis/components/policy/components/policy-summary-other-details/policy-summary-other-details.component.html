@@ -205,7 +205,7 @@
                                     <th>{{'gis.policy.pin' | translate}}</th>
                                     <th> {{'gis.policy.passport_no' | translate}}.</th>
                                     <th>{{'gis.policy.business' | translate}}</th>
-                                    <th style="width:15%">{{'gis.policy.other_insterested_parties' | translate}}</th>
+                                    <th style="width:15%">{{'gis.policy.other_interested_parties' | translate}}</th>
                                     <th>{{'gis.policy.id_no' | translate}}</th>
                                     <th></th>
                                 </tr>
@@ -1053,13 +1053,13 @@
                                                                                 class="col-5 col-form-label "
                                                                                 id="scheduleLabel">{{'gis.quotation.driver_licence_date'
                                                                                 | translate}}</label>
-                                                                                <div class="col-7">
-                                                                                    <input type="datetime"
-                                                                                        id="scheduleInput"
-                                                                                        class="form-control form-control-sm mb-1"
-                                                                                        formControlName="color">
-                                                                                </div>
-                                                                        </div>       
+                                                                            <div class="col-7">
+                                                                                <input type="datetime"
+                                                                                    id="scheduleInput"
+                                                                                    class="form-control form-control-sm mb-1"
+                                                                                    formControlName="color">
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="col-xl-6">
                                                                         <div class="mb-3 row">
@@ -1178,7 +1178,8 @@
                             <div>
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <p class="subheading">Premium Items</p>
+                                        <p class="subheading">{{'gis.policy.premium_items' |
+                                            translate}}</p>
                                     </div>
                                     <div class="col-sm-9 d-flex justify-content-end">
                                         <div class="row mb-2">
@@ -1227,14 +1228,22 @@
 
                                     <ng-template pTemplate="header">
                                         <tr>
-                                            <th>Group</th>
-                                            <th>Row No.</th>
-                                            <th>Short Desc</th>
-                                            <th>Description</th>
-                                            <th>Limit Amount</th>
-                                            <th>Premium rate</th>
-                                            <th>Div Factor</th>
-                                            <th>Premium</th>
+                                            <th>{{'gis.policy.group' |
+                                                translate}}</th>
+                                            <th>{{'gis.policy.row_no' |
+                                                translate}}.</th>
+                                            <th>{{'gis.policy.short_desc' |
+                                                translate}}</th>
+                                            <th>{{'gis.policy.description' |
+                                                translate}}</th>
+                                            <th> {{'gis.policy.limit_amount' |
+                                                translate}}</th>
+                                            <th> {{'gis.policy.premium_rate' |
+                                                translate}}</th>
+                                            <th> {{'gis.policy.div_factor' |
+                                                translate}}</th>
+                                            <th>{{'gis.policy.premium' |
+                                                translate}}</th>
                                         </tr>
                                     </ng-template>
 
@@ -1258,7 +1267,8 @@
                                     <div class="modal-dialog modal-dialog-centered " role="document">
                                         <div class="modal-content" id="addPremiumItemModal">
                                             <div class="modal-body">
-                                                <h5 class="modal-title mt-2" id="riskOtherDetailsLabel">Risk Sections
+                                                <h5 class="modal-title mt-2" id="riskOtherDetailsLabel">{{'gis.policy.risk_sections' |
+                                                    translate}}
                                                 </h5>
                                                 <div class="search-container mb-3">
                                                     <span class="search-icon"><i class="fa fa-search"></i></span>
@@ -1297,8 +1307,9 @@
 
                                                 <div class="mt-4 d-flex justify-content-end">
                                                     <button type="button" class="btn btn-primary " id="saveDetails"
-                                                        data-bs-dismiss="modal" (click)="createRiskSection()">Save
-                                                        Details</button>
+                                                        data-bs-dismiss="modal" (click)="createRiskSection()">
+                                                         {{'gis.policy.save_details' |
+                                                        translate}}</button>
                                                 </div>
                                             </div>
 
@@ -1314,7 +1325,7 @@
                                                 <button type="button" class="btn-close ms-auto py-2 px-2 float-end"
                                                     data-bs-dismiss="modal" aria-label="Close" id="close"></button>
                                                 <h5 class="modal-title mt-2" id="editScheduleLabel">Edit risk section
-                                                    details</h5>
+                                                    details{{'gis.policy.premium_items' | translate}}</h5>
                                                 <form [formGroup]="scheduleDetailsForm">
                                                     <!-- **ROW 1** -->
                                                     <div class="row" id="sectionRows">
@@ -1322,7 +1333,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">ID:</label>
+                                                                    id="sectionLabel">{{'gis.policy.id' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1335,7 +1346,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">Rate type:</label>
+                                                                    id="sectionLabel">{{'gis.policy.rate_type' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1350,7 +1361,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">Description:</label>
+                                                                    id="sectionLabel">{{'gis.policy.description' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1363,7 +1374,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">Premium type:</label>
+                                                                    id="sectionLabel"> {{'gis.policy.premium_type' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1380,7 +1391,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">Group:</label>
+                                                                    id="sectionLabel">{{'gis.policy.group' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1393,7 +1404,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label "
-                                                                    id="sectionLabel">Limit amount :</label>
+                                                                    id="sectionLabel">  {{'gis.policy.limit_amount' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1408,7 +1419,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required"
-                                                                    id="sectionLabel">Free limit:</label>
+                                                                    id="sectionLabel">{{'gis.policy.free_limit' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1421,7 +1432,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label required "
-                                                                    id="sectionLabel">Premium rate :</label>
+                                                                    id="sectionLabel">  {{'gis.policy.premium_rate' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1435,8 +1446,8 @@
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
-                                                                    class="col-5 col-form-label " id="sectionLabel">Div
-                                                                    by:</label>
+                                                                    class="col-5 col-form-label " id="sectionLabel">
+                                                                    {{'gis.policy.div_by' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1449,7 +1460,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Multi rate :</label>
+                                                                    id="sectionLabel">  {{'gis.policy.multi_rate' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1463,8 +1474,8 @@
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
-                                                                    class="col-5 col-form-label " id="sectionLabel">Div
-                                                                    multi by:</label>
+                                                                    class="col-5 col-form-label " id="sectionLabel">
+                                                                    {{'gis.quotation.div_multi_by' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1477,7 +1488,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Premium :</label>
+                                                                    id="sectionLabel"> {{'gis.policy.premium' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1491,8 +1502,8 @@
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
-                                                                    class="col-5 col-form-label " id="sectionLabel">Min
-                                                                    premium:</label>
+                                                                    class="col-5 col-form-label " id="sectionLabel">
+                                                                    {{'gis.policy.min_premium' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1505,7 +1516,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Accumulation :</label>
+                                                                    id="sectionLabel"> {{'gis.policy.accumulation' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="number" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1520,7 +1531,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label "
-                                                                    id="sectionLabel">Remarks:</label>
+                                                                    id="sectionLabel">{{'gis.policy.remarks' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1533,7 +1544,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Declaration :</label>
+                                                                    id="sectionLabel"> {{'gis.policy.declaration' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1548,13 +1559,13 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Compute :</label>
+                                                                    id="sectionLabel"> {{'gis.policy.compute' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input class="form-check-input " type="checkbox"
                                                                         id="compute" formControlName="logbookAvailable">
                                                                     <label for="minmax-buttons"
                                                                         class="col-5 col-form-label ms-3"
-                                                                        id="sectionLabel">Dual basis :</label>
+                                                                        id="sectionLabel">  {{'gis.policy.dual_basis' | translate}}</label>
                                                                     <input class="form-check-input " type="checkbox"
                                                                         id="compute" formControlName="logbookAvailable">
                                                                 </div>
@@ -1564,16 +1575,16 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Indemnity period
-                                                                    units :</label>
+                                                                    id="sectionLabel"> 
+                                                                     {{'gis.policy.indemnity_period_units' | translate}}</label>
                                                                 <div class="col-7">
 
                                                                     <select
                                                                         class="form-select form-control-sm selectInput"
                                                                         id="modelYear" formControlName="modelYear">
-                                                                        <option value="">Days</option>
-                                                                        <option value="">Weeks</option>
-                                                                        <option value="">Months</option>
+                                                                        <option value="">Days {{'gis.policy.premium_items' | translate}}</option>
+                                                                        <option value="">Weeks{{'gis.policy.premium_items' | translate}}</option>
+                                                                        <option value="">Months{{'gis.policy.premium_items' | translate}}</option>
 
 
                                                                     </select>
@@ -1587,7 +1598,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label "
-                                                                    id="sectionLabel">First indemnity %:</label>
+                                                                    id="sectionLabel">{{'gis.policy.first_indemnity' | translate}}%</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1600,8 +1611,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label  "
-                                                                    id="sectionLabel">Indemnity remainder
-                                                                    period :</label>
+                                                                    id="sectionLabel">{{'gis.policy.indemnity_remainder_period' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1616,7 +1626,7 @@
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
                                                                     class="col-5 col-form-label "
-                                                                    id="sectionLabel">Email pct:</label>
+                                                                    id="sectionLabel"> {{'gis.policy.email_pct' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1628,9 +1638,7 @@
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
-                                                                    class="col-5 col-form-label  " id="sectionLabel">Loc
-                                                                    division
-                                                                    factor :</label>
+                                                                    class="col-5 col-form-label  " id="sectionLabel">{{'gis.policy.loc_division_factor' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1644,8 +1652,7 @@
                                                         <div class="col-xl-6">
                                                             <div class="mb-3 row">
                                                                 <label for="minmax-buttons"
-                                                                    class="col-5 col-form-label " id="sectionLabel">Top
-                                                                    loc rate:</label>
+                                                                    class="col-5 col-form-label " id="sectionLabel">{{'gis.policy.top_loc_rate' | translate}}</label>
                                                                 <div class="col-7">
                                                                     <input type="text" id="sectionInput"
                                                                         class="form-control form-control-sm mb-1"
@@ -1661,12 +1668,12 @@
                                                 </form>
                                                 <div class="row mt-3 mb-2 mx-3">
                                                     <div class="col-6 ">
-                                                        <button type="button" class="btn btn-primary">Clear</button>
+                                                        <button type="button" class="btn btn-primary">{{'gis.policy.clear' | translate}}</button>
 
                                                     </div>
                                                     <div class="col-6 d-flex justify-content-end">
                                                         <button type="button" class="btn btn-outline-primary " id="
-                       " data-bs-dismiss="modal">Save Details</button>
+                       " data-bs-dismiss="modal">{{'gis.policy.save_details' | translate}}</button>
                                                     </div>
                                                 </div>
 
@@ -1884,7 +1891,8 @@
 
                                                 <!-- <div class="col-sm-3"></div> -->
                                                 <div class="col-3" *ngIf="isRequiredDocDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-success" title="add">
+                                                    <button type="button" id="icon" class="btn btn-success" title="add"
+                                                        data-bs-toggle="modal" data-bs-target="#addrequiredDoc">
                                                         <i class="fa-solid fa-plus"></i>
                                                     </button>
                                                 </div>
@@ -1906,13 +1914,14 @@
                                                 </div>
                                                 <div class="col-3" *ngIf="isRequiredDocDetailOpen">
                                                     <button type="button" id="icon" class="btn btn-primary"
-                                                        data-bs-toggle="modal" id="openRiskModalButtonDelete"
-                                                        [hidden]="true" data-bs-target="#deleteRisk" title="Delete">
+                                                        data-bs-toggle="modal" id="openRequiredDocModalButtonDelete"
+                                                        [hidden]="true" data-bs-target="#deleteRequiredDocument"
+                                                        title="Delete">
                                                     </button>
                                                     <button type="button" id="icon" class="btn btn-primary"
                                                         title="Delete">
                                                         <i class="fa-solid fa-trash-can"
-                                                            (click)="openRiskDeleteModal()"></i>
+                                                            (click)="openRequiredDocDeleteModal()"></i>
                                                     </button>
 
                                                 </div>
@@ -1964,7 +1973,80 @@
                                             </tr>
                                         </ng-template>
                                     </p-table>
-                                    <!--Edit Schedule Modal -->
+                                    <!-- Add Required Document Modal -->
+                                    <div class="modal fade" id="addrequiredDoc" tabindex="-1" role="dialog"
+                                        aria-labelledby="addrequiredDocLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered " role="document">
+                                            <div class="modal-content" id="addrequiredDocItemModal">
+                                                <div class="modal-body">
+                                                    <button type="button" class="btn-close ms-auto py-2 px-2 float-end"
+                                                        data-bs-dismiss="modal" aria-label="Close" id="close"></button>
+                                                    <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">Select
+                                                        required documents
+                                                    </h5>
+                                                    <!-- <div class="search-container mb-3">
+                                                        <span class="search-icon"><i class="fa fa-search"></i></span>
+                                                        <input type="text" placeholder="Search"
+                                                            id="search-input-Rsection" [(ngModel)]="searchText" />
+                                                    </div> -->
+
+                                                    <!-- <div class="scrollable-list">
+                                                        <div *ngFor="let document of filteredRequiredDocs">
+                                                            <div class="form-check"
+                                                                *ngIf="matchesSearch(document.description)">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    [id]="'checkbox-' + document.code"
+                                                                    [checked]="isSelected(document)"
+                                                                    (change)="onCheckboxChange(document)" />
+                                                                <label class="form-check-label section-label"
+                                                                    [for]="'checkbox-' + document.code">
+                                                                    {{ document.shortDescription }}
+                                                                </label>
+                                                                <label class="form-check-label section-label"
+                                                                    [for]="'checkbox-' + document.code">
+                                                                    {{ document.description }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div> -->
+                                                    <p-table #dt4 [value]="filteredRequiredDocs"
+                                                        [(selection)]="selectedDocument" selectionMode="single"
+                                                        dataKey="code" [paginator]="true" [rows]="10"
+                                                        [scrollable]="true" scrollDirection="horizontal"
+                                                        [showCurrentPageReport]="true"
+                                                        currentPageReportTemplate=" {first} - {last} of {totalRecords}">
+                                                        <ng-template pTemplate="header">
+                                                            <tr>
+
+
+                                                                <th>Short description</th>
+                                                                <th>Description</th>
+
+                                                            </tr>
+                                                        </ng-template>
+                                                        <ng-template pTemplate="body" let-document let-ri="rowIndex">
+                                                            <tr [pSelectableRow]="document"
+                                                                [class.p-highlight]="document === selectedDocument">
+
+                                                                <td>{{document.shortDescription}}</td>
+                                                                <td>{{document.description}}</td>
+                                                            </tr>
+                                                        </ng-template>
+                                                    </p-table>
+
+
+
+                                                    <div class="mt-4 d-flex justify-content-end">
+                                                        <button type="button" class="btn btn-primary " id="saveDetails"
+                                                            data-bs-dismiss="modal" (click)="createRiskSection()">Save
+                                                            Details</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--Edit Required Document Modal -->
                                     <div class="modal fade" id="editSchedule" tabindex="-1" role="dialog"
                                         aria-labelledby="editScheduleLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -1984,7 +2066,7 @@
                                         </div>
                                     </div>
                                     <!-- Delete Risk  Modal -->
-                                    <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="deleteRequiredDocument" tabindex="-1" role="dialog"
                                         aria-labelledby="deleteRisk" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content" id="deleteRisk">
