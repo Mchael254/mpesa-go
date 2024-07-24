@@ -18,13 +18,16 @@
                 ></app-entity-basic-info>
               </ng-container>
 
-                <ng-container *ngIf="partyAccountDetails && bankDetails">
+<!--                <ng-container *ngIf="partyAccountDetails && bankDetails">-->
+                <ng-container *ngIf="partyAccountDetails">
                   <app-entity-other-details
                     [countries]="countries"
                     [partyAccountDetails]="partyAccountDetails"
                     [bankDetails]="bankDetails"
+                    [bankBranch]="bankBranchDetails"
                     [wealthAmlDetails]="wealthAmlDetails"
                     [nokList]="nokDetails"
+                    [states]="states"
                     (refreshData)="refreshData()"
                   ></app-entity-other-details>
                 </ng-container>
