@@ -1761,4 +1761,7 @@ export class RiskDetailsComponent {
       }
     );
   }
+  next(){
+    this.router.navigate(['/home/gis/policy/policy-summary']);
+  }
 }
