@@ -7,6 +7,7 @@ import { Logger } from 'src/app/shared/services';
 import { ClaimClientsDTO } from '../../ind/components/claims/models/claim-clients';
 import { CausationCausesDTO } from '../../ind/components/claims/models/causation-causes';
 import { CausationTypesDTO } from '../../ind/components/claims/models/causation-types';
+import { HttpParams } from '@angular/common/http';
 
 const log = new Logger('ClaimsService');
 
@@ -47,11 +48,21 @@ export class ClaimsService {
     );
   }
 
-  getCausationCauses(): Observable<CausationCausesDTO[]> {
+  getCausationCauses(caus_type:string): Observable<CausationCausesDTO[]> {
+    log.info('Fetching Causation Causes');
+    const params = new HttpParams().set('caus_type', `${caus_type}`);
+    return this.api.GET<[CausationCausesDTO]>(
+      `individual/claims/causations`,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  /* getCausationCauses(): Observable<CausationCausesDTO[]> {
     log.info('Fetching Causation Causes');
     return this.api.GET<[CausationCausesDTO]>(
       `individual/claims/causations?caus_type=ILL`,
       API_CONFIG.CLAIMS_SERVICE_BASE_URL
     );
-  }
+  } */
 }

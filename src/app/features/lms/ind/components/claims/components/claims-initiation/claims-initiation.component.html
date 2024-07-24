@@ -10,7 +10,7 @@
 
     <ng-container *ngIf="claimType">
 
-      <ng-container *ngIf="claimType === claimsType.MATURITIES">
+      <ng-container *ngIf="claimType === claimsType.NORMAL">
         <app-death-claims
           [claimInitForm]="claimInitForm"
           [claimClients]="claimClients$"
