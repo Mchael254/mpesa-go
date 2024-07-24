@@ -27,7 +27,9 @@
                     </tr>
                     <tr>
                       <td>County</td>
-                      <th>{{ partyAccountDetails?.address?.state_id }}</th>
+                      <th>
+                        {{ states[partyAccountDetails?.address?.state_id]?.name }}
+                      </th>
                     </tr>
                   </tbody>
               </table>
@@ -37,7 +39,7 @@
                   <tbody>
                     <tr>
                       <td>Email address</td>
-                      <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                      <th>{{ partyAccountDetails?.contactDetails?.emailAddress }}</th>
                     </tr>
                     <tr>
                       <td>Physical address</td>
@@ -64,7 +66,7 @@
       </div>
   </p-tabPanel>
 
-    <p-tabPanel id="get-payment-details" header="Bank Details" (click)="getPaymentDetails()">
+    <p-tabPanel id="get-payment-details" header="Bank Details" *ngIf="bankDetails">
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -75,7 +77,7 @@
                       </tr>
                       <tr>
                         <td>Branch</td>
-                        <th>{{ bankDetails?.branchName }} {{ bankDetails?.id}}</th>
+                        <th>{{ bankBranch?.name }} </th>
                       </tr>
                     </tbody>
                 </table>

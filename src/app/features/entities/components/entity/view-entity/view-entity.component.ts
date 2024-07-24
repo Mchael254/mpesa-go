@@ -20,8 +20,11 @@ import { ClaimsDTO } from '../../../../gis/data/claims-dto';
 
 import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
-import {CountryDto} from "../../../../../shared/data/common/countryDto";
+import {CountryDto, StateDto} from "../../../../../shared/data/common/countryDto";
 import {Bank} from "../../../data/BankDto";
+import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
+import {BankBranchDTO} from "../../../../../shared/data/common/bank-dto";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger("ViewEntityComponent")
 
@@ -76,11 +79,13 @@ export class ViewEntityComponent implements OnInit {
 
   accountId: number;
 
-  countries: CountryDto[] = []
+  countries: CountryDto[] = [];
+  states: StateDto[] = [];
 
   wealthAmlDetails: any;
   bankDetails: any;
   nokDetails: any[] = [];
+  bankBranchDetails: BankBranchDTO;
 
   constructor(
     private fb: FormBuilder,
@@ -90,7 +95,9 @@ export class ViewEntityComponent implements OnInit {
     private accountService: AccountService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-    private countryService: CountryService
+    private countryService: CountryService,
+    private bankService: BankService,
+    private globalMessagingService: GlobalMessagingService,
   ) {
     this.spinner.show();
     this.selectedRole = {};
@@ -114,17 +121,51 @@ export class ViewEntityComponent implements OnInit {
         next: (countries: CountryDto[]) => {
           this.countries = countries
         },
-        error: (err) => {}
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message
+          this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+        }
       });
   }
 
-  /*
-   Set the account details in form from dropdown list.First item is the default
+
+  getMainCityStateBy(countryId: number) {
+    this.countryService.getMainCityStatesByCountry(countryId)
+      .subscribe({
+        next: (res) => {
+          this.states = res;
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message
+          this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+        }
+      })
+  }
+
+  /**
+   * Get the branches attached to a branch, and filter the branch assigned to the entity
+   * @param bankId
+   * @param branchId
+   */
+  getBankBranchesByBankId(bankId: number, branchId: number): void {
+    this.bankService.getBankBranchesByBankId(bankId).subscribe({
+      next: (res) => {
+        this.bankBranchDetails = res.filter(branch => branch.id === branchId)[0];
+      },
+      error: (err) => {
+        const errorMessage = err?.error?.message ?? err.message
+        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+      }
+    })
+  }
+
+  /**
+    Set the account details in form from dropdown list.First item is the default
   * Fetch extra information based on the account type (selectedAccount) and fill form with relevant information
   * Fetch roles not assigned to this entity
    */
   setAccountCode() {
-    console.log('entityAccountIdDetails: ' +this.entityAccountIdDetails);
+    // console.log('entityAccountIdDetails: ' +this.entityAccountIdDetails);
 
     this.accountCode = this.entityAccountIdDetails?.[0]?.accountCode;
     // this.accountId = this.entityAccountIdDetails?.[0]?.id;
@@ -156,16 +197,21 @@ export class ViewEntityComponent implements OnInit {
           takeUntil(this.destroyed$)
         )
         .subscribe((data: PartyAccountsDetails) => {
-          this.partyAccountDetails = data
-          log.info('This is the selected account data >>>>>', this.accountCode, this.partyAccountDetails);
           // this.accountService.setCurrentAccounts(accountType);
-          this.accountService.setCurrentAccounts(this.partyAccountDetails);
-          this.getPaymentDetails();
-          this.wealthAmlDetails = this.partyAccountDetails.wealthAmlDetails;
-          this.nokDetails = this.partyAccountDetails.nextOfKinDetailsList;
-          this.cdr.detectChanges();
-        })
+          this.populateDetailsForDisplay(data);
+        });
+      }
 
+
+      populateDetailsForDisplay(partyAccountDetails: PartyAccountsDetails) {
+        log.info('This is the selected account data >>>>>', this.accountCode, partyAccountDetails);
+        this.getMainCityStateBy(partyAccountDetails.address.country_id);
+        this.partyAccountDetails = partyAccountDetails;
+        this.accountService.setCurrentAccounts(partyAccountDetails);
+        this.getPaymentDetails(partyAccountDetails);
+        this.wealthAmlDetails = partyAccountDetails.wealthAmlDetails;
+        this.nokDetails = partyAccountDetails.nextOfKinDetailsList;
+        this.cdr.detectChanges();
       }
 
   /***
@@ -223,8 +269,6 @@ export class ViewEntityComponent implements OnInit {
         this.entityAccountIdDetails = data;
         this.getUnAssignedRoles();
         this.entityService.setCurrentEntityAccounts(data);
-
-        console.log('>>>>>>>>>>> Fetch entity accounts details by entity id', this.entityAccountIdDetails)
         // this.fetchAllPartyAccountsDetails();
       }
     )
@@ -353,45 +397,12 @@ export class ViewEntityComponent implements OnInit {
     this.router.navigate([url], { queryParams: {id: this.entityPartyIdDetails?.id }});
   }
 
-  selectAccount(event: any) {
-    if(event){
-      let accountId: number = Number((event.target as HTMLInputElement).value);
-      let accountType =  this.entityAccountIdDetails.find(account =>  account.id == accountId);
-      // this.getEntityAccountDetailsByAccountNo(accountId);
-      this.accountCode = accountType?.accountCode;
-      this.getPartyAccountDetailByAccountId(accountType?.accountCode);
-    }
-  }
-
   manageRoles(id: number) {
     this.router.navigate([ `/home/entity/manage-roles/${id}`]);
   }
 
   editEntities(id: number) {
     this.router.navigate([ `/home/entity/edit/${id}`]);
-  }
-
-  private fetchAllPartyAccountsDetails() {
-    let fetchedAccounts: PartyAccountsDetails[] = [];
-    this.entityService.currentEntityAccount$
-        .pipe(
-            takeUntil(this.destroyed$)
-        )
-        .subscribe(
-            (data:AccountReqPartyId[]) => {
-                data.forEach(
-                    value =>
-                        this.accountService.getPartyAccountById(value.id)
-                            .pipe()
-                            .subscribe(
-                                partyAccount =>
-                                    fetchedAccounts.push(partyAccount)
-                            )
-                );
-            }
-        )
-
-    this.entityService.setCurrentPartyAcounts(fetchedAccounts);
   }
 
   /**
@@ -417,48 +428,34 @@ export class ViewEntityComponent implements OnInit {
     this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
       .subscribe({
         next: (data: PartyAccountsDetails): void => {
-          this.partyAccountDetails = data;
-          this.accountService.setCurrentAccounts(this.partyAccountDetails);
-          this.fetchTransactions(this.partyAccountDetails);
+
+          this.populateDetailsForDisplay(data);
         },
         error: (err) => {}
       })
   }
 
-  getWealthAmlDetails(): void {
-    log.info(`fetching wealth AML details`);
-    if (this.partyAccountDetails.wealthAmlDetails) {
-      this.wealthAmlDetails = {
-        citizenship_country_id:  this.partyAccountDetails?.wealthAmlDetails?.citizenship_country_id,
-        funds_source: this.partyAccountDetails?.wealthAmlDetails?.funds_source,
-        sector_id: this.partyAccountDetails?.wealthAmlDetails?.sector_id,
-        employment_type: this.partyAccountDetails?.wealthAmlDetails?.occupation_id,
-        nationality_country_id: this.partyAccountDetails?.wealthAmlDetails?.nationality_country_id,
-        distribute_channel: this.partyAccountDetails?.wealthAmlDetails?.distributeChannel,
-        insurance_purpose: this.partyAccountDetails?.wealthAmlDetails?.insurancePurpose,
-        premium_frequency: this.partyAccountDetails?.wealthAmlDetails?.premiumFrequency,
-      };
-      log.info(`wealth AML Details ==> `, this.wealthAmlDetails);
-    }
-  }
-
-  getPaymentDetails(): void {
-    if (this.partyAccountDetails?.paymentDetails?.id) {
-      const id: number  = this.partyAccountDetails?.paymentDetails?.bank_branch_id;
+  getPaymentDetails(partyAccountDetails: PartyAccountsDetails): void {
+    if (partyAccountDetails?.paymentDetails?.id) {
+      const id: number  = partyAccountDetails?.paymentDetails?.bank_branch_id;
       this.entityService.fetchBankDetailsByBranchId(id)
         .subscribe({
           next: (bank: Bank) => {
             this.bankDetails = {
               ...bank,
-              accountNo: this.partyAccountDetails?.paymentDetails?.account_number,
+              accountNo: partyAccountDetails?.paymentDetails?.account_number,
               paymentMethod: 'xxx',
               accountType: 'xxx',
-              partyAccountId: this.partyAccountDetails?.paymentDetails?.partyAccountId,
+              partyAccountId: partyAccountDetails?.paymentDetails?.partyAccountId,
             }
             log.info(`Bank details ==> `, this.bankDetails);
+            this.getBankBranchesByBankId(bank.bankId, bank.id);
           },
           error: (err) => {}
         });
+    } else {
+      this.bankDetails = null;
+      log.info(`Bank details ==> `, this.bankDetails);
     }
   }
 
