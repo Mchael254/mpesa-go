@@ -247,7 +247,7 @@ export class EntityService {
 
   fetchGisQuotationsByClientId(id: number): Observable<any[]> {
     return this.api.GET<any[]>(
-      `api/v2/quotation/view/clientCode?clientId=${id}`,
+      `v2/quotation/view/clientCode?clientId=${id}`,
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
