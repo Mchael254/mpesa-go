@@ -58,7 +58,7 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     this.getClaimModules();
     this.getClaimClients();
     this.getCausationTypes();
-    this.getCausationCauses();
+    this.getCausationCauses('');
     this.claimType = this.activatedRoute.snapshot.queryParamMap.get('claimType');
 
     this.claimInitForm.get('claimType').valueChanges.subscribe(claimType => {
@@ -116,8 +116,8 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     );
   }
 
-  getCausationCauses() {
-    this.causationCauses$ = this.claimsService.getCausationCauses().pipe(
+  getCausationCauses(caus_type:string) {
+    this.causationCauses$ = this.claimsService.getCausationCauses('ILL').pipe(
       tap(data => log.info('CausationCausesDTO>>>>', data))
     );
   }
