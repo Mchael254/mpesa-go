@@ -172,4 +172,8 @@ export class PolicyService {
   reassignTicket(data){
     return this.api.POST(`api/v1/tickets`,JSON.stringify(data),API_CONFIG.MNGT_WORKFLOW_BASE_URL)
   }
+  getRiskClauses(riskCode){
+    return this.api.GET(`v1/excesses?riskCode=${riskCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+    // return this.api.GET(`v1/riskClauses?riskCode=${riskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
 }

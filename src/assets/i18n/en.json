@@ -873,6 +873,7 @@
       "export_template":"Export template",
       "upload_template":"Upload template",
       "underwriting_policy_summary":"Underwriting:Policy Summary",
+<<<<<<< HEAD
 
       "client_dd_details":"Client DD details",
       "policy_taxes": "Policy taxes",
@@ -947,6 +948,9 @@
       "risk_note": "Risk note",
       "uw_year": "UW year"
 
+=======
+      "select_risk_clauses":"Select risk clauses"
+>>>>>>> b6d9997f (VQ-2345:Ability to Add Risk clause)
     }
   },
   "lms": {

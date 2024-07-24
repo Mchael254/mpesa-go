@@ -18,6 +18,8 @@ import { Clause, subclassClauses, subclassCoverTypeSection } from '../../../setu
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -148,8 +150,8 @@ export class PolicySummaryOtherDetailsComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public sectionService: SectionsService,
     public premiumRateService: PremiumRateService,
-
-
+    public subclassService:SubclassesService,
+    public riskClauseService:RiskClausesService,
 
 
   ) { }
@@ -1116,22 +1118,80 @@ togglePremiumDetails() {
         },
       });
   }
-  addPremiumItem(){
+//   addPremiumItem(){
 
-  }
-  openPremiumDeleteModal() {
-    log.debug("Selected PremiumItem", this.selectedPremiumItem)
-    if (!this.selectedPremiumItem) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select Premium item to continue');
-    } else {
-      document.getElementById("openModalPremiumButtonDelete").click();
+// }
 
-    }
+getRiskClauses(){
+
+  
+  console.log("selected risk", this.selectedRisk);
+  this.selectedSubclassCode = this.selectedRisk.subClassCode;
+  console.log('SELECTED SUBCLASS CODE',this.selectedSubclassCode)
+  
+  if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
   }
-  toggleRequiredDocDetails() {
-    this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
+ 
+  
+  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  
+  if (!risk) {
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
+  }
+  this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
+    this.SubclauseList=data;
+    // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
+    // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
+
+    log.debug('subclass ClauseList#####',this.SubclauseList)
+    this.loadAllClauses()
+  })
+
+  // this.policyService.getRiskClauses(this.selectedRisk.riskIpuCode).subscribe({
+  //   next:(res)=>{
+  //     console.log(res)
+  //   }
+  // })
+}
+loadAllClauses() {
+  // Extract clause codes from selectedSubClauseList
+  const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
+  log.debug('Retrived Clause Codes',subClauseCodes)
+
+  // Check if there are any subClauseCodes before making the request
+  if (subClauseCodes.length === 0) {
+    // Handle the case when there are no subClauseCodes
+    return;
+  }
+
+  // Make the request to get all clauses based on the subClauseCodes
+  this.subclassService.getAllClauses().subscribe(data => {
+    this.clauseList = data._embedded.clause_dto_list;
+
+    // Filter clauseList based on subClauseCodes
+    this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
+    sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
+    log.debug('All ClauseList', this.clauseList);
+    log.debug('ClauseSelectdList', this.selectedClauseList);
+  });
+}
+openPremiumDeleteModal() {
+  log.debug("Selected PremiumItem", this.selectedPremiumItem)
+  if (!this.selectedPremiumItem) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select Premium item to continue');
+  } else {
+    document.getElementById("openModalPremiumButtonDelete").click();
+
   }
 }
+toggleRequiredDocDetails() {
+  this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
+}
 
+}
 
 
