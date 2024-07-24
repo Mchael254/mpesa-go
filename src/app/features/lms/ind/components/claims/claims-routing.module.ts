@@ -4,12 +4,13 @@ import { ClaimsInitiationComponent } from './components/claims-initiation/claims
 import { ClaimsInvestigationComponent } from './components/claims-investigation/claims-investigation.component';
 import { ClaimsPaymentProcessingComponent } from './components/claims-payment-processing/claims-payment-processing.component';
 import { PolicyAndClaimsDetailsComponent } from './components/policy-and-claims-details/policy-and-claims-details.component';
+import {ClaimsProcessComponent} from "./components/claims-process/claims-process.component";
 
 
 const routes: Routes = [
   {
-    path: 'initiation',
-    component: ClaimsInitiationComponent
+    path: '',
+    component: ClaimsProcessComponent
   },
   {
     path: 'claims-investigation',
@@ -23,7 +24,7 @@ const routes: Routes = [
     path: 'policy-and-claims-details',
     component: PolicyAndClaimsDetailsComponent
   },
-  
+
 ];
 
 @NgModule({
