@@ -15,12 +15,12 @@
   <div class="container-fluid">
     <div class="stepper">
       <ng-container *ngFor="let step of stepperData; let i = index">
-        <div class="step" (click)="navigateToPage(step.link)">
+        <div class="step" (click)="setCurrentStep(step.number)">
           <div class="circle" [ngClass]="getStepClasses(i+1)">
             <div>{{ step.number }}</div>
           </div>
           <div class="title step-link">{{ step.title }}</div>
-          <div *ngIf="i < stepperData.length - 1" class="border-line position-absolute"></div>
+<!--          <div *ngIf="i < stepperData.length - 1" class="border-line position-absolute"></div>-->
         </div>
         <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
       </ng-container>

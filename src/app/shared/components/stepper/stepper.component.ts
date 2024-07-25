@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 import { Step } from '../../data/steps';
 import { StepperService } from '../../services/stepper/stepper.service';
 
@@ -11,13 +11,17 @@ import { StepperService } from '../../services/stepper/stepper.service';
 export class StepperComponent {
   @Input() stepperData: Step[];
   @Input() currentStep: number = 1;
-  @Input() orientation: string = 'HORIZONTAL';
+  @Input() dbStep: number = 1;
+  @Input() orientation: string = 'HORIZONTAL'
+  @Output() stepChange = new EventEmitter<number>();  // EventEmitter to re-emit step changes
 
 
 
   constructor(private stepperService: StepperService) { }
 
 
-
+  onStepChange(step: number) {
+    this.stepChange.emit(step);  // Re-emit the step number
+  }
 
 }

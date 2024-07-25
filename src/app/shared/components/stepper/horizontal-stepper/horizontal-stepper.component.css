@@ -194,9 +194,9 @@
   font-weight: 400;
   line-height: normal;}
 /*Implementing new design for the stepper*/
-.done {
-  background-color:rgba(0, 82, 155, 0.6);
-}
+/*.done {*/
+/*  background-color:rgba(0, 82, 155, 0.6);*/
+/*}*/
 .step-active{
   background-color: var(--primary-color);
   border: 2px solid #FFF;
