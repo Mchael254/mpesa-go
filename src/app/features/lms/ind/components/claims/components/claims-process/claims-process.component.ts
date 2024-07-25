@@ -9,4 +9,10 @@ import stepData from "../../data/steps.json";
 })
 export class ClaimsProcessComponent {
   steps = stepData;
+  dbStep = 4
+  eachStep = this.dbStep
+
+  onStepChange(step: number) {
+    this.eachStep = step;  // Update the current step
+  }
 }

@@ -1,6 +1,24 @@
 <div class="main">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+    <app-stepper
+      [currentStep]="eachStep"
+      [dbStep]="dbStep"
+      [stepperData]="steps"
+      (stepChange)="onStepChange($event)"
+    >
+    </app-stepper>
   </div>
-  <app-claims-initiation></app-claims-initiation>
+  <ng-container *ngIf="eachStep === 1">
+    <app-claims-initiation></app-claims-initiation>
+  </ng-container>
+  <ng-container *ngIf="eachStep === 2">
+    <app-policy-and-claims-details></app-policy-and-claims-details>
+  </ng-container>
+  <ng-container *ngIf="eachStep === 3">
+    <app-claims-investigation></app-claims-investigation>
+  </ng-container>
+  <ng-container *ngIf="eachStep === 4">
+    <app-claims-payment-processing></app-claims-payment-processing>
+  </ng-container>
 </div>
+
