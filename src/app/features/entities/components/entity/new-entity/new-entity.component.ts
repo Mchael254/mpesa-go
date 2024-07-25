@@ -13,6 +13,7 @@ import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { EntityDto, EntityResDTO, IdentityModeDTO } from '../../../data/entityDto';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
+import {Pagination} from "../../../../../shared/data/common/pagination";
 
 const log = new Logger('NewEntityComponent');
 
@@ -96,6 +97,11 @@ export class NewEntityComponent implements OnInit {
     assign_role: 'Y',
     profilePiture: 'Y',
   };
+
+  foundEntity: EntityDto;
+  isEntityExisting: boolean = false;
+  isLoading: boolean = false;
+  progressBarWidth: number = 30;
 
   constructor(
     private fb: FormBuilder,
@@ -277,6 +283,7 @@ export class NewEntityComponent implements OnInit {
   onSubmit()
    {
      this.submitted = true;
+     this.isLoading = true;
      this.entityRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
      if (this.entityRegistrationForm.invalid) {
@@ -327,6 +334,7 @@ export class NewEntityComponent implements OnInit {
        profileImage: entityFormValues.profileImage,
        dateOfBirth: entityFormValues.date_of_birth
      }
+     this.progressBarWidth = 50;
 
      this.entityService.saveEntityDetails(saveEntity)
        // .pipe(finalize(() => this.uploadImage(this.savedEntity.id)))
@@ -343,10 +351,41 @@ export class NewEntityComponent implements OnInit {
          }
         },
         error: (err) => {
-          const errorMessage = err?.error?.message ?? err.message + `: ${err?.error?.errors[0]}`
-          this.globalMessagingService.displayErrorMessage('Error', `${errorMessage} ::: ${err?.error?.errors[0]}`);
+          this.findExistingEntity('identityNumber', saveEntity.identityNumber, saveEntity);
+          this.progressBarWidth = 70
         }
        })
+  }
+
+  findExistingEntity(columnName: string, columnValue: string, saveEntity) {
+    const page: number = 0;
+    const size: number = 5;
+
+    this.entityService.searchEntities(page, size, columnName, columnValue)
+      .subscribe({
+        next: (res: Pagination<EntityDto>) => {
+          if (res.content.length === 0) {
+            this.findExistingEntity('pinNumber', saveEntity.pinNumber, saveEntity)
+            this.progressBarWidth = 85;
+          } else {
+            this.foundEntity = res.content[0];
+            this.isEntityExisting = true;
+            this.progressBarWidth = 100;
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message + `: ${err?.error?.errors[0]}`
+          this.globalMessagingService.displayErrorMessage('Error', `${errorMessage} ::: ${err?.error?.errors[0]}`);
+          this.progressBarWidth = 100;
+          this.isLoading = false;
+        }
+      });
+  }
+
+  redirectToViewExistingEntity(): void {
+    this.router.navigate([`/home/entity/view/${this.foundEntity.id}`])
+      .then(r => true)
   }
 
   /**
