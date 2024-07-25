@@ -175,7 +175,10 @@
     "General ledger": "Ledger Kuu",
     "Cashbook": "Kitabu cha Fedha",
     "Cheques": "Hundi",
-    "Cheque signing": "Kusaini hundi"
+    "Cheque signing": "Kusaini hundi",
+    "Campaigns": "Kampeni",
+    "Client Attributes": "Sifa za Mteja",
+    "Product Attributes": "Sifa za Bidhaa"
   },
   "crm": {
     "activity": "Shughuli",
@@ -969,7 +972,7 @@
         "proceed": "Endelea",
         "select_an_option": "Chagua chaguo",
         "upload_documents": "Pakia hati",
-        "yes": "Ndio"      
+        "yes": "Ndio"
     },
     "grp": {}
   },

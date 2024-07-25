@@ -1,0 +1,145 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Campaign Management',
+        url: '/home/crm/campaigns'
+      },
+      {
+        label: 'Campaigns',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <p-tabView>
+    <p-tabPanel header="Campaigns">
+
+
+      <ng-container *ngIf="showCampaignTable; else showCampaignDefinition">
+        <h5 class="text-dark">Campaigns</h5>
+        <div class="row mb-2">
+          <div class="col-sm-12 col-md-6">
+            <input
+              type="text"
+              class="form-control w-75"
+              placeholder="Search for campaign"
+              aria-label="search"
+              aria-describedby="search"
+
+            />
+          </div>
+
+          <div class="col-sm-12 col-md-6 d-flex justify-content-end mt-2">
+            <div class="float-end">
+            <span class="icon-circle">
+              <i class="fa-solid fa-plus"
+              (click)="toggleCampaignDefinition()"></i>
+            </span>
+              <span class="icon-circle">
+              <i class="pi pi-pencil"></i>
+            </span>
+              <span class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+            </div>
+          </div>
+        </div>
+        <p-table
+          #campaignsTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="campaignData?.length"
+          [value]="campaignData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedCampaign"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">Campaign name <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+              <th pSortableColumn="objective">Objective <p-sortIcon field="objective"></p-sortIcon></th>
+              <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+              <th>System</th>
+              <th>User</th>
+              <th>Group</th>
+              <th>Organisation</th>
+              <th pSortableColumn="authorised">Starting date <p-sortIcon field="authorised"></p-sortIcon></th>
+              <th pSortableColumn="transactions_date">Closing date <p-sortIcon field="transactions_date"></p-sortIcon></th>
+              <th pSortableColumn="authorised_by">Expected cost <p-sortIcon field="authorised_by"></p-sortIcon></th>
+              <th pSortableColumn="authorised_date">Budgeted cost <p-sortIcon field="authorised_date"></p-sortIcon></th>
+              <th pSortableColumn="exception_by">Actual cost <p-sortIcon field="exception_by"></p-sortIcon></th>
+              <th>Expected revenue</th>
+              <th>Currency</th>
+              <th>Sponsor</th>
+              <th>Campaign type</th>
+              <th>Campaign status</th>
+              <th>Impressions</th>
+              <th>Event</th>
+              <th>Venue</th>
+              <th>Event time</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-campaign>
+            <tr>
+              <td></td>
+              <td>{{campaign.gis_exception_code}}</td>
+              <td></td>
+              <td></td>
+              <td>{{campaign?.set_standard}}</td>
+              <td>{{campaign?.used_standard}}</td>
+              <td>{{campaign?.authorised}}</td>
+              <td>{{campaign?.transactions_date}}</td>
+              <td>{{campaign?.authorised_by}}</td>
+              <td>{{campaign?.authorised_date}}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="21">No Campaign Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #showCampaignDefinition>
+        <app-campaign-definition></app-campaign-definition>
+      </ng-template>
+
+    </p-tabPanel>
+    <p-tabPanel header="Client/Products">
+      <p>Products</p>
+    </p-tabPanel>
+
+  </p-tabView>
+</div>

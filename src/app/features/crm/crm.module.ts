@@ -30,6 +30,8 @@ import { MessagingTemplateComponent } from './components/messaging-template/mess
 import { MessagesComponent } from './components/messages/messages.component';
 import { SystemRolesComponent } from './components/system-roles/system-roles.component';
 import {ScrollPanelModule} from "primeng/scrollpanel";
+import { CampaignsComponent } from './components/campaigns/campaigns.component';
+import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,8 @@ import {ScrollPanelModule} from "primeng/scrollpanel";
     MessagingTemplateComponent,
     MessagesComponent,
     SystemRolesComponent,
+    CampaignsComponent,
+    CampaignDefinitionComponent,
   ],
     imports: [
         CommonModule,
