@@ -167,6 +167,7 @@ export class PolicySummaryOtherDetailsComponent {
   public isRiskDetailsOpen = false;
   public isPremiumDetailOpen = false;
   public isRequiredDocDetailOpen = false;
+  public isCertificatesDetailOpen = false;
 
 
   ngOnInit(): void {
@@ -1239,6 +1240,9 @@ openPremiumDeleteModal() {
       document.getElementById("openRequiredDocModalButtonDelete").click();
 
     }
+  }
+  toggleCertificatesDetails() {
+    this.isCertificatesDetailOpen = !this.isCertificatesDetailOpen;
   }
 }
 
