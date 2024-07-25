@@ -205,11 +205,11 @@ export class ViewEntityComponent implements OnInit {
 
       populateDetailsForDisplay(partyAccountDetails: PartyAccountsDetails) {
         log.info('This is the selected account data >>>>>', this.accountCode, partyAccountDetails);
-        this.getMainCityStateBy(partyAccountDetails.address.country_id);
+        this.getMainCityStateBy(partyAccountDetails?.address.country_id);
         this.partyAccountDetails = partyAccountDetails;
         this.accountService.setCurrentAccounts(partyAccountDetails);
         this.getPaymentDetails(partyAccountDetails);
-        this.wealthAmlDetails = partyAccountDetails.wealthAmlDetails;
+        this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
         this.nokDetails = partyAccountDetails.nextOfKinDetailsList;
         this.cdr.detectChanges();
       }
