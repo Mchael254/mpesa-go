@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -12,7 +12,9 @@ export class HorizontalStepperComponent {
   constructor(private router: Router, private route: ActivatedRoute){}
 
   @Input() stepperData: any[];
-  @Input() currentStep: number = 1;
+  @Input() currentStep: number;
+  @Input() dbStep: number;
+  @Output() stepChange = new EventEmitter<number>();  // EventEmitter for step changes
 
   stepperItems: any[] = [
     {
@@ -57,6 +59,12 @@ export class HorizontalStepperComponent {
   //     'line-black': index === index,
   //   };
   // }
+
+  setCurrentStep(stepNumber: number) {
+    if (stepNumber <= this.dbStep && stepNumber !== this.currentStep) {
+      this.stepChange.emit(stepNumber);  // Emit the step number
+    }
+  }
 
   navigateToPage(link: string){
     this.router.navigate([link], { relativeTo: this.route });

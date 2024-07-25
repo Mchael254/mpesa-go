@@ -1,8 +1,4 @@
 <div class="base-content-section lms">
-    <div class="fw-medium col-lg-12 col-md-12 col-sm-12 col-xs-12">
-     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
-    </div>
-    
     <!-- Investigation Details Form -->
      <div class="row">
          <div class="col-sm-12">
@@ -15,37 +11,37 @@
              <!-- Investigation Details -->
               <div class="row g-3">
                  <div class="fw-medium" style="font-size: 1.25rem;">Investigation Details</div>
- 
+
                  <div class="col-lg-4 col-md-6">
                      <label for="investigator" class="quote-label text-black fw-medium" style="font-size:1rem;">
                          Investigator
                      </label>
                      <select class="form-select form-select mb-1 w-75" id="investigator" placement="right">
- 
-                     </select>   
+
+                     </select>
                  </div>
- 
+
                  <div class="col-lg-4 col-md-6">
                      <label for="requestDate" class="quote-label text-black fw-medium" style="font-size:1rem;">
                          Request Date
                      </label>
                      <input type="date" class="form-control mb-1" id="">
                  </div>
- 
+
                  <div class="col-lg-4 col-md-6">
                      <label for="submissionDate" class="quote-label text-black fw-medium" style="font-size:1rem;">
                          Submission Date
                      </label>
                      <input type="date"  class="form-control mb-1" id="">
                  </div>
- 
+
                  <div class="col-lg-4 col-md-6">
                      <label for="remarks" class="quote-label text-black fw-medium" style="font-size:1rem;">
                          Remarks
                      </label>
-                     <input type="text" class="form-control mb-1" id=""> 
+                     <input type="text" class="form-control mb-1" id="">
                  </div>
- 
+
                  <!-- <div class="col-lg-4 col-md-6">
                     <label for="uploadReport" class="quote-label text-black fw-medium" style="font-size:1rem;">
                         Upload Investigator's Report
@@ -67,7 +63,7 @@
                     <label for="uploadReport" class="quote-label text-black fw-medium me-2" style="font-size:1rem;">
                         Upload Investigator's Report
                     </label>
-                    <button class="btn btn-md p-2fw-medium" 
+                    <button class="btn btn-md p-2fw-medium"
                             type="button"
                             [ngClass]="{
                                 'btn-danger': false,
@@ -76,12 +72,12 @@
                                }"
                             style="font-size: 16px">
                         Choose File
-                    </button>  
+                    </button>
                 </div>
               </div>
               <!-- End of Investigation Details -->
 
-               <!-- Payment Details -->   
+               <!-- Payment Details -->
               <div class="row g-3">
                 <div class="fw-medium" style="font-size: 1.25rem;">Payment Details</div>
 
@@ -89,44 +85,44 @@
                  <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
                     Invoice Number
                  </label>
-                 <input type="text" class="form-control mb-1" id="">  
+                 <input type="text" class="form-control mb-1" id="">
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                  <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
                     Invoice Date
                  </label>
-                 <input type="date" class="form-control mb-1" id="">  
+                 <input type="date" class="form-control mb-1" id="">
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                  <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
                     Invoice Amount
                  </label>
-                 <input type="text" class="form-control mb-1" id="">  
+                 <input type="text" class="form-control mb-1" id="">
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                     <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
-                       Payment Mode 
+                       Payment Mode
                     </label>
                     <select class="form-select form-select mb-1 w-75" id="paymentMethod" placeholder="" placement="right">
-                        
-                    </select>   
+
+                    </select>
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                     <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
                        Account Number
                     </label>
-                    <input type="text" class="form-control mb-1" id="">   
+                    <input type="text" class="form-control mb-1" id="">
                 </div>
             </div>
               <!-- End of Payment Details -->
-           </div>  
+           </div>
          </div>
      </div>
- 
+
      <!-- BUTTONS -->
      <div class="d-flex justify-content-end gap-4 pb-4">
 
@@ -137,11 +133,11 @@
           <div>
            <button style="font-size: 16px"
                    type="button"
-                   class="btn btn-danger btn-md p-2 fw-medium">Reject Claim              
+                   class="btn btn-danger btn-md p-2 fw-medium">Reject Claim
            </button>
           </div>
      <!-- End of Reject Claim Button -->
- 
+
      <!-- Approve and Proceed Button -->
           <div>
            <button style="font-size: 16px" class="btn"
@@ -150,7 +146,7 @@
                                'btn-danger': false,
                                'btn-primary': true
                               }"
-                   class="btn btn-md p-2 fw-medium">Approve and Proceed              
+                   class="btn btn-md p-2 fw-medium">Approve and Proceed
            </button>
           </div>
      </div>

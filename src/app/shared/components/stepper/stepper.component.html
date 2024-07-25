@@ -1,5 +1,17 @@
 
 
 
-<app-horizontal-stepper [currentStep] = currentStep [stepperData]="stepperData" *ngIf="orientation === 'HORIZONTAL'"></app-horizontal-stepper>
-<app-vertical-stepper [currentStep] = currentStep [stepperData]="stepperData" *ngIf="orientation === 'VERTICAL'"></app-vertical-stepper>
+<app-horizontal-stepper
+  [currentStep] = currentStep
+  [stepperData]="stepperData"
+  [dbStep]="dbStep"
+  (stepChange)="onStepChange($event)"
+  *ngIf="orientation === 'HORIZONTAL'"
+>
+</app-horizontal-stepper>
+<app-vertical-stepper
+  [currentStep] = currentStep
+  [stepperData]="stepperData"
+  *ngIf="orientation === 'VERTICAL'"
+>
+</app-vertical-stepper>
