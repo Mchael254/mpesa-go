@@ -11,7 +11,22 @@
     </div>
     <div class="my-4 ms-4 me-4">
         <div class="card col-md-12 col-lg-12 col-xxl-12">
+          <ng-container *ngIf="isLoading">
+            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" [style]="'width:' + progressBarWidth + '%'"></div>
+            </div>
+          </ng-container>
             <div class="card-body">
+              <ng-container *ngIf="isEntityExisting">
+                <div class="text-center">
+                  <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    The entity with <span class="fw-bold">ID: {{ foundEntity.identityNumber }} and PIN: {{ foundEntity.pinNumber }} </span>
+                    already exists. Assign a role instead.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button class="btn btn-primary mx-3" (click)="redirectToViewExistingEntity()">Assign Role to Entity</button>
+                  </div>
+                </div>
+              </ng-container>
                 <form [formGroup]="entityRegistrationForm">
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.category === 'Y'">
@@ -160,7 +175,6 @@
                                 </div>
                             </div>
                         </ng-container>
-
                     </div>
                 </form>
             </div>
@@ -168,9 +182,9 @@
         <div class="lower-navigation pad-1">
             <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
             <span class="float-end">
-                <button 
-                    style="padding: 0.4 0.5rem;" 
-                    type="button" id="nextButton" 
+                <button
+                    style="padding: 0.4 0.5rem;"
+                    type="button" id="nextButton"
                     class="btn btn-primary" (click)="onSubmit()"
                 ><i class="fa-solid fa-circle-arrow-right"></i> {{ 'entities.next' | translate | titlecase }}
             </button>
