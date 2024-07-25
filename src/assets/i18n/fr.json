@@ -175,7 +175,10 @@
     "General ledger": "Grand livre",
     "Cashbook": "Livre de caisse",
     "Cheques": "Chèques",
-    "Cheque signing": "Signature de chèque"
+    "Cheque signing": "Signature de chèque",
+    "Campaigns": "Campagnes",
+    "Client Attributes": "Attributs du Client",
+    "Product Attributes": "Attributs du Produit"
   },
   "crm": {
     "activity": "Activité",

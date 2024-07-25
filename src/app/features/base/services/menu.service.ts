@@ -200,7 +200,20 @@ export class MenuService {
         name: 'Campaign Management',
         nameSlug: 'campaign',
         icon: 'fa-solid fa-align-center',
-        menuItems: [],
+        menuItems: [
+          {
+            name: 'Campaigns',
+            link: '/home/crm/campaigns',
+          },
+          {
+            name: 'Client Attributes',
+            link: '',
+          },
+          {
+            name: 'Product Attributes',
+            link: '',
+          },
+        ],
         collapsed: true,
       },
       {
