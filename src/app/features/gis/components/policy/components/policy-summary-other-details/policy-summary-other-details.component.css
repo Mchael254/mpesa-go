@@ -46,14 +46,17 @@
     color: #00529B;
 
 }
-.label{
+
+.label {
     font-weight: 400;
     font-size: 14px;
 }
-.detail{
+
+.detail {
     font-weight: 700;
     font-size: 14px;
 }
+
 .more {
     color: #00529B;
     font-family: Roboto;
@@ -63,6 +66,7 @@
     line-height: normal;
     text-decoration-line: underline;
 }
+
 .flex .search-input {
     /* padding-bottom: 6px; */
     padding-left: 30px;
@@ -112,6 +116,7 @@
     padding: 4px 8px;
     /* Adjust the padding of dropdown items */
 }
+
 .flex .search-input-Risk {
     /* padding-bottom: 6px; */
     padding-left: 30px;
@@ -122,7 +127,8 @@
     width: 100% !important;
     font-size: 13px;
 }
-.deleteMessage{
+
+.deleteMessage {
     color: #000;
     font-size: 16px;
     font-family: Roboto;
@@ -131,54 +137,66 @@
     line-height: normal;
     text-align: center;
 }
-#search-input-Rsection{
+
+#search-input-Rsection {
     border: none;
     background-color: transparent;
-    width:200px;
-  }
-  .search-container {
+    width: 200px;
+}
+
+.search-container {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 5px;
     background-color: #F5F6F8;
-  }
-  .search-icon {
-    padding: 10 10px; 
-  }
-  
-  .search-icon i {
-    padding-top :15px;
+}
+
+.search-icon {
+    padding: 10 10px;
+}
+
+.search-icon i {
+    padding-top: 15px;
     /* font-size: 12px;  */
-    color:#B5B5B5
-  }
-  .scrollable-list{
+    color: #B5B5B5
+}
+
+.scrollable-list {
     overflow-y: scroll;
     max-height: 280px;
-  }
-  .form-check-input:checked {
-    background-color:#00529B;
+}
+
+.form-check-input:checked {
+    background-color: #00529B;
     border-color: #00529B;
 
-  }
-  .form-check-input {
+}
+
+.form-check-input {
     border-color: #868E96
-  }
-  .form-check-input:hover {
+}
+
+.form-check-input:hover {
     border-color: #00529B
-  }
-  .section-label{
+}
+
+.section-label {
     color: #000;
-  }
-  .form-check {
+}
+
+.form-check {
     display: flex;
     align-items: left;
 }
+
 .form-check-input {
-    margin-left: 0px; /* Adjust as needed */
+    margin-left: 0px;
+    /* Adjust as needed */
 }
-#sectionLabel{
+
+#sectionLabel {
     color: #000;
     font-family: Roboto;
     font-size: 12px;
@@ -186,19 +204,23 @@
     font-weight: 400;
     line-height: normal;
 }
-#sectionInput{
+
+#sectionInput {
     color: #000;
     font-family: Roboto;
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    height: 30px;
 }
-#sectionRows{
-    margin-left:16px;
-    margin-right:16px;
+
+#sectionRows {
+    margin-left: 16px;
+    margin-right: 16px;
 }
-#editScheduleLabel{
+
+#editScheduleLabel {
     color: #00529B;
     font-family: Roboto;
     font-size: 16px;
@@ -206,11 +228,30 @@
     font-weight: 500;
     line-height: normal;
     padding-bottom: 30px;
-    margin-left:26px;
+    margin-left: 26px;
 
 }
-  .modalTitle{
+
+.modalTitle {
     font-weight: 700;
     font-size: 20px;
     color: #000;
-  }
+}
+
+#selectedInput {
+    height: 25px;
+}
+
+#selectCheckbox {
+    border-color: #000;
+}
+
+#certificateCheckboxLabel {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 15.23px;
+    text-align: left;
+    color: #000;
+
+}

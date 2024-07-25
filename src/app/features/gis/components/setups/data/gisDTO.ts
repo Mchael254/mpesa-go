@@ -1088,5 +1088,21 @@ export interface QuakeZone {
     quakeZoneName: string;
     areaCoveredByQuakeZone: string;
 }
+export interface RequiredDocument {
+    code: number;
+    shortDescription: string;
+    description: string;
+    isMandatory: string;
+    isNewBusinessDocument: string;
+    isEndorsementDocument: string;
+    isRenewalDocument: string;
+    isCertificateDocument: string;
+    isClaimLoopDocument: string;
+    isClaimPaymentDocument: string;
+    validPeriod: number;
+    validPeriodType: string;
+    organizationCode: string 
+}
+
 
 
