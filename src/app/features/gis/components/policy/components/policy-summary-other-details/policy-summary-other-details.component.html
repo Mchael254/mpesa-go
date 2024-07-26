@@ -2229,12 +2229,12 @@
                                                     <label for="selectCheckbox" class="form-check-label" id="certificateCheckboxLabel">Select user certificate lot</label>
                                                 </div>
                                                 <div class="col-2" *ngIf="isCertificatesDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-success" title="add" data-bs-toggle="modal" data-bs-target="#addrequiredDoc">
+                                                    <button type="button" id="icon" class="btn btn-success" title="add" data-bs-toggle="modal" data-bs-target="#addCertificates">
                                                         <i class="fa-solid fa-plus"></i>
                                                     </button>
                                                 </div>
                                                 <div class="col-2" *ngIf="isCertificatesDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editrequiredDoc" title="Edit">
+                                                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCertificates" title="Edit">
                                                         <i class="fa-solid fa-pencil"></i>
                                                     </button>
                                                 </div>
@@ -2253,59 +2253,6 @@
                                         </div>
                                     </div>
                                     
-                                    
-                                    <!-- <div class="row ">
-                                        <div class="col-sm-3">
-                                            <p class="subheading">Certificates</p>
-
-                                        </div>
-                                        <div class="col-sm-9 d-flex justify-content-end">
-                                            <div class="row  mb-2">
-
-                                                <div class="col-3" *ngIf="isCertificatesDetailOpen">
-                                                   
-
-                                                    <button type="button" id="icon" class="btn btn-success" title="add"
-                                                        data-bs-toggle="modal" data-bs-target="#addrequiredDoc">
-                                                        <i class="fa-solid fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                                <div class="col-3" *ngIf="isCertificatesDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-primary" 
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editrequiredDoc"   title="Edit">
-                                                    <i class="fa-solid fa-pencil"></i>
-                                                </button>
-                                                   
-                                                </div>
-                                                <div class="col-3" *ngIf="isCertificatesDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-primary"
-                                                        data-bs-toggle="modal" id="openRequiredDocModalButtonDelete"
-                                                        [hidden]="true" data-bs-target="#deleteRequiredDocument"
-                                                        title="Delete">
-                                                    </button>
-                                                    <button type="button" id="icon" class="btn btn-primary"
-                                                        title="Delete">
-                                                        <i class="fa-solid fa-trash-can"
-                                                            (click)="openRequiredDocDeleteModal()"></i>
-                                                    </button>
-
-                                                </div>
-                                                <div class="col-3">
-                                                    <button type="button" id="icon" class="btn btn-primary"
-                                                        data-bs-toggle="collapse" data-bs-target="#certificatesDetails"
-                                                        aria-expanded="false" aria-controls="certificatesDetails"
-                                                        [attr.aria-expanded]="!isCertificatesDetailOpen"
-                                                        (click)="toggleCertificatesDetails()">
-                                                        <i class="fa-solid fa-chevron-down"></i>
-                                                    </button>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div> -->
                                 </div>
                                 <div class="collapse" id="certificatesDetails">
 
@@ -2348,16 +2295,15 @@
                                             </tr>
                                         </ng-template>
                                     </p-table>
-                                    <!-- View Required Document Modal -->
-                                    <div class="modal fade" id="addrequiredDoc" tabindex="-1" role="dialog"
+                                    <!-- Add  Certificates Modal -->
+                                    <div class="modal fade" id="addCertificates" tabindex="-1" role="dialog"
                                         aria-labelledby="addrequiredDocLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered " role="document">
                                             <div class="modal-content" id="addrequiredDocItemModal">
                                                 <div class="modal-body">
                                                     <button type="button" class="btn-close ms-auto py-2 px-2 float-end"
                                                         data-bs-dismiss="modal" aria-label="Close" id="close"></button>
-                                                    <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">Select
-                                                        required documents
+                                                    <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">Select certificates
                                                     </h5>
                                                     <!-- <div class="search-container mb-3">
                                                         <span class="search-icon"><i class="fa fa-search"></i></span>
@@ -2394,8 +2340,9 @@
                                                             <tr>
 
 
-                                                                <th>Short description</th>
-                                                                <th>Description</th>
+                                                                <th>Cert type</th>
+                                                                <th>Lots ID</th>
+                                                                <th>Branch</th>
 
                                                             </tr>
                                                         </ng-template>
@@ -2403,8 +2350,9 @@
                                                             <tr [pSelectableRow]="document"
                                                                 [class.p-highlight]="document === selectedDocument">
 
-                                                                <td>{{document.shortDescription}}</td>
-                                                                <td>{{document.description}}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
                                                             </tr>
                                                         </ng-template>
                                                     </p-table>
@@ -2422,16 +2370,15 @@
                                         </div>
                                     </div>
 
-                                    <!--Add or Edit Required Document Modal -->
-                                    <div class="modal fade" id="editrequiredDoc" tabindex="-1" role="dialog"
+                                    <!--Add or Edit Certificates Modal -->
+                                    <div class="modal fade" id="editCertificates" tabindex="-1" role="dialog"
                                         aria-labelledby="editrequiredDocLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered " role="document">
                                             <div class="modal-content">
                                                 <div class="modal-body">
                                                     <button type="button" class="btn-close ms-auto py-2 px-2 float-end"
                                                         data-bs-dismiss="modal" aria-label="Close" id="close"></button>
-                                                    <h5 class="modal-title mt-2 mb-3 ms-4" id="editrequiredDoc">Edit required
-                                                        documents</h5>
+                                                    <h5 class="modal-title mt-2 mb-3 ms-4" id="editCertificates">Certificate details</h5>
                                                     <form [formGroup]="scheduleDetailsForm">
                                                         <!-- **ROW 1** -->
                                                         <div class="row mb-1" id="sectionRows">
@@ -2439,7 +2386,7 @@
                                                                 <div class="mb-1  row">
                                                                     <label for="minmax-buttons"
                                                                         class=""
-                                                                        id="sectionLabel">Code</label>
+                                                                        id="certificateLabel">Certificate</label>
                                                                 </div>
                                                                 <div class="row">
                                                                     <input type="text" id="sectionInput"
@@ -2452,12 +2399,18 @@
                                                                 <div class="mb-1  row">
                                                                     <label for="minmax-buttons"
                                                                         class=""
-                                                                        id="sectionLabel">Description</label>
+                                                                        id="certificateLabel">Status</label>
                                                                 </div>
                                                                 <div class="row">
-                                                                    <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2"
-                                                                            formControlName="chasisNumber">
+                                                                    <select
+                                                                    class="form-select form-control-sm mb-1 ms-2"
+                                                                    id="selectedInput"
+                                                                    formControlName="yearOfManufacture">
+                                                                    <option value=""></option>
+                                                                    <option value="">Active</option>
+                                                                    <option value="">Cancelled</option>
+                                                                    <option value="">Inactive</option>
+                                                                </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2466,25 +2419,21 @@
                                                             <div class="col-xl-5">
                                                                 <div class="mb-1  row">
                                                                     <label for="minmax-buttons"
-                                                                        class=""
-                                                                        id="sectionLabel">Submitted</label>
+                                                                        class="required"
+                                                                        id="certificateLabel">WEF </label>
                                                                 </div>
                                                                 <div class="row">
-                                                                    <select
-                                                                    class="form-select form-control-sm mb-1 ms-2"
-                                                                    id="selectedInput"
-                                                                    formControlName="yearOfManufacture">
-                                                                    <option></option>
-                                                                    <option></option>
-                                                                </select>
+                                                                    <input type="date" id="sectionInput"
+                                                                            class="form-control form-control-sm mb-1 ms-2"
+                                                                            formControlName="chasisNumber">
                                                                 </div>
                                                             </div>
                                                             <div class="col-xl-2"></div>
                                                             <div class="col-xl-5">
                                                                 <div class="mb-1  row">
                                                                     <label for="minmax-buttons"
-                                                                        class=""
-                                                                        id="sectionLabel">Date Submitted</label>
+                                                                        class="required"
+                                                                        id="certificateLabel">WET</label>
                                                                 </div>
                                                                 <div class="row">
                                                                     <input type="date" id="sectionInput"
@@ -2493,34 +2442,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                          <!-- **ROW 3** -->
-                                                          <div class="row " id="sectionRows">
-                                                            <div class="col-xl-5">
-                                                                <div class="mb-1  row">
-                                                                    <label for="minmax-buttons"
-                                                                        class=""
-                                                                        id="sectionLabel">Remarks</label>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2"
-                                                                            formControlName="chasisNumber">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-2"></div>
-                                                            <div class="col-xl-5">
-                                                                <div class="mb-1  row">
-                                                                    <label for="minmax-buttons"
-                                                                        class=""
-                                                                        id="sectionLabel">Ref no.</label>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2"
-                                                                            formControlName="chasisNumber">
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        
                                                     </form>
                                                     <div class="mt-4 d-flex justify-content-end">
                                                         <button type="button" class="btn btn-primary " id="saveDetails"
