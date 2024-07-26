@@ -671,11 +671,23 @@ export class PolicyProductComponent {
   }
 
   updateCoverDays(): void {
-    const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
-    const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
-    const differenceInTime = toDate.getTime() - fromDate.getTime();
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+    const product = this.policyProductForm.get('productCode').value
+   
+    if(product === 8293){
+      const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
+      const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
+      const differenceInTime = toDate.getTime() - fromDate.getTime() + 1;
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+     
+    }else{
+      const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
+      const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
+      const differenceInTime = toDate.getTime() - fromDate.getTime();
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+    }
+   
   }
   formatDate(date: Date): string {
     const year = date.getFullYear();
