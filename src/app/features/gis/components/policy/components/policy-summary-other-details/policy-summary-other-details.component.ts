@@ -133,6 +133,7 @@ export class PolicySummaryOtherDetailsComponent {
 
 
 
+
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
 
@@ -171,6 +172,7 @@ export class PolicySummaryOtherDetailsComponent {
   public isRequiredDocDetailOpen = false;
   public isCertificatesDetailOpen = false;
 
+  public riskPerils = false;
 
   ngOnInit(): void {
     this.getUtil();
@@ -1196,6 +1198,10 @@ openPremiumDeleteModal() {
     document.getElementById("openModalPremiumButtonDelete").click();
 
   }
+}
+
+toggleRiskPerils(){
+  this.riskPerils = !this.riskPerils
 }
 
 
