@@ -818,12 +818,12 @@ export class PolicySummaryOtherDetailsComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Coinsurers updated successfully');
+          this.globalMessagingService.displaySuccessMessage('Success', 'Insured details updated successfully');
 
           console.log('Success:', response);
         },
         error: (error) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update coinsurer.Try again later');
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update Insured details.Try again later');
         }
       });
   }

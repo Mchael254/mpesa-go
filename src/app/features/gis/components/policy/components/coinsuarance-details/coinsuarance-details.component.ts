@@ -4,6 +4,7 @@ import { PolicyService } from '../../services/policy.service';
 import { Coinsurance, CoinsuranceDetail, PolicyContent, PolicyResponseDTO } from '../../data/policy-dto';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 
 const log = new Logger("CoinsuaranceDetailsComponent");
 
@@ -44,7 +45,7 @@ export class CoinsuaranceDetailsComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     public fb: FormBuilder,
-
+    private router: Router,
 
 
   ) {
@@ -282,7 +283,7 @@ export class CoinsuaranceDetailsComponent {
           else {
             this.errorOccurred = true;
             this.errorMessage = 'Empty response received from the server.';
-            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to add coinsurer, try again later');
           }
 
         },
@@ -290,7 +291,7 @@ export class CoinsuaranceDetailsComponent {
 
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            this.errorMessage
+            'Failed to add coinsurer, try again later'
           );
           log.info(`error >>>`, err);
         },
@@ -371,7 +372,7 @@ export class CoinsuaranceDetailsComponent {
           'Error',
           this.errorMessage
         );
-        log.info(`error >>>`, err);
+        log.info(`error >>>`, 'Failed to add coinsurer, try again later');
       },
     })
   }
@@ -390,4 +391,10 @@ export class CoinsuaranceDetailsComponent {
   console.log('edit',this.editCoinsurer)
   console.log('add',this.addCoinsurer)
  }
+ next(){
+  this.router.navigate(['/home/gis/policy/risk-details']);
+}
+previous(){
+  this.router.navigate(['/home/gis/policy/policy-product']);
+}
 }

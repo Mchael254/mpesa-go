@@ -956,7 +956,8 @@
       "person_limit":"Person limit",
       "claim_amount":"Claim amount",
       "excess_type":"Excess type",
-      "peril_id":"ID"
+      "peril_id":"ID",
+      "previous":"Previous"
     }
   },
   "lms": {

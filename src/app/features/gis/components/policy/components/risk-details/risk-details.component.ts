@@ -1764,4 +1764,11 @@ export class RiskDetailsComponent {
   next(){
     this.router.navigate(['/home/gis/policy/policy-summary']);
   }
+  previous(){
+    this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNo}`]);
+  }
+  editPolicyDetails(){
+    this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNo}`]);
+  
+  }
 }

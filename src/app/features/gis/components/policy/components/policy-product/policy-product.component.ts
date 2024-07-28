@@ -18,7 +18,7 @@ import { IntroducersService } from '../../../setups/services/introducers/introdu
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ContractNamesService } from '../../services/contract-names/contract-names.service';
 import { PolicyService } from '../../services/policy.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import underwritingSteps from '../../data/underwriting-steps.json'
 import { ProductDocumentService } from '../../../setups/services/product-document/product-document.service';
 import { PremiumFinanciers } from '../../data/policy-dto';
@@ -120,6 +120,8 @@ export class PolicyProductComponent {
   @ViewChild('closebutton') closebutton;
   @ViewChild('closebuttonIntroducers') closebuttonIntroducers;
   @ViewChild('closebuttonJointAccount') closebuttonJointAccount;
+  page: any;
+  policyDetailsData: any;
 
 
   constructor(
@@ -139,15 +141,23 @@ export class PolicyProductComponent {
     public cdr: ChangeDetectorRef,
     public productDocumentService:ProductDocumentService,
     private spinner: NgxSpinnerService,
+    private route: ActivatedRoute,
 
   ) { }
 
   ngOnInit(): void {
     this.spinner.show()
+    this.createPolicyProductForm();
+    this.page = this.route.snapshot.paramMap.get('policyNo');
+    if(this.page){
+      this.checkParam()
+    }
+    
+   
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     log.debug("Passed Transaction type:", this.selectedTransactionType);
     this.loadAllClients();
-    this.createPolicyProductForm();
+   
     this.loadAllproducts();
     // this.fetchBranches();
     this.getCurrencies()
@@ -167,6 +177,65 @@ export class PolicyProductComponent {
     this.toggleContractSelect(false);
 
   }
+
+  checkParam(){
+    // this.page = this.route.snapshot.paramMap.get('policyNo');
+    if(this.page){
+      console.log(this.page)
+      const policy = sessionStorage.getItem('policyProductForm')
+      if (policy) {
+        const policyObject = JSON.parse(policy); // Parse the JSON string to an object
+        console.log(policyObject); // Pretty-print the policy object
+      this.policyProductForm.patchValue(policyObject); 
+      }
+      // console.log(JSON.parse(policy))
+      // this.policyProductForm.patchValue(policy)
+      this.getPolicyDetails(this.page)
+    }
+   
+   
+  }
+
+  getPolicyDetails(batchNo) {
+   
+    log.debug("Batch No:", batchNo)
+    this.policyService
+      .getPolicy(batchNo)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+  
+          if (data && data.content && data.content.length > 0) {
+            this.policyResponse = data;
+            log.debug("Get Policy Endpoint Response", this.policyResponse)
+            this.policyDetailsData = this.policyResponse.content[0]
+            log.debug("Policy Details data get policy", this.policyDetailsData)
+            // this.insureds = this.policyDetailsData.insureds
+            // log.debug("Insureds", this.insureds)
+          
+         
+            this.cdr.detectChanges();
+  
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+  
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
 
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
@@ -875,6 +944,8 @@ export class PolicyProductComponent {
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
+    sessionStorage.setItem('policyProductForm',JSON.stringify(this.policyProductForm.value))
+    
     log.debug("coinsurance outputAst", this.policyProductForm.get('isCoinsurance').value)
     // if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
     //   log.debug("NAVIGATING TO COINSUARANCE PAGE")
@@ -925,6 +996,7 @@ export class PolicyProductComponent {
               //   })
               // }
               this.spinner.hide()
+             
               this.router.navigate(['/home/gis/policy/risk-details']);
 
             }
