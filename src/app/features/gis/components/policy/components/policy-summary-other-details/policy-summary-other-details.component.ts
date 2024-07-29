@@ -129,6 +129,8 @@ export class PolicySummaryOtherDetailsComponent {
 
   filteredRequiredDocs:any[]=[];
   selectedDocument:any;
+  selectedCertificate:any;
+
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -1243,6 +1245,15 @@ openPremiumDeleteModal() {
   }
   toggleCertificatesDetails() {
     this.isCertificatesDetailOpen = !this.isCertificatesDetailOpen;
+  }
+  openRequiredcertifcateDeleteModal() {
+    log.debug("Selected Document", this.selectedCertificate)
+    if (!this.selectedCertificate) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a certificate to continue');
+    } else {
+      document.getElementById("openCertificateModalButtonDelete").click();
+
+    }
   }
 }
 
