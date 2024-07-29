@@ -12,6 +12,7 @@ export class StepperComponent {
   @Input() stepperData: Step[];
   @Input() currentStep: number = 1;
   @Input() dbStep: number = 1;
+  @Input() stepType: string = 'link';
   @Input() orientation: string = 'HORIZONTAL'
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter to re-emit step changes
 

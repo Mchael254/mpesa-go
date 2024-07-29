@@ -14,6 +14,7 @@ export class HorizontalStepperComponent {
   @Input() stepperData: any[];
   @Input() currentStep: number;
   @Input() dbStep: number;
+  @Input() stepType: string = 'link';
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter for step changes
 
   stepperItems: any[] = [
