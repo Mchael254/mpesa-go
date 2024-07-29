@@ -3,7 +3,7 @@ import { Table } from 'primeng/table';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { PolicyDocument, Products, introducers } from '../../../setups/data/gisDTO';
@@ -107,7 +107,9 @@ export class PolicyProductComponent {
   premiumFinanciers:PremiumFinanciers[]=[];
 
   policyRiskDetails:any;
-  riskDetailsData:any
+  riskDetailsData:any;
+  productDescription:any;
+  policyObject:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -183,10 +185,35 @@ export class PolicyProductComponent {
     if(this.page){
       console.log(this.page)
       const policy = sessionStorage.getItem('policyProductForm')
+      
+      this.policyService.getPolicy(this.page).subscribe({
+        next:(res)=>{
+          console.log('policy response',res)
+        }
+      })
       if (policy) {
-        const policyObject = JSON.parse(policy); // Parse the JSON string to an object
-        console.log(policyObject); // Pretty-print the policy object
-      this.policyProductForm.patchValue(policyObject); 
+        this.policyObject = JSON.parse(policy); // Parse the JSON string to an object
+        console.log(JSON.stringify(this.policyObject)); // Pretty-print the policy object
+      this.policyProductForm.patchValue(this.policyObject); 
+      if(this.policyObject.agentCode){
+        this.showIntermediaryFields = true
+        const agentCodeControl = new FormControl('', Validators.required);
+
+   
+        this.policyProductForm.addControl('agentCode', agentCodeControl);
+        this.policyProductForm.get('agentCode').setValue(this.policyObject.agentCode)
+        // this.onAgentSelected(this.policyObject.agentCode)
+        this.selectedAgentCode = this.policyObject.agentCode
+      }
+      this.loadClientDetails(this.policyObject.clientCode);
+      this.onProductSelected(this.policyObject.productCode)
+      
+
+      this.policyProductForm.get('branchCode').setValue(this.policyObject.branchCode);
+      this.policyProductForm.controls['productCode'].setValue(this.policyObject.productCode);
+      this.policyProductForm.controls['branchCode'].setValue(this.policyObject.branchCode);
+      console.log(this.policyProductForm.value,"Product value")
+      this.getProductDetails(this.policyObject.productCode)
       }
       // console.log(JSON.parse(policy))
       // this.policyProductForm.patchValue(policy)
@@ -194,6 +221,28 @@ export class PolicyProductComponent {
     }
    
    
+  }
+  getProductDetails(id){
+    this.productService.getProductByCode(id).subscribe({
+      next:(res)=>{
+        this.productDescription = res
+        // this.productDescription = this.productDescription.description
+        console.log("product details",this.productDescription)
+      }
+    })
+  }
+  editPolicy(){
+    this.policyProductForm.controls['batchNumber'].setValue(this.page)
+    this.policyProductForm.get('clientCode').setValue(this.clientCode);
+    const policyForm = this.policyProductForm.value;
+    console.log(policyForm)
+    this.policyService.updatePolicy(this.policyObject,this.user)
+    .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          console.log(data)
+        }
+      })
   }
 
   getPolicyDetails(batchNo) {
@@ -341,7 +390,7 @@ export class PolicyProductComponent {
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
-      this.updateJointAccountData();
+      // this.updateJointAccountData();
     })
   }
   /**
@@ -429,7 +478,7 @@ export class PolicyProductComponent {
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue;
     log.debug("Selected Productevent:", selectedValue);
-
+    console.log(this.policyProductForm.value.productCode)
     log.debug("Selected Product Code:", this.selectedProductCode);
     if(this.selectedProductCode){
       this.getProductDocument()
