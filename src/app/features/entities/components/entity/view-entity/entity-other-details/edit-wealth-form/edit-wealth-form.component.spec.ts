@@ -17,6 +17,7 @@ import {CountryService} from "../../../../../../../shared/services/setups/countr
 import {SectorService} from "../../../../../../../shared/services/setups/sector/sector.service";
 import {ReactiveFormsModule} from "@angular/forms";
 import {WealthAmlDTO, WealthDetailsUpdateDTO} from "../../../../../data/accountDTO";
+import {Extras} from "../entity-other-details.component";
 
 export class MockAppConfigService {
   get config() {
@@ -139,8 +140,8 @@ const wealthDetails: WealthAmlDTO = {
   tradingName: ""
 };
 
-const extras = {
-  partyId: 417,
+const extras: Extras = {
+  partyAccountId: 417,
 }
 
 const fundsSourceDto: FundSourceDTO = {code: 0, name: "SALARY"};

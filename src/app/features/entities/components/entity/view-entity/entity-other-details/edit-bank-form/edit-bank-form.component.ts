@@ -9,6 +9,7 @@ import {BankService} from "../../../../../../../shared/services/setups/bank/bank
 import {AccountService} from "../../../../../services/account/account.service";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 import {EntityService} from "../../../../../services/entity/entity.service";
+import {Extras} from "../entity-other-details.component";
 
 const log = new Logger('EditBankFormComponent');
 
@@ -25,7 +26,7 @@ export class EditBankFormComponent implements OnInit{
   bankDetails: any;
   banksData: BankDTO[];
   branchesData: BankBranchDTO[];
-  extras: any;
+  extras: Extras;
   shouldShowEditForm: boolean = false;
   progressBarWidth: number = 10;
 
@@ -59,11 +60,11 @@ export class EditBankFormComponent implements OnInit{
    * @param bankDetails current bank details
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
-  prepareUpdateDetails(bankDetails: Bank, extras: any): void {
+  prepareUpdateDetails(bankDetails: Bank, extras: Extras): void {
     this.shouldShowEditForm = false;
     this.bankDetails = bankDetails;
     this.extras = extras;
-    this.fetchBanks(1100) // todo: remove hardcoded country code
+    this.fetchBanks(extras.countryId);
     this.bankForm.patchValue({
       bank: this.bankDetails.bankId,
       accountNo: this.bankDetails?.accountNo,
@@ -140,6 +141,7 @@ export class EditBankFormComponent implements OnInit{
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
         this.closeEditModal.emit();
+        this.progressBarWidth = 10;
       },
       error: (err) => {
         const errorMessage = err?.error?.message ?? err.message

@@ -15,6 +15,9 @@ import {EditWealthFormComponent} from "./edit-wealth-form/edit-wealth-form.compo
 import {EditAmlFormComponent} from "./edit-aml-form/edit-aml-form.component";
 import {EditNokFormComponent} from "./edit-nok-form/edit-nok-form.component";
 import {BankBranchDTO} from "../../../../../../shared/data/common/bank-dto";
+import {SectorDTO} from "../../../../../../shared/data/common/sector-dto";
+import {SectorService} from "../../../../../../shared/services/setups/sector/sector.service";
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -54,7 +57,13 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
     { index: 4, tabName: 'nok' },
   ];
 
-  constructor() {
+  sectorData: SectorDTO[];
+  sector: SectorDTO;
+
+  constructor(
+    private sectorService: SectorService,
+    private globalMessagingService: GlobalMessagingService,
+  ) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -63,6 +72,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.getNokList();
+    this.fetchSectors();
   }
 
   getCountryName(id: number): string {
@@ -96,9 +106,9 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
    * Prepare the details to be edited and send to the required component
    */
   prepareDetailsForEdit(): void {
-    const extras = {
+    const extras: Extras = {
       partyAccountId: this.partyAccountDetails.id,
-      countryId: this.partyAccountDetails?.country?.id,
+      countryId: this.partyAccountDetails?.address?.country_id,
     };
 
     switch(this.activeTab) {
@@ -129,7 +139,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   }
 
   prepareNokForEdit(nok: any): void {
-    const extras = {
+    const extras: Extras = {
       partyAccountId: this.partyAccountDetails.id,
       countryId: this.partyAccountDetails?.country?.id,
     };
@@ -137,5 +147,28 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
     this.editNokFormComponent.prepareUpdateDetails(nokToUpdate, extras);
   }
 
+  /**
+   * This method fetches a list of sectors for patching and selecting
+   */
+  fetchSectors(): void {
+    this.sectorService.getSectors().subscribe({
+      next: (sectors) => {
+        this.sectorData = sectors;
+        // this.cdr.detectChanges();
+        this.sector = this.sectorData.filter((el) => el.id === this.wealthAmlDetails.sector_id)[0];
+      },
+      error: (err) => {
+        const errorMessage = err?.error?.message ?? err.message
+        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
+      }
+    })
+  }
+
   protected readonly status = status;
+}
+
+
+export interface Extras {
+  partyAccountId: number,
+  countryId?: number,
 }
