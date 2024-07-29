@@ -2239,9 +2239,9 @@
                                                     </button>
                                                 </div>
                                                 <div class="col-2" *ngIf="isCertificatesDetailOpen">
-                                                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" id="openRequiredDocModalButtonDelete" [hidden]="true" data-bs-target="#deleteRequiredDocument" title="Delete"></button>
+                                                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" id="openCertificateModalButtonDelete" [hidden]="true" data-bs-target="#deleteCertificates" title="Delete"></button>
                                                     <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                                                        <i class="fa-solid fa-trash-can" (click)="openRequiredDocDeleteModal()"></i>
+                                                        <i class="fa-solid fa-trash-can" (click)="openRequiredcertifcateDeleteModal()"></i>
                                                     </button>
                                                 </div>
                                                 <div class="col-2">
@@ -2454,7 +2454,7 @@
                                         </div>
                                     </div>
                                     <!-- Delete Risk  Modal -->
-                                    <div class="modal fade" id="deleteRequiredDocument" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="deleteCertificates" tabindex="-1" role="dialog"
                                         aria-labelledby="deleteRisk" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content" id="deleteRisk">
