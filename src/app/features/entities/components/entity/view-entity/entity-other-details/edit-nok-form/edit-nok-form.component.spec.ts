@@ -12,6 +12,7 @@ import {AccountService} from "../../../../../services/account/account.service";
 import {of} from "rxjs";
 import {IdentityModeDTO} from "../../../../../data/entityDto";
 import {NextKinDetailsUpdateDTO} from "../../../../../data/accountDTO";
+import {Extras} from "../entity-other-details.component";
 
 export class MockAppConfigService {
   get config() {
@@ -23,8 +24,8 @@ export class MockAppConfigService {
   }
 }
 
-const extras = {
-  partyId: 417,
+const extras: Extras = {
+  partyAccountId: 417,
 }
 
 export class MockGlobalMessageService {

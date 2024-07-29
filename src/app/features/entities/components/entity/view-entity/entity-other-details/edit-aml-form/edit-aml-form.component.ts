@@ -8,6 +8,7 @@ import {BankService} from "../../../../../../../shared/services/setups/bank/bank
 import {AmlWealthDetailsUpdateDTO} from "../../../../../data/accountDTO";
 import {EntityService} from "../../../../../services/entity/entity.service";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
+import {Extras} from "../entity-other-details.component";
 
 const log = new Logger('EditAmlFormComponent');
 
@@ -26,7 +27,7 @@ export class EditAmlFormComponent implements OnInit{
   countryData: CountryDto[];
   fundSource: FundSourceDTO[];
   shouldShowEditForm: boolean = false;
-  extras: any;
+  extras: Extras;
   progressBarWidth: number = 10;
 
   constructor(
@@ -62,7 +63,7 @@ export class EditAmlFormComponent implements OnInit{
    * @param amlDetails current AML details
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
-  prepareUpdateDetails(amlDetails: any, extras: any): void {
+  prepareUpdateDetails(amlDetails: any, extras: Extras): void {
     this.shouldShowEditForm = false;
     this.amlDetails = amlDetails;
     this.extras = extras;
@@ -142,6 +143,7 @@ export class EditAmlFormComponent implements OnInit{
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
           this.closeEditModal.emit();
+          this.progressBarWidth = 50;
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message
