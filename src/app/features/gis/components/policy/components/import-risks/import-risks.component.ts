@@ -9,6 +9,7 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { PolicyService } from '../../services/policy.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { Router } from '@angular/router';
 const log = new Logger("ImportRiskDetailsComponent");
 @Component({
   selector: 'app-import-risks',
@@ -54,7 +55,7 @@ export class ImportRisksComponent {
     public fb: FormBuilder,
     private policyService: PolicyService,
     public authService: AuthService,
-
+    private router: Router,
 
   ){
 
@@ -658,5 +659,11 @@ export class ImportRisksComponent {
   }
   createSchedule() {
     throw new Error('Method not implemented.');
+  }
+  next(){
+    this.router.navigate(['/home/gis/policy/risk-details']);
+  }
+  previous(){
+    this.router.navigate(['/home/gis/policy/policy-product']);
   }
 }

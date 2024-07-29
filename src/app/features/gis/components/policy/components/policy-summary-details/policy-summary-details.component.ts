@@ -34,6 +34,7 @@ export class PolicySummaryDetailsComponent {
   product:any
   clientDetails:ClientDTO;
   allClients:any;
+  productDescription:any;
 
   insureds:any;
 
@@ -101,10 +102,10 @@ getPolicy() {
           log.debug("Get Policy Endpoint Response", this.policyResponse)
           this.policyDetailsData = this.policyResponse.content[0]
           log.debug("Policy Details data get policy", this.policyDetailsData)
-          this.insureds = this.policyDetailsData.insureds
+          this.insureds = this.policyDetailsData.insureds[0]
           log.debug("Insureds", this.insureds)
-        
-       
+          this.insureds = this.insureds.client.firstName + " " + this.insureds.client.lastName
+          log.debug("Insureds", this.insureds)
           this.cdr.detectChanges();
 
         } else {
@@ -137,7 +138,7 @@ getPolicyDetails(){
       this.productService.getProductByCode(productCode).subscribe({
         next:(res)=>{
           this.product = res
-          
+          this.productDescription = this.product.description
         }
       })
      
