@@ -11,7 +11,23 @@
   </div>
 </section> -->
 
-<section class="rt-container">
+<section class="rt-container" *ngIf="stepType === 'link'">
+  <div class="container-fluid">
+    <div class="stepper">
+      <ng-container *ngFor="let step of stepperData; let i = index">
+        <div class="step" (click)="navigateToPage(step.link)">
+          <div class="circle" [ngClass]="getStepClasses(i+1)">
+            <div>{{ step.number }}</div>
+          </div>
+          <div class="title step-link">{{ step.title }}</div>
+        </div>
+        <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
+      </ng-container>
+    </div>
+  </div>
+</section>
+
+<section class="rt-container" *ngIf="stepType === 'tab'">
   <div class="container-fluid">
     <div class="stepper">
       <ng-container *ngFor="let step of stepperData; let i = index">
