@@ -10,38 +10,29 @@
   </div>
 
   <div style="position: relative">
-    <ngx-spinner
-      name="client_details_view"
-      type="ball-clip-rotate-multiple"
-      [fullScreen]="false"
-      color="#00529B"
-      size="medium"
-      bdColor="rgba(255, 255, 255, 0.966)"
-    ></ngx-spinner>
-<!-- {{clientForm.value | json}} -->
+
+    <ngx-spinner name="client_details_view" type="ball-clip-rotate-multiple"
+      [fullScreen]="false" color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)">
+    </ngx-spinner>
+    <!-- {{clientForm.value | json}} -->
     <div style="font-size: 90%">
+
       <form [formGroup]="clientForm">
+
+        <!-- BASIC DETAILS FORM -->
         <div class="card mb-4">
+
           <div class="card-body mx-2 mt-2">
-            <!-- <button
-              
-              class="btn btn-primary float-end p-2"
+            <!-- <button class="btn btn-primary float-end p-2"
               data-bs-toggle="modal"
-              data-bs-target="#selectClient"
-            >
+              data-bs-target="#selectClient">
               Select Existing Client
             </button> -->
-            <h6 class="text-primary" style="font-weight: 600; font-size: 14px">
-              Basic Details
-            </h6>
+            <h6 class="text-primary" style="font-weight: 600; font-size: 14px">Basic Details</h6>
             <div class="row" *ngIf="getFormControlsNameWithErrors.length > 0">
-              <div class="text-black fw-medium">List of required form(s)</div>
-              <div
-                class="col-12 text-danger required"
-                style="font-size: 11px; font-weight: 500"
-                *ngFor="let item of getFormControlsNameWithErrors"
-              >
-                {{ item | uppercase }}
+              <div class="text-black fw-medium">List of Required Form(s)</div>
+              <div class="col-12 text-danger required" style="font-size: 11px; font-weight: 500"
+                  *ngFor="let item of getFormControlsNameWithErrors">{{ item | uppercase }}
               </div>
             </div>
 
@@ -49,57 +40,31 @@
               <div class="col-md-4">
                 <br />
                 <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    value="NEW_CLIENT"
-                    formControlName="clientTypeId"
-                    id="inlineRadio1"
-                    (click)="resetForm()"
-                  />
-                  <label class="form-check-label" for="inlineRadio1"
-                    >New Client</label
-                  >
+                  <input class="form-check-input" type="radio" value="NEW_CLIENT"
+                        formControlName="clientTypeId" id="inlineRadio1" (click)="resetForm()"/>
+                  <label class="form-check-label" for="inlineRadio1">New Client</label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    value="EXISTING_CLIENT"
-                    formControlName="clientTypeId"
-                    id="inlineRadio2"
-                  />
-                  <label class="form-check-label" for="inlineRadio2"
-                    >Existing Client</label
-                  >
+                  <input class="form-check-input" type="radio" value="EXISTING_CLIENT"
+                        formControlName="clientTypeId" id="inlineRadio2"/>
+                  <label class="form-check-label" for="inlineRadio2">Existing Client</label>
                 </div>
               </div>
             </div>
 
             <div class="row" >
-              <div class="col-md-4" *ngIf="
-              this.clientForm.get('clientTypeId').value === 'EXISTING_CLIENT'
-            ">
+              <div class="col-md-4" *ngIf="this.clientForm.get('clientTypeId').value === 'EXISTING_CLIENT'">
                 <div class="label">
                   <label for="" class="quote-label">Client</label>
                 </div>
                 <div>
-                  <p-dropdown
-                    id="value"
-                    [options]="clientList"
-                    [optionLabel]="'details'"
-                    [dataKey]="'value'"
-                    [editable]="true"
-                    [style]="{
-                      width: '100%',
-                      height: '37px',
-                      'line-height': '10px'
-                    }"
-                    placeholder="Select or Type Client name"
-                    (onChange)="searchClient()"
-                    formControlName="client"
-                    class="select"
-                  >
+                  <p-dropdown id="value" [options]="clientList" [optionLabel]="'details'"
+                    [dataKey]="'value'" [editable]="true"
+                    [style]="{ width: '100%',
+                               height: '37px',
+                              'line-height': '10px' }"
+                    placeholder="Select or Type Client name" (onChange)="searchClient()"
+                    formControlName="client" class="select">
                   </p-dropdown>
                 </div>
               </div>
@@ -108,863 +73,577 @@
             <div class="row" >
 
               <div class="col-md-4" *ngIf="getFormData('LAST_NAME')">
-                <label
-                  class="quote-label"
-                  [for]="getFormData('LAST_NAME')['data']['label']"
-                  [class]="
-                    getFormData('LAST_NAME')['data']['required']
-                      ? 'required'
-                      : ''
-                  "
-                  >{{
-                    getFormData("LAST_NAME")["data"]["label"] | titlecase
-                  }}</label
-                >
-                <input
-                  type="text"
-                  id="lastName"
-                  class="form-control form-control mb-1"
-                  [id]="getFormData('LAST_NAME')['data']['label']"
-                  formControlName="lastName"
-                />
+                <label class="quote-label" [for]="getFormData('LAST_NAME')['data']['label']"
+                  [class]="getFormData('LAST_NAME')['data']['required'] ? 'required' : '' ">
+                    {{ getFormData("LAST_NAME")["data"]["label"] | titlecase }}
+                </label>
+                <input type="text" id="lastName" class="form-control form-control mb-1"
+                  [id]="getFormData('LAST_NAME')['data']['label']" formControlName="lastName"/>
               </div>
+
               <div class="col-md-4" *ngIf="getFormData('FIRST_NAME')">
-                <label
-                  class="quote-label"
+                <label class="quote-label"
                   [for]="getFormData('FIRST_NAME')['data']['label']"
-                  [class.required]="
-                    getFormData('FIRST_NAME')['data']['required']
-                  "
-                  >{{
-                    getFormData("FIRST_NAME")["data"]["label"] | titlecase
-                  }}</label
-                >
-                <input
-                  type="text"
-                  class="form-control form-control mb-1"
-                  [id]="getFormData('FIRST_NAME')['data']['label']"
-                  formControlName="firstName"
-                />
+                  [class.required]="getFormData('FIRST_NAME')['data']['required']">
+                    {{ getFormData("FIRST_NAME")["data"]["label"] | titlecase }}
+                </label>
+                <input type="text" class="form-control form-control mb-1"
+                  [id]="getFormData('FIRST_NAME')['data']['label']" formControlName="firstName"/>
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY')">
                 <label class="quote-label" [for]="getFormData('MODE_OF_IDENTITY')['data']['label']"
-                [class.required]="getFormData('MODE_OF_IDENTITY')['data']['required']"
-                >
-                    {{
-                    getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase
-                    }}</label>
+                  [class.required]="getFormData('MODE_OF_IDENTITY')['data']['required']">
+                    {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}</label>
                 <select id="modeOfIdentity" class="form-select form-select mb-1"
-                        [id]="getFormData('MODE_OF_IDENTITY')['data']['label']"
-                        placement="right" formControlName="modeOfIdentity"
-                        (change)="checkIdentityType($event)">
-                    <option selected="true" disabled="disabled">select {{
-                        getFormData("MODE_OF_IDENTITY")["data"]["label"] | lowercase }}</option>
-                    <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'"
-                            [value]="data.id">
-                        {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
+                  [id]="getFormData('MODE_OF_IDENTITY')['data']['label']"
+                  placement="right" formControlName="modeOfIdentity"
+                  (change)="checkIdentityType($event)">
+                    <option selected="true" disabled="disabled">Select 
+                      {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | lowercase }}</option>
+                    <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
+                      {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
                 </select>
-            </div>
+              </div>
             
             </div>
+
             <div class="row mb-4">
+
               <div class="col-md-4" *ngIf="getFormData('COUNTRY_ID')">
                 <label class="quote-label" [for]="getFormData('COUNTRY_ID')['data']['label']"
-                [class.required]="getFormData('COUNTRY_ID')['data']['required']"
-                >
+                  [class.required]="getFormData('COUNTRY_ID')['data']['required']">
                     {{ getFormData("COUNTRY_ID")["data"]["label"] | titlecase }}</label>
                 <select id="citizenship" class="form-select form-select mb-1"
-                        [id]="getFormData('COUNTRY_ID')['data']['label']"
-                        placement="right" formControlName="countryId">
-                    <option selected="true" disabled="disabled">select {{
-                        getFormData("COUNTRY_ID")["data"]["label"] | lowercase }}</option>
-                    <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'"
-                            [value]="data.id">
-                        {{ data?.nationality | titlecase }}</option>
+                  [id]="getFormData('COUNTRY_ID')['data']['label']" placement="right" formControlName="countryId">
+                    <option selected="true" disabled="disabled">Select 
+                      {{ getFormData("COUNTRY_ID")["data"]["label"] | lowercase }}
+                    </option>
+                    <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
+                      {{ data?.nationality | titlecase }}</option>
                 </select>
-            </div>
-            
+              </div>
 
               <div class="col-md-4" *ngIf="getFormData('DATE_OF_BIRTH')">
-                <label
-                  class="quote-label"
-                  [for]="getFormData('DATE_OF_BIRTH')['data']['label']"
-                  [class.required]="
-                    getFormData('DATE_OF_BIRTH')['data']['required']
-                  "
-                  >{{
-                    getFormData("DATE_OF_BIRTH")["data"]["label"] | titlecase
-                  }}</label
-                >
-                <!-- <input
-                  type="text"
+                <label class="quote-label"
+                  [for]="getFormData('DATE_OF_BIRTH')['data']['label']" [class.required]="getFormData('DATE_OF_BIRTH')['data']['required']">
+                    {{ getFormData("DATE_OF_BIRTH")["data"]["label"] | titlecase }}
+                </label>
+                <!-- <input type="text"
                   class="form-control form-control mb-1"
-                 
-                  formControlName="dateOfBirth"
-                /> -->
-                <p-calendar [maxDate]="minDate" [defaultDate]="minDate" [id]="getFormData('DATE_OF_BIRTH')['data']['label']" ngDefaultControl formControlName="dateOfBirth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                 formControlName="dateOfBirth" /> -->
+                <p-calendar [maxDate]="minDate" [defaultDate]="minDate" 
+                  [id]="getFormData('DATE_OF_BIRTH')['data']['label']" ngDefaultControl 
+                  formControlName="dateOfBirth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
                 </p-calendar>
               </div>
+
               <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY_NO')">
-                <label
-                  class="quote-label"
-                  [for]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']"
-                >
-                  {{
-                    getFormData("MODE_OF_IDENTITY_NO")["data"]["label"]
-                      | titlecase
-                  }}
-                  <span
-                    [class.required]="
-                      getFormData('MODE_OF_IDENTITY_NO')['data']['required']
-                    "
-                  >
-                    {{
-                      identityFormatDesc?.exampleFormat
-                        ? "- " + identityFormatDesc?.exampleFormat
-                        : ""
-                    }}
+                <label class="quote-label" [for]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']">
+                  {{ getFormData("MODE_OF_IDENTITY_NO")["data"]["label"] | titlecase }}
+                  <span [class.required]=" getFormData('MODE_OF_IDENTITY_NO')['data']['required'] ">
+                    {{ identityFormatDesc?.exampleFormat ? "- " + identityFormatDesc?.exampleFormat : "" }}
                   </span>
                 </label>
-                <input
-                  type="text"
-                  [id]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']"
-                  class="form-control form-control mb-1"
-                  formControlName="modeOfIdentityNumber"
-                />
+                <input type="text" [id]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']"
+                  class="form-control form-control mb-1" formControlName="modeOfIdentityNumber"/>
                 <div *ngIf="checkErrorThatsTouchedAndDirty() || checkError()" class="text-danger">
                   Incorrect ID No Format
                 </div>
               </div>
+
             </div>
+
             <div class="row mb-4">
+
               <div class="col-md-4" *ngIf="getFormData('PIN_NO')">
-                <label
-                  class="quote-label"
-                  [for]="getFormData('PIN_NO')['data']['label']"
-                  [class.required]="getFormData('PIN_NO')['data']['required']"
-                  >{{
-                    getFormData("PIN_NO")["data"]["label"] | titlecase
-                  }}</label
-                >
-                <input
-                  type="text"
-                  class="form-control form-control mb-1"
-                  [id]="getFormData('PIN_NO')['data']['label']"
-                  formControlName="pinNumber"
-                />
+                <label class="quote-label" [for]="getFormData('PIN_NO')['data']['label']"
+                  [class.required]="getFormData('PIN_NO')['data']['required']">
+                  {{ getFormData("PIN_NO")["data"]["label"] | titlecase }}
+                </label>
+                <input type="text" class="form-control form-control mb-1"
+                  [id]="getFormData('PIN_NO')['data']['label']" formControlName="pinNumber"/>
               </div>
+
               <div class="col-md-4" *ngIf="getFormData('GENDER')">
-                <label
-                  class="quote-label"
-                  [for]="getFormData('GENDER')['data']['label']"
-                  [class.required]="getFormData('GENDER')['data']['required']"
-                  >{{
-                    getFormData("GENDER")["data"]["label"] | titlecase
-                  }}</label
-                >
+                <label class="quote-label" [for]="getFormData('GENDER')['data']['label']"
+                  [class.required]="getFormData('GENDER')['data']['required']">
+                    {{ getFormData("GENDER")["data"]["label"] | titlecase }}
+                </label>
                 <br />
                 <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    value="F"
-                    formControlName="gender"
-                    [id]="getFormData('GENDER')['data']['label'] + '_female'"
-                  />
-                  <label
-                    class="form-check-label"
-                    [for]="getFormData('GENDER')['data']['label'] + '_female'"
-                    >Female</label
-                  >
+                  <input class="form-check-input" type="radio" value="F"
+                    formControlName="gender" [id]="getFormData('GENDER')['data']['label'] + '_female'"/>
+                  <label class="form-check-label"
+                    [for]="getFormData('GENDER')['data']['label'] + '_female'">Female</label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    value="M"
-                    formControlName="gender"
-                    [id]="getFormData('GENDER')['data']['label'] + '_male'"
-                  />
-                  <label
-                    class="form-check-label"
-                    [for]="getFormData('GENDER')['data']['label'] + '_male'"
-                    >Male</label
-                  >
+                  <input class="form-check-input" type="radio" value="M"
+                    formControlName="gender" [id]="getFormData('GENDER')['data']['label'] + '_male'"/>
+                  <label class="form-check-label" [for]="getFormData('GENDER')['data']['label'] + '_male'">Male</label>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Contact Details Form -->
+            </div>
+
+          </div>
+
+        </div>
+        <!-- END OF BASIC DETAILS -->
+
+        <!-- CONTACT DETAILS FORM -->
         <div class="card mb-4" formGroupName="contactDetails">
+
           <div class="card-body mx-2 mt-2">
+
             <div class="row">
+
               <div class="col-8">
                 <h6 class="text-start mb-3">Contact Details</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
-                <button
-                  type="button"
-                  id="icon"
-                  class="btn btn-card-icon"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#contactDetails"
-                  aria-expanded="false"
-                  aria-controls="contactDetails"
-                >
+                <button type="button" id="icon" class="btn btn-card-icon"
+                        data-bs-toggle="collapse" data-bs-target="#contactDetails"
+                        aria-expanded="false" aria-controls="contactDetails">
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
               </div>
+
             </div>
 
             <div class="collapse mt-4" id="contactDetails">
+
               <div class="row mb-4">
-                <div
-                
-                  class="col-md-4"
-                  *ngIf="getFormData('CONTACT_DETAILS_BRANCH_ID')"
-                >
-                  <label
-                    class="quote-label"
-                    [class.required]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['required']"
-                    [for]="
-                      getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']
-                    "
-                    >{{
-                      getFormData("CONTACT_DETAILS_BRANCH_ID")["data"]["label"]
-                        | titlecase
-                    }}</label
-                  >
-                  <select
-                    class="form-select form-select mb-1"
-                    [id]="
-                      getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']
-                    "
-                    formControlName="branchId"
-                    placement="right"
-                  >
-                    <option [value]="" selected="true" disabled="disabled">
-                      Select Branch
-                    </option>
-                    <option
-                      *ngFor="let data of branchList | sort : 'asc' : 'name'"
-                      [value]="data.id"
-                    >
-                      {{ data.name | titlecase }}
-                    </option>
+
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_BRANCH_ID')">
+                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['required']"
+                          [for]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']">
+                          {{ getFormData("CONTACT_DETAILS_BRANCH_ID")["data"]["label"] | titlecase }}
+                  </label>
+                  <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']"
+                          formControlName="branchId" placement="right">
+                          <option [value]="" selected="true" disabled="disabled">Select Branch</option>
+                          <option *ngFor="let data of branchList | sort : 'asc' : 'name'" [value]="data.id">
+                                  {{ data.name | titlecase }}
+                          </option>
                   </select>
                 </div>
 
-                <div class="col-md-4">
-                  <label for="titleShortDescription" class="quote-label"
-
-                    >Title</label
-                  >
-                  <input
-                    type="text"
-                    id="titleShortDescription"
-                    class="form-control form-control mb-1"
-                    formControlName="titleShortDescription"
-                  />
-                </div>
-                <div
-                  class="col-md-4"
-                  *ngIf="getFormData('CONTACT_DETAILS_SMS_NO')"
-                >
-                  <label
-                    class="quote-label"
-                    [class.required]="
-                    getFormData('CONTACT_DETAILS_SMS_NO')['data']['required']
-                  "
-                    [for]="
-                      getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']
-                    "
-                  >
-                    {{
-                      getFormData("CONTACT_DETAILS_SMS_NO")["data"]["label"]
-                        | titlecase
-                    }}
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')">
+                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['required']" 
+                          [for]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']">
+                          {{ getFormData("CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION")["data"]["label"] | titlecase }}
                   </label>
-                  <input
-                    type="text"
-                    [id]="
-                      getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']
-                    "
-                    formControlName="smsNumber"
-                    class="form-control form-control mb-1"
-                  />
-                </div>
-              </div>
-              <div class="row mb-4">
-                <div
-                  class="col-md-4"
-                  *ngIf="getFormData('CONTACT_DETAILS_PHONE_NO')"
-                >
-                  <label
-                    class="quote-label"
-                    [for]="
-                      getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']
-                    "
-                    >{{
-                      getFormData("CONTACT_DETAILS_PHONE_NO")["data"]["label"]
-                        | titlecase
-                    }}</label
-                  >
-                  <input
-                    type="text"
-                    [id]="
-                      getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']
-                    "
-                    formControlName="phoneNumber"
-                    class="form-control form-control mb-1"
-                  />
-                </div>
-                <div
-                  class="col-md-4"
-                  *ngIf="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')"
-                >
-                  <label
-                    class="quote-label"
-                    [for]="
-                      getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data'][
-                        'label'
-                      ]
-                    "
-                    >{{
-                      getFormData("CONTACT_DETAILS_EMAIL_ADDRESS")["data"][
-                        "label"
-                      ] | titlecase
-                    }}</label
-                  >
-                  <input
-                    type="email"
-                    [id]="
-                      getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data'][
-                        'label'
-                      ]
-                    "
-                    formControlName="emailAddress"
-                    class="form-control form-control mb-1"
-                  />
+                  <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']"
+                          formControlName="titleShortDescription" placement="right">
+                          <option [value]="" selected="true" disabled="disabled">Select Title</option> 
+                  </select>
                 </div>
 
-                <div
-                  class="col-md-4"
-                  *ngIf="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')"
-                >
-                  <label
-                    class="quote-label"
-                    [for]="
-                      getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data'][
-                        'label'
-                      ]
-                    "
-                    >{{
-                      getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"][
-                        "label"
-                      ] | titlecase
-                    }}</label
-                  >
-                  <select
-                    id="preferredChannel"
-                    class="form-select form-select mb-1"
-                    [id]="
-                      getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data'][
-                        'label'
-                      ]
-                    "
-                    placement="right"
-                    formControlName="preferredChannel"
-                  >
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_SMS_NO')">
+                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['required']"
+                          [for]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']">
+                          {{ getFormData("CONTACT_DETAILS_SMS_NO")["data"]["label"]  | titlecase }}
+                  </label>
+                  <input type="text" [id]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']"
+                          formControlName="smsNumber" class="form-control form-control mb-1"/>
+                </div>
+
+              </div>
+
+              <div class="row mb-4">
+
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_PHONE_NO')">
+                  <label class="quote-label"
+                          [for]="getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']">
+                          {{ getFormData("CONTACT_DETAILS_PHONE_NO")["data"]["label"] | titlecase }}
+                  </label>
+                  <input type="text" [id]="getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']"
+                          formControlName="phoneNumber" class="form-control form-control mb-1"/>
+                </div>
+
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')">
+                  <label class="quote-label"
+                          [for]="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data']['label']">
+                          {{  getFormData("CONTACT_DETAILS_EMAIL_ADDRESS")["data"]["label"] | titlecase }}
+                  </label>
+                  <input type="email" [id]="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data']['label']"
+                          formControlName="emailAddress" class="form-control form-control mb-1"/>
+                </div>
+
+                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')">
+                  <label class="quote-label"
+                          [for]="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data']['label']">
+                          {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | titlecase }}
+                  </label>
+                  <select id="preferredChannel" class="form-select form-select mb-1"
+                          [id]="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data']['label']"
+                          placement="right" formControlName="preferredChannel">
                     <option selected="true" disabled="disabled">
-                      select
-                      {{
-                        getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")[
-                          "data"
-                        ]["label"] | lowercase
-                      }}
+                      select {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | lowercase }}
                     </option>
                     <option value="EMAIL">Email</option>
                     <option value="SMS">SMS</option>
                     <option value="CALL">Call</option>
                   </select>
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+        <!-- END OF CONTACT DETAILS -->
 
         <!-- POSTAL ADDRESS DETAILS FORM -->
         <div class="card mb-4" formGroupName="address">
+
           <div class="card-body mx-2 mt-2">
+
             <div class="row">
+
               <div class="col-8">
                 <h6 class="text-start mb-3">Postal Address Details</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
-                <button
-                  type="button"
-                  id="icon"
-                  class="btn btn-card-icon"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#postalAddress"
-                  aria-expanded="false"
-                  aria-controls="contactDetails"
-                >
+                <button type="button" id="icon" class="btn btn-card-icon"
+                        data-bs-toggle="collapse" data-bs-target="#postalAddress"
+                        aria-expanded="false" aria-controls="contactDetails">
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
               </div>
+
             </div>
 
             <div class="collapse mt-4" id="postalAddress">
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
-                  <label for="box_number" class="quote-label"
-                    >P.O Box No.</label
-                  >
-                  <input
-                    type="number"
-                    id="box_number"
-                    formControlName="box_number"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="box_number" class="quote-label">P.O Box No.</label>
+                  <input type="number" id="box_number"
+                        formControlName="box_number" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
                   <label for="country_id" class="quote-label">Country</label>
-                  <select
-                    (change)="selectCountry($event)"
-                    class="form-select form-select mb-1"
-                    id="country_id"
-                    formControlName="country_id"
-                    placement="right"
-                  >
-                    <option [value]="" selected="true" disabled="disabled">
-                      select country
-                    </option>
-                    <option
-                      *ngFor="let data of countryList | sort : 'asc' : 'name'"
-                      [value]="data?.id"
-                    >
-                      {{ data?.name | titlecase }}
+                  <select (change)="selectCountry($event)" class="form-select form-select mb-1"
+                          id="country_id" formControlName="country_id" placement="right">
+                    <option [value]="" selected="true" disabled="disabled">Select Country</option>
+                    <option *ngFor="let data of countryList | sort : 'asc' : 'name'"[value]="data?.id">
+                            {{ data?.name | titlecase }}
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
                   <label for="state_id" class="quote-label">County</label>
-                  <select
-                    (change)="selectState($event)"
-                    formControlName="state_id"
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    placement="right"
-                  >
-                    <option selected="true" disabled="disabled">
-                      select county
-                    </option>
-                    <option
-                      *ngFor="let data of stateList | sort : 'asc' : 'name'"
-                      [value]="data?.id"
-                    >
-                      {{ data?.name | titlecase }}
+                  <select (change)="selectState($event)" formControlName="state_id"
+                          class="form-select form-select mb-1" id="quote-input" placement="right">
+                    <option selected="true" disabled="disabled">Select County</option>
+                    <option *ngFor="let data of stateList | sort : 'asc' : 'name'" [value]="data?.id">
+                          {{ data?.name | titlecase }}
                     </option>
                   </select>
                 </div>
+
               </div>
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
                   <label for="town_id" class="quote-label">Town</label>
-                  <select
-                    formControlName="town_id"
-                    class="form-select form-select mb-1"
-                    id="town_id"
-                    placement="right"
-                  >
-                    <option selected="true" disabled="disabled">
-                      select town
-                    </option>
-                    <option
-                      *ngFor="let data of townList | sort : 'asc' : 'name'"
-                      [value]="data.id"
-                    >
-                      {{ data?.name | titlecase }}
+                  <select formControlName="town_id" class="form-select form-select mb-1"
+                          id="town_id" placement="right">
+                    <option selected="true" disabled="disabled">Select Town</option>
+                    <option *ngFor="let data of townList | sort : 'asc' : 'name'" [value]="data.id">
+                            {{ data?.name | titlecase }}
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="physical_address" class="quote-label"
-                    >Physical Address</label
-                  >
-                  <input
-                    type="text"
-                    id="physical_address"
-                    formControlName="residential_address"
-                    class="form-control form-control mb-1"
-                    formControlName="physical_address"
-                  />
+                  <label for="physical_address" class="quote-label">Physical Address</label>
+                  <input type="text" id="physical_address" formControlName="residential_address"
+                          class="form-control form-control mb-1" formControlName="physical_address"/>
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+        <!-- END OF POSTAL ADDRESS -->
 
         <!-- BANKING DETAILS -->
         <div class="card mb-4" formGroupName="paymentDetails">
+
           <div class="card-body mx-2 mt-2">
+
             <div class="row">
+
               <div class="col-8">
                 <h6 class="text-start mb-3">Banking Details</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
-                <button
-                  type="button"
-                  id="icon"
-                  class="btn btn-card-icon"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#bankingDetails"
-                  aria-expanded="false"
-                  aria-controls="contactDetails"
-                >
+                <button type="button" id="icon" class="btn btn-card-icon"
+                        data-bs-toggle="collapse" data-bs-target="#bankingDetails"
+                        aria-expanded="false" aria-controls="contactDetails">
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
               </div>
+
             </div>
 
             <div class="collapse mt-4" id="bankingDetails">
+
               <div class="row mb-4">
+                
                 <div class="col-md-4">
                   <label for="bank_branch_id" class="quote-label">Bank</label>
-                  <select
-                    (change)="selectBank($event)"
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    placement="right"
-                    formControlName="bank_branch_id"
-                  >
-                    <option selected="true" disabled="disabled">
-                      select bank
-                    </option>
-                    <option
-                      *ngFor="let data of bankList | sort : 'asc' : 'name'"
-                      [value]="data.id"
-                    >
-                      {{ data.name | titlecase }}
+                  <select (change)="selectBank($event)" class="form-select form-select mb-1"
+                          id="quote-input" placement="right" formControlName="bank_branch_id">
+                    <option selected="true" disabled="disabled">Select Bank</option>
+                    <option *ngFor="let data of bankList | sort : 'asc' : 'name'" [value]="data.id">
+                            {{ data.name | titlecase }}
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
                   <label for="bank_branch_id" class="quote-label">Branch</label>
-                  <select
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    formControlName="bank_branch_id"
-                    placement="right"
-                  >
+                  <select class="form-select form-select mb-1" id="quote-input"
+                          formControlName="bank_branch_id" placement="right">
                     <option selected="true" disabled="disabled">
-                      select bank branch
+                      Select Bank Branch
                     </option>
-                    <option
-                      *ngFor="
-                        let data of bankBranchList | sort : 'asc' : 'name'
-                      "
-                      [value]="data.id"
-                    >
-                      {{ data.name | titlecase }}
+                    <option *ngFor="let data of bankBranchList | sort : 'asc' : 'name'" [value]="data.id">
+                            {{ data.name | titlecase }}
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="account_number" class="quote-label"
-                    >Account No.</label
-                  >
-                  <input
-                    type="number"
-                    id="account_number"
-                    class="form-control form-control mb-1"
-                    formControlName="account_number"
-                  />
+                  <label for="account_number" class="quote-label">Account No.</label>
+                  <input type="number" id="account_number" class="form-control form-control mb-1"
+                        formControlName="account_number"/>
                 </div>
+
               </div>
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
                   <label for="currency_id" class="quote-label">Currency</label>
-                  <select
-                    class="form-select form-select mb-1"
-                    id="currency_id"
-                    placement="right"
-                    formControlName="currency_id"
-                  >
+                  <select class="form-select form-select mb-1" id="currency_id"
+                          placement="right" formControlName="currency_id">
                     <option selected="true" disabled="disabled"></option>
                     <option *ngFor="let data of currencyList" [value]="data.id">
-                      <ng-container
-                        >{{ data?.currency?.name | titlecase }} ({{
-                          data?.currency?.symbol
-                        }})</ng-container
-                      >
+                      <ng-container>
+                        {{ data?.currency?.name | titlecase }} 
+                        ({{ data?.currency?.symbol }})
+                      </ng-container>
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="effective_from_date" class="quote-label">
-                    With effect from</label
-                  >
-                  <!-- <input
-                    type="date"
-                    id="effective_from_date"
+                  <label for="effective_from_date" class="quote-label">With Effect From</label>
+                  <!-- <input type="date" id="effective_from_date"
                     class="form-control form-control mb-1"
-                    formControlName="effective_from_date"
-                  /> -->
-                  <p-calendar  [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE')?.data?.label" ngDefaultControl formControlName="effective_from_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                    formControlName="effective_from_date" /> -->
+                  <p-calendar [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE')?.data?.label" ngDefaultControl 
+                              formControlName="effective_from_date" dateFormat="dd/mm/yy" 
+                              [showIcon]="true" [showButtonBar]="true">
                   </p-calendar>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="effective_to_date" class="quote-label">
-                    With effect to</label
-                  >
-                  <!-- <input
-                    type="date"
-                    id="effective_to_date"
+                  <label for="effective_to_date" class="quote-label">With Effect To</label>
+                  <!-- <input type="date" id="effective_to_date"
                     formControlName="effective_to_date"
                     class="form-control form-control mb-1"
                   /> -->
-                  <p-calendar  [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_TO_DATE')?.data?.label" ngDefaultControl formControlName="effective_to_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                  <p-calendar [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_TO_DATE')?.data?.label" ngDefaultControl 
+                              formControlName="effective_to_date" dateFormat="dd/mm/yy" 
+                              [showIcon]="true" [showButtonBar]="true">
                   </p-calendar>
                 </div>
               </div>
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
                   <label for="mpayno" class="quote-label">Mpay No</label>
-                  <input
-                    type="number"
-                    id="mpayno"
-                    formControlName="mpayno"
-                    class="form-control form-control mb-1"
-                  />
+                  <input type="number" id="mpayno" formControlName="mpayno" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
                   <label for="iban" class="quote-label">IBAN</label>
-                  <input
-                    type="number"
-                    id="iban"
-                    formControlName="iban"
-                    class="form-control form-control mb-1"
-                  />
+                  <input type="number" id="iban" formControlName="iban" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="preferedChannel" class="quote-label"
-                    >Preferred channel</label
-                  >
-                  <input
-                    type="text"
-                    id="preferedChannel"
-                    class="form-control form-control mb-1"
-                    formControlName="preferedChannel"
-                  />
+                  <label for="preferedChannel" class="quote-label">Preferred Channel</label>
+                  <input type="text" id="preferedChannel" class="form-control form-control mb-1" formControlName="preferedChannel"/>
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+        <!-- END OF BANKING DETAILS -->
 
         <!-- WEALTH AML DETAILS -->
         <div class="card mb-4" formGroupName="wealthDetails">
+
           <div class="card-body mx-2 mt-2">
+
             <div class="row">
+
               <div class="col-8">
-                <h6 class="text-start mb-3">Wealth AML details</h6>
+                <h6 class="text-start mb-3">Wealth AML Details</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
-                <button
-                  type="button"
-                  id="icon"
-                  class="btn btn-card-icon"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#amlDetails"
-                  aria-expanded="false"
-                  aria-controls="contactDetails"
-                >
+                <button type="button" id="icon" class="btn btn-card-icon"
+                        data-bs-toggle="collapse" data-bs-target="#amlDetails"
+                        aria-expanded="false" aria-controls="contactDetails">
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
               </div>
+
             </div>
 
             <div class="collapse mt-4" id="amlDetails">
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
                   <label for="" class="quote-label">Citizenship</label>
-                  <select
-                    class="form-select form-select mb-1"
-                    id="citizenship"
-                    formControlName="citizenship_country_id"
-                    placement="right"
-                  >
+                  <select class="form-select form-select mb-1" id="citizenship"
+                          formControlName="citizenship_country_id" placement="right">
                     <option selected="true" disabled="disabled">
-                      select citizenship
+                      select Citizenship
                     </option>
-                    <option
-                      *ngFor="
-                        let data of countryList | sort : 'asc' : 'nationality'
-                      "
-                      [value]="data.id"
-                    >
-                      {{ data?.nationality | titlecase }}
+                    <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
+                            {{ data?.nationality | titlecase }}
                     </option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="marital_status" class="quote-label"
-                    >Marital status</label
-                  >
-                  <select
-                    id="marital_status"
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    placement="right"
-                    formControlName="marital_status"
-                  >
+                  <label for="marital_status" class="quote-label">Marital Status</label>
+                  <select id="marital_status" class="form-select form-select mb-1" id="quote-input"
+                          placement="right" formControlName="marital_status">
                     <option selected="true" disabled="disabled"></option>
                     <option value="MARRIED">Married</option>
                     <option value="SINGLE">Single</option>
                   </select>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="" class="quote-label">Source of funds</label>
-                  <input
-                    type="text"
-                    id="quote-input"
-                    class="form-control form-control mb-1"
-                    formControlName="funds_source"
-                  />
+                  <label for="" class="quote-label">Source of Funds</label>
+                  <input type="text" id="quote-input" class="form-control form-control mb-1"
+                        formControlName="funds_source"/>
                 </div>
+
               </div>
+
               <div class="row mb-4">
+
                 <div class="col-md-4">
-                  <label for="employed" class="quote-label"
-                    >Type of employment</label
-                  >
-                  <input
-                    type="text"
-                    id="employed"
-                    formControlName="employed"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="employed" class="quote-label">Type of Employment</label>
+                  <input type="text" id="employed" formControlName="employed" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="sector_id" class="quote-label">
-                    Economic sector</label
-                  >
-                  <input
-                    type="text"
-                    id="sector_id"
-                    formControlName="sector_id"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="sector_id" class="quote-label">Economic Sector</label>
+                  <input type="text" id="sector_id" formControlName="sector_id" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="occupation_id" class="quote-label">
-                    Occupation</label
-                  >
+                  <label for="occupation_id" class="quote-label">Occupation</label>
                   <!-- <input
                     type="text"
                     id="occupation_id"
                     class="form-control form-control mb-1"
                     formControlName="occupation_id"
                   /> -->
-                  <select
-                    id="marital_status"
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    placement="right"
-                    formControlName="occupation_id"
-                  >
+                  <select id="marital_status" class="form-select form-select mb-1" id="quote-input"
+                          placement="right" formControlName="occupation_id">
                     <option selected="true" disabled="disabled"></option>
                     <ng-container *ngFor="let item of occupationsData">
                       <option [value]="item.id" >{{item?.name}}</option>
                     </ng-container>
-                    
                   </select>
                 </div>
+
               </div>
+
               <div class="row mb-4">
+                
                 <div class="col-md-4">
-                  <label for="insurancePurpose" class="quote-label"
-                    >Purpose in insurance</label
-                  >
-                  <input
-                    type="text"
-                    id="insurancePurpose"
-                    formControlName="insurancePurpose"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="insurancePurpose" class="quote-label">Purpose In Insurance</label>
+                  <input type="text" id="insurancePurpose" formControlName="insurancePurpose" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="premiumFrequency" class="quote-label"
-                    >Premium frequency</label
-                  >
-                  <input
-                    type="text"
-                    id="premiumFrequency"
-                    formControlName="premiumFrequency"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="premiumFrequency" class="quote-label">Premium frequency</label>
+                  <input type="text" id="premiumFrequency" formControlName="premiumFrequency" class="form-control form-control mb-1"/>
                 </div>
+
                 <div class="col-md-4">
-                  <label for="distributeChannel" class="quote-label"
-                    >Distribution channel</label
-                  >
-                  <input
-                    type="text"
-                    id="distributeChannel"
-                    formControlName="distributeChannel"
-                    class="form-control form-control mb-1"
-                  />
+                  <label for="distributeChannel" class="quote-label">Distribution Channel</label>
+                  <input type="text" id="distributeChannel" formControlName="distributeChannel" class="form-control form-control mb-1"/>
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+        <!-- END OF WEALTH AML DETAILS -->
 
         <div class="float-start"></div>
+
       </form>
+
     </div>
 
     <div class="d-flex justify-content-between pb-4">
       <div></div>
       <div>
-        <button
-          (click)="saveClientDetails()"
-          class="btn"
-          type="button"
-          [ngClass]="{
-            'btn-danger': clientForm.invalid,
-            'btn-primary': !clientForm.invalid
-          }"
-          class="btn btn-sm"
-        >
-          save client details
+        <button (click)="saveClientDetails()" class="btn" type="button"
+                [ngClass]="{ 'btn-danger': clientForm.invalid,
+                             'btn-primary': !clientForm.invalid }"
+                class="btn btn-sm">
+          Save Client Details
         </button>
       </div>
     </div>
+
   </div>
-  <!-- Modal -->
-  <div
-    class="modal fade"
-    id="selectClient"
-    tabindex="-1"
-    aria-labelledby="selectClientLabel"
-    aria-hidden="true"
-  >
+
+  <!-- MODAL -->
+  <div class="modal fade" id="selectClient" tabindex="-1"
+      aria-labelledby="selectClientLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" [formGroup]="clientSearch">
       <div class="modal-content">
         <div class="modal-body">
           <div class="float-start"></div>
-          <button
-            type="button"
-            class="btn-close float-end"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close float-end"
+                  data-bs-dismiss="modal" aria-label="Close">
+          </button>
+
           <h5 class="text-center fs-6 mt-2 mb-4">Select Client</h5>
           <div class="input-group mb-4" id="search-input">
             <span class="input-group-append" style="background-color: #f5f6f8">
@@ -972,34 +651,17 @@
                 <i class="fa fa-search"></i>
               </button>
             </span>
-            <input
-              class="form-control py-2 border-start-0"
-              pInputText
-              formControlName="client"
-              style="background-color: #f5f6f8; border: 0px"
-              type="search"
-              placeholder="search..."
-              (keyup.enter)="searchClient()"
-            />
+            <input class="form-control py-2 border-start-0" pInputText formControlName="client"
+                  style="background-color: #f5f6f8; border: 0px" type="search"
+                  placeholder="search..." (keyup.enter)="searchClient()"/>
           </div>
 
-          <p-table
-            #dt1
-            [value]="clientList"
-            [tableStyle]="{ 'max-width': '100rem' }"
-            [resizableColumns]="true"
-            styleClass="p-datatable"
-            class="ui-datatable"
-            [globalFilterFields]="[
-              'shortDescription',
-              'firstName',
-              'emailAddress'
-            ]"
-            [paginator]="true"
-            [rows]="5"
-            [showCurrentPageReport]="true"
-            currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-          >
+          <p-table #dt1 [value]="clientList" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
+            [globalFilterFields]="['shortDescription',
+                                   'firstName',
+                                   'emailAddress']"
+            [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} to {last} of {totalRecords} entries">
             <ng-template pTemplate="header">
               <tr>
                 <!-- <th field="ID">ID</th> -->
@@ -1008,19 +670,11 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-data style="position: relative">
-              <ngx-spinner
-                name="search_view"
-                type="ball-clip-rotate-multiple"
-                [fullScreen]="false"
-                color="#00529B"
-                size="medium"
-                bdColor="rgba(255, 255, 255, 0.966)"
-              ></ngx-spinner>
-              <tr
-                [pSelectableRow]="clientList"
-                style="height: 2.5rem; cursor: pointer"
-                (click)="selectClient(data)"
-              >
+              <ngx-spinner name="search_view" type="ball-clip-rotate-multiple" [fullScreen]="false"
+                color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)">
+              </ngx-spinner>
+              <tr [pSelectableRow]="clientList" style="height: 2.5rem; cursor: pointer"
+                  (click)="selectClient(data)">
                 <!-- <td>{{ data.shortDescription }}</td> -->
                 <td>{{ data.firstName + " " + data.lastName }}</td>
                 <td>{{ data.emailAddress }}</td>
@@ -1028,40 +682,30 @@
               </tr>
             </ng-template>
           </p-table>
+
         </div>
       </div>
     </div>
   </div>
 
-  <div
-    class="modal fade"
-    id="draft"
-    tabindex="-1"
-    aria-labelledby="draftLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="draft" tabindex="-1" aria-labelledby="draftLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
+
           <div class="d-flex justify-content-between">
             <div></div>
             <div>
-              <button
-                (click)="closeModal('draft')"
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <button (click)="closeModal('draft')" type="button" class="btn-close"
+                      data-bs-dismiss="modal" aria-label="Close">
+              </button>
             </div>
           </div>
 
-          <div
-            class="text-black fw-medium"
-            style="font-size: 70%; padding-bottom: 1rem"
-          >
+          <div class="text-black fw-medium" style="font-size: 70%; padding-bottom: 1rem">
             Client’s Existing(Draft) Quotations
           </div>
+
           <div>
             <div class="table-responsive" style="font-size: 70%">
               <table class="table table-striped">
@@ -1086,15 +730,10 @@
           <div class="d-flex justify-content-between">
             <div class="d-flex align-content-end" style="font-size: 80%"></div>
             <div>
-              <button
-                (click)="closeModal('draft')"
-                class="btn btn-danger mt-4"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
+              <button (click)="closeModal('draft')" class="btn btn-danger mt-4" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
+
         </div>
       </div>
     </div>
