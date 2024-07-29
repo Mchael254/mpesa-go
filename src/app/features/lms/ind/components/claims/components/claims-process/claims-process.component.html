@@ -3,6 +3,7 @@
     <app-stepper
       [currentStep]="eachStep"
       [dbStep]="dbStep"
+      [stepType]="'tab'"
       [stepperData]="steps"
       (stepChange)="onStepChange($event)"
     >
