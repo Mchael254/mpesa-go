@@ -12,6 +12,7 @@ import {of} from "rxjs";
 import {BankService} from "../../../../../../../shared/services/setups/bank/bank.service";
 import {BankBranchDTO} from "../../../../../../../shared/data/common/bank-dto";
 import {EntityService} from "../../../../../services/entity/entity.service";
+import {Extras} from "../entity-other-details.component";
 
 export class MockAppConfigService {
   get config() {
@@ -82,8 +83,8 @@ const bankBranch: BankBranchDTO = {
   townName: ""
 };
 
-const extras = {
-  partyId: 417,
+const extras: Extras = {
+  partyAccountId: 417,
 }
 
 describe('EditBankFormComponent', () => {
