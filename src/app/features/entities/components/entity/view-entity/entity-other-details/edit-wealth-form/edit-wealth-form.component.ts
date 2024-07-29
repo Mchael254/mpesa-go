@@ -10,6 +10,7 @@ import {BankService} from "../../../../../../../shared/services/setups/bank/bank
 import {EntityService} from "../../../../../services/entity/entity.service";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 import {WealthAmlDTO, WealthDetailsUpdateDTO} from "../../../../../data/accountDTO";
+import {Extras} from "../entity-other-details.component";
 
 const log = new Logger('EditWealthFormComponent');
 
@@ -24,7 +25,7 @@ export class EditWealthFormComponent implements OnInit{
   @Output('closeEditModal') closeEditModal: EventEmitter<any> = new EventEmitter<any>();
 
   wealthAmlDetails: WealthAmlDTO;
-  extras: any;
+  extras: Extras;
 
   wealthForm: FormGroup;
   countryData: CountryDto[];
@@ -122,7 +123,7 @@ export class EditWealthFormComponent implements OnInit{
    * @param wealthDetails current wealth details
    * @param extras additional info required for updating wealth details
    */
-  prepareUpdateDetails(wealthDetails: any, extras: any): void {
+  prepareUpdateDetails(wealthDetails: any, extras: Extras): void {
     this.shouldShowEditForm = false;
     this.wealthAmlDetails = wealthDetails;
     this.extras = extras;
@@ -159,6 +160,7 @@ export class EditWealthFormComponent implements OnInit{
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
           this.closeEditModal.emit();
+          this.progressBarWidth = 10;
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message

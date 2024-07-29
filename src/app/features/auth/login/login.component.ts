@@ -281,7 +281,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.entities.length === 0 || this.entities.length === 1) {
       const entityType = this.entities[0];
       this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entityType);
-      log.info(`entity type a ===> `, entityType);
+      log.info(`entity type >> auto-selected ===> `, entityType);
       this.authAttempt()
     } else if (this.entities.length > 1) {
       this.shouldShowEntities = true;
@@ -290,7 +290,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   selectEntity(entity: string): void {
     this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entity);
-    log.info(`entity type b ===> `, entity);
+    log.info(`entity type >> selected by clicking ===> `, entity);
     this.authAttempt();
   }
 

@@ -6,6 +6,7 @@ import {AccountService} from "../../../../../services/account/account.service";
 import {NextKinDetailsUpdateDTO} from "../../../../../data/accountDTO";
 import {EntityService} from "../../../../../services/entity/entity.service";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
+import {Extras} from "../entity-other-details.component";
 
 const log = new Logger('EditBankFormComponent');
 
@@ -21,7 +22,7 @@ export class EditNokFormComponent implements OnInit {
 
   nokForm: FormGroup;
   modeIdentityType: IdentityModeDTO[];
-  extras: any;
+  extras: Extras;
   shouldShowEditForm: boolean = false;
   progressBarWidth: number = 50;
   nokDetails: any;
@@ -87,7 +88,7 @@ export class EditNokFormComponent implements OnInit {
    * @param nokDetails current Next-of-Kin details
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
-  prepareUpdateDetails(nokDetails: any, extras: any): void {
+  prepareUpdateDetails(nokDetails: any, extras: Extras): void {
     this.shouldShowEditForm = false;
     this.nokDetails = nokDetails;
     this.extras = extras;
@@ -126,6 +127,7 @@ export class EditNokFormComponent implements OnInit {
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Next-of-Kin Details');
           this.closeEditModal.emit();
+          this.progressBarWidth = 50;
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message

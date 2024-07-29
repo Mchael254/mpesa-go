@@ -511,22 +511,14 @@ export class AuthService implements OnDestroy {
       .subscribe(
         (data: Profile) => {
           this.setAuth(data);
-
           log.info(`logged in user`, data);
-
+          this.session_storage.set('memberProfile', data);
+          
+          const entityCode: number = data.code;
+          const entityIdNo: string = data.idNo;
           const entityType = headers.get('entityType');
-          if (entityType === 'MEMBER') {
-            const entityCode = data.code;
-            const entityIdNo = data.idNo;
-            this.session_storage.set('memberProfile', data);
-            this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], { queryParams: { entityCode }});
-          } else {
-            this.router
-            .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
-            .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
-            .catch((error) => log.error(error));
-          }
 
+          this.gotToDashboard(entityType, entityCode, entityIdNo)
         },
         (error) => {
           this.destroyUser();
@@ -544,6 +536,26 @@ export class AuthService implements OnDestroy {
         },
       );
   }
+
+  gotToDashboard(entityType: string, entityCode?: number, entityIdNo?: string): void {
+    switch(entityType) {
+      case 'MEMBER':
+        this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], { queryParams: { entityCode }});
+        break;
+      case 'ADMIN':
+        this.router.navigate(['/home/lms/grp/dashboard/admin'], { queryParams: {  }});
+        break;
+      case 'AGENT':
+        this.router.navigate(['/home/lms/grp/dashboard/agent'], { queryParams: {  }});
+        break;
+      default:
+        this.router
+          .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
+          .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
+          .catch((error) => log.error(error));
+    }
+  }
+
   /**
    * User Authentication
   */

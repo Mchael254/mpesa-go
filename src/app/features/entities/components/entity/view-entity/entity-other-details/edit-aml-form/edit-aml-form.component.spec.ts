@@ -16,6 +16,7 @@ import {BankService} from "../../../../../../../shared/services/setups/bank/bank
 import {EntityService} from "../../../../../services/entity/entity.service";
 import {CountryService} from "../../../../../../../shared/services/setups/country/country.service";
 import {SectorService} from "../../../../../../../shared/services/setups/sector/sector.service";
+import {Extras} from "../entity-other-details.component";
 
 export class MockAppConfigService {
   get config() {
@@ -105,8 +106,9 @@ const amlDetailsToUpdate: AmlWealthDetailsUpdateDTO = {
   tradingName: 'Turnquest'
 }
 
-const extras = {
-  partyId: 417,
+const extras: Extras = {
+  partyAccountId: 417
+
 }
 
 const fundsSourceDto: FundSourceDTO = {code: 0, name: "SALARY"};
