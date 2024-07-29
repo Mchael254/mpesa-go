@@ -3,7 +3,7 @@ import { Table } from 'primeng/table';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { PolicyDocument, Products, introducers } from '../../../setups/data/gisDTO';
@@ -18,7 +18,7 @@ import { IntroducersService } from '../../../setups/services/introducers/introdu
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ContractNamesService } from '../../services/contract-names/contract-names.service';
 import { PolicyService } from '../../services/policy.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import underwritingSteps from '../../data/underwriting-steps.json'
 import { ProductDocumentService } from '../../../setups/services/product-document/product-document.service';
 import { PremiumFinanciers } from '../../data/policy-dto';
@@ -107,7 +107,9 @@ export class PolicyProductComponent {
   premiumFinanciers:PremiumFinanciers[]=[];
 
   policyRiskDetails:any;
-  riskDetailsData:any
+  riskDetailsData:any;
+  productDescription:any;
+  policyObject:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -120,6 +122,8 @@ export class PolicyProductComponent {
   @ViewChild('closebutton') closebutton;
   @ViewChild('closebuttonIntroducers') closebuttonIntroducers;
   @ViewChild('closebuttonJointAccount') closebuttonJointAccount;
+  page: any;
+  policyDetailsData: any;
 
 
   constructor(
@@ -139,15 +143,23 @@ export class PolicyProductComponent {
     public cdr: ChangeDetectorRef,
     public productDocumentService:ProductDocumentService,
     private spinner: NgxSpinnerService,
+    private route: ActivatedRoute,
 
   ) { }
 
   ngOnInit(): void {
     this.spinner.show()
+    this.createPolicyProductForm();
+    this.page = this.route.snapshot.paramMap.get('policyNo');
+    if(this.page){
+      this.checkParam()
+    }
+    
+   
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     log.debug("Passed Transaction type:", this.selectedTransactionType);
     this.loadAllClients();
-    this.createPolicyProductForm();
+   
     this.loadAllproducts();
     // this.fetchBranches();
     this.getCurrencies()
@@ -167,6 +179,112 @@ export class PolicyProductComponent {
     this.toggleContractSelect(false);
 
   }
+
+  checkParam(){
+    // this.page = this.route.snapshot.paramMap.get('policyNo');
+    if(this.page){
+      console.log(this.page)
+      const policy = sessionStorage.getItem('policyProductForm')
+      
+      this.policyService.getPolicy(this.page).subscribe({
+        next:(res)=>{
+          console.log('policy response',res)
+        }
+      })
+      if (policy) {
+        this.policyObject = JSON.parse(policy); // Parse the JSON string to an object
+        console.log(JSON.stringify(this.policyObject)); // Pretty-print the policy object
+      this.policyProductForm.patchValue(this.policyObject); 
+      if(this.policyObject.agentCode){
+        this.showIntermediaryFields = true
+        const agentCodeControl = new FormControl('', Validators.required);
+
+   
+        this.policyProductForm.addControl('agentCode', agentCodeControl);
+        this.policyProductForm.get('agentCode').setValue(this.policyObject.agentCode)
+        // this.onAgentSelected(this.policyObject.agentCode)
+        this.selectedAgentCode = this.policyObject.agentCode
+      }
+      this.loadClientDetails(this.policyObject.clientCode);
+      this.onProductSelected(this.policyObject.productCode)
+      
+
+      this.policyProductForm.get('branchCode').setValue(this.policyObject.branchCode);
+      this.policyProductForm.controls['productCode'].setValue(this.policyObject.productCode);
+      this.policyProductForm.controls['branchCode'].setValue(this.policyObject.branchCode);
+      console.log(this.policyProductForm.value,"Product value")
+      this.getProductDetails(this.policyObject.productCode)
+      }
+      // console.log(JSON.parse(policy))
+      // this.policyProductForm.patchValue(policy)
+      this.getPolicyDetails(this.page)
+    }
+   
+   
+  }
+  getProductDetails(id){
+    this.productService.getProductByCode(id).subscribe({
+      next:(res)=>{
+        this.productDescription = res
+        // this.productDescription = this.productDescription.description
+        console.log("product details",this.productDescription)
+      }
+    })
+  }
+  editPolicy(){
+    this.policyProductForm.controls['batchNumber'].setValue(this.page)
+    this.policyProductForm.get('clientCode').setValue(this.clientCode);
+    const policyForm = this.policyProductForm.value;
+    console.log(policyForm)
+    this.policyService.updatePolicy(this.policyObject,this.user)
+    .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          console.log(data)
+        }
+      })
+  }
+
+  getPolicyDetails(batchNo) {
+   
+    log.debug("Batch No:", batchNo)
+    this.policyService
+      .getPolicy(batchNo)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+  
+          if (data && data.content && data.content.length > 0) {
+            this.policyResponse = data;
+            log.debug("Get Policy Endpoint Response", this.policyResponse)
+            this.policyDetailsData = this.policyResponse.content[0]
+            log.debug("Policy Details data get policy", this.policyDetailsData)
+            // this.insureds = this.policyDetailsData.insureds
+            // log.debug("Insureds", this.insureds)
+          
+         
+            this.cdr.detectChanges();
+  
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+  
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
 
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
@@ -272,7 +390,7 @@ export class PolicyProductComponent {
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
-      this.updateJointAccountData();
+      // this.updateJointAccountData();
     })
   }
   /**
@@ -360,7 +478,7 @@ export class PolicyProductComponent {
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue;
     log.debug("Selected Productevent:", selectedValue);
-
+    console.log(this.policyProductForm.value.productCode)
     log.debug("Selected Product Code:", this.selectedProductCode);
     if(this.selectedProductCode){
       this.getProductDocument()
@@ -671,11 +789,23 @@ export class PolicyProductComponent {
   }
 
   updateCoverDays(): void {
-    const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
-    const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
-    const differenceInTime = toDate.getTime() - fromDate.getTime();
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+    const product = this.policyProductForm.get('productCode').value
+   
+    if(product === 8293){
+      const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
+      const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
+      const differenceInTime = toDate.getTime() - fromDate.getTime() + 1;
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+     
+    }else{
+      const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
+      const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
+      const differenceInTime = toDate.getTime() - fromDate.getTime();
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
+    }
+   
   }
   formatDate(date: Date): string {
     const year = date.getFullYear();
@@ -863,6 +993,8 @@ export class PolicyProductComponent {
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
+    sessionStorage.setItem('policyProductForm',JSON.stringify(this.policyProductForm.value))
+    
     log.debug("coinsurance outputAst", this.policyProductForm.get('isCoinsurance').value)
     // if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
     //   log.debug("NAVIGATING TO COINSUARANCE PAGE")
@@ -913,6 +1045,7 @@ export class PolicyProductComponent {
               //   })
               // }
               this.spinner.hide()
+             
               this.router.navigate(['/home/gis/policy/risk-details']);
 
             }

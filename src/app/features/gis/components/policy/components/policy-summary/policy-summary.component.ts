@@ -241,5 +241,8 @@ editPolicyDetails(){
   this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNumber}`]);
 
 }
+previous(){
+  this.router.navigate(['/home/gis/policy/risk-details']);
+}
 
 }

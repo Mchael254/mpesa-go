@@ -44,10 +44,14 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="product" class="required product-label" id="product">{{'gis.policy.product' |
                                 translate}}</label><br>
-                            <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
+                            <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" *ngIf="!page"
                                 optionValue="code" optionLabel="description"
                                 (onChange)="onProductSelected($event.value)" placeholder=" " [filterBy]="'description'"
-                                [filter]="true" [ngModel]="selectedProductCode"></p-dropdown>
+                                [filter]="true" [(ngModel)]="selectedProductCode"></p-dropdown>
+                            <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" *ngIf="page"
+                                optionValue="code" optionLabel="description"
+                                (onChange)="onProductSelected($event.value)" placeholder=" " [filterBy]="'description'"
+                                [filter]="true" ></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('productCode').hasError('required') && policyProductForm.get('productCode').touched"
                                 class="form-text text-danger">
@@ -109,7 +113,11 @@
                                     formControlName="agent_code">
                                     <option value=""></option>
                                 </select> -->
-                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"
+                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id" *ngIf="!page"
+                                    optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
+                                    [filterBy]="'name'" [filter]="true"></p-dropdown>
+
+                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"  *ngIf="page"
                                     optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
                                     [filterBy]="'name'" [filter]="true"></p-dropdown>
                             </div>
@@ -583,7 +591,7 @@
                             <label for="policy_type" class=" product-label"
                                 id="policy_type">{{'gis.policy.currency_rate' | translate}}</label>
                             <input type="text" id="quote-input" formControlName="currencyRate"
-                                class="form-control form-control-sm mb-1">
+                                class="form-control form-control-sm mb-1" readonly>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
@@ -624,10 +632,10 @@
                          </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="branch" class="required product-label"
+                            <!-- <label for="branch" class="required product-label"
                                 id="branch">{{'gis.policy.payment_reference' |
                                 translate}}</label>
-                            <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
+                            <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan"> -->
 
                         </div>
                     </div>
@@ -817,8 +825,11 @@
             </div>
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-primary" (click)="createPolicy();selectedPolicyforRisk()">{{'gis.policy.next' |
+            <button type="button" class="btn btn-primary" *ngIf="!page" (click)="createPolicy();selectedPolicyforRisk()">{{'gis.policy.next' |
                 translate}}</button>
+            
+                <button type="button" class="btn btn-primary" *ngIf="page" (click)="editPolicy()">{{'gis.policy.next' |
+                    translate}}</button>
         </div>
 
     </div>

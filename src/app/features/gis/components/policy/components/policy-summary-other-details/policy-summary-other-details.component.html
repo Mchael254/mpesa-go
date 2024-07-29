@@ -2483,6 +2483,147 @@
 
                         </div>
 
+                        <!-- RISK PERILS -->
+                         <div class="row mt-4 mb-4">
+                            <div>
+                                <div>
+                                    <div class="row ">
+                                        <div class="col-sm-3">
+                                            <p class="subheading">Risk Perils</p>
+
+                                        </div>
+                                        <div class="col-sm-9 d-flex justify-content-end">
+                                            <div class="row  mb-2">
+
+                                                <!-- <div class="col-sm-3"></div> -->
+                                                <div class="col-3" *ngIf="riskPerils">
+                                                    <button type="button" id="icon" class="btn btn-success" title="add">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="col-3" *ngIf="riskPerils">
+                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                        data-bs-toggle="modal" id="openRiskModalButtonEdit"
+                                                        [hidden]="true" data-bs-target="#editSchedule" title="Edit">
+                                                    </button>
+                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                        title="Edit">
+                                                        <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
+                                                    </button>
+
+                                                </div>
+                                                <div class="col-3" *ngIf="riskPerils">
+                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                        data-bs-toggle="modal" id="openRiskModalButtonDelete"
+                                                        [hidden]="true" data-bs-target="#deleteRisk" title="Delete">
+                                                    </button>
+                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                        title="Delete">
+                                                        <i class="fa-solid fa-trash-can"
+                                                            (click)="openRiskDeleteModal()"></i>
+                                                    </button>
+
+                                                </div>
+                                                <div class="col-3">
+                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                        data-bs-toggle="collapse" data-bs-target="#riskPerils"
+                                                        aria-expanded="false" aria-controls="riskPerils"
+                                                        [attr.aria-expanded]="!riskPerils"
+                                                        (click)="toggleRiskPerils()">
+                                                        <i class="fa-solid fa-chevron-down"></i>
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="collapse" id="riskPerils">
+
+                                    <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                        [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
+                                        responsiveLayout="scroll" [autoLayout]="true">
+
+
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>{{'gis.policy.peril_id' |translate}}</th>
+                                                <th>{{'gis.policy.peril' |translate}}</th>
+                                                <th>{{'gis.policy.type' |translate}}</th>
+                                                <th style="width: 8px;">{{'gis.policy.limit_description' |translate}}</th>
+                                                <th style="width: 8px;">{{'gis.policy.person_limit' |translate}}</th>
+                                                <th style="width: 8px;">{{'gis.policy.limit_amount' |translate}}</th>
+                                                <th style="width: 8px;">{{'gis.policy.claim_amount' |translate}}</th>
+                                                <th style="width: 8px;">{{'gis.policy.excess_type' |translate}}</th>
+
+
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
+                                            <tr [pSelectableRow]="riskDetails"
+                                                [class.p-highlight]="riskDetails === selectedRisk">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+
+
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                    <!--Edit Schedule Modal -->
+                                    <div class="modal fade" id="editSchedule" tabindex="-1" role="dialog"
+                                        aria-labelledby="editScheduleLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                            <div class="modal-content">
+
+
+
+
+                                                <div class="modal-body">
+                                                    <button type="button" class="btn-close ms-auto py-2 px-2 float-end"
+                                                        data-bs-dismiss="modal" aria-label="Close" id="close"></button>
+                                                    <h5 class="modal-title mt-2" id="editScheduleLabel">Edit Motor
+                                                        Private Details</h5>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Delete Risk  Modal -->
+                                    <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+                                        aria-labelledby="deleteRisk" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content" id="deleteRisk">
+                                                <div class="modal-body ">
+                                                    <p class="deleteMessage mt-4 mb-4">
+                                                        {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+                                                    <div class="d-flex justify-content-center mb-3">
+                                                        <button type="button" class="btn btn-primary px-5" id="delete"
+                                                            data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
+                                                            translate}} </button>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center mb-2">
+                                                        <button type="button" class="btn btn-outline-primary px-5"
+                                                            data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                                                            translate}}</button>
+                                                    </div>
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
 
                         <!-- RISK CLAUSES MODAL -->
 
