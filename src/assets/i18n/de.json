@@ -175,7 +175,10 @@
     "General ledger": "Hauptbuch",
     "Cashbook": "Kassenbuch",
     "Cheques": "Schecks",
-    "Cheque signing": "Unterzeichnung von Schecks"
+    "Cheque signing": "Unterzeichnung von Schecks",
+    "Campaigns": "Kampagnen",
+    "Client Attributes": "Kundenattribute",
+    "Product Attributes": "Produktattribute"
   },
   "crm": {
     "activity": "Activiteit",
@@ -966,7 +969,7 @@
         "proceed": "Fortfahren",
         "select_an_option": "Option auswählen",
         "upload_documents": "Dokumente hochladen",
-        "yes": "Ja"      
+        "yes": "Ja"
     },
     "grp": {}
   },
