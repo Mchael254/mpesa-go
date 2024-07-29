@@ -85,3 +85,6 @@ ul.dropdown-menu li:hover {
   display: flex;
   align-items: center;
 }
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  font-weight: 500;
+}

@@ -19,6 +19,8 @@ import { AgencyComponent } from './components/agency/agency.component';
 import { MessagingTemplateComponent } from './components/messaging-template/messaging-template.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import {SystemRolesComponent} from "./components/system-roles/system-roles.component";
+import {CampaignsComponent} from "./components/campaigns/campaigns.component";
+import {CampaignDefinitionComponent} from "./components/campaigns/campaign-definition/campaign-definition.component";
 
 const routes: Routes = [
   {
@@ -96,6 +98,14 @@ const routes: Routes = [
   {
     path: 'system-roles',
     component: SystemRolesComponent,
+  },
+  {
+    path: 'campaigns',
+    component: CampaignsComponent,
+  },
+  {
+    path: 'campaign-definition',
+    component: CampaignDefinitionComponent,
   },
 ];
 

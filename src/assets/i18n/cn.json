@@ -175,7 +175,10 @@
     "General ledger": "总账",
     "Cashbook": "现金账簿",
     "Cheques": "支票",
-    "Cheque signing": "支票签署"
+    "Cheque signing": "支票签署",
+    "Campaigns": "活动",
+    "Client Attributes": "客户属性",
+    "Product Attributes": "产品属性"
   },
   "crm": {
     "activity": "活动",

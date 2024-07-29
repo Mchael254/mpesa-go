@@ -175,7 +175,10 @@
     "General ledger": "General ledger",
     "Cashbook": "Cashbook",
     "Cheques": "Cheques",
-    "Cheque signing": "Cheque signing"
+    "Cheque signing": "Cheque signing",
+    "Campaigns": "Campaigns",
+    "Client Attributes": "Client Attributes",
+    "Product Attributes": "Product Attributes"
   },
   "crm": {
     "activity": "Activity",
