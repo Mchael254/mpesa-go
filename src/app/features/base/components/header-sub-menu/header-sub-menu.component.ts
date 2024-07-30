@@ -11,6 +11,8 @@ import {EntityService} from "../../../entities/services/entity/entity.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Logger} from "../../../../shared/services";
 import {AutoUnsubscribe} from "../../../../shared/services/AutoUnsubscribe";
+import {SESSION_KEY} from "../../../lms/util/session_storage_enum";
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 
 const log = new Logger("HeaderSubMenuComponent")
 @Component({
@@ -41,9 +43,15 @@ export class HeaderSubMenuComponent implements OnInit {
   reinsuranceSubMenuList: SidebarMenu[];
 
   searchAccountForm: FormGroup;
+  entityType: string;
 
-  constructor(private menuService: MenuService, private router:Router,private entityService: EntityService,
-              private fb: FormBuilder,){
+  constructor(
+    private menuService: MenuService,
+    private router:Router,
+    private entityService: EntityService,
+    private fb: FormBuilder,
+    private session_storage: SessionStorageService
+    ){
     this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
   }
 
@@ -61,6 +69,12 @@ export class HeaderSubMenuComponent implements OnInit {
     this.analyticsSubMenuList = this.menuService.analyticsSubMenuList();
     this.fmsSubMenuList = this.menuService.fmsSubMenuList();
     this.createSearchAccountForm();
+    this.getEntityType();
+  }
+
+  getEntityType(): void {
+    this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
+    log.info(`entity type >>> `, this.entityType);
   }
 
   createSearchAccountForm(): void {

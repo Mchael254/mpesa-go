@@ -29,6 +29,14 @@ export class ReportManagementComponent implements OnInit{
   public totalRecords: number;
   public createBy$: Observable<any>;
 
+  globalFilterFields: string[] = [
+    'name',
+    'createdBy',
+    'date',
+    'createdDate',
+    'dashboardId',
+  ]
+
 
   constructor(
     private reportServiceV2: ReportServiceV2,

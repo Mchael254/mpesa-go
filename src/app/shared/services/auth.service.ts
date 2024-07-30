@@ -513,7 +513,7 @@ export class AuthService implements OnDestroy {
           this.setAuth(data);
           log.info(`logged in user`, data);
           this.session_storage.set('memberProfile', data);
-          
+
           const entityCode: number = data.code;
           const entityIdNo: string = data.idNo;
           const entityType = headers.get('entityType');

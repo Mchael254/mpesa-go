@@ -1,6 +1,6 @@
 <div class="p-3">
     <div class="card p-3">
-        
+
         <div class="preloader" *ngIf="!shouldShowTable">
             <p-progressSpinner
                 styleClass="w-0.5em h-0.5em "
@@ -10,8 +10,8 @@
             ></p-progressSpinner>
         </div>
         <div class="mt-5" *ngIf="shouldShowTable">
-            <p-table 
-                [value]="reports.content" 
+            <p-table
+                [value]="reports.content"
                 [tableStyle]="{ 'min-width': '50rem' }"
                 [paginator]="true"
                 [rows]="rows"
@@ -19,15 +19,28 @@
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                 (onPage)="pageChange($event)"
                 [showCurrentPageReport]="true"
+                [globalFilterFields]=globalFilterFields
             >
                 <ng-template pTemplate="header">
                     <tr>
                         <!-- <th>ID</th> -->
-                        <th>{{ 'report.name' | translate }}</th>
-                        <th>{{ 'report.created_by' | translate }}</th>
+                        <th pSortableColumn="name">
+                          {{ 'report.name' | translate }}
+                          <p-sortIcon field="name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="createdBy">
+                          {{ 'report.created_by' | translate }}
+                          <p-sortIcon field="createdBy"></p-sortIcon>
+                        </th>
                         <th>{{ 'report.category' | translate }}</th>
-                        <th>{{ 'report.date_created' | translate }}</th>
-                        <th>{{ 'report.dashboard' | translate }}</th>
+                        <th pSortableColumn="createdDate">
+                          {{ 'report.date_created' | translate }}
+                          <p-sortIcon field="createdDate"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="dashboardId">
+                          {{ 'report.dashboard' | translate }}
+                          <p-sortIcon field="dashboardId"></p-sortIcon>
+                        </th>
                         <th class="text-center">{{ 'report.action' | translate }}</th>
                     </tr>
                 </ng-template>
@@ -48,7 +61,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                   <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">
-                                    {{ 'report.my_reports' | translate }} 
+                                    {{ 'report.my_reports' | translate }}
                                     <span *ngIf="report.folder==='M'" class="float-end">
                                         <i class="pi pi-check"></i>
                                     </span>
@@ -69,14 +82,14 @@
                                     {{ getDashboardName(report.dashboardId) }}
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li 
+                                  <li
                                     *ngFor="let dashboad of dashboards"
                                     class="reAssignReportDashboard"
                                     (click)="reAssignReportDashboard(dashboad.id, report)"
                                   >
                                     {{ dashboad?.name }}
                                     <span *ngIf="getDashboardName(report.dashboardId) === dashboad.name" class="float-end">
-                                        <i class="pi pi-check"></i> 
+                                        <i class="pi pi-check"></i>
                                     </span>
                                 </li>
                                 </ul>
@@ -105,7 +118,7 @@
                                     <li data-bs-toggle="modal" data-bs-target="#downloadModal">
                                         {{ 'report.download' | translate }}
                                     </li>
-                                    <li 
+                                    <li
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteReportModal"
                                         (click)="selectReport(report)"
@@ -113,15 +126,15 @@
                                     {{ 'report.delete' | translate }}
                                     </li>
                                 </ul>
-                            </div>                              
+                            </div>
                         </td>
                     </tr>
                 </ng-template>
             </p-table>
         </div>
-        
+
     </div>
-    
+
 </div>
 
 <div class="mobile-bottom"></div>
@@ -132,15 +145,15 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-            <button 
-                type="button" 
-                class="btn-close d-none" 
-                data-bs-dismiss="modal" 
+            <button
+                type="button"
+                class="btn-close d-none"
+                data-bs-dismiss="modal"
                 aria-label="Close"
                 #closebutton
             ></button>
             <app-save-report-modal
-               [report]="selectedReport" 
+               [report]="selectedReport"
                (reportToSave)="saveReport($event)"
             ></app-save-report-modal>
         </div>
@@ -152,7 +165,7 @@
 <div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModal" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        
+
         <div class="modal-header">
             <h5 class="modal-title text-danger text-center">
                 Delete {{ selectedReport?.name }}?
@@ -160,13 +173,13 @@
             <button #closebutton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <div class="modal-body">        
+        <div class="modal-body">
             <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            <button 
+            <button
                 class="btn btn-danger float-end"
                 id="deleteReport"
                 (click)="deleteReport(selectedReport?.id)"
-                data-bs-dismiss="modal" 
+                data-bs-dismiss="modal"
                 aria-label="Close"
             >
                 Confirm Delete
