@@ -77,7 +77,7 @@ export class PolicyProductComponent {
   selectedAgentDesc: any;
   marketerList: any;
   selectedMarketerCode: any;
-
+  selectedCurrencyCode:any;
   introducersList: introducers[];
   selectedIntroducer: any;
   introducerCode: any;
@@ -110,6 +110,9 @@ export class PolicyProductComponent {
   riskDetailsData:any;
   productDescription:any;
   policyObject:any;
+  branchDescription:any;
+  agentDescription:any;
+  currencyDescription:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -207,13 +210,17 @@ export class PolicyProductComponent {
       }
       this.loadClientDetails(this.policyObject.clientCode);
       this.onProductSelected(this.policyObject.productCode)
+      this.getBranch(this.policyObject.branchCode)
+      this.getAgent(this.policyObject.agentCode)
+      this.getcurrency(this.policyObject.currencyCode)
       
-
-      this.policyProductForm.get('branchCode').setValue(this.policyObject.branchCode);
-      this.policyProductForm.controls['productCode'].setValue(this.policyObject.productCode);
-      this.policyProductForm.controls['branchCode'].setValue(this.policyObject.branchCode);
       console.log(this.policyProductForm.value,"Product value")
       this.getProductDetails(this.policyObject.productCode)
+      this.policyProductForm.controls['productCode'].setValue(this.policyObject.productCode)
+      this.selectedBranchCode = this.policyObject.branchCode
+      this.selectedAgentCode = this.policyObject.agentCode
+    
+      console.log(this.selectedProductCode, 'prodddd')
       }
       // console.log(JSON.parse(policy))
       // this.policyProductForm.patchValue(policy)
@@ -226,25 +233,72 @@ export class PolicyProductComponent {
     this.productService.getProductByCode(id).subscribe({
       next:(res)=>{
         this.productDescription = res
-        // this.productDescription = this.productDescription.description
+        this.productDescription = this.productDescription.description
         console.log("product details",this.productDescription)
       }
     })
   }
   editPolicy(){
+    this.spinner.show()
     this.policyProductForm.controls['batchNumber'].setValue(this.page)
     this.policyProductForm.get('clientCode').setValue(this.clientCode);
+    console.log(this.policyObject.productCode, 'prodddd')
+    console.log(this.policyProductForm.value.productCode, 'prodddd')
+    console.log(this.productDescription, 'prodddd')
+    console.log(this.selectedProductCode, 'prodddd')
+    this.policyProductForm.controls['productCode'].setValue(this.selectedProductCode)
+    this.policyProductForm.controls['branchCode'].setValue(this.selectedBranchCode)
+    this.policyProductForm.controls['agentCode'].setValue(this.selectedAgentCode)
+    this.policyProductForm.controls['currencyCode'].setValue(this.selectedCurrencyCode)
+
     const policyForm = this.policyProductForm.value;
     console.log(policyForm)
-    this.policyService.updatePolicy(this.policyObject,this.user)
+    this.policyService.updatePolicy(policyForm,this.user)
     .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
+          this.spinner.hide();
+          this.globalMessagingService.displaySuccessMessage('Success','Updated Sucessfully')
+          this.router.navigate(['/home/gis/policy/risk-details']);
           console.log(data)
+        }, error: (err) => {
+  
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+           'Something went wrong while updating the policy. Please try Again'
+          );
+          log.info(`error >>>`, err);
         }
       })
   }
-
+  getBranch(id){
+    this.branchService.getBranchById(id).subscribe({
+      next:(res)=>{
+        this.branchDescription = res 
+        this.branchDescription = this.branchDescription.name
+        console.log(res)
+      }
+    })
+  }
+  getAgent(id){
+    this.intermediaryService.getAgentById(id).subscribe({
+      next:(res)=>{
+        this.agentDescription = res
+        this.agentDescription = this.agentDescription.name
+        console.log(this.agentDescription,'Agent')
+      }
+    })
+  }
+  getcurrency(id){
+    this.selectedCurrencyCode = id 
+    this.currencyService.getCurrencybyId(id).subscribe({
+      next:(res)=>{
+        this.currencyDescription = res 
+        this.currencyDescription = this.currencyDescription.name
+        console.log(this.selectedCurrencyCode,'currency')
+      }
+    })
+    }
   getPolicyDetails(batchNo) {
    
     log.debug("Batch No:", batchNo)
@@ -477,8 +531,8 @@ export class PolicyProductComponent {
   */
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue;
-    log.debug("Selected Productevent:", selectedValue);
     console.log(this.policyProductForm.value.productCode)
+    this.getProductDetails( this.selectedProductCode)
     log.debug("Selected Product Code:", this.selectedProductCode);
     if(this.selectedProductCode){
       this.getProductDocument()
