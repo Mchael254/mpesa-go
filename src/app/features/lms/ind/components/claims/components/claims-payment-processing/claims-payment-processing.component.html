@@ -1,1 +1,121 @@
-<p>claims-payment-processing works!</p>
+<div class="base-content-section lms">
+  <!-- Investigation Details Form -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="full-border" style="position:relative">
+        <!-- Title -->
+        <div class="transactions d-flex justify-content-center fw-medium"
+             style="font-size: 1.25rem; padding-bottom: 1rem;">
+          Payment processing
+        </div>
+        <!-- Payee Details -->
+        <div class="row g-3">
+          <div class="fw-medium" style="font-size: 1.25rem;">Payee details</div>
+          <div class="col-lg-4 col-md-6">
+            <label for="remarks" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              Payee name
+            </label>
+            <input type="text" class="form-control mb-1" id="">
+          </div>
+
+
+          <div class="col-lg-4 col-md-6">
+            <label for="remarks" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              Payable amount
+            </label>
+            <input type="text" class="form-control mb-1" id="">
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <label for="investigator" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              Payment method
+            </label>
+            <select class="form-select form-select mb-1" id="investigator" placement="right">
+
+            </select>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <label for="investigator" class="quote-label text-black fw-medium" style="font-size:1rem;">
+             Bank
+            </label>
+            <select class="form-select form-select mb-1" id="investigator" placement="right">
+
+            </select>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <label for="remarks" class="quote-label text-black fw-medium" style="font-size:1rem;">
+              Account number
+            </label>
+            <input type="text" class="form-control mb-1" id="">
+          </div>
+        </div>
+        <div>
+          <!-- Surrender Charges -->
+          <div class="row g-3">
+            <div class="fw-medium" style="font-size: 1.25rem;">Surrender charges</div>
+
+            <div class="col-lg-4 col-md-6">
+              <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
+                Description
+              </label>
+              <input type="text" class="form-control mb-1" id="">
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+              <label for="paymentMethod" class="quote-label text-black fw-medium" style="font-size:1rem;">
+                Amount
+              </label>
+              <input type="text" class="form-control mb-1" id="">
+            </div>
+          </div>
+          <!-- End of Surrender charges -->
+        </div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="d-flex justify-content-end gap-4 pb-4">
+      <div class="row">
+        <!-- Dispatch Voucher Button -->
+        <div class="col-md-12 mr-6">
+          <button
+            class="btn btn-md p-2 px-3 fw-medium"
+            type="button"
+            [ngClass]="{
+          'btn-danger': false,
+          'btn-primary': false,
+          'btn-outline-primary': true
+        }"
+            style="font-size: 16px"
+          >
+            Dispatch voucher
+          </button>
+        </div>
+        <!-- End of Reject Claim Button -->
+      </div>
+      <div class="row">
+        <!-- Reject Claim Button -->
+        <div class="col-md-5">
+          <button style="font-size: 16px"
+                  type="button"
+                  class="btn btn-danger btn-md p-2 px-3 fw-medium">Reject
+          </button>
+        </div>
+        <!-- End of Reject Claim Button -->
+
+        <!-- Approve Claim Button -->
+        <div class="col-md-5">
+          <button style="font-size: 16px" class="btn"
+                  type="button"
+                  [ngClass]="{
+                                 'btn-danger': false,
+                                 'btn-primary': true
+                                }"
+                  class="btn btn-md p-2 px-3 fw-medium">Approve
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End of Approve and Proceed Button -->
+  </div>
