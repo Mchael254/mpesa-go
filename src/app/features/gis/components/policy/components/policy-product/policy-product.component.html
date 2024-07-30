@@ -17,7 +17,7 @@
                                 translate}}</label>
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                                 formControlName="clientCode" [(ngModel)]="clientName" data-bs-toggle="modal"
-                                data-bs-target="#clientModal" readonly>
+                                data-bs-target="#clientModal" readonly >
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('clientCode').hasError('required') && policyProductForm.get('clientCode').touched"
@@ -50,7 +50,7 @@
                                 [filter]="true" [(ngModel)]="selectedProductCode"></p-dropdown>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" *ngIf="page"
                                 optionValue="code" optionLabel="description"
-                                (onChange)="onProductSelected($event.value)" placeholder=" " [filterBy]="'description'"
+                                (onChange)="onProductSelected($event.value)" [placeholder]="productDescription" [(ngModel)]="productDescription" [filterBy]="'description'"
                                 [filter]="true" ></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('productCode').hasError('required') && policyProductForm.get('productCode').touched"
@@ -94,8 +94,8 @@
                                 translate}}</label>
                             <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name"
                                 optionValue="id" (onChange)="onBranchSelected($event.value)"
-                                 [filterBy]="'description'" [filter]="true"
-                                [ngModel]="userBranchName"></p-dropdown>
+                                 [filterBy]="'description'" [filter]="true" [placeholder]="branchDescription"
+                                [(ngModel)]="branchDescription"></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('branchCode').hasError('required') && policyProductForm.get('branchCode').touched"
                                 class="form-text text-danger">
@@ -118,7 +118,7 @@
                                     [filterBy]="'name'" [filter]="true"></p-dropdown>
 
                                 <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"  *ngIf="page"
-                                    optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
+                                    optionLabel="name" (onChange)="onAgentSelected($event.value)" [placeholder]="agentDescription" [(ngModel)]="agentDescription"
                                     [filterBy]="'name'" [filter]="true"></p-dropdown>
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
@@ -579,8 +579,8 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="currency" class=" product-label required"
                                 id="currency">{{'gis.policy.currency' | translate}}</label>
-                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
-                                optionValue="id" [filterBy]="'name'" placeholder=" " [filter]="true" [ngModel]="currencyCode"></p-dropdown>
+                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" (onChange)="getcurrency($event.value)"
+                                optionValue="id" [filterBy]="'name'" [placeholder]="currencyDescription" [filter]="true" [ngModel]="currencyDescription"></p-dropdown>
                                  <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('currencyCode').hasError('required') && policyProductForm.get('currencyCode').touched"
                             class="form-text text-danger">
