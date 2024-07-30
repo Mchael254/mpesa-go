@@ -180,7 +180,8 @@
 }
 
 .done {
-  background-color: var(--primary-color);
+  /*background-color: var(--primary-color);*/
+  background-color:rgba(0, 82, 155, 0.6);
   color:#fff
 }
 
