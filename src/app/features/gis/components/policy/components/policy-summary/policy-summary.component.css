@@ -85,3 +85,7 @@
 #icon i{
     color: #00529B;
 }
+.nav-link.active {
+    color: #00529B !important;
+    font-weight: 500;
+}

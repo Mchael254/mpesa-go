@@ -4,9 +4,9 @@
     font-weight: 500;
 }
 
-.tab-content-details {
+/* .tab-content-details {
     background-color: #ffffff;
-}
+} */
 
 .list-group-item {
     border: none;
@@ -270,4 +270,31 @@
     text-align: left;
     color: #000;
 
+}
+
+#remarkDescription {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18.75px;
+    text-align: left;
+    color: #000;
+}
+/* .textArea{
+    height: 50px;
+} */
+ .riskDetailsCards{
+    border-color: transparent;
+    border-radius: 5px;
+ }
+ .flexible-header {
+    white-space: nowrap;
+    width: auto;
+    text-align: left;
+}
+/* .ui-datatable th, .ui-datatable td {
+    white-space: nowrap;
+} */
+.ui-datatable th, .ui-datatable td {
+    white-space: nowrap;
 }
