@@ -24,6 +24,9 @@ import { AdminQuoteSummaryComponent } from './components/admin-quote-summary/adm
 import { AdminCoverageDetailsComponent } from './components/admin-coverage-details/admin-coverage-details.component';
 import { AdminInvestmentDetailsComponent } from './components/admin-investment-details/admin-investment-details.component';
 import { AdminCreditLifeSummaryComponent } from './components/admin-credit-life-summary/admin-credit-life-summary.component';
+import { ServiceRequestsDashboardComponent } from './components/admin-service-requests/service-requests-dashboard/service-requests-dashboard.component';
+import { ServiceRequestLogsComponent } from './components/admin-service-requests/service-request-logs/service-request-logs.component';
+import { ServiceRequestComponent } from './components/admin-service-requests/service-request/service-request.component';
 
 
 @NgModule({
@@ -45,6 +48,9 @@ import { AdminCreditLifeSummaryComponent } from './components/admin-credit-life-
     AdminQuoteSummaryComponent,
     AdminInvestmentDetailsComponent,
     AdminCreditLifeSummaryComponent,
+    ServiceRequestsDashboardComponent,
+    ServiceRequestLogsComponent,
+    ServiceRequestComponent,
   ],
   imports: [
     CommonModule,
