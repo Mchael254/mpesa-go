@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import {
   ClientBranchesDto,
   ClientDTO,
+  ClientTitlesDto,
   ClientTypeDTO,
 } from '../../data/ClientDTO';
 import { Pagination } from '../../../../shared/data/common/pagination';
@@ -193,16 +194,19 @@ export class ClientService {
     );
   }
 
-  getClientTitles(organizationId: number): Observable<any[]> {
-    const params = new HttpParams()
-      // .set('organizationId', `${organizationId}`);
-    return this.api.GET<ClientTypeDTO[]>(
+  getClientTitles(organizationId?:number):Observable<ClientTitlesDto[]>{
+    const paramObj: { [param: string] : string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramObj['organizationId'] = organizationId.toString();
+    }
+    const params = new HttpParams({ fromObject: paramObj });
+    return this.api.GET<ClientTitlesDto[]>(
       `client-titles`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       params
     );
   }
-
+  
   save(clientData: any): Observable<any> {
     return this.api.POST<any>(
       `clients`,
