@@ -489,18 +489,20 @@ export class CreateReportComponent implements OnInit {
   /**
    * Filters the metrics and dimensions and returns filtered result
    * returns the filtered value (metrics || dimensions)
-   * @param event: HTML event
-   * @param arr: event to be filtered (metrics || dimensions)
+   * @param event
+   * @param arr
    * @param filterType the array type that is being filtered (metrics || dimensions)
    * @returns void
    */
   filterMetricsAndDimensions(event: any, arr: any, filterType: string): void {
-    const filterValue = event.target.value;
-    const subCategory = arr;
-    const filteredResult = subCategory.filter(s => (
-      s.name.toLowerCase()).includes(filterValue.toLowerCase()) ? s : null);
+    const valueToFilter = (event.target.value).toLowerCase();
 
-    filterType === 'metrics' ? this.filteredMetrics = filteredResult : this.filteredDimensions = filteredResult;
+    const filteredData = arr.map(obj => ({ // todo: define type for category area
+      ...obj,
+      categoryAreas: obj.categoryAreas.filter(categoryArea => (categoryArea.name.toLowerCase()).includes(valueToFilter))
+    })).filter(obj => obj.categoryAreas.length > 0);
+
+    filterType === 'metrics' ? this.filteredMetrics = filteredData : this.filteredDimensions = filteredData;
   }
 
 }
