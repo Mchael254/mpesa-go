@@ -29,9 +29,10 @@ import { AgencyComponent } from './components/agency/agency.component';
 import { MessagingTemplateComponent } from './components/messaging-template/messaging-template.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SystemRolesComponent } from './components/system-roles/system-roles.component';
-import {ScrollPanelModule} from "primeng/scrollpanel";
+import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { CampaignsComponent } from './components/campaigns/campaigns.component';
 import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
+import { SchedulerComponent } from './components/scheduler/scheduler.component';
 
 @NgModule({
   declarations: [
@@ -56,21 +57,22 @@ import { CampaignDefinitionComponent } from './components/campaigns/campaign-def
     SystemRolesComponent,
     CampaignsComponent,
     CampaignDefinitionComponent,
+    SchedulerComponent,
   ],
-    imports: [
-        CommonModule,
-        CrmRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TableModule,
-        DropdownModule,
-        TooltipModule,
-        DialogModule,
-        MultiSelectModule,
-        TabViewModule,
-        SharedModule,
-        ScrollPanelModule,
-    ],
+  imports: [
+    CommonModule,
+    CrmRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TableModule,
+    DropdownModule,
+    TooltipModule,
+    DialogModule,
+    MultiSelectModule,
+    TabViewModule,
+    SharedModule,
+    ScrollPanelModule,
+  ],
   providers: [DatePipe],
 })
 export class CrmModule {}
