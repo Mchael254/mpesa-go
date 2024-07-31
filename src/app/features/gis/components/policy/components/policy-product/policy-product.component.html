@@ -579,7 +579,9 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="currency" class=" product-label required"
                                 id="currency">{{'gis.policy.currency' | translate}}</label>
-                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" (onChange)="getcurrency($event.value)"
+                                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" *ngIf="!page" (onChange)="getcurrency($event.value)"
+                                optionValue="id" [filterBy]="'name'"  [filter]="true" ></p-dropdown>
+                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" (onChange)="getcurrency($event.value)"  *ngIf="page"
                                 optionValue="id" [filterBy]="'name'" [placeholder]="currencyDescription" [filter]="true" [ngModel]="currencyDescription"></p-dropdown>
                                  <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('currencyCode').hasError('required') && policyProductForm.get('currencyCode').touched"
