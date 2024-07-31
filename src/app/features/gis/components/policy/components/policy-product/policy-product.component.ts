@@ -1013,6 +1013,7 @@ export class PolicyProductComponent {
     this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
     this.policyProductForm.get('branchCode').setValue(this.selectedBranchCode);
     this.policyProductForm.get('branchShortDescription').setValue(this.selectedBranchDescription);
+    this.policyProductForm.get('currencyCode').setValue(this.selectedCurrencyCode);
 
     // Transform the checkbox value to 'Y' or 'N' based on whether it's checked
     const isCoinsuranceChecked = this.policyProductForm.get('isCoinsurance').value ? 'Y' : 'N';
