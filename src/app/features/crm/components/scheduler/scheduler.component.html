@@ -1,0 +1,498 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card col-md-12 col-lg-12 col-xxl-12 mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Scheduler Setups</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <span class="mb-3 light-bold">Select a System</span>
+            <div class="mb-3">
+              <div class="row">
+                <div class="col-md-4 my-2" *ngFor="let system of systems">
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="system"
+                      [id]="system.id"
+                      [value]="system.id"
+                      [(ngModel)]="selectedSystem"
+                      (ngModelChange)="onSystemChange()"
+                    />
+                    <label class="form-check-label" [for]="system.id">{{
+                      system.systemName | titlecase
+                    }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-sm-4 col-6">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search by job name"
+                aria-label="search"
+                aria-describedby="search"
+                (input)="filterScheduler($event)"
+              />
+            </div>
+            <div class="col-sm-8 col-6">
+              <div class="float-end">
+                <span class="icon-circle"
+                  ><i
+                    class="fa-solid fa-plus"
+                    (click)="openSchedulerModal()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i class="pi pi-pencil" (click)="editScheduler()"></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="fa-regular fa-trash-can"
+                    (click)="deleteScheduler()"
+                  ></i
+                ></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table
+                #scheduledJobsTable
+                [value]="scheduledJobsData"
+                styleClass="p-datatable-sm"
+                [autoLayout]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                responsiveLayout="scroll"
+                [scrollable]="true"
+                scrollHeight="400px"
+                class="ui-datatable"
+                [globalFilterFields]="['jobName']"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head" pSortableColumn="jobName">
+                      Job Name<p-sortIcon field="jobName"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="description">
+                      Description<p-sortIcon field="description"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="startTime">
+                      Execution Time<p-sortIcon field="startTime"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="recurrenceType">
+                      Recurrence<p-sortIcon field="recurrenceType"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="assignee">
+                      Assigne<p-sortIcon field="assignee"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="failUser">
+                      Failed Notification User<p-sortIcon
+                        field="failUser"
+                      ></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="succUser">
+                      Success Notification User<p-sortIcon
+                        field="succUser"
+                      ></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="assigneeEmail">
+                      Email To<p-sortIcon field="assigneeEmail"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="failUserEmail">
+                      Failed Email Notification<p-sortIcon
+                        field="failUserEmail"
+                      ></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="succUserEmail">
+                      Successfull Email Notification<p-sortIcon
+                        field="succUserEmail"
+                      ></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-scheduler>
+                  <tr
+                    class="custom-table"
+                    (click)="onSchedulerRowSelect(scheduler)"
+                    [class.selected]="selectedScheduledJob === scheduler"
+                  >
+                    <td class="body">{{ scheduler.jobName }}</td>
+                    <td class="body">
+                      {{ scheduler.description }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.startTime }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.recurrenceType }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.assignee }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.failUser }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.succUser }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.assigneeEmail }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.failUserEmail }}
+                    </td>
+                    <td class="body">
+                      {{ scheduler.succUserEmail }}
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No Scheduler found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="schedulerModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define a Scheduler</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeSchedulerModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createSchedulerForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="jobName" class="form-label">{{
+                "crm.job_name" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="jobName"
+                placeholder="Job Name"
+                formControlName="jobName"
+                [ngClass]="{
+                  'is-invalid':
+                    f['jobName']?.invalid &&
+                    (f['jobName']?.dirty || f['jobName']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['jobName']?.invalid &&
+                  (f['jobName']?.dirty || f['jobName']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['jobName']?.errors
+                }"
+              >
+                <div *ngIf="f['jobName']?.errors['required']">
+                  Job Name is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="jobDescription" class="form-label">{{
+                "crm.job_description" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="jobDescription"
+                placeholder="Job Description"
+                formControlName="jobDescription"
+                [ngClass]="{
+                  'is-invalid':
+                    f['jobDescription']?.invalid &&
+                    (f['jobDescription']?.dirty || f['jobDescription']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['jobDescription']?.invalid &&
+                  (f['jobDescription']?.dirty || f['jobDescription']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['jobDescription']?.errors
+                }"
+              >
+                <div *ngIf="f['jobDescription']?.errors['required']">
+                  Job Description is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="jobType" class="form-label">{{
+                "crm.job_type" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="jobType"
+                formControlName="jobType"
+                [ngClass]="{
+                  'is-invalid':
+                    f['jobType']?.invalid &&
+                    (f['jobType']?.dirty || f['jobType']?.touched)
+                }"
+              >
+                <option value="">Select Job Type</option>
+                <option *ngFor="let job of jobTypeData" [value]="job.value">
+                  {{ job.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                  f['jobType']?.invalid &&
+                  (f['jobType']?.dirty || f['jobType']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['jobType']?.errors
+                }"
+              >
+                <div *ngIf="f['jobType']?.errors['required']">
+                  Job Type is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="executionTime" class="form-label">{{
+                "crm.execution_time" | translate
+              }}</label>
+              <input
+                class="form-control"
+                onfocus="(this.type='datetime-local')"
+                onblur="(this.type='text')"
+                formControlName="executionTime"
+                placeholder="Execution time"
+                [ngClass]="{
+                  'is-invalid':
+                    f['executionTime']?.invalid &&
+                    (f['executionTime']?.dirty || f['executionTime']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['executionTime']?.invalid &&
+                  (f['executionTime']?.dirty || f['executionTime']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['executionTime']?.errors
+                }"
+              >
+                <div *ngIf="f['executionTime']?.errors['required']">
+                  Execution Time is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="repeat" class="form-label">{{
+                "crm.repeat" | translate
+              }}</label>
+              <select class="form-select" id="repeat" formControlName="repeat">
+                <option value="">Select Repeat</option>
+                <option
+                  *ngFor="let repeat of repeatOption"
+                  [value]="repeat.value"
+                >
+                  {{ repeat.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="successUser" class="form-label">{{
+                "crm.notified_success_user" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="successUser"
+                formControlName="successUser"
+              >
+                <option value="">Select User</option>
+                <option *ngFor="let user of userData" [value]="user.value">
+                  {{ user.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="successTemplate" class="form-label">{{
+                "crm.success_notify_template" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="successTemplate"
+                formControlName="successTemplate"
+              >
+                <option value="">Select Template</option>
+                <option
+                  *ngFor="let template of templateData"
+                  [value]="template.value"
+                >
+                  {{ template.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="failedUser" class="form-label">{{
+                "crm.notified_failed_user" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="failedUser"
+                formControlName="failedUser"
+              >
+                <option value="">Select User</option>
+                <option *ngFor="let user of userData" [value]="user.value">
+                  {{ user.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="failedTemplate" class="form-label">{{
+                "crm.fail_notify_template" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="failedTemplate"
+                formControlName="failedTemplate"
+              >
+                <option value="">Select Template</option>
+                <option
+                  *ngFor="let template of templateData"
+                  [value]="template.value"
+                >
+                  {{ template.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="thresholdType" class="form-label">{{
+                "crm.threshold_type" | translate
+              }}</label>
+              <select
+                class="form-select"
+                id="thresholdType"
+                formControlName="thresholdType"
+              >
+                <option value="">Select Threshold Type</option>
+                <option
+                  *ngFor="let threshold of thresholdTypeData"
+                  [value]="threshold.value"
+                >
+                  {{ threshold.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="thresholdValue" class="form-label">{{
+                "crm.threshold_value" | translate
+              }}</label>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Threshold Value"
+                formControlName="thresholdValue"
+                [ngClass]="{
+                  'is-invalid':
+                    f['thresholdValue']?.invalid &&
+                    (f['thresholdValue']?.dirty || f['thresholdValue']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['thresholdValue']?.invalid &&
+                  (f['thresholdValue']?.dirty || f['thresholdValue']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['thresholdValue']?.errors
+                }"
+              >
+                <div *ngIf="f['thresholdValue']?.errors['required']">
+                  Threshold Value is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <fieldset>
+                <legend for="status" class="form-label">Status</legend>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio1"
+                    value="A"
+                    formControlName="status"
+                  />
+                  <label class="form-check-label" for="inlineRadio1"
+                    >Active</label
+                  >
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio2"
+                    value="I"
+                    formControlName="status"
+                  />
+                  <label class="form-check-label" for="inlineRadio2"
+                    >Inactive</label
+                  >
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveScheduler()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
