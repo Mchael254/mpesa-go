@@ -22,7 +22,7 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { PolicySummaryComponent } from './components/policy-summary/policy-summary.component';
 import { PolicySummaryDetailsComponent } from './components/policy-summary-details/policy-summary-details.component';
 import { PolicySummaryOtherDetailsComponent } from './components/policy-summary-other-details/policy-summary-other-details.component';
-
+import { InputTextareaModule } from 'primeng/inputtextarea';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -50,7 +50,8 @@ import { PolicySummaryOtherDetailsComponent } from './components/policy-summary-
     MenuModule,
     PanelMenuModule,
     TreeModule,
-    TabViewModule
+    TabViewModule,
+    InputTextareaModule
 
   ]
 })

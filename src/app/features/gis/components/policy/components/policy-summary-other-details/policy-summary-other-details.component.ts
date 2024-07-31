@@ -171,6 +171,7 @@ export class PolicySummaryOtherDetailsComponent {
   public isPremiumDetailOpen = false;
   public isRequiredDocDetailOpen = false;
   public isCertificatesDetailOpen = false;
+  public isRemarkDetailsOpen = false;
 
   public riskPerils = false;
 
@@ -1260,6 +1261,9 @@ toggleRiskPerils(){
       document.getElementById("openCertificateModalButtonDelete").click();
 
     }
+  }
+  toggleRemarksDetails() {
+    this.isRemarkDetailsOpen = !this.isRemarkDetailsOpen;
   }
 }
 
