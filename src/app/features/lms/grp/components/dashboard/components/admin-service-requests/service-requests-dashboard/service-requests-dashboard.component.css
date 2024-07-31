@@ -1,0 +1,92 @@
+.main {
+    background: #F5F6F8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 20px;
+    height: 100%;
+}
+
+.container {
+    background: #FFF;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+    flex: 1;
+    padding: 48px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.new-req-button {
+    position: relative;
+    width: 100%;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.new-req-button ::ng-deep .p-button {
+    background-color: #00529B !important;
+    height: 40px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: auto;
+}
+
+p-multiSelect {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+:host ::ng-deep .p-multiselect-label-container {
+    display: none;
+}
+
+:host ::ng-deep .p-multiselect {
+    height: auto;
+}
+
+:host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+td {
+    padding: 2px;
+    white-space: nowrap;
+}
+
+tr {
+    border-bottom: none !important;
+    height: 40px;
+}

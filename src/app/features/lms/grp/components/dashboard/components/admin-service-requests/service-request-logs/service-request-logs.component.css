@@ -1,0 +1,248 @@
+.main {
+  background: #F5F6F8;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 20px;
+  height: 100%;
+}
+
+.container {
+  background: #FFF;
+  border: 1px solid rgba(220, 220, 220, 0.85);
+  border-radius: 5px;
+  flex: 1;
+  padding: 48px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+button.new-msg {
+  background-color: #00529B;
+  color: #FFFFFF;
+  border-color: #00529B;
+}
+
+button.new-msg:hover {
+  background-color: #65b2f5;
+}
+
+.custom-red-button {
+  color: transparent;
+  background-color: transparent;
+  border: none;
+}
+
+.custom-red-button::before {
+  content: "X";
+  color: #EE3945;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+  /* Removes the border between header/footer and body of modal */
+}
+
+.modal-content {
+  padding: 0 20px;
+}
+
+.plain-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: black;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.vertical-paperclip {
+  transform: rotate(315deg);
+}
+
+.plain-button .pi {
+  margin-right: 5px;
+}
+
+.plain-button:hover {
+  background-color: #F5F6F8;
+}
+
+.attach-file-container {
+  display: flex;
+  align-items: center;
+}
+
+.attached-file {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+
+.file-name-container {
+  max-width: 200px;
+  overflow: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name:hover {
+  cursor: pointer;
+}
+
+
+.delete-icon {
+  margin-left: 5px;
+  cursor: pointer;
+  color: red;
+}
+
+.pdf-icon {
+  width: 20px;
+  height: 20px;
+  padding-right: 3px;
+}
+
+.custom-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notifications {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.notification-row {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  align-items: center;
+  padding: 10px;
+  border: none;
+  position: relative;
+}
+
+.notification-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.notification-row.read {
+  background-color: #F5F6F8;
+}
+
+.sender {
+  font-weight: 500;
+  color: black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: black;
+  /* padding-right: 60px; */
+}
+
+.date {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  color: #999;
+  padding-right: 40px;
+}
+
+.options-icon {
+  cursor: pointer;
+}
+
+@media (max-width: 500px) {
+  .custom-footer {
+    white-space: nowrap;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .attach-file-container {
+    white-space: nowrap;
+    overflow: auto;
+    max-width: 60%;
+  }
+
+  .file-name-container {
+    text-overflow: unset;
+    overflow: auto;
+  }
+
+  .file-name {
+    text-overflow: unset;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .notification-row {
+    grid-template-columns: 1fr;
+    padding: 5px;
+  }
+  
+  .sender, .message {
+    display: block;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .message {
+    padding-right: 0;
+  }
+
+  .options-icon {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+  }
+}
