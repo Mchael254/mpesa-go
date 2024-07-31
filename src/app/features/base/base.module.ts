@@ -18,6 +18,8 @@ import { CalendarComponent } from './components/dashboard/calendar/calendar.comp
 import { CalendarLayoutComponent } from './components/dashboard/calendar-layout/calendar-layout.component';
 import {CalendarModule} from "primeng/calendar";
 import {DialogModule} from "primeng/dialog";
+import { DefaultSubMenuComponent } from './components/header-sub-menu/default-sub-menu/default-sub-menu.component';
+import { AdminSubMenuComponent } from './components/header-sub-menu/admin-sub-menu/admin-sub-menu.component';
 
 
 @NgModule({
@@ -43,6 +45,8 @@ import {DialogModule} from "primeng/dialog";
     TicketsSummaryComponent,
     CalendarComponent,
     CalendarLayoutComponent,
+    DefaultSubMenuComponent,
+    AdminSubMenuComponent,
   ],
 })
 export class BaseModule {

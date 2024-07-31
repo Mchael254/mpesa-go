@@ -73,8 +73,24 @@ export class HeaderSubMenuComponent implements OnInit {
   }
 
   getEntityType(): void {
-    this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
-    log.info(`entity type >>> `, this.entityType);
+    const entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
+
+    switch(entityType) {
+      case 'ADMIN':
+        this.entityType = 'ADMIN'
+        break;
+      case 'AGENT':
+        this.entityType = 'AGENT'
+        break;
+      case 'MEMBER':
+        this.entityType = 'MEMBER'
+        break;
+      case 'USR':
+        this.entityType = 'DEFAULT'
+        break;
+      default:
+      this.entityType = 'DEFAULT'
+    }
   }
 
   createSearchAccountForm(): void {
@@ -84,31 +100,31 @@ export class HeaderSubMenuComponent implements OnInit {
     });
   }
 
-  displaySearchValues() {
+  /*displaySearchValues() {
     const searchFormValue = this.searchAccountForm.getRawValue();
     log.info('search value', searchFormValue);
 
     this.entityService.searchTermObject.set({...searchFormValue, fromSearchScreen: true});
     this.navLink('/home/entity/list');
-  }
-  dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
+  }*/
 
+  /*dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
     if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
     this.menuService.updateSidebarMainMenu(sidebarMenu.value)
-  }
+  }*/
 
 
   navLink(menuLink:string){
     this.router.navigate([menuLink])
   }
 
-  onSearch(){
+  /*onSearch(){
       this.searchTerm = this.nameSearchTerm || this.idSearchTerm;
       localStorage.setItem('searchTerm', this.searchTerm)
       this.nameSearchTerm = '';
       this.idSearchTerm = '';
       this.navLink('/home/entity/list');
-  }
+  }*/
 
   openModal() {
     const modal = document.getElementById('NewQuoteModal');
