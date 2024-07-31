@@ -36,7 +36,7 @@ import { OrganizationBranchDto } from '../../../../../../../shared/data/common/o
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
 import { ClientService as CRMClientService, ClientService } from '../../../../../../entities/services/client/client.service';
 import { ClientService as LMSClientService } from '../../../../../service/client/client.service';
-import { ClientDTO } from '../../../../../../entities/data/ClientDTO';
+import { ClientDTO, ClientTitlesDto } from '../../../../../../entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
 import {
@@ -86,6 +86,7 @@ export class PersonalDetailsComponent implements OnInit {
   client: any;
   clientList: any;
   clientDetails: ClientDTO;
+  clientTitles: ClientTitlesDto[] = [];
   clientForm: FormGroup;
   clientSearch: FormGroup;
   textColor: string = 'black';
@@ -146,7 +147,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.getBranchList();
     this.getBankList();
     this.getClientType();
-
+    this.getClientTitles();
 
     this.util = new Utils(this.session_storage);
 
@@ -583,6 +584,12 @@ export class PersonalDetailsComponent implements OnInit {
         console.log('No INDIVIDUAL client type found');
       }
     });
+  }
+
+  getClientTitles(organizationId?:number) {
+    this.crm_client_service.getClientTitles(organizationId).subscribe((data) => {
+      this.clientTitles = data; 
+        })
   }
 
   getBankList() {

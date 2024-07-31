@@ -236,7 +236,10 @@
                   </label>
                   <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']"
                           formControlName="titleShortDescription" placement="right">
-                          <option [value]="" selected="true" disabled="disabled">Select Title</option> 
+                          <option [value]="" selected="true" disabled="disabled">Select Title</option>
+                          <option *ngFor="let data of clientTitles | sort : 'asc' : 'description'" [value]="data.id">
+                                  {{ data.description | titlecase }}
+                          </option> 
                   </select>
                 </div>
 
