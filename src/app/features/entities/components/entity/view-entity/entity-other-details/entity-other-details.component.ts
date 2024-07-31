@@ -158,7 +158,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   /**
    * This method fetches a list of sectors for patching and selecting
    */
-  fetchSectors(): void {
+  fetchSectors():void {
     this.sectorService.getSectors().subscribe({
       next: (sectors) => {
         this.sectorData = sectors;
