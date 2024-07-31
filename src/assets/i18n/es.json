@@ -178,7 +178,10 @@
     "Cheque signing": "Firma de cheques",
     "Campaigns": "Campañas",
     "Client Attributes": "Atributos del Cliente",
-    "Product Attributes": "Atributos del Producto"
+    "Product Attributes": "Atributos del Producto",
+    "quick_quote": "Cotización rápida",
+    "service_requests": "Solicitudes de servicio",
+    "downloads": "Descargas"
   },
   "crm": {
     "activity": "Actividad",

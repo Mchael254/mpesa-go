@@ -1,23 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderSubMenuComponent } from './header-sub-menu.component';
+import { AdminSubMenuComponent } from './admin-sub-menu.component';
 import {TranslateModule} from "@ngx-translate/core";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-describe('HeaderSubMenuComponent', () => {
-  let component: HeaderSubMenuComponent;
-  let fixture: ComponentFixture<HeaderSubMenuComponent>;
+describe('AdminSubMenuComponent', () => {
+  let component: AdminSubMenuComponent;
+  let fixture: ComponentFixture<AdminSubMenuComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderSubMenuComponent],
+      declarations: [AdminSubMenuComponent],
       imports: [
         HttpClientTestingModule,
         TranslateModule.forRoot(),
       ],
       providers: []
     });
-    fixture = TestBed.createComponent(HeaderSubMenuComponent);
+    fixture = TestBed.createComponent(AdminSubMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,556 @@
+<!-- mobile nav -->
+<div class="content-nav">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mobile-nav">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <span class="d-none">Navbar</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a
+              class="nav-link active"
+              aria-current="page" href="javascript:void(0)"
+              (click)="dynamicSideBarMenu(defaultSidebar)"
+            >
+              <i
+                class="fa-solid fa-house-chimney"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.dashboard" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a
+              class="nav-link" href="javascript:void(0)"
+              (click)="dynamicSideBarMenu(accountSubMenuList[0]);navLink('/home/entity/list')"
+            >
+              <i
+                class="fa-solid fa-file-invoice-dollar"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.accounts" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link" href="javascript:void(0)"
+               (click)="dynamicSideBarMenu(quotationSubMenuList[0]);navLink('/home/lms/quotation/list')"
+            >
+              <i
+                class="fa-solid fa-quote-right"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.quotation" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link">
+              <i
+                class="fa-solid fa-building-shield"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.policy" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link" href="javascript:void(0)"
+               (click)="dynamicSideBarMenu(reinsuranceSubMenuList[0])">
+              <i
+                class="fa-solid fa-handshake-angle"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.reinsurance" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link">
+              <i
+                class="fa-solid fa-handshake-angle"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.tickets" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link">
+              <i
+                class="fa-solid fa-people-group"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.team" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-toolbox"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.administration" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <ng-container *ngFor="let admin of administationSubMenuList">
+                <li *ngIf="admin?.isActive">
+                  <a
+                    class="dropdown-item"
+                    (click)="dynamicSideBarMenu(admin)"
+                  >{{ admin["name"] }}</a
+                  >
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="d-flex">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2/create-report"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[0])"
+              ><i
+                class="fa-solid fa-chart-simple"
+                style="padding-right: 6px"
+              ></i
+              >{{ "base.new_report" | translate | uppercase }}</a
+              >
+            </li>
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[2])"
+              ><i class="fa-solid fa-chart-pie" style="padding-right: 6px"></i
+              >{{ "base.analytics" | translate | uppercase }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- desktop nav -->
+<div class="content-nav">
+  <nav
+    class="navbar navbar-expand-lg bg-body-tertiary fadeIn"
+    style="border-bottom: 1px solid #00539b14"
+    id="desktop-nav"
+  >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbar">
+          <li class="nav-item">
+            <a
+              (click)="dynamicSideBarMenu(defaultSidebar)"
+              class="nav-link"
+              href="#"
+              routerLink="/home/dashboard"
+              style="font-size: 12px"
+            ><i
+              class="fa-solid fa-house-chimney"
+              style="padding-right: 6px"
+            ></i
+            >{{ "base.dashboard" | translate | uppercase }}</a
+            >
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-file-invoice-dollar"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.accounts" | translate | uppercase }}
+            </a>
+            <ul
+              class="dropdown-menu"
+              style="
+                width: 300px;
+                padding: 1em 2em 1em 0.5em;
+                border-radius: 0.2em;
+                border-right: 2px solid #00539b67;
+              "
+            >
+              <div class="d-flex justify-content-between">
+                <label
+                  class="label-text update-side-menu"
+                  (click)="dynamicSideBarMenu(accountSubMenuList[0])"
+                >
+                  {{ 'base.accounts' | translate }}
+                </label>
+
+                <label
+                  class="label-text"
+                  (click)="
+                  navLink('/home/entity/new');
+                  dynamicSideBarMenu(accountSubMenuList[0])"
+                >{{ 'base.new_entity' | translate }}
+                  <i class="fa-solid fa-plus"></i></label>
+              </div>
+              <div class="my-2"></div>
+              <form [formGroup]="searchAccountForm">
+                <div class="row">
+                  <div
+                    class="col-3 d-flex justify-content-end align-items-center"
+                  >
+                    <label for="searchNameInput" class="form-label label-text"
+                    >{{ 'base.name' | translate }}:
+                    </label>
+                  </div>
+                  <div class="col-9" style="padding: 0.5rem 0">
+                    <input
+                      (keyup.enter)="displaySearchValues()"
+                      style="border-radius: 0.3rem; font-size: 10px"
+                      type="text"
+                      class="form-control"
+                      id="searchNameInput"
+                      formControlName="searchNameInput"
+                    />
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div
+                    class="col-3 d-flex justify-content-end align-items-center"
+                  >
+                    <label for="input2" class="form-label label-text">{{ 'base.id' | translate }}: </label>
+                  </div>
+                  <div class="col-9" style="padding: 0.5rem 0">
+                    <input
+                      (keyup.enter)="displaySearchValues()"
+                      style="border-radius: 0.3rem; font-size: 10px"
+                      type="text"
+                      class="form-control"
+                      formControlName="searchIdInput"
+                    />
+                  </div>
+                </div>
+              </form>
+
+              <div class="my-4"></div>
+
+              <div class="d-flex justify-content-end">
+                <label
+                  (click)="
+                    navLink('/home/entity/list');dynamicSideBarMenu(accountSubMenuList[0]);"
+                  class="text-plain"
+                >
+                  {{ 'base.view_entities' | translate }}
+                </label
+                >
+              </div>
+
+              <!-- Add space at the bottom -->
+              <div class="mb-3"></div>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i class="fa-solid fa-quote-right" style="padding-right: 6px; font-size: 16px"></i>{{ "base.quotation" | translate | uppercase }}
+            </a>
+            <ul
+              class="dropdown-menu"
+              style="
+                width: 300px;
+                padding: 1em 2em 1em 0.5em;
+
+              "
+            >
+              <div class="d-flex justify-content-between">
+                <label
+                  class="label-text"
+                  (click)="dynamicSideBarMenu(quotationSubMenuList[0])"
+                >
+                  {{ 'base.quotation' | translate }}
+                </label>
+
+                <label
+                  data-bs-toggle="modal"
+                  data-bs-target="#NewQuoteModal"
+                  class="label-text"
+                  (click)="navLink('/home/lms/quotation/list')"
+                >
+                  {{ 'base.new_quotation' | translate }}
+                  <i class="fa-solid fa-plus"></i
+                  ></label>
+              </div>
+              <div class="my-2"></div>
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-start align-items-center"
+                >
+                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">
+                    {{ 'base.policy_id' | translate }}:
+                  </label>
+                </div>
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-start align-items-center"
+                >
+                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">
+                    {{ 'base.quot_id' | translate }}:
+                  </label>
+                </div>
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                    id="input2"
+                  />
+                </div>
+              </div>
+              <div class="my-4"></div>
+
+              <div class="d-flex justify-content-end">
+                <label
+                  (click)="navLink('/home/lms/quotation/list')"
+                  class="text-plain"
+                >View Quotations</label
+                >
+              </div>
+
+              <!-- Add space at the bottom -->
+              <div class="mb-3"></div>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+
+              <i
+                class="fa-solid fa-building-shield"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.policy" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <ng-container *ngFor="let team of policySubMenuList">
+                <li>
+                  <a class="dropdown-item" (click)="dynamicSideBarMenu(team)">{{
+                      team["name"]
+                    }}</a>
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+
+              <i
+                class="fa-solid fa-umbrella"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.reinsurance" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <ng-container *ngFor="let team of reinsuranceSubMenuList">
+                <li>
+                  <a class="dropdown-item" (click)="dynamicSideBarMenu(team)">{{
+                      team["name"]
+                    }}</a>
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-people-group"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.team" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <ng-container *ngFor="let team of teamSubMenuList">
+                <li>
+                  <a class="dropdown-item" (click)="dynamicSideBarMenu(team)">{{
+                      team["name"]
+                    }}</a>
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-money-bill-transfer"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.FMS" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <ng-container *ngFor="let fms of fmsSubMenuList">
+                <li>
+                  <a class="dropdown-item" (click)="dynamicSideBarMenu(fms)">
+                    {{ 'base.' +fms["name"] | translate }}
+                  </a>
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-toolbox"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "base.administration" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <ng-container *ngFor="let admin of administationSubMenuList">
+                <li *ngIf="admin?.isActive">
+                  <a
+                    class="dropdown-item"
+                    (click)="dynamicSideBarMenu(admin)"
+                  >
+                    {{ 'base.'+admin["name"] | translate }}
+                  </a>
+                </li>
+              </ng-container>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-flex" id="chart">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2/create-report"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[0])"
+              ><i
+                class="fa-solid fa-chart-simple"
+                style="padding-right: 6px"
+              ></i
+              >{{ "base.new_report" | translate | uppercase }}</a
+              >
+            </li>
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[2])"
+              ><i class="fa-solid fa-chart-pie" style="padding-right: 6px"></i
+              >{{ "base.analytics" | translate | uppercase }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+
+<div class="modal fade" tabindex="-1" #NewQuoteModal id="NewQuoteModal" aria-labelledby="NewQuoteModal" aria-hidden="true"
+     style="color: #333;">
+  <div class="modal-dialog">
+    <div class="modal-content modal-content-sub-header">
+      <div class="modal-body">
+        <div class="d-flex justify-content-between">
+
+          <div data-bs-dismiss="modal"
+               class="card sub-card"
+               routerLink="/home/lms/ind/quotation/quick"
+               (click)="closeModal()"
+               id="close-modal"
+          >
+            <div class=" with-background-image lms-ind-image"  >
+              <div class="sub-card-content ">
+                &nbsp;
+
+              </div>
+            </div>
+            <div class="sub-card-text  d-flex justify-content-center">LMS Individual</div>
+          </div>
+
+          <div data-bs-dismiss="modal"  class="card sub-card" routerLink="/home/lms/grp/quotation/client" (click)="closeModal()">
+            <div class=" with-background-image lms-grp-image" >
+              <div class="sub-card-content ">
+                &nbsp;
+
+              </div>
+            </div>
+            <div class="sub-card-text  d-flex justify-content-center">LMS Group</div>
+          </div>
+
+
+          <div data-bs-dismiss="modal"  class="card sub-card" (click)="closeModal()" routerLink="/home/gis/quotation/quick-quote">
+            <div class=" with-background-image gis-image" >
+              <div class="sub-card-content ">
+                &nbsp;
+
+              </div>
+            </div>
+            <div class="sub-card-text  d-flex justify-content-center">GIS</div>
+          </div>
+
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
