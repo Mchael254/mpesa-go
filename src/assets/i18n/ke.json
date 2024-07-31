@@ -178,7 +178,10 @@
     "Cheque signing": "Kusaini hundi",
     "Campaigns": "Kampeni",
     "Client Attributes": "Sifa za Mteja",
-    "Product Attributes": "Sifa za Bidhaa"
+    "Product Attributes": "Sifa za Bidhaa",
+    "quick_quote": "Nukuu ya haraka",
+    "service_requests": "Maombi ya huduma",
+    "downloads": "Vipakuliwa"
   },
   "crm": {
     "activity": "Shughuli",

@@ -178,7 +178,10 @@
     "Cheque signing": "Signature de chèque",
     "Campaigns": "Campagnes",
     "Client Attributes": "Attributs du Client",
-    "Product Attributes": "Attributs du Produit"
+    "Product Attributes": "Attributs du Produit",
+    "quick_quote": "Devis rapide",
+    "service_requests": "Demandes de service",
+    "downloads": "Téléchargements"
   },
   "crm": {
     "activity": "Activité",
@@ -866,7 +869,7 @@
       "fee_rate": "Taux de Frais",
       "fee_amount": "Montant des Frais",
 
-    
+
       "import_schedule": "Importer le calendrier",
       "from_csv_file": "Depuis le fichier CSV",
       "from_another_policy": "Depuis une autre police",

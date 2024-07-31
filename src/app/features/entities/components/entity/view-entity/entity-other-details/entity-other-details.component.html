@@ -7,7 +7,7 @@
             class="btn btn-light btn-sm ms-4"
             style="border-radius: 100%;" data-bs-toggle="modal"
             data-bs-target="#editModal"
-            (click)="prepareDetailsForEdit()"
+            (click)="prepareDetailsForEdit(); confirmFormReadyStatus(false)"
           >
             <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
           </button>
@@ -66,7 +66,11 @@
       </div>
   </p-tabPanel>
 
-    <p-tabPanel id="get-payment-details" header="Bank Details" *ngIf="bankDetails">
+    <p-tabPanel
+      id="get-payment-details"
+      header="Bank Details"
+      *ngIf="bankDetails"
+    >
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -271,7 +275,12 @@
   <div class="modal-dialog">
     <div class="modal-content" id="editModalContent">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editModalLabel">Edit {{ activeTab }} details</h1>
+        <h1 class="modal-title fs-5" id="editModalLabel">
+          Edit {{ activeTab }} details
+          <span class="spinner-border ms-3" style="font-size: 0.5rem" role="status" *ngIf="!isFormDetailsReady">
+            <span class="visually-hidden">Loading...</span>
+          </span>
+        </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalButton></button>
       </div>
       <div class="modal-body">
@@ -280,19 +289,31 @@
         </ng-container>
 
         <ng-container *ngIf="activeTab==='bank'">
-          <app-edit-bank-form (closeEditModal)="closeEditModal()"></app-edit-bank-form>
+          <app-edit-bank-form
+            (closeEditModal)="closeEditModal()"
+            (isFormDetailsReady)="confirmFormReadyStatus($event)"
+          ></app-edit-bank-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='wealth'">
-          <app-edit-wealth-form (closeEditModal)="closeEditModal()"></app-edit-wealth-form>
+          <app-edit-wealth-form
+            (closeEditModal)="closeEditModal()"
+            (isFormDetailsReady)="confirmFormReadyStatus($event)"
+          ></app-edit-wealth-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='aml'">
-          <app-edit-aml-form (closeEditModal)="closeEditModal()"></app-edit-aml-form>
+          <app-edit-aml-form
+            (closeEditModal)="closeEditModal()"
+            (isFormDetailsReady)="confirmFormReadyStatus($event)"
+          ></app-edit-aml-form>
         </ng-container>
 
         <ng-container *ngIf="activeTab==='nok'">
-          <app-edit-nok-form (closeEditModal)="closeEditModal()"></app-edit-nok-form>
+          <app-edit-nok-form
+            (closeEditModal)="closeEditModal()"
+            (isFormDetailsReady)="confirmFormReadyStatus($event)"
+          ></app-edit-nok-form>
         </ng-container>
       </div>
     </div>

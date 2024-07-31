@@ -216,6 +216,5 @@ describe('EditWealthFormComponent', () => {
 
     expect(component.updateDetails.call).toBeTruthy();
     // expect(component.closeEditModal).toHaveBeenCalled();
-
   });
 });

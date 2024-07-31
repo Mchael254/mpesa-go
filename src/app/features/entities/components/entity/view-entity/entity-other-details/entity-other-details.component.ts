@@ -59,6 +59,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   sectorData: SectorDTO[];
   sector: SectorDTO;
+  isFormDetailsReady: boolean = false;
 
   constructor(
     private sectorService: SectorService,
@@ -136,6 +137,13 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   closeEditModal(): void {
     this.closeModalButton.nativeElement.click();
     this.refreshData.emit();
+  }
+
+  /**
+   * Upon successful form data patching, update details to hide spinner
+   */
+  confirmFormReadyStatus(event: boolean): void {
+    this.isFormDetailsReady = event;
   }
 
   prepareNokForEdit(nok: any): void {

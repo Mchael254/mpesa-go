@@ -178,7 +178,10 @@
     "Cheque signing": "Unterzeichnung von Schecks",
     "Campaigns": "Kampagnen",
     "Client Attributes": "Kundenattribute",
-    "Product Attributes": "Produktattribute"
+    "Product Attributes": "Produktattribute",
+    "quick_quote": "Schnellangebot",
+    "service_requests": "Serviceanfragen",
+    "downloads": "Downloads"
   },
   "crm": {
     "activity": "Activiteit",
