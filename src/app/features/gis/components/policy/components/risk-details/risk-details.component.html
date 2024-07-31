@@ -228,7 +228,7 @@
                         </div>
                         <div class="row mb-4">
                             <div class="mb-1 col-sm-4 col-12">
-                                <label for="logbook" class="required risk-label" id="logbook">Logbook</label><br>
+                                <label for="logbook" class=" risk-label" id="logbook">Logbook</label><br>
                                 <input type="text" id="logbook" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="logbook">
                             </div>
@@ -467,7 +467,7 @@
                     <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="riskLocation" class="required risk-label"
+                            <label for="riskLocation" class=" risk-label"
                                 id="riskLocation">{{'gis.policy.risk_location'|translate}}</label>
                             <p-dropdown [options]="statesList" optionValue="id" optionLabel="name" placeholder=" "
                                 (onChange)="onStateSelected($event.value)" [filterBy]="'name'"
@@ -475,7 +475,7 @@
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class="required risk-label">{{'gis.policy.risk_town'|translate}}</label>
+                            <label class=" risk-label">{{'gis.policy.risk_town'|translate}}</label>
                             <p-dropdown [options]="townList" optionValue="name" optionLabel="name" placeholder=" "
                                 [filterBy]="'name'" [filter]="true" formControlName="town"></p-dropdown>
 
@@ -510,7 +510,7 @@
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class="required risk-label">{{'gis.policy.survey_risk'|translate}}</label>
+                            <label class=" risk-label">{{'gis.policy.survey_risk'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                 formControlName="surveyDate">
                                 <option value="Y">{{'gis.policy.yes' | translate}}</option>
@@ -525,7 +525,7 @@
                             </div> -->
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="surveyDate" class="required risk-label"
+                            <label for="surveyDate" class=" risk-label"
                                 id="surveyDate">{{'gis.policy.Survey_date'|translate}}</label><br>
                             <input type="date" id="surveyDate" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="surveyDate">
@@ -542,7 +542,7 @@
                     <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="computeMaxExposure" class="required risk-label"
+                            <label for="computeMaxExposure" class=" risk-label"
                                 id="riskLocation">{{'gis.policy.compute_maximum_exposure'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                 formControlName="computeMaxExposure">
@@ -564,7 +564,7 @@
                             </div> -->
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="surveyDate" class="required risk-label"
+                            <label for="surveyDate" class=" risk-label"
                                 id="surveyDate">{{'gis.policy.territory'|translate}}</label><br>
                             <p-dropdown formControlName="territory" [options]="countryList" optionValue="id"
                                 optionLabel="name" [placeholder]="userCountryName" [filterBy]="'name'" [filter]="true"
@@ -601,7 +601,7 @@
                         <div class="row mb-4">
 
                             <div class="mb-1 col-sm-4 col-12">
-                                <label for="emlLocation" class="required risk-label"
+                                <label for="emlLocation" class=" risk-label"
                                     id="emlLocation">{{'gis.policy.eml_top_location_level'|translate}}</label>
                                 <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="topLocationLevel">
@@ -658,7 +658,7 @@
 
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
-                                <label for="surveyDate" class="required risk-label"
+                                <label for="surveyDate" class=" risk-label"
                                     id="surveyDate">{{'gis.policy.quake_flood_zone'|translate}}</label><br>
 
                                 <p-dropdown [options]="quakeZoneList" optionValue="code" optionLabel="quakeZoneName"
@@ -674,7 +674,7 @@
                                 </div> -->
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
-                                <label for="surveyDate" class="required risk-label"
+                                <label for="surveyDate" class=" risk-label"
                                     id="surveyDate">{{'gis.policy.relational_group'|translate}}</label><br>
                                 <p-dropdown [options]="" optionValue="code" optionLabel="description" placeholder=" "
                                     [filterBy]="'description'" [filter]="true"></p-dropdown>
@@ -690,7 +690,7 @@
                         <div class="row mb-4">
 
                             <div class="mb-1 col-sm-4 col-12">
-                                <label for="newRisk" class="required risk-label"
+                                <label for="newRisk" class=" risk-label"
                                     id="riskLocation">{{'gis.policy.risk_class'|translate}}</label>
                                 <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="riskClass">
