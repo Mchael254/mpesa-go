@@ -178,7 +178,10 @@
     "Cheque signing": "支票签署",
     "Campaigns": "活动",
     "Client Attributes": "客户属性",
-    "Product Attributes": "产品属性"
+    "Product Attributes": "产品属性",
+    "quick_quote": "快速报价",
+    "service_requests": "服务请求",
+    "downloads": "下载"
   },
   "crm": {
     "activity": "活动",

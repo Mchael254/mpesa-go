@@ -23,6 +23,7 @@ const log = new Logger('EditWealthFormComponent');
 export class EditWealthFormComponent implements OnInit{
 
   @Output('closeEditModal') closeEditModal: EventEmitter<any> = new EventEmitter<any>();
+  @Output('isFormDetailsReady') isFormDetailsReady: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   wealthAmlDetails: WealthAmlDTO;
   extras: Extras;
@@ -32,8 +33,8 @@ export class EditWealthFormComponent implements OnInit{
   fundSource: FundSourceDTO[];
   sectorData: SectorDTO[];
 
-  shouldShowEditForm: boolean = false;
-  progressBarWidth: number = 10;
+  // shouldShowEditForm: boolean = false;
+  // progressBarWidth: number = 10;
 
   constructor(
     private fb: FormBuilder,
@@ -67,12 +68,12 @@ export class EditWealthFormComponent implements OnInit{
    * This method fetches the list of countries for patching and selecting
    */
   fetchCountries(): void {
-    this.shouldShowEditForm = false;
+    // this.shouldShowEditForm = false;
     this.countryService.getCountries().subscribe({
       next: (countries) => {
         this.countryData = countries;
         this.fetchSectors();
-        this.progressBarWidth = 40;
+        // this.progressBarWidth = 40;
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -89,7 +90,7 @@ export class EditWealthFormComponent implements OnInit{
     this.sectorService.getSectors().subscribe({
       next: (sectors) => {
         this.sectorData = sectors;
-        this.progressBarWidth = 70;
+        // this.progressBarWidth = 70;
         this.fetchFundSource();
         this.cdr.detectChanges();
       },
@@ -107,8 +108,9 @@ export class EditWealthFormComponent implements OnInit{
     this.bankService.getFundSource().subscribe({
       next: (fundSource) => {
         this.fundSource = fundSource;
-        this.progressBarWidth = 100;
-        this.shouldShowEditForm = true;
+        // this.progressBarWidth = 100;
+        // this.shouldShowEditForm = true;
+        this.isFormDetailsReady.emit(true)
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -124,7 +126,7 @@ export class EditWealthFormComponent implements OnInit{
    * @param extras additional info required for updating wealth details
    */
   prepareUpdateDetails(wealthDetails: any, extras: Extras): void {
-    this.shouldShowEditForm = false;
+    // this.shouldShowEditForm = false;
     this.wealthAmlDetails = wealthDetails;
     this.extras = extras;
     this.wealthForm.patchValue({
@@ -160,7 +162,8 @@ export class EditWealthFormComponent implements OnInit{
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
           this.closeEditModal.emit();
-          this.progressBarWidth = 10;
+          // this.progressBarWidth = 10;
+          this.isFormDetailsReady.emit(false)
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message

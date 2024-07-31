@@ -21,14 +21,15 @@ const log = new Logger('EditBankFormComponent');
 export class EditBankFormComponent implements OnInit{
 
   @Output('closeEditModal') closeEditModal: EventEmitter<any> = new EventEmitter<any>();
+  @Output('isFormDetailsReady') isFormDetailsReady: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   bankForm: FormGroup;
   bankDetails: any;
   banksData: BankDTO[];
   branchesData: BankBranchDTO[];
   extras: Extras;
-  shouldShowEditForm: boolean = false;
-  progressBarWidth: number = 10;
+  // shouldShowEditForm: boolean = false;
+  // progressBarWidth: number = 10;
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +62,7 @@ export class EditBankFormComponent implements OnInit{
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
   prepareUpdateDetails(bankDetails: Bank, extras: Extras): void {
-    this.shouldShowEditForm = false;
+    // this.shouldShowEditForm = false;
     this.bankDetails = bankDetails;
     this.extras = extras;
     this.fetchBanks(extras.countryId);
@@ -73,7 +74,7 @@ export class EditBankFormComponent implements OnInit{
       paymentMethod: null,
       partyAccountId: extras.partyAccountId
     });
-    this.progressBarWidth = 50;
+    // this.progressBarWidth = 50;
     this.cdr.detectChanges();
   }
 
@@ -86,7 +87,7 @@ export class EditBankFormComponent implements OnInit{
       next: (banksData) => {
         this.banksData = banksData;
         this.fetchBranches(this.bankDetails?.bankId);
-        this.progressBarWidth = 75;
+        // this.progressBarWidth = 75;
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -103,9 +104,10 @@ export class EditBankFormComponent implements OnInit{
   fetchBranches(bankId: number): void {
     this.bankService.getBankBranchById(bankId).subscribe({
       next: (branchesData) => {
-        this.progressBarWidth = 100;
+        // this.progressBarWidth = 100;
         this.branchesData = branchesData;
-        this.shouldShowEditForm = true;
+        // this.shouldShowEditForm = true;
+        this.isFormDetailsReady.emit(true)
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -141,7 +143,8 @@ export class EditBankFormComponent implements OnInit{
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
         this.closeEditModal.emit();
-        this.progressBarWidth = 10;
+        // this.progressBarWidth = 10;
+        this.isFormDetailsReady.emit(false);
       },
       error: (err) => {
         const errorMessage = err?.error?.message ?? err.message

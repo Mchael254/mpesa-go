@@ -21,14 +21,15 @@ const log = new Logger('EditAmlFormComponent');
 export class EditAmlFormComponent implements OnInit{
 
   @Output('closeEditModal') closeEditModal: EventEmitter<any> = new EventEmitter<any>();
+  @Output('isFormDetailsReady') isFormDetailsReady: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   amlForm: FormGroup;
   amlDetails: any;
   countryData: CountryDto[];
   fundSource: FundSourceDTO[];
-  shouldShowEditForm: boolean = false;
+  // shouldShowEditForm: boolean = false;
   extras: Extras;
-  progressBarWidth: number = 10;
+  // progressBarWidth: number = 10;
 
   constructor(
     private fb: FormBuilder,
@@ -64,7 +65,7 @@ export class EditAmlFormComponent implements OnInit{
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
   prepareUpdateDetails(amlDetails: any, extras: Extras): void {
-    this.shouldShowEditForm = false;
+    // this.shouldShowEditForm = false;
     this.amlDetails = amlDetails;
     this.extras = extras;
     this.amlForm.patchValue({
@@ -76,7 +77,7 @@ export class EditAmlFormComponent implements OnInit{
       sourceOfWealth: amlDetails.source_of_wealth_id,
       parentCompany: amlDetails.parentCompany,
     });
-    this.progressBarWidth = 50;
+    // this.progressBarWidth = 50;
     this.cdr.detectChanges();
     this.fetchCountries();
   }
@@ -88,7 +89,7 @@ export class EditAmlFormComponent implements OnInit{
     this.countryService.getCountries().subscribe({
       next: (countries) => {
         this.countryData = countries;
-        this.progressBarWidth = 75;
+        // this.progressBarWidth = 75;
         this.fetchFundSource();
         this.cdr.detectChanges();
       },
@@ -106,8 +107,9 @@ export class EditAmlFormComponent implements OnInit{
     this.bankService.getFundSource().subscribe({
       next: (fundSource) => {
         this.fundSource = fundSource
-        this.progressBarWidth = 100;
-        this.shouldShowEditForm = true;
+        // this.progressBarWidth = 100;
+        // this.shouldShowEditForm = true;
+        this.isFormDetailsReady.emit(true)
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -143,7 +145,8 @@ export class EditAmlFormComponent implements OnInit{
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Bank Details');
           this.closeEditModal.emit();
-          this.progressBarWidth = 50;
+          // this.progressBarWidth = 50;
+          this.isFormDetailsReady.emit(false);
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message

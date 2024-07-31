@@ -428,8 +428,8 @@ export class ViewEntityComponent implements OnInit {
     this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
       .subscribe({
         next: (data: PartyAccountsDetails): void => {
-
           this.populateDetailsForDisplay(data);
+          this.fetchTransactions(data)
         },
         error: (err) => {}
       })

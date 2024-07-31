@@ -19,12 +19,13 @@ const log = new Logger('EditBankFormComponent');
 export class EditNokFormComponent implements OnInit {
 
   @Output('closeEditModal') closeEditModal: EventEmitter<any> = new EventEmitter<any>();
+  @Output('isFormDetailsReady') isFormDetailsReady: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   nokForm: FormGroup;
   modeIdentityType: IdentityModeDTO[];
   extras: Extras;
-  shouldShowEditForm: boolean = false;
-  progressBarWidth: number = 50;
+  // shouldShowEditForm: boolean = false;
+  // progressBarWidth: number = 50;
   nokDetails: any;
 
   relationships: { id: number, name: string }[] = [
@@ -72,8 +73,9 @@ export class EditNokFormComponent implements OnInit {
     this.accountService.getIdentityMode(organizationId).subscribe({
       next: (identityMode) => {
         this.modeIdentityType = identityMode;
-        this.progressBarWidth = 100;
-        this.shouldShowEditForm = true;
+        // this.progressBarWidth = 100;
+        // this.shouldShowEditForm = true;
+        this.isFormDetailsReady.emit(true)
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -89,7 +91,7 @@ export class EditNokFormComponent implements OnInit {
    * @param extras additional info needed for updating bank details e.g. partyAccountId
    */
   prepareUpdateDetails(nokDetails: any, extras: Extras): void {
-    this.shouldShowEditForm = false;
+    // this.shouldShowEditForm = false;
     this.nokDetails = nokDetails;
     this.extras = extras;
     this.nokForm.patchValue({
@@ -102,6 +104,7 @@ export class EditNokFormComponent implements OnInit {
       dob: nokDetails.dob,
     });
     // this.progressBarWidth = 50;
+    this.isFormDetailsReady.emit(true);
     this.cdr.detectChanges();
   }
 
@@ -127,7 +130,8 @@ export class EditNokFormComponent implements OnInit {
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Next-of-Kin Details');
           this.closeEditModal.emit();
-          this.progressBarWidth = 50;
+          // this.progressBarWidth = 50;
+          this.isFormDetailsReady.emit(false)
         },
         error: (err) => {
           const errorMessage = err?.error?.message ?? err.message
