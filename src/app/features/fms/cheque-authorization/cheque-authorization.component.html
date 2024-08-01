@@ -66,15 +66,15 @@
           <p-tabPanel header="Cheques">
             <form [formGroup]="sortingForm" style="background: none; display: contents">
               <div class="row">
-                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                <div class="col-lg-3 col-sm-4 col-6 mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">{{'fms.bankAC' | translate }}</label>
 
                   <p-dropdown
-                    [options]="bankAccount"
-                    optionLabel="bctName"
+                    [options]="bankAccount?.data"
+                    optionLabel="name"
                     [showClear]="true"
                     [filter]="true"
-                    filterBy="bctName"
+                    filterBy="name"
                     [style]="{ width: '100%', height: '50%' }"
                     appendTo="body"
                     placeholder="Select bank"
@@ -83,22 +83,31 @@
 
                     <ng-template let-bank pTemplate="item">
                       <div class="d-flex align-items-center gap-2">
-                        <div>{{ bank?.accNo }}</div>
-                        <div>{{ bank?.bctName }}</div>
+                        <div>{{ bank?.code }}</div>
+                        <div>{{ bank?.name }}</div>
                       </div>
                     </ng-template>
                   </p-dropdown>
                 </div>
-                <div class="col-lg-2 col-sm-4 col-6">
+                <div class="col-lg-3 col-sm-4 col-6n mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">{{'fms.paymentType' | translate }}</label>
-                  <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
-                    <option value="" disabled selected>Select option</option>
-                    <!--                <option value="">All</option>-->
-                    <option *ngFor="let paymentOption of paymentTypes" value="{{ paymentOption?.chqPaymentType }}" >{{ paymentOption?.chqPaymentDesc }}
-                    </option>
-                  </select>
+                  <p-dropdown
+                    [options]="paymentTypes?.data"
+                    optionLabel="chqPaymentDesc"
+                    optionValue="chqPaymentType"
+                    formControlName="paymentType"
+                    id="paymentType"
+                    [filter]="true"
+                    filterBy="chqPaymentDesc"
+                    [showClear]="true"
+                    [style]="{ width: '100%', height: '50%' }"
+                    appendTo="body"
+                    placeholder="Select option"
+                    (onChange)="sortChequePayments()"
+                  >
+                  </p-dropdown>
                 </div>
-                <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
+                <div class="col-lg-2 col-sm-4 col-6 offset-lg-2">
                   <label class="form-label text-black fw-medium">{{'fms.dateFrom' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
                 </div>
@@ -241,15 +250,15 @@
           <p-tabPanel header="EFT">
             <form [formGroup]="sortingForm" style="background: none; display: contents">
               <div class="row">
-                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                <div class="col-lg-3 col-sm-4 col-6 mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">{{'fms.bankAC' | translate }}</label>
 
                   <p-dropdown
-                    [options]="bankAccount"
-                    optionLabel="bctName"
+                    [options]="bankAccount?.data"
+                    optionLabel="name"
                     [showClear]="true"
                     [filter]="true"
-                    filterBy="bctName"
+                    filterBy="name"
                     [style]="{ width: '100%', height: '50%' }"
                     appendTo="body"
                     placeholder="Select bank"
@@ -258,22 +267,31 @@
 
                     <ng-template let-bank pTemplate="item">
                       <div class="d-flex align-items-center gap-2">
-                        <div>{{ bank?.accNo }}</div>
-                        <div>{{ bank?.bctName }}</div>
+                        <div>{{ bank?.code }}</div>
+                        <div>{{ bank?.name }}</div>
                       </div>
                     </ng-template>
                   </p-dropdown>
                 </div>
-                <div class="col-lg-2 col-sm-4 col-6">
+                <div class="col-lg-3 col-sm-4 col-6 mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">{{'fms.paymentType' | translate }}</label>
-                  <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
-                    <option value="" disabled selected>Select option</option>
-                    <!--                <option value="">All</option>-->
-                    <option *ngFor="let paymentOption of paymentTypes;" value="{{ paymentOption?.chqPaymentType }}">{{ paymentOption?.chqPaymentDesc }}
-                    </option>
-                  </select>
+                  <p-dropdown
+                    [options]="paymentTypes?.data"
+                    optionLabel="chqPaymentDesc"
+                    optionValue="chqPaymentType"
+                    formControlName="paymentType"
+                    id="paymentType"
+                    [filter]="true"
+                    filterBy="chqPaymentDesc"
+                    [showClear]="true"
+                    [style]="{ width: '100%', height: '50%' }"
+                    appendTo="body"
+                    placeholder="Select option"
+                    (onChange)="sortChequePayments()"
+                  >
+                  </p-dropdown>
                 </div>
-                <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
+                <div class="col-lg-2 col-sm-4 col-6 offset-lg-2">
                   <label class="form-label text-black fw-medium">{{'fms.dateFrom' | translate }}</label><br>
                   <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
                 </div>
@@ -314,7 +332,7 @@
                       <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                     </th>
                     <th pSortableColumn="chequeRef">{{'fms.refNo' | translate }}<p-sortIcon field="chequeRef"></p-sortIcon></th>
-                    <th pSortableColumn="cqrRefDate">{{'fms.date' | translate }}<p-sortIcon field="cqrRefDate"></p-sortIcon></th>
+                    <th pSortableColumn="chequeRefDate">{{'fms.date' | translate }}<p-sortIcon field="chequeRefDate"></p-sortIcon></th>
                     <th pSortableColumn="chequeNarrative">{{'fms.narrative' | translate }}<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
                     <th pSortableColumn="bnkBankName">{{'fms.bank' | translate }}<p-sortIcon field="bnkBankName"></p-sortIcon></th>
                     <th pSortableColumn="pyAccNo">{{'fms.acNo' | translate }}<p-sortIcon field="pyAccNo"></p-sortIcon></th>

@@ -5,7 +5,14 @@ import {Pagination} from "../../../shared/data/common/pagination";
 import {HttpParams} from "@angular/common/http";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {UtilService} from "../../../shared/services";
-import {eftDTO} from "../data/auth-requisition-dto";
+import {
+  ApprovedChequeMandatesDTO,
+  eftDTO,
+  EftPaymentTypesDTO,
+  EligibleAuthorizersDTO,
+  PaymentBankAccountsDTO, TransactionalDetailsDTO
+} from "../data/auth-requisition-dto";
+import {GenericResponseFMS} from "../../../shared/data/common/genericResponseDTO";
 
 
 @Injectable({
@@ -19,55 +26,51 @@ export class FmsService {
   ) { }
 
   getEftPaymentTypes(userCode: number, branchCode: number, sysCode: number):
-    Observable<any> {
+    Observable<GenericResponseFMS<EftPaymentTypesDTO>> {
     const params = new HttpParams()
       .set('userCode', `${userCode}`)
       .set('branchCode', `${branchCode}`)
       .set('sysCode', `${sysCode}`)
-    return this.api.GET<any>(`v1/eft-payment-types?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<GenericResponseFMS<EftPaymentTypesDTO>>(`eft-payment-types?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
   }
 
-  getBankAccounts(userCode: number, orgCode: number, branchCode: number, sysCode: number):
-    Observable<any> {
+  getBankAccounts(userCode: number, orgCode: number, branchCode: number):
+    Observable<GenericResponseFMS<PaymentBankAccountsDTO>> {
     const params = new HttpParams()
       .set('userCode', `${userCode}`)
       .set('orgCode', `${orgCode}`)
       .set('branchCode', `${branchCode}`)
-      .set('sysCode', `${sysCode}`)
 
-    return this.api.GET<any>(`v1/payment-bank-accounts?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<GenericResponseFMS<PaymentBankAccountsDTO>>(`payment-bank-accounts?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2)
   }
 
   getEligibleAuthorizers(userCode: number, branchCode: number, chequeNumber: number, chequeAmount: number):
-    Observable<any> {
+    Observable<GenericResponseFMS<EligibleAuthorizersDTO>> {
     const params = new HttpParams()
       .set('userCode', `${userCode}`)
       .set('branchCode', `${branchCode}`)
       .set('chequeNumber', `${chequeNumber}`)
       .set('chequeAmount', `${chequeAmount}`)
 
-    return this.api.GET<any>(`v1/eft-eligible-mandate-signers?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<GenericResponseFMS<EligibleAuthorizersDTO>>(`eft-eligible-mandate-signers?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2)
   }
 
-  getSignedBy(userCode: number, chequeNumber: number, branchCode: number):
-    Observable<any> {
+  getSignedBy(chequeNumber: number):
+    Observable<GenericResponseFMS<ApprovedChequeMandatesDTO>> {
     const params = new HttpParams()
-      .set('userCode', `${userCode}`)
-      .set('chequeNumber', `${chequeNumber}`)
-      .set('branchCode', `${branchCode}`)
+      .set('chequeNo', `${chequeNumber}`)
 
-
-    return this.api.GET<any>(`v1/approved-cheque-mandates?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<GenericResponseFMS<ApprovedChequeMandatesDTO>>(`approved-cheque-mandates?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2)
   }
 
   getTransactionDetails(chequeNumber: number, userCode: number, paymentCategory: string):
-    Observable<any> {
+    Observable<GenericResponseFMS<TransactionalDetailsDTO>> {
     const params = new HttpParams()
       .set('chequeNo', `${chequeNumber}`)
       .set('userCode', `${userCode}`)
       .set('paymentCategory', `${paymentCategory}`)
 
-    return this.api.GET<any>(`v1/view-transactional-details?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<GenericResponseFMS<TransactionalDetailsDTO>>(`view-transactional-details?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
   }
 
   getEftMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
@@ -92,7 +95,7 @@ export class FmsService {
 
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.api.GET<Pagination<eftDTO>>(`v1/eft-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<Pagination<eftDTO>>(`eft-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2)
   }
 
   getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
@@ -108,7 +111,7 @@ export class FmsService {
 
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.api.GET<Pagination<any>>(`v1/cheque-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<Pagination<any>>(`cheque-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2)
   }
 
   generateOtp(
@@ -117,8 +120,8 @@ export class FmsService {
   ): Observable<any> {
 
     return this.api.POST<any>(
-      `v1/generate-otp?user_code=${userCode}&organization_code=${organizationCode}`, null,
-      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL
+      `generate-otp?userCode=${userCode}&organizationCode=${organizationCode}`, null,
+      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2
     );
   }
 
@@ -128,14 +131,14 @@ export class FmsService {
   ): Observable<any> {
 
     return this.api.POST<any>(
-      `v1/validate-otp?user_code=${userCode}&token_id=${tokenId}`, null,
-      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL);
+      `validate-otp?user_code=${userCode}&token_id=${tokenId}`, null,
+      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2);
   }
 
   signChequeMandate(data: any): Observable<any> {
     return this.api.POST<any>(
-      `v1/sign-cheque-mandate`, JSON.stringify(data),
-      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL
+      `sign-cheque-mandate`, JSON.stringify(data),
+      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2
     );
   }
 }
