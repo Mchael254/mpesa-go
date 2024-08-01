@@ -14,7 +14,13 @@ import {DmsDocument, SingleDmsDocument} from "../../../shared/data/common/dmsDoc
 import {take} from "rxjs";
 import {TableLazyLoadEvent} from "primeng/table";
 import {LazyLoadEvent} from "primeng/api";
-import {eftDTO} from "../data/auth-requisition-dto";
+import {
+  ApprovedChequeMandatesDTO,
+  eftDTO, EftPaymentTypesDTO,
+  EligibleAuthorizersDTO, PaymentBankAccountsDTO,
+  TransactionalDetailsDTO
+} from "../data/auth-requisition-dto";
+import {GenericResponseFMS} from "../../../shared/data/common/genericResponseDTO";
 
 
 const log = new Logger('ChequeAuthorizationComponent');
@@ -65,23 +71,22 @@ export class ChequeAuthorizationComponent implements OnInit {
     { field: 'dsgnDescription', header: 'Designation' },
   ];
 
-  private eligibleAuthorizers: any[];
-
+  private eligibleAuthorizers: GenericResponseFMS<EligibleAuthorizersDTO> = <GenericResponseFMS<EligibleAuthorizersDTO>>{};
   showSignedBy: boolean = false;
   tableSignedBy: TableDetail;
   colsSignedBy = [
-    { field: 'username', header: 'User' },
+    { field: 'userName', header: 'User' },
     { field: 'authorizationDate', header: 'Authorization date' }
   ];
-  private signedBy: any[];
+  private signedBy: GenericResponseFMS<ApprovedChequeMandatesDTO> = <GenericResponseFMS<ApprovedChequeMandatesDTO>>{};
 
   documentList: DmsDocument[] = [];
   selectedDocumentData: SingleDmsDocument;
   private validityPeriod: number;
 
-  bankAccount: any;
-  paymentTypes: any;
-  transactionSummary: any;
+  bankAccount: GenericResponseFMS<PaymentBankAccountsDTO> = <GenericResponseFMS<PaymentBankAccountsDTO>>{};
+  paymentTypes: GenericResponseFMS<EftPaymentTypesDTO> = <GenericResponseFMS<EftPaymentTypesDTO>>{};
+  transactionSummary: TransactionalDetailsDTO;
 
   activeIndex: number = 0;
   private loggedInUser: Profile;
@@ -126,7 +131,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.tableEligibleAuthorizers = {
       paginator: false, showFilter: false, showSorting: false,
       cols: this.colsEligibleAuthorizers,
-      rows: this.eligibleAuthorizers,
+      rows: this.eligibleAuthorizers.data,
       isLazyLoaded: false,
       showCustomModalOnView: false,
       noDataFoundMessage: 'No Eligible Authorizers Found'
@@ -135,7 +140,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.tableSignedBy = {
       paginator: false, showFilter: false, showSorting: false,
       cols: this.colsSignedBy,
-      rows: this.signedBy,
+      rows: this.signedBy.data,
       isLazyLoaded: false,
       showCustomModalOnView: false,
       noDataFoundMessage: 'No Signed By Users Found'
@@ -287,11 +292,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     log.info('form value', sortValues);
     this.formPayload = {
       paymentType: sortValues.paymentType ? sortValues.paymentType : '',
-      system: sortValues.system ? sortValues.system : 1,
       fromDate: sortValues.fromDate ? sortValues.fromDate : '',
       toDate: sortValues.toDate ? sortValues.toDate : '',
-      bankBranch: sortValues?.bank.brhCode ? sortValues?.bank.brhCode: '',
-      bankCode: sortValues?.bank.bctCode ? sortValues?.bank.bctCode: ''
+      bankBranch: sortValues?.bank?.bctBbrCode ? sortValues?.bank?.bctBbrCode: '',
+      bankCode: sortValues?.bank?.code ? sortValues?.bank?.code: ''
     }
 
     this.selectedBank = sortValues?.bank;
@@ -387,7 +391,7 @@ export class ChequeAuthorizationComponent implements OnInit {
       },
       error: (err) => {
         this.isLoadingGenerateOtp = false;
-        this.globalMessagingService.displayErrorMessage('Error', err.message);
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.msg);
       }
     });
   }
@@ -614,7 +618,7 @@ export class ChequeAuthorizationComponent implements OnInit {
    * authorization modal.
    */
   openEligibleAuthModal(data) {
-    this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.brhCode, data?.chequeNo, data?.chequeAmount);
+    this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.bctBbrCode, data?.chequeNo, data?.chequeAmount);
     this.toggleEligibleAuthModal(true);
   }
 
@@ -638,7 +642,7 @@ export class ChequeAuthorizationComponent implements OnInit {
    */
   openSignedByModal(data) {
     this.toggleSignedByModal(true);
-    this.getSignedBy(this.loggedInUser?.code, data?.chequeNo, this.selectedBank?.brhCode)
+    this.getSignedBy(data?.chequeNo)
   }
 
   /**
@@ -646,10 +650,10 @@ export class ChequeAuthorizationComponent implements OnInit {
    */
   getBankAccount() {
 
-    this.fmsService.getBankAccounts(this.loggedInUser?.code, 2, 223, 1)
+    this.fmsService.getBankAccounts(this.loggedInUser?.code, 2, 223)
       .subscribe({
         next: (res) => {
-          this.bankAccount = res.data;
+          this.bankAccount = res;
           log.info('Bank account>>', this.bankAccount);
         },
         error: err => {
@@ -666,7 +670,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.fmsService.getEftPaymentTypes(this.loggedInUser?.code, 223, 1)
       .subscribe({
         next: (res) => {
-          this.paymentTypes = res.data;
+          this.paymentTypes = res;
           log.info('Payment types>>', this.paymentTypes);
         },
         error: err => {
@@ -684,7 +688,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.fmsService.getEligibleAuthorizers(userCode, branchCode, chequeNumber, chequeAmount)
       .subscribe({
         next: (res) => {
-          this.eligibleAuthorizers = res.data;
+          this.eligibleAuthorizers = res;
           this.tableEligibleAuthorizers.rows = res.data;
           log.info('Eligible Authorizers>>', this.eligibleAuthorizers);
         },
@@ -698,15 +702,15 @@ export class ChequeAuthorizationComponent implements OnInit {
    * The function `getSignedBy` retrieves signed by information for a given user code, cheque number,
    * and branch code.
    */
-  getSignedBy(userCode: number, chequeNumber: number, branchCode: number) {
+  getSignedBy(chequeNumber: number) {
 
     this.signedBy = null;
     this.tableSignedBy.rows = null;
 
-    this.fmsService.getSignedBy(userCode, chequeNumber, branchCode)
+    this.fmsService.getSignedBy(chequeNumber)
       .subscribe({
         next: (res) => {
-          this.signedBy = res.data;
+          this.signedBy = res;
           this.tableSignedBy.rows = res.data;
           log.info('Signed by>>', this.signedBy);
         },
@@ -726,7 +730,7 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.fmsService.getTransactionDetails(chequeNumber, userCode, paymentCategory)
       .subscribe({
         next: (res) => {
-          this.transactionSummary = res.data;
+          this.transactionSummary = res.data[0];
           log.info('Transaction summary>>', this.transactionSummary);
         },
         error: err => {
@@ -863,7 +867,7 @@ export class ChequeAuthorizationComponent implements OnInit {
    * The `filterEft` function filters EFT mandate requisitions based on various criteria and retrieves
    * the data asynchronously.
    */
-  filterEft(event, pageIndex: number = 0, pageSize: number = event?.rows) {
+  filterEft(event, pageIndex: number = 1, pageSize: number = event?.rows) {
     this.eftRequisitions = null;
 
     this.spinner.show();

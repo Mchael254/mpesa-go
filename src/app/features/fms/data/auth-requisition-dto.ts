@@ -89,3 +89,87 @@ export interface eftDTO {
   toolTip: string,
   userEligible: string
 }
+
+export interface PaymentBankAccountsDTO {
+  bankSlipReportNo: number,
+  bctBbrCode: number,
+  by: number,
+  chequeFile: string,
+  chequePrinter: string,
+  chequeTypeRequired: string,
+  coaNo: string,
+  coaOrgCode: number,
+  code: number,
+  currencyChequeNo: number,
+  currencyCode: number,
+  dateFrom: string,
+  dateOpened: string,
+  dateTo: string,
+  defaultBank: string,
+  documentRequired: string,
+  eftChequeRequired: string,
+  eftFile: string,
+  eftFolder: string,
+  maxChequeLmt: number,
+  mftFile: string,
+  minBalance: number,
+  name: string,
+  number: string,
+  paymentMode: string,
+  reconStartDate: string,
+  ref: string,
+  restrictUser: string,
+  restrictUser1: string,
+  rtgsChequeRequired: string,
+  rtgsEft: string,
+  securityCodeRequired: string,
+  status: string,
+  type: string,
+  userRestricted: string
+}
+
+export interface EftPaymentTypesDTO {
+  chqPaymentDesc: string,
+  chqPaymentType: string
+}
+
+export interface EligibleAuthorizersDTO {
+  signatoryType: string,
+  userName: string,
+  jointSignatoryType: string,
+  dsgnDescription: string
+}
+
+export interface ApprovedChequeMandatesDTO {
+  chequeNo: number,
+  userName: string,
+  authorizationDate: string,
+  voucherNo: number,
+  remarks: string,
+  id: number
+}
+
+export interface TransactionalDetailsDTO {
+  chequeNo: number,
+  chequeSource: string,
+  chequeRef: string,
+  chequeRefDate: string,
+  chequeNarrative: string,
+  chequeTransactionBranch: string,
+  chequeAmount: number,
+  currency: string,
+  bank: string,
+  chequeNumber: string,
+  chequeDate: string,
+  chequeAmountInWords: string,
+  chequePayee: string,
+  payeeBank: string,
+  actionBy1: string,
+  date1: string,
+  actionBy2: string,
+  date2: string,
+  requisitionBy: string,
+  reqDate: string,
+  authorisedBy: string,
+  sourceAuthDate: string
+}
