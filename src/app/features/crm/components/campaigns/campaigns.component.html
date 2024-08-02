@@ -25,14 +25,13 @@
   <p-tabView>
     <p-tabPanel header="Campaigns">
 
-
-      <ng-container *ngIf="showCampaignTable; else showCampaignDefinition">
+      <ng-container *ngIf="showCampaignTable; else otherTemplates">
         <h5 class="text-dark">Campaigns</h5>
         <div class="row mb-2">
           <div class="col-sm-12 col-md-6">
             <input
               type="text"
-              class="form-control w-75"
+              class="form-control"
               placeholder="Search for campaign"
               aria-label="search"
               aria-describedby="search"
@@ -40,11 +39,12 @@
             />
           </div>
 
-          <div class="col-sm-12 col-md-6 d-flex justify-content-end mt-2">
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
             <div class="float-end">
+              <button class="btn btn-primary" (click)="showAnalytics()">View analytics</button>
             <span class="icon-circle">
               <i class="fa-solid fa-plus"
-              (click)="toggleCampaignDefinition()"></i>
+              (click)="showDefinition()"></i>
             </span>
               <span class="icon-circle">
               <i class="pi pi-pencil"></i>
@@ -132,8 +132,14 @@
           </ng-template>
         </p-table>
       </ng-container>
-      <ng-template #showCampaignDefinition>
-        <app-campaign-definition></app-campaign-definition>
+      <ng-template #otherTemplates>
+        <ng-container *ngIf="showDefinitionMode; else showCampaignAnalytics">
+          <app-campaign-definition (onClickSave)="toggleCampaign()"></app-campaign-definition>
+        </ng-container>
+
+        <ng-template #showCampaignAnalytics>
+          <app-campaign-analytics (onClickBack)="toggleCampaign()"></app-campaign-analytics>
+        </ng-template>
       </ng-template>
 
     </p-tabPanel>
