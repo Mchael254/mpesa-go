@@ -17,6 +17,10 @@ export class CampaignsComponent implements OnInit {
   isLoadingMakeUndo: boolean = false;
 
   showCampaignTable: boolean = true;
+  showDefinitionMode: boolean = false;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
@@ -24,5 +28,22 @@ export class CampaignsComponent implements OnInit {
   toggleCampaignDefinition() {
     this.showCampaignTable = false;
     log.info('toggle is called');
+  }
+
+  showDefinition() {
+    this.showCampaignTable = false;
+    this.showDefinitionMode = true;
+    console.log('Showing campaign definition');
+  }
+
+  // Toggle function for analytics mode
+  showAnalytics() {
+    this.showCampaignTable = false;
+    this.showDefinitionMode = false;
+    console.log('Showing campaign analytics');
+  }
+
+  toggleCampaign() {
+    this.showCampaignTable = true;
   }
 }

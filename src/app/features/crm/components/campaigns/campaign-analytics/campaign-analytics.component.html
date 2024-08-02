@@ -1,0 +1,194 @@
+<h5>Campaign performance</h5>
+<div class="row mb-2">
+  <div class="col-lg-4">
+    <h6 style="margin-top: .6rem;">Campaigns analytics</h6>
+  </div>
+  <label class="text-black w-auto offset-lg-2" style="margin-top: .6rem;">Date range:</label>
+  <div class="col-lg-2">
+
+    <input
+      type="date"
+      class="form-control"
+    />
+  </div>
+  <div class="col-lg-2">
+    <input
+      type="date"
+      class="form-control"
+    />
+  </div>
+</div>
+<div class="container py-2 border border-primary rounded">
+  <h5 class="mt-0">Overall performance</h5>
+  <div class="row">
+    <div class="row col-sm-12 col-lg-4">
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Engagement rate</label>
+      <div class="col-2 pe-0">
+        <h6>36%</h6>
+      </div>
+      <div class="col-6">
+        <label class="text-green w-auto" style="margin-top: .6rem;">
+          <i class="fa fa-arrow-up"></i> 15%
+        </label>
+      </div>
+    </div>
+    <div class="row col-sm-12 col-lg-4">
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Conversion rate</label>
+      <div class="col-2 pe-0">
+        <h6>36%</h6>
+      </div>
+      <div class="col-6">
+        <label class="text-green w-auto" style="margin-top: .6rem;">
+          <i class="fa fa-arrow-up"></i> 15%
+        </label>
+      </div>
+    </div>
+    <div class="row col-sm-12 col-lg-4">
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Link clicks</label>
+      <div class="col-2 pe-0">
+        <h6>36%</h6>
+      </div>
+      <div class="col-6">
+        <label class="text-green w-auto" style="margin-top: .6rem;">
+          <i class="fa fa-arrow-up"></i> 15%
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <h5 class="w-auto">Performance over time</h5>
+  <label class="text-black w-auto" style="margin-top: .8rem;">(Metric selected vs dates)</label>
+</div>
+
+<div class="row col-sm-12 col-lg-6 mb-2">
+  <label class="text-black w-auto" style="margin-top: .4rem;">Metric</label>
+  <select class="form-select w-50">
+    <option value="1">Engagements</option>
+    <option value="2">Inactive</option>
+  </select>
+</div>
+<div>
+  <app-dynamic-chart
+    [chartType]="'line'"
+    [basicData]="basicData"
+    [chartTitle]="'Performance over time'"
+  ></app-dynamic-chart>
+  <label class="text-black mt-2">Total (metric selected): <span class="fw-medium">10,000 Engagements</span> </label>
+</div>
+
+<h5 class="mt-4">Top performing campaigns</h5>
+<div class="row col-sm-12 col-lg-6 mb-2">
+  <label class="text-black w-auto" style="margin-top: .4rem;">Metric</label>
+  <select class="form-select w-50">
+    <option value="1">Engagements</option>
+    <option value="2">Inactive</option>
+  </select>
+</div>
+<p-table
+  #performingCampaignsTable
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="campaignTargetData?.length"
+  [value]="campaignTargetData"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  selectionMode="single"
+  dataKey="code"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+  [globalFilterFields]="['description', 'code']"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="target">Campaign <p-sortIcon field="target"></p-sortIcon></th>
+      <th pSortableColumn="email">Description <p-sortIcon field="email"></p-sortIcon></th>
+      <th pSortableColumn="date">System <p-sortIcon field="date"></p-sortIcon></th>
+      <th pSortableColumn="date">Organization <p-sortIcon field="date"></p-sortIcon></th>
+      <th pSortableColumn="date">Starting date <p-sortIcon field="date"></p-sortIcon></th>
+      <th pSortableColumn="date">Closing date <p-sortIcon field="date"></p-sortIcon></th>
+      <th pSortableColumn="date">Total (metric selected) <p-sortIcon field="date"></p-sortIcon></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-campaignTarget>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">No Performing Campaigns Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+<div class="row">
+  <h5 class="w-auto">Audience segmentation performance</h5>
+  <label class="text-black w-auto" style="margin-top: .8rem;">(Segmentation chart)</label>
+  <div>
+    <app-dynamic-chart
+      [chartType]="'bar'"
+      [basicData]="basicData"
+      [chartTitle]="'Performance over time'"
+    ></app-dynamic-chart>
+  </div>
+</div>
+<h5 class="mt-4">Campaign products performance</h5>
+<div class="row col-sm-12 col-lg-6 mb-2">
+  <label class="w-auto" style="margin-top: .4rem;">Metric</label>
+  <select class="form-select w-50">
+    <option value="1">Engagements</option>
+    <option value="2">Inactive</option>
+  </select>
+</div>
+<p-table
+  #campaignsProductPerformanceTable
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="campaignTargetData?.length"
+  [value]="campaignTargetData"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  selectionMode="single"
+  dataKey="code"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+  [globalFilterFields]="['description', 'code']"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="target">Product name <p-sortIcon field="target"></p-sortIcon></th>
+      <th pSortableColumn="email">Engagements <p-sortIcon field="email"></p-sortIcon></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-campaignTarget>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="2">No Products Performance Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+<div class="d-flex justify-content-end mt-2">
+  <button class="btn btn-outline-primary" (click)="goToCampaigns()">Back to campaigns</button>
+</div>
