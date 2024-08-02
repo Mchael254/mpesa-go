@@ -207,11 +207,11 @@ export class MenuService {
           },
           {
             name: 'Client Attributes',
-            link: '',
+            link: '/home/crm/client-attributes',
           },
           {
             name: 'Product Attributes',
-            link: '',
+            link: '/home/crm/product-attributes',
           },
         ],
         collapsed: true,
