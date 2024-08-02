@@ -45,7 +45,8 @@
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="propertyDescription" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Tooltip on right" readonly>
+                                title="Tooltip on right" readonly  pTooltip="This is not an editable field" 
+                                tooltipPosition="left">
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"

@@ -112,6 +112,94 @@
                                 <div class="col-5">
                                 </div>
                             </div>
+                            <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                [(selection)]="selectedRisk" [tableStyle]="{'min-width': '50rem'}"
+                                responsiveLayout="scroll" [autoLayout]="true" [globalFilterFields]="['propertyId']">
+
+                                <!-- <ng-template pTemplate="caption">
+                                        <div class="flex">
+                                            <span class="p-input-icon-left ml-auto">
+                                                <i class="pi pi-search search-icon"></i>
+                                            </span>
+                                            <input class="search-input-Risk" pInputText type="text"
+                                                (input)="applyFilterGlobalRisk($event, 'contains')"
+                                                placeholder="Search" />
+            
+                                        </div>
+                                    </ng-template> -->
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>{{'gis.policy.risk_id' | translate}}</th>
+                                        <th>{{'gis.policy.risk_note' | translate}}</th>
+                                        <th>{{'gis.policy.description' | translate}}</th>
+                                        <th>{{'gis.policy.subclass' | translate}}</th>
+                                        <th>{{'gis.policy.binder_name' | translate}}</th>
+                                        <th>{{'gis.policy.cover_type' | translate}}</th>
+                                        <th>{{'gis.policy.uw_year' | translate}}</th>
+                                        <th>{{'gis.policy.premium' | translate}}</th>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
+                                    <tr [pSelectableRow]="riskDetails"
+                                        [class.p-highlight]="riskDetails === selectedRisk"
+                                        (click)="togglePremiumDetails();getRiskClauses();getSubclassPerils()">
+                                        <td>{{riskDetails.propertyId}}</td>
+                                        <td></td>
+                                        <td>{{riskDetails.propertyDescription}}</td>
+                                        <td>{{riskDetails.subClassDescription}}</td>
+                                        <td>{{riskDetails.binderCode}}</td>
+                                        <td>{{riskDetails.coverTypeShortDescription}}</td>
+                                        <td>{{riskDetails.underwritingYear}}</td>
+                                        <td>{{riskDetails.totalPremium}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+
+                            <!-- Delete Risk  Modal -->
+                            <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+                                aria-labelledby="deleteRisk" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content" id="deleteRisk">
+                                        <div class="modal-body ">
+                                            <p class="deleteMessage mt-4 mb-4">
+                                                {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+                                            <div class="d-flex justify-content-center mb-3">
+                                                <button type="button" class="btn btn-primary px-5" id="delete"
+                                                    data-bs-dismiss="modal"
+                                                    (click)="deleteRisk()">{{'gis.policy.yes_delete' |
+                                                    translate}} </button>
+                                            </div>
+                                            <div class="d-flex justify-content-center mb-2">
+                                                <button type="button" class="btn btn-outline-primary px-5"
+                                                    data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                                                    translate}}</button>
+                                            </div>
+
+
+                                            <!-- <div class="row mt-4 mb-2 d-flex justify-content-center">
+                              <button type="button" class="btn btn-outline-primary "
+                                      data-bs-dismiss="modal">Cancel</button>
+                              <div class="col-6 ">
+                                  <button type="button" class="btn btn-outline-primary "
+                                      data-bs-dismiss="modal">Cancel</button>
+                              </div>
+                              <div class="col-6 d-flex justify-content-end">
+                                  <button type="button" class="btn btn-primary" id="save"
+                                      data-bs-dismiss="modal" (click)="deleteCoinsurance" >Delete</button>
+            
+                              </div>
+                              <div class="row">
+                                  <button type="button" class="btn btn-primary" id="save"
+                                      data-bs-dismiss="modal" (click)="deleteCoinsurance" >Delete</button>
+                              </div>
+                          </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                </div>
+                            </div>
 
                             <!-- <p-table #dt1 [value]="insuredDetails" dataKey="code" editMode="row" selectionMode="single"
                          [(selection)]="selectedInsured" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-sm"
