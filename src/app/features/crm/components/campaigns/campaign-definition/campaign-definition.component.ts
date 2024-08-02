@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
@@ -19,7 +19,37 @@ export class CampaignDefinitionComponent implements OnInit {
   url = ""
   selectedFile: File;
 
-  navigationLinks: any[];
+  navigationLinks: any[] = [
+    {
+      id: 0,
+      url: 'campaignDetails',
+      title: 'Campaign details'
+    },
+    {
+      id: 1,
+      url: 'targets',
+      title: 'Targets'
+    },
+    {
+      id: 2,
+      url: 'activities',
+      title: 'Activities'
+    },
+    {
+      id: 3,
+      url: 'messages',
+      title: 'Messages'
+    },
+    {
+      id: 4,
+      url: 'performance',
+      title: 'Performance'
+    }
+  ];
+  currentTab: any = this.navigationLinks[0];
+  buttonText:string = 'Next';
+  @Output() onClickSave: EventEmitter<any> = new EventEmitter<any>();
+  basicData: any;
 
   constructor(
     private globalMessagingService: GlobalMessagingService,
@@ -41,45 +71,15 @@ export class CampaignDefinitionComponent implements OnInit {
         id: 3
       }
     ];
-    this.navigationLinks = [
-      {
-        id: 1,
-        url: 'campaignDetails'
-      },
-      {
-        id: 2,
-        url: 'targets'
-      },
-      {
-        id: 3,
-        url: 'activities'
-      },
-      {
-        id: 4,
-        url: 'messages'
-      }
-    ]
-  }
-
-  goNext() {
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = document.querySelectorAll('.navigate-tab');
-
-      log.info('here')
-      buttons.forEach(button => {
-        button.addEventListener('click', (event) => {
-          const targetTabId = (event.target as HTMLElement).getAttribute('data-target');
-          if (targetTabId) {
-            const tabElement = document.querySelector(targetTabId) as HTMLElement;
-            if (tabElement) {
-              const bootstrapTab = new (window as any).bootstrap.Tab(tabElement);
-              bootstrapTab.show();
-            }
-          }
-        });
-      });
-    });
-
+    this.basicData = {
+      labels: ['Jun 12', 'Jun 13', 'Jun 14', 'Jun 15', 'Jun 16', 'Jun 17', 'Jun 18', 'Jun 19', 'Jun 20'],
+      datasets: [
+        {
+          label: 'Engagements',
+          data: [550, 570, 600, 760, 800, 255, 250, 990, 0, 120]
+        }
+      ]
+    };
   }
 
   selectProduct(product: any) {
@@ -89,8 +89,6 @@ export class CampaignDefinitionComponent implements OnInit {
   deleteProduct(product: any) {
 
   }
-
-
 
   openTargetModal() {
     const modal = document.getElementById('targetSearchModal');
@@ -193,5 +191,27 @@ export class CampaignDefinitionComponent implements OnInit {
         log.info(this.url);
       }
     }
+  }
+
+  goToNext() {
+    let index = this.currentTab.id;
+    if (index === this.navigationLinks.length-1) {
+      index = 0;
+      this.onClickSave.emit(index);
+    }
+    else {
+      index++;
+    }
+
+    this.currentTab = this.navigationLinks[index];
+    log.info(this.currentTab)
+
+    this.buttonText = this.navigationLinks.length-1 === this.currentTab.id ? 'Back to campaigns' : 'Next';
+
+  }
+
+  tabNavigation(index:number) {
+    this.currentTab = this.navigationLinks[index];
+    this.buttonText = this.navigationLinks.length-1 === this.currentTab.id ? 'Back to campaigns' : 'Next';
   }
 }
