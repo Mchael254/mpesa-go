@@ -18,7 +18,8 @@ export class CampaignsComponent implements OnInit {
 
   showCampaignTable: boolean = true;
   showDefinitionMode: boolean = false;
-
+  campaignProductsData: any;
+  campaignClientsData: any;
   constructor() {
   }
 
