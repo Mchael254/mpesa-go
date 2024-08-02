@@ -32,6 +32,7 @@ import { SystemRolesComponent } from './components/system-roles/system-roles.com
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { CampaignsComponent } from './components/campaigns/campaigns.component';
 import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
+import { CampaignAnalyticsComponent } from './components/campaigns/campaign-analytics/campaign-analytics.component';
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
 
 @NgModule({
@@ -57,6 +58,7 @@ import { SchedulerComponent } from './components/scheduler/scheduler.component';
     SystemRolesComponent,
     CampaignsComponent,
     CampaignDefinitionComponent,
+    CampaignAnalyticsComponent,
     SchedulerComponent,
   ],
   imports: [
