@@ -107,6 +107,11 @@ export class PersonalDetailsComponent implements OnInit {
   util: Utils;
   clientTypeCode: number;
   organizationId: number;
+  
+  openCardId: string | null = null;
+  toggleCollapse(cardId: string) {
+    this.openCardId = this.openCardId === cardId ? null : cardId;
+  } 
 
   constructor(
     private session_storage: SessionStorageService,
