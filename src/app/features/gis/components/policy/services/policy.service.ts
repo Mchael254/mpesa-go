@@ -196,4 +196,8 @@ export class PolicyService {
     return this.api.DELETE(`v1/risk-section/delete?batchNo=${batchNo}&pilCode=${sectionCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getSubsclassPerils(subclassCode){
+    return this.api.GET(`api/v1/subperils?subclassCode=${subclassCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+  }
+  
 }

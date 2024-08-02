@@ -21,6 +21,7 @@ import { PremiumRateService } from '../../../setups/services/premium-rate/premiu
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { RequiredDocumentService } from '../../../setups/services/required-documents/required-document.service';
+import { PerilsService } from '../../../setups/services/perils-territories/perils/perils.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -135,6 +136,10 @@ export class PolicySummaryOtherDetailsComponent {
   action: any;
   premiumItemCode:any;
   selectedTransaction:any;
+  subperils:any;
+
+
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -162,7 +167,7 @@ export class PolicySummaryOtherDetailsComponent {
     public subclassService:SubclassesService,
     public riskClauseService:RiskClausesService,
     public requiredDocumentService: RequiredDocumentService,
-
+    public perilService:PerilsService
 
 
   ) { }
@@ -1489,6 +1494,24 @@ openCommissionTranscDeleteModal() {
 
   }
 }
+  getSubclassPerils(){
+    this.policyService.getSubsclassPerils(this.selectedSubclassCode).subscribe({
+      next:(res)=>{
+        this.subperils = res
+        this.subperils = this.subperils.content
+        console.log(this.subperils)
+        this.subperils.forEach(element => {
+          this.perilService.getPeril(element.perilCode).subscribe({
+            next:(res)=>{
+              console.log(res)
+            }
+          })
+       
+        });
+      }
+    })
+  }
+  
 }
 
 
