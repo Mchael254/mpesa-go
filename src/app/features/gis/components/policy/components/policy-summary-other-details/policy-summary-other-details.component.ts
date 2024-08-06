@@ -130,7 +130,9 @@ export class PolicySummaryOtherDetailsComponent {
   filteredRequiredDocs:any[]=[];
   selectedDocument:any;
   selectedCertificate:any;
-
+  remarkDetailsForm: FormGroup;
+  selectedRemark:any;
+  action: any;
 
 
 
@@ -182,6 +184,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.getAllSection();
     this.createSectionDetailsForm();
     this.getRequiredDocuments();
+    this.createRemarkDetailsForm();
   }
   ngOnDestroy(): void { }
 
@@ -1265,6 +1268,137 @@ toggleRiskPerils(){
   toggleRemarksDetails() {
     this.isRemarkDetailsOpen = !this.isRemarkDetailsOpen;
   }
+  createRemarkDetailsForm() {
+    this.remarkDetailsForm = this.fb.group({
+      action: [''],
+      code: [],
+      ipuCode: [],
+      polBatchNo: [],
+      schedule: [''],
+    });
+  }
+  addRemark(){
+ log.debug("rrisk code:", this.SelectedRiskCode)
+    this.remarkDetailsForm.get('action').setValue("A");
+    this.remarkDetailsForm.get('code').setValue(0);
+    this.remarkDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode);
+    this.remarkDetailsForm.get('polBatchNo').setValue(this.batchNo);
+       // Convert the value of 'schedule' to a number
+    const scheduleText = this.remarkDetailsForm.get('schedule').value;
+    log.debug("Schedules not converted to hash",scheduleText)
+
+    const scheduleLong = this.convertTextToLong(scheduleText);
+    log.debug("Schedules converted to hash",scheduleLong)
+    this.remarkDetailsForm.get('schedule').setValue(scheduleLong);
+    
+     const remarkForm = this.remarkDetailsForm.value;
+     log.debug('Remark Form:', remarkForm);
+    this.policyService
+      .addRemarks(remarkForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: async (data: any) => {
+          if (data) {
+           log.debug(" Added Remark", data);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Remark has been added');
+        
+           
+        
+        
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'An error occurred.');
+          console.error(`Error >>>`, err);
+        },
+      });
+  }
+  convertTextToLong(text: string): number {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash); // Ensure it's a positive number
+  }
+  editRemark(data){
+    log.debug("Insured Data Edited", data)
+    this.remarkDetailsForm.get('action').setValue("A");
+    this.remarkDetailsForm.get('code').setValue(0);
+    this.remarkDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode);
+    this.remarkDetailsForm.get('polBatchNo').setValue(this.batchNo);
+       // Convert the value of 'schedule' to a number
+    const scheduleText = this.remarkDetailsForm.get('schedule').value;
+    const updateRemarkForm = this.remarkDetailsForm.value;
+    log.debug('Update Remark Form:', updateRemarkForm);   
+       this.policyService
+      .editRemarks(updateRemarkForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Remark details updated successfully');
+
+          console.log('Success:', response);
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update Remark details.Try again later');
+        }
+      });
+  }
+  openRemarkDeleteModal() {
+    log.debug("Selected remark", this.selectedRemark)
+    if (!this.selectedRemark) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select remark to continue');
+    } else {
+      document.getElementById("openModalRemarkButtonDelete").click();
+
+    }
+  }
+deleteRemark(){
+  this.action= "D"
+  this.policyService
+  .deleteRemarks(this.action,this.policyInsuredCode, this.SelectedRiskCode, this.batchNo,this.selectedRemark)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (data) => {
+
+      if (data) {
+
+        log.debug("Response Deleting Remark:", data);
+        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Remark"');
+        // Remove the deleted Insured from the Insured Details array
+        const index = this.insuredDetails.findIndex(insured => insured.code === this.policyInsuredCode);
+        if (index !== -1) {
+          this.insuredDetails.splice(index, 1);
+        }
+        // Clear the selected risk
+        this.selectedRemark = null;
+
+      } else {
+        this.errorOccurred = true;
+        this.errorMessage = 'Something went wrong. Please try Again';
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Something went wrong. Please try Again'
+        );
+      }
+    },
+    error: (err) => {
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        this.errorMessage
+      );
+      log.info(`error >>>`, err);
+    },
+  });
+}
 }
 
 
