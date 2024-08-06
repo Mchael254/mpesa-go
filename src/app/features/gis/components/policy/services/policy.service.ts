@@ -8,6 +8,7 @@ import { API_CONFIG } from '../../../../../../environments/api_service_config';
 import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
+import { Remarks } from '../../../data/policies-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -179,5 +180,16 @@ export class PolicyService {
   getRiskClauses(riskCode){
     return this.api.GET(`v1/excesses?riskCode=${riskCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
     // return this.api.GET(`v1/riskClauses?riskCode=${riskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  addRemarks(data: Remarks){
+    console.log("Data", JSON.stringify(data))
+    return this.api.POST(`v1/remarks?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  editRemarks(data:Remarks){
+    return this.api.PUT(`v1/remarks?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  deleteRemarks(action:any,policyRiskCode:any,riskCode:any,batchNo:any,schedule:any){
+    return this.api.DELETE(`v1/policies/delete-insured?action=${action}&code=${policyRiskCode}&ipuCode=${riskCode}&polBatchNo=${batchNo}&schedule=${schedule}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
   }
 }
