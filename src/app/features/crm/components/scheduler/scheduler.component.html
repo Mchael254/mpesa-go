@@ -185,7 +185,6 @@
   id="schedulerModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
@@ -264,6 +263,20 @@
               </div>
             </div>
             <div class="col-6 mb-3">
+              <label for="status" class="form-label">{{
+                "crm.status" | translate
+              }}</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option value="">Select Status</option>
+                <option
+                  *ngFor="let status of statusData"
+                  [value]="status.value"
+                >
+                  {{ status.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
               <label for="jobType" class="form-label">{{
                 "crm.job_type" | translate
               }}</label>
@@ -271,6 +284,7 @@
                 class="form-select"
                 id="jobType"
                 formControlName="jobType"
+                (change)="onJobTypeChange($event)"
                 [ngClass]="{
                   'is-invalid':
                     f['jobType']?.invalid &&
@@ -278,7 +292,7 @@
                 }"
               >
                 <option value="">Select Job Type</option>
-                <option *ngFor="let job of jobTypeData" [value]="job.value">
+                <option *ngFor="let job of jobTypeData" [value]="job.code">
                   {{ job.name }}
                 </option>
               </select>
@@ -294,6 +308,100 @@
               >
                 <div *ngIf="f['jobType']?.errors['required']">
                   Job Type is required
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="createSchedulerForm.get('jobType').value"
+              class="col-6 mb-3"
+            >
+              <label for="dynamicField" class="form-label">{{
+                dynamicFieldLabel
+              }}</label>
+              <p-dropdown
+                [options]="templateData"
+                [(ngModel)]="selectedUser"
+                [optionLabel]="optionLabel"
+                optionValue="code"
+                formControlName="successTemplate"
+                id="successTemplate"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select Template"
+                [ngClass]="{
+                  'is-invalid':
+                    f['dynamicField']?.invalid &&
+                    (f['dynamicField']?.dirty || f['dynamicField']?.touched)
+                }"
+              >
+              </p-dropdown>
+              <!-- <ng-select
+                [items]="templateData"
+                bindLabel="name"
+                bindValue="code"
+                formControlName="successTemplate"
+                placeholder="Select Template"
+                [searchable]="true"
+                [ngClass]="{
+                  'is-invalid':
+                    f['dynamicField']?.invalid &&
+                    (f['dynamicField']?.dirty || f['dynamicField']?.touched)
+                }"
+              >
+              </ng-select> -->
+              <div
+                *ngIf="
+                  f['dynamicField']?.invalid &&
+                  (f['dynamicField']?.dirty || f['dynamicField']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['dynamicField']?.errors
+                }"
+              >
+                <div *ngIf="f['dynamicField']?.errors['required']">
+                  {{ dynamicFieldLabel }} is required
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="createSchedulerForm.get('jobType').value"
+              class="col-6 mb-3"
+            >
+              <label for="sendTo" class="form-label">Send To</label>
+              <p-dropdown
+                [options]="userData"
+                [(ngModel)]="selectedSendTo"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="sendTo"
+                id="sendTo"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select Send To"
+                [ngClass]="{
+                  'is-invalid':
+                    f['sendTo']?.invalid &&
+                    (f['sendTo']?.dirty || f['sendTo']?.touched)
+                }"
+              >
+              </p-dropdown>
+              <div
+                *ngIf="
+                  f['sendTo']?.invalid &&
+                  (f['sendTo']?.dirty || f['sendTo']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['sendTo']?.errors
+                }"
+              >
+                <div *ngIf="f['sendTo']?.errors['required']">
+                  Send To is required
                 </div>
               </div>
             </div>
@@ -335,8 +443,8 @@
               <select class="form-select" id="repeat" formControlName="repeat">
                 <option value="">Select Repeat</option>
                 <option
-                  *ngFor="let repeat of repeatOption"
-                  [value]="repeat.value"
+                  *ngFor="let repeat of repeatOptionsData"
+                  [value]="repeat.code"
                 >
                   {{ repeat.name }}
                 </option>
@@ -346,67 +454,105 @@
               <label for="successUser" class="form-label">{{
                 "crm.notified_success_user" | translate
               }}</label>
-              <select
-                class="form-select"
-                id="successUser"
+              <p-dropdown
+                [options]="userData"
+                [(ngModel)]="selectedUser"
+                optionLabel="name"
+                optionValue="id"
                 formControlName="successUser"
+                id="successUser"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select a User"
               >
-                <option value="">Select User</option>
-                <option *ngFor="let user of userData" [value]="user.value">
-                  {{ user.name }}
-                </option>
-              </select>
+              </p-dropdown>
             </div>
             <div class="col-6 mb-3">
               <label for="successTemplate" class="form-label">{{
                 "crm.success_notify_template" | translate
               }}</label>
-              <select
-                class="form-select"
-                id="successTemplate"
+              <p-dropdown
+                [options]="messageTemplateData"
+                [(ngModel)]="selectedTemplate"
+                optionLabel="content"
+                optionValue="id"
                 formControlName="successTemplate"
+                id="successTemplate"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select Template"
               >
-                <option value="">Select Template</option>
-                <option
-                  *ngFor="let template of templateData"
-                  [value]="template.value"
-                >
-                  {{ template.name }}
-                </option>
-              </select>
+                <ng-template let-item pTemplate="selectedTemplate">
+                  <div
+                    class="ellipsis-tooltip"
+                    [pTooltip]="item.content"
+                    tooltipPosition="right"
+                    [appendTo]="'body'"
+                  >
+                    {{ sliceString(item.content) }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
             </div>
             <div class="col-6 mb-3">
               <label for="failedUser" class="form-label">{{
                 "crm.notified_failed_user" | translate
               }}</label>
-              <select
-                class="form-select"
-                id="failedUser"
+              <p-dropdown
+                [options]="userData"
+                [(ngModel)]="selectedFailedUser"
+                optionLabel="name"
+                optionValue="id"
                 formControlName="failedUser"
+                id="failedUser"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select a User"
               >
-                <option value="">Select User</option>
-                <option *ngFor="let user of userData" [value]="user.value">
-                  {{ user.name }}
-                </option>
-              </select>
+              </p-dropdown>
             </div>
             <div class="col-6 mb-3">
               <label for="failedTemplate" class="form-label">{{
                 "crm.fail_notify_template" | translate
               }}</label>
-              <select
-                class="form-select"
-                id="failedTemplate"
+              <p-dropdown
+                [options]="messageTemplateData"
+                [(ngModel)]="selectedFailedTemplate"
+                optionLabel="content"
+                optionValue="id"
                 formControlName="failedTemplate"
+                id="failedTemplate"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select Template"
               >
-                <option value="">Select Template</option>
-                <option
-                  *ngFor="let template of templateData"
-                  [value]="template.value"
-                >
-                  {{ template.name }}
-                </option>
-              </select>
+                <!-- <ng-template let-item pTemplate="selectedFailedTemplate">
+                  <div
+                    class="ellipsis-tooltip"
+                    [appCustomTooltip]="item.content"
+                  >
+                    {{ sliceString(item.content) }}
+                  </div>
+                </ng-template> -->
+                <ng-template let-item pTemplate="selectedFailedTemplate">
+                  <div
+                    class="ellipsis-tooltip"
+                    [pTooltip]="item.content"
+                    tooltipPosition="right"
+                    [appendTo]="'body'"
+                  >
+                    {{ sliceString(item.content) }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
             </div>
             <div class="col-6 mb-3">
               <label for="thresholdType" class="form-label">{{
@@ -455,35 +601,6 @@
                   Threshold Value is required
                 </div>
               </div>
-            </div>
-            <div class="col-6 mb-3">
-              <fieldset>
-                <legend for="status" class="form-label">Status</legend>
-                <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="inlineRadio1"
-                    value="A"
-                    formControlName="status"
-                  />
-                  <label class="form-check-label" for="inlineRadio1"
-                    >Active</label
-                  >
-                </div>
-                <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="inlineRadio2"
-                    value="I"
-                    formControlName="status"
-                  />
-                  <label class="form-check-label" for="inlineRadio2"
-                    >Inactive</label
-                  >
-                </div>
-              </fieldset>
             </div>
           </div>
         </form>
