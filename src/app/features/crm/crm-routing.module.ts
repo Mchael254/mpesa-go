@@ -22,6 +22,8 @@ import { SystemRolesComponent } from './components/system-roles/system-roles.com
 import { CampaignsComponent } from './components/campaigns/campaigns.component';
 import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
+import { ClientAttributesComponent } from "./components/campaigns/client-attributes/client-attributes.component";
+import { ProductAttributesComponent } from "./components/campaigns/product-attributes/product-attributes.component";
 
 const routes: Routes = [
   {
@@ -111,6 +113,14 @@ const routes: Routes = [
   {
     path: 'scheduler',
     component: SchedulerComponent,
+  },
+  {
+    path: 'client-attributes',
+    component: ClientAttributesComponent,
+  },
+  {
+    path: 'product-attributes',
+    component: ProductAttributesComponent,
   },
 ];
 
