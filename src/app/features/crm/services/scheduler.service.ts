@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ScheduledJobsDto } from '../data/scheduler';
 import { HttpParams } from '@angular/common/http';
 import { API_CONFIG } from 'src/environments/api_service_config';
+import { StaffDto } from '../../entities/data/StaffDto';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +35,21 @@ export class SchedulerService {
     return this.api.GET<ScheduledJobsDto[]>(
       'scheduledJobs',
       API_CONFIG.NOTIFICATION_BASE_URL,
+      params
+    );
+  }
+
+  getAllUsers(page: number): Observable<StaffDto[]> {
+    // Create an object to hold parameters only for page
+    const paramsObj: { [param: string]: string } = {
+      page: page.toString(),
+    };
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<StaffDto[]>(
+      `users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
       params
     );
   }
