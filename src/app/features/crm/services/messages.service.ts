@@ -7,6 +7,7 @@ import { Pagination } from '../../../shared/data/common/pagination';
 import { EmailHistoryDto, SmsHistoryDto } from '../data/messages';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 import { UtilService } from '../../../shared/services/util/util.service';
+import { MessageTemplate } from '../data/messaging-template';
 
 @Injectable({
   providedIn: 'root',
@@ -124,6 +125,21 @@ export class MessagesService {
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET<Pagination<EmailHistoryDto>>(
       'email/history',
+      API_CONFIG.NOTIFICATION_BASE_URL,
+      params
+    );
+  }
+
+  getMessageTemplates(
+    systemId: number
+  ): Observable<Pagination<MessageTemplate>> {
+    const paramsObj: { [param: string]: string } = {
+      systemId: systemId.toString(),
+    };
+
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET<Pagination<MessageTemplate>>(
+      `api/message-templates`,
       API_CONFIG.NOTIFICATION_BASE_URL,
       params
     );
