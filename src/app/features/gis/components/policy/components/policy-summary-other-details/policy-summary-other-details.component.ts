@@ -133,7 +133,7 @@ export class PolicySummaryOtherDetailsComponent {
   remarkDetailsForm: FormGroup;
   selectedRemark:any;
   action: any;
-
+  premiumItemCode:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -1376,6 +1376,47 @@ deleteRemark(){
         const index = this.insuredDetails.findIndex(insured => insured.code === this.policyInsuredCode);
         if (index !== -1) {
           this.insuredDetails.splice(index, 1);
+        }
+        // Clear the selected risk
+        this.selectedRemark = null;
+
+      } else {
+        this.errorOccurred = true;
+        this.errorMessage = 'Something went wrong. Please try Again';
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Something went wrong. Please try Again'
+        );
+      }
+    },
+    error: (err) => {
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        this.errorMessage
+      );
+      log.info(`error >>>`, err);
+    },
+  });
+}
+deletePremiumItem(){
+  log.debug("Selected premium item", this.selectedPremiumItem)
+  this.premiumItemCode = this.selectedPremiumItem.sectCode;
+  log.debug("Premium Item Section code", this.premiumItemCode)
+  this.policyService
+  .deletePremiumItem(this.batchNo,this.premiumItemCode )
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (data) => {
+
+      if (data) {
+
+        log.debug("Response Deleting Remark:", data);
+        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Premium Item"');
+        // Remove the deleted Insured from the Insured Details array
+        const index = this.sectionsDetails.findIndex(premiumItem => premiumItem.sectCode === this.premiumItemCode);
+        if (index !== -1) {
+          this.sectionsDetails.splice(index, 1);
         }
         // Clear the selected risk
         this.selectedRemark = null;
