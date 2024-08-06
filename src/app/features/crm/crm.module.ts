@@ -34,6 +34,8 @@ import { CampaignsComponent } from './components/campaigns/campaigns.component';
 import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
 import { CampaignAnalyticsComponent } from './components/campaigns/campaign-analytics/campaign-analytics.component';
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
+import { ClientAttributesComponent } from './components/campaigns/client-attributes/client-attributes.component';
+import { ProductAttributesComponent } from './components/campaigns/product-attributes/product-attributes.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,8 @@ import { SchedulerComponent } from './components/scheduler/scheduler.component';
     CampaignDefinitionComponent,
     CampaignAnalyticsComponent,
     SchedulerComponent,
+    ClientAttributesComponent,
+    ProductAttributesComponent,
   ],
   imports: [
     CommonModule,
