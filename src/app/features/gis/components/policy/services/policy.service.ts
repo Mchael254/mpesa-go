@@ -192,4 +192,8 @@ export class PolicyService {
     return this.api.DELETE(`v1/policies/delete-insured?action=${action}&code=${policyRiskCode}&ipuCode=${riskCode}&polBatchNo=${batchNo}&schedule=${schedule}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  deletePremiumItem(batchNo:any,sectionCode:any){
+    return this.api.DELETE(`v1/risk-section/delete?batchNo=${batchNo}&pilCode=${sectionCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
