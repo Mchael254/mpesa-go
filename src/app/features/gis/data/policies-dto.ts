@@ -108,3 +108,10 @@ export interface EtimsDTO {
   etim_unit_price: number,
   etim_error: string
 }
+export interface Remarks {
+  action: string;
+  code: number;
+  ipuCode: number;
+  polBatchNo: number;
+  schedule: number;
+}
