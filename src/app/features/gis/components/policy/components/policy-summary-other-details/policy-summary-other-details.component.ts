@@ -134,7 +134,7 @@ export class PolicySummaryOtherDetailsComponent {
   selectedRemark:any;
   action: any;
   premiumItemCode:any;
-
+  selectedTransaction:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -174,6 +174,9 @@ export class PolicySummaryOtherDetailsComponent {
   public isRequiredDocDetailOpen = false;
   public isCertificatesDetailOpen = false;
   public isRemarkDetailsOpen = false;
+  public isCommissionTranscDetailsOpen = false;
+  public isRelatedRiskDetailsOpen = false;
+
 
   public riskPerils = false;
 
@@ -1266,6 +1269,24 @@ toggleRiskPerils(){
     }
   }
   toggleRemarksDetails() {
+    console.log("selected risk", this.selectedRisk);
+  
+    if (!this.selectedRisk) {
+        this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+        return; // Exit function early if selectedRisk is not defined
+    }
+    
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+    
+    if (!risk) {
+        console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+        return; // Exit function early if corresponding risk is not found
+    }
+    
+    
+  
+    // Toggle collapse state only if both selectedRisk and corresponding risk are valid
     this.isRemarkDetailsOpen = !this.isRemarkDetailsOpen;
   }
   createRemarkDetailsForm() {
@@ -1287,9 +1308,7 @@ toggleRiskPerils(){
     const scheduleText = this.remarkDetailsForm.get('schedule').value;
     log.debug("Schedules not converted to hash",scheduleText)
 
-    const scheduleLong = this.convertTextToLong(scheduleText);
-    log.debug("Schedules converted to hash",scheduleLong)
-    this.remarkDetailsForm.get('schedule').setValue(scheduleLong);
+    
     
      const remarkForm = this.remarkDetailsForm.value;
      log.debug('Remark Form:', remarkForm);
@@ -1317,15 +1336,7 @@ toggleRiskPerils(){
         },
       });
   }
-  convertTextToLong(text: string): number {
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      const char = text.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash |= 0; // Convert to 32bit integer
-    }
-    return Math.abs(hash); // Ensure it's a positive number
-  }
+  
   editRemark(data){
     log.debug("Insured Data Edited", data)
     this.remarkDetailsForm.get('action').setValue("A");
@@ -1361,9 +1372,10 @@ toggleRiskPerils(){
     }
   }
 deleteRemark(){
+  log.debug("Selected Remark", this.selectedRemark)
   this.action= "D"
   this.policyService
-  .deleteRemarks(this.action,this.policyInsuredCode, this.SelectedRiskCode, this.batchNo,this.selectedRemark)
+  .deleteRemarks(this.selectedRemark)
   .pipe(untilDestroyed(this))
   .subscribe({
     next: (data) => {
@@ -1439,6 +1451,43 @@ deletePremiumItem(){
       log.info(`error >>>`, err);
     },
   });
+}
+toggleRelatedRiskDetails() {
+  this.isRelatedRiskDetailsOpen = !this.isRelatedRiskDetailsOpen;
+}
+// toggleCommissionTranscDetails() {
+//   this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
+// }
+toggleCommissionTranscDetails() {
+  console.log("selected risk", this.selectedRisk);
+  
+  if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
+  }
+  
+  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  
+  if (!risk) {
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
+  }
+  
+  
+
+  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+  this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
+}
+
+openCommissionTranscDeleteModal() {
+  log.debug("Selected Commission Transaction", this.selectedTransaction)
+  if (!this.selectedTransaction) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+  } else {
+    document.getElementById("openCommissionModalButtonDelete").click();
+
+  }
 }
 }
 
