@@ -179,14 +179,14 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Scheduler Create Modal -->
 <div
   class="modal fade"
   id="schedulerModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
 >
-  <div class="modal-dialog align-items-center">
+  <div class="modal-dialog modal-lg align-items-center">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Define a Scheduler</h5>
@@ -315,53 +315,39 @@
               *ngIf="createSchedulerForm.get('jobType').value"
               class="col-6 mb-3"
             >
-              <label for="dynamicField" class="form-label">{{
+              <label for="jobTemplate" class="form-label">{{
                 dynamicFieldLabel
               }}</label>
               <p-dropdown
                 [options]="templateData"
-                [(ngModel)]="selectedUser"
+                [(ngModel)]="selectedJobTemplate"
                 [optionLabel]="optionLabel"
                 optionValue="code"
-                formControlName="successTemplate"
-                id="successTemplate"
+                formControlName="jobTemplate"
+                id="jobTemplate"
                 [filter]="true"
-                filterBy="name"
+                filterBy="optionLabel"
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
                 placeholder="Select Template"
                 [ngClass]="{
                   'is-invalid':
-                    f['dynamicField']?.invalid &&
-                    (f['dynamicField']?.dirty || f['dynamicField']?.touched)
+                    f['jobTemplate']?.invalid &&
+                    (f['jobTemplate']?.dirty || f['jobTemplate']?.touched)
                 }"
               >
               </p-dropdown>
-              <!-- <ng-select
-                [items]="templateData"
-                bindLabel="name"
-                bindValue="code"
-                formControlName="successTemplate"
-                placeholder="Select Template"
-                [searchable]="true"
-                [ngClass]="{
-                  'is-invalid':
-                    f['dynamicField']?.invalid &&
-                    (f['dynamicField']?.dirty || f['dynamicField']?.touched)
-                }"
-              >
-              </ng-select> -->
               <div
                 *ngIf="
-                  f['dynamicField']?.invalid &&
-                  (f['dynamicField']?.dirty || f['dynamicField']?.touched)
+                  f['jobTemplate']?.invalid &&
+                  (f['jobTemplate']?.dirty || f['jobTemplate']?.touched)
                 "
                 class="form-text text-danger"
                 [ngClass]="{
-                  'is-invalid': ['submitted'] && f['dynamicField']?.errors
+                  'is-invalid': ['submitted'] && f['jobTemplate']?.errors
                 }"
               >
-                <div *ngIf="f['dynamicField']?.errors['required']">
+                <div *ngIf="f['jobTemplate']?.errors['required']">
                   {{ dynamicFieldLabel }} is required
                 </div>
               </div>
@@ -414,6 +400,7 @@
                 onfocus="(this.type='datetime-local')"
                 onblur="(this.type='text')"
                 formControlName="executionTime"
+                id="executionTime"
                 placeholder="Execution time"
                 [ngClass]="{
                   'is-invalid':
@@ -484,18 +471,10 @@
                 filterBy="name"
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
+                class="template"
                 placeholder="Select Template"
+                (onFocus)="openModal('successTemplate')"
               >
-                <ng-template let-item pTemplate="selectedTemplate">
-                  <div
-                    class="ellipsis-tooltip"
-                    [pTooltip]="item.content"
-                    tooltipPosition="right"
-                    [appendTo]="'body'"
-                  >
-                    {{ sliceString(item.content) }}
-                  </div>
-                </ng-template>
               </p-dropdown>
             </div>
             <div class="col-6 mb-3">
@@ -532,26 +511,10 @@
                 filterBy="name"
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
+                class="template"
                 placeholder="Select Template"
+                (onFocus)="openModal('failedTemplate')"
               >
-                <!-- <ng-template let-item pTemplate="selectedFailedTemplate">
-                  <div
-                    class="ellipsis-tooltip"
-                    [appCustomTooltip]="item.content"
-                  >
-                    {{ sliceString(item.content) }}
-                  </div>
-                </ng-template> -->
-                <ng-template let-item pTemplate="selectedFailedTemplate">
-                  <div
-                    class="ellipsis-tooltip"
-                    [pTooltip]="item.content"
-                    tooltipPosition="right"
-                    [appendTo]="'body'"
-                  >
-                    {{ sliceString(item.content) }}
-                  </div>
-                </ng-template>
               </p-dropdown>
             </div>
             <div class="col-6 mb-3">
@@ -581,6 +544,7 @@
                 class="form-control"
                 placeholder="Threshold Value"
                 formControlName="thresholdValue"
+                id="thresholdValue"
                 [ngClass]="{
                   'is-invalid':
                     f['thresholdValue']?.invalid &&
@@ -608,6 +572,110 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="saveScheduler()">
           Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Modal -->
+<div
+  class="modal fade"
+  id="templatesModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="templatesModalTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fs-5 header" id="templatesModalTitle">
+          {{ "crm.select_template" | translate }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- <input
+          type="search"
+          name="searchTemplate"
+          id="searchTemplate"
+          placeholder="Template"
+          [(ngModel)]="templateFilter"
+          [ngModelOptions]="{ standalone: true }"
+          class="border border-1 border-secondary rounded-1 w-50 h-auto"
+        />
+        <input
+          type="search"
+          name="searchContent"
+          id="searchContent"
+          placeholder="Content"
+          [(ngModel)]="contentFilter"
+          [ngModelOptions]="{ standalone: true }"
+          class="border border-1 border-secondary rounded-1 w-50 h-auto"
+        /> -->
+        <p-table
+          [value]="messageTemplateData"
+          [paginator]="true"
+          [rows]="10"
+          [first]="first"
+          [showCurrentPageReport]="true"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          [totalRecords]="messageTemplateResponse?.totalElements"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          [loading]="loading"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          sortMode="single"
+          selectionMode="single"
+          [(selection)]="selectedTemplateData"
+          dataKey="id"
+          styleClass="p-datatable-gridlines templates"
+          responsiveLayout="scroll"
+          class="ui-datatable"
+          (onRowSelect)="onTemplateSelect($event)"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>{{ "crm.name" | translate }}</th>
+              <th>{{ "crm.description" | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-template>
+            <tr [pSelectableRow]="template">
+              <td class="body" style="width: 50%">
+                {{ template?.name | titlecase }}
+              </td>
+              <td class="body" style="width: 50%">{{ template?.content }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2">
+                {{ "crm.no_templates_found" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer d-block border-top-0">
+        <button
+          class="btn btn-outline-primary float-end reassign templates-bottom-btn"
+          aria-label="Save"
+          (click)="saveSelectedTemplate()"
+        >
+          {{ "entities.save" | translate }}
+        </button>
+        <button
+          class="btn btn-primary cancelBtn templates-bottom-btn float-end"
+          (click)="closeModal()"
+          aria-label="Close"
+        >
+          {{ "entities.cancel" | translate }}
         </button>
       </div>
     </div>

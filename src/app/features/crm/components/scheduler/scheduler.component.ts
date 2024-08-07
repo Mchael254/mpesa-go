@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
   NgZone,
@@ -8,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Table } from 'primeng/table';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
@@ -31,7 +30,7 @@ import { StaffService } from '../../../../features/entities/services/staff/staff
 import { StatusService } from '../../../../shared/services/system-definitions/status.service';
 import { MessagesService } from '../../services/messages.service';
 import { MessageTemplate } from '../../data/messaging-template';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+import { Pagination } from '../../../../shared/data/common/pagination';
 
 const log = new Logger('SchedulerComponent');
 
@@ -40,8 +39,9 @@ const log = new Logger('SchedulerComponent');
   templateUrl: './scheduler.component.html',
   styleUrls: ['./scheduler.component.css'],
 })
-export class SchedulerComponent implements OnInit, AfterViewInit {
+export class SchedulerComponent implements OnInit {
   @ViewChild('schedulerTable') schedulerTable: Table;
+  @ViewChild('templatesModal') templatesModal: any;
 
   public createSchedulerForm: FormGroup;
 
@@ -62,10 +62,23 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
   public selectedSendTo = '';
   public selectedUser = '';
   public selectedFailedUser = '';
-  public selectedTemplate = '';
+  public selectedTemplate: any;
   public selectedFailedTemplate = '';
+  public selectedJobTemplate = '';
   public dynamicFieldLabel: string = '';
   optionLabel: string = '';
+
+  messageTemplates: MessageTemplate[];
+  messageTemplateResponse: Pagination<MessageTemplate>;
+  selectedTemplateData: any;
+
+  first = 0;
+  rows = 10;
+  pageNumber: number = 0;
+  loading: boolean = false;
+  templateFilter: string;
+  contentFilter: string;
+  triggeringField: string;
 
   public errorOccurred = false;
   public errorMessage: string = '';
@@ -104,7 +117,6 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
     private mandatoryFieldsService: MandatoryFieldsService,
     private statusService: StatusService,
     private messagesService: MessagesService,
-    private renderer: Renderer2,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
   ) {}
@@ -121,17 +133,13 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy(): void {}
 
-  ngAfterViewInit() {
-    this.forceTooltipRepaint();
-  }
-
   SchedulerForm() {
     this.createSchedulerForm = this.fb.group({
       jobName: [''],
       jobDescription: [''],
       jobType: [''],
       sendTo: [''],
-      dynamicField: [''],
+      jobTemplate: [''],
       executionTime: [''],
       repeat: [''],
       successUser: [''],
@@ -171,25 +179,61 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
     return this.createSchedulerForm.controls;
   }
 
-  sliceString(str: string): string {
-    if (str) {
-      return str.length > 35 ? str.slice(0, 35) + '...' : str;
-    } else {
-      return '';
+  openModal(field: string) {
+    this.triggeringField = field;
+    log.info('Trigger Field', this.triggeringField);
+    // this.fetchMessageTemplates(this.selectedSystem);
+    const modal = document.getElementById('templatesModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
     }
   }
 
-  // After setting tooltip content, force repaint
-  forceTooltipRepaint() {
-    const tooltips = document.querySelectorAll('.p-tooltip');
-    tooltips.forEach((tooltip) => {
-      const htmlTooltip = tooltip as HTMLElement;
-      this.renderer.setStyle(htmlTooltip, 'display', 'none');
-      this.renderer.setStyle(htmlTooltip, 'z-index', '9999');
-      // Force a repaint
-      htmlTooltip.offsetHeight; // This triggers a reflow
-      this.renderer.setStyle(htmlTooltip, 'display', 'block');
-    });
+  closeModal() {
+    const modal = document.getElementById('templatesModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  onTemplateSelect(event: any) {
+    this.selectedTemplateData = event.data;
+    log.info('Selected Template', this.selectedTemplateData);
+    if (this.selectedTemplateData) {
+      if (this.triggeringField === 'successTemplate') {
+        this.selectedTemplate = this.selectedTemplateData;
+        this.createSchedulerForm.patchValue({
+          successTemplate: this.selectedTemplateData.id,
+        });
+      } else if (this.triggeringField === 'failedTemplate') {
+        this.selectedFailedTemplate = this.selectedTemplateData;
+        this.createSchedulerForm.patchValue({
+          failedTemplate: this.selectedTemplateData.id,
+        });
+      }
+      this.triggeringField = '';
+      this.closeModal();
+    }
+  }
+
+  saveSelectedTemplate() {
+    if (this.selectedTemplateData) {
+      if (this.triggeringField === 'successTemplate') {
+        this.selectedTemplate = this.selectedTemplateData;
+        this.createSchedulerForm.patchValue({
+          successTemplate: this.selectedTemplateData.id,
+        });
+      } else if (this.triggeringField === 'failTemplate') {
+        this.selectedFailedTemplate = this.selectedTemplateData;
+        this.createSchedulerForm.patchValue({
+          failTemplate: this.selectedTemplateData.id,
+        });
+      }
+      this.triggeringField = '';
+      this.closeModal();
+    }
   }
 
   fetchSystemApps(organizationId?: number) {
@@ -354,6 +398,7 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
   }
 
   fetchMessageTemplates(systemId: number) {
+    this.loading = true;
     this.messagesService
       .getMessageTemplates(systemId)
       .pipe(untilDestroyed(this))
@@ -362,6 +407,7 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
           if (data) {
             this.messageTemplateRes = data;
             this.messageTemplateData = data.content;
+            this.loading = false;
             log.info('Fetch Message Templates', this.messageTemplateData);
           } else {
             this.errorOccurred = true;
@@ -380,6 +426,7 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
             this.errorMessage
           );
           log.info(`error >>>`, err);
+          this.loading = false;
         },
       });
   }
@@ -420,12 +467,12 @@ export class SchedulerComponent implements OnInit, AfterViewInit {
     this.ngZone.run(() => {
       switch (selectedJobType) {
         case 'RPT':
-          this.dynamicFieldLabel = 'Reports Name';
+          this.dynamicFieldLabel = 'Report Name';
           this.optionLabel = 'name';
           this.fetchReports();
           break;
         case 'J':
-          this.dynamicFieldLabel = 'Routines Name';
+          this.dynamicFieldLabel = 'Routine Name';
           this.optionLabel = 'description';
           this.fetchRoutines();
           break;

@@ -50,6 +50,10 @@ fieldset legend {
   border: solid 1px red !important;
 }
 
+::ng-deep .template .p-dropdown-panel {
+  display: none !important;
+}
+
 .p-tooltip {
   background-color: red;
   z-index: 9999 !important;
