@@ -58,7 +58,21 @@ export class ProductComponent implements OnInit {
     private crm_client_service: ClientService
   ) {
     this.util = new Utils(this.session_storage);
+
+    this.productForm = this.fb.group ({
+      escalation_question: [''],
+      coinsurance_question: ['']
+    });
   }
+
+  get isEscalationYes(): boolean {
+    return this.productForm.get('escalation_question').value === 'Y';
+  }
+
+  get isCoinsuranceYes(): boolean {
+    return this.productForm.get('coinsurance_question').value === 'Y';
+  }
+
   ngOnInit(): void {
     let quote = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
