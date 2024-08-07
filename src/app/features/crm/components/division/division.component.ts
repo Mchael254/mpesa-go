@@ -364,6 +364,7 @@ export class DivisionComponent implements OnInit {
               );
               this.selectedDivision = null;
               this.fetchOrganizationDivision(this.selectedOrg.id);
+              this.cdr.detectChanges();
             } else {
               this.errorOccurred = true;
               this.errorMessage = 'Something went wrong. Please try Again';
