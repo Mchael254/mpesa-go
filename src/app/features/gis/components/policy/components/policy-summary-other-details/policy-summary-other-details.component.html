@@ -1858,7 +1858,8 @@
                                                         {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
                                                     <div class="d-flex justify-content-center mb-3">
                                                         <button type="button" class="btn btn-primary px-5" id="delete"
-                                                            data-bs-dismiss="modal" (click)="deletePremiumItem()">{{'gis.policy.yes_delete' |
+                                                            data-bs-dismiss="modal"
+                                                            (click)="deletePremiumItem()">{{'gis.policy.yes_delete' |
                                                             translate}} </button>
                                                     </div>
                                                     <div class="d-flex justify-content-center mb-2">
@@ -2289,7 +2290,8 @@
                                     <div>
                                         <div class="row ">
                                             <div class="col-sm-3">
-                                                <p class="subheading">Required documents</p>
+                                                <p class="subheading">{{'gis.policy.required_documents' |
+                                                    translate}}</p>
 
                                             </div>
                                             <div class="col-sm-9 d-flex justify-content-end">
@@ -2358,11 +2360,11 @@
 
                                             <ng-template pTemplate="header">
                                                 <tr>
-                                                    <th>Description</th>
-                                                    <th>Submitted</th>
-                                                    <th>Date Submitted</th>
-                                                    <th>Remarks</th>
-                                                    <th>Ref no.</th>
+                                                    <th> {{'gis.policy.description' | translate}}</th>
+                                                    <th>  {{'gis.policy.submitted' | translate}}</th>
+                                                    <th>  {{'gis.policy.date_submitted' | translate}}</th>
+                                                    <th>  {{'gis.policy.remarks' | translate}}</th>
+                                                    <th>  {{'gis.policy.ref_no' | translate}}</th>
 
 
                                                 </tr>
@@ -2392,8 +2394,7 @@
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
                                                         <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">
-                                                            Select
-                                                            required documents
+                                                        {{'gis.policy.select_required_documents' | translate}}
                                                         </h5>
                                                         <!-- <div class="search-container mb-3">
                                                                 <span class="search-icon"><i class="fa fa-search"></i></span>
@@ -2430,8 +2431,8 @@
                                                                 <tr>
 
 
-                                                                    <th>Short description</th>
-                                                                    <th>Description</th>
+                                                                    <th>  {{'gis.policy.short_description' | translate}}</th>
+                                                                    <th>  {{'gis.policy.description' | translate}}</th>
 
                                                                 </tr>
                                                             </ng-template>
@@ -2451,8 +2452,8 @@
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="createRiskSection()">Save
-                                                                Details</button>
+                                                                (click)="createRiskSection()">
+                                                                 {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
 
@@ -2470,16 +2471,14 @@
                                                             class="btn-close ms-auto py-2 px-2 float-end"
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
-                                                        <h5 class="modal-title mt-2 mb-3 ms-4" id="editrequiredDoc">Edit
-                                                            required
-                                                            documents</h5>
+                                                        <h5 class="modal-title mt-2 mb-3 ms-4" id="editrequiredDoc"> {{'gis.policy.edit_required_documents' | translate}}</h5>
                                                         <form [formGroup]="scheduleDetailsForm">
                                                             <!-- **ROW 1** -->
                                                             <div class="row mb-1" id="sectionRows">
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Code</label>
+                                                                            id="sectionLabel"> {{'gis.policy.code' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
@@ -2491,7 +2490,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Description</label>
+                                                                            id="sectionLabel"> {{'gis.policy.description' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
@@ -2505,7 +2504,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Submitted</label>
+                                                                            id="sectionLabel">{{'gis.policy.submitted' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <select
@@ -2521,7 +2520,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Date Submitted</label>
+                                                                            id="sectionLabel">  {{'gis.policy.date_submitted' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="date" id="sectionInput"
@@ -2535,7 +2534,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Remarks</label>
+                                                                            id="sectionLabel"> {{'gis.policy.remarks' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
@@ -2547,7 +2546,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="sectionLabel">Ref no.</label>
+                                                                            id="sectionLabel"> {{'gis.policy.ref_no' | translate}}.</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
@@ -2559,8 +2558,7 @@
                                                         </form>
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
-                                                                id="saveDetails" data-bs-dismiss="modal">Save
-                                                                Details</button>
+                                                                id="saveDetails" data-bs-dismiss="modal">{{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2608,7 +2606,7 @@
                                     <div>
                                         <div class="row">
                                             <div class="col-sm-3">
-                                                <p class="subheading">Certificates</p>
+                                                <p class="subheading"> {{'gis.policy.certificates' | translate}}</p>
                                             </div>
                                             <div class="col-sm-9 d-flex justify-content-end">
                                                 <div class="row mb-2">
@@ -2618,8 +2616,7 @@
                                                         <input type="checkbox" id="selectCheckbox"
                                                             class="form-check-input me-2">
                                                         <label for="selectCheckbox" class="form-check-label"
-                                                            id="certificateCheckboxLabel">Select user certificate
-                                                            lot</label>
+                                                            id="certificateCheckboxLabel">{{'gis.policy.select_user_certifacte_iot' | translate}}</label>
                                                     </div>
                                                     <div class="col-2" *ngIf="isCertificatesDetailOpen">
                                                         <button type="button" id="icon" class="btn btn-success"
@@ -2670,15 +2667,15 @@
 
                                             <ng-template pTemplate="header">
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>Cert no.</th>
-                                                    <th>Lot ID</th>
-                                                    <th>Issue date</th>
-                                                    <th>Cert year</th>
-                                                    <th>Status</th>
-                                                    <th>Print status</th>
-                                                    <th>Print date</th>
-                                                    <th>WEF</th>
+                                                    <th> {{'gis.policy.id' | translate}}</th>
+                                                    <th> {{'gis.policy.cert_no' | translate}}.</th>
+                                                    <th>{{'gis.policy.lot_id' | translate}}</th>
+                                                    <th> {{'gis.policy.issue_date' | translate}}</th>
+                                                    <th> {{'gis.policy.cert_year' | translate}}</th>
+                                                    <th> {{'gis.policy.status' | translate}}</th>
+                                                    <th> {{'gis.policy.print_status' | translate}}</th>
+                                                    <th> {{'gis.policy.print_date' | translate}}</th>
+                                                    <th> {{'gis.policy.wef' | translate}}</th>
 
 
                                                 </tr>
@@ -2712,10 +2709,7 @@
                                                             class="btn-close ms-auto py-2 px-2 float-end"
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
-                                                        <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">
-                                                            Select
-                                                            certificates
-                                                        </h5>
+                                                        <h5 class="modal-title mt-2 mb-2" id="riskOtherDetailsLabel">{{'gis.policy.select_certifiactes' | translate}}</h5>
                                                         <!-- <div class="search-container mb-3">
                                                                 <span class="search-icon"><i class="fa fa-search"></i></span>
                                                                 <input type="text" placeholder="Search"
@@ -2751,9 +2745,9 @@
                                                                 <tr>
 
 
-                                                                    <th>Cert type</th>
-                                                                    <th>Lots ID</th>
-                                                                    <th>Branch</th>
+                                                                    <th> {{'gis.policy.cert_type' | translate}}</th>
+                                                                    <th> {{'gis.policy.lots_id' | translate}}</th>
+                                                                    <th> {{'gis.policy.branch' | translate}}</th>
 
                                                                 </tr>
                                                             </ng-template>
@@ -2774,8 +2768,7 @@
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="createRiskSection()">Save
-                                                                Details</button>
+                                                                (click)="createRiskSection()"> {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
 
@@ -2794,14 +2787,14 @@
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
                                                         <h5 class="modal-title mt-2 mb-3 ms-4" id="editCertificates">
-                                                            Certificate details</h5>
+                                                           {{'gis.policy.certificate_details' | translate}}</h5>
                                                         <form [formGroup]="scheduleDetailsForm">
                                                             <!-- **ROW 1** -->
                                                             <div class="row mb-1" id="sectionRows">
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="certificateLabel">Certificate</label>
+                                                                            id="certificateLabel"> {{'gis.policy.certificate' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
@@ -2813,7 +2806,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class=""
-                                                                            id="certificateLabel">Status</label>
+                                                                            id="certificateLabel"> {{'gis.policy.status' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <select
@@ -2821,9 +2814,9 @@
                                                                             id="selectedInput"
                                                                             formControlName="yearOfManufacture">
                                                                             <option value=""></option>
-                                                                            <option value="">Active</option>
-                                                                            <option value="">Cancelled</option>
-                                                                            <option value="">Inactive</option>
+                                                                            <option value=""> {{'gis.policy.active' | translate}}</option>
+                                                                            <option value=""> {{'gis.policy.cancelled' | translate}}</option>
+                                                                            <option value=""> {{'gis.policy.inactive' | translate}}</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -2833,7 +2826,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class="required"
-                                                                            id="certificateLabel">WEF </label>
+                                                                            id="certificateLabel">{{'gis.policy.wef' | translate}} </label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="date" id="sectionInput"
@@ -2845,7 +2838,7 @@
                                                                 <div class="col-xl-5">
                                                                     <div class="mb-1  row">
                                                                         <label for="minmax-buttons" class="required"
-                                                                            id="certificateLabel">WET</label>
+                                                                            id="certificateLabel">{{'gis.policy.wet' | translate}}</label>
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="date" id="sectionInput"
@@ -2858,8 +2851,7 @@
                                                         </form>
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
-                                                                id="saveDetails" data-bs-dismiss="modal">Save
-                                                                Details</button>
+                                                                id="saveDetails" data-bs-dismiss="modal"> {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2907,7 +2899,7 @@
                                     <div>
                                         <div class="row">
                                             <div class="col-sm-3">
-                                                <p class="subheading">Remarks</p>
+                                                <p class="subheading">{{'gis.policy.remarks' | translate}}</p>
                                             </div>
                                             <div class="col-sm-9 d-flex justify-content-end">
                                                 <div class="row  mb-2">
@@ -2930,21 +2922,22 @@
                                                     </div>
                                                     <div class="col-3" *ngIf="isRemarkDetailsOpen">
                                                         <button type="button" id="icon" class="btn btn-primary"
-                                                        data-bs-toggle="modal" id="openModalRemarkButtonDelete" [hidden]="true"
-                                                        data-bs-target="#deleteRemark" title="Delete">
-                                                    </button>
-                                                    <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                                                        <i class="fa-solid fa-trash-can" (click)="openRemarkDeleteModal()"></i>
-                                                    </button>
+                                                            data-bs-toggle="modal" id="openModalRemarkButtonDelete"
+                                                            [hidden]="true" data-bs-target="#deleteRemark"
+                                                            title="Delete">
+                                                        </button>
+                                                        <button type="button" id="icon" class="btn btn-primary"
+                                                            title="Delete">
+                                                            <i class="fa-solid fa-trash-can"
+                                                                (click)="openRemarkDeleteModal()"></i>
+                                                        </button>
                                                     </div>
                                                     <div class="col-3">
+                                                      
                                                         <button type="button" id="icon" class="btn btn-primary"
-                                                            data-bs-toggle="collapse" data-bs-target="#remarksDetails"
-                                                            aria-expanded="false" aria-controls="remarksDetails"
-                                                            [attr.aria-expanded]="!isRemarkDetailsOpen"
-                                                            (click)="toggleRemarksDetails()">
-                                                            <i class="fa-solid fa-chevron-down"></i>
-                                                        </button>
+                                                        (click)="toggleRemarksDetails()">
+                                                        <i class="fa-solid fa-chevron-down"></i>
+                                                    </button>
                                                     </div>
 
 
@@ -2954,7 +2947,8 @@
                                         </div>
 
                                     </div>
-                                    <div class="collapse" id="remarksDetails">
+                                        <div class="collapse " id="remarksDetails" [class.show]="isRemarkDetailsOpen">
+
 
                                         <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
                                             [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
@@ -2963,8 +2957,8 @@
 
                                             <ng-template pTemplate="header">
                                                 <tr>
-                                                    <th>Remark</th>
-                                                    <th>Created date</th>
+                                                    <th>{{'gis.policy.remark' | translate}}</th>
+                                                    <th>{{'gis.policy.created_date' | translate}}</th>
 
 
 
@@ -2996,22 +2990,19 @@
                                                         <form [formGroup]="remarkDetailsForm">
 
                                                             <h5 class="modal-title mt-2 mb-2 ms-2"
-                                                                id="addRemarkDetailsLabel">Add
-                                                                Remarks
-                                                            </h5>
+                                                                id="addRemarkDetailsLabel">{{'gis.policy.add_remarks' | translate}}</h5>
 
                                                             <label for="remark" class="ms-2"
-                                                                id="remarkDescription">Description</label>
+                                                                id="remarkDescription"> {{'gis.policy.description' | translate}}</label>
                                                             <textarea class="row ms-2 " id="remark" rows="5" cols="50"
-                                                                pInputTextarea  formControlName="schedule">
+                                                                pInputTextarea formControlName="schedule">
                                                         </textarea>
                                                         </form>
 
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="addRemark()">Save
-                                                                Details</button>
+                                                                (click)="addRemark()"> {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
 
@@ -3029,12 +3020,10 @@
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
                                                         <h5 class="modal-title mt-2 mb-2 ms-2"
-                                                            id="editRemarkDetailsLabel">Edit
-                                                            Remarks
-                                                        </h5>
+                                                            id="editRemarkDetailsLabel">{{'gis.policy.edit_remarks' | translate}} </h5>
 
                                                         <label for="remark" class="ms-2"
-                                                            id="remarkDescription">Description</label>
+                                                            id="remarkDescription"> {{'gis.policy.description' | translate}}</label>
                                                         <textarea class="row ms-2 " id="remark" rows="5" cols="50"
                                                             pInputTextarea>
                                                         </textarea>
@@ -3043,8 +3032,7 @@
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="createRiskSection()">Save
-                                                                Details</button>
+                                                                (click)="createRiskSection()"> {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
 
@@ -3086,55 +3074,327 @@
                             </div>
                         </div>
                     </div>
+                    <!-- RELATED RISK DETAILS -->
+                    <div class="card mt-2 mb-2 riskDetailsCards">
+                        <div class="card-body">
+                            <div class="row ">
+                                <div>
+                                    <div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <p class="subheading"> {{'gis.policy.related_risks' | translate}}</p>
+                                            </div>
+                                            <div class="col-sm-9 d-flex justify-content-end">
+                                                <div class="row  mb-2">
+
+                                                    <!-- <div class="col-sm-3"></div> -->
+
+                                                    <!-- <div class="col-3" *ngIf="isRelatedRiskDetailsOpen">
+                                                        
+                                                    </div>
+                                                    <div class="col-3" *ngIf="isRelatedRiskDetailsOpen">
+                                                        
+                                                    </div>
+                                                    <div class="col-3" *ngIf="isRelatedRiskDetailsOpen">
+                                                      
+                                                    </div> -->
+                                                    <div class="col-3">
+                                                        <button type="button" id="icon" class="btn btn-primary"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#relatedRiskDetails" aria-expanded="false"
+                                                            aria-controls="relatedRiskDetails"
+                                                            [attr.aria-expanded]="!isRelatedRiskDetailsOpen"
+                                                            (click)="toggleRelatedRiskDetails()">
+                                                            <i class="fa-solid fa-chevron-down"></i>
+                                                        </button>
+                                                    </div>
 
 
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="collapse" id="relatedRiskDetails">
+
+                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                            [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
+                                            responsiveLayout="scroll" [autoLayout]="true">
+
+
+                                            <ng-template pTemplate="header">
+                                                <tr>
+                                                    <th> {{'gis.policy.property_id' | translate}}</th>
+                                                    <th> {{'gis.policy.value' | translate}}</th>
+                                                    <th> {{'gis.policy.wef' | translate}}</th>
+                                                    <th> {{'gis.policy.wet' | translate}}</th>
+                                                    <th> {{'gis.policy.policy_no' | translate}}.</th>
+                                                    <th> {{'gis.policy.premium' | translate}}</th>
+
+
+
+                                                </tr>
+                                            </ng-template>
+
+                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
+                                                <tr [pSelectableRow]="riskDetails"
+                                                    [class.p-highlight]="riskDetails === selectedRemark">
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+
+
+
+
+                                                </tr>
+                                            </ng-template>
+                                        </p-table>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- COMMISSION TRANSACTION DETAILS -->
+                    <div class="card mt-2 mb-2 riskDetailsCards">
+                        <div class="card-body">
+                            <div class="row ">
+                                <div class="col-sm-4">
+                                    <p class="subheading">{{'gis.policy.commission_transaction' | translate}}</p>
+
+                                </div>
+                                <div class="col-sm-8 d-flex justify-content-end">
+                                    <div class="row  mb-2">
+
+                                        <!-- <div class="col-sm-3"></div> -->
+                                        <div class="col-sm-3" *ngIf="isCommissionTranscDetailsOpen">
+                                            <!-- <button type="button" id="icon" class="btn btn-primary" (click)="editRisk()"
+                                                title="Edit">
+                                                <i class="fa-solid fa-pencil"></i>
+                                            </button> -->
+
+                                        </div>
+                                        <div class="col-sm-3 " *ngIf="isCommissionTranscDetailsOpen">
+                                            <button type="button" id="icon" class="btn btn-primary"
+                                            data-bs-toggle="modal" data-bs-target="#addCommissionTransc"
+                                            title="Add">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                        </div>
+                                       
+
+                                        <div class="col-sm-3" *ngIf="isCommissionTranscDetailsOpen">
+                                            <button type="button" id="icon" class="btn btn-primary"
+                                                data-bs-toggle="modal" id="openCommissionModalButtonDelete" [hidden]="true"
+                                                data-bs-target="#deleteCommissionTransc" title="Delete">
+                                            </button>
+                                            <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                                                <i class="fa-solid fa-trash-can" (click)="openCommissionTranscDeleteModal()"></i>
+                                            </button>
+                                           
+                                        </div>
+                                        <!-- <div class="col-3">
+                                            <button type="button" id="icon" class="btn btn-primary"
+                                                data-bs-toggle="collapse" data-bs-target="#commissionTranscDetails"
+                                                aria-expanded="false" aria-controls="commissionTranscDetails"
+                                                [attr.aria-expanded]="!isCommissionTranscDetailsOpen" (click)="toggleCommissionTranscDetails()">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </button>
+                                        </div> -->
+                                        <div class="col-3">
+                                            <button type="button" id="icon" class="btn btn-primary"
+                                                (click)="toggleCommissionTranscDetails()">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- <div class="collapse" id="commissionTranscDetails"> -->
+                                <div class="collapse mt-4" id="commissionTranscDetails" [class.show]="isCommissionTranscDetailsOpen">
+
+                              
+                                <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                    [(selection)]="selectedTransaction" [tableStyle]="{'min-width': '50rem'}"
+                                    styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable'
+                                    responsiveLayout="scroll" [autoLayout]="true" [globalFilterFields]="['propertyId']">
+
+
+                                    <!-- <ng-template pTemplate="caption">
+                            <div class="flex">
+                                <span class="p-input-icon-left ml-auto">
+                                    <i class="pi pi-search search-icon"></i>
+                                </span>
+                                <input class="search-input-Risk" pInputText type="text"
+                                    (input)="applyFilterGlobalRisk($event, 'contains')"
+                                    placeholder="Search" />
+
+                            </div>
+                        </ng-template> -->
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th> {{'gis.policy.group' | translate}}</th>
+                                            <th> {{'gis.policy.agent_name' | translate}}</th>
+                                            <th>{{'gis.policy.account_type' | translate}}</th>
+                                            <th>{{'gis.policy.setup_rate' | translate}}</th>
+                                            <th>{{'gis.policy.used_rate' | translate}}</th>
+                                            <th> {{'gis.policy.commission_amount' | translate}}</th>
+                                            <th> {{'gis.policy.withholding_rate' | translate}}</th>
+                                           
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
+                                        <tr [pSelectableRow]="riskDetails"
+                                            [class.p-highlight]="riskDetails === selectedTransaction"
+                                            (click)="togglePremiumDetails();getRiskClauses()">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+
+
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                                    <!-- Add Commission Transaction  Modal -->
+                            <div class="modal fade" id="addCommissionTransc" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <div class="modal-body">
+                                        <button type="button" #closebutton class="float-end btn-close"
+                                            data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <p class="text-start" id="applicableCommissionLabel">Applicable commission
+                                        </p>
+
+                                        <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
+                                            selectionMode="single" [resizableColumns]="true"
+                                            styleClass="p-datatable-sm" responsiveLayout="scroll"
+                                            class='ui-datatable' [autoLayout]="true" [paginator]="true" [rows]="5"
+                                            [scrollable]="true" scrollDirection="horizontal"
+                                            [showCurrentPageReport]="true"
+                                            currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                                            [globalFilterFields]="['idNumber', 'emailAddress','lastName','emailAddress']">
+                                           
+                                            <ng-template pTemplate="header">
+
+                                                <tr id="product">
+                                                    <th>Description</th>
+                                                    <th>Type</th>
+                                                    <th>Trntcode</th>
+
+                                                </tr>
+                                            </ng-template>
+
+                                            <ng-template let-clientData pTemplate="body">
+                                                <tr id="productData" [pSelectableRow]=""
+                                                    (click)="loadClientDetails(clientData.id);">
+
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    <td></td>
+                                                </tr>
+                                            </ng-template>
+
+                                        </p-table>
+                                        <br>
+                                        <!-- <button class="btn btn-primary float-end" data-bs-dismiss="modal" (click)="saveclient()">Save Details</button> -->
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                                <!-- Delete Commission Transc  Modal -->
+                                <div class="modal fade" id="deleteCommissionTransc" tabindex="-1" role="dialog"
+                                    aria-labelledby="deleteCommissionTransc" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content" id="deleteRisk">
+                                            <div class="modal-body ">
+                                                <p class="deleteMessage mt-4 mb-4">
+                                                    {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+                                                <div class="d-flex justify-content-center mb-3">
+                                                    <button type="button" class="btn btn-primary px-5" id="delete"
+                                                        data-bs-dismiss="modal"
+                                                       >{{'gis.policy.yes_delete' |
+                                                        translate}} </button>
+                                                </div>
+                                                <div class="d-flex justify-content-center mb-2">
+                                                    <button type="button" class="btn btn-outline-primary px-5"
+                                                        data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                                                        translate}}</button>
+                                                </div>
+
+
+                                             
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
 
 
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 2">
-                    <h5>Client DD details</h5>
+                    <h5> {{'gis.policy.client_dd_details' | translate}}</h5>
                     <p>Details about Client DD...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 3">
-                    <h5>Policy taxes</h5>
+                    <h5> {{'gis.policy.policy_taxes' | translate}}</h5>
                     <p>Details about Policy taxes...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 4">
-                    <h5>Policy clauses</h5>
+                    <h5>{{'gis.policy.policy_clauses' | translate}}</h5>
                     <p>Details about Policy clauses...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 5">
-                    <h5>Policy subclasses clauses</h5>
+                    <h5>{{'gis.policy.policy_subclasses_clauses' | translate}}</h5>
                     <p>Details about Policy subclasses clauses...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 6">
-                    <h5>Policy level perils</h5>
+                    <h5> {{'gis.policy.policy_level_perils' | translate}}</h5>
                     <p>Details about Policy level perils...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 7">
-                    <h5>Policy remarks</h5>
+                    <h5>{{'gis.policy.policy_remarks' | translate}}</h5>
                     <p>Details about Policy remarks...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 8">
-                    <h5>Limits of liability</h5>
+                    <h5>{{'gis.policy.limits_of_liability' | translate}}</h5>
                     <p>Details about Limits of liability...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 9">
-                    <h5>External claims exp..</h5>
+                    <h5> {{'gis.policy.external_claim_exp' | translate}}..</h5>
                     <p>Details about External claims exp...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 10">
-                    <h5>Internal claims exp..</h5>
+                    <h5>{{'gis.policy.internal_claim_exp' | translate}}..</h5>
                     <p>Details about Internal claims exp...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 11">
-                    <h5>Service providers</h5>
+                    <h5> {{'gis.policy.service_providers' | translate}}</h5>
                     <p>Details about Service providers...</p>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 12">
-                    <h5>Reasons for pending</h5>
+                    <h5> {{'gis.policy.reasons_for_pending' | translate}}</h5>
                     <p>Details about Reasons for pending...</p>
                 </ng-container>
             </div>
