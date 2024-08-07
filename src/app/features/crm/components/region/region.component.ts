@@ -384,7 +384,7 @@ export class RegionComponent implements OnInit {
               'Success',
               'Successfully Created a RegionBank'
             );
-            this.createRegionForm.reset();
+            this.createRegionBankForm.reset();
             this.fetchBankRegions(this.selectedRegion.code);
           } else {
             this.errorOccurred = true;
@@ -429,7 +429,7 @@ export class RegionComponent implements OnInit {
                 'Successfully Updated a RegionBank'
               );
               this.selectedRegionBank = null;
-              this.createRegionForm.reset();
+              this.createRegionBankForm.reset();
               this.fetchBankRegions(this.selectedRegion.code);
             } else {
               this.errorOccurred = true;

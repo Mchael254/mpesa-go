@@ -23,14 +23,15 @@ export const environment = {
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
-    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, 'gis/quotation/api'],
+    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.GIS_QUOTATION_BASE_URL, '/gis/quotation/api'],
+    [API_CONFIG.NOTIFICATION_BASE_URL, '/turnquest/notification'],
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
-    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims']
+    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']

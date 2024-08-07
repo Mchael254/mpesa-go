@@ -801,7 +801,7 @@ export class CurrenciesComponent implements OnInit {
         id: null,
         name: currencyDenominationFormValues.name,
         value: currencyDenominationFormValues.value,
-        withEffectiveFrom: currencyDenominationFormValues.wef,
+        withEffectiveFrom: currencyDenominationFormValues.denomination_wef,
       };
       // Create a new Currency Denomination
       this.currencyService
@@ -824,7 +824,7 @@ export class CurrenciesComponent implements OnInit {
         id: currencyDenominationId,
         name: currencyDenominationFormValues.name,
         value: currencyDenominationFormValues.value,
-        withEffectiveFrom: currencyDenominationFormValues.wef,
+        withEffectiveFrom: currencyDenominationFormValues.denomination_wef,
       };
       // Update a Currency Denomination
       this.currencyService
@@ -854,7 +854,7 @@ export class CurrenciesComponent implements OnInit {
       this.createDenominationForm.patchValue({
         value: this.selectedCurrencyDenomination.value,
         name: this.selectedCurrencyDenomination.name,
-        wef: this.selectedCurrencyDenomination.withEffectiveFrom,
+        denomination_wef: this.selectedCurrencyDenomination.withEffectiveFrom,
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
