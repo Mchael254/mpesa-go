@@ -181,7 +181,7 @@
                   </div>
 
                   <div></div>
-                  <div class="row">
+                  <div class="row" *ngIf="isEscalationYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Escalation Option</label>
                       <select formControlName="" class="form-select">
@@ -229,7 +229,7 @@
                   </div>
 
                   <div></div>
-                  <div class="row">
+                  <div class="row" *ngIf="isCoinsuranceYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Leader</label>
                       <select formControlName="" class="form-select">
@@ -250,11 +250,11 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row" *ngIf="isCoinsuranceYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Coinsurer</label>
                       <select formControlName="" class="form-select">
-                        <option [value]="" selected disabled>{{'Select Option'}}</option>
+                        <option [value]="" selected disabled>{{'Select Coinsurer'}}</option>
                         <ng-container>
                           <option></option>
                         </ng-container>
