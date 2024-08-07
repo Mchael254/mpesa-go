@@ -1,22 +1,31 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import {AccountReqPartyId, ReqPartyById} from 'src/app/features/entities/data/entityDto';
-import {PartyAccountsDetails} from "../../../../data/accountDTO";
-import {Logger} from "../../../../../../shared/services";
-import {PartyTypeDto} from "../../../../data/partyTypeDto";
-import {StateDto} from "../../../../../../shared/data/common/countryDto";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import {
+  AccountReqPartyId,
+  ReqPartyById,
+} from 'src/app/features/entities/data/entityDto';
+import { PartyAccountsDetails } from '../../../../data/accountDTO';
+import { Logger } from '../../../../../../shared/services';
+import { PartyTypeDto } from '../../../../data/partyTypeDto';
+import { StateDto } from '../../../../../../shared/data/common/countryDto';
 
 const log = new Logger('EntityBasicInfoComponent');
 
 @Component({
   selector: 'app-entity-basic-info',
   templateUrl: './entity-basic-info.component.html',
-  styleUrls: ['./entity-basic-info.component.css']
+  styleUrls: ['./entity-basic-info.component.css'],
 })
 export class EntityBasicInfoComponent {
-
-  @Output('fetchTransactions') fetchTransactions: EventEmitter<any> = new EventEmitter();
+  // @Output('fetchTransactions') fetchTransactions: EventEmitter<any> = new EventEmitter();
   @Output('assignRole') assignRole: EventEmitter<any> = new EventEmitter();
-  @Output('partyTypeRole') partyTypeRole: EventEmitter<any> = new EventEmitter<any>();
+  @Output('partyTypeRole') partyTypeRole: EventEmitter<any> =
+    new EventEmitter<any>();
 
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() entityAccountIdDetails: AccountReqPartyId[];
@@ -32,5 +41,4 @@ export class EntityBasicInfoComponent {
   selectPartyTypeRole(role: PartyTypeDto) {
     this.partyTypeRole.emit(role);
   }
-
 }

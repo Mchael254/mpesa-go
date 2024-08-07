@@ -1,36 +1,37 @@
-import {Injectable, signal} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from "../../../../core/config/app-config-service";
+import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { AppConfigService } from '../../../../core/config/app-config-service';
 
-import {Pagination} from '../../../../shared/data/common/pagination';
+import { Pagination } from '../../../../shared/data/common/pagination';
 import {
   AccountReqPartyId,
   EntityDto,
   EntityResDTO,
   IdentityModeDTO,
   PoliciesDTO,
-  ReqPartyById
+  ReqPartyById,
 } from '../../data/entityDto';
-import {PartyTypeDto} from '../../data/partyTypeDto';
+import { PartyTypeDto } from '../../data/partyTypeDto';
 import {
   AmlWealthDetailsUpdateDTO,
-  BankDetailsUpdateDTO, NextKinDetailsUpdateDTO,
+  BankDetailsUpdateDTO,
+  NextKinDetailsUpdateDTO,
   PartyAccountsDetails,
-  WealthDetailsUpdateDTO
+  WealthDetailsUpdateDTO,
 } from '../../data/accountDTO';
-import {UtilService} from "../../../../shared/services/util/util.service";
-import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
-import {Bank} from "../../data/BankDto";
-import {ApiService} from "../../../../shared/services/api/api.service";
-import {API_CONFIG} from "../../../../../environments/api_service_config";
-import {ClaimsDTO} from "../../../gis/data/claims-dto";
+import { UtilService } from '../../../../shared/services/util/util.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { Bank } from '../../data/BankDto';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
+import { ClaimsDTO } from '../../../gis/data/claims-dto';
+import { QuotationsDTO_2 } from 'src/app/features/gis/data/quotations-dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EntityService {
-
   // baseUrl = this.appConfig.config.contextPath.setup_services;
   private entity$ = new BehaviorSubject<EntityDto>({
     partyTypeId: 0,
@@ -97,8 +98,8 @@ export class EntityService {
     private appConfig: AppConfigService,
     private utilService: UtilService,
     private api: ApiService,
-    private session_storage: SessionStorageService,
-  ) { }
+    private session_storage: SessionStorageService
+  ) {}
 
   setSearchTerm(searchTerm: string) {
     this.searchTermSource.next(searchTerm);
@@ -133,14 +134,14 @@ export class EntityService {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     });
     let params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('sortListFields', `${sortList}`)
-      .set('order', `${order}`)
-      /*.set('organizationId',2);*/ /*TODO: Find proper way to fetch organizationId*/
+      .set('order', `${order}`);
+    /*.set('organizationId',2);*/ /*TODO: Find proper way to fetch organizationId*/
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({
@@ -245,8 +246,8 @@ export class EntityService {
     );
   }
 
-  fetchGisQuotationsByClientId(id: number): Observable<any[]> {
-    return this.api.GET<any[]>(
+  fetchGisQuotationsByClientId(id: number): Observable<QuotationsDTO_2[]> {
+    return this.api.GET<QuotationsDTO_2[]>(
       `v2/quotation/view/clientCode?clientId=${id}`,
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
@@ -267,10 +268,16 @@ export class EntityService {
   }
 
   fetchBankDetailsByBranchId(id: number): Observable<Bank> {
-    return this.api.GET<Bank>(`bank-branches/${id}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
+    return this.api.GET<Bank>(
+      `bank-branches/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
-  updateBankDetails(partyAccountId: number, bankDetails: BankDetailsUpdateDTO): Observable<BankDetailsUpdateDTO> {
+  updateBankDetails(
+    partyAccountId: number,
+    bankDetails: BankDetailsUpdateDTO
+  ): Observable<BankDetailsUpdateDTO> {
     return this.api.POST<BankDetailsUpdateDTO>(
       `accounts/${partyAccountId}/bank-details`,
       bankDetails,
@@ -278,7 +285,10 @@ export class EntityService {
     );
   }
 
-  updateWealthDetails(partyAccountId: number, wealthDetails: WealthDetailsUpdateDTO): Observable<WealthDetailsUpdateDTO> {
+  updateWealthDetails(
+    partyAccountId: number,
+    wealthDetails: WealthDetailsUpdateDTO
+  ): Observable<WealthDetailsUpdateDTO> {
     return this.api.POST<WealthDetailsUpdateDTO>(
       `accounts/${partyAccountId}/wealth-details`,
       wealthDetails,
@@ -286,7 +296,10 @@ export class EntityService {
     );
   }
 
-  updateAmlDetails(partyAccountId: number, amlDetails: AmlWealthDetailsUpdateDTO): Observable<AmlWealthDetailsUpdateDTO> {
+  updateAmlDetails(
+    partyAccountId: number,
+    amlDetails: AmlWealthDetailsUpdateDTO
+  ): Observable<AmlWealthDetailsUpdateDTO> {
     return this.api.POST<AmlWealthDetailsUpdateDTO>(
       `accounts/${partyAccountId}/aml-details`,
       amlDetails,
@@ -294,7 +307,10 @@ export class EntityService {
     );
   }
 
-  updateNokDetails(partyAccountId: number, nokDetails: NextKinDetailsUpdateDTO): Observable<NextKinDetailsUpdateDTO> {
+  updateNokDetails(
+    partyAccountId: number,
+    nokDetails: NextKinDetailsUpdateDTO
+  ): Observable<NextKinDetailsUpdateDTO> {
     return this.api.POST<NextKinDetailsUpdateDTO>(
       `accounts/${partyAccountId}/next-of-kin-details`,
       nokDetails,
@@ -302,4 +318,51 @@ export class EntityService {
     );
   }
 
+  fetchGisQuotationsByAgentCode(agentCode: number): Observable<Quotation> {
+    return this.api.GET<Quotation>(
+      `v2/quotation/agent/${agentCode}`,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
+    );
+  }
+
+  fetchGisPoliciesByAgentCode(agentCode: number): Observable<any> {
+    return this.api.GET<any>(
+      `v2/policies/agent/${agentCode}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  fetchGisClaimsByAgentCode(agentCode: number): Observable<any> {
+    return this.api.GET<any>(
+      `api/v2/claims/agent${agentCode}`,
+      API_CONFIG.GIS_CLAIMS_BASE_URL
+    );
+  }
+
+  fetchGisQuotationsByUser(user: string): Observable<Quotation> {
+    return this.api.GET<Quotation>(
+      `v2/quotation/${user}`,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
+    );
+  }
+
+  fetchGisPoliciesByUser(user: string): Observable<any> {
+    return this.api.GET<any>(
+      `v2/policies/${user}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  fetchGisClaimsByUser(user: string): Observable<any> {
+    return this.api.GET<any>(
+      `api/v2/claims/${user}`,
+      API_CONFIG.GIS_CLAIMS_BASE_URL
+    );
+  }
+}
+
+interface Quotation {
+  message: string;
+  status: string;
+  _embedded: QuotationsDTO_2[];
 }
