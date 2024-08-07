@@ -59,13 +59,7 @@ export class ProductsService {
   getAllProducts():Observable<Products[]>{
     let page = 0;
     let size = 1000;
-   const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-
-    
-    })
+  
 
     return this.api.GET<Products[]>(`api/v1/products?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
