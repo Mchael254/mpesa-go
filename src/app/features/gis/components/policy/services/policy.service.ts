@@ -188,8 +188,8 @@ export class PolicyService {
   editRemarks(data:Remarks){
     return this.api.PUT(`v1/remarks?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
-  deleteRemarks(action:any,policyRiskCode:any,riskCode:any,batchNo:any,schedule:any){
-    return this.api.DELETE(`v1/policies/delete-insured?action=${action}&code=${policyRiskCode}&ipuCode=${riskCode}&polBatchNo=${batchNo}&schedule=${schedule}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  deleteRemarks(data:Remarks){
+    return this.api.DELETE(`v1/remarks?`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   deletePremiumItem(batchNo:any,sectionCode:any){
