@@ -587,7 +587,7 @@
                                     <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
                                         <tr [pSelectableRow]="riskDetails"
                                             [class.p-highlight]="riskDetails === selectedRisk"
-                                            (click)="togglePremiumDetails();getRiskClauses()">
+                                            (click)="togglePremiumDetails();getRiskClauses();getRiskPeril()">
                                             <td class="flexible-header">{{riskDetails.propertyId}}</td>
                                             <td class="flexible-header"></td>
                                             <td class="flexible-header">{{riskDetails.propertyDescription}}</td>
@@ -1710,9 +1710,8 @@
                                                                             id="compute"
                                                                             >
                                                                         <label for="minmax-buttons"
-                                                                            class="col-5 col-form-label ms-3"
-                                                                            id="sectionLabel"> {{'gis.policy.dual_basis'
-                                                                            |
+                                                                            class="col-5 col-form-label required"
+                                                                            id="sectionLabel">{{'gis.policy.id' |
                                                                             translate}}</label>
                                                                         <input class="form-check-input " type="checkbox"
                                                                             id="compute"
@@ -1825,8 +1824,57 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-xl-6">
-
+                                                            <!-- **ROW 9** -->
+                                                            <div class="row" id="sectionRows">
+                                                                <div class="col-xl-6">
+                                                                    <div class="mb-3 row">
+                                                                        <label for="minmax-buttons"
+                                                                            class="col-5 col-form-label  "
+                                                                            id="sectionLabel">
+                                                                            {{'gis.policy.compute' | translate}}</label>
+                                                                        <div class="col-7">
+                                                                            <input class="form-check-input " type="checkbox"
+                                                                                id="compute"
+                                                                                formControlName="logbookAvailable">
+                                                                            <label for="minmax-buttons"
+                                                                                class="col-5 col-form-label ms-3"
+                                                                                id="sectionLabel"> {{'gis.policy.dual_basis'
+                                                                                |
+                                                                                translate}}</label>
+                                                                            <input class="form-check-input " type="checkbox"
+                                                                                id="compute"
+                                                                                formControlName="logbookAvailable">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xl-6">
+                                                                    <div class="mb-3 row">
+                                                                        <label for="minmax-buttons"
+                                                                            class="col-5 col-form-label  "
+                                                                            id="sectionLabel">
+                                                                            {{'gis.policy.indemnity_period_units' |
+                                                                            translate}}</label>
+                                                                        <div class="col-7">
+    
+                                                                            <select
+                                                                                class="form-select form-control-sm selectInput"
+                                                                                id="modelYear" formControlName="modelYear">
+                                                                                <option value="">Days
+                                                                                    {{'gis.policy.premium_items' |
+                                                                                    translate}}
+                                                                                </option>
+                                                                                <option value="">
+                                                                                    Weeks{{'gis.policy.premium_items' |
+                                                                                    translate}}</option>
+                                                                                <option value="">
+                                                                                    Months{{'gis.policy.premium_items' |
+                                                                                    translate}}</option>
+    
+    
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -2655,16 +2703,13 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="collapse" id="certificatesDetails">
-
-                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
-                                            [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
-                                            responsiveLayout="scroll" [autoLayout]="true" class='ui-datatable'>
-
-
+                                        </div> -->
+                                        <p-table #dt4 [value]="filteredRequiredDocs"
+                                            [(selection)]="selectedDocument" selectionMode="single"
+                                            dataKey="code" [paginator]="true" [rows]="10"
+                                            [scrollable]="true" scrollDirection="horizontal"
+                                            [showCurrentPageReport]="true"
+                                            currentPageReportTemplate=" {first} - {last} of {totalRecords}">
                                             <ng-template pTemplate="header">
                                                 <tr>
                                                     <th> {{'gis.policy.id' | translate}}</th>
@@ -2678,24 +2723,19 @@
                                                     <th> {{'gis.policy.wef' | translate}}</th>
 
 
+                                                    <th>Cert type</th>
+                                                    <th>Lots ID</th>
+                                                    <th>Branch</th>
+
                                                 </tr>
                                             </ng-template>
+                                            <ng-template pTemplate="body" let-document let-ri="rowIndex">
+                                                <tr [pSelectableRow]="document"
+                                                    [class.p-highlight]="document === selectedDocument">
 
-                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
-                                                <tr [pSelectableRow]="riskDetails"
-                                                    [class.p-highlight]="riskDetails === selectedRisk">
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-
-
-
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
                                             </ng-template>
                                         </p-table>
@@ -2772,9 +2812,13 @@
                                                         </div>
                                                     </div>
 
-                                                </div>
-                                            </div>
+
+                                        <div class="mt-4 d-flex justify-content-end">
+                                            <button type="button" class="btn btn-primary " id="saveDetails"
+                                                data-bs-dismiss="modal" (click)="createRiskSection()">Save
+                                                Details</button>
                                         </div>
+                                    </div>
 
                                         <!--Add or Edit Certificates Modal -->
                                         <div class="modal fade" id="editCertificates" tabindex="-1" role="dialog"
@@ -2856,33 +2900,38 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <!-- Delete certificate  Modal -->
-                                        <div class="modal fade" id="deleteCertificates" tabindex="-1" role="dialog"
-                                            aria-labelledby="deleteRisk" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content" id="deleteRisk">
-                                                    <div class="modal-body ">
-                                                        <p class="deleteMessage mt-4 mb-4">
-                                                            {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mb-3">
-                                                            <button type="button" class="btn btn-primary px-5"
-                                                                id="delete"
-                                                                data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
-                                                                translate}} </button>
-                                                        </div>
-                                                        <div class="d-flex justify-content-center mb-2">
-                                                            <button type="button" class="btn btn-outline-primary px-5"
-                                                                data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
-                                                                translate}}</button>
-                                                        </div>
-
-
-
+                                            <!-- **ROW 2** -->
+                                            <div class="row mb-1" id="sectionRows">
+                                                <div class="col-xl-5">
+                                                    <div class="mb-1  row">
+                                                        <label for="minmax-buttons" class="required"
+                                                            id="certificateLabel">WEF </label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <input type="date" id="sectionInput"
+                                                            class="form-control form-control-sm mb-1 ms-2"
+                                                           >
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-2"></div>
+                                                <div class="col-xl-5">
+                                                    <div class="mb-1  row">
+                                                        <label for="minmax-buttons" class="required"
+                                                            id="certificateLabel">WET</label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <input type="date" id="sectionInput"
+                                                            class="form-control form-control-sm mb-1 ms-2"
+                                                           >
                                                     </div>
                                                 </div>
                                             </div>
+
+                                        </form>
+                                        <div class="mt-4 d-flex justify-content-end">
+                                            <button type="button" class="btn btn-primary " id="saveDetails"
+                                                data-bs-dismiss="modal">Save
+                                                Details</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2891,6 +2940,122 @@
                         </div>
                     </div>
 
+                    <!--Add or Edit Certificates Modal -->
+                    <div class="modal fade" id="editCertificates" tabindex="-1" role="dialog"
+                        aria-labelledby="editrequiredDocLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered " role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button"
+                                        class="btn-close ms-auto py-2 px-2 float-end"
+                                        data-bs-dismiss="modal" aria-label="Close"
+                                        id="close"></button>
+                                    <h5 class="modal-title mt-2 mb-3 ms-4" id="editCertificates">
+                                        Certificate details</h5>
+                                    <form [formGroup]="scheduleDetailsForm">
+                                        <!-- **ROW 1** -->
+                                        <div class="row mb-1" id="sectionRows">
+                                            <div class="col-xl-5">
+                                                <div class="mb-1  row">
+                                                    <label for="minmax-buttons" class=""
+                                                        id="certificateLabel">Certificate</label>
+                                                </div>
+                                                <div class="row">
+                                                    <input type="text" id="sectionInput"
+                                                        class="form-control form-control-sm mb-1 ms-2"
+                                                        formControlName="chasisNumber">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2"></div>
+                                            <div class="col-xl-5">
+                                                <div class="mb-1  row">
+                                                    <label for="minmax-buttons" class=""
+                                                        id="certificateLabel">Status</label>
+                                                </div>
+                                                <div class="row">
+                                                    <select
+                                                        class="form-select form-control-sm mb-1 ms-2"
+                                                        id="selectedInput"
+                                                        formControlName="yearOfManufacture">
+                                                        <option value=""></option>
+                                                        <option value="">Active</option>
+                                                        <option value="">Cancelled</option>
+                                                        <option value="">Inactive</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- **ROW 2** -->
+                                        <div class="row mb-1" id="sectionRows">
+                                            <div class="col-xl-5">
+                                                <div class="mb-1  row">
+                                                    <label for="minmax-buttons" class="required"
+                                                        id="certificateLabel">WEF </label>
+                                                </div>
+                                                <div class="row">
+                                                    <input type="date" id="sectionInput"
+                                                        class="form-control form-control-sm mb-1 ms-2"
+                                                        formControlName="chasisNumber">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-2"></div>
+                                            <div class="col-xl-5">
+                                                <div class="mb-1  row">
+                                                    <label for="minmax-buttons" class="required"
+                                                        id="certificateLabel">WET</label>
+                                                </div>
+                                                <div class="row">
+                                                    <input type="date" id="sectionInput"
+                                                        class="form-control form-control-sm mb-1 ms-2"
+                                                        formControlName="chasisNumber">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                    <div class="mt-4 d-flex justify-content-end">
+                                        <button type="button" class="btn btn-primary "
+                                            id="saveDetails" data-bs-dismiss="modal">Save
+                                            Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Delete certificate  Modal -->
+                    <div class="modal fade" id="deleteCertificates" tabindex="-1" role="dialog"
+                        aria-labelledby="deleteRisk" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" id="deleteRisk">
+                                <div class="modal-body ">
+                                    <p class="deleteMessage mt-4 mb-4">
+                                        {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}
+                                    </p>
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <button type="button" class="btn btn-primary px-5"
+                                            id="delete"
+                                            data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
+                                            translate}} </button>
+                                    </div>
+                                    <div class="d-flex justify-content-center mb-2">
+                                        <button type="button" class="btn btn-outline-primary px-5"
+                                            data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                                            translate}}</button>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    
                     <!-- REMARKS DETAILS -->
                     <div class="card mt-2 mb-2 riskDetailsCards">
                         <div class="card-body">
