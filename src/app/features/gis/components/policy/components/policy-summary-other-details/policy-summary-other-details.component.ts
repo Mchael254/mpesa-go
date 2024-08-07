@@ -1494,6 +1494,7 @@ openCommissionTranscDeleteModal() {
 
   }
 }
+
   getSubclassPerils(){
     this.policyService.getSubsclassPerils(this.selectedSubclassCode).subscribe({
       next:(res)=>{
@@ -1512,6 +1513,14 @@ openCommissionTranscDeleteModal() {
     })
   }
   
+getRiskPeril(){
+  this.policyService.getRiskPerils().subscribe({
+    next:(res)=>{
+      console.log(this.batchNo)
+      console.log(res)
+    }
+  })
+}
 }
 
 
