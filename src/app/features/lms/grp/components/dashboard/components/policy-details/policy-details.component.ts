@@ -23,6 +23,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   selectedPolicyCode: number;
   memberCode: number;
   endorsementCode: number;
+  productType: string;
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   breadCrumbItems: BreadCrumbItem[] = [];
   selectedRowIndex: number;
@@ -31,7 +32,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   investment: boolean = false;
   investmentWithRider: boolean = false;
   memberBalances: memberBalancesDTO[];
-  memberCovers: MemberCoversDTO;
+  memberCovers: MemberCoversDTO[];
   memberPensionDepReceipts: MemberPensionDepReceiptsDTO[];
   memberDetails: MemberDetailsDTO[];
   detailedMemContrReceipts: DetailedMemContrReceiptsDTO[]
@@ -50,6 +51,8 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.memberCode = this.activatedRoute.snapshot.queryParams['entityCode'];
     this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
     this.endorsementCode = this.activatedRoute.snapshot.queryParams['endorsementCode'];
+    this.productType = this.activatedRoute.snapshot.queryParams['productType'];
+    this.getProductType();
     this.populateYears();
     this.adminDetsTableColumns();
     this.populateBreadCrumbItems();
@@ -62,6 +65,16 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
 
+  }
+
+  /**
+   * The function `getProductType` sets the `gla`(Group life assurance) property to true if the `productType` is 'EARN'.
+   * If productType is 'PENS'(Pension product), that is default. To add for pension with life rider, in and inv with rider
+   */
+  getProductType() {
+    if(this.productType === 'EARN') {
+      this.gla = true
+    }
   }
 
   populateBreadCrumbItems(): void {
@@ -211,8 +224,8 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   }
 
   getMemberCovers() {
-    this.dashboardService.getMemberCovers(this.selectedPolicyCode, this.endorsementCode).subscribe((res: MemberCoversDTO) => {
-    // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO) => {
+    this.dashboardService.getMemberCovers(this.selectedPolicyCode, this.endorsementCode).subscribe((res: MemberCoversDTO[]) => {
+    // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO[]) => {
       this.memberCovers = res;
       log.info("getMemberCovers", this.memberCovers)
     });

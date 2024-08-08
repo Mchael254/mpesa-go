@@ -24,4 +24,27 @@ export class ClaimsService {
     return this.api.POST('group/claims/causation-causes', cause,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
 
+  getPolicyMembers(policyCode: number) {
+    return this.api.GET(`group/claims/${policyCode}/members`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  createNewClaim(claimDets, policyCode: number) {
+    return this.api.POST(`group/claims/create-claim?policyCode=${policyCode}`, claimDets,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  // getClaimDetails(clm_no: string, memberCode: number = null) {
+  //   return this.api.GET(`group/claims/claim-booking-dtls?${clm_no}4&memCode=${memberCode}`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  // }
+  getClaimDetails(clm_no: string, memberCode: number | null = null) {
+    // Create the base URL
+    let url = `group/claims/claim-booking-dtls?clm_no=${encodeURIComponent(clm_no)}`;
+    
+    if (memberCode !== null && memberCode !== undefined) {
+      url += `&memCode=${memberCode}`;
+    }
+  
+    return this.api.GET(url, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+  
+
 }

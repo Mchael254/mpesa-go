@@ -294,6 +294,14 @@ td:first-child {
     text-align: right;
 }
 
+.cvt-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: #FFF;
+    border-radius: 6px;
+}
+
 @media (max-width: 1200px) {
 
     .container,
