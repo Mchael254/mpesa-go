@@ -5,55 +5,55 @@
     </div>
   </div>
   <div class="container">
-    <div><span class="title">Claim information</span></div>
+    <div><span class="title">{{ "lms.grp.claims.claim_information" | translate }}</span></div>
     <div class="row col-12" style="color: black;">
       <div class="col-md-4 col-xs-12 col-sm-12">
         <table style="width: 100%;">
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Product: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.product" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Causation type: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.cause_type" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_type | titlecase }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Incident location: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="col-md-4 col-xs-12 col-sm-12">
-        <table style="width: 100%;">
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Policy: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
-          </tr>
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Causation cause: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
-          </tr>
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Claim report date: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.incident_location" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}</td>
           </tr>
         </table>
       </div>
       <div class="col-md-4 col-xs-12 col-sm-12">
         <table style="width: 100%;">
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Policy member: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.policy" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Death date: </td>
-            <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.causation_cause" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_description | titlecase }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.claim_report_date" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.date_reported | date: 'yyyy-MM-dd' }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-4 col-xs-12 col-sm-12">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.policy_member" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.member_name | titlecase }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.death_date" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.date_of_accident | date: 'yyyy-MM-dd' }}</td>
           </tr>
         </table>
       </div>
     </div>
 
-    <div class="mt-3"><span class="title">Documents</span></div>
+    <div class="mt-3"><span class="title">{{ "lms.grp.claims.documents" | translate }}</span></div>
 
     <div class="doc-container">
       <div class="document" *ngFor="let doc of documents; let i = index">
@@ -75,12 +75,12 @@
 
   </div>
   <div class="button-container" *ngIf="!isClaimAdmitted">
-    <button class="admit-claim" (click)="onAdmitClaim()">Admit claim</button>
+    <button class="admit-claim" (click)="onAdmitClaim()">{{ "lms.grp.claims.admit_claim" | translate }}</button>
   </div>
 
   <ng-container *ngIf="isClaimAdmitted">
     <div class="container" style="margin-top: 10px;">
-      <div><span class="title">Acknowledgement letter</span></div>
+      <div><span class="title">{{ "lms.grp.claims.acknowledgement_letter" | translate }}</span></div>
 
       <div class="download-link" style="display: flex; align-items: center; white-space: nowrap;">
         <a href="#">
@@ -99,7 +99,7 @@
       
         <span class="share-button-container">
           <button class="bottom-button-share" (click)="showShareAcknowledgmentModal()">
-            <span class="text-share">Share</span>
+            <span class="text-share">{{ "lms.grp.claims.share" | translate }}</span>
           </button>
         </span>
       </div>
@@ -107,7 +107,7 @@
     </div>
   
     <div class="button-container">
-      <button class="admit-claim" (click)="onProcessClaim()">Process claim</button>
+      <button class="admit-claim" (click)="onProcessClaim()">{{ "lms.grp.claims.process_claim" | translate }}</button>
     </div>
   </ng-container>
 </div>
@@ -119,7 +119,7 @@
  <div class="modal-dialog modal-dialog-centered modal-lg">
      <div class="modal-content">
          <div class="modal-header">
-          <h5 class="modal-title" id="shareAcknowledgementModal">Acknowledgement details</h5>
+          <h5 class="modal-title" id="shareAcknowledgementModal">{{ "lms.grp.claims.acknowledgement_details" | translate }}</h5>
              <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal"
                  aria-label="Close" (click)="closeShareAcknowledgmentModal()"></button>
          </div>
@@ -129,19 +129,19 @@
                 <div class="col-md-6 col-xs-12 col-sm-12 col-xs-12">
                   <table style="width: 100%;">
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Product: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.product" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Policy: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.policy" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Policy member: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.policy_member" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Causation type: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.cause_type" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                   </table>
@@ -149,23 +149,23 @@
                 <div class="col-md-6 col-xs-12 col-sm-12 col-xs-12">
                   <table style="width: 100%;">
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Actual cause: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.actual_cause" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Claim initialization date: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.claim_initialization_date" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 50%; align-items: left; color: grey;">Incident occurence date: </td>
+                      <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.incident_occurence_date" | translate }}: </td>
                       <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
                     </tr>
                   </table>
                 </div>
               </div>
-              <div class="black-text-form title mt-3">Share acknowledgement letter</div>
+              <div class="black-text-form title mt-3">{{ "lms.grp.claims.share_acknowledgement_letter" | translate }}</div>
              <form [formGroup]="shareAcknowledgementForm" class="black-text-form">
-              <div class="black-text-form mt-2">Select sharing method</div>
+              <div class="black-text-form mt-2">{{ "lms.grp.claims.select_sharing_method" | translate }}</div>
                  <div class="row col-lg-7 col-m-7 col-sm-12 col-xs-12">
                      <div class="col">
                          <div class="custom-radio-button-container">
@@ -173,7 +173,7 @@
                                  class="custom-radio-button"></p-radioButton>
                                  <!-- <input class="form-check-input" type="radio" value="email" formControlName="communicationType"
                               id="email" name="communicationType" /> -->
-                             <label for="email" class="custom-label">Email</label>
+                             <label for="email" class="custom-label">{{ "lms.grp.claims.email" | translate }}</label>
                          </div>
                      </div>
 
@@ -181,7 +181,7 @@
                          <div class="">
                              <p-radioButton formControlName="communicationType" value="sms"
                                  inputId="sms"></p-radioButton>
-                             <label for="sms" class="custom-label">SMS</label>
+                             <label for="sms" class="custom-label">{{ "lms.grp.claims.sms" | translate }}</label>
                          </div>
                      </div>
 
@@ -189,14 +189,14 @@
                          <div class="">
                              <p-radioButton formControlName="communicationType" value="whatsapp"
                                  inputId="whatsapp"></p-radioButton>
-                             <label for="whatsapp" class="custom-label">Whatsapp</label>
+                             <label for="whatsapp" class="custom-label">{{ "lms.grp.claims.whatsapp" | translate }}</label>
                          </div>
                      </div>
                  </div>
 
                  <div *ngIf="shareAcknowledgementForm.get('communicationType').value === 'email'">
                      <div>
-                         <label class="label" for="email">Enter email address<span
+                         <label class="label" for="email">{{ "lms.grp.claims.enter_email_address" | translate }}<span
                                  class="required"></span></label>
                      </div>
                      <div class="form-group col-lg-6 col-m-6 col-sm-12 col-xs-12">
@@ -206,7 +206,7 @@
 
                  <div *ngIf="shareAcknowledgementForm.get('communicationType').value === 'sms'">
                      <div>
-                         <label class="label" for="sms">Enter phone number<span
+                         <label class="label" for="sms">{{ "lms.grp.claims.enter_phone_number" | translate }}<span
                                  class="required"></span></label>
                      </div>
                      <div class="form-group col-lg-6 col-m-6 col-sm-12 col-xs-12">
@@ -216,7 +216,7 @@
 
                  <div *ngIf="shareAcknowledgementForm.get('communicationType').value === 'whatsapp'">
                      <div>
-                         <label class="label" for="whatsapp">Enter whatsapp number<span
+                         <label class="label" for="whatsapp">{{ "lms.grp.claims.enter_whatsapp_number" | translate }}<span
                                  class="required"></span></label>
                      </div>
                      <div class="form-group col-lg-6 col-m-6 col-sm-12 col-xs-12">
@@ -229,7 +229,7 @@
              <!-- </div> -->
          </div>
          <div class="modal-footer">
-             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Share</button>
+             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ "lms.grp.claims.share" | translate }}</button>
          </div>
      </div>
  </div>

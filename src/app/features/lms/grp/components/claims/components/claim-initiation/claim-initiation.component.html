@@ -3,22 +3,22 @@
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   </div>
   <div class="container">
-    <div class="title">Claim initiation</div>
+    <div class="title">{{ "lms.grp.claims.claim_initiation" | translate }}</div>
     <form [formGroup]="claimInitForm">
       <div class="row" style="padding-top: 10px;">
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="product" style="color: black;">Select a product</label>
+            <label for="product" style="color: black;">{{ "lms.grp.claims.select_a_product" | translate }}</label>
             <select class="form-select" [id]="'product'" formControlName="product">
               <option selected="true" disabled="disabled"></option>
-              <option *ngFor="let prod of " [value]="">{{ prod }}</option>
+              <option *ngFor="let prod of productList" [value]="prod.code">{{ prod.description | titlecase }}</option>
             </select>
           </div>
         </div>
 
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="policy" style="color: black;">Select a policy</label>
+            <label for="policy" style="color: black;">{{ "lms.grp.claims.select_a_policy" | translate }}</label>
             <select class="form-select" [id]="'policy'" formControlName="policy">
               <option selected="true" disabled="disabled"></option>
               <option *ngFor="let pol of " [value]="">{{ pol }}</option>
@@ -28,10 +28,10 @@
 
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="policyMember" style="color: black;">Select a policy member</label>
+            <label for="policyMember" style="color: black;">{{ "lms.grp.claims.select_a_policy_member" | translate }}</label>
             <select class="form-select" [id]="'policyMember'" formControlName="policyMember">
               <option selected="true" disabled="disabled"></option>
-              <option *ngFor="let mem of " [value]="">{{ mem }}</option>
+              <option *ngFor="let mem of policyMembers" [value]="mem.policy_member_code">{{ mem.member_name | titlecase }}</option>
             </select>
           </div>
         </div>
@@ -40,26 +40,26 @@
       <div class="row" style="padding-top: 10px;">
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="causationType" style="color: black;">Select a causation type</label>
+            <label for="causationType" style="color: black;">{{ "lms.grp.claims.select_a_causation_type" | translate }}</label>
             <select class="form-select" [id]="'causationType'" formControlName="causationType">
               <option selected="true" disabled="disabled"></option>
-              <option *ngFor="let causation of causationTypes " [value]="causation.cause_code">{{ causation.cause_desc | titlecase }}</option>
+              <option *ngFor="let causation of causationTypes " [value]="causation.cause_type">{{ causation.cause_desc | titlecase }}</option>
             </select>
           </div>
         </div>
 
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="actualCause" style="color: black;">Select the actual cause</label>
+            <label for="actualCause" style="color: black;">{{ "lms.grp.claims.select_the_actual_cause" | translate }}</label>
             <select class="form-select" id="actualCause" formControlName="actualCause" (click)="onSelectClick($event)">
-              <option selected="true" disabled="disabled">Select an option</option>
+              <option selected="true" disabled="disabled">{{ "lms.grp.claims.select_an_option" | translate }}</option>
               <option *ngFor="let actualCause of actualCauses" [value]="actualCause.causation_cause_code">{{ actualCause.death_disability_description | titlecase }}</option>
-              <option class="add-causation-link" [value]="'addCausation'">Add causation
+              <option class="add-causation-link" [value]="'addCausation'">{{ "lms.grp.claims.add_causation" | translate }}
               </option>
               <p-overlayPanel #op>
                 <div class="">
                   <div>
-                    <label for="causationId" style="color: black;">Causation Id</label>
+                    <label for="causationId" style="color: black;">{{ "lms.grp.claims.causation_id" | translate }}</label>
                   </div>
                   <div class="form-group">
                     <div>
@@ -71,7 +71,7 @@
 
                 <div class="mt-2">
                   <div>
-                    <label for="causationDesc" style="color: black;">Causation description</label>
+                    <label for="causationDesc" style="color: black;">{{ "lms.grp.claims.causation_description" | translate }}</label>
                   </div>
                   <div class="form-group">
                     <div>
@@ -85,29 +85,29 @@
                 <div class="row mt-2">
                   <div class="col-md-12">
                     <div>
-                      <label for="gender" style="color: black;">Gender</label>
+                      <label for="gender" style="color: black;">{{ "lms.grp.claims.gender" | translate }}</label>
                     </div>
                       <div class="form-check form-check-inline">
-                          <input class="form-check-input" type="radio" value="F" formControlName="gender"
+                          <input class="form-check-input" type="radio" value="M" formControlName="gender"
                               id="inlineRadio1" name="gender" />
-                          <label class="form-check-label" for="inlineRadio1">Male</label>
+                          <label class="form-check-label" for="inlineRadio1">{{ "lms.grp.claims.male" | translate }}</label>
                       </div>
                       <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" value="F" formControlName="gender"
                               id="inlineRadio2" name="gender" />
-                          <label class="form-check-label" for="inlineRadio2">Female</label>
+                          <label class="form-check-label" for="inlineRadio2">{{ "lms.grp.claims.female" | translate }}</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" value="BOTH" formControlName="gender"
+                        <input class="form-check-input" type="radio" value="B" formControlName="gender"
                             id="inlineRadio2" name="gender" />
-                        <label class="form-check-label" for="inlineRadio2">Both</label>
+                        <label class="form-check-label" for="inlineRadio2">{{ "lms.grp.claims.both" | translate }}</label>
                     </div>
                   </div>
               </div>
 
                 <div class="mt-2">
                   <div>
-                    <label for="claimableMonths" style="color: black;">Minimum claimable months</label>
+                    <label for="claimableMonths" style="color: black;">{{ "lms.grp.claims.minimum_claimable_months" | translate }}</label>
                   </div>
                   <div class="form-group">
                     <div>
@@ -118,7 +118,7 @@
                 </div>
 
                 <div class="button-container">
-                  <button class="book-claim" (click)="addActualType()">Add actual type</button>
+                  <button class="book-claim" (click)="addActualType()">{{ "lms.grp.claims.add_actual_type" | translate }}</button>
                 </div>
                 
               </p-overlayPanel>
@@ -131,7 +131,7 @@
         <div class="col-md-4">
           <div>
             <div>
-              <label for="reportDate" style="color: black;">Claim report date</label>
+              <label for="reportDate" style="color: black;">{{ "lms.grp.claims.claim_report_date" | translate }}</label>
             </div>
             <div class="form-group">
               <div>
@@ -148,7 +148,7 @@
         <div class="col-md-4">
           <div>
             <div>
-              <label for="occurenceDate" style="color: black;">Incident occurence date</label>
+              <label for="occurenceDate" style="color: black;">{{ "lms.grp.claims.incident_occurence_date" | translate }}</label>
             </div>
             <div class="form-group">
               <div>
@@ -162,7 +162,7 @@
 
         <div class="col-md-4">
           <div>
-            <label for="locationOfIncident" style="color: black;">Location of incident</label>
+            <label for="locationOfIncident" style="color: black;">{{ "lms.grp.claims.location_of_incident" | translate }}</label>
           </div>
           <div class="form-group">
             <div>
@@ -177,7 +177,7 @@
   </div>
 
   <div class="container mt-2">
-    <div class="title">Upload documents</div>
+    <div class="title">{{ "lms.grp.claims.upload_documents" | translate }}</div>
     <div class="row" style="padding-top: 10px;">
       <div class="col-md-4 col-12">
         <div class="d-flex align-items-center flex-wrap">
@@ -236,6 +236,6 @@
   </div>
 
   <div class="button-container">
-    <button class="book-claim" (click)="submitClaimInitFormData()">Book claim</button>
+    <button class="book-claim" (click)="submitClaimInitFormData()">{{ "lms.grp.claims.book_claim" | translate }}</button>
   </div>
 </div>
