@@ -46,20 +46,20 @@ return throwError(errorMessage);
 
     /* PERILS */
     getAllPerils(): Observable<Peril[]>{
-      return this.api.GET<Peril[]>(`perils?pageNo=0&pageSize=100`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      return this.api.GET<Peril[]>(`api/v1/perils?pageNo=0&pageSize=100`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     getPeril(code: any): Observable<Peril>{
-      return this.api.GET<Peril>(`perils/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      return this.api.GET<Peril>(`api/v1/perils/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     createPeril(data:Peril[]) {
       console.log(JSON.stringify(data))
-      return this.api.POST<Peril[]>(`perils`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
+      return this.api.POST<Peril[]>(`api/v1/perils`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
@@ -67,14 +67,14 @@ return throwError(errorMessage);
       }
       updatePeril(data:Peril,id:any){
         console.log(JSON.stringify(data))
-        return this.api.PUT<Peril>(`perils/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
+        return this.api.PUT<Peril>(`api/v1/perils/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
         )
       }
       deletePeril(id:any){
-        return this.api.DELETE<Peril>(`perils/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+        return this.api.DELETE<Peril>(`api/v1/perils/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)

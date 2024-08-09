@@ -587,7 +587,7 @@
                                     <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
                                         <tr [pSelectableRow]="riskDetails"
                                             [class.p-highlight]="riskDetails === selectedRisk"
-                                            (click)="togglePremiumDetails();getRiskClauses()">
+                                            (click)="togglePremiumDetails();getRiskClauses();getRiskPeril()">
                                             <td class="flexible-header">{{riskDetails.propertyId}}</td>
                                             <td class="flexible-header"></td>
                                             <td class="flexible-header">{{riskDetails.propertyDescription}}</td>
@@ -2175,7 +2175,7 @@
                                                         <button type="button" id="icon" class="btn btn-primary"
                                                             data-bs-toggle="collapse" data-bs-target="#riskPerils"
                                                             aria-expanded="false" aria-controls="riskPerils"
-                                                            [attr.aria-expanded]="!riskPerils"
+                                                            [attr.aria-expanded]="riskPerils"
                                                             (click)="toggleRiskPerils()">
                                                             <i class="fa-solid fa-chevron-down"></i>
                                                         </button>
@@ -2189,7 +2189,7 @@
                                     </div>
                                     <div class="collapse" id="riskPerils">
 
-                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                        <p-table #dt2 [value]="policyRiskPeril" dataKey="code" selectionMode="single"
                                             [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
                                             responsiveLayout="scroll" [autoLayout]="true">
 
@@ -2213,14 +2213,17 @@
                                                 </tr>
                                             </ng-template>
 
-                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
+                                            <ng-template pTemplate="body" let-data let-ri="rowIndex">
                                                 <tr [pSelectableRow]="riskDetails"
                                                     [class.p-highlight]="riskDetails === selectedRisk">
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{data.perilDescription}}</td>
+                                                    <td>{{data.description}}</td>
+                                                    <td>{{data.perilType}}</td>
+                                                    <td>{{data.sumInsuredOrLimit}}</td>
+                                                    <td>{{data.personLimit}}</td>
+                                                    <td>{{data.perilLimit}}</td>
+                                                    <td>{{data.claimLimit}}</td>
+                                                    <td>{{data.excessType}}</td>
 
 
                                                 </tr>
