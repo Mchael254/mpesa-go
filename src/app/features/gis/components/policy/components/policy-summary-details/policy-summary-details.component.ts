@@ -35,10 +35,22 @@ export class PolicySummaryDetailsComponent {
   clientDetails:ClientDTO;
   allClients:any;
   productDescription:any;
-
+  policyNumber:any;
+  endorsementNo:any;
+  policyStatus:string;
+  policyType:string;
+  totalSumInsured:number;
+  branch:any;
+  basicPremium:any;
   insureds:any;
-
-  policySummary:any
+  wet:any;
+  wef:any;
+  authorizedStatus:string;
+  underWritingOnly:string;
+  currency:string;
+  policySummary:any;
+  transactionType:any;
+  renewalDate:any;
 
   constructor(
     public policyService:PolicyService,
@@ -52,7 +64,7 @@ export class PolicySummaryDetailsComponent {
 
   ngOnInit(): void {
     this.getUtil();
-    this.getPolicyDetails();
+    // this.getPolicyDetails();
     this.getPolicy()
   }
   ngOnDestroy(): void { }
@@ -102,7 +114,15 @@ getPolicy() {
           log.debug("Get Policy Endpoint Response", this.policyResponse)
           this.policyDetailsData = this.policyResponse.content[0]
           log.debug("Policy Details data get policy", this.policyDetailsData)
+          this.policyNumber = this.policyDetailsData.policyNo
+          this.endorsementNo = this.policyDetailsData.endorsementNo
+          this.policyType = this.policyDetailsData.policyType
+          this.totalSumInsured = this.policyDetailsData.totalSumInsured
+          this.basicPremium = this.policyDetailsData.basicPremium
+          this.policyStatus = this.policyDetailsData.policyStatus
+          this.productDescription = this.policyDetailsData.product.description
           this.insureds = this.policyDetailsData.insureds[0]
+
           log.debug("Insureds", this.insureds)
           this.insureds = this.insureds.client.firstName + " " + this.insureds.client.lastName
           log.debug("Insureds", this.insureds)

@@ -21,6 +21,7 @@ import { PremiumRateService } from '../../../setups/services/premium-rate/premiu
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { RequiredDocumentService } from '../../../setups/services/required-documents/required-document.service';
+import { PerilsService } from '../../../setups/services/perils-territories/perils/perils.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -135,6 +136,10 @@ export class PolicySummaryOtherDetailsComponent {
   action: any;
   premiumItemCode:any;
   selectedTransaction:any;
+  subperils:any;
+
+  policyRiskPeril:any[]=[]
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -162,7 +167,7 @@ export class PolicySummaryOtherDetailsComponent {
     public subclassService:SubclassesService,
     public riskClauseService:RiskClausesService,
     public requiredDocumentService: RequiredDocumentService,
-
+    public perilService:PerilsService
 
 
   ) { }
@@ -1209,6 +1214,7 @@ openPremiumDeleteModal() {
 
 toggleRiskPerils(){
   this.riskPerils = !this.riskPerils
+ 
 }
 
 
@@ -1489,6 +1495,70 @@ openCommissionTranscDeleteModal() {
 
   }
 }
-}
+
+  getSubclassPerils(){
+    this.policyService.getSubsclassPerils(this.selectedSubclassCode).subscribe({
+      next:(res)=>{
+        this.subperils = res
+        this.subperils = this.subperils.content
+        console.log(this.subperils)
+        this.subperils.forEach(element => {
+          this.perilService.getPeril(element.perilCode).subscribe({
+            next:(res)=>{
+              console.log(res)
+            }
+          })
+       
+        });
+      }
+    })
+  }
+  
+getRiskPeril(){
+  console.log("selected risk (Risk Peril)", this.selectedRisk);
+  
+  if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
+  }else{
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+    if (!risk) {
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
+  }
+    this.policyService.getRiskPerils().subscribe({
+      next:(res)=>{
+        this.subperils = res
+        this.subperils = this.subperils._embedded
+        console.log(this.batchNo)
+        
+          this.subperils.forEach(perilArray => {   
+              perilArray.forEach(element => {
+                // console.log(element.ipuCode, "perils");
+                //  console.log(this.SelectedRiskCode)
+                
+                if(element.polBatchNo === 233471313){
+                 
+                  if(element.ipuCode === 20235954513){
+                    this.policyRiskPeril.push(element)
+                    this.subperils =element 
+                    console.log(element,'risk perils')
+                  }
+                }
+              });
+            
+          });
+        
+      }
+    });
+  }
+  
+
+   
+    }
+  }
+
 
 

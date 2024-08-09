@@ -16,8 +16,8 @@
                             <label for="client" class="required product-label" id="client">{{'gis.policy.client' |
                                 translate}}</label>
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="clientCode" [(ngModel)]="clientName" data-bs-toggle="modal"
-                                data-bs-target="#clientModal" readonly >
+                                formControlName="clientCode" [(ngModel)]="clientName" data-bs-toggle="modal" placeholder="Select a client "
+                                data-bs-target="#clientModal" readonly  >
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('clientCode').hasError('required') && policyProductForm.get('clientCode').touched"
@@ -28,12 +28,13 @@
                         <div class=" mb-1 col-sm-4 col-12">
 
                             <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault"
-                                #checkbox (change)="toggleJointAccountSelect(checkbox.checked)">
+                                #checkbox (change)="toggleJointAccountSelect(checkbox.checked)"  pTooltip="Select to add a joint account" 
+                                tooltipPosition="left">
 
                             <label class="product-label">{{'gis.policy.joint_account' | translate}}</label>
                             <input type="text" id="jointAccountInput" class="form-control form-control-sm mb-1"
                                 formControlName="source" [value]="jointAccountCode " [(ngModel)]="jointAccountName"
-                                data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly>
+                                data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly >
 
                             <!-- <select class="form-select form-control-sm mb-1 ms-n4 quote-input" id="jointAccountInput"
                                 formControlName="source">
