@@ -419,88 +419,31 @@
     </ng-container>
 
         <ng-container *ngIf="gla">
+            <div>
             <div class="title-desc" style="font-size: 20px;">Cover types</div>
-            <div class="box-container">
-                <div class="box">
-                    <label class="active-label">Active</label>
+            <div class="cvt-container">
+                <div *ngFor="let memCovers of memberCovers; let i = index" class="box">
+                    <label class="active-label">{{memberCovers[0]?.pcm_status | titlecase}}</label>
                     <div class="scroll-content">
                     <table>
                         <tr>
                             <td>Cover:</td>
-                            <td class="td-data">Death benefit</td>
+                            <td class="td-data">{{memberCovers[0]?.cvt_desc | titlecase}}</td>
                         </tr>
                         <tr>
                             <td>Coverage period:</td>
-                            <td class="td-data">10/10/2010-10/10/2030</td>
+                            <td class="td-data">{{ memberCovers[0]?.pcm_cover_wef_date }} - {{ memberCovers[0]?.pcm_cover_wet_date }}</td>
                         </tr>
                         <tr>
                             <td>Sum assured:</td>
-                            <td class="td-data">Ksh. 97,865</td>
+                            <td class="td-data">{{memberCovers[0]?.pcm_sa | number}}</td>
                         </tr>
                     </table>
-                </div>
-                </div>
-
-                <div class="box">
-                    <label class="active-label">Active</label>
-                    <div class="scroll-content">
-                    <table>
-                        <tr>
-                            <td>Cover:</td>
-                            <td class="td-data">Death benefit</td>
-                        </tr>
-                        <tr>
-                            <td>Coverage period:</td>
-                            <td class="td-data">10/10/2010-10/10/2030</td>
-                        </tr>
-                        <tr>
-                            <td>Sum assured:</td>
-                            <td class="td-data">Ksh. 97,865</td>
-                        </tr>
-                    </table>
-                </div>
-                </div>
-
-                <div class="box">
-                    <label class="active-label">Active</label>
-                    <div class="scroll-content">
-                    <table>
-                        <tr>
-                            <td>Cover:</td>
-                            <td class="td-data">Death benefit</td>
-                        </tr>
-                        <tr>
-                            <td>Coverage period:</td>
-                            <td class="td-data">10/10/2010-10/10/2030</td>
-                        </tr>
-                        <tr>
-                            <td>Sum assured:</td>
-                            <td class="td-data">Ksh. 97,865</td>
-                        </tr>
-                    </table>
-                </div>
-                </div>
-
-                <div class="box">
-                    <label class="active-label">Active</label>
-                    <div class="scroll-content">
-                    <table>
-                        <tr>
-                            <td>Cover:</td>
-                            <td class="td-data">Death benefit</td>
-                        </tr>
-                        <tr>
-                            <td>Coverage period:</td>
-                            <td class="td-data">10/10/2010-10/10/2030</td>
-                        </tr>
-                        <tr>
-                            <td>Sum assured:</td>
-                            <td class="td-data">Ksh. 97,865</td>
-                        </tr>
-                    </table>
-                </div>
+                    </div>
                 </div>
             </div>
+            </div>
+    
         </ng-container>
 
     </div>
@@ -524,23 +467,23 @@
                     <table class="receipt-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.employee_amount</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.employee_amount | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer amount:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Cost of benefits:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.cost_of_past_benefits</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.total_amount</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
                         </tr>
                     </table>
                 </div>
@@ -551,23 +494,23 @@
                     <table class="receipt-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.employer_amount</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.employer_amount | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer amount:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Cost of benefits:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.cost_of_past_benefits</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total contribution:</td>
-                            <td class="table-label-desc">detailedMemContrReceipts[0]?.total_amount</td>
+                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
                         </tr>
                     </table>
                 </div>
