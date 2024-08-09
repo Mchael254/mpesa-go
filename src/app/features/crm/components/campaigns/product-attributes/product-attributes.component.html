@@ -45,7 +45,8 @@
                  (click)="openDefineProductModal()"></i>
             </span>
             <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
+              <i class="pi pi-pencil"
+                 (click)="editProduct()"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -121,7 +122,8 @@
                  (click)="openDefineProductAttributesModal()"></i>
             </span>
             <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
+              <i class="pi pi-pencil"
+                 (click)="editProductAttribute()"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -184,8 +186,7 @@
   #campaignClientProduct
   id="campaignClientProduct"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
+  aria-labelledby="exampleModalLabel">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
@@ -198,43 +199,85 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="row my-3">
-          <div class="col-md-6">
-            <label class="form-label w-100">System name</label>
-            <input
-              type="text"
-              class="form-control"
-            />
+        <form [formGroup]="createProductForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.selectAttribute === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="sysName">System name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sysName"
+                  formControlName="sysName"
+                  [ngClass]="{ 'is-invalid': g['sysName']?.invalid && (g['sysName']?.dirty || g['sysName']?.touched) }"
+                />
+                <div *ngIf="g['sysName']?.invalid && (g['sysName']?.dirty || g['sysName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['sysName']?.errors['required']">System name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.productName === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="productName">Product name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="productName"
+                  formControlName="productName"
+                  [ngClass]="{ 'is-invalid': g['productName']?.invalid && (g['productName']?.dirty || g['productName']?.touched) }"
+                />
+                <div *ngIf="g['productName']?.invalid && (g['productName']?.dirty || g['productName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['productName']?.errors['required']">Product name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="shortDescription">Short description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="shortDescription"
+                  formControlName="shortDescription"
+                  [ngClass]="{ 'is-invalid': g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched) }"
+                />
+                <div *ngIf="g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['shortDescription']?.errors['required']">Short description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="description">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description"
+                  formControlName="description"
+                  [ngClass]="{ 'is-invalid': g['description']?.invalid && (g['description']?.dirty || g['description']?.touched) }"
+                />
+                <div *ngIf="g['description']?.invalid && (g['description']?.dirty || g['selectAttribute']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.narration === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="narration">Narration</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="narration"
+                  formControlName="narration"
+                  [ngClass]="{ 'is-invalid': g['narration']?.invalid && (g['narration']?.dirty || g['narration']?.touched) }"
+                />
+                <div *ngIf="g['narration']?.invalid && (g['narration']?.dirty || g['narration']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['narration']?.errors['required']">Narration is required</div>
+                </div>
+              </div>
+            </ng-container>
           </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Product name</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Short description</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Description</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Narration</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-        </div>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Save details</button>
@@ -249,8 +292,7 @@
   #campaignClientProductAttributes
   id="campaignClientProductAttributes"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
+  aria-labelledby="exampleModalLabel">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
@@ -263,36 +305,68 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="row my-3">
-          <div class="col-md-12">
-            <label class="form-label w-100">Select attribute</label>
-            <select class="form-select">
-              <option value=""></option>
-              <option value=""></option>
-            </select>
+        <form [formGroup]="createProductAttributesForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.selectAttribute === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="selectAttribute">Select attribute</label>
+                <select class="form-select" id="selectAttribute" formControlName="selectAttribute"
+                [ngClass]="{ 'is-invalid': f['selectAttribute']?.invalid && (f['selectAttribute']?.dirty || f['selectAttribute']?.touched) }">
+                  <option value=""></option>
+                  <option value=""></option>
+                </select>
+                <div *ngIf="f['selectAttribute']?.invalid && (f['selectAttribute']?.dirty || f['selectAttribute']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['selectAttribute']?.errors['required']">Attribute is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.productAttributeCheck === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="productAttributeCheck">Check</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="productAttributeCheck"
+                  formControlName="productAttributeCheck"
+                  [ngClass]="{ 'is-invalid': f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched) }"
+                />
+                <div *ngIf="f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['productAttributeCheck']?.errors['required']">Check is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.minValue === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="minValue">Min value</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="minValue"
+                  formControlName="minValue"
+                  [ngClass]="{ 'is-invalid': f['minValue']?.invalid && (f['minValue']?.dirty || f['minValue']?.touched) }"
+                />
+                <div *ngIf="f['minValue']?.invalid && (f['minValue']?.dirty || f['minValue']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['minValue']?.errors['required']">Min value is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.maxValue === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="maxValue">Max value</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="maxValue"
+                  formControlName="maxValue"
+                  [ngClass]="{ 'is-invalid': f['maxValue']?.invalid && (f['maxValue']?.dirty || f['maxValue']?.touched) }"
+                />
+                <div *ngIf="f['maxValue']?.invalid && (f['maxValue']?.dirty || f['maxValue']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['maxValue']?.errors['required']">Max value is required</div>
+                </div>
+              </div>
+            </ng-container>
           </div>
-          <div class="col-md-12">
-            <label class="form-label w-100">Check</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-12">
-            <label class="form-label w-100">Min value</label>
-            <input
-              type="number"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-12">
-            <label class="form-label w-100">Max value</label>
-            <input
-              type="number"
-              class="form-control"
-            />
-          </div>
-        </div>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Save details</button>
