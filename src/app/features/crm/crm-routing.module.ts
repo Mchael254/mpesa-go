@@ -24,6 +24,11 @@ import { CampaignDefinitionComponent } from './components/campaigns/campaign-def
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
 import { ClientAttributesComponent } from "./components/campaigns/client-attributes/client-attributes.component";
 import { ProductAttributesComponent } from "./components/campaigns/product-attributes/product-attributes.component";
+import {ActivitiesComponent} from "./components/activity-management/activities/activities.component";
+import {ActivityTypesComponent} from "./components/activity-management/activity-types/activity-types.component";
+import {
+  PriorityLevelsActivityStatusComponent
+} from "./components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component";
 
 const routes: Routes = [
   {
@@ -121,6 +126,18 @@ const routes: Routes = [
   {
     path: 'product-attributes',
     component: ProductAttributesComponent,
+  },
+  {
+    path: 'activities',
+    component: ActivitiesComponent,
+  },
+  {
+    path: 'activity-types',
+    component: ActivityTypesComponent,
+  },
+  {
+    path: 'priority-level-activity-status',
+    component: PriorityLevelsActivityStatusComponent,
   },
 ];
 
