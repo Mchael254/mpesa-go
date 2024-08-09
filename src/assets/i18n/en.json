@@ -181,7 +181,11 @@
     "Product Attributes": "Product Attributes",
     "quick_quote": "Quick quote",
     "service_requests": "Service requests",
-    "downloads": "Downloads"
+    "downloads": "Downloads",
+    "Activity Management": "Activity Management",
+    "Activities": "Activities",
+    "Activity Types": "Activity Types",
+    "Priority level & Activity status": "Priority level & Activity status"
   },
   "crm": {
     "activity": "Activity",

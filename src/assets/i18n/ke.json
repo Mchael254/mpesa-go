@@ -181,7 +181,11 @@
     "Product Attributes": "Sifa za Bidhaa",
     "quick_quote": "Nukuu ya haraka",
     "service_requests": "Maombi ya huduma",
-    "downloads": "Vipakuliwa"
+    "downloads": "Vipakuliwa",
+    "Activity Management": "Usimamizi wa Shughuli",
+    "Activities": "Shughuli",
+    "Activity Types": "Aina za Shughuli",
+    "Priority level & Activity status": "Kiwango cha Kipaumbele & Hali ya Shughuli"
   },
   "crm": {
     "activity": "Shughuli",
