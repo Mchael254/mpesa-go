@@ -1,43 +1,50 @@
 <div class="entity-container">
-    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-    <div class="p-2">
-        <p-tabView>
-            <p-tabPanel header="Overview">
-              <ng-container
-                *ngIf="entityPartyIdDetails && entityAccountIdDetails
-                && partyAccountDetails && unAssignedPartyTypes"
-              >
-                <app-entity-basic-info
-                  [unAssignedPartyTypes]="unAssignedPartyTypes"
-                  [partyAccountDetails]="partyAccountDetails"
-                  [entityAccountIdDetails]="entityAccountIdDetails"
-                  [entityPartyIdDetails]="entityPartyIdDetails"
-                  (fetchTransactions)="fetchTransactions($event)"
-                  (assignRole)="onAssignRole($event)"
-                  (partyTypeRole)="selectPartyTypeRole($event)"
-                ></app-entity-basic-info>
-              </ng-container>
+  <ngx-spinner
+    type="ball-clip-rotate-multiple"
+    [fullScreen]="false"
+    color="#00529B"
+    size="medium"
+    bdColor="rgba(255, 255, 255, 0.966)"
+  ></ngx-spinner>
+  <div class="p-2">
+    <p-tabView>
+      <p-tabPanel header="Overview">
+        <ng-container
+          *ngIf="
+            entityPartyIdDetails &&
+            entityAccountIdDetails &&
+            partyAccountDetails &&
+            unAssignedPartyTypes
+          "
+        >
+          <app-entity-basic-info
+            [unAssignedPartyTypes]="unAssignedPartyTypes"
+            [partyAccountDetails]="partyAccountDetails"
+            [entityAccountIdDetails]="entityAccountIdDetails"
+            [entityPartyIdDetails]="entityPartyIdDetails"
+            (assignRole)="onAssignRole($event)"
+            (partyTypeRole)="selectPartyTypeRole($event)"
+          ></app-entity-basic-info>
+        </ng-container>
 
-<!--                <ng-container *ngIf="partyAccountDetails && bankDetails">-->
-                <ng-container *ngIf="partyAccountDetails">
-                  <app-entity-other-details
-                    [countries]="countries"
-                    [partyAccountDetails]="partyAccountDetails"
-                    [bankDetails]="bankDetails"
-                    [bankBranch]="bankBranchDetails"
-                    [wealthAmlDetails]="wealthAmlDetails"
-                    [nokList]="nokDetails"
-                    [states]="states"
-                    (refreshData)="refreshData()"
-                  ></app-entity-other-details>
-                </ng-container>
-
-            </p-tabPanel>
-            <p-tabPanel header="Transactions">
-                <app-entity-transactions
-                  [clientName]="entityPartyIdDetails?.name"
-                 ></app-entity-transactions>
-            </p-tabPanel>
-        </p-tabView>
-    </div>
+        <ng-container *ngIf="partyAccountDetails">
+          <app-entity-other-details
+            [countries]="countries"
+            [partyAccountDetails]="partyAccountDetails"
+            [bankDetails]="bankDetails"
+            [bankBranch]="bankBranchDetails"
+            [wealthAmlDetails]="wealthAmlDetails"
+            [nokList]="nokDetails"
+            [states]="states"
+            (refreshData)="refreshData()"
+          ></app-entity-other-details>
+        </ng-container>
+      </p-tabPanel>
+      <p-tabPanel header="Transactions">
+        <app-entity-transactions
+          [clientName]="entityPartyIdDetails?.name"
+        ></app-entity-transactions>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
 </div>
