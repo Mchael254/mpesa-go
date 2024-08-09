@@ -24,6 +24,7 @@ export class LandingDashboardComponent implements OnInit {
   policyNumber: string;
   policyCode: number;
   endorsementCode: number;
+  productType: string;
 
   constructor(
     private router: Router,
@@ -73,7 +74,8 @@ export class LandingDashboardComponent implements OnInit {
         entityCode: this.entityCode,
         policyNumber: this.policyNumber ,
         policyCode: this.policyCode,
-        endorsementCode: this.endorsementCode
+        endorsementCode: this.endorsementCode,
+        productType: this.productType
       }
     });
   }
@@ -84,6 +86,7 @@ export class LandingDashboardComponent implements OnInit {
       this.policyNumber = this.memberPolicies[0].policy_number;
       this.policyCode = this.memberPolicies[0].policy_code;
       this.endorsementCode = this.memberPolicies[0].endorsement_code;
+      this.productType = this.memberPolicies[0].product_type;
     })
   }
 
