@@ -6,18 +6,22 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges, ViewChild
+  SimpleChanges,
+  ViewChild,
 } from '@angular/core';
-import {CountryDto, StateDto} from "../../../../../../shared/data/common/countryDto";
-import {Logger} from "../../../../../../shared/services";
-import {EditBankFormComponent} from "./edit-bank-form/edit-bank-form.component";
-import {EditWealthFormComponent} from "./edit-wealth-form/edit-wealth-form.component";
-import {EditAmlFormComponent} from "./edit-aml-form/edit-aml-form.component";
-import {EditNokFormComponent} from "./edit-nok-form/edit-nok-form.component";
-import {BankBranchDTO} from "../../../../../../shared/data/common/bank-dto";
-import {SectorDTO} from "../../../../../../shared/data/common/sector-dto";
-import {SectorService} from "../../../../../../shared/services/setups/sector/sector.service";
-import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {
+  CountryDto,
+  StateDto,
+} from '../../../../../../shared/data/common/countryDto';
+import { Logger } from '../../../../../../shared/services';
+import { EditBankFormComponent } from './edit-bank-form/edit-bank-form.component';
+import { EditWealthFormComponent } from './edit-wealth-form/edit-wealth-form.component';
+import { EditAmlFormComponent } from './edit-aml-form/edit-aml-form.component';
+import { EditNokFormComponent } from './edit-nok-form/edit-nok-form.component';
+import { BankBranchDTO } from '../../../../../../shared/data/common/bank-dto';
+import { SectorDTO } from '../../../../../../shared/data/common/sector-dto';
+import { SectorService } from '../../../../../../shared/services/setups/sector/sector.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 
 const log = new Logger('EntityOtherDetails');
 
@@ -27,12 +31,13 @@ const log = new Logger('EntityOtherDetails');
   styleUrls: ['./entity-other-details.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntityOtherDetailsComponent implements OnInit, OnChanges {
-
+export class EntityOtherDetailsComponent implements OnInit {
   @ViewChild('closeModalButton') closeModalButton;
 
-  @ViewChild(EditBankFormComponent) editBankFormComponent!: EditBankFormComponent;
-  @ViewChild(EditWealthFormComponent) editWealthFormComponent!: EditWealthFormComponent;
+  @ViewChild(EditBankFormComponent)
+  editBankFormComponent!: EditBankFormComponent;
+  @ViewChild(EditWealthFormComponent)
+  editWealthFormComponent!: EditWealthFormComponent;
   @ViewChild(EditAmlFormComponent) editAmlFormComponent!: EditAmlFormComponent;
   @ViewChild(EditNokFormComponent) editNokFormComponent!: EditNokFormComponent;
 
@@ -42,14 +47,17 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   @Input() bankBranch: BankBranchDTO;
   @Input() wealthAmlDetails: any;
   @Input() states: StateDto[];
-  // @Input() nokDetails: any;
-  @Input() nokList: any[]
-  @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> = new EventEmitter<any>();
-  @Output('fetchPaymentDetails') fetchPaymentDetails: EventEmitter<any> = new EventEmitter<any>();
-  @Output('refreshData') refreshData: EventEmitter<any> = new EventEmitter<any>();
+  @Input() nokList: any[];
+
+  @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> =
+    new EventEmitter<any>();
+  @Output('fetchPaymentDetails') fetchPaymentDetails: EventEmitter<any> =
+    new EventEmitter<any>();
+  @Output('refreshData') refreshData: EventEmitter<any> =
+    new EventEmitter<any>();
   activeTab: string = 'contact';
 
-  additionalInfoTabs: { index: number, tabName: string }[] = [
+  additionalInfoTabs: { index: number; tabName: string }[] = [
     { index: 0, tabName: 'contact' },
     { index: 1, tabName: 'bank' },
     { index: 2, tabName: 'wealth' },
@@ -63,13 +71,8 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   constructor(
     private sectorService: SectorService,
-    private globalMessagingService: GlobalMessagingService,
-  ) {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // this.getNokList();
-  }
+    private globalMessagingService: GlobalMessagingService
+  ) {}
 
   ngOnInit(): void {
     this.getNokList();
@@ -78,13 +81,14 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
 
   getCountryName(id: number): string {
     if (this.countries?.length > 0) {
-      const country: CountryDto = this.countries.filter((item: CountryDto):boolean => item.id === id)[0];
-      return country?.name
+      const country: CountryDto = this.countries.filter(
+        (item: CountryDto): boolean => item.id === id
+      )[0];
+      return country?.name;
     }
   }
 
   getWealthAmlDetails(): void {
-    log.info(`fetch wealth aml details`)
     this.fetchWealthAmlDetails.emit();
   }
 
@@ -112,15 +116,24 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
       countryId: this.partyAccountDetails?.address?.country_id,
     };
 
-    switch(this.activeTab) {
+    switch (this.activeTab) {
       case 'bank':
-        this.editBankFormComponent.prepareUpdateDetails(this.bankDetails, extras);
+        this.editBankFormComponent.prepareUpdateDetails(
+          this.bankDetails,
+          extras
+        );
         break;
       case 'wealth':
-        this.editWealthFormComponent.prepareUpdateDetails(this.wealthAmlDetails, extras);
+        this.editWealthFormComponent.prepareUpdateDetails(
+          this.wealthAmlDetails,
+          extras
+        );
         break;
       case 'aml':
-        this.editAmlFormComponent.prepareUpdateDetails(this.wealthAmlDetails, extras);
+        this.editAmlFormComponent.prepareUpdateDetails(
+          this.wealthAmlDetails,
+          extras
+        );
         break;
       case 'nok':
         // code block
@@ -128,7 +141,6 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
       default:
       // code block
     }
-
   }
 
   /**
@@ -151,32 +163,33 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
       partyAccountId: this.partyAccountDetails.id,
       countryId: this.partyAccountDetails?.country?.id,
     };
-    const nokToUpdate = this.nokList.filter(el => el.id === nok.id)[0];
+    const nokToUpdate = this.nokList.filter((el) => el.id === nok.id)[0];
     this.editNokFormComponent.prepareUpdateDetails(nokToUpdate, extras);
   }
 
   /**
    * This method fetches a list of sectors for patching and selecting
    */
-  fetchSectors():void {
+  fetchSectors(): void {
     this.sectorService.getSectors().subscribe({
       next: (sectors) => {
         this.sectorData = sectors;
         // this.cdr.detectChanges();
-        this.sector = this.sectorData.filter((el) => el.id === this.wealthAmlDetails.sector_id)[0];
+        this.sector = this.sectorData.filter(
+          (el) => el.id === this.wealthAmlDetails.sector_id
+        )[0];
       },
       error: (err) => {
-        const errorMessage = err?.error?.message ?? err.message
-        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
-      }
-    })
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   protected readonly status = status;
 }
 
-
 export interface Extras {
-  partyAccountId: number,
-  countryId?: number,
+  partyAccountId: number;
+  countryId?: number;
 }

@@ -5,15 +5,28 @@
       <a class="navbar-brand" href="#">
         <span class="d-none">Navbar</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <li
+            class="nav-item"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
             <a
               class="nav-link active"
-              aria-current="page" href="javascript:void(0)"
+              aria-current="page"
+              href="javascript:void(0)"
             >
               <i
                 class="fa-solid fa-house-chimney"
@@ -30,7 +43,10 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-briefcase" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-briefcase"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.Products" | translate | uppercase }}
             </a>
           </li>
@@ -42,7 +58,10 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-server" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-server"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.service_requests" | translate | uppercase }}
             </a>
           </li>
@@ -54,12 +73,14 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-download" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-download"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.downloads" | translate | uppercase }}
             </a>
           </li>
         </ul>
-
       </div>
     </div>
   </nav>
@@ -78,34 +99,39 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              href="#"
-              routerLink="/home/dashboard"
-              style="font-size: 12px">
-              <i class="fa-solid fa-house-chimney" style="padding-right: 6px"></i>
+              routerLink="/home/lms/grp/dashboard/admin"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-house-chimney"
+                style="padding-right: 6px"
+              ></i>
               {{ "base.dashboard" | translate | uppercase }}
             </a>
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              class="nav-link"
+              routerLink="/home/lms/grp/dashboard/quick-quote"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-quote-right" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-quote-right"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.quick_quote" | translate | uppercase }}
             </a>
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              class="nav-link"
+              routerLink="/home/lms/grp/dashboard/products"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-briefcase" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-briefcase"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.Products" | translate | uppercase }}
             </a>
           </li>
@@ -117,7 +143,10 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-server" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-server"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.service_requests" | translate | uppercase }}
             </a>
           </li>
@@ -129,11 +158,13 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
-              <i class="fa-solid fa-solid fa-download" style="padding-right: 6px; font-size: 16px"></i>
+              <i
+                class="fa-solid fa-solid fa-download"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
               {{ "base.downloads" | translate | uppercase }}
             </a>
           </li>
-
         </ul>
       </div>
     </div>

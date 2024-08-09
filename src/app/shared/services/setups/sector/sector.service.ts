@@ -24,8 +24,6 @@ export class SectorService {
    * @returns {SectorDTO[]} List of sector
    */
   getSectors(organizationId?: number): Observable<SectorDTO[]> {
-    log.info('Fetching Sectors');
-
     const paramsObj: { [param: string]: string } = {};
 
     if (organizationId !== undefined && organizationId !== null) {

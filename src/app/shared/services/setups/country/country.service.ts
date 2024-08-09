@@ -40,7 +40,6 @@ export class CountryService {
    * @returns Observable<CountryDTO[]> list of countries
    */
   getCountries(): Observable<CountryDto[]> {
-    log.info('Fetching countries');
     return this.api.GET<CountryDto[]>(
       `countries`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -53,7 +52,6 @@ export class CountryService {
    * @returns Observable<CountryDTO> Country
    */
   getCountryById(countryId: number): Observable<CountryDto> {
-    log.info('Fetching county of id: ' + countryId);
     return this.api.GET<CountryDto>(
       `countries/${countryId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -65,7 +63,6 @@ export class CountryService {
    * @returns Observable<StateDTO []> list of states
    */
   getMainCityStates(): Observable<StateDto[]> {
-    log.info('Fetching city states');
     return this.api.GET<StateDto[]>(
       `states`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -78,7 +75,6 @@ export class CountryService {
    * @returns Observable<StateDTO []> list of states
    */
   getMainCityStatesByCountry(id: number): Observable<StateDto[]> {
-    log.info('Fetching city states');
     return this.api.GET<StateDto[]>(
       `countries/${id}/states`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -91,7 +87,6 @@ export class CountryService {
    * @returns Observable<StateDTO > State
    */
   getMainCityStateById(stateId: number): Observable<StateDto> {
-    log.info('Fetching city state of id: ' + stateId);
     return this.api.GET<StateDto>(
       `states/${stateId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -104,7 +99,6 @@ export class CountryService {
    * @returns Observable<TownDto> Town
    */
   getTownById(townId: number): Observable<TownDto> {
-    log.info('Fetching town of id: ' + townId);
     return this.api.GET<TownDto>(
       `towns/${townId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -117,7 +111,6 @@ export class CountryService {
    * @returns Observable<TownDto[]> list of towns
    */
   getTownsByCountry(countryId: number): Observable<TownDto[]> {
-    log.info('Fetching towns of county id: ' + countryId);
     return this.api.GET<TownDto[]>(
       `countries/${countryId}/towns`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL

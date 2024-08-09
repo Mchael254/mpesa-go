@@ -242,10 +242,10 @@ export class ViewEntityComponent implements OnInit {
           this.entityPartyIdDetails = data;
           const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
 
-          log.info(
-            'This is the Entity Details By PartyId',
-            this.entityPartyIdDetails
-          );
+          // log.info(
+          //   'This is the Entity Details By PartyId',
+          //   this.entityPartyIdDetails
+          // );
 
           this.entitySummaryForm.patchValue({
             contact: null,
