@@ -3,7 +3,7 @@ import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { ClaimsDTO } from '../../../../../gis/data/claims-dto';
 import { EntityService } from '../../../../services/entity/entity.service';
 import { Logger } from '../../../../../../shared/services';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 
 const log = new Logger('EntityTransactionComponent');
 
@@ -20,9 +20,9 @@ export class EntityTransactionsComponent implements OnInit {
   currency: string;
   partyTypeShtDesc: string;
 
-  isQuotationDataReady: boolean;
-  isPolicyDataReady: boolean;
-  isClaimDataReady: boolean;
+  isQuotationDataReady: boolean = true;
+  isPolicyDataReady: boolean = true;
+  isClaimDataReady: boolean = true;
 
   constructor(
     private entityService: EntityService,
