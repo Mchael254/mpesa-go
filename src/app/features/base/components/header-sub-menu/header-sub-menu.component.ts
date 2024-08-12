@@ -1,26 +1,26 @@
 import {
   Component,
-  ElementRef, OnInit,
+  ElementRef,
+  OnInit,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Router } from '@angular/router';
-import {EntityService} from "../../../entities/services/entity/entity.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Logger} from "../../../../shared/services";
-import {AutoUnsubscribe} from "../../../../shared/services/AutoUnsubscribe";
-import {SESSION_KEY} from "../../../lms/util/session_storage_enum";
-import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import { EntityService } from '../../../entities/services/entity/entity.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Logger } from '../../../../shared/services';
+import { AutoUnsubscribe } from '../../../../shared/services/AutoUnsubscribe';
+import { SESSION_KEY } from '../../../lms/util/session_storage_enum';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 
-const log = new Logger("HeaderSubMenuComponent")
+const log = new Logger('HeaderSubMenuComponent');
 @Component({
   selector: 'app-header-sub-menu',
   templateUrl: './header-sub-menu.component.html',
   styleUrls: ['./header-sub-menu.component.css'],
-  encapsulation: ViewEncapsulation.None
-
+  encapsulation: ViewEncapsulation.None,
 })
 @AutoUnsubscribe
 export class HeaderSubMenuComponent implements OnInit {
@@ -36,8 +36,8 @@ export class HeaderSubMenuComponent implements OnInit {
   analyticsSubMenuList: SidebarMenu[];
   fmsSubMenuList: SidebarMenu[];
   searchTerm: any;
-  nameSearchTerm:any;
-  idSearchTerm:any;
+  nameSearchTerm: any;
+  idSearchTerm: any;
   close_modal: boolean = false;
   policySubMenuList: SidebarMenu[];
   reinsuranceSubMenuList: SidebarMenu[];
@@ -47,15 +47,17 @@ export class HeaderSubMenuComponent implements OnInit {
 
   constructor(
     private menuService: MenuService,
-    private router:Router,
+    private router: Router,
     private entityService: EntityService,
     private fb: FormBuilder,
     private session_storage: SessionStorageService
-    ){
-    this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
+  ) {
+    this.defaultSidebar = {
+      name: 'Summary',
+      value: 'DEFAULT',
+      link: '/home/dashboard',
+    };
   }
-
-
 
   ngOnInit(): void {
     this.administationSubMenuList = this.menuService.administationSubMenuList();
@@ -75,69 +77,37 @@ export class HeaderSubMenuComponent implements OnInit {
   getEntityType(): void {
     const entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
 
-    switch(entityType) {
+    switch (entityType) {
       case 'ADMIN':
-        this.entityType = 'ADMIN'
+        this.entityType = 'ADMIN';
         break;
       case 'AGENT':
-        this.entityType = 'AGENT'
+        this.entityType = 'AGENT';
         break;
       case 'MEMBER':
-        this.entityType = 'MEMBER'
-        break;
-      case 'USR':
-        this.entityType = 'DEFAULT'
+        this.entityType = 'MEMBER';
         break;
       default:
-      this.entityType = 'DEFAULT'
+        this.entityType = 'USR';
     }
   }
 
   createSearchAccountForm(): void {
     this.searchAccountForm = this.fb.group({
       searchIdInput: [''],
-      searchNameInput: ['']
+      searchNameInput: [''],
     });
   }
 
-  /*displaySearchValues() {
-    const searchFormValue = this.searchAccountForm.getRawValue();
-    log.info('search value', searchFormValue);
-
-    this.entityService.searchTermObject.set({...searchFormValue, fromSearchScreen: true});
-    this.navLink('/home/entity/list');
-  }*/
-
-  /*dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
-    if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
-    this.menuService.updateSidebarMainMenu(sidebarMenu.value)
-  }*/
-
-
-  navLink(menuLink:string){
-    this.router.navigate([menuLink])
+  navLink(menuLink: string) {
+    this.router.navigate([menuLink]);
   }
 
-  /*onSearch(){
-      this.searchTerm = this.nameSearchTerm || this.idSearchTerm;
-      localStorage.setItem('searchTerm', this.searchTerm)
-      this.nameSearchTerm = '';
-      this.idSearchTerm = '';
-      this.navLink('/home/entity/list');
-  }*/
-
-  openModal() {
-    const modal = document.getElementById('NewQuoteModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.style.display = 'block';
-    }
-  }
-  closeModal() {
-    const modal = document.getElementById('NewQuoteModal');
-    if (modal) {
-      modal.classList.remove('show')
-      modal.style.display = 'none';
-    }
-  }
+  // openModal() {
+  //   const modal = document.getElementById('NewQuoteModal');
+  //   if (modal) {
+  //     modal.classList.add('show');
+  //     modal.style.display = 'block';
+  //   }
+  // }
 }
