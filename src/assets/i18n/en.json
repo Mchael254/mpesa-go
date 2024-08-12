@@ -572,7 +572,14 @@
     "yes": "Yes",
     "zero": "Zero",
     "update_details": "Update details",
-    "company": "Company"
+    "company": "Company",
+    "quotation_no": "Quotation no",
+    "client_name": "Client name",
+    "sum_insured": "Sum insured",
+    "date_created": "Date Created",
+    "action": "Action",
+    "policy_no": "Policy no.",
+    "claim_no": "Claim no"
   },
   "gis": {
     "quotation": {

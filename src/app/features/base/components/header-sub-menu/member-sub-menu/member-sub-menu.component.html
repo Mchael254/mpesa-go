@@ -27,7 +27,7 @@
               class="nav-link active"
               aria-current="page"
               href="javascript:void(0)"
-              routerLink="/home/lms/grp/dashboard/admin"
+              routerLink="/home/lms/grp/dashboard/dashboard-screen"
             >
               <i
                 class="fa-solid fa-house-chimney"
@@ -36,22 +36,7 @@
               {{ "base.dashboard" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              style="font-size: 12px"
-              routerLink="/home/lms/grp/dashboard/products"
-            >
-              <i
-                class="fa-solid fa-solid fa-briefcase"
-                style="padding-right: 6px; font-size: 16px"
-              ></i>
-              {{ "base.Products" | translate | uppercase }}
-            </a>
-          </li>
+
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -74,6 +59,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
               style="font-size: 12px"
+              routerLink="/home/lms/grp/downloads/member-downloads"
             >
               <i
                 class="fa-solid fa-solid fa-download"
@@ -101,7 +87,7 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              routerLink="/home/lms/grp/dashboard/admin"
+              routerLink="/home/lms/grp/dashboard/dashboard-screen"
               style="font-size: 12px"
             >
               <i
@@ -109,32 +95,6 @@
                 style="padding-right: 6px"
               ></i>
               {{ "base.dashboard" | translate | uppercase }}
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link"
-              routerLink="/home/lms/grp/dashboard/quick-quote"
-              style="font-size: 12px"
-            >
-              <i
-                class="fa-solid fa-solid fa-quote-right"
-                style="padding-right: 6px; font-size: 16px"
-              ></i>
-              {{ "base.quick_quote" | translate | uppercase }}
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link"
-              routerLink="/home/lms/grp/dashboard/products"
-              style="font-size: 12px"
-            >
-              <i
-                class="fa-solid fa-solid fa-briefcase"
-                style="padding-right: 6px; font-size: 16px"
-              ></i>
-              {{ "base.Products" | translate | uppercase }}
             </a>
           </li>
           <li class="nav-item dropdown">
@@ -159,6 +119,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
               style="font-size: 12px"
+              routerLink="/home/lms/grp/downloads/member-downloads"
             >
               <i
                 class="fa-solid fa-solid fa-download"
