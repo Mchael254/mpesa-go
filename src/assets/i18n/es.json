@@ -556,7 +556,14 @@
     "withholding_tax_applicable_required": "Impuesto de Retención Aplicable es obligatorio",
     "withholding_tax_required": "Impuesto de Retención es obligatorio",
     "yes": "Sí",
-    "zero": "Cero"
+    "zero": "Cero",
+    "quotation_no": "Número de cotización",
+    "client_name": "Nombre del cliente",
+    "sum_insured": "Suma asegurada",
+    "date_created": "Fecha de creación",
+    "action": "Acción",
+    "policy_no": "Número de póliza",
+    "claim_no": "Número de reclamación"
   },
   "gis": {
     "quotation": {

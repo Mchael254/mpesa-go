@@ -556,7 +556,14 @@
     "withholding_tax_applicable_required": "适用代扣税是必需的",
     "withholding_tax_required": "代扣税是必需的",
     "yes": "是",
-    "zero": "零"
+    "zero": "零",
+    "quotation_no": "报价编号",
+    "client_name": "客户名称",
+    "sum_insured": "保险金额",
+    "date_created": "创建日期",
+    "action": "操作",
+    "policy_no": "保单编号",
+    "claim_no": "索赔编号"
   },
   "gis": {
     "quotation": {

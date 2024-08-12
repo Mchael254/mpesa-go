@@ -556,7 +556,14 @@
     "withholding_tax_applicable_required": "La retenue d'impôt Applicable est requise",
     "withholding_tax_required": "La retenue d'impôt est requise",
     "yes": "Oui",
-    "zero": "Zéro"
+    "zero": "Zéro",
+    "quotation_no": "Numéro de devis",
+    "client_name": "Nom du client",
+    "sum_insured": "Somme assurée",
+    "date_created": "Date de création",
+    "action": "Action",
+    "policy_no": "Numéro de police",
+    "claim_no": "Numéro de réclamation"
   },
   "gis": {
     "quotation": {
@@ -873,7 +880,6 @@
       "fee_rate": "Taux de Frais",
       "fee_amount": "Montant des Frais",
 
-
       "import_schedule": "Importer le calendrier",
       "from_csv_file": "Depuis le fichier CSV",
       "from_another_policy": "Depuis une autre police",
@@ -960,7 +966,7 @@
     "excess_type": "Type de franchise",
     "peril_id": "ID",
     "previous": "Précédent",
-  
+
     "select_required_documents": "Sélectionner les documents requis",
     "edit_required_documents": "Modifier les documents requis",
     "certificates": "Certificats",
