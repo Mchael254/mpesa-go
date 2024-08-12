@@ -137,9 +137,10 @@ export class PolicySummaryOtherDetailsComponent {
   premiumItemCode:any;
   selectedTransaction:any;
   subperils:any;
-
+  subclassPeril:any;
+  subclassPerilList:any[]=[];
   policyRiskPeril:any[]=[]
-
+  
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -1501,13 +1502,14 @@ openCommissionTranscDeleteModal() {
   getSubclassPerils(){
     this.policyService.getSubsclassPerils(this.selectedSubclassCode).subscribe({
       next:(res)=>{
-        this.subperils = res
-        this.subperils = this.subperils.content
-        console.log(this.subperils)
-        this.subperils.forEach(element => {
+        this.subclassPeril = res
+        this.subclassPeril = this.subclassPeril.content
+        console.log(this.subclassPeril)
+        this.subclassPeril.forEach(element => {
           this.perilService.getPeril(element.perilCode).subscribe({
             next:(res)=>{
-              console.log(res)
+              this.subclassPerilList.push(res)
+              console.log(this.subclassPerilList)
             }
           })
        
