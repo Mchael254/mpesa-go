@@ -310,3 +310,14 @@
     text-align: left;
 
 }
+.printClaimLabel{
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    color: #00529B;
+}
+.printClaimLabel:hover{
+    text-decoration: underline;
+}

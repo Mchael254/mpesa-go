@@ -203,4 +203,18 @@ export class PolicyService {
   getRiskPerils(){
     return this.api.GET(`v2/risk-perils`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
+  generateRiskClaimReport(data){
+   
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json', // It should be 'application/json' for JSON data
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+  
+    // Include responseType: 'text' in the options
+    const options = {
+      headers: headers,
+      responseType: 'text' as 'json' // Cast 'json' is required for Angular's HttpClient
+    };
+    return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
+  }
 }
