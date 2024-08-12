@@ -185,7 +185,11 @@
     "Activity Management": "Usimamizi wa Shughuli",
     "Activities": "Shughuli",
     "Activity Types": "Aina za Shughuli",
-    "Priority level & Activity status": "Kiwango cha Kipaumbele & Hali ya Shughuli"
+    "Priority level & Activity status": "Kiwango cha Kipaumbele & Hali ya Shughuli",
+    "general": "Jumla",
+    "life_ind": "Bima ya Maisha ya Mtu Binafsi",
+    "life_group": "Bima ya Maisha ya Kundi",
+    "pension": "Pensheni"
   },
   "crm": {
     "activity": "Shughuli",
@@ -563,7 +567,11 @@
     "date_created": "Tarehe ya kuundwa",
     "action": "Kitendo",
     "policy_no": "Nambari ya sera",
-    "claim_no": "Nambari ya madai"
+    "claim_no": "Nambari ya madai",
+    "create_quick_quote": "Unda nukuu ya haraka",
+    "create_normal_quote": "Unda nukuu ya kawaida",
+    "create_new_policy": "Unda sera mpya",
+    "report_a_claim": "Ripoti dai"
   },
   "gis": {
     "quotation": {

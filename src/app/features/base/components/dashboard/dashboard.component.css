@@ -1,13 +1,16 @@
 .section-title {
   font-size: 15px;
-  text-transform:uppercase;
+  text-transform: uppercase;
 }
 
-
+.transactions_container {
+  margin-bottom: 2rem;
+  background: #fff;
+}
 
 .transactions {
   font-size: 13px;
-  text-transform:uppercase;
+  text-transform: uppercase;
   padding: 0.5rem 0;
 }
 
