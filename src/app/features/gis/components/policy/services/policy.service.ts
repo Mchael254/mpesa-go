@@ -217,4 +217,7 @@ export class PolicyService {
     };
     return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
   }
+  deleteRiskPeril(data){
+    return this.api.DELETE(`v1/peril`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
 }

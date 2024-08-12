@@ -140,7 +140,8 @@ export class PolicySummaryOtherDetailsComponent {
   subclassPeril:any;
   subclassPerilList:any[]=[];
   policyRiskPeril:any[]=[]
-  
+  selectedPeril:any;
+  selectedRiskPeril:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -1632,6 +1633,26 @@ downloadBase64File(base64, filename: string): void {
   a.click();
   window.URL.revokeObjectURL(url);
   a.remove();
+}
+getSingleRiskPeril(){
+  console.log(this.selectedPeril)
+}
+deleteRiskPeril(){
+  this.policyService.deleteRiskPeril(JSON.stringify(this.selectedRiskPeril)).subscribe({
+    next:(res)=>{
+      console.log('delete response',res)
+    }
+  })
+  console.log(this.selectedRiskPeril)
+}
+openRiskPerilDeleteModal() {
+  log.debug("Selected Risk Peril", this.selectedRiskPeril)
+  if (!this.selectedRiskPeril) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
+  } else {
+    document.getElementById("openRiskPerilModalButtonDelete").click();
+
+  }
 }
 }
 
