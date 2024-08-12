@@ -185,7 +185,11 @@
     "Activity Management": "Gestión de Actividades",
     "Activities": "Actividades",
     "Activity Types": "Tipos de Actividades",
-    "Priority level & Activity status": "Nivel de Prioridad & Estado de Actividad"
+    "Priority level & Activity status": "Nivel de Prioridad & Estado de Actividad",
+    "general": "General",
+    "life_ind": "Vida individual",
+    "life_group": "Vida en grupo",
+    "pension": "Pensión"
   },
   "crm": {
     "activity": "Actividad",
@@ -563,7 +567,11 @@
     "date_created": "Fecha de creación",
     "action": "Acción",
     "policy_no": "Número de póliza",
-    "claim_no": "Número de reclamación"
+    "claim_no": "Número de reclamación",
+    "create_quick_quote": "Crear cotización rápida",
+    "create_normal_quote": "Crear cotización normal",
+    "create_new_policy": "Crear nueva póliza",
+    "report_a_claim": "Reportar un reclamo"
   },
   "gis": {
     "quotation": {
