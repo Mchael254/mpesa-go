@@ -99,4 +99,31 @@ export class DashboardService {
     return this.api.GET(`group/policies/partial-withdrawals?policy_code=${policy_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
+
+  getReports(rpt_code: number, prodCode: number, polCode: number, polMemCode: number) {
+    let payload = {
+      "rpt_code": rpt_code,
+      "system": "GRP",
+      "report_format": "PDF",
+      "encode_format": "RAW",
+      "params": [
+
+        {
+          "name": "V_PROD_CODE",
+          "value": prodCode
+        },
+        {
+          "name": "V_POL_CODE",
+          "value": polCode
+        },
+        {
+          "name": "V_POLM_CODE",
+          "value": polMemCode
+        }
+
+      ]
+    }
+    return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
+  }
+
 }

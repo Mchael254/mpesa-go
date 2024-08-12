@@ -157,21 +157,14 @@
 
             <div class="statement-desc" style="color: black;">Pension account totals <b>Ksh. 20,000,000</b></div>
         </ng-container>
-            <!-- <div class="download-link mt-2">
-                <a href="#">
-                    <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
-                    <span class="download-link">Pension account summary report</span>
+            <div class="download-link mt-2" *ngIf="blobUrl">
+                <a href="#" (click)="downloadReport($event)">
+                  <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                  <span class="download-link">
+                    {{ investment || investmentWithRider ? 'Investment summary report' : 'Pension account summary report' }}
+                  </span>
                 </a>
-            </div> -->
-            <div class="download-link mt-2">
-                <a href="#">
-                    <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
-                    <span class="download-link">
-                        {{ investment || investmentWithRider ? 'Investment summary report' : 'Pension account summary report' }}
-                    </span>
-                </a>
-            </div>
-            
+              </div>
 
             <div class="title-desc mt-3">Valuations</div>
             <div class="filter-options">
