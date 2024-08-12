@@ -20,6 +20,7 @@ import {CalendarModule} from "primeng/calendar";
 import {DialogModule} from "primeng/dialog";
 import { DefaultSubMenuComponent } from './components/header-sub-menu/default-sub-menu/default-sub-menu.component';
 import { AdminSubMenuComponent } from './components/header-sub-menu/admin-sub-menu/admin-sub-menu.component';
+import { MemberSubMenuComponent } from './components/header-sub-menu/member-sub-menu/member-sub-menu.component';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import { AdminSubMenuComponent } from './components/header-sub-menu/admin-sub-me
     CalendarLayoutComponent,
     DefaultSubMenuComponent,
     AdminSubMenuComponent,
+    MemberSubMenuComponent,
   ],
 })
 export class BaseModule {
