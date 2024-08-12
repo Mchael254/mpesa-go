@@ -6,6 +6,7 @@ import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberP
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
+import { ReportsService } from 'src/app/shared/services/reports/reports.service';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
@@ -21,7 +22,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   years: number[] = [];
   selectedPolicyNumber: string;
   selectedPolicyCode: number;
-  memberCode: number;
+  memberCode: number = 20221254139;
   endorsementCode: number;
   productType: string;
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -39,11 +40,16 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   pensionMemCode: number;
   pensionDepositCode: number;
   withdrawals: MemberWithdrawalsDTO[];
+  blobUrl: string | null = null;
+  rptCode: number = 789233
+  productCode: number = 2021686
+  policyCode: number = 2022169
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private dashboardService: DashboardService,
-    private router: Router
+    private router: Router,
+    private reportsService: ReportsService,
   ) { }
 
   ngOnInit(): void {
@@ -52,7 +58,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
     this.endorsementCode = this.activatedRoute.snapshot.queryParams['endorsementCode'];
     this.productType = this.activatedRoute.snapshot.queryParams['productType'];
-    this.getProductType();
+    // this.getProductType();
     this.populateYears();
     this.adminDetsTableColumns();
     this.populateBreadCrumbItems();
@@ -61,6 +67,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.getMemberCovers();
     this.getMemberDetails();
     this.getMemberWithdrawals();
+    this.getReports();
   }
 
   ngOnDestroy(): void {
@@ -240,4 +247,24 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   }
 
 
+  getReports() {
+    this.dashboardService.getReports(this.rptCode, this.productCode, this.policyCode, this.memberCode).subscribe((res) => {
+      log.info("getReports", res)
+      const blob = new Blob([res], { type: 'application/pdf' });
+      this.blobUrl = window.URL.createObjectURL(blob);
+    });
+  }
+
+
+  downloadReport(event: Event): void {
+    event.preventDefault();
+
+    if (this.blobUrl) {
+      const link = document.createElement('a');
+      link.href = this.blobUrl;
+      link.download = 'pension_report.pdf';
+      link.click();
+    }
+  }
+  
 }
