@@ -181,7 +181,11 @@
     "Product Attributes": "Produktattribute",
     "quick_quote": "Schnellangebot",
     "service_requests": "Serviceanfragen",
-    "downloads": "Downloads"
+    "downloads": "Downloads",
+    "Activity Management": "Aktivitätsverwaltung",
+    "Activities": "Aktivitäten",
+    "Activity Types": "Aktivitätstypen",
+    "Priority level & Activity status": "Prioritätsstufe & Aktivitätsstatus"
   },
   "crm": {
     "activity": "Activiteit",

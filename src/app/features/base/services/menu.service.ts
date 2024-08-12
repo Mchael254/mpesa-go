@@ -217,6 +217,26 @@ export class MenuService {
         collapsed: true,
       },
       {
+        name: 'Activity Management',
+        nameSlug: 'activity',
+        icon: 'fa-solid fa-align-center',
+        menuItems: [
+          {
+            name: 'Activities',
+            link: '/home/crm/activities',
+          },
+          {
+            name: 'Activity Types',
+            link: '/home/crm/activity-types',
+          },
+          {
+            name: 'Priority level & Activity status',
+            link: '/home/crm/priority-level-activity-status',
+          }
+        ],
+        collapsed: true,
+      },
+      {
         name: 'Portal Setups',
         nameSlug: 'portal',
         icon: 'fa-solid fa-magnifying-glass-chart',
