@@ -61,7 +61,7 @@ export class PolicySummaryOtherDetailsComponent {
   policyNumber: any;
   endorsementNo: any;
   selectedClientCode: any;
-
+  clientPrpCode:any;
   filteredClients: any[] = [];
 
   columns = [
@@ -179,9 +179,10 @@ export class PolicySummaryOtherDetailsComponent {
   public isRequiredDocDetailOpen = false;
   public isCertificatesDetailOpen = false;
   public isRemarkDetailsOpen = false;
-  public isCommissionTranscDetailsOpen = false;
   public isRelatedRiskDetailsOpen = false;
-
+  public isCommissionTranscDetailsOpen = false;
+  public isRiskClaimsReportDetailsOpen = false;
+ 
 
   public riskPerils = false;
 
@@ -284,6 +285,7 @@ export class PolicySummaryOtherDetailsComponent {
 
             this.riskDetails = this.policyDetailsData.riskInformation;
             // this.sectionsDetails = this.riskDetails[0].sections;
+            this.clientPrpCode = this.policyDetailsData.clientCode
 
             this.cdr.detectChanges();
         } else {
@@ -303,7 +305,7 @@ export class PolicySummaryOtherDetailsComponent {
 
     for (const insured of this.insureds) {
       const prpCode = insured.prpCode; // Assuming each insured object has prpCode
-
+      // this.clientPrpCode =prpCode;
       const clientRequest = this.clientService.getClientById(prpCode)
         .pipe(
           map((data: any) => {
@@ -1558,7 +1560,77 @@ getRiskPeril(){
 
    
     }
-  }
+  
 
+toggleRiskClaimReportDetails() {
+  this.isRiskClaimsReportDetailsOpen = !this.isRiskClaimsReportDetailsOpen;
+}
+printClaimReport(){
+  log.debug("client code",this.clientPrpCode)
+  const payload ={
+    "encode_format": "BASE64",
+    "params": [
+      {
+        "name": "P_CLIENT",
+        "value": this.clientPrpCode
+      },
+      {
+        "name": "V_POLICY_NO",
+        "value": this.policyDetailsData.policyNo
+      },
+      {
+        "name": "P_YEARS",
+        "value":7
+      },
+      {
+        "name": "P_NO_INSITEMS",
+        "value":5
+      },
+      {
+        "name": "FROMYR",
+        "value":2
+      }
+    ],
+    "report_format": "PDF",
+    "rpt_code": 4039,
+    "system": "GIS"
+  }
+  this.policyService.generateRiskClaimReport(payload).subscribe({
+    next:(res)=>{
+      this.downloadBase64File(res, 'INS_CLMS_EXP_RPT.pdf');
+      this.globalMessagingService.displaySuccessMessage('Success','Risk Claim Report generated successfully ')
+    },
+    error: (err) => {
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error', 'Something went wrong, try again later'
+      );
+      log.info(`error >>>`, err);
+    },
+
+  })
+}
+// Method to decode and trigger file download 
+downloadBase64File(base64, filename: string): void {
+  // Decode the base64 string
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: 'application/pdf' }); // Adjust the MIME type as needed
+
+  // Create a URL for the blob and trigger the download
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
+}
+}
 
 
