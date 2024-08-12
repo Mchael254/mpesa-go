@@ -181,7 +181,11 @@
     "Product Attributes": "产品属性",
     "quick_quote": "快速报价",
     "service_requests": "服务请求",
-    "downloads": "下载"
+    "downloads": "下载",
+    "Activity Management": "活动管理",
+    "Activities": "活动",
+    "Activity Types": "活动类型",
+    "Priority level & Activity status": "优先级 & 活动状态"
   },
   "crm": {
     "activity": "活动",

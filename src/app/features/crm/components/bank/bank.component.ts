@@ -14,7 +14,7 @@ import {OrganizationService} from "../../services/organization.service";
 import {OrganizationBranchDTO} from "../../data/organization-dto";
 import {SystemsDto} from "../../../../shared/data/common/systemsDto";
 import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
-import {ProductService} from "../../../gis/services/product/product.service";
+import {ProductsService} from "../../../gis/components/setups/services/products/products.service";
 import {
   BankChargeRateTypesService
 } from "../../../../shared/services/system-definitions/bank-charge-rate-types.service";
@@ -133,7 +133,7 @@ export class BankComponent implements OnInit{
     private globalMessagingService: GlobalMessagingService,
     private organizationService: OrganizationService,
     private systemsService: SystemsService,
-    private gisProductService: ProductService,
+    private gisProductService: ProductsService,
     private lmsProductService: LmsProductService,
     private bankChargeRateTypesService: BankChargeRateTypesService,
     private cdr: ChangeDetectorRef

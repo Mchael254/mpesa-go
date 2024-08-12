@@ -18,217 +18,366 @@
             <div class="tab-pane fade" id="campaignDetails" [ngClass]="{'show active': currentTab.url === 'campaignDetails'}"
                  role="tabpanel" aria-labelledby="ex1-tab-1">
 
-              <h5>Campaign definition</h5>
-              <h6>Basic information</h6>
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="name" class="form-label">Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="system" class="form-label">System type</label>
-                  <select id="system" class="form-select">
-                    <option value="gis">GIS</option>
-                    <option value="lms">LMS</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="description" class="form-label">Description</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="description"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="objective" class="form-label">Objective</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="objective"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="description" class="form-label">From</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="dateFrom"
-                    placeholder="Date from"
-                    onfocus="(this.type='date')"
-                    onblur="(this.type='text')"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="description" class="form-label">To</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="dateTo"
-                    placeholder="Date to"
-                    onfocus="(this.type='date')"
-                    onblur="(this.type='text')"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="time" class="form-label">Execution time</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="time"
-                    onfocus="(this.type='time')"
-                    onblur="(this.type='text')"
-                  />
-                </div>
-              </div>
-
-              <h6>Assignment</h6>
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="system" class="form-label">Assigned to</label>
-                  <select id="assignedTo" class="form-select">
-                    <option value="1">user 1</option>
-                    <option value="2">user 2</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="system" class="form-label">Organization</label>
-                  <select id="org" class="form-select">
-                    <option value="1">Heritage</option>
-                    <option value="2">KCB</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="team" class="form-label">Team</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="team"
-                  />
-                </div>
-              </div>
-              <h6>Financial information</h6>
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="currency" class="form-label">Currency</label>
-                  <select id="currency" class="form-select">
-                    <option value="1">Kshs</option>
-                    <option value="2">US Dollar</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="budgetedCost" class="form-label">Budgeted cost</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="budgetedCost"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="actualCost" class="form-label">Actual cost</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="actualCost"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="expectedCost" class="form-label">Expected cost</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="expectedCost"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="expectedRevenue" class="form-label">Expected revenue</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="expectedRevenue"
-                  />
-                </div>
-              </div>
-
-              <h6>Campaign details</h6>
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="sponsor" class="form-label">Sponsor/partner</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="sponsor"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="campaignType" class="form-label">Campaign type</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="campaignType"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="sponsor" class="form-label">Status</label>
-                  <select id="status" class="form-select">
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="impressions" class="form-label">Page impressions</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="impressions"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="event" class="form-label">Event</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="event"
-                  />
-                </div>
-                <div class="col-md-4">
-                  <label for="venue" class="form-label">Venue</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="venue"
-                  />
-                </div>
-              </div>
-
-              <h6>Campaign products</h6>
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="products" class="form-label">Products</label>
-                  <select id="products" class="form-select">
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
-                  </select>
-                </div>
-                <div *ngFor="let product of products" class="col-md-3">
-                  <div class="row pill-box fadeIn">
-                    <div class="col-md-9 col-9 text-primary fw-medium">
-                      {{product.name}}
+              <form [formGroup]="createCampaignDefinitionForm">
+                <h5>Campaign definition</h5>
+                <h6>Basic information</h6>
+                <div class="row">
+                  <ng-container *ngIf="visibleStatus.name === 'Y'">
+                    <div class="col-md-4">
+                      <label for="name" class="form-label">Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        formControlName="name"
+                        [ngClass]="{ 'is-invalid': f['name']?.invalid && (f['name']?.dirty || f['name']?.touched) }"
+                      />
+                      <div *ngIf="f['name']?.invalid && (f['name']?.dirty || f['name']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['name']?.errors['required']">Name is required</div>
+                      </div>
                     </div>
-                    <div class="col-md-3 col-3 text-end">
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.system === 'Y'">
+                    <div class="col-md-4">
+                      <label for="system" class="form-label">System type</label>
+                      <select id="system" class="form-select" formControlName="system"
+                              [ngClass]="{ 'is-invalid': f['system']?.invalid && (f['system']?.dirty || f['system']?.touched) }">
+                        <option value="gis">GIS</option>
+                        <option value="lms">LMS</option>
+                      </select>
+                      <div *ngIf="f['system']?.invalid && (f['system']?.dirty || f['system']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['system']?.errors['required']">System is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.description === 'Y'">
+                    <div class="col-md-4">
+                      <label for="description" class="form-label">Description</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="description"
+                        formControlName="description"
+                        [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }"
+                      />
+                      <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.objective === 'Y'">
+                    <div class="col-md-4">
+                      <label for="objective" class="form-label">Objective</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="objective"
+                        formControlName="objective"
+                        [ngClass]="{ 'is-invalid': f['objective']?.invalid && (f['objective']?.dirty || f['objective']?.touched) }"
+                      />
+                      <div *ngIf="f['objective']?.invalid && (f['objective']?.dirty || f['objective']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['objective']?.errors['required']">Objective is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.dateFrom === 'Y'">
+                    <div class="col-md-4">
+                      <label for="dateFrom" class="form-label">From</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="dateFrom"
+                        placeholder="Date from"
+                        onfocus="(this.type='date')"
+                        onblur="(this.type='text')"
+                        formControlName="dateFrom"
+                        [ngClass]="{ 'is-invalid': f['dateFrom']?.invalid && (f['dateFrom']?.dirty || f['dateFrom']?.touched) }"
+                      />
+                      <div *ngIf="f['dateFrom']?.invalid && (f['dateFrom']?.dirty || f['dateFrom']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['dateFrom']?.errors['required']">Date from is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.dateTo === 'Y'">
+                    <div class="col-md-4">
+                      <label for="dateTo" class="form-label">To</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="dateTo"
+                        placeholder="Date to"
+                        onfocus="(this.type='date')"
+                        onblur="(this.type='text')"
+                        formControlName="dateTo"
+                        [ngClass]="{ 'is-invalid': f['dateTo']?.invalid && (f['dateTo']?.dirty || f['dateTo']?.touched) }"
+                      />
+                      <div *ngIf="f['dateTo']?.invalid && (f['dateTo']?.dirty || f['dateTo']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['dateTo']?.errors['required']">Date to is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.executionTime === 'Y'">
+                    <div class="col-md-4">
+                      <label for="executionTime" class="form-label">Execution time</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="executionTime"
+                        onfocus="(this.type='time')"
+                        onblur="(this.type='text')"
+                        formControlName="executionTime"
+                        [ngClass]="{ 'is-invalid': f['executionTime']?.invalid && (f['executionTime']?.dirty || f['executionTime']?.touched) }"
+                      />
+                      <div *ngIf="f['executionTime']?.invalid && (f['executionTime']?.dirty || f['executionTime']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['executionTime']?.errors['required']">Execution time is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
 
-                      <i class="pi pi-times text-primary" (click)="deleteProduct(product)"></i>
+                <h6>Assignment</h6>
+                <div class="row">
+                  <ng-container *ngIf="visibleStatus.assignedTo === 'Y'">
+                    <div class="col-md-4">
+                      <label for="assignedTo" class="form-label">Assigned to</label>
+                      <select id="assignedTo" class="form-select" formControlName="assignedTo"
+                              [ngClass]="{ 'is-invalid': f['assignedTo']?.invalid && (f['assignedTo']?.dirty || f['assignedTo']?.touched) }">
+                        <option value="1">user 1</option>
+                        <option value="2">user 2</option>
+                      </select>
+                      <div *ngIf="f['assignedTo']?.invalid && (f['assignedTo']?.dirty || f['assignedTo']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['assignedTo']?.errors['required']">Assigned to is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.organization === 'Y'">
+                    <div class="col-md-4">
+                      <label for="organization" class="form-label">Organization</label>
+                      <select id="organization" class="form-select" formControlName="organization"
+                              [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
+                        <option value="1">Heritage</option>
+                        <option value="2">KCB</option>
+                      </select>
+                      <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.team === 'Y'">
+                    <div class="col-md-4">
+                      <label for="team" class="form-label">Team</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="team"
+                        formControlName="team"
+                        [ngClass]="{ 'is-invalid': f['team']?.invalid && (f['team']?.dirty || f['team']?.touched) }"
+                      />
+                      <div *ngIf="f['team']?.invalid && (f['team']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['team']?.errors['required']">Team is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+                <h6>Financial information</h6>
+                <div class="row">
+                  <ng-container *ngIf="visibleStatus.currency === 'Y'">
+                    <div class="col-md-4">
+                      <label for="currency" class="form-label">Currency</label>
+                      <select id="currency" class="form-select" formControlName="currency"
+                              [ngClass]="{ 'is-invalid': f['currency']?.invalid && (f['currency']?.dirty || f['currency']?.touched) }">
+                        <option value="1">Kshs</option>
+                        <option value="2">US Dollar</option>
+                      </select>
+                      <div *ngIf="f['currency']?.invalid && (f['currency']?.dirty || f['currency']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['currency']?.errors['required']">Currency is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.budgetedCost === 'Y'">
+                    <div class="col-md-4">
+                      <label for="budgetedCost" class="form-label">Budgeted cost</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="budgetedCost"
+                        formControlName="budgetedCost"
+                        [ngClass]="{ 'is-invalid': f['budgetedCost']?.invalid && (f['budgetedCost']?.dirty || f['budgetedCost']?.touched) }"
+                      />
+                      <div *ngIf="f['budgetedCost']?.invalid && (f['budgetedCost']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['budgetedCost']?.errors['required']">Budgeted cost is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.actualCost === 'Y'">
+                    <div class="col-md-4">
+                      <label for="actualCost" class="form-label">Actual cost</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="actualCost"
+                        formControlName="actualCost"
+                        [ngClass]="{ 'is-invalid': f['actualCost']?.invalid && (f['actualCost']?.dirty || f['actualCost']?.touched) }"
+                      />
+                      <div *ngIf="f['actualCost']?.invalid && (f['actualCost']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['actualCost']?.errors['required']">Actual cost is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.expectedCost === 'Y'">
+                    <div class="col-md-4">
+                      <label for="expectedCost" class="form-label">Expected cost</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="expectedCost"
+                        formControlName="expectedCost"
+                        [ngClass]="{ 'is-invalid': f['expectedCost']?.invalid && (f['expectedCost']?.dirty || f['expectedCost']?.touched) }"
+                      />
+                      <div *ngIf="f['expectedCost']?.invalid && (f['expectedCost']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['expectedCost']?.errors['required']">Expected cost is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.expectedRevenue === 'Y'">
+                    <div class="col-md-4">
+                      <label for="expectedRevenue" class="form-label">Expected revenue</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="expectedRevenue"
+                        formControlName="expectedRevenue"
+                        [ngClass]="{ 'is-invalid': f['expectedRevenue']?.invalid && (f['expectedRevenue']?.dirty || f['expectedRevenue']?.touched) }"
+                      />
+                      <div *ngIf="f['expectedRevenue']?.invalid && (f['expectedRevenue']?.dirty || f['expectedRevenue']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['expectedRevenue']?.errors['required']">Expected revenue is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <h6>Campaign details</h6>
+                <div class="row">
+                  <ng-container *ngIf="visibleStatus.sponsor === 'Y'">
+                    <div class="col-md-4">
+                      <label for="sponsor" class="form-label">Sponsor/partner</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="sponsor"
+                        formControlName="sponsor"
+                        [ngClass]="{ 'is-invalid': f['sponsor']?.invalid && (f['sponsor']?.dirty || f['sponsor']?.touched) }"
+                      />
+                      <div *ngIf="f['sponsor']?.invalid && (f['sponsor']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['sponsor']?.errors['required']">Sponsor is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.campaignType === 'Y'">
+                    <div class="col-md-4">
+                      <label for="campaignType" class="form-label">Campaign type</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="campaignType"
+                        formControlName="campaignType"
+                        [ngClass]="{ 'is-invalid': f['campaignType']?.invalid && (f['campaignType']?.dirty || f['campaignType']?.touched) }"
+                      />
+                      <div *ngIf="f['campaignType']?.invalid && (f['campaignType']?.dirty || f['campaignType']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['campaignType']?.errors['required']">Campaign type is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.status === 'Y'">
+                    <div class="col-md-4">
+                      <label for="status" class="form-label">Status</label>
+                      <select id="status" class="form-select" formControlName="status"
+                              [ngClass]="{ 'is-invalid': f['status']?.invalid && (f['status']?.dirty || f['status']?.touched) }">
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                      </select>
+                      <div *ngIf="f['status']?.invalid && (f['status']?.dirty || f['status']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['status']?.errors['required']">Status is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.pageImpressions === 'Y'">
+                    <div class="col-md-4">
+                      <label for="pageImpressions" class="form-label">Page impressions</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="pageImpressions"
+                        formControlName="pageImpressions"
+                        [ngClass]="{ 'is-invalid': f['pageImpressions']?.invalid && (f['pageImpressions']?.dirty || f['pageImpressions']?.touched) }"
+                      />
+                      <div *ngIf="f['pageImpressions']?.invalid && (f['pageImpressions']?.dirty || f['pageImpressions']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['pageImpressions']?.errors['required']">Page impressions is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.event === 'Y'">
+                    <div class="col-md-4">
+                      <label for="event" class="form-label">Event</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="event"
+                        formControlName="event"
+                        [ngClass]="{ 'is-invalid': f['event']?.invalid && (f['event']?.dirty || f['event']?.touched) }"
+                      />
+                      <div *ngIf="f['event']?.invalid && (f['event']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['event']?.errors['required']">Event is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="visibleStatus.venue === 'Y'">
+                    <div class="col-md-4">
+                      <label for="venue" class="form-label">Venue</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="venue"
+                        formControlName="venue"
+                        [ngClass]="{ 'is-invalid': f['venue']?.invalid && (f['venue']?.dirty || f['venue']?.touched) }"
+                      />
+                      <div *ngIf="f['venue']?.invalid && (f['venue']?.dirty || f['venue']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['venue']?.errors['required']">Venue is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <h6>Campaign products</h6>
+                <div class="row">
+                  <ng-container *ngIf="visibleStatus.products === 'Y'">
+                    <div class="col-md-4">
+                      <label for="products" class="form-label">Products</label>
+                      <select id="products" class="form-select" formControlName="products"
+                              [ngClass]="{ 'is-invalid': f['products']?.invalid && (f['products']?.dirty || f['products']?.touched) }">
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                      </select>
+                      <div *ngIf="f['products']?.invalid && (f['products']?.dirty || f['products']?.touched)" class="form-text text-danger">
+                        <div *ngIf="f['products']?.errors['required']">Products is required</div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <div *ngFor="let product of products" class="col-md-3">
+                    <div class="row pill-box fadeIn">
+                      <div class="col-md-9 col-9 text-primary fw-medium">
+                        {{product.name}}
+                      </div>
+                      <div class="col-md-3 col-3 text-end">
+
+                        <i class="pi pi-times text-primary" (click)="deleteProduct(product)"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-
-            </div >
+              </form>
+            </div>
           </ng-container>
 
           <ng-container *ngIf="currentTab.url === 'targets'">
@@ -249,16 +398,17 @@
 
                 <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
                   <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openTargetModal()"></i>
-            </span>
                     <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
-            </span>
+                      <i class="fa-solid fa-plus"
+                         (click)="openTargetModal()"></i>
+                    </span>
                     <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                      <i class="pi pi-pencil"
+                      (click)="editTarget()"></i>
+                    </span>
+                    <span class="icon-circle">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -321,16 +471,17 @@
 
                 <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
                   <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openCampaignActivityModal()"></i>
-            </span>
                     <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
-            </span>
+                      <i class="fa-solid fa-plus"
+                         (click)="openCampaignActivityModal()"></i>
+                    </span>
                     <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                      <i class="pi pi-pencil"
+                         (click)="editCampaignActivity()"></i>
+                    </span>
+                    <span class="icon-circle">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -394,16 +545,17 @@
 
                 <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
                   <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openCampaignMessageModal()"></i>
-            </span>
                     <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
-            </span>
+                      <i class="fa-solid fa-plus"
+                         (click)="openCampaignMessageModal()"></i>
+                    </span>
                     <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                      <i class="pi pi-pencil"
+                        (click)="editCampaignMessages()"></i>
+                    </span>
+                    <span class="icon-circle">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -468,16 +620,17 @@
 
                 <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
                   <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openTrackerUrlModal()"></i>
-            </span>
                     <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
-            </span>
+                      <i class="fa-solid fa-plus"
+                         (click)="openTrackerUrlModal()"></i>
+                    </span>
                     <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                      <i class="pi pi-pencil"
+                         (click)="editTrackerUrl()"></i>
+                    </span>
+                    <span class="icon-circle">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -626,8 +779,13 @@
               <div class="row col-sm-12 col-lg-6 mb-2">
                 <label class="w-auto" style="margin-top: .6rem;">Metric</label>
                 <select class="form-select w-50">
-                  <option value="1">Engagements</option>
-                  <option value="2">Inactive</option>
+                  <option value="">Messages sent</option>
+                  <option value="">Messages queue</option>
+                  <option value="">Viewed messages</option>
+                  <option value="">Click-thru links</option>
+                  <option value="">Contacts created</option>
+                  <option value="">Opted out</option>
+                  <option value="">Suppressed by email addresses</option>
                 </select>
               </div>
               <div>
@@ -642,8 +800,13 @@
               <div class="row col-sm-12 col-lg-6 mb-2">
                 <label class="w-auto" style="margin-top: .6rem;">Metric</label>
                 <select class="form-select w-50">
-                  <option value="1">Active</option>
-                  <option value="2">Inactive</option>
+                  <option value="">Messages sent</option>
+                  <option value="">Messages queue</option>
+                  <option value="">Viewed messages</option>
+                  <option value="">Click-thru links</option>
+                  <option value="">Contacts created</option>
+                  <option value="">Opted out</option>
+                  <option value="">Suppressed by email addresses</option>
                 </select>
               </div>
               <p-table
@@ -688,11 +851,8 @@
             </div>
           </ng-container>
 
-
         </div>
       </div>
-
-
 
     </div>
   </div>
@@ -709,7 +869,6 @@
   id="targetSearchModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog modal-lg align-items-center">
     <div class="modal-content">
@@ -723,6 +882,7 @@
         ></button>
       </div>
       <div class="modal-body">
+
         <label class="form-label w-100">Select target group</label>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="inlineRadioOptions" id="clients" value="clients">
@@ -813,7 +973,6 @@
   id="campaignActivityModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog modal-lg align-items-center">
     <div class="modal-content">
@@ -896,12 +1055,11 @@
   id="newCampaignActivityModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 py-0">
-        <h5 class="modal-title" id="exampleModalLabel">Define a new activity</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} {{ editMode ? 'an activity' : 'a new activity' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -910,60 +1068,105 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="row my-3">
-          <div class="col-md-6">
-            <label for="name" class="form-label">Subject</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="name" class="form-label">Description</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="name" class="form-label">WEF</label>
-            <input
-              type="text"
-              class="form-control"
-              id="wef"
-              placeholder="Date from"
-              onfocus="(this.type='date')"
-              onblur="(this.type='text')"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="name" class="form-label">WET</label>
-            <input
-              type="text"
-              class="form-control"
-              id="wet"
-              placeholder="Date to"
-              onfocus="(this.type='date')"
-              onblur="(this.type='text')"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="name" class="form-label">Location</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="name" class="form-label">Type</label>
-            <select id="system" class="form-select">
-              <option value="gis">GIS</option>
-              <option value="lms">LMS</option>
-            </select>
-          </div>
-        </div>
+        <form [formGroup]="createCampaignActivityForm">
+          <div class="row my-3">
 
-
+            <ng-container *ngIf="visibleStatus.subject === 'Y'">
+              <div class="col-md-6">
+                <label for="subject" class="form-label">Subject</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="subject"
+                  formControlName="subject"
+                  [ngClass]="{ 'is-invalid': g['subject']?.invalid && (g['subject']?.dirty || g['subject']?.touched) }"
+                />
+                <div *ngIf="g['subject']?.invalid && (g['subject']?.dirty || g['subject']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['subject']?.errors['required']">Subject is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.activityDescription === 'Y'">
+              <div class="col-md-6">
+                <label for="activityDescription" class="form-label">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="activityDescription"
+                  formControlName="activityDescription"
+                  [ngClass]="{ 'is-invalid': g['activityDescription']?.invalid && (g['activityDescription']?.dirty || g['activityDescription']?.touched) }"
+                />
+                <div *ngIf="g['activityDescription']?.invalid && (g['activityDescription']?.dirty || g['activityDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['activityDescription']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.wef === 'Y'">
+              <div class="col-md-6">
+                <label for="wef" class="form-label">WEF</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="wef"
+                  placeholder="Date from"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  formControlName="wef"
+                  [ngClass]="{ 'is-invalid': g['wef']?.invalid && (g['wef']?.dirty || g['wef']?.touched) }"
+                />
+                <div *ngIf="g['wef']?.invalid && (g['wef']?.dirty || g['wef']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['wef']?.errors['required']">WEF is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.wet === 'Y'">
+              <div class="col-md-6">
+                <label for="wet" class="form-label">WET</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="wet"
+                  placeholder="Date to"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  formControlName="wet"
+                  [ngClass]="{ 'is-invalid': g['wet']?.invalid && (g['wet']?.dirty || g['wet']?.touched) }"
+                />
+                <div *ngIf="g['wet']?.invalid && (g['wet']?.dirty || g['wet']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['wet']?.errors['required']">WET is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.location === 'Y'">
+              <div class="col-md-6">
+                <label for="location" class="form-label">Location</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="location"
+                  formControlName="location"
+                  [ngClass]="{ 'is-invalid': g['location']?.invalid && (g['location']?.dirty || g['location']?.touched) }"
+                />
+                <div *ngIf="g['location']?.invalid && (g['location']?.dirty || g['location']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['location']?.errors['required']">Location is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.type === 'Y'">
+              <div class="col-md-6">
+                <label for="type" class="form-label">Type</label>
+                <select id="type" class="form-select" formControlName="type"
+                        [ngClass]="{ 'is-invalid': g['type']?.invalid && (g['type']?.dirty || g['type']?.touched) }">
+                  <option value="gis">GIS</option>
+                  <option value="lms">LMS</option>
+                </select>
+                <div *ngIf="g['type']?.invalid && (g['type']?.dirty || g['type']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['type']?.errors['required']">Type is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-primary">Save details</button>
@@ -979,12 +1182,11 @@
   id="campaignMessageModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 py-0">
-        <h5 class="modal-title" id="exampleModalLabel">Campaign message</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'campaign message' : 'new campaign message' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -993,74 +1195,102 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div>
-          <label class="form-label w-100">Campaign type</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="sms" value="sms">
-            <label class="form-check-label" for="sms">SMS</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="email" value="email">
-            <label class="form-check-label" for="email">Email</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="newsletter" value="newsletter">
-            <label class="form-check-label" for="newsletter">Newsletter</label>
-          </div>
-        </div>
-
-
-        <label class="form-label w-100">Send to all target?</label>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="yes" value="Y">
-          <label class="form-check-label" for="yes">Yes</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="no" value="N">
-          <label class="form-check-label" for="no">No</label>
-        </div>
-
-        <label class="form-label w-100">Subject</label>
-        <input
-          type="text"
-          class="form-control"
-        />
-        <!--Remove this when we add form control-->
-        <ng-container>
-          <label class="form-label w-100">Message content</label>
-          <input
-            type="text"
-            class="form-control"
-          />
-        </ng-container>
-
-        <div class="row my-3">
-          <div class="col-md-6">
-            <label class="form-label w-100">Add image</label>
-            <div class="row">
-              <i class="fa-solid fa-paperclip w-auto m-auto"></i>
-              <input
-                type="text"
-                class="form-control w-75"
-              />
+        <form [formGroup]="createCampaignMessageForm">
+          <ng-container *ngIf="visibleStatus.msgCampaignType === 'Y'">
+            <div>
+              <label class="form-label w-100" for="msgCampaignType">Campaign type</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="msgCampaignType" id="msgCampaignType" value="sms">
+                <label class="form-check-label" for="msgCampaignType">SMS</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="msgCampaignType" id="msgCampaignType" value="email">
+                <label class="form-check-label" for="msgCampaignType">Email</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="msgCampaignType" id="msgCampaignType" value="newsletter">
+                <label class="form-check-label" for="msgCampaignType">Newsletter</label>
+              </div>
+              <div *ngIf="h['msgCampaignType']?.invalid && (h['msgCampaignType']?.dirty || h['msgCampaignType']?.touched)" class="form-text text-danger">
+                <div *ngIf="h['msgCampaignType']?.errors['required']">Campaign type is required</div>
+              </div>
             </div>
-          </div>
-          <div class="col-md-6 align-content-end">
-            <div class="mt-2" (change)="onFileChange($event)">
-              <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
-              <input type="file" id="inputProfileImg" accept="image/jpeg, image/png" hidden />
-              <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">Upload file</label>
-              <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">{{ 'entities.edit' | translate | titlecase }}</label>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.sendToAllOptions === 'Y'">
+            <label class="form-label w-100" for="sendToAllOptions">Send to all target?</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="sendToAllOptions" id="sendToAllOptions" value="Y">
+              <label class="form-check-label" for="sendToAllOptions">Yes</label>
             </div>
-          </div>
-        </div>
-        <label class="form-label w-100">Send test to</label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Email or phone number"
-        />
-
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="sendToAllOptions" id="sendToAllOptions" value="N">
+              <label class="form-check-label" for="sendToAllOptions">No</label>
+            </div>
+            <div *ngIf="h['sendToAllOptions']?.invalid && (h['sendToAllOptions']?.dirty || h['sendToAllOptions']?.touched)" class="form-text text-danger">
+              <div *ngIf="h['sendToAllOptions']?.errors['required']">Default mode is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.messagesSubject === 'Y'">
+            <label class="form-label w-100" for="messagesSubject">Subject</label>
+            <input
+              type="text"
+              class="form-control"
+              id="messagesSubject"
+              formControlName="messagesSubject"
+              [ngClass]="{ 'is-invalid': h['messagesSubject']?.invalid && (h['messagesSubject']?.dirty || h['messagesSubject']?.touched) }"
+            />
+            <div *ngIf="h['messagesSubject']?.invalid && (h['messagesSubject']?.dirty || h['messagesSubject']?.touched)" class="form-text text-danger">
+              <div *ngIf="h['messagesSubject']?.errors['required']">Subject is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.messagesContent === 'Y' && createCampaignMessageForm.get('msgCampaignType').value !== 'newsletter'">
+            <label class="form-label w-100" for="messagesContent">Message content</label>
+            <textarea
+              class="form-control"
+              id="messagesContent"
+              formControlName="messagesContent" rows="3"
+              [ngClass]="{ 'is-invalid': h['messagesContent']?.invalid && (h['messagesContent']?.dirty || h['messagesContent']?.touched) }"></textarea>
+            <div *ngIf="h['messagesContent']?.invalid && (h['messagesContent']?.dirty || h['messagesContent']?.touched)" class="form-text text-danger">
+              <div *ngIf="h['messagesContent']?.errors['required']">Message content is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.image === 'Y'">
+            <div class="row my-3">
+              <div class="col-md-6">
+                <label class="form-label w-100">Add image</label>
+                <div class="row">
+                  <i class="fa-solid fa-paperclip w-auto m-auto"></i>
+                  <input
+                    type="text"
+                    class="form-control w-75"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6 align-content-end">
+                <div class="mt-2" (change)="onFileChange($event)">
+                  <img *ngIf="url !== '' && url" [src]="url" alt="" id="photo" />
+                  <input type="file" id="inputImg" accept="image/jpeg, image/png" hidden />
+                  <label *ngIf="url === ''" for="inputImg" class="img_upload">Upload file</label>
+                  <label for="inputImg" *ngIf="url !== ''" class="img_edit">{{ 'entities.edit' | translate | titlecase }}</label>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.sendTestTo === 'Y'">
+            <label class="form-label w-100" for="sendTestTo">Send test to</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Email or phone number"
+              id="sendTestTo"
+              formControlName="sendTestTo"
+              [ngClass]="{ 'is-invalid': h['sendTestTo']?.invalid && (h['sendTestTo']?.dirty || h['sendTestTo']?.touched) }"
+            />
+            <div *ngIf="h['sendTestTo']?.invalid && (h['sendTestTo']?.dirty || h['sendTestTo']?.touched)" class="form-text text-danger">
+              <div *ngIf="h['sendTestTo']?.errors['required']">Send test to is required</div>
+            </div>
+          </ng-container>
+        </form>
       </div>
         <div class="row col-12 ms-0">
           <div class="col-md-6 mb-2">
@@ -1084,12 +1314,11 @@
   id="trackerUrlModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 py-0">
-        <h5 class="modal-title" id="exampleModalLabel">Create a tracker URL</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Create' }} a {{ editMode ? 'tracker URL' : 'new tracker URL' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -1098,30 +1327,65 @@
         ></button>
       </div>
       <div class="modal-body">
-
-        <label class="form-label w-100">Tracker name</label>
-        <input
-          type="text"
-          class="form-control"
-        />
-        <label class="form-label w-100">URL</label>
-        <input
-          type="text"
-          class="form-control"
-        />
-        <label class="form-label w-100">Description</label>
-        <input
-          type="text"
-          class="form-control"
-        />
-
-        <div class="form-check mt-2">
-          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-          <label class="form-check-label text-black" for="flexCheckDefault">
-            Opt-out link
-          </label>
-        </div>
-
+        <form [formGroup]="createTrackerUrlForm">
+          <ng-container *ngIf="visibleStatus.trackerName === 'Y'">
+            <label class="form-label w-100" for="trackerName">Tracker name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="trackerName"
+              formControlName="trackerName"
+              [ngClass]="{ 'is-invalid': i['trackerName']?.invalid && (i['trackerName']?.dirty || i['trackerName']?.touched) }"
+            />
+            <div *ngIf="i['trackerName']?.invalid && (i['trackerName']?.dirty || i['trackerName']?.touched)" class="form-text text-danger">
+              <div *ngIf="i['trackerName']?.errors['required']">Tracker name is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.trackerUrl === 'Y'">
+            <label class="form-label w-100" for="trackerUrl">URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="trackerUrl"
+              formControlName="trackerUrl"
+              [ngClass]="{ 'is-invalid': i['trackerUrl']?.invalid && (i['trackerUrl']?.dirty || i['trackerUrl']?.touched) }"
+            />
+            <div *ngIf="i['trackerUrl']?.invalid && (i['trackerUrl']?.dirty || i['trackerUrl']?.touched)" class="form-text text-danger">
+              <div *ngIf="i['trackerUrl']?.errors['required']">URL is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.trackerDescription === 'Y'">
+            <label class="form-label w-100" for="trackerDescription">Description</label>
+            <input
+              type="text"
+              class="form-control"
+              id="trackerDescription"
+              formControlName="trackerDescription"
+              [ngClass]="{ 'is-invalid': i['trackerDescription']?.invalid && (i['trackerDescription']?.dirty || i['trackerDescription']?.touched) }"
+            />
+            <div *ngIf="i['trackerDescription']?.invalid && (i['trackerDescription']?.dirty || i['trackerDescription']?.touched)" class="form-text text-danger">
+              <div *ngIf="i['trackerDescription']?.errors['required']">Description is required</div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="visibleStatus.optOut === 'Y'">
+            <div class="form-check mt-2" for="optOut">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="optOut"
+                formControlName="optOut"
+                [ngClass]="{ 'is-invalid': i['optOut']?.invalid && (i['optOut']?.dirty || i['optOut']?.touched) }"
+              />
+              <label class="form-check-label text-black" for="optOut">
+                Opt-out link
+              </label>
+              <div *ngIf="i['optOut']?.invalid && (i['optOut']?.dirty || i['optOut']?.touched)" class="form-text text-danger">
+                <div *ngIf="i['optOut']?.errors['required']">Select opt out to is required</div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-primary">Save details</button>

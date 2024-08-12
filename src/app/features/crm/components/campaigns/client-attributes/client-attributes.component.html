@@ -45,7 +45,8 @@
                  (click)="openDefineClientAttributesModal()"></i>
             </span>
             <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
+              <i class="pi pi-pencil"
+              (click)="editClientAttribute()"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -107,8 +108,7 @@
   #campaignClientAttribute
   id="campaignClientAttribute"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
+  aria-labelledby="exampleModalLabel">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
@@ -121,43 +121,81 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="row my-3">
-          <div class="col-md-6">
-            <label class="form-label w-100">Name</label>
-            <input
-              type="text"
-              class="form-control"
-            />
+        <form [formGroup]="createClientAttributesForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.clientAttributeName === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="clientAttributeName">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="clientAttributeName"
+                  formControlName="clientAttributeName"
+                  [ngClass]="{ 'is-invalid': f['clientAttributeName']?.invalid && (f['clientAttributeName']?.dirty || f['clientAttributeName']?.touched) }"
+                />
+                <div *ngIf="f['clientAttributeName']?.invalid && (f['clientAttributeName']?.dirty || f['clientAttributeName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['clientAttributeName']?.errors['required']">Name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.clientAttributeDescription === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="clientAttributeDescription">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="clientAttributeDescription"
+                  formControlName="clientAttributeDescription"
+                  [ngClass]="{ 'is-invalid': f['clientAttributeDescription']?.invalid && (f['clientAttributeDescription']?.dirty || f['clientAttributeDescription']?.touched) }"
+                />
+                <div *ngIf="f['clientAttributeDescription']?.invalid && (f['clientAttributeDescription']?.dirty || f['clientAttributeDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['clientAttributeDescription']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.clientAttributePrompt === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="clientAttributePrompt">Prompt</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="clientAttributePrompt"
+                  formControlName="clientAttributePrompt"
+                  [ngClass]="{ 'is-invalid': f['clientAttributePrompt']?.invalid && (f['clientAttributePrompt']?.dirty || f['clientAttributePrompt']?.touched) }"
+                />
+                <div *ngIf="f['clientAttributePrompt']?.invalid && (f['clientAttributePrompt']?.dirty || f['clientAttributePrompt']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['clientAttributePrompt']?.errors['required']">Prompt is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.clientAttributeRange === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="clientAttributeRange">Range</label>
+                <select class="form-select" id="clientAttributeRange" formControlName="clientAttributeRange"
+                  [ngClass]="{ 'is-invalid': f['clientAttributeRange']?.invalid && (f['clientAttributeRange']?.dirty || f['clientAttributeRange']?.touched) }">
+                  <option value=""></option>
+                  <option value=""></option>
+                </select>
+                <div *ngIf="f['clientAttributeRange']?.invalid && (f['clientAttributeRange']?.dirty || f['clientAttributeRange']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['clientAttributeRange']?.errors['required']">Range is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.clientAttribute === 'Y'">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="clientAttribute">Client attribute</label>
+                <select class="form-select" id="clientAttribute" formControlName="clientAttribute"
+                [ngClass]="{ 'is-invalid': f['clientAttribute']?.invalid && (f['clientAttribute']?.dirty || f['clientAttribute']?.touched) }">
+                  <option value=""></option>
+                  <option value=""></option>
+                </select>
+                <div *ngIf="f['clientAttribute']?.invalid && (f['clientAttribute']?.dirty || f['clientAttribute']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['clientAttribute']?.errors['required']">Client attribute is required</div>
+                </div>
+              </div>
+            </ng-container>
           </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Description</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Prompt</label>
-            <input
-              type="text"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Range</label>
-            <select class="form-select">
-              <option value=""></option>
-              <option value=""></option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Client attribute</label>
-            <select class="form-select">
-              <option value=""></option>
-              <option value=""></option>
-            </select>
-          </div>
-        </div>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Save details</button>

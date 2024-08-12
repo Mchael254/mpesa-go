@@ -1,0 +1,268 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Activity Management',
+        url: '/home/crm/priority-level-activity-status'
+      },
+      {
+        label: 'Priority level and activity status',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-sm-12 col-md-6">
+              <h6 class="text-dark">Activity priority levels definition</h6>
+            </div>
+
+            <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+              <div class="float-end">
+        <span class="icon-circle">
+              <i class="fa-solid fa-plus"
+                 (click)="openDefinePriorityLevelModal()"></i>
+            </span>
+                <span class="icon-circle">
+              <i class="pi pi-pencil" (click)="editPriorityLevel()"></i>
+            </span>
+                <span class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+              </div>
+            </div>
+          </div>
+          <p-table
+            #priorityLevelsTable
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="priorityLevelsData?.length"
+            [value]="priorityLevelsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            [(selection)]="selectedPriorityLevels"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['description', 'code']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-priorityLevel>
+              <tr>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="1">No Priority Level Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-sm-12 col-md-6">
+              <h6 class="text-dark">Activity status definition</h6>
+            </div>
+
+            <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+              <div class="float-end">
+        <span class="icon-circle">
+              <i class="fa-solid fa-plus"
+                 (click)="openActivityStatusModal()"></i>
+            </span>
+                <span class="icon-circle">
+              <i class="pi pi-pencil" (click)="editActivityStatus()"></i>
+            </span>
+                <span class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+              </div>
+            </div>
+          </div>
+          <p-table
+            #activityStatusTable
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="activityStatusData?.length"
+            [value]="activityStatusData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            [(selection)]="selectedActivityStatus"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['description', 'code']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-activityType>
+              <tr>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="1">No Activity Status Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Create priority level modal-->
+<div
+  class="modal fade"
+  #newPriorityLevel
+  id="newPriorityLevel"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'priority level' : 'new priority level' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeDefinePriorityLevelModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createNewPriorityLevelForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="shortDescription">Short description</label>
+                <textarea
+                  class="form-control"
+                  id="shortDescription"
+                  formControlName="shortDescription" rows="2"
+                  [ngClass]="{ 'is-invalid': f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched) }"></textarea>
+                <div *ngIf="f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['shortDescription']?.errors['required']">Short description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="description">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  formControlName="description" rows="3"
+                  [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }"></textarea>
+                <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Create activity status modal-->
+<div
+  class="modal fade"
+  #newActivityStatus
+  id="newActivityStatus"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} {{ editMode ? 'an activity status' : 'new activity status' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeActivityStatusModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createNewActivityStatusForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="shortDescription">Short description</label>
+                <textarea
+                  class="form-control"
+                  id="shortDescription"
+                  formControlName="shortDescription" rows="2"
+                  [ngClass]="{ 'is-invalid': g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched) }"></textarea>
+                <div *ngIf="g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['shortDescription']?.errors['required']">Short description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="description">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  formControlName="description" rows="3"
+                  [ngClass]="{ 'is-invalid': g['description']?.invalid && (g['description']?.dirty || g['description']?.touched) }"></textarea>
+                <div *ngIf="g['description']?.invalid && (g['description']?.dirty || g['description']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>

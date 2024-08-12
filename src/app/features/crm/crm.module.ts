@@ -36,6 +36,10 @@ import { CampaignAnalyticsComponent } from './components/campaigns/campaign-anal
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
 import { ClientAttributesComponent } from './components/campaigns/client-attributes/client-attributes.component';
 import { ProductAttributesComponent } from './components/campaigns/product-attributes/product-attributes.component';
+import { ActivitiesComponent } from './components/activity-management/activities/activities.component';
+import {EntitiesModule} from "../entities/entities.module";
+import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
+import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
 
 @NgModule({
   declarations: [
@@ -64,21 +68,25 @@ import { ProductAttributesComponent } from './components/campaigns/product-attri
     SchedulerComponent,
     ClientAttributesComponent,
     ProductAttributesComponent,
+    ActivitiesComponent,
+    ActivityTypesComponent,
+    PriorityLevelsActivityStatusComponent,
   ],
-  imports: [
-    CommonModule,
-    CrmRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TableModule,
-    DropdownModule,
-    TooltipModule,
-    DialogModule,
-    MultiSelectModule,
-    TabViewModule,
-    SharedModule,
-    ScrollPanelModule,
-  ],
+    imports: [
+        CommonModule,
+        CrmRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TableModule,
+        DropdownModule,
+        TooltipModule,
+        DialogModule,
+        MultiSelectModule,
+        TabViewModule,
+        SharedModule,
+        ScrollPanelModule,
+        EntitiesModule,
+    ],
   providers: [DatePipe],
 })
 export class CrmModule {}

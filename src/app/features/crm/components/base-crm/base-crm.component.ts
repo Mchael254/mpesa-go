@@ -62,6 +62,39 @@ Relationship Management) application. Each object has the following properties: 
     { label: 'System Reports', link: '', showSubItems: false, subItems: [] },
   ];
 
+  campaignMngtItems: Array<{
+    label: string;
+    link?: string;
+    showSubItems: boolean;
+    subItems?: Array<{ label: string; link?: string }>;
+  }> = [
+    {
+      label: 'Campaign Management',
+      showSubItems: false,
+      subItems: [
+        { label: 'Campaigns', link: '/home/crm/campaigns' },
+        { label: 'Client Attributes', link: '/home/crm/client-attributes' },
+        { label: 'Product Attributes', link: '/home/crm/product-attributes' },
+      ],
+    },
+    {
+      label: 'Leads and Potentials',
+      link: '',
+      showSubItems: false,
+      subItems: [],
+    },
+    {
+      label: 'Activity Management',
+      link: '',
+      showSubItems: false,
+      subItems: [
+        { label: 'Activities', link: '/home/crm/activities' },
+        { label: 'Activity Types', link: '/home/crm/activity-types' },
+        { label: 'Priority Level & Activity Status', link: '/home/crm/priority-level-activity-status' }
+      ],
+    },
+  ];
+
   constructor() {}
 
   ngOnInit(): void {}

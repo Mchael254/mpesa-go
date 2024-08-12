@@ -1,0 +1,171 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Activity Management',
+        url: '/home/crm/activity-types'
+      },
+      {
+        label: 'Activity types',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <label class="form-label w-100 text-black fs-5 fw-medium" for="sendReminder">System</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="CRM">
+            <label class="form-check-label text-black" for="sendReminder">
+              Customer relationship management system
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="FMS">
+            <label class="form-check-label text-black" for="sendReminder">
+              Financial management system
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="GIS">
+            <label class="form-check-label text-black" for="sendReminder">
+              General insurance system
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="HRMS">
+            <label class="form-check-label text-black" for="sendReminder">
+              Human resource management system
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="LMS">
+            <label class="form-check-label text-black" for="sendReminder">
+              Life management system
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-6">
+          <h5 class="text-dark">Activities</h5>
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+          <div class="float-end">
+        <span class="icon-circle">
+              <i class="fa-solid fa-plus"
+                 (click)="openDefineActivityTypeModal()"></i>
+            </span>
+            <span class="icon-circle">
+              <i class="pi pi-pencil" (click)="editActivityType()"></i>
+            </span>
+            <span class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <p-table
+        #activityTypeTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="activityTypeData?.length"
+        [value]="activityTypeData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedActivityType"
+        selectionMode="single"
+        dataKey="code"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['description', 'code']"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-activityType>
+          <tr>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="1">No Activity Type Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!--Create Activity Type modal-->
+<div
+  class="modal fade"
+  #newActivityType
+  id="newActivityType"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} an {{ editMode ? 'activity type' : 'activity type' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeDefineActivityTypeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createNewActivityTypeForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="description">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  formControlName="description" rows="3"
+                  [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }"></textarea>
+                <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
