@@ -185,7 +185,11 @@
     "Activity Management": "Activity Management",
     "Activities": "Activities",
     "Activity Types": "Activity Types",
-    "Priority level & Activity status": "Priority level & Activity status"
+    "Priority level & Activity status": "Priority level & Activity status",
+    "general": "General",
+    "life_ind": "Life Individual",
+    "life_group": "Life Group",
+    "pension": "Pension"
   },
   "crm": {
     "activity": "Activity",
@@ -579,7 +583,11 @@
     "date_created": "Date Created",
     "action": "Action",
     "policy_no": "Policy no.",
-    "claim_no": "Claim no"
+    "claim_no": "Claim no",
+    "create_quick_quote": "Create quick quote",
+    "create_normal_quote": "Create normal quote",
+    "create_new_policy": "Create new policy",
+    "report_a_claim": "Report a claim"
   },
   "gis": {
     "quotation": {
@@ -1021,7 +1029,7 @@
       "used_rate": "Used rate",
       "commission_amount": "Commission amount",
       "withholding_rate": "Withholding rate",
-      "code": "Code"    
+      "code": "Code"
     }
   },
   "lms": {
