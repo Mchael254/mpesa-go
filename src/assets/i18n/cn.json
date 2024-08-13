@@ -185,7 +185,11 @@
     "Activity Management": "活动管理",
     "Activities": "活动",
     "Activity Types": "活动类型",
-    "Priority level & Activity status": "优先级 & 活动状态"
+    "Priority level & Activity status": "优先级 & 活动状态",
+    "general": "一般",
+    "life_ind": "个人寿险",
+    "life_group": "团体寿险",
+    "pension": "养老金"
   },
   "crm": {
     "activity": "活动",
@@ -563,7 +567,11 @@
     "date_created": "创建日期",
     "action": "操作",
     "policy_no": "保单编号",
-    "claim_no": "索赔编号"
+    "claim_no": "索赔编号",
+    "create_quick_quote": "创建快速报价",
+    "create_normal_quote": "创建普通报价",
+    "create_new_policy": "创建新保单",
+    "report_a_claim": "报告索赔"
   },
   "gis": {
     "quotation": {
@@ -965,7 +973,7 @@
       "excess_type": "超额类型",
       "peril_id": "ID",
       "previous": "以前",
-    
+
       "select_required_documents": "选择所需文件",
       "edit_required_documents": "编辑所需文件",
       "certificates": "证书",

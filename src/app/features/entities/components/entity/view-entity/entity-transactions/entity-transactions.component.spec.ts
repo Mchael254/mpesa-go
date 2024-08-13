@@ -7,6 +7,8 @@ import { of, throwError } from 'rxjs';
 import { EntityService } from '../../../../services/entity/entity.service';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {TranslateModule} from "@ngx-translate/core";
 
 const transaction = {
   quotation_no: 100,
@@ -19,6 +21,15 @@ const transaction = {
   cover_to: '08-08-2024',
   status: 'A',
 };
+
+export class MockGlobalMessageService {
+  displayErrorMessage = jest.fn((summary, detail) => {
+    return;
+  });
+  displaySuccessMessage = jest.fn((summary, detail) => {
+    return;
+  });
+}
 
 describe('EntityTransactionsComponent', () => {
   const entityServiceStub = createSpyObj('EntityService', [
@@ -68,10 +79,13 @@ describe('EntityTransactionsComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [EntityTransactionsComponent],
-      imports: [HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        TranslateModule.forRoot()
+      ],
       providers: [
         { provide: EntityService, useValue: entityServiceStub },
-        MessageService,
+        { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });

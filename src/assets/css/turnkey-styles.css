@@ -53,6 +53,11 @@ html,body {
   text-decoration: none;
 }
 
+.p-element p-ripple p-tabview-nav-link,
+.tabTitle {
+  color: #00529b;
+}
+
 .btn-full-width {
     width: 100%;
 }

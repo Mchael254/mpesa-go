@@ -116,6 +116,7 @@ tr.ng-star-inserted {
  {
   border: 0;
   border-radius: 0;
+  border-bottom: solid 2px #00529b;
 }
 
 .p-calendar {
