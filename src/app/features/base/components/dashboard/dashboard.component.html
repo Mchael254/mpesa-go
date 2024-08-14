@@ -20,11 +20,21 @@
     <div class="col-sm-6 col-12">
       <div class="card">
         <div class="card-body">
-          <app-dynamic-chart
-            [basicData]="basicData"
-            [chartType]="'bar'"
-            [chartTitle]="'Total Individual Premium'"
-          ></app-dynamic-chart>
+          <ng-container *ngIf="chartsData.length > 0; else chartLoading">
+            <app-dynamic-chart
+              [basicData]="chartsData[0]"
+              [chartType]="'bar'"
+              [chartTitle]="report[0].type"
+            ></app-dynamic-chart>
+            <p class="text-primary text-center mt-2 fw-bold">{{ report[0].name }}</p>
+          </ng-container>
+          <ng-template #chartLoading>
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -32,11 +42,21 @@
     <div class="col-sm-6 col-12">
       <div class="card">
         <div class="card-body">
-          <app-dynamic-chart
-            [chartType]="'line'"
-            [basicData]="basicData"
-            [chartTitle]="'Total Gross Premium'"
-          ></app-dynamic-chart>
+          <ng-container *ngIf="chartsData.length > 0; else chartLoading">
+            <app-dynamic-chart
+              [basicData]="chartsData[1]"
+              [chartType]="'line'"
+              [chartTitle]="report[1].type"
+            ></app-dynamic-chart>
+            <p class="text-primary text-center mt-2 fw-bold">{{ report[1].name }}</p>
+          </ng-container>
+          <ng-template #chartLoading>
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
