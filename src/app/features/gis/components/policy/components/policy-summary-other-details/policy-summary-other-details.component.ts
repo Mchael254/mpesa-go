@@ -1640,12 +1640,35 @@ getSingleRiskPeril(){
   console.log(this.selectedPeril)
 }
 deleteRiskPeril(){
-  this.policyService.deleteRiskPeril(this.selectedRiskPeril).subscribe({
+ 
+  this.policyService.deleteRiskPeril(this.selectedRiskPeril.code).subscribe({
     next:(res)=>{
       console.log('delete response',res)
+      this.policyService.getRiskPerils().subscribe({
+        next:(res)=>{
+          this.subperils = res
+          this.subperils = this.subperils._embedded
+          console.log(this.batchNo)
+          
+            this.subperils.forEach(perilArray => {   
+                perilArray.forEach(element => {              
+                  if(element.polBatchNo === 233471313){                  
+                    if(element.ipuCode === 20235954513){
+                      this.policyRiskPeril.push(element)
+                      this.subperils =element 
+                      console.log(element,'risk perils')
+                    }
+                  }
+                });
+              
+            });
+          
+        }
+      });
+      this.globalMessagingService.displaySuccessMessage('Success','Risk Peril deleted successfully')
     }
   })
-  console.log(this.selectedRiskPeril)
+  console.log(this.selectedRiskPeril.code)
 }
 openRiskPerilDeleteModal() {
   log.debug("Selected Risk Peril", this.selectedRiskPeril)
