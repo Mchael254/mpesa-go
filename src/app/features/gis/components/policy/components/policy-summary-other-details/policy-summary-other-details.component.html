@@ -1886,9 +1886,13 @@
                                                     </div>
                                                     <div class="col-3" *ngIf="isRiskClauseDetailsOpen">
                                                         <button type="button" id="icon" class="btn btn-primary"
-                                                            data-bs-toggle="modal" data-bs-target="#deleteSection"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-trash-can"></i>
+                                                            data-bs-toggle="modal" id="openRiskClauseModalButtonDelete"
+                                                            [hidden]="true" data-bs-target="#deleteRiskClause" title="Delete">
+                                                        </button>
+                                                        <button type="button" id="icon" class="btn btn-primary"
+                                                            title="Delete">
+                                                            <i class="fa-solid fa-trash-can"
+                                                                (click)="openRiskClauseDeleteModal()"></i>
                                                         </button>
                                                     </div>
                                                     <div class="col-3">
@@ -1911,9 +1915,10 @@
                                     <div class="collapse" id="riskClauses">
 
 
-                                        <p-table #dt2 [value]="selectedClauseList" dataKey="code" selectionMode="single"
-                                            editMode="row" [tableStyle]="{'min-width': '50rem'}"
-                                            responsiveLayout="scroll" [autoLayout]="true">
+                                        <p-table [value]="selectedSubClauseList" dataKey="code" selectionMode="single"
+                                            editMode="row" [tableStyle]="{'min-width': '50rem'}"  [(selection)]="selectedClause"
+                                            responsiveLayout="scroll" [autoLayout]="true"  [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                                            currentPageReportTemplate=" {first} - {last} of {totalRecords}" >
 
                                             <ng-template pTemplate="header">
                                                 <tr>
@@ -1921,7 +1926,7 @@
                                                     <th>Header</th>
                                                     <th>Clause</th>
                                                     <th></th>
-                                                    <th>Type</th>
+                                                    
                                                     <th>{{'gis.quotation.editable' | translate}}</th>
 
                                                 </tr>
@@ -1929,7 +1934,8 @@
                                             <ng-template pTemplate="body" let-selectedClauseList let-editing="editing"
                                                 let-ri="rowIndex">
                                                 <tr (click)="onSelectRiskClauses(selectedClauseList)"
-                                                    [pEditableRow]="selectedClauseList">
+                                                    [pEditableRow]="selectedClauseList" [pSelectableRow]="selectedClauseList"
+                                                    [class.p-highlight]="selectedClauseList === selectedClause" >
                                                     <!-- <td>
                                               <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
                                           </td> -->
@@ -1958,12 +1964,12 @@
                                                         <p-cellEditor>
                                                             <ng-template pTemplate="input">
                                                                 <input pInputText type="text"
-                                                                    [(ngModel)]="selectedClauseList.wording"
+                                                                    [(ngModel)]="selectedClauseList.clause"
                                                                     class="form-control form-control-sm"
                                                                     [ngModelOptions]="{standalone: true}">
                                                             </ng-template>
                                                             <ng-template pTemplate="output">
-                                                                {{selectedClauseList.wording}}
+                                                                {{selectedClauseList.clause}}
                                                             </ng-template>
                                                             <!-- Helper icon added next to the wording column -->
                                                         </p-cellEditor>
@@ -1975,20 +1981,7 @@
                                                             icon="pi pi-info-circle"
                                                             class="p-button-rounded p-button-text"></button>
                                                     </td>
-                                                    <td>
-                                                        <p-cellEditor>
-                                                            <ng-template pTemplate="input">
-                                                                <input pInputText type="text"
-                                                                    [(ngModel)]="selectedClauseList.type"
-                                                                    class="form-control form-control-sm"
-                                                                    [ngModelOptions]="{standalone: true}">
-                                                            </ng-template>
-                                                            <ng-template pTemplate="output">
-                                                                {{selectedClauseList.type}}
-                                                            </ng-template>
-                                                            <!-- Helper icon added next to the wording column -->
-                                                        </p-cellEditor>
-                                                    </td>
+                                                   
                                                     <td *ngIf="selectedClauseList.is_editable  !== 'Y'"
                                                         style="padding-left: 24px;">
                                                         -- </td>
@@ -2015,7 +2008,7 @@
                                                         <div pResizable
                                                             [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
                                                             (onResize)="onResize($event)">
-                                                            <p>{{ selectedClauseList.wording }}</p>
+                                                            <p>{{ selectedClauseList.clause }}</p>
                                                         </div>
                                                     </ng-container>
                                                 </p-dialog>
@@ -2093,7 +2086,33 @@
                                                 </div>
                                             </div>
                                         </div>
+                                         <!-- DELETE Risk Clause  Modal -->
+                                         <div class="modal fade" id="deleteRiskClause" tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteRiskClause" aria-hidden="true">
+                                         <div class="modal-dialog modal-dialog-centered" role="document">
+                                             <div class="modal-content" id="deleteRiskClause">
+                                                 <div class="modal-body ">
+                                                     <p class="deleteMessage mt-4 mb-4">
+                                                         {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}
+                                                     </p>
+                                                     <div class="d-flex justify-content-center mb-3">
+                                                         <button type="button" class="btn btn-primary px-5"
+                                                             id="delete"
+                                                             data-bs-dismiss="modal" (click)="deleteRiskClause()">{{'gis.policy.yes_delete' |
+                                                             translate}} </button>
+                                                     </div>
+                                                     <div class="d-flex justify-content-center mb-2">
+                                                         <button type="button" class="btn btn-outline-primary px-5"
+                                                             data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                                                             translate}}</button>
+                                                     </div>
 
+
+
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
                                     </div>
                                 </div>
                             </div>
