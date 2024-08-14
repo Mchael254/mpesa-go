@@ -14,3 +14,35 @@
     flex: 1;
     padding: 48px;
   }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+    font-style: Roboto;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+  }
+  
+  button.review-claim {
+    background-color: #00529B;
+    color: #FFFFFF;
+    border-color: #00529B;
+  }
+  
+  button.review-claim:hover {
+    background-color: #65b2f5;
+  }
