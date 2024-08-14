@@ -1,6 +1,9 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
+import { ClaimPoliciesDTO } from '../models/claim-models';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +48,36 @@ export class ClaimsService {
   
     return this.api.GET(url, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
+
+  getDocumetsToUpload(claimNo: string) {
+    return this.api.GET(`group/claims/documents?clm_no=${claimNo}`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }  
+
+  getClaimPolicies(
+    productCode: number,
+    policyCode?: number,
+    status?: string,
+    endorsementCode?: number
+  ): Observable<ClaimPoliciesDTO[]> {
+    let params = new HttpParams();
+  
+    if (policyCode !== undefined && policyCode !== null) {
+      params = params.set('policyCode', policyCode.toString());
+    }
+    if (status !== undefined && status !== null) {
+      params = params.set('status', status);
+    }
+    if (endorsementCode !== undefined && endorsementCode !== null) {
+      params = params.set('endorsementCode', endorsementCode.toString());
+    }
+  
+    return this.api.GET<ClaimPoliciesDTO[]>(
+      `group/claims/${productCode}/policies`,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
+    );
+  }
+  
   
 
 }

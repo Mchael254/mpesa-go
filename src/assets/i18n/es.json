@@ -1084,7 +1084,26 @@
       "whatsapp": "Whatsapp",
       "enter_email_address": "Ingresar dirección de correo electrónico",
       "enter_phone_number": "Ingresar número de teléfono",
-      "enter_whatsapp_number": "Ingresar número de Whatsapp"
+      "enter_whatsapp_number": "Ingresar número de Whatsapp",
+      "choose_file": "Seleccionar archivo",
+      "investigator": "Investigador",
+      "request_date": "Fecha de solicitud",
+      "submission_date": "Fecha de envío",
+      "remarks": "Observaciones",
+      "upload_investigators_report": "Subir el informe del investigador",
+      "investigation_details": "Detalles de la investigación",
+      "payment_details": "Detalles de pago",
+      "invoice_number": "Número de factura",
+      "invoice_date": "Fecha de la factura",
+      "invoice_amount": "Monto de la factura",
+      "payment_mode": "Modo de pago",
+      "account_number": "Número de cuenta",
+      "approve_and_proceed": "Aprobar y continuar",
+      "payment_voucher_processing": "Procesamiento del comprobante de pago",
+      "payee": "Beneficiario",
+      "amount": "Monto",
+      "reject": "Rechazar",
+      "send_for_review": "Enviar para revisión"
       }
     }
   },

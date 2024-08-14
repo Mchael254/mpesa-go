@@ -4,5 +4,47 @@
           <app-stepper [currentStep]="4" [stepperData]="steps"></app-stepper>
         </div>
       </div>
-    <div class="container"></div>
+    <div class="container">
+      <div class="title">{{ "lms.grp.claims.payment_voucher_processing" | translate }}</div>
+    <div class="row">
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div>
+          <label for="payee" style="color: black;">{{ "lms.grp.claims.payee" | translate }}</label>
+          <select class="form-select" id="investigator" formControlName="payee">
+            <option selected="true" disabled="disabled"></option>
+            <option *ngFor="let payee of " [value]="payee">{{ payee | titlecase }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 40px;">
+      <div class="col-md-4">
+        <div>
+          <label for="paymentMode" style="color: black;">{{ "lms.grp.claims.payment_mode" | translate }}</label>
+          <select class="form-select" id="paymentMode" formControlName="paymentMode">
+            <option selected="true" disabled="disabled"></option>
+            <option *ngFor="let mode of " [value]="mode">{{ mode | titlecase }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div>
+          <label for="accountNumber" style="color: black;">{{ "lms.grp.claims.account_number" | translate }}</label>
+          <input type="text" pInputText class="form-control" id="accountNumber" [style]="{ width: '100%' }"
+            formControlName="accountNumber">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div>
+          <label for="amount" style="color: black;">{{ "lms.grp.claims.amount" | translate }}</label>
+          <input type="text" pInputText class="form-control" readonly="readonly" id="amount" [style]="{ width: '100%' }"
+            formControlName="amount">
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="button-container">
+      <button class="review-claim">{{ "lms.grp.claims.send_for_review" | translate }}</button>
+    </div>
 </div>

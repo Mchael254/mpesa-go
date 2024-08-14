@@ -1,8 +1,123 @@
 <div class="main">
+  <div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+  <div class="container">
+    <div class="title">{{ "lms.grp.claims.investigation_details" | translate }}</div>
+    <form [formGroup]="claimInvestigationForm">
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div>
+          <label for="investigator" style="color: black;">{{ "lms.grp.claims.investigator" | translate }}</label>
+          <select class="form-select" id="investigator" formControlName="investigator">
+            <option selected="true" disabled="disabled"></option>
+            <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+          </select>
         </div>
       </div>
-    <div class="container"></div>
+
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div>
+          <label for="requestDate" style="color: black;">{{ "lms.grp.claims.request_date" | translate }}</label>
+          <p-calendar formControlName="requestDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+            placeholder="dd/mm/yy">
+          </p-calendar>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div>
+          <label for="submissionDate" style="color: black;">{{ "lms.grp.claims.submission_date" | translate }}</label>
+          <p-calendar formControlName="submissionDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+            placeholder="dd/mm/yy">
+          </p-calendar>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 40px;">
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div>
+          <label for="remarks" style="color: black;">{{ "lms.grp.claims.remarks" | translate }}</label>
+          <textarea rows="2" cols="5" pInputTextarea id="remarks" [style]="{ width: '100%' }"
+            formControlName="remarks"></textarea>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-12 col-xs-12">
+        <div class="d-flex align-items-center flex-wrap">
+          <label for="uploadReport" style="color: black; margin-right: 15px;">{{
+            "lms.grp.claims.upload_investigators_report" | translate }}</label>
+          <div class="form-group">
+            <input type="file" #fileInput style="display: none;">
+            <button class="choose-file">
+              <span class="file-text">{{ "lms.grp.claims.choose_file" | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="title" style="margin-top: 20px;">{{ "lms.grp.claims.payment_details" | translate }}</div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div>
+          <label for="invoiceNumber" style="color: black;">{{ "lms.grp.claims.invoice_number" | translate }}</label>
+          <input type="text" pInputText class="form-control" id="invoiceNumber" [style]="{ width: '100%' }"
+            formControlName="invoiceNumber">
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div>
+          <label for="invoiceDate" style="color: black;">{{ "lms.grp.claims.invoice_date" | translate }}</label>
+          <p-calendar formControlName="invoiceDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+            placeholder="dd/mm/yy"></p-calendar>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div>
+          <label for="invoiceAmount" style="color: black;">{{ "lms.grp.claims.invoice_amount" | translate }}</label>
+          <input type="number" pInputText class="form-control" id="invoiceAmount" [style]="{ width: '100%' }"
+            formControlName="invoiceAmount">
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 40px;">
+      <div class="col-md-4">
+        <div>
+          <label for="paymentMode" style="color: black;">{{ "lms.grp.claims.payment_mode" | translate }}</label>
+          <select class="form-select" id="paymentMode" formControlName="paymentMode">
+            <option selected="true" disabled="disabled"></option>
+            <option *ngFor="let mode of " [value]="mode">{{ mode | titlecase }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div>
+          <label for="accountNumber" style="color: black;">{{ "lms.grp.claims.account_number" | translate }}</label>
+          <input type="text" pInputText class="form-control" id="accountNumber" [style]="{ width: '100%' }"
+            formControlName="accountNumber">
+        </div>
+      </div>
+    </div>
+  </form>
+
+  </div>
+  <div class="flex-container">
+    <div class="reject-button-container">
+      <button class="bottom-button-reject">
+        <span class="text">{{ "lms.grp.claims.reject" | translate }}</span>
+      </button>
+    </div>
+    <div class="button-container">
+      <button class="approve-claim">{{ "lms.grp.claims.approve_and_proceed" | translate }}</button>
+    </div>
+  </div>
 </div>

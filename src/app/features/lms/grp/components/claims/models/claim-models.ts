@@ -100,3 +100,30 @@ export class ClaimDetailsDTO {
     member_uid: string;
     early_access: string;
 }
+
+export interface DocumentsToUploadDTO {
+    document_description: string;
+    short_description: string;
+    is_document_submitted: boolean;
+    date_given: string;
+    document_number: string;
+    document_code: number;
+  }
+
+  export interface FileDetailsDTO {
+    lastModified: number;
+    name: string;
+    size: number;
+    type: string;
+    webkitRelativePath: string;
+  }
+
+  export interface ClaimPoliciesDTO {
+    policy_code: number | null;
+    endorsement_code: number;
+    product_code: number | null;
+    product_type: string;
+    policy_no: string;
+    client: string;
+    status: string;
+  }
