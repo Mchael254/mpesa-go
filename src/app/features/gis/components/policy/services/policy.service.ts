@@ -177,9 +177,9 @@ export class PolicyService {
   reassignTicket(data){
     return this.api.POST(`api/v1/tickets`,JSON.stringify(data),API_CONFIG.MNGT_WORKFLOW_BASE_URL)
   }
-  getRiskClauses(riskCode){
-    return this.api.GET(`v1/excesses?riskCode=${riskCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
-    // return this.api.GET(`v1/riskClauses?riskCode=${riskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getRiskClauses(){
+    return this.api.GET(`v2/risk-clauses`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    
   }
   addRemarks(data: Remarks){
     console.log("Data", JSON.stringify(data))
@@ -216,5 +216,14 @@ export class PolicyService {
       responseType: 'text' as 'json' // Cast 'json' is required for Angular's HttpClient
     };
     return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
+  }
+  deleteRiskPeril(code){
+    return this.api.DELETE(`v2/risk-perils?code=${code}`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getRiskClause(riskCode){
+    return this.api.GET(`v2/risk-clauses/${riskCode}?code=${riskCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  deleteRiskClause(riskCode,polClauseCode){
+    return this.api.DELETE(`v1/delete-risk-clause?ipuCode=${riskCode}&polClauseCode=${polClauseCode}`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
 }

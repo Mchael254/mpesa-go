@@ -1029,7 +1029,8 @@
       "used_rate": "Used rate",
       "commission_amount": "Commission amount",
       "withholding_rate": "Withholding rate",
-      "code": "Code"
+      "code": "Code",
+      "select_risk_peril":"Select Risk Peril" 
     }
   },
   "lms": {
