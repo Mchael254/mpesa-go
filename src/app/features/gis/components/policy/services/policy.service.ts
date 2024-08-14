@@ -217,8 +217,8 @@ export class PolicyService {
     };
     return this.http.post(`${this.reportsUrl}`,JSON.stringify(data),options)
   }
-  deleteRiskPeril(data){
-    return this.api.DELETE(`v1/perils`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  deleteRiskPeril(code){
+    return this.api.DELETE(`v2/risk-perils?code=${code}`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
   getRiskClause(riskCode){
     return this.api.GET(`v2/risk-clauses/${riskCode}?code=${riskCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
