@@ -1,9 +1,12 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
-import {Router} from "@angular/router";
-import {Observable} from "rxjs";
-import {PoliciesClaimModuleDTO} from "../../../models/claim-inititation";
-import {logInfo} from "source-map-explorer/bin/cli";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {combineLatest, filter, Observable, of} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, take} from 'rxjs/operators';
+import { PoliciesClaimModuleDTO } from '../../../models/claim-inititation';
+import { ClaimsService } from '../../../../../../service/claims/claims.service';
+import {AuthService} from "../../../../../../../../shared/services/auth.service";
+import {UtilService} from "../../../../../../../../shared/services";
 
 @Component({
   selector: 'app-claims-options',
@@ -12,21 +15,43 @@ import {logInfo} from "source-map-explorer/bin/cli";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClaimsOptionsComponent implements OnInit, OnDestroy {
+  @Input() claimInitForm: FormGroup;
+  @Input() claim_types: any[];
+  @Output() policyFiltered = new EventEmitter<PoliciesClaimModuleDTO[]>(); // Emit event to parent
+  @Output() clientFiltered = new EventEmitter<PoliciesClaimModuleDTO[]>();
+
+  public userCode: number;
+  public policy$: Observable<PoliciesClaimModuleDTO[]>;
+
   constructor(
-    private router: Router
+    private router: Router,
+    private claimsService: ClaimsService,
+    private authService: AuthService,
   ) {
   }
-  @Input() claimInitForm: FormGroup;
-  @Input() policy: Observable<PoliciesClaimModuleDTO[]>;
-  @Input() claim_types: any[];
-
-
 
   ngOnInit(): void {
-    console.log('policy111>>>>', this.policy)
-    this.policy.subscribe(data => console.log('policy>>>>', data))
+    console.log('auth Service', this.authService.getCurrentUser())
   }
 
-  ngOnDestroy(): void {
+  handlePolicyFilter(searchTerm: string) {
+    this.policy$ = this.createFilteredPolicyObservable(searchTerm, '');
   }
+
+  handleClientFilter(searchTerm: string) {
+    this.policy$ = this.createFilteredPolicyObservable('', searchTerm);
+  }
+
+  private createFilteredPolicyObservable(policyNo: string, name: string): Observable<PoliciesClaimModuleDTO[]> {
+    return of(policyNo || name).pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(() => this.claimsService.getClaimPolicies(policyNo, name).pipe(
+        catchError(() => of([]))
+      )),
+      map(response => response || [])
+    );
+  }
+
+  ngOnDestroy(): void {}
 }

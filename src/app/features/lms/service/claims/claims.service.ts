@@ -21,8 +21,21 @@ export class ClaimsService {
 
   getClaimModules(): Observable<PoliciesClaimModuleDTO[]> {
     log.info('Fetching Policies');
+    // const params = new HttpParams()
+    //   .append('agnActCode', `${agnActCode}`)
     return this.api.GET<PoliciesClaimModuleDTO[]>(
       `individual/parties/claim-clients?policy_no=&name=an`,
+      API_CONFIG.UNDERWRITING_SERVICE_BASE_URL
+    );
+  }
+
+  getClaimPolicies(policyNo: string = '', name: string = ''): Observable<PoliciesClaimModuleDTO[]> {
+    log.info('Fetching Policies');
+
+    const url = `individual/parties/claim-clients?policy_no=${encodeURIComponent(policyNo)}&name=${encodeURIComponent(name)}`;
+
+    return this.api.GET<PoliciesClaimModuleDTO[]>(
+      url,
       API_CONFIG.UNDERWRITING_SERVICE_BASE_URL
     );
   }
