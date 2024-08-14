@@ -10,12 +10,23 @@
       <div class="col-md-4">
         <div class="col-lg-12 col-md-12 col-sm-12">
           <label for="policySelection">{{ "lms.ind.policy" | translate }}</label>
-          <select class="form-select" [id]="'policySelection'" formControlName="policySelection">
-
-            <option *ngFor="let data of (policy | async) | sort : 'asc' : 'prp_code'" [value]="data.value">
-              {{ data?.prp_code}}
-            </option>
-          </select>
+          <p-dropdown
+            [style]="{width: '100%', padding: '0px'}"
+            formControlName="policySelection"
+            [options]="policy$ | async"
+            optionLabel="policy_no"
+            placeholder="Select a Policy"
+            [filter]="true"
+            [showClear]="true"
+            filterBy="policy_no"
+            (onFilter)="handlePolicyFilter($event.filter)"
+          >
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="claimInitForm.get('policySelection').value">
+                {{claimInitForm.get('policySelection').value?.policy_no}}
+              </div>
+            </ng-template>
+          </p-dropdown>
         </div>
       </div>
 
@@ -24,24 +35,42 @@
       <div class="col-md-4">
         <div class="col-lg-12 col-md-12 col-sm-12">
           <label for="policyMember">{{ "lms.ind.policy_member" | translate }}</label>
-          <select class="form-select" [id]="'clientDetails'" formControlName="policyMember">
-            <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-            <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value">
-              {{ data?.name | titlecase }}
-            </option>
-          </select>
+          <p-dropdown
+            [style]="{width: '100%', padding: '0px'}"
+            formControlName="policyMember"
+            [options]="policy$ | async"
+            optionLabel="name"
+            placeholder="Select Client"
+            [filter]="true"
+            [showClear]="true"
+            filterBy="name"
+            (onFilter)="handleClientFilter($event.filter)"
+          >
+            <ng-template pTemplate="selectedItem">
+              <div *ngIf="claimInitForm.get('policyMember').value">
+                {{claimInitForm.get('policyMember').value?.name}}
+              </div>
+            </ng-template>
+          </p-dropdown>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="col-lg-12 col-md-12 col-sm-12">
           <label for="claimType">{{ "lms.ind.claim_type" | translate }}</label>
-          <select class="form-select" [id]="'claimType'" formControlName="claimType">
-            <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-            <option *ngFor="let data of claim_types | sort : 'asc' : 'name'" [value]="data.value">
-              {{ data?.name | titlecase }}
-            </option>
-          </select>
+          <p-dropdown
+            [style]="{ width: '100%', padding: '0px' }"
+            formControlName="claimType"
+            [options]="claim_types"
+            optionLabel="name"
+            optionValue="value"
+          >
+            <ng-template pTemplate="selectedItem">
+              <span *ngIf="claimInitForm.get('claimType').value">
+                {{ claimInitForm.get('claimType').value | titlecase }}
+              </span>
+            </ng-template>
+          </p-dropdown>
         </div>
       </div>
     </div>

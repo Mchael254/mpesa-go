@@ -4,18 +4,19 @@
     <!-- Claims Initiation -->
     <app-claims-options
       [claimInitForm]="claimInitForm"
-      [policy]="policy$"
-      [claim_types]="claim_types" >
+      [claim_types]="claim_types"
+      (policyFiltered)="handlePolicyFiltered($event)"
+      (clientFiltered)="handleClientFiltered($event)"
+    >
     </app-claims-options>
 
     <ng-container *ngIf="claimType">
 
       <ng-container *ngIf="claimType === claimsType.NORMAL">
         <app-death-claims
-          [claimInitForm]="claimInitForm"
           [claimClients]="claimClients$"
           [causationTypes]="causationTypes$"
-          [causationCauses]="causationCauses$">
+        >
         </app-death-claims>
       </ng-container>
 
@@ -28,17 +29,6 @@
         </app-surrender-claims>
       </ng-container>
 
-      <app-upload-documents
-        [claimInitForm]="claimInitForm">
-      </app-upload-documents>
-
-      <!-- Proceed Button -->
-      <div class="button-container">
-        <button class="proceed-btn" (click)="submitClaimInitFormData()">
-          {{ "lms.ind.proceed" | translate }}
-        </button>
-      </div>
-      <!-- End of Proceed Button -->
     </ng-container>
   </form>
 </div>

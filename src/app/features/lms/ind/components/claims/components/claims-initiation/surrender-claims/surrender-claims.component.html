@@ -83,5 +83,16 @@
 
   </div>
   <!-- End of Claim Details -->
-</div>
+ </div>
+  <app-upload-documents
+    [claimInitForm]="claimInitForm">
+  </app-upload-documents>
+
+  <!-- Proceed Button -->
+  <div class="button-container">
+    <button class="proceed-btn" (click)="submitClaimInitFormData()">
+      {{ "lms.ind.proceed" | translate }}
+    </button>
+  </div>
+  <!-- End of Proceed Button -->
 </form>
