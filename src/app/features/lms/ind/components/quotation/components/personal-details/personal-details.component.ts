@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnInit,
@@ -42,6 +43,7 @@ import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubs
 import {
   BankBranchDTO,
   BankDTO,
+  FundSourceDTO,
 } from '../../../../../../../shared/data/common/bank-dto';
 import { BankService } from '../../../../../../../shared/services/setups/bank/bank.service';
 import { CurrencyService } from '../../../../../../../shared/services/setups/currency/currency.service';
@@ -60,13 +62,17 @@ import {FormsService} from "../../../../../../setups/components/forms/service/fo
 import {QuotationService} from "../../../../../service/quotation/quotation.service";
 import {IdentityTypeService} from "../../../../../service/identityType/identity-type.service";
 import {Pagination} from "../../../../../../../shared/data/common/pagination";
+import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 
 @Component({
   selector: 'app-personal-details',
   templateUrl: './personal-details.component.html',
   styleUrls: ['./personal-details.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 @AutoUnsubscribe
+
 export class PersonalDetailsComponent implements OnInit {
   breadCrumbItems: BreadCrumbItem[] = [
     { label: 'Home', url: '/home/dashboard' },
@@ -104,6 +110,7 @@ export class PersonalDetailsComponent implements OnInit {
   identityFormatDesc: { id: number; exampleFormat: string };
   minDate = DataManipulation.getMinDate();
   occupationsData: any[] = [];
+  sectorData: SectorDTO[] = [];
   util: Utils;
   clientTypeCode: number;
   organizationId: number;
@@ -153,6 +160,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.getBankList();
     this.getClientType();
     this.getClientTitles();
+    this.getSectors();
 
     this.util = new Utils(this.session_storage);
 
@@ -595,6 +603,12 @@ export class PersonalDetailsComponent implements OnInit {
     this.crm_client_service.getClientTitles(organizationId).subscribe((data) => {
       this.clientTitles = data; 
         })
+  }
+
+  getSectors(organizationId?:number) {
+    this.sector_service.getSectors(organizationId).subscribe((data) => {
+      this.sectorData = data;
+      }); 
   }
 
   getBankList() {

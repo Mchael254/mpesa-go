@@ -558,20 +558,20 @@
 
                 <div class="col-md-4">
                   <label for="sector_id" class="quote-label">Economic Sector</label>
-                  <input type="text" id="sector_id" formControlName="sector_id" class="form-control form-control mb-1"/>
+                  <select id="sector_id" class="form-select form-select mb-1" id="quote-input"
+                          placement="right" formControlName="sector_id">
+                    <option selected="true" disabled="disabled">Select Sector</option>
+                     <option *ngFor="let data of sectorData | sort : 'asc' : 'name'" [value]="data.sectorId">
+                              {{ data.name }}
+                     </option>
+                  </select>
                 </div>
 
                 <div class="col-md-4">
                   <label for="occupation_id" class="quote-label">Occupation</label>
-                  <!-- <input
-                    type="text"
-                    id="occupation_id"
-                    class="form-control form-control mb-1"
-                    formControlName="occupation_id"
-                  /> -->
-                  <select id="marital_status" class="form-select form-select mb-1" id="quote-input"
+                  <select id="occupation_id" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="occupation_id">
-                    <option selected="true" disabled="disabled"></option>
+                    <option selected="true" disabled="disabled">Select Occupation</option>
                     <ng-container *ngFor="let item of occupationsData">
                       <option [value]="item.id" >{{item?.name}}</option>
                     </ng-container>
