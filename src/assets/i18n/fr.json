@@ -1084,7 +1084,26 @@
       "whatsapp": "Whatsapp",
       "enter_email_address": "Saisir l'adresse email",
       "enter_phone_number": "Saisir le numéro de téléphone",
-      "enter_whatsapp_number": "Saisir le numéro Whatsapp"
+      "enter_whatsapp_number": "Saisir le numéro Whatsapp",
+      "choose_file": "Choisir un fichier",
+      "investigator": "Enquêteur",
+      "request_date": "Date de demande",
+      "submission_date": "Date de soumission",
+      "remarks": "Remarques",
+      "upload_investigators_report": "Télécharger le rapport de l'enquêteur",
+      "investigation_details": "Détails de l'enquête",
+      "payment_details": "Détails du paiement",
+      "invoice_number": "Numéro de facture",
+      "invoice_date": "Date de la facture",
+      "invoice_amount": "Montant de la facture",
+      "payment_mode": "Mode de paiement",
+      "account_number": "Numéro de compte",
+      "approve_and_proceed": "Approuver et continuer",
+      "payment_voucher_processing": "Traitement du bon de paiement",
+      "payee": "Bénéficiaire",
+      "amount": "Montant",
+      "reject": "Rejeter",
+      "send_for_review": "Envoyer pour révision"
       }
     }
   },

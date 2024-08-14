@@ -1113,7 +1113,26 @@
         "whatsapp": "Whatsapp",
         "enter_email_address": "Enter email address",
         "enter_phone_number": "Enter phone number",
-        "enter_whatsapp_number": "Enter whatsapp number"
+        "enter_whatsapp_number": "Enter whatsapp number",
+        "choose_file": "Choose file",
+        "investigator": "Investigator",
+        "request_date": "Request date",
+        "submission_date": "Submission date",
+        "remarks": "Remarks",
+        "upload_investigators_report": "Upload investigator's report",
+        "investigation_details": "Investigation details",
+        "payment_details": "Payment details",
+        "invoice_number": "Invoice number",
+        "invoice_date": "Invoice date",
+        "invoice_amount": "Invoice amount",
+        "payment_mode": "Payment mode",
+        "account_number": "Account number",
+        "approve_and_proceed": "Approve and proceed",
+        "payment_voucher_processing": "Payment voucher processing",
+        "payee": "Payee",
+        "amount": "Amount",
+        "reject": "Reject",
+        "send_for_review": "Send for review"
       }
     }
   },

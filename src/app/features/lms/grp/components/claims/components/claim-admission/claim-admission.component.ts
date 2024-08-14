@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { MessageService } from 'primeng/api';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -12,7 +12,8 @@ const log = new Logger("ClaimAdmissionComponent");
 @Component({
   selector: 'app-claim-admission',
   templateUrl: './claim-admission.component.html',
-  styleUrls: ['./claim-admission.component.css']
+  styleUrls: ['./claim-admission.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   steps = stepData;
@@ -24,6 +25,7 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private fb: FormBuilder,
     private claimsService: ClaimsService,
+    private cdr: ChangeDetectorRef
   ) {}
   
   ngOnInit(): void {
@@ -82,6 +84,7 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   getClaimDetails() {
     this.claimsService.getClaimDetails(this.claimNumber).subscribe((res: ClaimDetailsDTO[]) => {
       this.claimDetails = res;
+      this.cdr.detectChanges();
       log.info("getClaimDetails", res)
     });
   }
