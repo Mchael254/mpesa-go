@@ -7,40 +7,42 @@
     <div class="col-md-4">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <label for="claimClients">{{ "lms.ind.claim_on_life" | translate }}</label>
-        <select class="form-select" [id]="'claimClients'" formControlName="claimClients">
-          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-          <option *ngFor="let data of (claimClients | async) | sort : 'asc' : 'name' "
-                  [value]="data.name">
-            {{ data?.name | titlecase}}</option>
-        </select>
+        <p-dropdown
+          [style]="{width: '100%', padding: '0px'}"
+          formControlName="claimClients"
+          [options]="(claimClients | async) | sort : 'asc' : 'name'"
+          optionLabel="name"
+          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+        </p-dropdown>
       </div>
     </div>
 
     <div class="col-md-4">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <label for="causationType">{{ "lms.ind.causation_type" | translate }}</label>
-        <select class="form-select" [id]="'causationType'" formControlName="causationType">
-          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-          <option *ngFor="let data of (causationTypes | async) | sort : 'asc' : 'name' "
-                  [value]="data.code">
-            {{ data?.name | titlecase }}
-          </option>
-        </select>
+        <p-dropdown
+          [style]="{width: '100%', padding: '0px'}"
+          formControlName="causationType"
+          [options]="(causationTypes | async) | sort : 'asc' : 'name'"
+          optionLabel="name"
+          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+        </p-dropdown>
       </div>
     </div>
 
     <div class="col-md-4">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <label for="causationCause">{{ "lms.ind.causation_cause" | translate }}</label>
-        <select class="form-select" [id]="'causationCause'" formControlName="causationCause">
-          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-          <option *ngFor="let data of (causationCauses | async) | sort : 'asc' : 'caus_desc' "
-                  [value]="data.caus_code">
-            {{ data?.caus_desc | titlecase}}
-          </option>
-        </select>
+        <p-dropdown
+          [style]="{width: '100%', padding: '0px'}"
+          formControlName="causationCause"
+          [options]="(causationCauses$ | async) | sort : 'asc' : 'caus_desc'"
+          optionLabel="caus_desc"
+          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+        </p-dropdown>
       </div>
     </div>
+
   </div>
 
   <div class="row">
@@ -109,4 +111,15 @@
   </div>
   <!-- End of Claim Details -->
 </div>
+  <app-upload-documents
+    [claimInitForm]="claimInitForm">
+  </app-upload-documents>
+
+  <!-- Proceed Button -->
+  <div class="button-container">
+    <button class="proceed-btn" (click)="submitClaimInitFormData()">
+      {{ "lms.ind.proceed" | translate }}
+    </button>
+  </div>
+  <!-- End of Proceed Button -->
 </form>

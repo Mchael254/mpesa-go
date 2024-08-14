@@ -9,8 +9,9 @@ import { CausationCausesDTO } from '../../models/causation-causes';
 import { ClaimClientsDTO } from '../../models/claim-clients';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from "@angular/router";
-import {Observable, of} from "rxjs";
-import {catchError, tap} from "rxjs/operators";
+import {filter, Observable, of, Subscription} from "rxjs";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from "rxjs/operators";
+import {AuthService} from "../../../../../../../shared/services/auth.service";
 
 const log = new Logger('ClaimsInitiationComponent');
 
@@ -32,6 +33,7 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   claimClients$: Observable<ClaimClientsDTO[]>;
   causationTypes$: Observable<CausationTypesDTO[]>;
   causationCauses$: Observable<CausationCausesDTO[]>;
+  private subscriptions: Subscription = new Subscription();
 
   claim_types = [
     { name: "Normal", value: "NORMAL" },
@@ -50,15 +52,16 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     private claimsService: ClaimsService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
     this.createForm();
     this.getClaimModules();
-    this.getClaimClients();
+    // this.getClaimClients();
     this.getCausationTypes();
-    this.getCausationCauses('');
     this.claimType = this.activatedRoute.snapshot.queryParamMap.get('claimType');
 
     this.claimInitForm.get('claimType').valueChanges.subscribe(claimType => {
@@ -66,6 +69,7 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
     this.navigateToClaimsIntiation(this.claimType);
+    this.patchFormWithQueryParam();
 
   }
 
@@ -74,13 +78,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       claimType: [''],
       policySelection: [''],
       policyMember: [''],
-      claimClients: [''],
-      causationType: [''],
-      causationCause: [''],
-      dateReported: [''],
-      incubationPeriod: [''],
-      incidentLocation: [''],
-      incidentDate: [''],
       claimReason: [''],
       surrenderDate: [''],
       surrenderType: [''],
@@ -106,19 +103,27 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   getClaimClients() {
     this.claimClients$ = this.claimsService.getClaimClients().pipe(
-      tap(data => log.info('ClaimClientsDTO>>>>', data))
-    );
+      catchError(_ => {
+        return of([]); // Return an empty array as a fallback
+      })
+    )
   }
 
   getCausationTypes() {
     this.causationTypes$ = this.claimsService.getCausationTypes().pipe(
-      tap(data => log.info('CausationTypesDTO>>>>', data))
+      tap(data => log.info('getCausationTypes>>>>', data)),
+      catchError(_ => {
+        return of([]); // Return an empty array as a fallback
+      })
     );
   }
 
-  getCausationCauses(caus_type:string) {
-    this.causationCauses$ = this.claimsService.getCausationCauses('ILL').pipe(
-      tap(data => log.info('CausationCausesDTO>>>>', data))
+  getCausationCauses(causationType: string): void {
+    this.causationCauses$ = this.claimsService.getCausationCauses(causationType).pipe(
+      tap(data => log.info('getCausationCauses>>>>', data)),
+      catchError(_ => {
+        return of([]); // Return an empty array as a fallback
+      })
     );
   }
 
@@ -133,7 +138,34 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   }
 
+  handlePolicyFiltered(policies: PoliciesClaimModuleDTO[]) {
+    console.log('Filtered Policies from Child:', policies);
+    // Do something with the filtered policies
+  }
+
+  handleClientFiltered(clients: PoliciesClaimModuleDTO[]) {
+    console.log('Filtered Clients from Child:', clients);
+    // Do something with the filtered clients
+  }
+
+
+  private patchFormWithQueryParam(): void {
+    const queryParamsSubscription = this.route.queryParams
+      .pipe(
+        filter(params => !!params['claimType']),
+        take(1) // Ensures this only runs once
+      )
+      .subscribe(params => {
+        const claimType = params['claimType'];
+        console.log('claimType>>', claimType)
+        this.claimInitForm.patchValue({
+          claimType: claimType
+        });
+      });
+    this.subscriptions.add(queryParamsSubscription);
+  }
+
   ngOnDestroy(): void {
-    // Clean up any subscriptions or resources here
+    this.subscriptions.unsubscribe(); // Ensures all subscriptions are cleaned up
   }
 }
