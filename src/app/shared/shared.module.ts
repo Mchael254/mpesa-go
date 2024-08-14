@@ -277,7 +277,8 @@ const SERVICES = [
     ProposalLandingScreenComponent,
     FileUploadModule,
     PdfViewerModule,
-    DynamicDocumentModalComponent
+    DynamicDocumentModalComponent,
+    DropdownModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

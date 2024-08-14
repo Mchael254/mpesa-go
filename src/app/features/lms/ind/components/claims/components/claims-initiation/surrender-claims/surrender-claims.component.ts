@@ -16,4 +16,9 @@ export class SurrenderClaimsComponent {
   @Input() claimClients:  Observable<ClaimClientsDTO[]>;
   @Input() causationTypes: Observable<CausationTypesDTO[]>;
   @Input() causationCauses: Observable<CausationCausesDTO[]>;
+
+
+  submitClaimInitFormData() {
+    // Handle form submission logic here
+  }
 }

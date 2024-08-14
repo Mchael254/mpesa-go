@@ -86,3 +86,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
 }
+::ng-deep .p-inputtext {
+  padding: 0.3rem 0.4rem !important;
+  border: 1px solid #ced4da;
+}
