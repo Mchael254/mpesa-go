@@ -14,3 +14,93 @@
     flex: 1;
     padding: 48px;
   }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+    font-style: Roboto;
+  }
+
+  .choose-file {
+    display: inline-flex;
+    height: 24px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #00529B;
+    background-color: #FFF;
+  }
+  
+  .file-text {
+    color: #00529B;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  
+label {
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+
+.flex-container {
+  display: flex;
+  justify-content:flex-end;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+button.approve-claim {
+  background-color: #00529B;
+  color: #FFFFFF;
+  border-color: #00529B;
+}
+
+button.approve-claim:hover {
+  background-color: #65b2f5;
+}
+
+.reject-button-container {
+  padding-top: 10px;
+  padding-right: 20px;
+}
+
+.bottom-button-reject {
+  display: inline-flex;
+  width: 100%;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  float: right;
+  background: #F00;
+  border: 1px solid #F00;
+  color: #FFFFFF;
+}
+
+.bottom-button-reject:hover {
+  background-color: rgb(240, 87, 87);
+}
+  

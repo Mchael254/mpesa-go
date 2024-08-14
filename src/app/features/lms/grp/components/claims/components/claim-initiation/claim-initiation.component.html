@@ -21,7 +21,7 @@
             <label for="policy" style="color: black;">{{ "lms.grp.claims.select_a_policy" | translate }}</label>
             <select class="form-select" [id]="'policy'" formControlName="policy">
               <option selected="true" disabled="disabled"></option>
-              <option *ngFor="let pol of " [value]="">{{ pol }}</option>
+              <option *ngFor="let pol of claimPolicies" [value]="pol.policy_code">{{ pol.policy_no }}</option>
             </select>
           </div>
         </div>
@@ -178,55 +178,18 @@
 
   <div class="container mt-2">
     <div class="title">{{ "lms.grp.claims.upload_documents" | translate }}</div>
-    <div class="row" style="padding-top: 10px;">
-      <div class="col-md-4 col-12">
+    <div class="row" style="padding-top: 10px;" *ngFor="let document of documents; let i = index">
+      <div class="col-md-4 col-sm-12" >
         <div class="d-flex align-items-center flex-wrap">
-          <label for="nationalId" class="fixed-width-label" style="color: black;">National identification<span
-              style="color: red;">*</span></label>
+          <label [for]="'document' + i" class="fixed-width-label" style="color: black;">
+            {{ document.document_description | titlecase }}<span style="color: red;">*</span>
+          </label>
           <div class="form-group">
-            <input type="file" #fileInput style="display: none;">
-            <button class="choose-file">
-              <span class="file-text">Choose file</span>
+            <input type="file" [id]="'document' + i" #fileInput style="display: none;" (change)="onFileSelected($event)">
+            <button class="choose-file" (click)="fileInput.click()">
+              <span class="file-text">{{ "lms.grp.claims.choose_file" | translate }}</span>
             </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="documentC" class="fixed-width-label" style="color: black;">Document C<span
-              style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput style="display: none;">
-            <button class="choose-file">
-              <span class="file-text">Choose file</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row" style="padding-top: 10px;">
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="deathCertificate" class="fixed-width-label" style="color: black;">Death certificate<span
-              style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput style="display: none;">
-            <button class="choose-file">
-              <span class="file-text">Choose file</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="documentD" class="fixed-width-label" style="color: black;">Document D<span
-              style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput style="display: none;">
-            <button class="choose-file">
-              <span class="file-text">Choose file</span>
-            </button>
+            <span *ngIf="selectedFile" style="margin-left: 10px;">{{ selectedFile.name }}</span>
           </div>
         </div>
       </div>
