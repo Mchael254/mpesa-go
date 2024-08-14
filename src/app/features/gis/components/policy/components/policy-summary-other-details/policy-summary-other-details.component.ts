@@ -89,10 +89,10 @@ export class PolicySummaryOtherDetailsComponent {
   updatedScheduleData: any;
   sectionsDetails: any;
 
-  selectedClauseList: Clause[];
-  selectedRiskClause: Clause;
-  clauseList: Clause[];
-  SubclauseList: subclassClauses[];
+  selectedClauseList:any;
+  selectedRiskClause: any;
+  clauseList:any;
+  SubclauseList:any;
   selectedSubClauseList: subclassClauses[];
   selectedClauseCode: any;
   // clauseDetail:any;
@@ -142,6 +142,7 @@ export class PolicySummaryOtherDetailsComponent {
   policyRiskPeril:any[]=[]
   selectedPeril:any;
   selectedRiskPeril:any;
+  selectedClause:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -766,14 +767,9 @@ export class PolicySummaryOtherDetailsComponent {
   }
   onSelectRiskClauses(event: any) {
     this.selectedRiskClause = event;
-    // log.info("Patched Risk Section",this.selectedRiskClause);
-    // this.selectedRiskClauseCode=this.selectedRiskClause.code;
-    // log.debug("SELECTED RISK CLAUSE CODE:",this.selectedRiskClauseCode);
-    // log.debug("SELECTED PRODUCT CODE:",this.selectProductCode);
-    // log.debug("SELECTED RISK CODE:",this.riskCode);
-    // log.debug("SELECTED Quote CODE:",this.quotationCode);
+    console.log(this.selectedRiskClause )
+    console.log(this.selectedClause)
 
-    // this.captureRiskClause();
   }
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
@@ -1164,25 +1160,31 @@ getRiskClauses(){
   
   this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
   const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-  
+  console.log(this.SelectedRiskCode,'Selected Risk Code ')
   if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
   }
-  this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
-    this.SubclauseList=data;
-    // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
-    // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
+  // this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
+  //   this.SubclauseList=data;
+  //   // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
+  //   // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-    log.debug('subclass ClauseList#####',this.SubclauseList)
-    this.loadAllClauses()
-  })
-
-  // this.policyService.getRiskClauses(this.selectedRisk.riskIpuCode).subscribe({
-  //   next:(res)=>{
-  //     console.log(res)
-  //   }
+  //   log.debug('subclass ClauseList#####',this.SubclauseList)
+  //   this.loadAllClauses()
   // })
+
+  this.policyService.getRiskClauses().subscribe({
+    next:(res)=>{
+      this.SubclauseList=res;
+      this.SubclauseList = this.SubclauseList._embedded[0]
+      this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.riskCode == 20225949312 );
+      console.log(this.SubclauseList, 'Unfiltered List')
+     
+     
+      console.log(this.selectedSubClauseList, 'Filtered List')
+    }
+  })
 }
 loadAllClauses() {
   // Extract clause codes from selectedSubClauseList
@@ -1638,7 +1640,7 @@ getSingleRiskPeril(){
   console.log(this.selectedPeril)
 }
 deleteRiskPeril(){
-  this.policyService.deleteRiskPeril(JSON.stringify(this.selectedRiskPeril)).subscribe({
+  this.policyService.deleteRiskPeril(this.selectedRiskPeril).subscribe({
     next:(res)=>{
       console.log('delete response',res)
     }
@@ -1653,6 +1655,24 @@ openRiskPerilDeleteModal() {
     document.getElementById("openRiskPerilModalButtonDelete").click();
 
   }
+}
+openRiskClauseDeleteModal() {
+  log.debug("Selected Risk Clause", this.selectedClause)
+  if (!this.selectedClause) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Clause to continue');
+  } else {
+    document.getElementById("openRiskClauseModalButtonDelete").click();
+
+  }
+}
+deleteRiskClause(){
+  this.policyService.deleteRiskClause(this.selectedClause.riskCode,this.selectedClause.policyClauseCode).subscribe({
+    next:(data)=>{
+      console.log(data)
+      this.getRiskClauses()
+      this.globalMessagingService.displaySuccessMessage('Success','Risk Clause deleted successfully')
+    }
+  })
 }
 }
 
