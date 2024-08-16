@@ -3473,7 +3473,7 @@
                                         </div>
                                         <div class="col-sm-3 " *ngIf="isRiskServiceListOpen">
                                             <button type="button" id="icon" class="btn btn-primary"
-                                                data-bs-toggle="modal" data-bs-target="#addCommissionTransc"
+                                                data-bs-toggle="modal" data-bs-target="#addRiskServiceList"
                                                 title="Add">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
@@ -3545,7 +3545,7 @@
                                         </tr>
                                     </ng-template>
                                 </p-table>
-                                <!-- Add Commission Transaction  Modal -->
+                                <!-- Add Risk Service Lisk Modal -->
                                 <div class="modal fade" id="addRiskServiceList" tabindex="-1"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
@@ -3554,11 +3554,18 @@
                                             <div class="modal-body">
                                                 <button type="button" #closebutton class="float-end btn-close"
                                                     data-bs-dismiss="modal" aria-label="Close"></button>
-                                                <p class="text-start" id="applicableCommissionLabel">Applicable
-                                                    commission
-                                                </p>
+                                                <p class="text-start" id="riskServiceListLabel">Service </p>
 
-                                                <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
+                                                <div class="flex mb-4 w-50">
+                                                    <span class="p-input-icon-left ml-auto">
+                                                        <i class="pi pi-search search-icon"></i>
+                                                    </span>
+                                                    <input class="search-input" pInputText type="text"
+                                                        (input)="applyFilterGlobal($event, 'contains')"
+                                                        placeholder="Search" />
+    
+                                                </div>
+                                                <p-table #dt1 [value]="" [tableStyle]="{'max-width': '465px'}"
                                                     selectionMode="single" [resizableColumns]="true"
                                                     styleClass="p-datatable-sm" responsiveLayout="scroll"
                                                     class='ui-datatable' [autoLayout]="true" [paginator]="true"
@@ -3570,9 +3577,8 @@
                                                     <ng-template pTemplate="header">
 
                                                         <tr id="product">
-                                                            <th>Description</th>
-                                                            <th>Type</th>
-                                                            <th>Trntcode</th>
+                                                            <th>Service</th>
+                                                         
 
                                                         </tr>
                                                     </ng-template>
@@ -3597,7 +3603,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Delete Commission Transc  Modal -->
+                                <!-- Delete  Risk Service Lisk  Modal -->
                                 <div class="modal fade" id="deleteRiskServiceList" tabindex="-1" role="dialog"
                                     aria-labelledby="deleteRiskServiceList" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
