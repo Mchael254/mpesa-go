@@ -1947,8 +1947,7 @@
                                               max-width: 250px;" pTooltip="{{selectedClauseList.heading }}"
                                                         tooltipPosition="top">
                                                         <p-cellEditor>
-                                                            <ng-template pTemplate="input"
-                                                                *ngIf="selectedClauseList.is_editable  === 'Y'">
+                                                            <ng-template pTemplate="input">
                                                                 <input pInputText type="text"
                                                                     [(ngModel)]="selectedClauseList.heading"
                                                                     class="form-control form-control-sm"
@@ -1963,7 +1962,7 @@
                                                         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
                                                         <p-cellEditor>
                                                             <ng-template pTemplate="input">
-                                                                <input pInputText type="text"
+                                                                <input pInputTextarea type="text"  rows="5" cols="30" 
                                                                     [(ngModel)]="selectedClauseList.clause"
                                                                     class="form-control form-control-sm"
                                                                     [ngModelOptions]="{standalone: true}">
