@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import underwritingSteps from '../../data/underwriting-steps.json';
 import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -22,6 +22,7 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { RequiredDocumentService } from '../../../setups/services/required-documents/required-document.service';
 import { PerilsService } from '../../../setups/services/perils-territories/perils/perils.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -128,7 +129,7 @@ export class PolicySummaryOtherDetailsComponent {
   sectionDetailsForm: FormGroup;
   selectedPremiumItem:any;
 
-  filteredRequiredDocs:any[]=[];
+  requiredDocs:any[]=[];
   selectedDocument:any;
   selectedCertificate:any;
   remarkDetailsForm: FormGroup;
@@ -143,6 +144,11 @@ export class PolicySummaryOtherDetailsComponent {
   selectedPeril:any;
   selectedRiskPeril:any;
   selectedClause:any;
+  passedSubclassCode:any;
+  requiredDocumentsForm: FormGroup;
+  user:any;
+  userDetails:any;
+  selectedTransactionType:any
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -150,9 +156,9 @@ export class PolicySummaryOtherDetailsComponent {
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
+ 
 
-
-
+  
 
 
   constructor(
@@ -170,7 +176,9 @@ export class PolicySummaryOtherDetailsComponent {
     public subclassService:SubclassesService,
     public riskClauseService:RiskClausesService,
     public requiredDocumentService: RequiredDocumentService,
-    public perilService:PerilsService
+    public perilService:PerilsService,
+    public authService: AuthService,
+
 
 
   ) { }
@@ -190,13 +198,20 @@ export class PolicySummaryOtherDetailsComponent {
   public riskPerils = false;
 
   ngOnInit(): void {
+    
+    const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
+    this.userDetails = JSON.parse(passedUserDetailsString);
+    log.debug("Passed User Details:", this.userDetails);
+    this.user = this.authService.getCurrentUserName()
+    log.debug("logged in user :", this.user);
     this.getUtil();
     this.loadAllClients();
     this.createScheduleDetailsForm();
     this.getAllSection();
     this.createSectionDetailsForm();
-    this.getRequiredDocuments();
+    // this.getRequiredDocuments();
     this.createRemarkDetailsForm();
+    this.createRequiredDocumentsForm();
   }
   ngOnDestroy(): void { }
 
@@ -288,7 +303,16 @@ export class PolicySummaryOtherDetailsComponent {
 
             this.riskDetails = this.policyDetailsData.riskInformation;
             // this.sectionsDetails = this.riskDetails[0].sections;
-            this.clientPrpCode = this.policyDetailsData.clientCode
+            this.clientPrpCode = this.policyDetailsData.clientCode;
+            this.passedSubclassCode = this.policyDetailsData.riskInformation[0].subClassCode;
+            this.selectedTransactionType= this.policyDetailsData.transactionType;
+            log.debug("Passed Transaction type:", this.selectedTransactionType);
+
+            if(this.passedSubclassCode){
+              this.getRequiredDocuments();
+
+            }
+            
 
             this.cdr.detectChanges();
         } else {
@@ -1228,9 +1252,41 @@ toggleRiskPerils(){
   toggleRequiredDocDetails() {
     this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
   }
+  // getRequiredDocuments(){
+  //   this.requiredDocumentService
+  //     .getRequiredDoc()
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (data) => {
+
+  //         if (data) {
+
+  //           log.debug("Required document list:", data);
+  //           this.filteredRequiredDocs= data.filter(doc => doc.isNewBusinessDocument === "Y");
+  //           log.debug("New Business Documents",this.filteredRequiredDocs)
+  //         } else {
+  //           this.errorOccurred = true;
+  //           this.errorMessage = 'Something went wrong. Please try Again';
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Error',
+  //             'Something went wrong. Please try Again'
+  //           );
+  //         }
+  //       },
+  //       error: (err) => {
+
+  //         this.globalMessagingService.displayErrorMessage(
+  //           'Error',
+  //           this.errorMessage
+  //         );
+  //         log.info(`error >>>`, err);
+  //       },
+  //     });
+  // }
   getRequiredDocuments(){
-    this.requiredDocumentService
-      .getRequiredDoc()
+    this.selectedTransactionType= "NB"
+    this.policyService
+      .getRequiredDocuments(null,this.passedSubclassCode,this.selectedTransactionType)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
@@ -1238,8 +1294,7 @@ toggleRiskPerils(){
           if (data) {
 
             log.debug("Required document list:", data);
-            this.filteredRequiredDocs= data.filter(doc => doc.isNewBusinessDocument === "Y");
-            log.debug("New Business Documents",this.filteredRequiredDocs)
+            log.debug("New Business Documents",this.requiredDocs)
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -1726,6 +1781,60 @@ openRiskServiceListDeleteModal() {
   //   document.getElementById("openRiskPerilModalButtonDelete").click();
 
   // }
+}
+
+createRequiredDocumentsForm() {
+  this.requiredDocumentsForm = this.fb.group({
+    code: [''],
+    description: [''],
+    dateCreated: [''],
+    isMandatory: [''],
+    isSubmitted: [''],
+    referenceNumber: [''],
+    remark: [''],
+    riskUniqueCode: [''],
+    subClassCode: [''],
+    submissionDate: [''],
+   
+  });
+}
+
+
+
+addRequiredDocuments(){
+  const requiredDocForm = this.requiredDocumentsForm.value;
+  log.debug('Required Documents Form:', requiredDocForm);   
+     this.policyService
+    .addRequiredDocuments(requiredDocForm,this.user)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Document details added successfully');
+
+        console.log('Success:', response);
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+      }
+    });
+}
+
+deleteRequiredDocuments(){
+  this.policyService
+  .deleteRequiredDocument(this.selectedDocument)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response) => {
+      this.globalMessagingService.displaySuccessMessage('Success', 'Document details deleted successfully');
+
+      console.log('Success:', response);
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete document details.Try again later');
+    }
+  });
 }
 }
 
