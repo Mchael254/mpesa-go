@@ -23,10 +23,8 @@
         <div class="card mb-4">
 
           <div class="card-body mx-2 mt-2">
-            <!-- <button class="btn btn-primary float-end p-2"
-              data-bs-toggle="modal"
-              data-bs-target="#selectClient">
-              Select Existing Client
+            <!-- <button class="btn btn-primary float-end p-2" data-bs-toggle="modal"
+              data-bs-target="#selectClient">Select Existing Client
             </button> -->
             <h6 class="text-primary" style="font-weight: 600; font-size: 14px">Basic Details</h6>
             <div class="row" *ngIf="getFormControlsNameWithErrors.length > 0">
@@ -100,7 +98,7 @@
                   placement="right" formControlName="modeOfIdentity"
                   (change)="checkIdentityType($event)">
                     <option selected="true" disabled="disabled">Select 
-                      {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | lowercase }}</option>
+                      {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}</option>
                     <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
                       {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
                 </select>
@@ -233,7 +231,7 @@
                   </label>
                   <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']"
                           formControlName="titleShortDescription" placement="right">
-                          <option [value]="" selected="true" disabled="disabled">Select Title</option>
+                          <option [value]="" selected="true" disabled="disabled">Select {{ getFormData ("CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION") ["data"] ["label"] | titlecase }}</option>
                           <option *ngFor="let data of clientTitles | sort : 'asc' : 'description'" [value]="data.id">
                                   {{ data.description | titlecase }}
                           </option> 
@@ -280,7 +278,7 @@
                           [id]="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data']['label']"
                           placement="right" formControlName="preferredChannel">
                     <option selected="true" disabled="disabled">
-                      select {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | lowercase }}
+                      Select {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | titlecase }}
                     </option>
                     <option value="EMAIL">Email</option>
                     <option value="SMS">SMS</option>
@@ -436,8 +434,8 @@
                   <label for="currency_id" class="quote-label">Currency</label>
                   <select class="form-select form-select mb-1" id="currency_id"
                           placement="right" formControlName="currency_id">
-                    <option selected="true" disabled="disabled"></option>
-                    <option *ngFor="let data of currencyList" [value]="data.id">
+                    <option selected="true" disabled="disabled">Select Currency</option>
+                    <option *ngFor="let data of currencyList | sort : 'asc' : 'name'" [value]="data.id">
                       <ng-container>
                         {{ data?.currency?.name | titlecase }} 
                         ({{ data?.currency?.symbol }})
@@ -523,7 +521,7 @@
                   <select class="form-select form-select mb-1" id="citizenship"
                           formControlName="citizenship_country_id" placement="right">
                     <option selected="true" disabled="disabled">
-                      select Citizenship
+                      Select Citizenship
                     </option>
                     <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
                             {{ data?.nationality | titlecase }}
@@ -535,16 +533,21 @@
                   <label for="marital_status" class="quote-label">Marital Status</label>
                   <select id="marital_status" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="marital_status">
-                    <option selected="true" disabled="disabled"></option>
+                    <option selected="true" disabled="disabled">Select Marital Status</option>
                     <option value="MARRIED">Married</option>
                     <option value="SINGLE">Single</option>
                   </select>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="" class="quote-label">Source of Funds</label>
-                  <input type="text" id="quote-input" class="form-control form-control mb-1"
-                        formControlName="funds_source"/>
+                  <label for="funds_source" class="quote-label">Source of Funds</label>
+                  <select id="funds_source" class="form-select form-select mb-1" id="quote-input"
+                          placement="right" formControlName="funds_source">
+                    <option selected="true" disabled="disabled">Select Source</option>
+                    <option *ngFor="let data of fundSource | sort: 'asc' : 'name'" [value]="data.code">
+                            {{ data.name }}
+                    </option>
+                  </select>
                 </div>
 
               </div>
@@ -562,7 +565,7 @@
                           placement="right" formControlName="sector_id">
                     <option selected="true" disabled="disabled">Select Sector</option>
                      <option *ngFor="let data of sectorData | sort : 'asc' : 'name'" [value]="data.sectorId">
-                              {{ data.name }}
+                              {{ data.name | titlecase }}
                      </option>
                   </select>
                 </div>
@@ -573,7 +576,7 @@
                           placement="right" formControlName="occupation_id">
                     <option selected="true" disabled="disabled">Select Occupation</option>
                     <ng-container *ngFor="let item of occupationsData">
-                      <option [value]="item.id" >{{item?.name}}</option>
+                      <option [value]="item.id" >{{item?.name | titlecase }}</option>
                     </ng-container>
                   </select>
                 </div>
@@ -616,10 +619,10 @@
       <div></div>
       <div>
         <button (click)="saveClientDetails()" class="btn" type="button"
-                [ngClass]="{ 'btn-danger': clientForm.invalid,
-                             'btn-primary': !clientForm.invalid }"
+                [ngClass]="{ 'btn-primary': clientForm.invalid,
+                             'btn-danger': !clientForm.invalid }"
                 class="btn btn-sm">
-          Save Client Details
+          Continue
         </button>
       </div>
     </div>
