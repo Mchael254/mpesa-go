@@ -2458,7 +2458,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div> -->
-                                                        <p-table #dt4 [value]="filteredRequiredDocs"
+                                                        <p-table #dt4 [value]="requiredDocs"
                                                             [(selection)]="selectedDocument" selectionMode="single"
                                                             dataKey="code" [paginator]="true" [rows]="10"
                                                             [scrollable]="true" scrollDirection="horizontal"
@@ -2490,8 +2490,9 @@
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="createRiskSection()">
+                                                                data-bs-toggle="modal" data-bs-target="#editrequiredDoc">
                                                                 {{'gis.policy.save_details' | translate}}</button>
+                                                                
                                                         </div>
                                                     </div>
 
@@ -2500,7 +2501,7 @@
                                         </div>
 
                                         <!--Add or Edit Required Document Modal -->
-                                        <div class="modal fade" id="editrequiredDoc" tabindex="-1" role="dialog"
+                                        <div class="modal fade"  #editrequiredDoc id="editrequiredDoc" tabindex="-1" role="dialog"
                                             aria-labelledby="editrequiredDocLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered " role="document">
                                                 <div class="modal-content">
@@ -2511,7 +2512,7 @@
                                                             id="close"></button>
                                                         <h5 class="modal-title mt-2 mb-3 ms-4" id="editrequiredDoc">
                                                             {{'gis.policy.edit_required_documents' | translate}}</h5>
-                                                        <form [formGroup]="scheduleDetailsForm">
+                                                        <form [formGroup]="requiredDocumentsForm">
                                                             <!-- **ROW 1** -->
                                                             <div class="row mb-1" id="sectionRows">
                                                                 <div class="col-xl-5">
@@ -2522,7 +2523,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2">
+                                                                            class="form-control form-control-sm mb-1 ms-2" formControlName="code">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-xl-2"></div>
@@ -2535,7 +2536,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2">
+                                                                            class="form-control form-control-sm mb-1 ms-2" formControlName="description">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2550,9 +2551,9 @@
                                                                     <div class="row">
                                                                         <select
                                                                             class="form-select form-control-sm mb-1 ms-2"
-                                                                            id="selectedInput">
-                                                                            <option></option>
-                                                                            <option></option>
+                                                                            id="selectedInput" formControlName="isSubmitted">
+                                                                            <option>Yes</option>
+                                                                            <option>No</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -2566,7 +2567,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="date" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2">
+                                                                            class="form-control form-control-sm mb-1 ms-2" formControlName="submissionDate">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2580,7 +2581,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2">
+                                                                            class="form-control form-control-sm mb-1 ms-2" formControlName="remark">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-xl-2"></div>
@@ -2592,7 +2593,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
-                                                                            class="form-control form-control-sm mb-1 ms-2">
+                                                                            class="form-control form-control-sm mb-1 ms-2" formControlName="referenceNumber">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2619,7 +2620,7 @@
                                                         <div class="d-flex justify-content-center mb-3">
                                                             <button type="button" class="btn btn-primary px-5"
                                                                 id="delete"
-                                                                data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
+                                                                data-bs-dismiss="modal" (click)="deleteRequiredDocuments()">{{'gis.policy.yes_delete' |
                                                                 translate}} </button>
                                                         </div>
                                                         <div class="d-flex justify-content-center mb-2">
@@ -2779,7 +2780,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div> -->
-                                                        <p-table #dt4 [value]="filteredRequiredDocs"
+                                                        <p-table #dt4 [value]="requiredDocs"
                                                             [(selection)]="selectedDocument" selectionMode="single"
                                                             dataKey="code" [paginator]="true" [rows]="10"
                                                             [scrollable]="true" scrollDirection="horizontal"
