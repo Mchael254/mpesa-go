@@ -33,6 +33,8 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   claimClients$: Observable<ClaimClientsDTO[]>;
   causationTypes$: Observable<CausationTypesDTO[]>;
   causationCauses$: Observable<CausationCausesDTO[]>;
+  filteredPolicy: string;
+  selectedPolicy: PoliciesClaimModuleDTO;
   private subscriptions: Subscription = new Subscription();
 
   claim_types = [
@@ -85,6 +87,13 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       offsetPremium: ['']
 
     });
+
+    const policySelectionSubscription = this.claimInitForm.get('policySelection')
+      .valueChanges.subscribe(value => {
+      this.selectedPolicy = value;
+      console.log('Selected Policy in Parent:', value);
+    });
+    this.subscriptions.add(policySelectionSubscription);
   }
 
   submitClaimInitFormData() {
@@ -93,7 +102,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   getClaimModules() {
     this.policy$ = this.claimsService.getClaimModules().pipe(
-      tap(data => log.info('PoliciesClaimModuleDTO>>>>', data)),
       catchError(error => {
         console.error('Error fetching claim modules', error);
         return of([]); // Return an empty array to keep the app running
@@ -111,7 +119,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   getCausationTypes() {
     this.causationTypes$ = this.claimsService.getCausationTypes().pipe(
-      tap(data => log.info('getCausationTypes>>>>', data)),
       catchError(_ => {
         return of([]); // Return an empty array as a fallback
       })
@@ -120,7 +127,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   getCausationCauses(causationType: string): void {
     this.causationCauses$ = this.claimsService.getCausationCauses(causationType).pipe(
-      tap(data => log.info('getCausationCauses>>>>', data)),
       catchError(_ => {
         return of([]); // Return an empty array as a fallback
       })
@@ -138,14 +144,12 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
 
   }
 
-  handlePolicyFiltered(policies: PoliciesClaimModuleDTO[]) {
-    console.log('Filtered Policies from Child:', policies);
-    // Do something with the filtered policies
+// use to handle policy search filtered value from claims option coponent event
+  handlePolicyFiltered(policy: string) {
+    this.filteredPolicy = policy
   }
-
-  handleClientFiltered(clients: PoliciesClaimModuleDTO[]) {
-    console.log('Filtered Clients from Child:', clients);
-    // Do something with the filtered clients
+  // use to handle client search filtered value
+  handleClientFiltered(client: string) {
   }
 
 
@@ -157,7 +161,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       )
       .subscribe(params => {
         const claimType = params['claimType'];
-        console.log('claimType>>', claimType)
         this.claimInitForm.patchValue({
           claimType: claimType
         });
