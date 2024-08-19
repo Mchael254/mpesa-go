@@ -185,7 +185,7 @@ export class PolicySummaryOtherDetailsComponent {
   public isRelatedRiskDetailsOpen = false;
   public isCommissionTranscDetailsOpen = false;
   public isRiskClaimsReportDetailsOpen = false;
- 
+  public isRiskServiceListOpen = false;
 
   public riskPerils = false;
 
@@ -1491,6 +1491,27 @@ toggleCommissionTranscDetails() {
   // Toggle collapse state only if both selectedRisk and corresponding risk are valid
   this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
 }
+toggleRiskServiceList() {
+  console.log("selected risk", this.selectedRisk);
+  
+  if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
+  }
+  
+  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  
+  if (!risk) {
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
+  }
+  
+  
+
+  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+  this.isRiskServiceListOpen = !this.isRiskServiceListOpen;
+}
 
 openCommissionTranscDeleteModal() {
   log.debug("Selected Commission Transaction", this.selectedTransaction)
@@ -1696,6 +1717,15 @@ deleteRiskClause(){
       this.globalMessagingService.displaySuccessMessage('Success','Risk Clause deleted successfully')
     }
   })
+}
+openRiskServiceListDeleteModal() {
+  document.getElementById("openRiskServiceListModalButtonDelete").click();
+  // if (!this.selectedRiskPeril) {
+  //   this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
+  // } else {
+  //   document.getElementById("openRiskPerilModalButtonDelete").click();
+
+  // }
 }
 }
 

@@ -1030,7 +1030,8 @@
       "commission_amount": "Commission amount",
       "withholding_rate": "Withholding rate",
       "code": "Code",
-      "select_risk_peril":"Select Risk Peril" 
+      "select_risk_peril":"Select Risk Peril",
+      "risk_service_list":"Risk Service List" 
     }
   },
   "lms": {
