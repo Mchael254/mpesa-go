@@ -17,8 +17,8 @@ import {UtilService} from "../../../../../../../../shared/services";
 export class ClaimsOptionsComponent implements OnInit, OnDestroy {
   @Input() claimInitForm: FormGroup;
   @Input() claim_types: any[];
-  @Output() policyFiltered = new EventEmitter<PoliciesClaimModuleDTO[]>(); // Emit event to parent
-  @Output() clientFiltered = new EventEmitter<PoliciesClaimModuleDTO[]>();
+  @Output() policyFiltered: EventEmitter<string> = new EventEmitter<string>();
+  @Output() clientFiltered : EventEmitter<string> = new EventEmitter<string>();
 
   public userCode: number;
   public policy$: Observable<PoliciesClaimModuleDTO[]>;

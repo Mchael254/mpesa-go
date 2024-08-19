@@ -8,6 +8,9 @@ import { ClaimClientsDTO } from '../../ind/components/claims/models/claim-client
 import { CausationCausesDTO } from '../../ind/components/claims/models/causation-causes';
 import { CausationTypesDTO } from '../../ind/components/claims/models/causation-types';
 import { HttpParams } from '@angular/common/http';
+import {ClaimOnLiveDTO} from "../../ind/components/claims/models/claim-on-live";
+import {ClaimDTO} from "../../ind/components/claims/models/claims";
+import {PolicyClaimIntiation} from "../../ind/components/claims/models/policy-claim-intiation";
 
 const log = new Logger('ClaimsService');
 
@@ -20,9 +23,7 @@ export class ClaimsService {
   constructor(private api:ApiService) { }
 
   getClaimModules(): Observable<PoliciesClaimModuleDTO[]> {
-    log.info('Fetching Policies');
-    // const params = new HttpParams()
-    //   .append('agnActCode', `${agnActCode}`)
+
     return this.api.GET<PoliciesClaimModuleDTO[]>(
       `individual/parties/claim-clients?policy_no=&name=an`,
       API_CONFIG.UNDERWRITING_SERVICE_BASE_URL
@@ -30,8 +31,6 @@ export class ClaimsService {
   }
 
   getClaimPolicies(policyNo: string = '', name: string = ''): Observable<PoliciesClaimModuleDTO[]> {
-    log.info('Fetching Policies');
-
     const url = `individual/parties/claim-clients?policy_no=${encodeURIComponent(policyNo)}&name=${encodeURIComponent(name)}`;
 
     return this.api.GET<PoliciesClaimModuleDTO[]>(
@@ -45,14 +44,21 @@ export class ClaimsService {
       API_CONFIG.CLAIMS_SERVICE_BASE_URL)
   }
 
+  /**
+   * Get Claim Client
+   * @returns {Observable<ClaimClientsDTO>}
+   */
   getClaimClients(): Observable<ClaimClientsDTO[]> {
-    log.info('Fetching Clients');
     return this.api.GET<[ClaimClientsDTO]>(
       `individual/parties/claim-clients?name=an`,
       API_CONFIG.UNDERWRITING_SERVICE_BASE_URL
     );
   }
 
+  /**
+   * Get Claim Causation Types
+   * @returns {Observable<CausationTypesDTO>}
+   */
   getCausationTypes (): Observable<CausationTypesDTO[]> {
     log.info('Fetching Causation Types');
     return this.api.GET<[CausationTypesDTO]>(
@@ -60,9 +66,12 @@ export class ClaimsService {
       API_CONFIG.CLAIMS_SERVICE_BASE_URL
     );
   }
-
+  /**
+   * Get Claim Causation Causes
+   * @param cause_type
+   * @returns {Observable<CausationCausesDTO>}
+   */
   getCausationCauses(caus_type:string): Observable<CausationCausesDTO[]> {
-    log.info('Fetching Causation Causes');
     const params = new HttpParams().set('caus_type', `${caus_type}`);
     return this.api.GET<[CausationCausesDTO]>(
       `individual/claims/causations`,
@@ -71,11 +80,34 @@ export class ClaimsService {
     );
   }
 
-  /* getCausationCauses(): Observable<CausationCausesDTO[]> {
-    log.info('Fetching Causation Causes');
-    return this.api.GET<[CausationCausesDTO]>(
-      `individual/claims/causations?caus_type=ILL`,
-      API_CONFIG.CLAIMS_SERVICE_BASE_URL
+  /**
+   * Get Claim On Lives
+   * @param caus_code
+   * @param pol_no
+   * @returns {Observable<ClaimClientsDTO>}
+   */
+  getClaimOnLive(causCode, polNo): Observable<ClaimOnLiveDTO[]> {
+    const params = new HttpParams().set('caus_code', `${causCode}`)
+      .set('pol_no', `${polNo}`);
+    const url = `individual/parties/causation-lives`
+    return this.api.GET<[ClaimOnLiveDTO]>(
+      url,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
     );
-  } */
+  }
+
+  /**
+   * Initiate a claim request and get the claim response.
+   * @param requestBody PolicyClaimIntiation request body.
+   * @returns {Observable<ClaimDTO>} Observable containing the response.
+   */
+  initiateClaims(requestBody: PolicyClaimIntiation): Observable<ClaimDTO> {
+    return this.api.POST<ClaimDTO>(
+    `individual/claims`,
+      requestBody,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+    )
+  }
+
 }

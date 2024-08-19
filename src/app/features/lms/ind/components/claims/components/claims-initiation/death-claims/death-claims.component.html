@@ -3,20 +3,6 @@
   <!-- Claim Details -->
   <div class="row">
     <div class="fw-medium section-title">{{ "lms.ind.claim_details" | translate }}</div>
-
-    <div class="col-md-4">
-      <div class="col-lg-12 col-md-12 col-sm-12">
-        <label for="claimClients">{{ "lms.ind.claim_on_life" | translate }}</label>
-        <p-dropdown
-          [style]="{width: '100%', padding: '0px'}"
-          formControlName="claimClients"
-          [options]="(claimClients | async) | sort : 'asc' : 'name'"
-          optionLabel="name"
-          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
-        </p-dropdown>
-      </div>
-    </div>
-
     <div class="col-md-4">
       <div class="col-lg-12 col-md-12 col-sm-12">
         <label for="causationType">{{ "lms.ind.causation_type" | translate }}</label>
@@ -38,6 +24,20 @@
           formControlName="causationCause"
           [options]="(causationCauses$ | async) | sort : 'asc' : 'caus_desc'"
           optionLabel="caus_desc"
+          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+        </p-dropdown>
+      </div>
+    </div>
+
+
+    <div class="col-md-4">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <label for="claimOnLive">{{ "lms.ind.claim_on_life" | translate }}</label>
+        <p-dropdown
+          [style]="{width: '100%', padding: '0px'}"
+          formControlName="claimOnLive"
+          [options]="(claimOnLive$ | async) | sort : 'asc' : 'co_desc'"
+          optionLabel="co_desc"
           placeholder="{{ 'lms.ind.select_an_option' | translate }}">
         </p-dropdown>
       </div>
@@ -117,7 +117,7 @@
 
   <!-- Proceed Button -->
   <div class="button-container">
-    <button class="proceed-btn" (click)="submitClaimInitFormData()">
+    <button class="proceed-btn" (click)="submitClaimRequest()">
       {{ "lms.ind.proceed" | translate }}
     </button>
   </div>
