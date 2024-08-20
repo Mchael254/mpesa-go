@@ -236,4 +236,8 @@ export class PolicyService {
     return this.api.DELETE(`v1/submitted-required-documents/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getRemarks(){
+    return this.api.GET(`v2/remarks`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }

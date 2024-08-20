@@ -3000,8 +3000,8 @@
                                     <div class="collapse " id="remarksDetails" [class.show]="isRemarkDetailsOpen">
 
 
-                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
-                                            [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
+                                        <p-table #dt2 [value]="filteredRemarks" dataKey="code" selectionMode="single"
+                                            [(selection)]="selectedRemark" [tableStyle]="{'min-width': '50rem'}"
                                             responsiveLayout="scroll" [autoLayout]="true">
 
 
@@ -3015,10 +3015,11 @@
                                                 </tr>
                                             </ng-template>
 
-                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
-                                                <tr [pSelectableRow]="riskDetails"
-                                                    [class.p-highlight]="riskDetails === selectedRemark">
-                                                    <td></td>
+                                            <ng-template pTemplate="body" let-filteredRemarks let-ri="rowIndex">
+                                                <tr [pSelectableRow]="filteredRemarks"
+                                                    [class.p-highlight]="filteredRemarks === selectedRemark"
+                                                    (click)="onEditRemark(filteredRemarks)">
+                                                    <td>{{filteredRemarks.schedule}}</td>
                                                     <td></td>
 
 
@@ -3071,21 +3072,23 @@
                                                             class="btn-close ms-auto py-2 px-2 float-end"
                                                             data-bs-dismiss="modal" aria-label="Close"
                                                             id="close"></button>
+                                                            <form [formGroup]="remarkDetailsForm">
+
                                                         <h5 class="modal-title mt-2 mb-2 ms-2"
                                                             id="editRemarkDetailsLabel">{{'gis.policy.edit_remarks' |
                                                             translate}} </h5>
 
                                                         <label for="remark" class="ms-2" id="remarkDescription">
                                                             {{'gis.policy.description' | translate}}</label>
-                                                        <textarea class="row ms-2 " id="remark" rows="5" cols="50"
-                                                            pInputTextarea>
+                                                            <textarea class="row ms-2 " id="remark" rows="5" cols="50"
+                                                            pInputTextarea formControlName="schedule">
                                                         </textarea>
-
+                                                        </form>
 
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails" data-bs-dismiss="modal"
-                                                                (click)="createRiskSection()">
+                                                                (click)="editRemark()">
                                                                 {{'gis.policy.save_details' | translate}}</button>
                                                         </div>
                                                     </div>
@@ -3107,7 +3110,7 @@
                                                         <div class="d-flex justify-content-center mb-3">
                                                             <button type="button" class="btn btn-primary px-5"
                                                                 id="delete"
-                                                                data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
+                                                                data-bs-dismiss="modal" (click)="deleteRemark()">{{'gis.policy.yes_delete' |
                                                                 translate}} </button>
                                                         </div>
                                                         <div class="d-flex justify-content-center mb-2">

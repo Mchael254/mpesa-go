@@ -149,6 +149,8 @@ export class PolicySummaryOtherDetailsComponent {
   user:any;
   userDetails:any;
   selectedTransactionType:any
+  remarkList:any;
+  filteredRemarks:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -288,6 +290,7 @@ export class PolicySummaryOtherDetailsComponent {
     if (this.batchNo) {
         console.debug("CALLED GET INSURED"); // Changed from log.debug to console.debug
         this.getInsureds();
+        this.getAllRemarks();
     }
 
     try {
@@ -1387,7 +1390,7 @@ toggleRiskPerils(){
           if (data) {
            log.debug(" Added Remark", data);
             this.globalMessagingService.displaySuccessMessage('Success', 'Remark has been added');
-        
+        this.getAllRemarks();
            
         
         
@@ -1403,14 +1406,21 @@ toggleRiskPerils(){
         },
       });
   }
-  
-  editRemark(data){
-    log.debug("Insured Data Edited", data)
-    this.remarkDetailsForm.get('action').setValue("A");
-    this.remarkDetailsForm.get('code').setValue(0);
+  onEditRemark(remark: any) {
+    this.selectedRemark = remark;
+    this.remarkDetailsForm.patchValue({
+      schedule: remark.schedule,
+      // Patch other fields if needed
+    });
+  }
+  editRemark(){
+    log.debug("Selected Remark", this.selectedRemark)
+
+    this.remarkDetailsForm.get('action').setValue("E");
+    this.remarkDetailsForm.get('code').setValue(this.selectedRemark.code);
     this.remarkDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode);
     this.remarkDetailsForm.get('polBatchNo').setValue(this.batchNo);
-       // Convert the value of 'schedule' to a number
+
     const scheduleText = this.remarkDetailsForm.get('schedule').value;
     const updateRemarkForm = this.remarkDetailsForm.value;
     log.debug('Update Remark Form:', updateRemarkForm);   
@@ -1422,6 +1432,15 @@ toggleRiskPerils(){
           this.globalMessagingService.displaySuccessMessage('Success', 'Remark details updated successfully');
 
           console.log('Success:', response);
+
+                // Update the `filteredRemarks` array with the new data
+                const index = this.filteredRemarks.findIndex(
+                  (remark) => remark.code === this.selectedRemark.code
+              );
+
+              if (index !== -1) {
+                  this.filteredRemarks[index] = { ...this.selectedRemark, ...updateRemarkForm };
+              }
         },
         error: (error) => {
 
@@ -1442,7 +1461,7 @@ deleteRemark(){
   log.debug("Selected Remark", this.selectedRemark)
   this.action= "D"
   this.policyService
-  .deleteRemarks(this.selectedRemark)
+  .deleteRemarks(this.selectedRemark.code)
   .pipe(untilDestroyed(this))
   .subscribe({
     next: (data) => {
@@ -1452,9 +1471,9 @@ deleteRemark(){
         log.debug("Response Deleting Remark:", data);
         this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Remark"');
         // Remove the deleted Insured from the Insured Details array
-        const index = this.insuredDetails.findIndex(insured => insured.code === this.policyInsuredCode);
+        const index = this.filteredRemarks.findIndex(remark => remark.code === this.selectedRemark.code);
         if (index !== -1) {
-          this.insuredDetails.splice(index, 1);
+          this.filteredRemarks.splice(index, 1);
         }
         // Clear the selected risk
         this.selectedRemark = null;
@@ -1833,6 +1852,24 @@ deleteRequiredDocuments(){
     error: (error) => {
 
       this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete document details.Try again later');
+    }
+  });
+}
+getAllRemarks(){
+  this.policyService
+  .getRemarks()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response:any) => {
+this.remarkList = response._embedded[0];
+      console.log('Remarks list:', this.remarkList);
+this.filteredRemarks= this.remarkList.filter(remark => remark.polBatchNo == this.batchNo);
+log.debug("FILTERED REMARK LIST",this.filteredRemarks)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
     }
   });
 }
