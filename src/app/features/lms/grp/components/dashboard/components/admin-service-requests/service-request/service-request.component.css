@@ -76,6 +76,12 @@ button.submit-req:hover {
   background-color: #65b2f5;
 }
 
+.delete-icon {
+  margin-left: 5px;
+  cursor: pointer;
+  color: red;
+}
+
 @media (max-width: 1000px) {
   .fixed-width-label {
     margin-bottom: 10px;

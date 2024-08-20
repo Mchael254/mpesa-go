@@ -27,6 +27,7 @@ import { AdminCreditLifeSummaryComponent } from './components/admin-credit-life-
 import { ServiceRequestsDashboardComponent } from './components/admin-service-requests/service-requests-dashboard/service-requests-dashboard.component';
 import { ServiceRequestLogsComponent } from './components/admin-service-requests/service-request-logs/service-request-logs.component';
 import { ServiceRequestComponent } from './components/admin-service-requests/service-request/service-request.component';
+import { MemberServiceRequestComponent } from './components/member-service-requests/member-service-request/member-service-request.component';
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import { ServiceRequestComponent } from './components/admin-service-requests/ser
     ServiceRequestsDashboardComponent,
     ServiceRequestLogsComponent,
     ServiceRequestComponent,
+    MemberServiceRequestComponent,
   ],
   imports: [
     CommonModule,
