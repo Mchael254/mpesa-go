@@ -427,7 +427,12 @@
               <label for="repeat" class="form-label">{{
                 "crm.repeat" | translate
               }}</label>
-              <select class="form-select" id="repeat" formControlName="repeat">
+              <select
+                class="form-select"
+                id="repeat"
+                formControlName="repeat"
+                (change)="onRepeatChange($event)"
+              >
                 <option value="">Select Repeat</option>
                 <option
                   *ngFor="let repeat of repeatOptionsData"
@@ -529,7 +534,7 @@
                 <option value="">Select Threshold Type</option>
                 <option
                   *ngFor="let threshold of thresholdTypeData"
-                  [value]="threshold.value"
+                  [value]="threshold.code"
                 >
                   {{ threshold.name }}
                 </option>
@@ -585,7 +590,6 @@
   tabindex="-1"
   role="dialog"
   aria-labelledby="templatesModalTitle"
-  aria-hidden="true"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -676,6 +680,316 @@
           aria-label="Close"
         >
           {{ "entities.cancel" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recurrence Modal -->
+<div
+  class="modal fade"
+  id="recurrenceModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define recurrence</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="closeRecurrenceModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="recurrenceForm">
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="repeatInterval" class="form-label"
+                >Repeat every</label
+              >
+            </div>
+            <div class="col-sm-3">
+              <input
+                type="number"
+                id="repeatInterval"
+                formControlName="interval"
+                min="1"
+                class="form-control"
+              />
+            </div>
+            <div class="col-sm-3">
+              <select
+                id="repeatType"
+                formControlName="type"
+                class="form-select"
+              >
+                <option value="daily">Day</option>
+                <option value="weekly">Week</option>
+                <option value="monthly">Month</option>
+                <option value="yearly">Year</option>
+              </select>
+            </div>
+          </div>
+          <div
+            class="row mt-3"
+            *ngIf="recurrenceForm.get('type')?.value === 'weekly'"
+          >
+            <div class="col-12">
+              <label class="form-label">Repeat on</label>
+              <div class="btn-group" role="group">
+                <button
+                  type="button"
+                  *ngFor="let day of weekDays"
+                  (click)="toggleDaySelection(day.value)"
+                  class="btn btn-outline-primary round-btn"
+                  [ngClass]="{
+                    active: recurrenceForm
+                      .get('daysOfWeek')
+                      ?.value.includes(day.value)
+                  }"
+                >
+                  {{ day.name.charAt(0) }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="row mt-3"
+            *ngIf="recurrenceForm.get('type')?.value === 'monthly'"
+          >
+            <div class="col-12">
+              <label for="day" class="form-label">Repeat on</label>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-1">
+                <input
+                  type="radio"
+                  id="monthlyDayOfMonth"
+                  value="day"
+                  formControlName="repeatOnTheMonthly"
+                  class="form-check-input"
+                />
+              </div>
+              <div class="col-sm-3">
+                <label for="monthlyDayOfMonth" class="form-check-label"
+                  >On</label
+                >
+              </div>
+              <div class="col-sm-3">
+                <input
+                  type="number"
+                  id="monthlyDayOfMonthInput"
+                  min="1"
+                  max="31"
+                  class="form-control"
+                  formControlName="dayOfMonthMonthly"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-1">
+                <input
+                  type="radio"
+                  id="repeatOnTheMonthlyRadio"
+                  value="the"
+                  formControlName="repeatOnTheMonthly"
+                  class="form-check-input"
+                />
+              </div>
+              <div class="col-sm-3">
+                <label for="repeatOnTheMonthlyRadio" class="form-check-label"
+                  >The</label
+                >
+              </div>
+              <div class="col-sm-8">
+                <!-- Container for multiSelect and listboxes -->
+                <div class="d-flex align-items-start" #monthlyContainer>
+                  <!-- MultiSelect for selecting the week option -->
+                  <p-multiSelect
+                    [options]="weekOptions"
+                    [filter]="false"
+                    formControlName="monthlyRepeatOnThe"
+                    optionLabel="name"
+                    placeholder="{{ weekDaysPlaceholder }}"
+                    (onChange)="onWeekOptionChange($event)"
+                    (onFocus)="onMultiSelectFocus()"
+                  ></p-multiSelect>
+
+                  <!-- Listbox for Week Days -->
+                  <p-listbox
+                    *ngIf="showWeekDaysListbox"
+                    [options]="weekDays"
+                    optionLabel="name"
+                    [multiple]="true"
+                    [checkbox]="true"
+                    formControlName="monthlyDays"
+                    class="week-days ms-2"
+                    (onChange)="onDaySelectionChange()"
+                  ></p-listbox>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="row mt-3"
+            *ngIf="recurrenceForm.get('type')?.value === 'yearly'"
+          >
+            <div class="col-12">
+              <label for="day" class="form-label">Repeat on</label>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-1">
+                <input
+                  type="radio"
+                  id="yearlyDayOfMonth"
+                  value="day"
+                  formControlName="repeatOnTheYearly"
+                  class="form-check-input"
+                />
+              </div>
+              <div class="col-sm-3">
+                <label for="yearlyDayOfMonth" class="form-check-label"
+                  >On</label
+                >
+              </div>
+              <div class="col-sm-3">
+                <select formControlName="month" class="form-select">
+                  <option *ngFor="let month of months" [value]="month.value">
+                    {{ month.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-sm-3">
+                <input
+                  type="number"
+                  id="yearlyDayOfMonth"
+                  min="1"
+                  max="31"
+                  class="form-control"
+                  formControlName="dayOfMonthYearly"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-1">
+                <input
+                  type="radio"
+                  formControlName="repeatOnTheYearly"
+                  value="the"
+                  class="form-check-input"
+                  id="repeatOnTheYearlyRadio"
+                />
+              </div>
+              <div class="col-sm-3">
+                <label for="repeatOnTheYearlyRadio" class="form-check-label"
+                  >The</label
+                >
+              </div>
+              <div class="col-sm-8">
+                <!-- Container for multiSelect and listboxes -->
+                <div class="d-flex align-items-start" #yearlyContainer>
+                  <!-- MultiSelect for selecting the week option -->
+                  <p-multiSelect
+                    [options]="weekOptions"
+                    [filter]="false"
+                    formControlName="yearlyRepeatOnThe"
+                    optionLabel="name"
+                    placeholder="{{ yearlyWeekDaysPlaceholder }}"
+                    (onChange)="onYearlyWeekOptionChange($event)"
+                    (onFocus)="onYearlyMultiSelectFocus()"
+                  ></p-multiSelect>
+
+                  <!-- Listbox for Week Days -->
+                  <p-listbox
+                    *ngIf="showYearlyWeekDaysListbox"
+                    [options]="weekDays"
+                    optionLabel="name"
+                    [multiple]="true"
+                    [checkbox]="true"
+                    formControlName="yearlyDays"
+                    class="week-days ms-2"
+                    (onChange)="onYearlyDaySelectionChange()"
+                  ></p-listbox>
+
+                  <!-- Listbox for Months -->
+                  <p-listbox
+                    *ngIf="showYearlyMonthsListbox"
+                    [options]="months"
+                    optionLabel="name"
+                    [multiple]="true"
+                    [checkbox]="true"
+                    formControlName="yearlyMonths"
+                    class="months-list me-4"
+                    (onChange)="onYearlyMonthSelectionChange()"
+                  ></p-listbox>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <span>Ends On</span>
+
+            <div class="col-sm-12 mb-3 d-flex align-items-center">
+              <input
+                type="radio"
+                id="neverEnd"
+                formControlName="end"
+                value="never"
+                class="form-check-input me-2"
+              />
+              <label for="neverEnd" class="form-check-label">Never</label>
+            </div>
+
+            <div class="col-sm-12 mb-3 d-flex align-items-center">
+              <input
+                type="radio"
+                id="endOnDate"
+                formControlName="end"
+                value="on"
+                class="form-check-input me-2"
+              />
+              <label for="endOnDate" class="form-check-label me-2">On</label>
+              <input
+                type="date"
+                formControlName="endOn"
+                class="form-control d-inline-block w-auto"
+              />
+            </div>
+
+            <div class="col-sm-12 d-flex align-items-center">
+              <input
+                type="radio"
+                id="endAfter"
+                formControlName="end"
+                value="after"
+                class="form-check-input me-2"
+              />
+              <label for="endAfter" class="form-check-label me-2">After</label>
+              <input
+                type="number"
+                formControlName="occurrences"
+                min="1"
+                class="form-control d-inline-block w-auto"
+              />
+              <label class="form-check-label ms-2">occurrence(s)</label>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <p class="alert alert-info mt-3">{{ updateSummary() }}</p>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveOccurence()">
+          Save details
         </button>
       </div>
     </div>
