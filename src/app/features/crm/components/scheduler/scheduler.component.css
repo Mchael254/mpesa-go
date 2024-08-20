@@ -59,3 +59,61 @@ fieldset legend {
   z-index: 9999 !important;
   position: absolute;
 }
+
+.round-btn {
+  border-radius: 50% !important; /* Force circular shape */
+  width: 30px !important; /* Set fixed width */
+  height: 30px !important; /* Set fixed height */
+  padding: 0 !important; /* Remove padding */
+  margin: 0 16px !important; /* Space between buttons */
+  display: flex;
+  align-items: center; /* Center text vertically */
+  justify-content: center; /* Center text horizontally */
+  font-size: 14px !important; /* Adjust font size */
+  line-height: 1 !important; /* Ensure text is centered */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  background-color: #00529b2b;
+  border-color: #00529b2b;
+  color: #000000;
+}
+
+.btn-group .btn.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+/* .week-days {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.week-days-container {
+  margin-top: 10px;
+  position: relative;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.week-options {
+  flex: 1;
+} */
+
+.week-days {
+  flex: 1;
+  margin-top: 10px;
+  display: inline-block;
+  vertical-align: top;
+  z-index: 1050;
+}
+
+.months-list {
+  flex: 1;
+  margin-top: 10px;
+  display: inline-block;
+  vertical-align: top;
+  z-index: 1060;
+}
