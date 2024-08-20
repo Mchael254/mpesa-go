@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -225,5 +225,19 @@ export class PolicyService {
   }
   deleteRiskClause(riskCode,polClauseCode){
     return this.api.DELETE(`v1/delete-risk-clause?ipuCode=${riskCode}&polClauseCode=${polClauseCode}`,API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getRequiredDocuments(showALL:any,subClassCode:any, transLevel:any){
+    return this.api.GET(`v1/submitted-required-documents?showAll=${showALL}&subClassCode=${subClassCode}&transLevel=${transLevel}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  addRequiredDocuments(data:RequiredDocuments ,user){
+    return this.api.POST(`v1/submitted-required-documents?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  deleteRequiredDocument(code:any){
+    return this.api.DELETE(`v1/submitted-required-documents/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getRemarks(){
+    return this.api.GET(`v2/remarks`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
   }
 }
