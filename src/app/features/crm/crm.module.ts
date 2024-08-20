@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
@@ -7,6 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TabViewModule } from 'primeng/tabview';
+import { ListboxModule } from 'primeng/listbox';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -37,7 +38,7 @@ import { SchedulerComponent } from './components/scheduler/scheduler.component';
 import { ClientAttributesComponent } from './components/campaigns/client-attributes/client-attributes.component';
 import { ProductAttributesComponent } from './components/campaigns/product-attributes/product-attributes.component';
 import { ActivitiesComponent } from './components/activity-management/activities/activities.component';
-import {EntitiesModule} from "../entities/entities.module";
+import { EntitiesModule } from '../entities/entities.module';
 import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
 import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
 
@@ -72,21 +73,22 @@ import { PriorityLevelsActivityStatusComponent } from './components/activity-man
     ActivityTypesComponent,
     PriorityLevelsActivityStatusComponent,
   ],
-    imports: [
-        CommonModule,
-        CrmRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TableModule,
-        DropdownModule,
-        TooltipModule,
-        DialogModule,
-        MultiSelectModule,
-        TabViewModule,
-        SharedModule,
-        ScrollPanelModule,
-        EntitiesModule,
-    ],
+  imports: [
+    CommonModule,
+    CrmRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TableModule,
+    DropdownModule,
+    MultiSelectModule,
+    ListboxModule,
+    TooltipModule,
+    DialogModule,
+    TabViewModule,
+    SharedModule,
+    ScrollPanelModule,
+    EntitiesModule,
+  ],
   providers: [DatePipe],
 })
 export class CrmModule {}
