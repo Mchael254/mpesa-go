@@ -62,7 +62,7 @@ export class PolicySummaryOtherDetailsComponent {
   policyNumber: any;
   endorsementNo: any;
   selectedClientCode: any;
-  clientPrpCode:any;
+  clientPrpCode: any;
   filteredClients: any[] = [];
 
   columns = [
@@ -90,10 +90,10 @@ export class PolicySummaryOtherDetailsComponent {
   updatedScheduleData: any;
   sectionsDetails: any;
 
-  selectedClauseList:any;
+  selectedClauseList: any;
   selectedRiskClause: any;
-  clauseList:any;
-  SubclauseList:any;
+  clauseList: any;
+  SubclauseList: any;
   selectedSubClauseList: subclassClauses[];
   selectedClauseCode: any;
   // clauseDetail:any;
@@ -111,46 +111,46 @@ export class PolicySummaryOtherDetailsComponent {
   filteredMandatorySections: any;
   filteredAllMatchingSections: any;
 
-  sectionList:any;
+  sectionList: any;
   selectedSection: any;
-  SelectedRiskCode:any;
+  SelectedRiskCode: any;
   selectedSubclassCode: any;
   selectedCoverTypeDesc: any;
-  selectedCoverTypeCode:any;
-  covertypeSections:any;
+  selectedCoverTypeCode: any;
+  covertypeSections: any;
   searchText: string = '';
   selectedSections: any[] = [];
   allTransformedSections: any;
 
-  selectedBindercode:any;
+  selectedBindercode: any;
   premiumList: any[] = [];
   premiumListIndex = 0;
   sectionArray: any;
   sectionDetailsForm: FormGroup;
-  selectedPremiumItem:any;
+  selectedPremiumItem: any;
 
-  requiredDocs:any[]=[];
-  selectedDocument:any;
-  selectedCertificate:any;
+  requiredDocs: any[] = [];
+  selectedDocument: any;
+  selectedCertificate: any;
   remarkDetailsForm: FormGroup;
-  selectedRemark:any;
+  selectedRemark: any;
   action: any;
-  premiumItemCode:any;
-  selectedTransaction:any;
-  subperils:any;
-  subclassPeril:any;
-  subclassPerilList:any[]=[];
-  policyRiskPeril:any[]=[]
-  selectedPeril:any;
-  selectedRiskPeril:any;
-  selectedClause:any;
-  passedSubclassCode:any;
+  premiumItemCode: any;
+  selectedTransaction: any;
+  subperils: any;
+  subclassPeril: any;
+  subclassPerilList: any[] = [];
+  policyRiskPeril: any[] = []
+  selectedPeril: any;
+  selectedRiskPeril: any;
+  selectedClause: any;
+  passedSubclassCode: any;
   requiredDocumentsForm: FormGroup;
-  user:any;
-  userDetails:any;
-  selectedTransactionType:any
-  remarkList:any;
-  filteredRemarks:any;
+  user: any;
+  userDetails: any;
+  selectedTransactionType: any
+  remarkList: any;
+  filteredRemarks: any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -158,9 +158,9 @@ export class PolicySummaryOtherDetailsComponent {
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
- 
 
-  
+
+
 
 
   constructor(
@@ -175,10 +175,10 @@ export class PolicySummaryOtherDetailsComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public sectionService: SectionsService,
     public premiumRateService: PremiumRateService,
-    public subclassService:SubclassesService,
-    public riskClauseService:RiskClausesService,
+    public subclassService: SubclassesService,
+    public riskClauseService: RiskClausesService,
     public requiredDocumentService: RequiredDocumentService,
-    public perilService:PerilsService,
+    public perilService: PerilsService,
     public authService: AuthService,
 
 
@@ -200,7 +200,7 @@ export class PolicySummaryOtherDetailsComponent {
   public riskPerils = false;
 
   ngOnInit(): void {
-    
+
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.userDetails = JSON.parse(passedUserDetailsString);
     log.debug("Passed User Details:", this.userDetails);
@@ -262,7 +262,7 @@ export class PolicySummaryOtherDetailsComponent {
   //           this.riskDetails = this.policyDetailsData.riskInformation
   //           this.sectionsDetails = this.riskDetails[0].sections
   //           // log.debug("RISK INFORMATION", this.sectionsDetails)
-            
+
   //           this.cdr.detectChanges();
 
   //         } else {
@@ -288,48 +288,48 @@ export class PolicySummaryOtherDetailsComponent {
     this.batchNo = this.policyDetails.batchNumber;
     console.debug("Batch No:", this.batchNo); // Changed from log.debug to console.debug
     if (this.batchNo) {
-        console.debug("CALLED GET INSURED"); // Changed from log.debug to console.debug
-        this.getInsureds();
-        this.getAllRemarks();
+      console.debug("CALLED GET INSURED"); // Changed from log.debug to console.debug
+      this.getInsureds();
+      this.getAllRemarks();
     }
 
     try {
-        const data:any = await this.policyService.getPolicy(this.batchNo)
-            .pipe(untilDestroyed(this))
-            .toPromise();
+      const data: any = await this.policyService.getPolicy(this.batchNo)
+        .pipe(untilDestroyed(this))
+        .toPromise();
 
-        if (data && data.content && data.content.length > 0) {
-            this.policyResponse = data;
-            console.debug("Get Policy Endpoint Response", this.policyResponse); // Changed from log.debug to console.debug
-            this.policyDetailsData = this.policyResponse.content[0];
-            console.debug("Policy Details data get policy", this.policyDetailsData); // Changed from log.debug to console.debug
+      if (data && data.content && data.content.length > 0) {
+        this.policyResponse = data;
+        console.debug("Get Policy Endpoint Response", this.policyResponse); // Changed from log.debug to console.debug
+        this.policyDetailsData = this.policyResponse.content[0];
+        console.debug("Policy Details data get policy", this.policyDetailsData); // Changed from log.debug to console.debug
 
-            this.riskDetails = this.policyDetailsData.riskInformation;
-            // this.sectionsDetails = this.riskDetails[0].sections;
-            this.clientPrpCode = this.policyDetailsData.clientCode;
-            this.passedSubclassCode = this.policyDetailsData.riskInformation[0].subClassCode;
-            this.selectedTransactionType= this.policyDetailsData.transactionType;
-            log.debug("Passed Transaction type:", this.selectedTransactionType);
+        this.riskDetails = this.policyDetailsData.riskInformation;
+        // this.sectionsDetails = this.riskDetails[0].sections;
+        this.clientPrpCode = this.policyDetailsData.clientCode;
+        this.passedSubclassCode = this.policyDetailsData.riskInformation[0].subClassCode;
+        this.selectedTransactionType = this.policyDetailsData.transactionType;
+        log.debug("Passed Transaction type:", this.selectedTransactionType);
 
-            if(this.passedSubclassCode){
-              this.getRequiredDocuments();
+        if (this.passedSubclassCode) {
+          this.getRequiredDocuments();
 
-            }
-            
-
-            this.cdr.detectChanges();
-        } else {
-            this.errorOccurred = true;
-            this.errorMessage = 'Something went wrong. Please try Again';
-            this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong. Please try Again');
         }
-    } catch (err) {
-        this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
-        console.info(`error >>>`, err); // Changed from log.info to console.info
-    }
-}
 
- 
+
+        this.cdr.detectChanges();
+      } else {
+        this.errorOccurred = true;
+        this.errorMessage = 'Something went wrong. Please try Again';
+        this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong. Please try Again');
+      }
+    } catch (err) {
+      this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+      console.info(`error >>>`, err); // Changed from log.info to console.info
+    }
+  }
+
+
   getClient() {
     const clientRequests = [];
 
@@ -794,7 +794,7 @@ export class PolicySummaryOtherDetailsComponent {
   }
   onSelectRiskClauses(event: any) {
     this.selectedRiskClause = event;
-    console.log(this.selectedRiskClause )
+    console.log(this.selectedRiskClause)
     console.log(this.selectedClause)
 
   }
@@ -866,58 +866,58 @@ export class PolicySummaryOtherDetailsComponent {
         }
       });
   }
-//   togglePremiumDetails() {
-//     console.log("selected risk", this.selectedRisk);
-//     if (!this.selectedRisk) {
-//       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
-//     } else {
-//       this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-//       const risk = this.riskDetails.filter(risk => risk.riskIpuCode === this.SelectedRiskCode);
-//       log.debug('FILTERED RISK',risk)
-//       this.sectionsDetails = risk[0].sections
-//      log.debug("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
+  //   togglePremiumDetails() {
+  //     console.log("selected risk", this.selectedRisk);
+  //     if (!this.selectedRisk) {
+  //       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+  //     } else {
+  //       this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+  //       const risk = this.riskDetails.filter(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  //       log.debug('FILTERED RISK',risk)
+  //       this.sectionsDetails = risk[0].sections
+  //      log.debug("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
 
-//       this.isPremiumDetailOpen = !this.isPremiumDetailOpen; // Toggle collapse state
-//     }
-  
-// }
-togglePremiumDetails() {
-  console.log("selected risk", this.selectedRisk);
-  
-  if (!this.selectedRisk) {
+  //       this.isPremiumDetailOpen = !this.isPremiumDetailOpen; // Toggle collapse state
+  //     }
+
+  // }
+  togglePremiumDetails() {
+    console.log("selected risk", this.selectedRisk);
+
+    if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
       return; // Exit function early if selectedRisk is not defined
-  }
-  
-  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-  
-  if (!risk) {
+    }
+
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+
+    if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
+    }
+
+    this.sectionsDetails = risk.sections;
+    console.log("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
+    this.selectedSubclassCode = risk.subClassCode;
+    log.debug("subclass code:", this.selectedSubclassCode)
+    if (this.selectedSubclassCode) {
+      this.loadSubclassSectionCovertype()
+    }
+    this.selectedCoverTypeDesc = risk.coverTypeShortDescription
+    log.debug("subclass covertype:", this.selectedCoverTypeDesc)
+    this.selectedCoverTypeCode = risk.coverTypeCode;
+    this.selectedBindercode = risk.binderCode
+
+
+    // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+    this.isPremiumDetailOpen = !this.isPremiumDetailOpen;
   }
-  
-  this.sectionsDetails = risk.sections;
-  console.log("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
-  this.selectedSubclassCode = risk.subClassCode;
-            log.debug("subclass code:", this.selectedSubclassCode)
-            if (this.selectedSubclassCode) {
-              this.loadSubclassSectionCovertype()
-            }
-            this.selectedCoverTypeDesc = risk.coverTypeShortDescription
-            log.debug("subclass covertype:", this.selectedCoverTypeDesc)
-            this.selectedCoverTypeCode = risk.coverTypeCode;
-            this.selectedBindercode = risk.binderCode
-
-
-  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
-  this.isPremiumDetailOpen = !this.isPremiumDetailOpen;
-}
 
 
 
-  
-  
+
+
   getAllSection() {
     this.sectionService
       .getAllSections()
@@ -962,7 +962,7 @@ togglePremiumDetails() {
             this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
             log.debug("Mandatory Section Covertype:", this.mandatorySections);
 
-            this.covertypeSections = this.subclassSectionCoverList?.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode )
+            this.covertypeSections = this.subclassSectionCoverList?.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode)
             log.debug("All section for a selected Cover Type:", this.covertypeSections)
 
             if (this.sectionList && this.covertypeSections) {
@@ -971,12 +971,12 @@ togglePremiumDetails() {
                 const matchingSections = this.sectionList.filter(section => section.code === element.sectionCode);
                 this.allMatchingSections.push(...matchingSections);
               });
-        
+
               log.debug("Retrieved All matching sections", this.allMatchingSections);
             }
-           if(this.allMatchingSections){
-            this.filterMandatorySections()
-           } 
+            if (this.allMatchingSections) {
+              this.filterMandatorySections()
+            }
           }
           else {
             this.errorOccurred = true;
@@ -1021,7 +1021,7 @@ togglePremiumDetails() {
   matchesSearch(description: string): boolean {
     return description.toLowerCase().includes(this.searchText.toLowerCase());
   }
-  
+
   isSelected(section: any): boolean {
     return this.selectedSections.some((s) => s.code === section.code);
 
@@ -1144,18 +1144,18 @@ togglePremiumDetails() {
           if (data) {
             console.log("Risk Section Created data:", data);
             this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
-        
+
             await this.getPolicy(); // Wait for getPolicy() to finish
-        
+
             if (this.riskDetails) {
-                const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-                const sections = risk.sections;
-                this.sectionsDetails = sections;
-                console.debug("SECTIONS:", this.sectionsDetails); // Changed from log.debug to console.debug
+              const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+              const sections = risk.sections;
+              this.sectionsDetails = sections;
+              console.debug("SECTIONS:", this.sectionsDetails); // Changed from log.debug to console.debug
             }
-        
-        
-        
+
+
+
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Empty response received from the server.';
@@ -1168,90 +1168,90 @@ togglePremiumDetails() {
         },
       });
   }
-//   addPremiumItem(){
+  //   addPremiumItem(){
 
-// }
+  // }
 
-getRiskClauses(){
+  getRiskClauses() {
 
-  
-  console.log("selected risk", this.selectedRisk);
-  this.selectedSubclassCode = this.selectedRisk.subClassCode;
-  console.log('SELECTED SUBCLASS CODE',this.selectedSubclassCode)
-  
-  if (!this.selectedRisk) {
+
+    console.log("selected risk", this.selectedRisk);
+    this.selectedSubclassCode = this.selectedRisk.subClassCode;
+    console.log('SELECTED SUBCLASS CODE', this.selectedSubclassCode)
+
+    if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
       return; // Exit function early if selectedRisk is not defined
-  }
- 
-  
-  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-  console.log(this.SelectedRiskCode,'Selected Risk Code ')
-  if (!risk) {
+    }
+
+
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+    console.log(this.SelectedRiskCode, 'Selected Risk Code ')
+    if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
-  }
-  // this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
-  //   this.SubclauseList=data;
-  //   // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
-  //   // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
-
-  //   log.debug('subclass ClauseList#####',this.SubclauseList)
-  //   this.loadAllClauses()
-  // })
-
-  this.policyService.getRiskClauses().subscribe({
-    next:(res)=>{
-      this.SubclauseList=res;
-      this.SubclauseList = this.SubclauseList._embedded[0]
-      this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.riskCode == 20225949312 );
-      console.log(this.SubclauseList, 'Unfiltered List')
-     
-     
-      console.log(this.selectedSubClauseList, 'Filtered List')
     }
-  })
-}
-loadAllClauses() {
-  // Extract clause codes from selectedSubClauseList
-  const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
-  log.debug('Retrived Clause Codes',subClauseCodes)
+    // this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
+    //   this.SubclauseList=data;
+    //   // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
+    //   // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-  // Check if there are any subClauseCodes before making the request
-  if (subClauseCodes.length === 0) {
-    // Handle the case when there are no subClauseCodes
-    return;
+    //   log.debug('subclass ClauseList#####',this.SubclauseList)
+    //   this.loadAllClauses()
+    // })
+
+    this.policyService.getRiskClauses().subscribe({
+      next: (res) => {
+        this.SubclauseList = res;
+        this.SubclauseList = this.SubclauseList._embedded[0]
+        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode == 20225949312);
+        console.log(this.SubclauseList, 'Unfiltered List')
+
+
+        console.log(this.selectedSubClauseList, 'Filtered List')
+      }
+    })
+  }
+  loadAllClauses() {
+    // Extract clause codes from selectedSubClauseList
+    const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
+    log.debug('Retrived Clause Codes', subClauseCodes)
+
+    // Check if there are any subClauseCodes before making the request
+    if (subClauseCodes.length === 0) {
+      // Handle the case when there are no subClauseCodes
+      return;
+    }
+
+    // Make the request to get all clauses based on the subClauseCodes
+    this.subclassService.getAllClauses().subscribe(data => {
+      this.clauseList = data._embedded.clause_dto_list;
+
+      // Filter clauseList based on subClauseCodes
+      this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
+      sessionStorage.setItem("riskClauses", JSON.stringify(this.selectedClauseList))
+      log.debug('All ClauseList', this.clauseList);
+      log.debug('ClauseSelectdList', this.selectedClauseList);
+    });
+  }
+  openPremiumDeleteModal() {
+    log.debug("Selected PremiumItem", this.selectedPremiumItem)
+    if (!this.selectedPremiumItem) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Premium item to continue');
+    } else {
+      document.getElementById("openModalPremiumButtonDelete").click();
+
+    }
   }
 
-  // Make the request to get all clauses based on the subClauseCodes
-  this.subclassService.getAllClauses().subscribe(data => {
-    this.clauseList = data._embedded.clause_dto_list;
-
-    // Filter clauseList based on subClauseCodes
-    this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
-    sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
-    log.debug('All ClauseList', this.clauseList);
-    log.debug('ClauseSelectdList', this.selectedClauseList);
-  });
-}
-openPremiumDeleteModal() {
-  log.debug("Selected PremiumItem", this.selectedPremiumItem)
-  if (!this.selectedPremiumItem) {
-    this.globalMessagingService.displayInfoMessage('Error', 'Select Premium item to continue');
-  } else {
-    document.getElementById("openModalPremiumButtonDelete").click();
+  toggleRiskPerils() {
+    this.riskPerils = !this.riskPerils
 
   }
-}
-
-toggleRiskPerils(){
-  this.riskPerils = !this.riskPerils
- 
-}
 
 
-   
+
   toggleRequiredDocDetails() {
     this.isRequiredDocDetailOpen = !this.isRequiredDocDetailOpen;
   }
@@ -1286,10 +1286,10 @@ toggleRiskPerils(){
   //       },
   //     });
   // }
-  getRequiredDocuments(){
-    this.selectedTransactionType= "NB"
+  getRequiredDocuments() {
+    this.selectedTransactionType = "NB"
     this.policyService
-      .getRequiredDocuments(null,this.passedSubclassCode,this.selectedTransactionType)
+      .getRequiredDocuments(null, this.passedSubclassCode, this.selectedTransactionType)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
@@ -1297,7 +1297,7 @@ toggleRiskPerils(){
           if (data) {
 
             log.debug("Required document list:", data);
-            log.debug("New Business Documents",this.requiredDocs)
+            log.debug("New Business Documents", this.requiredDocs)
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -1340,22 +1340,22 @@ toggleRiskPerils(){
   }
   toggleRemarksDetails() {
     console.log("selected risk", this.selectedRisk);
-  
+
     if (!this.selectedRisk) {
-        this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
-        return; // Exit function early if selectedRisk is not defined
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
     }
-    
+
     this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
     const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-    
+
     if (!risk) {
-        console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
-        return; // Exit function early if corresponding risk is not found
+      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+      return; // Exit function early if corresponding risk is not found
     }
-    
-    
-  
+
+
+
     // Toggle collapse state only if both selectedRisk and corresponding risk are valid
     this.isRemarkDetailsOpen = !this.isRemarkDetailsOpen;
   }
@@ -1368,32 +1368,32 @@ toggleRiskPerils(){
       schedule: [''],
     });
   }
-  addRemark(){
- log.debug("rrisk code:", this.SelectedRiskCode)
+  addRemark() {
+    log.debug("rrisk code:", this.SelectedRiskCode)
     this.remarkDetailsForm.get('action').setValue("A");
     this.remarkDetailsForm.get('code').setValue(0);
     this.remarkDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode);
     this.remarkDetailsForm.get('polBatchNo').setValue(this.batchNo);
-       // Convert the value of 'schedule' to a number
+    // Convert the value of 'schedule' to a number
     const scheduleText = this.remarkDetailsForm.get('schedule').value;
-    log.debug("Schedules not converted to hash",scheduleText)
+    log.debug("Schedules not converted to hash", scheduleText)
 
-    
-    
-     const remarkForm = this.remarkDetailsForm.value;
-     log.debug('Remark Form:', remarkForm);
+
+
+    const remarkForm = this.remarkDetailsForm.value;
+    log.debug('Remark Form:', remarkForm);
     this.policyService
       .addRemarks(remarkForm)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: async (data: any) => {
           if (data) {
-           log.debug(" Added Remark", data);
+            log.debug(" Added Remark", data);
             this.globalMessagingService.displaySuccessMessage('Success', 'Remark has been added');
-        this.getAllRemarks();
-           
-        
-        
+            this.getAllRemarks();
+
+
+
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Empty response received from the server.';
@@ -1413,7 +1413,7 @@ toggleRiskPerils(){
       // Patch other fields if needed
     });
   }
-  editRemark(){
+  editRemark() {
     log.debug("Selected Remark", this.selectedRemark)
 
     this.remarkDetailsForm.get('action').setValue("E");
@@ -1423,8 +1423,8 @@ toggleRiskPerils(){
 
     const scheduleText = this.remarkDetailsForm.get('schedule').value;
     const updateRemarkForm = this.remarkDetailsForm.value;
-    log.debug('Update Remark Form:', updateRemarkForm);   
-       this.policyService
+    log.debug('Update Remark Form:', updateRemarkForm);
+    this.policyService
       .editRemarks(updateRemarkForm)
       .pipe(untilDestroyed(this))
       .subscribe({
@@ -1433,14 +1433,14 @@ toggleRiskPerils(){
 
           console.log('Success:', response);
 
-                // Update the `filteredRemarks` array with the new data
-                const index = this.filteredRemarks.findIndex(
-                  (remark) => remark.code === this.selectedRemark.code
-              );
+          // Update the `filteredRemarks` array with the new data
+          const index = this.filteredRemarks.findIndex(
+            (remark) => remark.code === this.selectedRemark.code
+          );
 
-              if (index !== -1) {
-                  this.filteredRemarks[index] = { ...this.selectedRemark, ...updateRemarkForm };
-              }
+          if (index !== -1) {
+            this.filteredRemarks[index] = { ...this.selectedRemark, ...updateRemarkForm };
+          }
         },
         error: (error) => {
 
@@ -1457,422 +1457,444 @@ toggleRiskPerils(){
 
     }
   }
-deleteRemark(){
-  log.debug("Selected Remark", this.selectedRemark)
-  this.action= "D"
-  this.policyService
-  .deleteRemarks(this.selectedRemark.code)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (data) => {
+  deleteRemark() {
+    log.debug("Selected Remark", this.selectedRemark)
+    this.action = "D"
+    this.policyService
+      .deleteRemarks(this.selectedRemark.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-      if (data) {
+          if (data) {
 
-        log.debug("Response Deleting Remark:", data);
-        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Remark"');
-        // Remove the deleted Insured from the Insured Details array
-        const index = this.filteredRemarks.findIndex(remark => remark.code === this.selectedRemark.code);
-        if (index !== -1) {
-          this.filteredRemarks.splice(index, 1);
-        }
-        // Clear the selected risk
-        this.selectedRemark = null;
+            log.debug("Response Deleting Remark:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Remark"');
+            // Remove the deleted Insured from the Insured Details array
+            const index = this.filteredRemarks.findIndex(remark => remark.code === this.selectedRemark.code);
+            if (index !== -1) {
+              this.filteredRemarks.splice(index, 1);
+            }
+            // Clear the selected risk
+            this.selectedRemark = null;
 
-      } else {
-        this.errorOccurred = true;
-        this.errorMessage = 'Something went wrong. Please try Again';
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Something went wrong. Please try Again'
-        );
-      }
-    },
-    error: (err) => {
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
 
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        this.errorMessage
-      );
-      log.info(`error >>>`, err);
-    },
-  });
-}
-deletePremiumItem(){
-  log.debug("Selected premium item", this.selectedPremiumItem)
-  this.premiumItemCode = this.selectedPremiumItem.sectCode;
-  log.debug("Premium Item Section code", this.premiumItemCode)
-  this.policyService
-  .deletePremiumItem(this.batchNo,this.premiumItemCode )
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (data) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  deletePremiumItem() {
+    log.debug("Selected premium item", this.selectedPremiumItem)
+    this.premiumItemCode = this.selectedPremiumItem.sectCode;
+    log.debug("Premium Item Section code", this.premiumItemCode)
+    this.policyService
+      .deletePremiumItem(this.batchNo, this.premiumItemCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-      if (data) {
+          if (data) {
 
-        log.debug("Response Deleting Remark:", data);
-        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Premium Item"');
-        // Remove the deleted Insured from the Insured Details array
-        const index = this.sectionsDetails.findIndex(premiumItem => premiumItem.sectCode === this.premiumItemCode);
-        if (index !== -1) {
-          this.sectionsDetails.splice(index, 1);
-        }
-        // Clear the selected risk
-        this.selectedRemark = null;
+            log.debug("Response Deleting Remark:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Premium Item"');
+            // Remove the deleted Insured from the Insured Details array
+            const index = this.sectionsDetails.findIndex(premiumItem => premiumItem.sectCode === this.premiumItemCode);
+            if (index !== -1) {
+              this.sectionsDetails.splice(index, 1);
+            }
+            // Clear the selected risk
+            this.selectedRemark = null;
 
-      } else {
-        this.errorOccurred = true;
-        this.errorMessage = 'Something went wrong. Please try Again';
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Something went wrong. Please try Again'
-        );
-      }
-    },
-    error: (err) => {
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
 
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        this.errorMessage
-      );
-      log.info(`error >>>`, err);
-    },
-  });
-}
-toggleRelatedRiskDetails() {
-  this.isRelatedRiskDetailsOpen = !this.isRelatedRiskDetailsOpen;
-}
-// toggleCommissionTranscDetails() {
-//   this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
-// }
-toggleCommissionTranscDetails() {
-  console.log("selected risk", this.selectedRisk);
-  
-  if (!this.selectedRisk) {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  toggleRelatedRiskDetails() {
+    this.isRelatedRiskDetailsOpen = !this.isRelatedRiskDetailsOpen;
+  }
+  // toggleCommissionTranscDetails() {
+  //   this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
+  // }
+  toggleCommissionTranscDetails() {
+    console.log("selected risk", this.selectedRisk);
+
+    if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
       return; // Exit function early if selectedRisk is not defined
-  }
-  
-  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-  
-  if (!risk) {
+    }
+
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+
+    if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
-  }
-  
-  
+    }
 
-  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
-  this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
-}
-toggleRiskServiceList() {
-  console.log("selected risk", this.selectedRisk);
-  
-  if (!this.selectedRisk) {
+
+
+    // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+    this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
+  }
+  toggleRiskServiceList() {
+    console.log("selected risk", this.selectedRisk);
+
+    if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
       return; // Exit function early if selectedRisk is not defined
-  }
-  
-  this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-  const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-  
-  if (!risk) {
+    }
+
+    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+
+    if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
+    }
+
+
+
+    // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+    this.isRiskServiceListOpen = !this.isRiskServiceListOpen;
   }
-  
-  
 
-  // Toggle collapse state only if both selectedRisk and corresponding risk are valid
-  this.isRiskServiceListOpen = !this.isRiskServiceListOpen;
-}
+  openCommissionTranscDeleteModal() {
+    log.debug("Selected Commission Transaction", this.selectedTransaction)
+    if (!this.selectedTransaction) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+    } else {
+      document.getElementById("openCommissionModalButtonDelete").click();
 
-openCommissionTranscDeleteModal() {
-  log.debug("Selected Commission Transaction", this.selectedTransaction)
-  if (!this.selectedTransaction) {
-    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
-  } else {
-    document.getElementById("openCommissionModalButtonDelete").click();
-
+    }
   }
-}
 
-  getSubclassPerils(){
+  getSubclassPerils() {
     this.policyService.getSubsclassPerils(this.selectedSubclassCode).subscribe({
-      next:(res)=>{
+      next: (res) => {
         this.subclassPeril = res
         this.subclassPeril = this.subclassPeril.content
         console.log(this.subclassPeril)
         this.subclassPeril.forEach(element => {
           this.perilService.getPeril(element.perilCode).subscribe({
-            next:(res)=>{
+            next: (res) => {
               this.subclassPerilList.push(res)
               console.log(this.subclassPerilList)
             }
           })
-       
+
         });
       }
     })
   }
-  
-getRiskPeril(){
-  console.log("selected risk (Risk Peril)", this.selectedRisk);
-  
-  if (!this.selectedRisk) {
+
+  getRiskPeril() {
+    console.log("selected risk (Risk Peril)", this.selectedRisk);
+
+    if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
       return; // Exit function early if selectedRisk is not defined
-  }else{
-    this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    } else {
+      this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
 
-    const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-    if (!risk) {
-      console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
-      return; // Exit function early if corresponding risk is not found
-  }
-    this.policyService.getRiskPerils().subscribe({
-      next:(res)=>{
-        this.subperils = res
-        this.subperils = this.subperils._embedded
-        console.log(this.batchNo)
-        
-          this.subperils.forEach(perilArray => {   
-              perilArray.forEach(element => {
-                // console.log(element.ipuCode, "perils");
-                //  console.log(this.SelectedRiskCode)
-                
-                if(element.polBatchNo === 233471313){
-                 
-                  if(element.ipuCode === 20235954513){
-                    this.policyRiskPeril.push(element)
-                    this.subperils =element 
-                    console.log(element,'risk perils')
-                  }
-                }
-              });
-            
-          });
-        
+      const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+      if (!risk) {
+        console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+        return; // Exit function early if corresponding risk is not found
       }
-    });
-  }
-  
-
-   
-    }
-  
-
-toggleRiskClaimReportDetails() {
-  this.isRiskClaimsReportDetailsOpen = !this.isRiskClaimsReportDetailsOpen;
-}
-printClaimReport(){
-  log.debug("client code",this.clientPrpCode)
-  const payload ={
-    "encode_format": "BASE64",
-    "params": [
-      {
-        "name": "P_CLIENT",
-        "value": this.clientPrpCode
-      },
-      {
-        "name": "V_POLICY_NO",
-        "value": this.policyDetailsData.policyNo
-      },
-      {
-        "name": "P_YEARS",
-        "value":7
-      },
-      {
-        "name": "P_NO_INSITEMS",
-        "value":5
-      },
-      {
-        "name": "FROMYR",
-        "value":2
-      }
-    ],
-    "report_format": "PDF",
-    "rpt_code": 4039,
-    "system": "GIS"
-  }
-  this.policyService.generateRiskClaimReport(payload).subscribe({
-    next:(res)=>{
-      this.downloadBase64File(res, 'INS_CLMS_EXP_RPT.pdf');
-      this.globalMessagingService.displaySuccessMessage('Success','Risk Claim Report generated successfully ')
-    },
-    error: (err) => {
-
-      this.globalMessagingService.displayErrorMessage(
-        'Error', 'Something went wrong, try again later'
-      );
-      log.info(`error >>>`, err);
-    },
-
-  })
-}
-// Method to decode and trigger file download 
-downloadBase64File(base64, filename: string): void {
-  // Decode the base64 string
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  const blob = new Blob([bytes], { type: 'application/pdf' }); // Adjust the MIME type as needed
-
-  // Create a URL for the blob and trigger the download
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-  a.remove();
-}
-getSingleRiskPeril(){
-  console.log(this.selectedPeril)
-}
-deleteRiskPeril(){
- 
-  this.policyService.deleteRiskPeril(this.selectedRiskPeril.code).subscribe({
-    next:(res)=>{
-      console.log('delete response',res)
       this.policyService.getRiskPerils().subscribe({
-        next:(res)=>{
+        next: (res) => {
           this.subperils = res
           this.subperils = this.subperils._embedded
           console.log(this.batchNo)
-          
-            this.subperils.forEach(perilArray => {   
-                perilArray.forEach(element => {              
-                  if(element.polBatchNo === 233471313){                  
-                    if(element.ipuCode === 20235954513){
-                      this.policyRiskPeril.push(element)
-                      this.subperils =element 
-                      console.log(element,'risk perils')
-                    }
-                  }
-                });
-              
+
+          this.subperils.forEach(perilArray => {
+            perilArray.forEach(element => {
+              // console.log(element.ipuCode, "perils");
+              //  console.log(this.SelectedRiskCode)
+
+              if (element.polBatchNo === 233471313) {
+
+                if (element.ipuCode === 20235954513) {
+                  this.policyRiskPeril.push(element)
+                  this.subperils = element
+                  console.log(element, 'risk perils')
+                }
+              }
             });
-          
+
+          });
+
         }
       });
-      this.globalMessagingService.displaySuccessMessage('Success','Risk Peril deleted successfully')
     }
-  })
-  console.log(this.selectedRiskPeril.code)
-}
-openRiskPerilDeleteModal() {
-  log.debug("Selected Risk Peril", this.selectedRiskPeril)
-  if (!this.selectedRiskPeril) {
-    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
-  } else {
-    document.getElementById("openRiskPerilModalButtonDelete").click();
+
+
 
   }
-}
-openRiskClauseDeleteModal() {
-  log.debug("Selected Risk Clause", this.selectedClause)
-  if (!this.selectedClause) {
-    this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Clause to continue');
-  } else {
-    document.getElementById("openRiskClauseModalButtonDelete").click();
 
+
+  toggleRiskClaimReportDetails() {
+    this.isRiskClaimsReportDetailsOpen = !this.isRiskClaimsReportDetailsOpen;
   }
-}
-deleteRiskClause(){
-  this.policyService.deleteRiskClause(this.selectedClause.riskCode,this.selectedClause.policyClauseCode).subscribe({
-    next:(data)=>{
-      console.log(data)
-      this.getRiskClauses()
-      this.globalMessagingService.displaySuccessMessage('Success','Risk Clause deleted successfully')
+  printClaimReport() {
+    log.debug("client code", this.clientPrpCode)
+    const payload = {
+      "encode_format": "BASE64",
+      "params": [
+        {
+          "name": "P_CLIENT",
+          "value": this.clientPrpCode
+        },
+        {
+          "name": "V_POLICY_NO",
+          "value": this.policyDetailsData.policyNo
+        },
+        {
+          "name": "P_YEARS",
+          "value": 7
+        },
+        {
+          "name": "P_NO_INSITEMS",
+          "value": 5
+        },
+        {
+          "name": "FROMYR",
+          "value": 2
+        }
+      ],
+      "report_format": "PDF",
+      "rpt_code": 4039,
+      "system": "GIS"
     }
-  })
-}
-openRiskServiceListDeleteModal() {
-  document.getElementById("openRiskServiceListModalButtonDelete").click();
-  // if (!this.selectedRiskPeril) {
-  //   this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
-  // } else {
-  //   document.getElementById("openRiskPerilModalButtonDelete").click();
-
-  // }
-}
-
-createRequiredDocumentsForm() {
-  this.requiredDocumentsForm = this.fb.group({
-    code: [''],
-    description: [''],
-    dateCreated: [''],
-    isMandatory: [''],
-    isSubmitted: [''],
-    referenceNumber: [''],
-    remark: [''],
-    riskUniqueCode: [''],
-    subClassCode: [''],
-    submissionDate: [''],
-   
-  });
-}
-
-
-
-addRequiredDocuments(){
-  const requiredDocForm = this.requiredDocumentsForm.value;
-  log.debug('Required Documents Form:', requiredDocForm);   
-     this.policyService
-    .addRequiredDocuments(requiredDocForm,this.user)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Document details added successfully');
-
-        console.log('Success:', response);
+    this.policyService.generateRiskClaimReport(payload).subscribe({
+      next: (res) => {
+        this.downloadBase64File(res, 'INS_CLMS_EXP_RPT.pdf');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Claim Report generated successfully ')
       },
-      error: (error) => {
+      error: (err) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+        this.globalMessagingService.displayErrorMessage(
+          'Error', 'Something went wrong, try again later'
+        );
+        log.info(`error >>>`, err);
+      },
+
+    })
+  }
+  // Method to decode and trigger file download 
+  downloadBase64File(base64, filename: string): void {
+    // Decode the base64 string
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: 'application/pdf' }); // Adjust the MIME type as needed
+
+    // Create a URL for the blob and trigger the download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }
+  getSingleRiskPeril() {
+    console.log(this.selectedPeril)
+  }
+  deleteRiskPeril() {
+
+    this.policyService.deleteRiskPeril(this.selectedRiskPeril.code).subscribe({
+      next: (res) => {
+        console.log('delete response', res)
+        this.policyService.getRiskPerils().subscribe({
+          next: (res) => {
+            this.subperils = res
+            this.subperils = this.subperils._embedded
+            console.log(this.batchNo)
+
+            this.subperils.forEach(perilArray => {
+              perilArray.forEach(element => {
+                if (element.polBatchNo === 233471313) {
+                  if (element.ipuCode === 20235954513) {
+                    this.policyRiskPeril.push(element)
+                    this.subperils = element
+                    console.log(element, 'risk perils')
+                  }
+                }
+              });
+
+            });
+
+          }
+        });
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Peril deleted successfully')
       }
+    })
+    console.log(this.selectedRiskPeril.code)
+  }
+  openRiskPerilDeleteModal() {
+    log.debug("Selected Risk Peril", this.selectedRiskPeril)
+    if (!this.selectedRiskPeril) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
+    } else {
+      document.getElementById("openRiskPerilModalButtonDelete").click();
+
+    }
+  }
+  openRiskClauseDeleteModal() {
+    log.debug("Selected Risk Clause", this.selectedClause)
+    if (!this.selectedClause) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Clause to continue');
+    } else {
+      document.getElementById("openRiskClauseModalButtonDelete").click();
+
+    }
+  }
+  deleteRiskClause() {
+    this.policyService.deleteRiskClause(this.selectedClause.riskCode, this.selectedClause.policyClauseCode).subscribe({
+      next: (data) => {
+        console.log(data)
+        this.getRiskClauses()
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Clause deleted successfully')
+      }
+    })
+  }
+  openRiskServiceListDeleteModal() {
+    document.getElementById("openRiskServiceListModalButtonDelete").click();
+    // if (!this.selectedRiskPeril) {
+    //   this.globalMessagingService.displayInfoMessage('Error', 'Select Risk Peril to continue');
+    // } else {
+    //   document.getElementById("openRiskPerilModalButtonDelete").click();
+
+    // }
+  }
+
+  createRequiredDocumentsForm() {
+    this.requiredDocumentsForm = this.fb.group({
+      code: [''],
+      description: [''],
+      dateCreated: [''],
+      isMandatory: [''],
+      isSubmitted: [''],
+      referenceNumber: [''],
+      remark: [''],
+      riskUniqueCode: [''],
+      subClassCode: [''],
+      submissionDate: [''],
+
     });
-}
+  }
 
-deleteRequiredDocuments(){
-  this.policyService
-  .deleteRequiredDocument(this.selectedDocument)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response) => {
-      this.globalMessagingService.displaySuccessMessage('Success', 'Document details deleted successfully');
 
-      console.log('Success:', response);
-    },
-    error: (error) => {
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete document details.Try again later');
+  addRequiredDocuments() {
+    const requiredDocForm = this.requiredDocumentsForm.value;
+    log.debug('Required Documents Form:', requiredDocForm);
+    this.policyService
+      .addRequiredDocuments(requiredDocForm, this.user)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Document details added successfully');
+
+          console.log('Success:', response);
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+        }
+      });
+  }
+
+  deleteRequiredDocuments() {
+    this.policyService
+      .deleteRequiredDocument(this.selectedDocument)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Document details deleted successfully');
+
+          console.log('Success:', response);
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete document details.Try again later');
+        }
+      });
+  }
+  getAllRemarks() {
+    this.policyService
+      .getRemarks()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.remarkList = response._embedded[0];
+          console.log('Remarks list:', this.remarkList);
+          this.filteredRemarks = this.remarkList.filter(remark => remark.polBatchNo == this.batchNo);
+          log.debug("FILTERED REMARK LIST", this.filteredRemarks)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
+        }
+      });
+  }
+  populateRequiredDocument() {
+    if(this.SelectedRiskCode){
+      const tempTransactionType = "NB"
+
+      this.policyService
+      .populateRequiredDoc(this.SelectedRiskCode,tempTransactionType,this.user)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Populate Doc:', response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated Required document')
+        },
+        error: (error) => {
+  
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
+        }
+      });
+    }else{
+      this.globalMessagingService.displayInfoMessage('Error', 'Select risk to continue');
+
     }
-  });
-}
-getAllRemarks(){
-  this.policyService
-  .getRemarks()
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response:any) => {
-this.remarkList = response._embedded[0];
-      console.log('Remarks list:', this.remarkList);
-this.filteredRemarks= this.remarkList.filter(remark => remark.polBatchNo == this.batchNo);
-log.debug("FILTERED REMARK LIST",this.filteredRemarks)
-
-    },
-    error: (error) => {
-
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
-    }
-  });
-}
+  
+  }
 }
 
 
