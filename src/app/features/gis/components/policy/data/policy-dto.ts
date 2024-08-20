@@ -450,6 +450,18 @@ export interface editInsured {
   pinNo: string,
   // type: string
 }
+export interface RequiredDocuments{
+  code:number,
+  description:string,
+  dateCreated: string;
+  isMandatory: string;
+  isSubmitted: string;
+  referenceNumber: string;
+  remark: string;
+  riskUniqueCode: number;
+  subClassCode: number;
+  submissionDate: string;
+}
 
 
 
