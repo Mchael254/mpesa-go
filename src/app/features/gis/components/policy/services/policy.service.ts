@@ -240,4 +240,8 @@ export class PolicyService {
     return this.api.GET(`v2/remarks`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  populateRequiredDoc(riskCode:any,transType:any,user){
+    return this.api.POST(`v1/submitted-required-documents?ipuCode=${riskCode}&transType=${transType}&user=${user}`,"placeholder data", API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }

@@ -2334,53 +2334,63 @@
                                             <div class="col-sm-9 d-flex justify-content-end">
                                                 <div class="row  mb-2">
 
-                                                    <!-- <div class="col-sm-3"></div> -->
-                                                    <div class="col-3" *ngIf="isRequiredDocDetailOpen">
-                                                        <button type="button" id="icon" class="btn btn-success"
-                                                            title="add" data-bs-toggle="modal"
-                                                            data-bs-target="#addrequiredDoc">
-                                                            <i class="fa-solid fa-plus"></i>
-                                                        </button>
+                                                  
+                                                    <div class="col-6" *ngIf="isRequiredDocDetailOpen">
+                                                        <button class="btn btn-primary import-button" (click)="populateRequiredDocument()"
+                                                            style="min-width: 141px;font-size:smaller;">Populate mandatory documents</button>
                                                     </div>
-                                                    <div class="col-3" *ngIf="isRequiredDocDetailOpen">
-                                                        <button type="button" id="icon" class="btn btn-primary"
-                                                            data-bs-toggle="modal" data-bs-target="#editrequiredDoc"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-pencil"></i>
-                                                        </button>
-                                                        <!-- <button type="button" id="icon" class="btn btn-primary"
-                                                                data-bs-toggle="modal" id="openRiskModalButtonEdit"
-                                                                [hidden]="true" data-bs-target="#editrequiredDoc" title="Edit">
-                                                            </button>
-                                                            <button type="button" id="icon" class="btn btn-primary"
-                                                                title="Edit">
-                                                                <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
-                                                            </button> -->
-
+                                                    <div class="col-6">
+                                                        <div class="row">
+                                                            <div class="col-3" *ngIf="isRequiredDocDetailOpen">
+                                                                <button type="button" id="icon" class="btn btn-success"
+                                                                    title="add" data-bs-toggle="modal"
+                                                                    data-bs-target="#addrequiredDoc">
+                                                                    <i class="fa-solid fa-plus"></i>
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-3" *ngIf="isRequiredDocDetailOpen">
+                                                                <button type="button" id="icon" class="btn btn-primary"
+                                                                    data-bs-toggle="modal" data-bs-target="#editrequiredDoc"
+                                                                    title="Edit">
+                                                                    <i class="fa-solid fa-pencil"></i>
+                                                                </button>
+                                                                <!-- <button type="button" id="icon" class="btn btn-primary"
+                                                                        data-bs-toggle="modal" id="openRiskModalButtonEdit"
+                                                                        [hidden]="true" data-bs-target="#editrequiredDoc" title="Edit">
+                                                                    </button>
+                                                                    <button type="button" id="icon" class="btn btn-primary"
+                                                                        title="Edit">
+                                                                        <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
+                                                                    </button> -->
+        
+                                                            </div>
+                                                            <div class="col-3" *ngIf="isRequiredDocDetailOpen">
+                                                                <button type="button" id="icon" class="btn btn-primary"
+                                                                    data-bs-toggle="modal" id="openRequiredDocModalButtonDelete"
+                                                                    [hidden]="true" data-bs-target="#deleteRequiredDocument"
+                                                                    title="Delete">
+                                                                </button>
+                                                                <button type="button" id="icon" class="btn btn-primary"
+                                                                    title="Delete">
+                                                                    <i class="fa-solid fa-trash-can"
+                                                                        (click)="openRequiredDocDeleteModal()"></i>
+                                                                </button>
+        
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <button type="button" id="icon" class="btn btn-primary"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#requiredDocDetails" aria-expanded="false"
+                                                                    aria-controls="requiredDocDetails"
+                                                                    [attr.aria-expanded]="!isRequiredDocDetailOpen"
+                                                                    (click)="toggleRequiredDocDetails()">
+                                                                    <i class="fa-solid fa-chevron-down"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-3" *ngIf="isRequiredDocDetailOpen">
-                                                        <button type="button" id="icon" class="btn btn-primary"
-                                                            data-bs-toggle="modal" id="openRequiredDocModalButtonDelete"
-                                                            [hidden]="true" data-bs-target="#deleteRequiredDocument"
-                                                            title="Delete">
-                                                        </button>
-                                                        <button type="button" id="icon" class="btn btn-primary"
-                                                            title="Delete">
-                                                            <i class="fa-solid fa-trash-can"
-                                                                (click)="openRequiredDocDeleteModal()"></i>
-                                                        </button>
-
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <button type="button" id="icon" class="btn btn-primary"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#requiredDocDetails" aria-expanded="false"
-                                                            aria-controls="requiredDocDetails"
-                                                            [attr.aria-expanded]="!isRequiredDocDetailOpen"
-                                                            (click)="toggleRequiredDocDetails()">
-                                                            <i class="fa-solid fa-chevron-down"></i>
-                                                        </button>
-                                                    </div>
+                                             
+                                                    <!-- <div class="col-1"></div> -->
 
                                                 </div>
 
