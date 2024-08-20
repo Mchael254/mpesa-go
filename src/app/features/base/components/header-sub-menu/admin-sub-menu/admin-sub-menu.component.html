@@ -43,6 +43,22 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
               style="font-size: 12px"
+              routerLink="/home/lms/grp/dashboard/quote"
+            >
+              <i
+                class="fa-solid fa-solid fa-briefcase"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
+              {{ "base.quote" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
               routerLink="/home/lms/grp/dashboard/products"
             >
               <i
@@ -58,6 +74,7 @@
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+              routerLink="/home/lms/grp/dashboard/service-req-dashboard"
               style="font-size: 12px"
             >
               <i
@@ -114,14 +131,14 @@
           <li class="nav-item dropdown">
             <a
               class="nav-link"
-              routerLink="/home/lms/grp/dashboard/quick-quote"
+              routerLink="/home/lms/grp/dashboard/quote"
               style="font-size: 12px"
             >
               <i
                 class="fa-solid fa-solid fa-quote-right"
                 style="padding-right: 6px; font-size: 16px"
               ></i>
-              {{ "base.quick_quote" | translate | uppercase }}
+              {{ "base.quote" | translate | uppercase }}
             </a>
           </li>
           <li class="nav-item dropdown">
@@ -143,6 +160,7 @@
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+              routerLink="/home/lms/grp/dashboard/service-req-dashboard"
               style="font-size: 12px"
             >
               <i

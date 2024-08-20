@@ -1,35 +1,19 @@
 <div class="main">
   <div class="container">
-    <div><span class="title">Service request logs</span></div>
+    <div><span class="title">{{ "lms.grp.service_request.admin.logs.service_request_logs" | translate }}</span></div>
     <div class="row col-12" style="color: black;">
       <div class="col-md-4 col-xs-12 col-sm-12">
         <table style="width: 100%;">
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Request number: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.request_number" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Request status: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.request_status" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Request date: </td>
-            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="col-md-4 col-xs-12 col-sm-12">
-        <table style="width: 100%;">
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Policy: </td>
-            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
-          </tr>
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Category type: </td>
-            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
-          </tr>
-          <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Policy member: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.request_date" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
         </table>
@@ -37,24 +21,40 @@
       <div class="col-md-4 col-xs-12 col-sm-12">
         <table style="width: 100%;">
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Category: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.policy" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Policy member: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.category_type" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
           <tr>
-            <td style="width: 50%; align-items: left; color: grey;">Days lapsed: </td>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.policy_member" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-4 col-xs-12 col-sm-12">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.category" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.policy_number" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.days_lapsed" | translate }}: </td>
             <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
           </tr>
         </table>
       </div>
     </div>
 
-    <div style="margin-top: 40px;">Notifications</div>
+    <div style="margin-top: 40px;">{{ "lms.grp.service_request.admin.logs.notifications" | translate }}</div>
     <div class="button-container">
-      <button class="new-msg" (click)="showNewMessageModal()">New message</button>
+      <button class="new-msg" (click)="showNewMessageModal()">{{ "lms.grp.service_request.admin.logs.new_message" | translate }}</button>
     </div>
     <div class="notifications">
       <div *ngFor="let notification of notifications" class="notification-row" [class.read]="notification.read">
@@ -72,7 +72,7 @@
  <div class="modal-dialog modal-dialog-centered modal-m">
      <div class="modal-content">
          <div class="modal-header">
-          <h6 class="modal-title" id="newMessageModal">New Message</h6>
+          <h6 class="modal-title" id="newMessageModal">{{ "lms.grp.service_request.admin.logs.new_message" | translate }}</h6>
              <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal"
                  aria-label="Close" (click)="closeNewMessageModal()"></button>
          </div>
@@ -91,7 +91,7 @@
           <div class="attach-file-container">
             <div class="attach-button">
               <button class="plain-button" (click)="fileInput.click()">
-                <i class="pi pi-paperclip vertical-paperclip"></i> Attach file
+                <i class="pi pi-paperclip vertical-paperclip"></i> {{ "lms.grp.service_request.admin.logs.attach_file" | translate }}
               </button>
               <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
             </div>
@@ -103,7 +103,7 @@
             </div>
           </div>
           
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ "lms.grp.service_request.admin.logs.submit" | translate }}</button>
         </div>
      </div>
  </div>

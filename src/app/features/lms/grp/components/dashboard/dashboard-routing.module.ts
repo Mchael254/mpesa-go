@@ -20,6 +20,7 @@ import { AdminCreditLifeSummaryComponent } from './components/admin-credit-life-
 import { ServiceRequestsDashboardComponent } from './components/admin-service-requests/service-requests-dashboard/service-requests-dashboard.component';
 import { ServiceRequestLogsComponent } from './components/admin-service-requests/service-request-logs/service-request-logs.component';
 import { ServiceRequestComponent } from './components/admin-service-requests/service-request/service-request.component';
+import { MemberServiceRequestComponent } from './components/member-service-requests/member-service-request/member-service-request.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: LandingScreenComponent }, //agent
@@ -42,6 +43,7 @@ const routes: Routes = [
   { path: 'service-req-dashboard', component: ServiceRequestsDashboardComponent}, //scheme admin service request listing dashboard
   { path: 'service-req-logs', component: ServiceRequestLogsComponent}, //scheme admin service request logs
   { path: 'service-request', component: ServiceRequestComponent}, //scheme admin service requests
+  { path: 'member-service-request', component: MemberServiceRequestComponent}, //scheme member service requests screen
 ];
 
 @NgModule({

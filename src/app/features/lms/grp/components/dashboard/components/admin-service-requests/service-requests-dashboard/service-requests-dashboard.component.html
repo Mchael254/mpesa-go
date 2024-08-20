@@ -1,8 +1,8 @@
 <div class="main">
     <div class="container">
-        <div class="title" style="padding-top: 35px;">Service requests dashboard</div>
+        <div class="title" style="padding-top: 35px;">{{ "lms.grp.service_request.admin.dashboard.service_requests_dashboard" | translate }}</div>
         <div class="new-req-button">
-            <p-button label="New service request" [style]="{'border-radius': '4px'}"></p-button>
+            <p-button [style]="{'border-radius': '4px'}">{{ "lms.grp.service_request.admin.dashboard.new_service_request" | translate }}</p-button>
             <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
             </p-multiSelect>
         </div>
@@ -14,13 +14,13 @@
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th *ngIf="selectedColumns.includes('req')">Request ID</th>
-                        <th *ngIf="selectedColumns.includes('req')">Category</th>
-                        <th *ngIf="selectedColumns.includes('req')">Category type</th>
-                        <th *ngIf="selectedColumns.includes('req')">Status</th>
-                        <th *ngIf="selectedColumns.includes('req')">Date submitted</th>
-                        <th *ngIf="selectedColumns.includes('req')">Policy number</th>
-                        <th *ngIf="selectedColumns.includes('req')">Assigned to</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.request_id" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.category" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.category_type" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.status" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.date_submitted" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.policy_number" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.admin.dashboard.assigned_to" | translate }}</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-serviceReq>

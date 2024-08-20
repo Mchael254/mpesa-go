@@ -474,3 +474,31 @@ export class ValuationsDTO {
   wet: string;
   withdrawal_total: number | null;
 }
+
+export class ContactMethodDTO {
+  name: string;
+  value: string;
+}
+
+export class ServiceReqCategoriesDTO {
+  branchCode: number;
+  branchName: string;
+  code: number;
+  isDefault: boolean;
+  name: string;
+  requestTypeCode: number;
+  userCode: number;
+  username: string;
+  validity: number;
+}
+
+export class ServiceReqCatTypesDTO {
+  code: number;
+  description: string;
+  shortDescription: string;
+}
+
+export class ServiceReqPoliciesDTO {
+  accountName: string;
+  policyNumber: string;
+}
