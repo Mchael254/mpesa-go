@@ -58,7 +58,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
     this.endorsementCode = this.activatedRoute.snapshot.queryParams['endorsementCode'];
     this.productType = this.activatedRoute.snapshot.queryParams['productType'];
-    // this.getProductType();
+    this.getProductType();
     this.populateYears();
     this.adminDetsTableColumns();
     this.populateBreadCrumbItems();

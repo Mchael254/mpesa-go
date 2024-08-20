@@ -180,6 +180,7 @@
     "Client Attributes": "Client Attributes",
     "Product Attributes": "Product Attributes",
     "quick_quote": "Quick quote",
+    "quote": "Quote",
     "service_requests": "Service requests",
     "downloads": "Downloads",
     "Activity Management": "Activity Management",
@@ -1134,6 +1135,74 @@
         "amount": "Amount",
         "reject": "Reject",
         "send_for_review": "Send for review"
+      },
+      "service_request": {
+        "admin": {
+          "dashboard": {
+            "service_requests_dashboard": "Service requests dashboard",
+            "new_service_request": "New service request",
+            "request_id": "Request ID",
+            "category": "Category",
+            "category_type": "Category type",
+            "status": "Status",
+            "date_submitted": "Date submitted",
+            "policy_number": "Policy number",
+            "assigned_to": "Assigned to"
+          },
+          "service_req": {
+            "service_request": "Service request",
+            "category": "Category",
+            "category_type": "Category type",
+            "policy": "Policy",
+            "policy_members": "Policy members",
+            "preferred_contact_method": "Preferred contact method",
+            "preferred_contact_time": "Preferred contact time",
+            "description": "Description",
+            "documents": "Documents",
+            "upload_file": "Upload file",
+            "choose_file": "Choose file",
+            "submit_request": "Submit request"
+          },
+          "logs": {
+            "service_request_logs": "Service request logs",
+            "request_number": "Request number",
+            "request_status": "Request status",
+            "request_date": "Request date",
+            "policy": "Policy",
+            "category_type": "Category type",
+            "policy_member": "Policy member",
+            "category": "Category",
+            "policy_number": "Policy number",
+            "days_lapsed": "Days lapsed",
+            "notifications": "Notifications",
+            "new_message": "New message",
+            "attach_file": "Attach file",
+            "submit": "Submit"
+          }
+        },
+        "member": {
+          "my_service_requests": "My service requests",
+          "new_request": "New request",
+          "request_number": "Request number",
+          "category": "category",
+          "summary": "Summary",
+          "date": "Date",
+          "status": "Status",
+          "due_date": "Due date",
+          "lapsed_date": "Lapsed date",
+          "service_request_summary": "Service request summary",
+          "category_type": "Category type",
+          "policy": "Policy",
+          "policy_members": "Policy members",
+          "description": "Description",
+          "service_request": "Service request",
+          "preferred_contact_method": "Preferred contact method",
+          "preferred_contact_time": "Preferred contact time",
+          "invoice_number": "Invoice number",
+          "upload_file": "Upload file",
+          "choose_file": "Choose file",
+          "submit": "Submit"
+        }
       }
     }
   },

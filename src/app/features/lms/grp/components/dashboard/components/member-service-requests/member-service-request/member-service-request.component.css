@@ -1,0 +1,174 @@
+.main {
+    background: #F5F6F8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 20px;
+    height: 100%;
+}
+
+.container {
+    background: #FFF;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+    flex: 1;
+    padding: 48px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.new-req-button {
+    position: relative;
+    width: 100%;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.new-req-button ::ng-deep .p-button {
+    background-color: #00529B !important;
+    height: 40px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: auto;
+}
+
+p-multiSelect {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+:host ::ng-deep .p-multiselect-label-container {
+    display: none;
+}
+
+:host ::ng-deep .p-multiselect {
+    height: auto;
+}
+
+:host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+td {
+    padding: 2px;
+    white-space: nowrap;
+}
+
+tr {
+    border-bottom: none !important;
+    height: 40px;
+}
+
+.selected-row {
+    background-color: #cce5ff !important;
+    /*Changes row color on click*/
+}
+
+/* CSS for X button, to close modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+}
+
+.custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* End of CSS for X button, to close modal */
+
+.modal-header,
+.modal-footer {
+    border: none;
+    /* Removes the border between header/footer and body of modal */
+}
+
+.choose-file {
+    display: inline-flex;
+    height: 24px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #00529B;
+    background-color: #FFF;
+  }
+  
+  .file-text {
+    color: #00529B;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+  }
+  
+  button.submit-req {
+    background-color: #00529B;
+    color: #FFFFFF;
+    border-color: #00529B;
+  }
+  
+  button.submit-req:hover {
+    background-color: #65b2f5;
+  }
