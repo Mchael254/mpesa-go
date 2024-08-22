@@ -4,12 +4,14 @@ import { ClaimInitiationComponent } from './components/claim-initiation/claim-in
 import { ClaimAdmissionComponent } from './components/claim-admission/claim-admission.component';
 import { ClaimInvestigationComponent } from './components/claim-investigation/claim-investigation.component';
 import { PaymentProcessingComponent } from './components/payment-processing/payment-processing.component';
+import { ClaimProcessingComponent } from './components/claim-processing/claim-processing.component';
 
 const routes: Routes = [
   { path: 'initiation', component: ClaimInitiationComponent },
   { path: 'admission', component: ClaimAdmissionComponent },
   { path: 'investigation', component: ClaimInvestigationComponent },
   { path: 'payment', component: PaymentProcessingComponent },
+  { path: 'processing', component: ClaimProcessingComponent },
 ];
 
 @NgModule({

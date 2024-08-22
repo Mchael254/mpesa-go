@@ -11,11 +11,16 @@
       },
       {
         "number": 3,
+        "title": "Claim processing",
+        "link": "/home/lms/grp/claims/processing"
+      },
+      {
+        "number": 4,
         "title": "Claim investigation",
         "link": "/home/lms/grp/claims/investigation"
       },
       {
-        "number": 4,
+        "number": 5,
         "title": "Payment processing",
         "link": "/home/lms/grp/claims/payment"
       }
