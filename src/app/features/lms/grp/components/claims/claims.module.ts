@@ -9,6 +9,7 @@ import { PaymentProcessingComponent } from './components/payment-processing/paym
 import { SharedModule } from 'src/app/shared/shared.module';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { ClaimProcessingComponent } from './components/claim-processing/claim-processing.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     ClaimInitiationComponent,
     ClaimAdmissionComponent,
     ClaimInvestigationComponent,
-    PaymentProcessingComponent
+    PaymentProcessingComponent,
+    ClaimProcessingComponent
   ],
   imports: [
     CommonModule,
