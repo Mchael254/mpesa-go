@@ -1,0 +1,259 @@
+<div class="main">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+        </div>
+    </div>
+    <div class="container">
+        <div class="containe">
+            <div class="row">
+                <div *ngFor="let cover of coverDetails" class="col-md-4 col-sm-12 mb-4">
+                    <div>
+                        <span class="title">Cover types</span>&nbsp;
+                        <i class="pi pi-pencil" (click)="toggleFormVisibility()"></i>
+                    </div>
+                    <div><span style="color: black;">{{ cover.cover_type }}</span></div>
+
+                    <div class="row" style="color: black;">
+                        <div class="col-12">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%; align-items: left; color: grey;">Sum assured:</td>
+                                    <td style="width: 50%; align-items: right;">{{ cover.sum_assured | number }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 50%; align-items: left; color: grey;">Reserved amount:</td>
+                                    <td style="width: 50%; align-items: right;">{{ cover.reserved_amount | number }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="isFormVisible">
+            <form [formGroup]="coverDetailsForm" class="">
+                <div class="row">
+                    <!-- Claimable Amount Field (Disabled) -->
+                    <div class="col-md-4">
+                        <div>
+                            <label for="claimableAmount" style="color: black;">
+                                {{ "lms.grp.claims.claimable_amount" | translate }}
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" pInputText class="form-control" id="claimableAmount"
+                                [style]="{ width: '100%' }" formControlName="claimableAmount" [disabled]="true">
+                        </div>
+                    </div>
+
+
+                    <!-- But Pay Amount Field -->
+                    <div class="col-md-4">
+                        <div>
+                            <label for="butPayAmount" style="color: black;">{{ "lms.grp.claims.but_pay_amount" |
+                                translate }}</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" pInputText class="form-control" id="butPayAmount"
+                                [style]="{ width: '100%' }" formControlName="butPayAmount">
+                        </div>
+                    </div>
+
+                    <!-- Reason Field -->
+                    <div class="col-md-4">
+                        <div>
+                            <label for="reason" style="color: black;">{{ "lms.grp.claims.reason" | translate }}</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" pInputText class="form-control" id="reason" [style]="{ width: '100%' }"
+                                formControlName="reason">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <!-- Payee Dropdown -->
+                    <div class="col-md-4">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label for="payee" style="color: black;">{{ "lms.grp.claims.payee" | translate }}
+                                <span style="color: red;">*</span>
+                            </label>
+                            <select class="form-select" id="payee" formControlName="payee">
+                                <option selected="true" disabled="disabled"></option>
+                                <option *ngFor="let payee of " [value]="">{{ payee }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Another But Pay Amount Field -->
+                    <div class="col-md-4">
+                        <div>
+                            <label for="butPayAmount2" style="color: black;">{{ "lms.grp.claims.but_pay_amount" |
+                                translate }}</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" pInputText class="form-control" id="butPayAmount2"
+                                [style]="{ width: '100%' }" formControlName="butPayAmount2">
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-md-4 d-flex align-items-end justify-content-end">
+                        <button type="submit" class="inv-button" [style]="{ width: '30%' }">
+                            {{ 'Submit' }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div style="margin-top: 40px;"><span class="title">Policy details</span></div>
+        <div class="row col-12" style="color: black;">
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Policy number' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Effective date' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_type | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Branch' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Group name'}}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'With effect to' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_description | titlecase }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Inception date' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.member_name | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Product' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.date_of_accident }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;"><span class="title">{{ "lms.grp.claims.claim_information" | translate }}</span>
+        </div>
+        <div class="row col-12" style="color: black;">
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Claim number' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Causation type' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_type | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Incident location' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Claimed amount' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Member name' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Initiator' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.death_location | titlecase }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Claim report date' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Causation cause' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_description | titlecase }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Reserve amount' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.date_reported }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'But pay amount' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_description }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Member number' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.cause_description }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Claim status' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.member_name | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Death date' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.date_of_accident | date:
+                            'yyyy-MM-dd' }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'But pay reason' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.member_name | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ 'Age' }}: </td>
+                        <td style="width: 50%; align-items: right;">{{ claimDetails[0]?.member_name | titlecase }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-end" style="margin-top: 10px;">
+        <div class="inv-container mb-2 mb-md-0 me-md-2">
+            <button class="inv-button w-100 text-nowrap">
+                <span class="share-text">Investigate claim</span>
+            </button>
+        </div>
+
+        <div class="proceed">
+            <button class="proceed-button w-100 text-nowrap">
+                <span class="proceed-text">Proceed without investigation</span>
+            </button>
+        </div>
+    </div>
+
+
+</div>
