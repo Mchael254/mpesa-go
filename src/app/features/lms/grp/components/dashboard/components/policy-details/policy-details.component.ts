@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DashboardService } from '../../services/dashboard.service';
@@ -13,7 +13,8 @@ const log = new Logger("PolicyDetailsComponent")
 @Component({
   selector: 'app-policy-details',
   templateUrl: './policy-details.component.html',
-  styleUrls: ['./policy-details.component.css']
+  styleUrls: ['./policy-details.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PolicyDetailsComponent implements OnInit, OnDestroy {
   selectedContent: string = 'summary'
@@ -22,7 +23,6 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   years: number[] = [];
   selectedPolicyNumber: string;
   selectedPolicyCode: number;
-  memberCode: number = 20221254139;
   endorsementCode: number;
   productType: string;
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -37,27 +37,30 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   memberPensionDepReceipts: MemberPensionDepReceiptsDTO[];
   memberDetails: MemberDetailsDTO[];
   detailedMemContrReceipts: DetailedMemContrReceiptsDTO[]
-  pensionMemCode: number;
+  policyMemCode: number;
+  entityCode: number
   pensionDepositCode: number;
   withdrawals: MemberWithdrawalsDTO[];
   blobUrl: string | null = null;
-  rptCode: number = 789233
-  productCode: number = 2021686
-  policyCode: number = 2022169
+  rptCode: number = 789233;
+  productCode: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private dashboardService: DashboardService,
     private router: Router,
     private reportsService: ReportsService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.selectedPolicyNumber = this.activatedRoute.snapshot.queryParams['policyNumber'];
-    this.memberCode = this.activatedRoute.snapshot.queryParams['entityCode'];
+    this.entityCode = this.activatedRoute.snapshot.queryParams['entityCode'];
     this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
     this.endorsementCode = this.activatedRoute.snapshot.queryParams['endorsementCode'];
     this.productType = this.activatedRoute.snapshot.queryParams['productType'];
+    this.policyMemCode = this.activatedRoute.snapshot.queryParams['policyMemberCode']
+    this.productCode = this.activatedRoute.snapshot.queryParams['productCode']
     this.getProductType();
     this.populateYears();
     this.adminDetsTableColumns();
@@ -76,12 +79,19 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * The function `getProductType` sets the `gla`(Group life assurance) property to true if the `productType` is 'EARN'.
-   * If productType is 'PENS'(Pension product), that is default. To add for pension with life rider, in and inv with rider
+   * If productType is 'PENS'(Pension product), that is default. To add for pension with life rider, inv and inv with rider
    */
   getProductType() {
-    if(this.productType === 'EARN') {
-      this.gla = true
+    if (this.productType === 'PENSWITHRIDER') {
+      this.pensionWithLifeRider = true;
+    } else if (this.productType === 'INV') {
+      this.investment = true;
+    } else if (this.productType === 'INVWITHRIDER') {
+      this.investmentWithRider = true;
+    } else if (this.productType === 'EARN') {
+      this.gla = true;
     }
+    //DEFAULT this.productType === 'PENS'
   }
 
   populateBreadCrumbItems(): void {
@@ -192,66 +202,74 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.selectedRowIndex = index;
     if(memberPensionDepReceipts){
       this.pensionDepositCode = memberPensionDepReceipts.pension_member_dep_code;
-      this.pensionMemCode = memberPensionDepReceipts.policy_member_code;
-      log.info("memberPensionDepReceiptsPassed", memberPensionDepReceipts, this.pensionDepositCode, this.pensionMemCode);
+      this.policyMemCode = memberPensionDepReceipts.policy_member_code;
+      log.info("memberPensionDepReceiptsPassed", memberPensionDepReceipts, this.pensionDepositCode, this.policyMemCode);
       this.getDetMemDepConReceipts();
       this.showReceiptsModal();
+      this.cdr.detectChanges();
     }
   }
 
   getDetMemDepConReceipts() {
-    this.dashboardService.getDetMemDepConReceipts(this.pensionDepositCode, this.pensionMemCode).subscribe((res: DetailedMemContrReceiptsDTO[]) => {
+    this.dashboardService.getDetMemDepConReceipts(this.pensionDepositCode, this.policyMemCode).subscribe((res: DetailedMemContrReceiptsDTO[]) => {
       this.detailedMemContrReceipts = res;
       log.info("getDetMemDepConReceipts", this.detailedMemContrReceipts)
+      this.cdr.detectChanges();
     })
   }
 
   getMemberDetails() {
-    this.dashboardService.getMemberDetails(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberDetailsDTO[]) => {
+    this.dashboardService.getMemberDetails(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberDetailsDTO[]) => {
     // this.dashboardService.getMemberDetails(2021111, 20211250237).subscribe((res: MemberDetailsDTO[]) => {
       this.memberDetails =  res;
       log.info("getMemberDetails", this.memberDetails)
+      this.cdr.detectChanges();
     });
   }
 
   getMemberAllPensionDepositReceipts() {
-    this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
+    this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
       // this.dashboardService.getMemberAllPensionDepositReceipts(2021118, 20211250493).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
       this.memberPensionDepReceipts = res;
       log.info("MemberAllPensionDepositReceipts-->", this.memberPensionDepReceipts)
+      this.cdr.detectChanges();
     });
   }
 
   getValuations() {
-    this.dashboardService.getMemberBalances(this.selectedPolicyCode, this.memberCode).subscribe((res: memberBalancesDTO[]) => {
+    this.dashboardService.getMemberBalances(this.selectedPolicyCode, this.policyMemCode).subscribe((res: memberBalancesDTO[]) => {
       // this.dashboardService.getMemberBalances(2022169, 20221254139).subscribe((res: memberBalancesDTO[]) => {
       log.info("MemberBalances", res)
       this.memberBalances = res;
+      this.cdr.detectChanges();
     });
   }
 
   getMemberCovers() {
-    this.dashboardService.getMemberCovers(this.selectedPolicyCode, this.endorsementCode).subscribe((res: MemberCoversDTO[]) => {
+    this.dashboardService.getMemberCovers(this.policyMemCode, this.endorsementCode).subscribe((res: MemberCoversDTO[]) => {
     // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO[]) => {
       this.memberCovers = res;
       log.info("getMemberCovers", this.memberCovers)
+      this.cdr.detectChanges();
     });
   }
 
   getMemberWithdrawals() {
-    this.dashboardService.getMemberWithdrawals(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberWithdrawalsDTO[]) => {
+    this.dashboardService.getMemberWithdrawals(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberWithdrawalsDTO[]) => {
       // this.dashboardService.getMemberWithdrawals(2024839, 20241259568).subscribe((res: MemberWithdrawalsDTO[]) => {
       this.withdrawals = res;
       log.info("withdrawals", this.withdrawals)
+      this.cdr.detectChanges();
     });
   }
 
 
   getReports() {
-    this.dashboardService.getReports(this.rptCode, this.productCode, this.policyCode, this.memberCode).subscribe((res) => {
+    this.dashboardService.getReports(this.rptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode).subscribe((res) => {
       log.info("getReports", res)
       const blob = new Blob([res], { type: 'application/pdf' });
       this.blobUrl = window.URL.createObjectURL(blob);
+      this.cdr.detectChanges();
     });
   }
 

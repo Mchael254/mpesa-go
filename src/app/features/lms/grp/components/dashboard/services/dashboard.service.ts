@@ -27,8 +27,8 @@ export class DashboardService {
     return this.api.GET(`group/portal/${policyCode}/member-valuations?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
-  getMemberCovers(policyCode, endorsementCode) {
-    return this.api.GET(`group/portal/member-covers?policyMemberCode=${policyCode}&endorsementCode=${endorsementCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  getMemberCovers(policyMemCode: number, endorsementCode: number) {
+    return this.api.GET(`group/portal/member-covers?policyMemberCode=${policyMemCode}&endorsementCode=${endorsementCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
   getDetMemDepConReceipts(pensDepCode: number, memberCode: number) {

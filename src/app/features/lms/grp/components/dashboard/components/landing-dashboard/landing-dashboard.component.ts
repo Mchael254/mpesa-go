@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DashboardService } from '../../services/dashboard.service';
 import { MemberPolicies, UserProfileDTO } from '../../models/member-policies';
@@ -12,7 +12,8 @@ const log = new Logger('LandingDashboardComponent');
 @Component({
   selector: 'app-landing-dashboard',
   templateUrl: './landing-dashboard.component.html',
-  styleUrls: ['./landing-dashboard.component.css']
+  styleUrls: ['./landing-dashboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingDashboardComponent implements OnInit {
   entityCode: number;
@@ -25,12 +26,14 @@ export class LandingDashboardComponent implements OnInit {
   policyCode: number;
   endorsementCode: number;
   productType: string;
+  policyMemberCode: number;
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private session_storage: SessionStorageService,
     private dashboardService: DashboardService,
+    private cdr: ChangeDetectorRef,
   ) {
 
   }
@@ -68,14 +71,17 @@ export class LandingDashboardComponent implements OnInit {
   //   this.router.navigate(['/home/lms/grp/policy/policyListing'])
   // }
 
-  navigateToPolDets() {
+  navigateToPolDets(selectedPolicy: MemberPolicies) {
+
     this.router.navigate(['/home/lms/grp/dashboard/policy-details'], {
       queryParams: {
         entityCode: this.entityCode,
-        policyNumber: this.policyNumber ,
-        policyCode: this.policyCode,
-        endorsementCode: this.endorsementCode,
-        productType: this.productType
+        policyNumber: selectedPolicy.policy_number,
+        policyCode: selectedPolicy.policy_code,
+        endorsementCode: selectedPolicy.endorsement_code,
+        productType: selectedPolicy.product_type,
+        policyMemberCode: selectedPolicy.policy_member_code,
+        productCode: selectedPolicy.product_code
       }
     });
   }
@@ -83,10 +89,7 @@ export class LandingDashboardComponent implements OnInit {
   getMemberPolicies() {
     this.dashboardService.getMemberPolicies(this.entityIdNo).subscribe((res: MemberPolicies[]) => {
       this.memberPolicies = res;
-      this.policyNumber = this.memberPolicies[0].policy_number;
-      this.policyCode = this.memberPolicies[0].policy_code;
-      this.endorsementCode = this.memberPolicies[0].endorsement_code;
-      this.productType = this.memberPolicies[0].product_type;
+      this.cdr.detectChanges();
     })
   }
 
