@@ -15,6 +15,8 @@ export class MemberPolicies {
     endorsement_code: number;
     if_group_life_rider: string;
     product_type: string;
+    policy_member_code: number
+    product_code: number;
   }
 
   export class UserProfileDTO {
