@@ -17,6 +17,7 @@ export class MemberPolicies {
     product_type: string;
     policy_member_code: number
     product_code: number;
+    fund_value: number;
   }
 
   export class UserProfileDTO {
