@@ -113,6 +113,7 @@ export class PolicyProductComponent {
   branchDescription:any;
   agentDescription:any;
   currencyDescription:any;
+  policyType:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -540,7 +541,8 @@ export class PolicyProductComponent {
   }
   onPolicyInterfaceTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
-
+    this.policyType = value;
+    log.debug("Policy  Type", this.policyType)
     this.showIntermediaryFields = value === 'N';
     this.showFacultativeFields = value === 'F';
 
@@ -1007,6 +1009,14 @@ export class PolicyProductComponent {
   // }
   createPolicy() {
     this.spinner.show()
+    if(this.policyType = "D"){
+      this.policyProductForm.get('agentShortDescription').setValue("DIRECT");
+      this.policyProductForm.get('agentCode').setValue(0);
+
+    }else{
+      this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+
+    }
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
     this.policyProductForm.get('clientCode').setValue(this.clientCode);
