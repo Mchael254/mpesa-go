@@ -53,6 +53,12 @@ label {
   margin-right: 40px;
 }
 
+::ng-deep .p-button {
+  background: none;
+  color: #00529B;
+  padding: 2px 7px;
+}
+
 
 @media (max-width: 1000px) {
   .label {

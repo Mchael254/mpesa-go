@@ -17,7 +17,7 @@ import {UtilService} from "../../../../../../../../shared/services";
 export class ClaimsOptionsComponent implements OnInit, OnDestroy {
   @Input() claimInitForm: FormGroup;
   @Input() claim_types: any[];
-  @Output() policyFiltered: EventEmitter<string> = new EventEmitter<string>();
+  @Output() policyFiltered: EventEmitter<Observable<PoliciesClaimModuleDTO[]>> = new EventEmitter<Observable<PoliciesClaimModuleDTO[]>>();
   @Output() clientFiltered : EventEmitter<string> = new EventEmitter<string>();
 
   public userCode: number;
@@ -31,15 +31,16 @@ export class ClaimsOptionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log('auth Service', this.authService.getCurrentUser())
   }
 
   handlePolicyFilter(searchTerm: string) {
     this.policy$ = this.createFilteredPolicyObservable(searchTerm, '');
+    this.policyFiltered.emit(this.policy$);
   }
 
   handleClientFilter(searchTerm: string) {
     this.policy$ = this.createFilteredPolicyObservable('', searchTerm);
+    this.policyFiltered.emit(this.policy$);
   }
 
   private createFilteredPolicyObservable(policyNo: string, name: string): Observable<PoliciesClaimModuleDTO[]> {

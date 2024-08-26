@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import stepData from '../../data/steps.json';
 import { ClaimsService } from 'src/app/features/lms/service/claims/claims.service';
 import { Logger } from 'src/app/shared/services';
@@ -12,6 +12,11 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {filter, Observable, of, Subscription} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, take, tap} from "rxjs/operators";
 import {AuthService} from "../../../../../../../shared/services/auth.service";
+import {untilDestroyed} from "../../../../../../../shared/shared.module";
+import {ClaimDTO} from "../../models/claims";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import {StringManipulation} from "../../../../../util/string_manipulation";
 
 const log = new Logger('ClaimsInitiationComponent');
 
@@ -28,14 +33,19 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   claimInitForm: FormGroup;
   claimType: string;
   steps = stepData;
+  claimDetails$: Observable<ClaimDTO>;
+  claimNo: string;
+  @Input() eachStep: number
+  @Output() valueChanged: EventEmitter<number> = new EventEmitter<number>();
 
   policy$: Observable<PoliciesClaimModuleDTO[]>;
   claimClients$: Observable<ClaimClientsDTO[]>;
   causationTypes$: Observable<CausationTypesDTO[]>;
   causationCauses$: Observable<CausationCausesDTO[]>;
-  filteredPolicy: string;
+  filteredPolicy: Observable<PoliciesClaimModuleDTO[]>;
   selectedPolicy: PoliciesClaimModuleDTO;
   private subscriptions: Subscription = new Subscription();
+
 
   claim_types = [
     { name: "Normal", value: "NORMAL" },
@@ -57,22 +67,29 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
+    private session_storage: SessionStorageService
   ) { }
 
   ngOnInit(): void {
     this.createForm();
-    this.getClaimModules();
-    // this.getClaimClients();
-    this.getCausationTypes();
     this.claimType = this.activatedRoute.snapshot.queryParamMap.get('claimType');
-
-    this.claimInitForm.get('claimType').valueChanges.subscribe(claimType => {
+    // this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo');
+    this.claimNo = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
+    console.log('textClaimNo', this.claimNo)
+    // this.getClaimModules();
+    this.getCausationTypes();
+    this.claimInitForm.get('claimType').valueChanges
+      .pipe(
+        untilDestroyed(this)
+      ).subscribe(claimType => {
       this.navigateToClaimsIntiation(claimType);
       this.cdr.detectChanges();
     });
     this.navigateToClaimsIntiation(this.claimType);
+    if(this.claimNo) {
+      this.getClaimDetails(this.claimNo)
+    }
     this.patchFormWithQueryParam();
-
   }
 
   createForm() {
@@ -89,13 +106,31 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     });
 
     const policySelectionSubscription = this.claimInitForm.get('policySelection')
-      .valueChanges.subscribe(value => {
-      this.selectedPolicy = value;
-      console.log('Selected Policy in Parent:', value);
-    });
+      .valueChanges
+      .pipe(
+        // Assuming `this.policy$` is an Observable of PoliciesClaimModuleDTO[]
+        switchMap((selPolicy: PoliciesClaimModuleDTO) => {
+          if(this.filteredPolicy) {
+            return this.filteredPolicy.pipe(
+              map((policies: PoliciesClaimModuleDTO[]) => {
+                  console.log('polCode???>>', selPolicy)
+                  return policies.find(policy => policy?.pol_code === Number(selPolicy?.pol_code))
+                }
+              )
+            )
+          }
+        }
+
+
+        )
+      )
+      .subscribe((selectedPolicy: PoliciesClaimModuleDTO) => {
+        this.selectedPolicy = selectedPolicy;
+
+      });
+
     this.subscriptions.add(policySelectionSubscription);
   }
-
   submitClaimInitFormData() {
     // Handle form submission logic here
   }
@@ -103,7 +138,6 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   getClaimModules() {
     this.policy$ = this.claimsService.getClaimModules().pipe(
       catchError(error => {
-        console.error('Error fetching claim modules', error);
         return of([]); // Return an empty array to keep the app running
       })
     );
@@ -134,22 +168,29 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   }
 
   navigateToClaimsIntiation(claimType: string) {
-    if(claimType) {
-      this.router.navigate(['/home/lms/ind/claims'], {
-        queryParams: { claimType: claimType?.toLowerCase() }
-      }).then(() => {
-        this.claimType = claimType?.toLowerCase();
-      });
+    const queryParams: any = {};
+
+    // Add claimType to queryParams if it exists
+    if (claimType) {
+      queryParams.claimType = claimType.toLowerCase();
     }
 
-  }
+    // Add claimNo to queryParams if it has a value
+    // if (claimNo) {
+    //   queryParams.claimNo = claimNo;
+    // }
+
+    // Navigate to the desired route with the constructed queryParams
+    this.router.navigate(['/home/lms/ind/claims'], { queryParams }).then(() => {
+      this.claimType = claimType?.toLowerCase();
+    });
+
+
+}
 
 // use to handle policy search filtered value from claims option coponent event
-  handlePolicyFiltered(policy: string) {
+  handlePolicyFiltered(policy: Observable<PoliciesClaimModuleDTO[]>) {
     this.filteredPolicy = policy
-  }
-  // use to handle client search filtered value
-  handleClientFiltered(client: string) {
   }
 
 
@@ -166,6 +207,28 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
         });
       });
     this.subscriptions.add(queryParamsSubscription);
+  }
+
+  onStepChange(newValue: number): void {
+    this.eachStep = newValue;
+    this.valueChanged.emit(newValue)
+  }
+
+  getClaimDetails(claimNo: string) {
+    this.claimDetails$ = this.claimsService.fetchClaimDetails(claimNo)
+      .pipe(
+        untilDestroyed(this)
+      )
+  }
+
+  routeParam(clm_no: string) {
+    const claimType = this.activatedRoute.snapshot.queryParamMap.get('claimType');
+    this.router.navigate(['/home/lms/ind/claims'], {
+      queryParams: {   claimType:  claimType}
+    }).then(() => {
+      this.getClaimDetails(clm_no)
+      this.claimNo = clm_no;
+    });
   }
 
   ngOnDestroy(): void {
