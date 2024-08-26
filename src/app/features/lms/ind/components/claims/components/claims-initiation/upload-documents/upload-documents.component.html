@@ -1,53 +1,31 @@
+
 <form [formGroup]="claimInitForm">
   <div class="container mt-3">
     <div class="row">
       <div class="fw-medium section-title">{{ "lms.ind.upload_documents" | translate }}</div>
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="nationalId" class="fixed-width-label">{{ "lms.ind.national_identification" | translate }}<span style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" id="inputProfileImg" formControlName="uploadFile" hidden />
-            <button class="choose-file">
-              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
-            </button>
-          </div>
-        </div>
+        <ng-container *ngIf="claimDocuments$ | async as claimDocuments; else loading">
+          <div *ngFor="let document of claimDocuments" class="col-md-4 col-12">
+            <div class="d-flex align-items-center flex-wrap">
+              <label for="nationalId" class="fixed-width-label">{{ document?.desc }}<span style="color: red;">*</span></label>
+              <div class="form-group">
+                  <p-fileUpload
+                    mode="basic"
+                    name="demo[]"
+                    chooseIcon="pi pi-upload"
+                    url="https://www.primefaces.org/cdn/api/upload.php"
+                    accept="image/*"
+                    [maxFileSize]="1000000"
+                    (onUpload)="onBasicUploadAuto($event)"
+                    [auto]="true"
+                    chooseLabel="Choose File"
+                  />
+                </div>
+              </div>
+            </div>
+        </ng-container>
+        <ng-template #loading>
+          <p style="display: block; text-align: center">Loading documents...</p>
+        </ng-template>
       </div>
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="docC" class="fixed-width-label">{{ "lms.ind.document_c" | translate }}<span style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput id="inputProfileImg" formControlName="uploadFile" hidden />
-            <button class="choose-file">
-              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="deathCert" class="fixed-width-label">{{ "lms.ind.death_certificate" | translate }}<span style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput id="inputProfileImg" formControlName="uploadFile" hidden />
-            <button class="choose-file">
-              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 col-12">
-        <div class="d-flex align-items-center flex-wrap">
-          <label for="docD" class="fixed-width-label">{{ "lms.ind.document_d" | translate }}<span style="color: red;">*</span></label>
-          <div class="form-group">
-            <input type="file" #fileInput id="inputProfileImg" formControlName="uploadFile" hidden />
-            <button class="choose-file">
-              <label for="inputProfileImg" class="file-text">{{ "lms.ind.choose_file" | translate }}</label>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </form>

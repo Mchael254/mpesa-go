@@ -22,11 +22,12 @@
             (onFilter)="handlePolicyFilter($event.filter)"
           >
             <ng-template pTemplate="selectedItem">
-              <div *ngIf="claimInitForm.get('policySelection').value">
-                {{claimInitForm.get('policySelection').value?.policy_no}}
+              <div *ngIf="claimInitForm.get('policySelection').value as selectedPolicy">
+                {{ selectedPolicy?.policy_no }}
               </div>
             </ng-template>
           </p-dropdown>
+
         </div>
       </div>
 
@@ -47,11 +48,12 @@
             (onFilter)="handleClientFilter($event.filter)"
           >
             <ng-template pTemplate="selectedItem">
-              <div *ngIf="claimInitForm.get('policyMember').value">
-                {{claimInitForm.get('policyMember').value?.name}}
+              <div *ngIf="claimInitForm.get('policyMember').value as selectedClient">
+                {{selectedClient?.name}}
               </div>
             </ng-template>
           </p-dropdown>
+
         </div>
       </div>
 

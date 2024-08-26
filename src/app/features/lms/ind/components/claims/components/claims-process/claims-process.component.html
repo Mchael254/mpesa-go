@@ -10,7 +10,10 @@
     </app-stepper>
   </div>
   <ng-container *ngIf="eachStep === 1">
-    <app-claims-initiation></app-claims-initiation>
+    <app-claims-initiation
+      [eachStep]="eachStep"
+      (valueChanged)="onStepChange($event)"
+    ></app-claims-initiation>
   </ng-container>
   <ng-container *ngIf="eachStep === 2">
     <app-policy-and-claims-details></app-policy-and-claims-details>

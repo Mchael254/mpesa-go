@@ -6,7 +6,6 @@
       [claimInitForm]="claimInitForm"
       [claim_types]="claim_types"
       (policyFiltered)="handlePolicyFiltered($event)"
-      (clientFiltered)="handleClientFiltered($event)"
     >
     </app-claims-options>
 
@@ -17,6 +16,9 @@
           [claimClients]="claimClients$"
           [causationTypes]="causationTypes$"
           [selectedPolicy]="selectedPolicy"
+          [eachStep]="eachStep"
+          (valueChanged)="onStepChange($event)"
+          [claimDetails$]="claimDetails$"
         >
         </app-death-claims>
       </ng-container>
