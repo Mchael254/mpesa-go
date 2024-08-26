@@ -7,10 +7,11 @@ import { Logger } from 'src/app/shared/services';
 import { ClaimClientsDTO } from '../../ind/components/claims/models/claim-clients';
 import { CausationCausesDTO } from '../../ind/components/claims/models/causation-causes';
 import { CausationTypesDTO } from '../../ind/components/claims/models/causation-types';
-import { HttpParams } from '@angular/common/http';
+import {HttpHeaders, HttpParams} from '@angular/common/http';
 import {ClaimOnLiveDTO} from "../../ind/components/claims/models/claim-on-live";
 import {ClaimDTO} from "../../ind/components/claims/models/claims";
 import {PolicyClaimIntiation} from "../../ind/components/claims/models/policy-claim-intiation";
+import {ClaimDocument} from "../../ind/components/claims/models/claim-document";
 
 const log = new Logger('ClaimsService');
 
@@ -59,8 +60,7 @@ export class ClaimsService {
    * Get Claim Causation Types
    * @returns {Observable<CausationTypesDTO>}
    */
-  getCausationTypes (): Observable<CausationTypesDTO[]> {
-    log.info('Fetching Causation Types');
+  getCausationTypes(): Observable<CausationTypesDTO[]> {
     return this.api.GET<[CausationTypesDTO]>(
       `individual/claims/enums/causation-types`,
       API_CONFIG.CLAIMS_SERVICE_BASE_URL
@@ -110,4 +110,34 @@ export class ClaimsService {
     )
   }
 
+  /**
+   * Get Claim Details
+   * @param claimNo
+   * @returns {Observable<ClaimClientsDTO>}
+   */
+  fetchClaimDetails(claimNo): Observable<ClaimDTO> {
+
+    const params = new HttpParams().set('clm_no', `${claimNo}`);
+    const url = `individual/claims`;
+    return this.api.GET<ClaimDTO>(
+      url,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  /**
+   * Get Claim Documents
+   * @param cnotNo
+   * @returns {Observable<ClaimDocument>}
+   */
+  getClaimsDocument(cnotNo): Observable<ClaimDocument[]> {
+    const params = new HttpParams().set('cnot_code', `${cnotNo}`);
+    const url = `individual/claims/documents`;
+    return this.api.GET<ClaimDocument[]>(
+      url,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
+    );
+  }
 }

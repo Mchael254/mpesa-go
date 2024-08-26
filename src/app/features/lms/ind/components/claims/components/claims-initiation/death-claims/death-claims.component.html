@@ -1,3 +1,4 @@
+<script src="death-claims.component.ts"></script>
 <form [formGroup]="claimInitForm">
   <div class="container mt-2">
   <!-- Claim Details -->
@@ -11,6 +12,7 @@
           formControlName="causationType"
           [options]="(causationTypes | async) | sort : 'asc' : 'name'"
           optionLabel="name"
+          optionValue="value"
           placeholder="{{ 'lms.ind.select_an_option' | translate }}">
         </p-dropdown>
       </div>
@@ -111,9 +113,13 @@
   </div>
   <!-- End of Claim Details -->
 </div>
-  <app-upload-documents
-    [claimInitForm]="claimInitForm">
-  </app-upload-documents>
+  <ng-container *ngIf="claimNo">
+      <app-upload-documents
+        [claimInitForm]="claimInitForm"
+        [claimResponse]="claimResponse"
+      >
+      </app-upload-documents>
+  </ng-container>
 
   <!-- Proceed Button -->
   <div class="button-container">
