@@ -63,8 +63,6 @@ export class ApiService {
     }else{
       config ={headers, params}
     }
-
-
     return this.http.get<T>(url, config);
   }
 
