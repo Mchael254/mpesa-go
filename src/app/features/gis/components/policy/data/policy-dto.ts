@@ -462,6 +462,43 @@ export interface RequiredDocuments{
   subClassCode: number;
   submissionDate: string;
 }
+export interface commission{
+  ipuCode:number;
+  transactionCode:string;
+  transactionTypeCode:string;
+}
+export interface PolicyTaxes{
+  addOrEdit: string;
+  amount: number;
+  batchNo: number;
+  companyLevel: string;
+  endorsementNumber: string;
+  overrideRate: string;
+  polBinder: string;
+  policyNumber: string;
+  proCode: number;
+  rate: number;
+  taxRateCode: string;
+  taxType: string;
+  transactionLevel: string;
+}
+export interface populatePolicyTaxes{
+  batchNo: number;
+  endorsementNumber: string;
+  polBinder: string;
+  policyNumber: string;
+  proCode: number;
+  transactionType: string;
+}
+export interface RelatedRisk {
+  propertyId: string;
+  value: number ;
+  withEffectFrom: string;
+  withEffectTo: string;
+  policyNumber: string;
+  endorsementDifferentAmount: number;
+}
+
 
 
 

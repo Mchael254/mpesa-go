@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -238,6 +238,37 @@ export class PolicyService {
   }
   getRemarks(){
     return this.api.GET(`v2/remarks`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  populateRequiredDoc(riskCode:any,transType:any,user){
+    return this.api.POST(`v1/submitted-required-documents?ipuCode=${riskCode}&transType=${transType}&user=${user}`,"placeholder data", API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  addCommission(data:commission){
+    return this.api.POST(`v1/commissions`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  deleteCommission(code:any){
+    return this.api.DELETE(`v1/commissions/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getPolicyTaxes(subclassCode:any){
+    return this.api.GET(`v1/policy-taxes?subClassCode=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  addPolicyTaxes(data:PolicyTaxes){
+    return this.api.POST(`v1/policy-taxes`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  populatePolicyTaxes(data:populatePolicyTaxes){
+    return this.api.POST(`v1/policy-taxes/populate`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  deletePolicyTaxes(polCode :any, TransactionCode:any){
+    return this.api.DELETE(`v1/policy-taxes?polCode=${polCode}&trntCode=${TransactionCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getRelatedRisks(riskCode:any,propertId:any){
+    return this.api.GET(`v1/related-risks?ipuCode=${riskCode}&propertyId=${propertId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }
