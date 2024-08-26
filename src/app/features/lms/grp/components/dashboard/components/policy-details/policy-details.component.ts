@@ -44,6 +44,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   blobUrl: string | null = null;
   rptCode: number = 789233;
   productCode: number;
+  totalContributions: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -213,9 +214,30 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   getDetMemDepConReceipts() {
     this.dashboardService.getDetMemDepConReceipts(this.pensionDepositCode, this.policyMemCode).subscribe((res: DetailedMemContrReceiptsDTO[]) => {
       this.detailedMemContrReceipts = res;
-      log.info("getDetMemDepConReceipts", this.detailedMemContrReceipts)
+      // Calculate the total contributions after data retrieval
+      this.totalContributions = this.calculateTotalContributions();
       this.cdr.detectChanges();
-    })
+    });
+  }
+  
+  // Method to calculate total contributions
+  calculateTotalContributions(): number {
+    const employeeContribution = this.detailedMemContrReceipts[0]?.employee_amount || 0;
+    const employeeTransfer = this.detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt || 0;
+    const employeeVoluntary = this.detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt || 0;
+    const employeeCostBenefits = this.detailedMemContrReceipts[0]?.cost_of_past_benefits || 0;
+    const employeeTotal = this.detailedMemContrReceipts[0]?.total_amount || 0;
+
+    const employerContribution = this.detailedMemContrReceipts[0]?.employer_amount || 0;
+    const employerTransfer = this.detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt || 0;
+    const employerVoluntary = this.detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt || 0;
+    const employerCostBenefits = this.detailedMemContrReceipts[0]?.cost_of_past_benefits || 0;
+    const employerTotal = this.detailedMemContrReceipts[0]?.total_amount || 0;
+
+    const totalEmployeeEmployerContr = employeeContribution + employeeTransfer + employeeVoluntary + employeeCostBenefits + 
+    employeeTotal + employerContribution + employerTransfer + employerVoluntary + employerCostBenefits + employerTotal;
+
+    return totalEmployeeEmployerContr;
   }
 
   getMemberDetails() {
