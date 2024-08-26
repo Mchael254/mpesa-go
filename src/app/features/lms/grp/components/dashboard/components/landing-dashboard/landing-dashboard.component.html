@@ -90,31 +90,44 @@
         <div class="title"><span id="title">Policies</span></div>
 
         <ng-container *ngIf="memberPolicies && memberPolicies.length > 0">
-            <div *ngFor="let memberPols of memberPolicies; let i = index" class="box" 
-            (click)="navigateToPolDets(memberPols)">
-                <label class="active-label">{{ getStatusDescription(memberPols?.status)  }}</label>
-                <div class="scroll-content">
-                    <table>
-                        <tr>
-                            <td>Policy:</td>
-                            <td class="td-data">{{ memberPols?.description | titlecase }}</td>
-                        </tr>
-                        <tr>
-                            <td>Policy number:</td>
-                            <td class="td-data">{{ memberPols?.policy_number }}</td>
-                        </tr>
-                        <tr>
-                            <td>Member number:</td>
-                            <td class="td-data">{{ memberPols?.member_number }}</td>
-                        </tr>
-                        <tr>
-                            <td>Fund value:</td>
-                            <td class="td-data">{{ memberPols }}</td>
-                        </tr>
-                    </table>
-                </div>
+            <div *ngFor="let memberPols of memberPolicies; let i = index" class="box" (click)="navigateToPolDets(memberPols)">
+              <label class="active-label">{{ getStatusDescription(memberPols?.status) }}</label>
+              <div class="scroll-content">
+                <table>
+                  <tr>
+                    <td>Policy:</td>
+                    <td class="td-data">{{ memberPols?.description | titlecase }}</td>
+                  </tr>
+                  <tr>
+                    <td>Policy number:</td>
+                    <td class="td-data">{{ memberPols?.policy_number }}</td>
+                  </tr>
+                  <tr>
+                    <td>Member number:</td>
+                    <td class="td-data">{{ memberPols?.member_number }}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <ng-container *ngIf="memberPols?.product_type === 'EARN'; else fundValueLabel">
+                        Sum assured:
+                      </ng-container>
+                      <ng-template #fundValueLabel>
+                        Fund value:
+                      </ng-template>
+                    </td>
+                    <td class="td-data">
+                      <ng-container *ngIf="memberPols?.product_type === 'EARN'; else fundValue">
+                        {{ memberPols?.total_sum_assured | number }}
+                      </ng-container>
+                      <ng-template #fundValue>
+                        {{ memberPols?.fund_value | number }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
-        </ng-container>
+          </ng-container>
         
     </div>
 </div>
