@@ -4,7 +4,7 @@ import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Sidebar } from 'primeng/sidebar';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
-import { Insured, PolicyContent, PolicyResponseDTO, RiskInformation } from '../../data/policy-dto';
+import { Insured, PolicyContent, PolicyResponseDTO, RelatedRisk, RiskInformation } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -158,6 +158,8 @@ export class PolicySummaryOtherDetailsComponent {
   policyTaxesDetailsForm: FormGroup;
   populatePolicyTaxesDetailsForm: FormGroup;
   passedBinderCode: any;
+  relatedRiskList:RelatedRisk[]=[];
+  selectedRelatedRisk:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -2057,6 +2059,23 @@ export class PolicySummaryOtherDetailsComponent {
       error: (error) => {
 
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
+      }
+    })
+  }
+  getRelatedRisks(){
+    this.policyService
+    .getRelatedRisks(this.selectedRisk.riskIpuCode,this.selectedRisk.propertyId)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.relatedRiskList =response._embedded
+        console.log('Related Risks:', this.relatedRiskList);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully retrived risks')
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
       }
     })
   }
