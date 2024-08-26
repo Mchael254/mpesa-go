@@ -151,6 +151,14 @@ export class PolicySummaryOtherDetailsComponent {
   selectedTransactionType: any
   remarkList: any;
   filteredRemarks: any;
+  mainSectionDetailsForm: FormGroup;
+  policyTaxes: any;
+  filteredPolicyTaxes: any;
+  selectedPolicyTax: any;
+  policyTaxesDetailsForm: FormGroup;
+  populatePolicyTaxesDetailsForm: FormGroup;
+  passedBinderCode: any;
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -214,6 +222,7 @@ export class PolicySummaryOtherDetailsComponent {
     // this.getRequiredDocuments();
     this.createRemarkDetailsForm();
     this.createRequiredDocumentsForm();
+    this.createPopulatePolicyTaxesDetailsForm();
   }
   ngOnDestroy(): void { }
 
@@ -310,9 +319,11 @@ export class PolicySummaryOtherDetailsComponent {
         this.passedSubclassCode = this.policyDetailsData.riskInformation[0].subClassCode;
         this.selectedTransactionType = this.policyDetailsData.transactionType;
         log.debug("Passed Transaction type:", this.selectedTransactionType);
+        this.passedBinderCode = this.policyDetailsData.riskInformation[0].binderCode
 
         if (this.passedSubclassCode) {
           this.getRequiredDocuments();
+          this.getPolicyTaxes();
 
         }
 
@@ -1089,6 +1100,7 @@ export class PolicySummaryOtherDetailsComponent {
   }
   createSectionDetailsForm() {
     this.sectionDetailsForm = this.fb.group({
+      addOrEdit: [''],
       bindCode: [''],
       coverTypeCode: [''],
       group: [''],
@@ -1126,6 +1138,7 @@ export class PolicySummaryOtherDetailsComponent {
 
     // Set other properties for section
     this.sectionArray = [section];
+    section.addOrEdit = "A"
     section.bindCode = this.selectedBindercode;
     section.coverTypeCode = this.selectedCoverTypeCode;
     section.group = 1;
@@ -1511,7 +1524,7 @@ export class PolicySummaryOtherDetailsComponent {
 
             log.debug("Response Deleting Remark:", data);
             this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted Premium Item"');
-            // Remove the deleted Insured from the Insured Details array
+            // Remove the deleted premium from the premium Details array
             const index = this.sectionsDetails.findIndex(premiumItem => premiumItem.sectCode === this.premiumItemCode);
             if (index !== -1) {
               this.sectionsDetails.splice(index, 1);
@@ -1874,26 +1887,178 @@ export class PolicySummaryOtherDetailsComponent {
       });
   }
   populateRequiredDocument() {
-    if(this.SelectedRiskCode){
+    if (this.SelectedRiskCode) {
       const tempTransactionType = "NB"
 
       this.policyService
-      .populateRequiredDoc(this.SelectedRiskCode,tempTransactionType,this.user)
-      .subscribe({
-        next: (response: any) => {
-          console.log('Populate Doc:', response);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated Required document')
-        },
-        error: (error) => {
-  
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
-        }
-      });
-    }else{
+        .populateRequiredDoc(this.SelectedRiskCode, tempTransactionType, this.user)
+        .subscribe({
+          next: (response: any) => {
+            console.log('Populate Doc:', response);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated Required document')
+          },
+          error: (error) => {
+
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
+          }
+        });
+    } else {
       this.globalMessagingService.displayInfoMessage('Error', 'Select risk to continue');
 
     }
-  
+
+  }
+  onEditRiskSectiion(premiumItem: any) {
+    log.debug("Selected Premium Item", this.selectedPremiumItem)
+    this.selectedPremiumItem = premiumItem;
+    this.sectionDetailsForm.patchValue({
+      schedule: premiumItem.schedule,
+      // Patch other fields if needed
+    });
+  }
+  // createMainSectionDetailsForm() {
+  //   this.mainSectionDetailsForm = this.fb.group({
+  //     addOrEdit: [''],
+  //     bindCode: [''],
+  //     coverTypeCode: [''],
+  //     group: [''],
+  //     limit: [''],
+  //     ncdLevel: [''],
+  //     renewal: [''],
+  //     riskCode: [''],
+  //     row: [''],
+  //     sectionCode: [''],
+  //     subClassCode: ['']
+  //   });
+  // }
+  getPolicyTaxes() {
+    const passedSubclassCode = this.policyDetailsData.riskInformation[0].subClassCode
+    this.policyService
+      .getPolicyTaxes(passedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.policyTaxes = response._embedded
+          console.log('Policy  Taxes:', this.policyTaxes);
+          this.filteredPolicyTaxes = this.policyTaxes.filter(policyTaxes => policyTaxes.batchNo == this.batchNo);
+          log.debug("FILTERED Policy Taxes LIST", this.filteredPolicyTaxes)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get remarks details.Try again later');
+        }
+      });
+  }
+  createPolicyTaxesDetailsForm() {
+    this.policyTaxesDetailsForm = this.fb.group({
+      addOrEdit: [''],
+      amount: [''],
+      batchNo: [''],
+      companyLevel: [''],
+      endorsementNumber: [''],
+      overrideRate: [''],
+      polBinder: [''],
+      policyNumber: [''],
+      proCode: [''],
+      rate: [''],
+      taxRateCode: [''],
+      taxType: [''],
+
+    });
+  }
+  addPolicyTaxes() {
+    const createPolicyTaxesForm = this.policyTaxesDetailsForm.value;
+
+    this.policyService
+      .addPolicyTaxes(createPolicyTaxesForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.policyTaxes = response._embedded
+          console.log('Policy  Taxes:', this.policyTaxes);
+          this.filteredPolicyTaxes = this.policyTaxes.filter(policyTaxes => policyTaxes.batchNo == this.batchNo);
+          log.debug("FILTERED Policy Taxes LIST", this.filteredPolicyTaxes)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
+        }
+      });
+  }
+  createPopulatePolicyTaxesDetailsForm() {
+    this.populatePolicyTaxesDetailsForm = this.fb.group({
+      batchNo: [''],
+      endorsementNumber: [''],
+      polBinder: [''],
+      policyNumber: [''],
+      proCode: [''],
+      transactionType: [''],
+    });
+  }
+  populatePolicyTaxes() {
+    this.populatePolicyTaxesDetailsForm.get('batchNo').setValue(this.batchNo)
+    this.populatePolicyTaxesDetailsForm.get('endorsementNumber').setValue(this.policyDetailsData.endorsementNo)
+    this.populatePolicyTaxesDetailsForm.get('polBinder').setValue(this.passedBinderCode)
+    this.populatePolicyTaxesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo)
+    this.populatePolicyTaxesDetailsForm.get('proCode').setValue(this.policyDetailsData.product.code)
+    this.populatePolicyTaxesDetailsForm.get('transactionType').setValue("NB")
+
+    const populatePolicyTaxesForm = this.populatePolicyTaxesDetailsForm.value;
+    log.debug("Populate Taxex Form:", populatePolicyTaxesForm)
+
+    this.policyService
+      .populatePolicyTaxes(populatePolicyTaxesForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.policyTaxes = response
+          console.log('Policy  Taxes:', this.policyTaxes);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
+        }
+      })
+
+  }
+  openPolicyTaxDeleteModal() {
+    log.debug("Selected Policy Tax", this.selectedPolicyTax)
+    if (!this.selectedPolicyTax) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select policy tax to continue');
+    } else {
+      document.getElementById("openModalTaxButtonDelete").click();
+
+    }
+  }
+  deletePolicyTaxes() {
+    log.debug("Selected Policy Tax",this.selectedPolicyTax)
+    this.policyService
+    .deletePolicyTaxes(this.batchNo,this.selectedPolicyTax.transactionTypeCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.policyTaxes =response
+        console.log('Policy  Taxes:', this.policyTaxes);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
+
+        // Remove the deleted tax from the policy tax Details array
+        const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
+        if (index !== -1) {
+          this.filteredPolicyTaxes.splice(index, 1);
+        }
+        // Clear the selected risk
+        this.selectedPolicyTax = null;
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
+      }
+    })
   }
 }
 
