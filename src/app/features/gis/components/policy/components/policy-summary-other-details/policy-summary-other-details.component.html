@@ -585,7 +585,7 @@
                                     <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
                                         <tr [pSelectableRow]="riskDetails"
                                             [class.p-highlight]="riskDetails === selectedRisk"
-                                            (click)="togglePremiumDetails();getRiskClauses();getRiskPeril();getSubclassPerils()">
+                                            (click)="togglePremiumDetails();getRiskClauses();getRiskPeril();getSubclassPerils();getRelatedRisks()">
                                             <td class="flexible-header">{{riskDetails.propertyId}}</td>
                                             <td class="flexible-header"></td>
                                             <td class="flexible-header">{{riskDetails.propertyDescription}}</td>
@@ -3205,7 +3205,7 @@
                                     </div>
                                     <div class="collapse" id="relatedRiskDetails">
 
-                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
+                                        <p-table #dt2 [value]="relatedRiskList" dataKey="code" selectionMode="single"
                                             [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
                                             responsiveLayout="scroll" [autoLayout]="true">
 
@@ -3224,14 +3224,14 @@
                                                 </tr>
                                             </ng-template>
 
-                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
-                                                <tr [pSelectableRow]="riskDetails"
-                                                    [class.p-highlight]="riskDetails === selectedRemark">
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                            <ng-template pTemplate="body" let-relatedRiskList let-ri="rowIndex">
+                                                <tr [pSelectableRow]="relatedRiskList"
+                                                    [class.p-highlight]="relatedRiskList === selectedRelatedRisk">
+                                                    <td>{{relatedRiskList.propertyId}}</td>
+                                                    <td>{{relatedRiskList.value}}</td>
+                                                    <td>{{relatedRiskList.withEffectFrom}}</td>
+                                                    <td>{{relatedRiskList.withEffectTo}}</td>
+                                                    <td>{{relatedRiskList.policyNumber}}</td>
                                                     <td></td>
 
 

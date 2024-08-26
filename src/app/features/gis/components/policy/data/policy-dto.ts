@@ -490,6 +490,15 @@ export interface populatePolicyTaxes{
   proCode: number;
   transactionType: string;
 }
+export interface RelatedRisk {
+  propertyId: string;
+  value: number ;
+  withEffectFrom: string;
+  withEffectTo: string;
+  policyNumber: string;
+  endorsementDifferentAmount: number;
+}
+
 
 
 

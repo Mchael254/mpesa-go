@@ -267,4 +267,8 @@ export class PolicyService {
     return this.api.DELETE(`v1/policy-taxes?polCode=${polCode}&trntCode=${TransactionCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getRelatedRisks(riskCode:any,propertId:any){
+    return this.api.GET(`v1/related-risks?ipuCode=${riskCode}&propertyId=${propertId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
