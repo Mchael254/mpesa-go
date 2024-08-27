@@ -84,9 +84,12 @@
   </div>
   <!-- End of Claim Details -->
  </div>
-  <app-upload-documents
-    [claimInitForm]="claimInitForm">
-  </app-upload-documents>
+  <ng-container *ngIf="surClaim">
+    <app-upload-documents
+      [claimInitForm]="claimInitForm">
+    </app-upload-documents>
+  </ng-container>
+
 
   <!-- Proceed Button -->
   <div class="button-container">
