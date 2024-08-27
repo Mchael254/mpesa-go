@@ -606,9 +606,10 @@ export class AgencyComponent implements OnInit {
     if (this.selectedAgency) {
       this.openAgencyTransferModal();
       const date = new Date();
+      const formattedDate = date.toISOString().substring(0, 10);
       this.createAgencyTransferForm.patchValue({
         agencyName: this.selectedAgency.name,
-        transferDate: date.toLocaleDateString('en-GB'),
+        transferDate: formattedDate,
       });
     }
   }

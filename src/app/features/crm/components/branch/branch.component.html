@@ -71,7 +71,7 @@
               <span class="icon-circle"
                 ><i
                   class="pi pi-arrow-right-arrow-left"
-                  (click)="openBranchTransferModal()"
+                  (click)="transferBranch()"
                 ></i
               ></span>
               <span class="icon-circle"
@@ -394,7 +394,6 @@
   id="branchModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
@@ -826,7 +825,6 @@
   id="branchTransferModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
@@ -846,13 +844,20 @@
               <label for="currentRegion" class="form-label"
                 >Current Region</label
               >
-              <input
-                type="text"
-                class="form-control"
-                id="currentRegion"
-                placeholder="Current Region"
+              <p-dropdown
+                [options]="regionData"
+                [(ngModel)]="selectedRegion"
+                optionLabel="name"
+                optionValue="code"
                 formControlName="currentRegion"
-              />
+                id="currentRegion"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Current Region"
+              >
+              </p-dropdown>
             </div>
             <div class="col-6 mb-3">
               <label for="branchName" class="form-label">Branch Name</label>
@@ -867,7 +872,7 @@
             <div class="col-6 mb-3">
               <label for="transferDate" class="form-label">Transfer Date</label>
               <input
-                type="text"
+                type="date"
                 class="form-control"
                 id="transferDate"
                 placeholder="Transfer Date"
@@ -880,9 +885,9 @@
               >
               <p-dropdown
                 [options]="regionData"
-                [(ngModel)]="selectedRegion"
+                [(ngModel)]="transferRegion"
                 optionLabel="name"
-                optionValue="id"
+                optionValue="code"
                 formControlName="transferRegion"
                 id="region"
                 [filter]="true"
@@ -900,7 +905,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          (click)="transferBranch()"
+          (click)="saveBranchTransfer()"
         >
           Authorize Transfer
         </button>
@@ -916,7 +921,6 @@
   id="branchDivisionModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
@@ -932,22 +936,6 @@
       <div class="modal-body">
         <form [formGroup]="createBranchDivisionForm">
           <div class="row">
-            <!-- <div class="form-group col-6 mb-3">
-              <label for="division" class="form-label">Select a Division</label>
-              <select
-                id="division"
-                class="form-select mb-1"
-                formControlName="division"
-              >
-                <option value="" selected>Select Division</option>
-                <option
-                  *ngFor="let division of branchUnassignedDivisionData"
-                  [value]="division.id"
-                >
-                  {{ division.name | titlecase }}
-                </option>
-              </select>
-            </div> -->
             <div class="form-group col-6 mb-3">
               <label for="division" class="form-label">Select a Division</label>
               <select
@@ -1021,7 +1009,6 @@
   id="branchContactModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
