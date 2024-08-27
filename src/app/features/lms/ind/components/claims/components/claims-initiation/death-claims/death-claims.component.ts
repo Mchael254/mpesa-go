@@ -218,7 +218,6 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
         // if (data) {
           this.claimResponse = data
           this.claimNo = data?.clm_no
-          console.log('this.claimResponse', this.claimResponse)
           this.patchFormWithClaimDetails(data);
           this.cdr.detectChanges()
         // }
