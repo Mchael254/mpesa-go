@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ClaimProcessingComponent } from './components/claim-processing/claim-processing.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -25,7 +26,9 @@ import { ClaimProcessingComponent } from './components/claim-processing/claim-pr
     ClaimsRoutingModule,
     SharedModule,
     OverlayPanelModule,
-    RadioButtonModule
+    RadioButtonModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class ClaimsModule { }
