@@ -140,4 +140,17 @@ export class ClaimsService {
       params
     );
   }
+
+  /**
+   * Initiate a claim request and get the claim response.
+   * @param requestBody PolicyClaimIntiation request body.
+   * @returns {Observable<ClaimDTO>} Observable containing the response.
+   */
+  uploadDocument(requestBody: PolicyClaimIntiation): Observable<ClaimDTO> {
+    return this.api.POST<ClaimDTO>(
+      `individual/claims`,
+      requestBody,
+      API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+    )
+  }
 }

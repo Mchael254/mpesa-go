@@ -1,31 +1,37 @@
-
 <form [formGroup]="claimInitForm">
   <div class="container mt-3">
     <div class="row">
       <div class="fw-medium section-title">{{ "lms.ind.upload_documents" | translate }}</div>
-        <ng-container *ngIf="claimDocuments$ | async as claimDocuments; else loading">
-          <div *ngFor="let document of claimDocuments" class="col-md-4 col-12">
-            <div class="d-flex align-items-center flex-wrap">
-              <label for="nationalId" class="fixed-width-label">{{ document?.desc }}<span style="color: red;">*</span></label>
-              <div class="form-group">
+      <ng-container *ngIf="claimDocuments as claimDocuments; else loading">
+        <div class="row">
+          <ng-container *ngFor="let document of claimDocuments; let i = index">
+            <!-- Column with specified width -->
+            <div class="col-md-4 col-sm-12 mb-4">
+              <div class="d-flex align-items-center flex-wrap">
+                <label class="fixed-width-label ">{{ document?.desc }}<span *ngIf="document.submitted === 'Y'" style="color: red;">*</span></label>
+                <div class="form-group">
                   <p-fileUpload
                     mode="basic"
                     name="demo[]"
                     chooseIcon="pi pi-upload"
-                    url="https://www.primefaces.org/cdn/api/upload.php"
                     accept="image/*"
                     [maxFileSize]="1000000"
                     (onUpload)="onBasicUploadAuto($event)"
+                    (onSelect)="uploadFile($event, document['desc'] )"
                     [auto]="true"
                     chooseLabel="Choose File"
                   />
                 </div>
               </div>
             </div>
-        </ng-container>
-        <ng-template #loading>
-          <p style="display: block; text-align: center">Loading documents...</p>
-        </ng-template>
-      </div>
+            <div class="clearfix" style="width: 100%" *ngIf="(i + 1) % 2 === 0"></div>
+            <!-- Insert row break after every 2 columns -->
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #loading>
+        <p style="display: block; text-align: center">Loading documents...</p>
+      </ng-template>
+    </div>
   </div>
 </form>
