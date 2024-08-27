@@ -264,6 +264,21 @@ export class OrganizationService {
     );
   }
 
+  transferOrganizationBranch(
+    branchId: number,
+    fromRegionId: number,
+    toRegionId: number
+  ): Observable<CrmApiResponse> {
+    const params = new HttpParams().set('toRegionId', `${toRegionId}`);
+    const body = {};
+    return this.api.POST<CrmApiResponse>(
+      `branches/${fromRegionId}/transfer-branches/${branchId}`,
+      body,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
   getOrganizationBranchDivision(
     branchId: number
   ): Observable<BranchDivisionDTO[]> {
@@ -299,7 +314,7 @@ export class OrganizationService {
     branchId: number
   ): Observable<BranchDivisionDTO[]> {
     return this.api.PUT<BranchDivisionDTO[]>(
-      `/branches/${branchDivisionId}/divisions/${branchId}`,
+      `branches/${branchDivisionId}/divisions/${branchId}`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
@@ -375,7 +390,7 @@ export class OrganizationService {
     branchId: number
   ): Observable<BranchAgencyDTO[]> {
     return this.api.PUT<BranchAgencyDTO[]>(
-      `/branches/${branchId}/branch-agencies/${branchAgencyId}`,
+      `branches/${branchId}/branch-agencies/${branchAgencyId}`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
@@ -391,7 +406,7 @@ export class OrganizationService {
   transferOrganizationBranchAgency(
     branchAgencyId: number,
     fromBranchId: number,
-    toBranchId
+    toBranchId: number
   ): Observable<CrmApiResponse> {
     const params = new HttpParams().set('toBranchId', `${toBranchId}`);
     const body = {};
