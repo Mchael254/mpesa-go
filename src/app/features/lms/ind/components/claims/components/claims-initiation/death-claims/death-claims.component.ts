@@ -39,7 +39,6 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
   @Input() filteredPolicy: string
   @Input() selectedPolicy: PoliciesClaimModuleDTO
   @Input() eachStep: number;
-  @Input() claimDetails$: Observable<ClaimDTO>;
   @Output() valueChanged: EventEmitter<number> = new EventEmitter<number>(); // Emit the updated value back to the parent
 
 
@@ -63,11 +62,13 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
 
   ngOnInit(): void {
+    this.claimNo = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
     this.createForm()
     this.setupCausationTypeListener()
     this.setupCausationCauseListener()
-    if(this.claimDetails$) {
-      this.getClaimDetails()
+    if(this.claimNo) {
+      console.log('claimmmm', this.claimNo)
+      this.getClaimDetails(this.claimNo)
     }
 
     // StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.QUOTE_DETAILS) )
@@ -139,9 +140,9 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
     ).subscribe({
       next: (response: ClaimDTO) => {
         this.claimResponse = response;
-        // this.routeParam(response?.clm_no)
-        this.claimNo = response?.clm_no
+        this.getClaimDetails(response?.clm_no)
         this.storeTempClaimNo(response?.clm_no)
+        this.claimNo = response?.clm_no
         // this.eachStep += 1
         this.valueChanged.emit(this.eachStep);
         this.cdr.detectChanges()
@@ -180,17 +181,6 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
     };
   }
 
-  getClaimDetails() {
-    this.claimDetails$
-      .pipe(untilDestroyed(this))
-      .subscribe((data: ClaimDTO) => {
-        if (data) {
-          this.claimNo = data?.clm_no
-          this.patchFormWithClaimDetails(data);
-        }
-      });
-  }
-
   patchFormWithClaimDetails(data: ClaimDTO): void {
     this.claimResponse = data;
     this.claimInitForm.patchValue({
@@ -207,7 +197,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
   storeTempClaimNo(clm_no: string) {
     this.session_storage.set(SESSION_KEY.CLAIM_NO, clm_no)
-    this.getClaimDetails()
+    this.getClaimDetails(clm_no)
     this.claimNo = clm_no;
   }
 
@@ -216,9 +206,23 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
     this.router.navigate(['/home/lms/ind/claims'], {
       queryParams: {   claimType:  claimType, claimNo: clm_no}
     }).then(() => {
-      this.getClaimDetails()
+      this.getClaimDetails(clm_no)
       this.claimNo = clm_no;
     });
+  }
+
+  getClaimDetails(claimNo: string) {
+    this.claimsService.fetchClaimDetails(claimNo)
+      .pipe(untilDestroyed(this))
+      .subscribe((data: ClaimDTO) => {
+        // if (data) {
+          this.claimResponse = data
+          this.claimNo = data?.clm_no
+          console.log('this.claimResponse', this.claimResponse)
+          this.patchFormWithClaimDetails(data);
+          this.cdr.detectChanges()
+        // }
+      });
   }
   ngOnDestroy(): void {
   }

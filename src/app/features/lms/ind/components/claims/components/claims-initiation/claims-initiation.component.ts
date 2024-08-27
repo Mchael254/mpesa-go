@@ -86,9 +86,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
     this.navigateToClaimsIntiation(this.claimType);
-    if(this.claimNo) {
-      this.getClaimDetails(this.claimNo)
-    }
+    // if(this.claimNo) {
+    //   this.getClaimDetails(this.claimNo)
+    // }
     this.patchFormWithQueryParam();
   }
 
