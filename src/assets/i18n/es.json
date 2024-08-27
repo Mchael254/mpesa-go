@@ -1104,7 +1104,24 @@
         "payee": "Beneficiario",
         "amount": "Monto",
         "reject": "Rechazar",
-        "send_for_review": "Enviar para revisión"
+        "send_for_review": "Enviar para revisión",
+        "discharge_voucher": "Vale de descarga",
+        "client_feedback": "Retroalimentación del cliente",
+        "accepted": "Aceptado",
+        "rejected": "Rechazado",
+        "reason_why_claim_is_rejected": "Razón por la cual se rechaza la reclamación",
+        "back_to_claim_initiation": "Volver a la iniciación de la reclamación",
+        "add_account": "Agregar cuenta",
+        "bank_name": "Nombre del banco",
+        "add_new_account": "Agregar nueva cuenta",
+        "process_voucher": "Procesar vale",
+        "make_ready": "Preparar",
+        "Voucher_authorization": "Autorización de vale",
+        "discharge_voucher_feedback": "Retroalimentación del vale de descarga",
+        "assign_supervisor": "Asignar supervisor",
+        "send_for_supervisor_approval": "Enviar para aprobación del supervisor",
+        "supervisor_approval": "Aprobación del supervisor",
+        "authorize_voucher": "Autorizar vale"
       },
       "service_request": {
         "admin": {

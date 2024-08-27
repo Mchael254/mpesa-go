@@ -1134,7 +1134,24 @@
         "payee": "Payee",
         "amount": "Amount",
         "reject": "Reject",
-        "send_for_review": "Send for review"
+        "send_for_review": "Send for review",
+        "discharge_voucher": "Discharge voucher",
+        "client_feedback": "Client feedback",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "reason_why_claim_is_rejected": "Reason why claim is rejected",
+        "back_to_claim_initiation": "Back to claim initiation",
+        "add_account": "Add account",
+        "bank_name": "Bank name",
+        "add_new_account": "Add new account",
+        "process_voucher": "Process voucher",
+        "make_ready": "Make ready",
+        "Voucher_authorization": "Voucher authorization",
+        "discharge_voucher_feedback": "Discharge voucher feedback",
+        "assign_supervisor": "Assign supervisor",
+        "send_for_supervisor_approval": "Send for Supevisor approval",
+        "supervisor_approval": "Supervisor approval",
+        "authorize_voucher": "Authorize voucher"
       },
       "service_request": {
         "admin": {
