@@ -1104,7 +1104,24 @@
         "payee": "Bénéficiaire",
         "amount": "Montant",
         "reject": "Rejeter",
-        "send_for_review": "Envoyer pour révision"
+        "send_for_review": "Envoyer pour révision",
+        "discharge_voucher": "Bon de décharge",
+        "client_feedback": "Retour d'information du client",
+        "accepted": "Accepté",
+        "rejected": "Rejeté",
+        "reason_why_claim_is_rejected": "Raison pour laquelle la demande est rejetée",
+        "back_to_claim_initiation": "Retour à l'initiation de la demande",
+        "add_account": "Ajouter un compte",
+        "bank_name": "Nom de la banque",
+        "add_new_account": "Ajouter un nouveau compte",
+        "process_voucher": "Traiter le bon",
+        "make_ready": "Préparer",
+        "Voucher_authorization": "Autorisation de bon",
+        "discharge_voucher_feedback": "Retour d'information sur le bon de décharge",
+        "assign_supervisor": "Assigner un superviseur",
+        "send_for_supervisor_approval": "Envoyer pour approbation du superviseur",
+        "supervisor_approval": "Approbation du superviseur",
+        "authorize_voucher": "Autoriser le bon"
       },
       "service_request": {
         "admin": {

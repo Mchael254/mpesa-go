@@ -5,15 +5,17 @@
         </div>
       </div>
     <div class="container">
-      <div class="title">{{ "lms.grp.claims.payment_voucher_processing" | translate }}</div>
+      <div class="title" *ngIf="!isVoucherDischarged">{{ "lms.grp.claims.payment_voucher_processing" | translate }}</div>
+      <div class="title" *ngIf="!isVoucherProcessed && isVoucherDischarged">{{ "lms.grp.claims.Voucher_authorization" | translate }}</div>
+      <div class="title" *ngIf="isVoucherProcessed && isVoucherDischarged">{{ "lms.grp.claims.discharge_voucher_feedback" | translate }}</div>
+      <form [formGroup]="paymentProcessingForm">
     <div class="row">
-      <div class="col-md-4 col-sm-12 col-xs-12">
+
+      <div class="col-md-4">
         <div>
           <label for="payee" style="color: black;">{{ "lms.grp.claims.payee" | translate }}</label>
-          <select class="form-select" id="investigator" formControlName="payee">
-            <option selected="true" disabled="disabled"></option>
-            <option *ngFor="let payee of " [value]="payee">{{ payee | titlecase }}</option>
-          </select>
+          <input type="text" pInputText class="form-control" readonly="readonly" id="payee" [style]="{ width: '100%' }"
+            formControlName="payee">
         </div>
       </div>
     </div>
@@ -28,13 +30,59 @@
           </select>
         </div>
       </div>
-      <div class="col-md-4">
+      <!-- <div class="col-md-4">
         <div>
           <label for="accountNumber" style="color: black;">{{ "lms.grp.claims.account_number" | translate }}</label>
           <input type="text" pInputText class="form-control" id="accountNumber" [style]="{ width: '100%' }"
             formControlName="accountNumber">
         </div>
+      </div> -->
+
+      <div class="col-md-4">
+        <div>
+          <label for="accountNumber" style="color: black;">
+            {{ "lms.grp.claims.account_number" | translate }}
+          </label>
+          <p-dropdown #dropdown [options]="accountDetails" formControlName="accountNumber" optionLabel="accountNumber"
+            [filter]="true" [filterBy]="'accountNumber'" [style]="{ width: '100%',  height: '37px', 'line-height': '10px' }">
+            <ng-template let-item pTemplate="item">
+              <div class="d-flex justify-content-between">
+                <div>{{ item.accountNumber }}</div>
+                <div>{{ item.bankName }}</div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <button type="button" class="p-link" (click)="showOverlay($event, overlayPanel)">
+                {{ "lms.grp.claims.add_new_account" | translate }}
+              </button>
+            </ng-template>
+          </p-dropdown>
+        </div>
+      
+        <!-- Overlay Panel -->
+        <p-overlayPanel #overlayPanel [style]="{minWidth: '300px'}" appendTo="body">
+          <div class="p-fluid">
+            <div class="p-field">
+              <div class="col-md-12">
+                <label for="newAccountNumber" style="color: black;">{{ "lms.grp.claims.account_number" | translate }}</label>
+                <input type="text" pInputText class="form-control" id="newAccountNumber" [style]="{ width: '100%' }"
+                  formControlName="newAccountNumber">
+              </div>
+            </div>
+            <div class="p-field">
+              <div class="col-md-12">
+                <label for="bankName" style="color: black;">{{ "lms.grp.claims.bank_name" | translate }}</label>
+                <input type="text" pInputText class="form-control" id="bankName" [style]="{ width: '100%' }"
+                  formControlName="bankName">
+              </div>
+            </div>
+            <div class="button-container">
+              <button class="review-claim" type="button" (click)="addAccount()">{{ "lms.grp.claims.add_account" | translate }}</button>
+            </div>
+          </div>
+        </p-overlayPanel>
       </div>
+      
       <div class="col-md-4">
         <div>
           <label for="amount" style="color: black;">{{ "lms.grp.claims.amount" | translate }}</label>
@@ -43,8 +91,95 @@
         </div>
       </div>
     </div>
+  </form>
     </div>
-    <div class="button-container">
-      <button class="review-claim">{{ "lms.grp.claims.send_for_review" | translate }}</button>
+    <div class="button-container" *ngIf="!isVoucherDischarged">
+      <button class="review-claim" (click)="onDischargeVoucherClick()">{{ "lms.grp.claims.discharge_voucher" | translate }}</button>
+    </div>
+
+    <div class="container" style="margin-top: 20px;" *ngIf="isVoucherDischarged && !isVoucherProcessed">
+      <div class="title">{{ "lms.grp.claims.client_feedback" | translate }}</div>
+    
+      
+      <form [formGroup]="paymentProcessingForm">
+      <div class="col-md-12" style="margin-top: 15px; color: black;">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" value="ACCEPTED" formControlName="feedback" id="inlineRadio1"
+            name="feedback" />
+          <label class="form-check-label" for="inlineRadio1">{{ "lms.grp.claims.accepted" | translate }}</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" value="REJECTED" formControlName="feedback" id="inlineRadio2"
+            name="feedback" />
+          <label class="form-check-label" for="inlineRadio2">{{ "lms.grp.claims.rejected" | translate }}</label>
+        </div>
+      </div>
+      <div class="col-md-4" *ngIf="paymentProcessingForm.get('feedback')?.value === 'REJECTED'" style="margin-top: 15px;">
+        <div>
+          <label for="reason" style="color: black;">{{ "lms.grp.claims.reason_why_claim_is_rejected" | translate }}</label>
+          <input type="text" pInputText class="form-control" id="reason" [style]="{ width: '100%' }"
+            formControlName="reason">
+        </div>
+      </div>
+    </form>
+    </div>
+    <div class="button-container" *ngIf="paymentProcessingForm.get('feedback')?.value === 'REJECTED'">
+      <button class="review-claim">{{ "lms.grp.claims.back_to_claim_initiation" | translate }}</button>
+    </div>
+    <div class="button-container" *ngIf="paymentProcessingForm.get('feedback')?.value === 'ACCEPTED' && !isVoucherProcessed">
+      <button class="review-claim" (click)="onProcessVoucherClick()">{{ "lms.grp.claims.process_voucher" | translate }}</button>
+    </div>
+    <div class="button-container" *ngIf="isVoucherProcessed && !isSendForSupervisorApproval">
+      <button class="review-claim" (click)="onMakeReadyClick()">{{ "lms.grp.claims.make_ready" | translate }}</button>
+    </div>
+    <div class="button-container" *ngIf="isSendForSupervisorApproval && !isSupervisorApproved">
+      <button class="review-claim" (click)="onSupervisorapprovalClick()">{{ "lms.grp.claims.supervisor_approval" | translate }}</button>
+    </div>
+    <div class="button-container" *ngIf="isSupervisorApproved">
+      <button class="review-claim" (click)="onAuthorizeVoucherClick()">{{ "lms.grp.claims.authorize_voucher" | translate }}</button>
     </div>
 </div>
+
+
+<!-- modals begin -->
+<!-- modal to assign supervisor -->
+<div class="modal fade" tabindex="-1" #assignSupervisorModal id="assignSupervisorModal" aria-labelledby="assignSupervisorModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title float-left" id="assignSupervisorModal">{{ "lms.grp.claims.assign_supervisor" | translate }}</h5>
+        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+        (click)="closeSupervisorModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="assignSupervisorForm">
+        <div class="row">
+          <div class="col-md-6">
+            <div>
+              <label for="supervisor" style="color: black;">{{ "lms.grp.claims.assign_supervisor" | translate }}</label>
+              <input type="text" pInputText class="form-control" id="supervisor" [style]="{ width: '100%' }"
+                formControlName="supervisor">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div>
+              <label for="remarks" style="color: black;">{{ "lms.grp.claims.remarks" | translate }}</label>
+              <input type="text" pInputText class="form-control" id="remarks" [style]="{ width: '100%' }"
+                formControlName="remarks">
+            </div>
+          </div>
+        </div>
+      </form>
+        
+      </div>
+      <div class="modal-footer">
+        <div class="button-container">
+          <button class="review-claim" (click)="onSendForSupApproval()">{{ "lms.grp.claims.send_for_supervisor_approval" | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end of modal to assign supervisor  -->
+<!-- modals end -->
