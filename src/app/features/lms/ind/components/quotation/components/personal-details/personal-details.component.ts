@@ -323,86 +323,6 @@ export class PersonalDetailsComponent implements OnInit {
     );
   }
 
-  // getClientDetailsForm(pattern: any = ''): FormGroup<any> {
-  //   return this.fb.group({
-  //     id: [],
-  //     modeOfIdentity: this.getControlConfig('CITIZENSHIP'),
-  //     countryId: this.getControlConfig('CITIZENSHIP'),
-  //     firstName: this.getControlConfig('CITIZENSHIP'),
-  //     gender: this.getControlConfig('CITIZENSHIP'),
-  //     lastName: this.getControlConfig('CITIZENSHIP'),
-  //     dateOfBirth: this.getControlConfig('CITIZENSHIP'),
-  //     modeOfIdentityNumber: this.getControlConfig('CITIZENSHIP'),
-  //     pinNumber: this.getControlConfig('CITIZENSHIP'),
-  //     branchId: this.getControlConfig('CITIZENSHIP'),
-  //     contactDetails: this.fb.group({
-  //       id: [0],
-  //       emailAddress: this.getControlConfig('CITIZENSHIP'),
-  //       phoneNumber: this.getControlConfig('CITIZENSHIP'),
-  //       preferredChannel: this.getControlConfig('CITIZENSHIP'),
-  //       smsNumber: this.getControlConfig('CITIZENSHIP'),
-  //       titleShortDescription: this.getControlConfig('CITIZENSHIP'),
-  //       branchId: this.getControlConfig('CITIZENSHIP'),
-  //     }),
-  //     address: this.fb.group({
-  //       id: [],
-  //       box_number: this.getControlConfig('CITIZENSHIP'),
-  //       country_id: this.getControlConfig('CITIZENSHIP'),
-  //       state_id: this.getControlConfig('CITIZENSHIP'),
-  //       town_id: this.getControlConfig('CITIZENSHIP'),
-  //       physical_address: this.getControlConfig('CITIZENSHIP')
-  //     }),
-  //     paymentDetails: this.fb.group({
-  //       id: [],
-  //       account_number: this.getControlConfig('CITIZENSHIP'),
-  //       bank_branch_id: this.getControlConfig('CITIZENSHIP'),
-  //       currency_id: this.getControlConfig('CITIZENSHIP'),
-  //       effective_from_date: this.getControlConfig('CITIZENSHIP'),
-  //       effective_to_date: this.getControlConfig('CITIZENSHIP'),
-  //       iban: this.getControlConfig('CITIZENSHIP'),
-  //       mpayno: this.getControlConfig('CITIZENSHIP'),
-  //       preferedChannel: this.getControlConfig('CITIZENSHIP'),
-  //     }),
-  //     wealthDetails: this.fb.group({
-  //       id: [],
-  //       citizenship_country_id: this.getControlConfig('CITIZENSHIP'),
-  //       marital_status: this.getControlConfig('CITIZENSHIP'),
-  //       funds_source: this.getControlConfig('CITIZENSHIP'),
-  //       occupation_id: this.getControlConfig('CITIZENSHIP'),
-  //       employed: this.getControlConfig('CITIZENSHIP'), //?
-  //       is_employed: ['N'],
-  //       is_self_employed: ['N'],
-  //       sector_id: this.getControlConfig('CITIZENSHIP'),
-  //       insurancePurpose: this.getControlConfig('CITIZENSHIP'),
-  //       premiumFrequency: this.getControlConfig('CITIZENSHIP'),
-  //       distributeChannel: this.getControlConfig('CITIZENSHIP'),
-  //     }),
-  //     occupationId: this.getControlConfig('CITIZENSHIP'),
-  //     organizationId: this.getControlConfig('CITIZENSHIP'),
-  //     partyId: this.getControlConfig('CITIZENSHIP'),
-  //     passportNumber: this.getControlConfig('CITIZENSHIP'),
-  //     proposerCode: this.getControlConfig('CITIZENSHIP'),
-  //     shortDescription: this.getControlConfig('CITIZENSHIP'),
-  //     stateId: this.getControlConfig('CITIZENSHIP'),
-  //     townId: this.getControlConfig('CITIZENSHIP'),
-  //     client: this.getControlConfig('CITIZENSHIP'),
-  //     status: ['A'],
-  //     system: ['LMS'],
-  //     category: ['C'],
-  //     clientTypeId: ['NEW_CLIENT'],
-  //     dateCreated: [],
-  //     effectiveDateFrom: [],
-  //     effectiveDateTo: [],
-  //     modeOfIdentityId: [],
-
-  //   });
-  // }
-
-  //   calculateAge(dateOfBirth: string | number | Date): number {
-  //     const today = new Date();
-  //     const dob = new Date(dateOfBirth);
-  //     return today.getFullYear() - dob.getFullYear();
-  //   }
   getClientDetailsForm(pattern: any = ''): FormGroup<any> {
     return this.fb.group({
       id: [],
@@ -696,73 +616,78 @@ export class PersonalDetailsComponent implements OnInit {
   }
 
   async saveClientDetails() {
+    // Mark all controls as touched and dirty to trigger validation
+    Object.keys(this.clientForm.controls).forEach((field) => {
+      const control = this.clientForm.get(field);
+      control?.markAsTouched({ onlySelf: true });
+      control?.markAsDirty({ onlySelf: true });
+    });
+
     this.spinner_Service.show('client_details_view');
     let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
 
     if (!this.clientForm.valid) {
-      StringManipulation.enableControlsWithErrors(this.clientForm);
-      this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(
-        this.clientForm
-      );
-      this.toast.danger('Fill the required forms', 'Required forms');
-      this.spinner_Service.hide('client_details_view');
-      return
+      // Only display the list of controls with errors if needed
+      if (this.shouldDisplayErrorList()) {
+        StringManipulation.enableControlsWithErrors(this.clientForm);
+        this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(this.clientForm);
+        this.toast.danger('Fill the required forms', 'Required forms');
+      }
 
+      this.spinner_Service.hide('client_details_view');
+      return;
     } else {
+      // Proceed with saving client details
       let client_sub = this.generateOutObjectFromClientForm(this.clientForm);
       console.log(client_sub);
 
       this.crm_client_service
-        .save(client_sub)
-        // of({'code':7373638383})
-        // of({'code':2323235976681})
-        .pipe(
-          concatMap((client_res) => {
-            console.log(client_res);
-            this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
-            quote['client_code'] = client_res['id'];
-            this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
-            this.toast.success(
-              'Create Client Details Successfully!',
-              'Client Details'
-            );
-            // return
-            return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['id']);
-          }),
-          finalize(() =>{this.spinner_Service.hide('client_details_view');})
-        )
-        .subscribe(
-          (data: any) => {
-            console.log(data);
-            this.toast.success(
-              'fetch Existing Drafts Successfully!',
-              'Client Details'
-            );
-            this.spinner_Service.hide('client_details_view');
-            this.draftList =
-            // [
-            //   {}, {}
-            // ]
-             data['content']
-            ?.filter((data: any)=> data?.proposal_no===null);
+          .save(client_sub)
+          .pipe(
+                concatMap((client_res) => {
+                  console.log(client_res);
+                  this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
+                  quote['client_code'] = client_res['id'];
+                  this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
+                  this.toast.success('Create Client Details Successfully!', 'Client Details');
+                  return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['id']);
+                }),
+                finalize(() => {
+                    this.spinner_Service.hide('client_details_view');
+                })
+            )
+            .subscribe(
+                (data: any) => {
+                    console.log(data);
+                    this.toast.success('fetch Existing Drafts Successfully!', 'Client Details');
+                    this.spinner_Service.hide('client_details_view');
+                    this.draftList = data['content']?.filter((data: any) => data?.proposal_no === null);
 
-            if (this.draftList.length > 0&&this.util.returnTelQuoteOrWebQuote()==='NEW') {
-              this.openModal('draft');
-              return;
-            }
-            this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
-          },
-          (err: any) => {
-            // console.log(err);
-            this.spinner_Service.hide('client_details_view');
-            // console.log(err);
-            // this.toast.danger('Unable to Create Client Record!', 'CLIENT CREATION');
-            this.toast.danger(err?.error?.errors[0], 'QUOTATION CREATION/UPDATE');
-
-          }
-        );
+                    if (this.draftList.length > 0 && this.util.returnTelQuoteOrWebQuote() === 'NEW') {
+                        this.openModal('draft');
+                        return;
+                    }
+                    this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
+                },
+                (err: any) => {
+                    this.spinner_Service.hide('client_details_view');
+                    this.toast.danger(err?.error?.errors[0], 'QUOTATION CREATION/UPDATE');
+                }
+              );
     }
   }
+
+  shouldDisplayErrorList(): boolean {
+    // Return true if you want to display the list, false if you don't
+    // This could be based on certain form states or other business logic
+    return false; // Set to true if you want to display the error list
+  }
+
+  // Method to highlight invalid fields
+  highlightInvalid(field: string): boolean {
+    const control = this.clientForm.get(field);
+    return control && control.invalid && (control.dirty || control.touched);
+  }   
 
   generateOutObjectFromClientForm(clientForm: FormGroup): any {
     let mode = this.identifierTypeList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('modeOfIdentity').value));

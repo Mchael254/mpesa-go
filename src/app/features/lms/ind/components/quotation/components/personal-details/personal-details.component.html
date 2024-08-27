@@ -26,9 +26,8 @@
             <!-- <button class="btn btn-primary float-end p-2" data-bs-toggle="modal"
               data-bs-target="#selectClient">Select Existing Client
             </button> -->
-            <h6 class="text-primary" style="font-weight: 600; font-size: 14px">Basic Details</h6>
+            <h6 class="text-primary" style="font-weight: 500; font-size: 16px">Basic Details</h6>
             <div class="row" *ngIf="getFormControlsNameWithErrors.length > 0">
-              <div class="text-black fw-medium">List of Required Form(s)</div>
               <div class="col-12 text-danger required" style="font-size: 11px; font-weight: 500"
                   *ngFor="let item of getFormControlsNameWithErrors">{{ item | uppercase }}
               </div>
@@ -71,12 +70,15 @@
             <div class="row" >
 
               <div class="col-md-4" *ngIf="getFormData('LAST_NAME')">
-                <label class="quote-label" [for]="getFormData('LAST_NAME')['data']['label']"
-                  [class]="getFormData('LAST_NAME')['data']['required'] ? 'required' : '' ">
-                    {{ getFormData("LAST_NAME")["data"]["label"] | titlecase }}
+                <label class="quote-label" 
+                    [for]="getFormData('LAST_NAME')['data']['label']"
+                    [ngClass]="{'is-invalid': highlightInvalid('lastName')}"
+                    [class]="getFormData('LAST_NAME')['data']['required'] ? 'required' : '' ">
+                  {{ getFormData("LAST_NAME")["data"]["label"] | titlecase }}
                 </label>
                 <input type="text" id="lastName" class="form-control form-control mb-1"
-                  [id]="getFormData('LAST_NAME')['data']['label']" formControlName="lastName"/>
+                    [id]="getFormData('LAST_NAME')['data']['label']" formControlName="lastName"/>
+                <div *ngIf="highlightInvalid('lastName')" class="invalid-feedback">Last Name is required</div> 
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('FIRST_NAME')">
@@ -90,18 +92,24 @@
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY')">
-                <label class="quote-label" [for]="getFormData('MODE_OF_IDENTITY')['data']['label']"
-                  [class.required]="getFormData('MODE_OF_IDENTITY')['data']['required']">
-                    {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}</label>
+                <label class="quote-label" 
+                    [for]="getFormData('MODE_OF_IDENTITY')['data']['label']"
+                    [class.required]="getFormData('MODE_OF_IDENTITY')['data']['required']">
+                  {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}
+                </label>
                 <select id="modeOfIdentity" class="form-select form-select mb-1"
-                  [id]="getFormData('MODE_OF_IDENTITY')['data']['label']"
-                  placement="right" formControlName="modeOfIdentity"
-                  (change)="checkIdentityType($event)">
-                    <option selected="true" disabled="disabled">Select 
-                      {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}</option>
-                    <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
+                    [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentity')}"
+                    [id]="getFormData('MODE_OF_IDENTITY')['data']['label']"
+                    placement="right" 
+                    formControlName="modeOfIdentity"
+                    (change)="checkIdentityType($event)">
+                  <option selected="true" disabled="disabled">
+                    Select {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}
+                  </option>
+                  <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
                       {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
                 </select>
+                <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">Mode of Identity is required</div>
               </div>
             
             </div>
@@ -109,31 +117,42 @@
             <div class="row mb-4">
 
               <div class="col-md-4" *ngIf="getFormData('COUNTRY_ID')">
-                <label class="quote-label" [for]="getFormData('COUNTRY_ID')['data']['label']"
-                  [class.required]="getFormData('COUNTRY_ID')['data']['required']">
-                    {{ getFormData("COUNTRY_ID")["data"]["label"] | titlecase }}</label>
+                <label class="quote-label" 
+                    [for]="getFormData('COUNTRY_ID')['data']['label']"
+                    [class.required]="getFormData('COUNTRY_ID')['data']['required']">
+                  {{ getFormData("COUNTRY_ID")["data"]["label"] | titlecase }}
+                </label>
                 <select id="citizenship" class="form-select form-select mb-1"
-                  [id]="getFormData('COUNTRY_ID')['data']['label']" placement="right" formControlName="countryId">
-                    <option selected="true" disabled="disabled">Select 
-                      {{ getFormData("COUNTRY_ID")["data"]["label"] | lowercase }}
-                    </option>
-                    <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
-                      {{ data?.nationality | titlecase }}</option>
+                    [ngClass]="{'is-invalid': highlightInvalid('countryId')}"
+                    [id]="getFormData('COUNTRY_ID')['data']['label']" 
+                    placement="right" 
+                    formControlName="countryId">
+                  <option selected="true" disabled="disabled">Select 
+                    {{ getFormData("COUNTRY_ID")["data"]["label"] | lowercase }}
+                  </option>
+                  <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
+                      {{ data?.nationality | titlecase }}
+                  </option>
                 </select>
+                <div *ngIf="highlightInvalid('countryId')" class="invalid-feedback">Nationality is required</div>
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('DATE_OF_BIRTH')">
                 <label class="quote-label"
-                  [for]="getFormData('DATE_OF_BIRTH')['data']['label']" [class.required]="getFormData('DATE_OF_BIRTH')['data']['required']">
-                    {{ getFormData("DATE_OF_BIRTH")["data"]["label"] | titlecase }}
+                    [for]="getFormData('DATE_OF_BIRTH')['data']['label']" 
+                    [class.required]="getFormData('DATE_OF_BIRTH')['data']['required']">
+                  {{ getFormData("DATE_OF_BIRTH")["data"]["label"] | titlecase }}
                 </label>
-                <!-- <input type="text"
-                  class="form-control form-control mb-1"
-                 formControlName="dateOfBirth" /> -->
-                <p-calendar [maxDate]="minDate" [defaultDate]="minDate" 
-                  [id]="getFormData('DATE_OF_BIRTH')['data']['label']" ngDefaultControl 
-                  formControlName="dateOfBirth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                <p-calendar 
+                    [maxDate]="minDate" 
+                    [defaultDate]="minDate" 
+                    [id]="getFormData('DATE_OF_BIRTH')['data']['label']" ngDefaultControl 
+                    formControlName="dateOfBirth" dateFormat="dd/mm/yy" 
+                    [showIcon]="true" 
+                    [showButtonBar]="true"
+                    [ngClass]="{'is-invalid': highlightInvalid('dateOfBirth')}">
                 </p-calendar>
+                <div *ngIf="highlightInvalid('dateOfBirth')" class="invalid-feedback">Date of Birth is required</div>
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY_NO')">
@@ -155,12 +174,16 @@
             <div class="row mb-4">
 
               <div class="col-md-4" *ngIf="getFormData('PIN_NO')">
-                <label class="quote-label" [for]="getFormData('PIN_NO')['data']['label']"
-                  [class.required]="getFormData('PIN_NO')['data']['required']">
+                <label class="quote-label" 
+                    [for]="getFormData('PIN_NO')['data']['label']"
+                    [class.required]="getFormData('PIN_NO')['data']['required']">
                   {{ getFormData("PIN_NO")["data"]["label"] | titlecase }}
                 </label>
                 <input type="text" class="form-control form-control mb-1"
-                  [id]="getFormData('PIN_NO')['data']['label']" formControlName="pinNumber"/>
+                    [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}"
+                    [id]="getFormData('PIN_NO')['data']['label']" 
+                    formControlName="pinNumber"/>
+                <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">PIN is required</div>
               </div>
 
               <div class="col-md-4" *ngIf="getFormData('GENDER')">
@@ -545,7 +568,7 @@
                           placement="right" formControlName="funds_source">
                     <option selected="true" disabled="disabled">Select Source</option>
                     <option *ngFor="let data of fundSource | sort: 'asc' : 'name'" [value]="data.code">
-                            {{ data.name }}
+                            {{ data.name | titlecase }}
                     </option>
                   </select>
                 </div>
@@ -616,16 +639,16 @@
     </div>
 
     <div class="d-flex justify-content-between pb-4">
-      <div></div>
-      <div>
-        <button (click)="saveClientDetails()" class="btn" type="button"
-                [ngClass]="{ 'btn-primary': clientForm.invalid,
-                             'btn-danger': !clientForm.invalid }"
-                class="btn btn-sm">
-          Continue
-        </button>
-      </div>
-    </div>
+  <div></div>
+  <div>
+    <button (click)="saveClientDetails()" class="btn" type="button"
+            [ngClass]="{ 'btn-danger': clientForm.invalid, 
+                         'btn-primary': !clientForm.invalid
+                       }"
+            class="btn btn-sm">Continue
+    </button>
+  </div>
+</div>
 
   </div>
 
