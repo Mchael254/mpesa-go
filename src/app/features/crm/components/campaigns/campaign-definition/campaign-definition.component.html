@@ -40,11 +40,23 @@
                   <ng-container *ngIf="visibleStatus.system === 'Y'">
                     <div class="col-md-4">
                       <label for="system" class="form-label">System type</label>
-                      <select id="system" class="form-select" formControlName="system"
-                              [ngClass]="{ 'is-invalid': f['system']?.invalid && (f['system']?.dirty || f['system']?.touched) }">
-                        <option value="gis">GIS</option>
-                        <option value="lms">LMS</option>
-                      </select>
+                      <p-dropdown
+                        [options]="systems"
+                        optionLabel="shortDesc"
+                        optionValue="id"
+                        formControlName="system"
+                        id="system"
+                        [filter]="true"
+                        filterBy="shortDesc"
+                        [showClear]="true"
+                        [style]="{ width: '100%', height: '50%' }"
+                        appendTo="body"
+                        placeholder="Select option"
+                        [(ngModel)]="selectedSystem"
+                        (onChange)="onSystemChange()"
+                        [ngClass]="{ 'is-invalid': f['system']?.invalid && (f['system']?.dirty || f['system']?.touched) }"
+                      >
+                      </p-dropdown>
                       <div *ngIf="f['system']?.invalid && (f['system']?.dirty || f['system']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['system']?.errors['required']">System is required</div>
                       </div>
@@ -123,7 +135,7 @@
                         type="text"
                         class="form-control"
                         id="executionTime"
-                        onfocus="(this.type='time')"
+                        onfocus="(this.type='datetime-local')"
                         onblur="(this.type='text')"
                         formControlName="executionTime"
                         [ngClass]="{ 'is-invalid': f['executionTime']?.invalid && (f['executionTime']?.dirty || f['executionTime']?.touched) }"
@@ -140,11 +152,16 @@
                   <ng-container *ngIf="visibleStatus.assignedTo === 'Y'">
                     <div class="col-md-4">
                       <label for="assignedTo" class="form-label">Assigned to</label>
-                      <select id="assignedTo" class="form-select" formControlName="assignedTo"
-                              [ngClass]="{ 'is-invalid': f['assignedTo']?.invalid && (f['assignedTo']?.dirty || f['assignedTo']?.touched) }">
-                        <option value="1">user 1</option>
-                        <option value="2">user 2</option>
-                      </select>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="assignedTo"
+                        value="{{selectedMainUser?.name}}"
+                        id="assignedTo"
+                        readonly
+                        (click)="openAllUsersModal()"
+                        [ngClass]="{ 'is-invalid': f['assignedTo']?.invalid && (f['assignedTo']?.dirty || f['assignedTo']?.touched) }"
+                      />
                       <div *ngIf="f['assignedTo']?.invalid && (f['assignedTo']?.dirty || f['assignedTo']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['assignedTo']?.errors['required']">Assigned to is required</div>
                       </div>
@@ -153,11 +170,26 @@
                   <ng-container *ngIf="visibleStatus.organization === 'Y'">
                     <div class="col-md-4">
                       <label for="organization" class="form-label">Organization</label>
-                      <select id="organization" class="form-select" formControlName="organization"
-                              [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
-                        <option value="1">Heritage</option>
-                        <option value="2">KCB</option>
-                      </select>
+                      <p-dropdown
+                        [options]="organizations"
+                        optionLabel="name"
+                        optionValue="id"
+                        formControlName="organization"
+                        id="organization"
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        [style]="{ width: '100%', height: '50%' }"
+                        appendTo="body"
+                        placeholder="Select option"
+                        [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }"
+                      >
+                        <ng-template let-organization pTemplate="item">
+                          <div title="{{organization?.name}}">
+                            {{ organization?.name.length > 10 ? organization?.name.substring(0, 20) + '...' : organization?.name }}
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
                       <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
                       </div>
@@ -171,6 +203,9 @@
                         class="form-control"
                         id="team"
                         formControlName="team"
+                        value="{{selectedDefaultUser?.username}}"
+                        readonly
+                        (click)="showGroupMembers()"
                         [ngClass]="{ 'is-invalid': f['team']?.invalid && (f['team']?.dirty || f['team']?.touched) }"
                       />
                       <div *ngIf="f['team']?.invalid && (f['team']?.dirty || f['countryCode']?.touched)" class="form-text text-danger">
@@ -184,11 +219,26 @@
                   <ng-container *ngIf="visibleStatus.currency === 'Y'">
                     <div class="col-md-4">
                       <label for="currency" class="form-label">Currency</label>
-                      <select id="currency" class="form-select" formControlName="currency"
-                              [ngClass]="{ 'is-invalid': f['currency']?.invalid && (f['currency']?.dirty || f['currency']?.touched) }">
-                        <option value="1">Kshs</option>
-                        <option value="2">US Dollar</option>
-                      </select>
+                      <p-dropdown
+                        [options]="currencies"
+                        optionLabel="name"
+                        optionValue="id"
+                        formControlName="currency"
+                        id="currency"
+                        [filter]="true"
+                        filterBy="shortDesc"
+                        [showClear]="true"
+                        [style]="{ width: '100%', height: '50%' }"
+                        appendTo="body"
+                        placeholder="Select option"
+                        [ngClass]="{ 'is-invalid': f['currency']?.invalid && (f['currency']?.dirty || f['currency']?.touched) }"
+                      >
+                        <ng-template let-currency pTemplate="item">
+                          <div title="{{currency?.name}}">
+                            {{ currency?.name.length > 10 ? currency?.name.substring(0, 20) + '...' : currency?.name }}
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
                       <div *ngIf="f['currency']?.invalid && (f['currency']?.dirty || f['currency']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['currency']?.errors['required']">Currency is required</div>
                       </div>
@@ -293,8 +343,8 @@
                       <label for="status" class="form-label">Status</label>
                       <select id="status" class="form-select" formControlName="status"
                               [ngClass]="{ 'is-invalid': f['status']?.invalid && (f['status']?.dirty || f['status']?.touched) }">
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
+                        <option value="A">Active</option>
+                        <option value="N">Inactive</option>
                       </select>
                       <div *ngIf="f['status']?.invalid && (f['status']?.dirty || f['status']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['status']?.errors['required']">Status is required</div>
@@ -353,21 +403,36 @@
                   <ng-container *ngIf="visibleStatus.products === 'Y'">
                     <div class="col-md-4">
                       <label for="products" class="form-label">Products</label>
-                      <select id="products" class="form-select" formControlName="products"
-                              [ngClass]="{ 'is-invalid': f['products']?.invalid && (f['products']?.dirty || f['products']?.touched) }">
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
-                      </select>
+                      <p-multiSelect
+                        [options]="productList"
+                        formControlName="products"
+                        optionLabel="description"
+                        id="products"
+                        [filter]="true"
+                        filterBy="description"
+                        [style]="{ 'width': '100%', 'height': '40px' }"
+                        placeholder="Select product"
+                        [(ngModel)]="selectedOptions"
+                        [ngClass]="{ 'is-invalid': f['products']?.invalid && (f['products']?.dirty || f['products']?.touched) }"
+                      >
+                        <ng-template let-product pTemplate="item">
+                          <div title="{{product.description}}">
+                            {{ product.description.length > 10 ? product.description.substring(0, 28) + '...' : product.description }}
+                          </div>
+                        </ng-template>
+                      </p-multiSelect>
                       <div *ngIf="f['products']?.invalid && (f['products']?.dirty || f['products']?.touched)" class="form-text text-danger">
                         <div *ngIf="f['products']?.errors['required']">Products is required</div>
                       </div>
                     </div>
                   </ng-container>
 
-                  <div *ngFor="let product of products" class="col-md-3">
+                  <div *ngFor="let product of selectedOptions" class="col-md-3">
                     <div class="row pill-box fadeIn">
                       <div class="col-md-9 col-9 text-primary fw-medium">
-                        {{product.name}}
+                        <span *ngIf = "product?.description" title="{{product?.description}}">
+                          {{product?.description?.substring(0,13) | titlecase}}...
+                        </span>
                       </div>
                       <div class="col-md-3 col-3 text-end">
 
@@ -492,8 +557,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="campaignTargetData?.length"
-                [value]="campaignTargetData"
+                [totalRecords]="campaignActivityData?.length"
+                [value]="campaignActivityData"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
@@ -540,6 +605,7 @@
                     placeholder="Search for campaign messages"
                     aria-label="search"
                     aria-describedby="search"
+                    (input)="filterCampaignMessages($event)"
                   />
                 </div>
 
@@ -551,57 +617,67 @@
                     </span>
                     <span class="icon-circle">
                       <i class="pi pi-pencil"
-                        (click)="editCampaignMessages()"></i>
+                        (click)="editCampaignMessage()"></i>
                     </span>
                     <span class="icon-circle">
-                      <i class="fa-regular fa-trash-can"></i>
+                      <i class="fa-regular fa-trash-can"
+                         (click)="deleteCampaignMessage()"></i>
                     </span>
                   </div>
                 </div>
               </div>
               <p-table
-                #campaignsMessagesTable
+                #campaignMessagesTable
                 [autoLayout]="true"
                 [rowHover]="true"
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="campaignTargetData?.length"
-                [value]="campaignTargetData"
+                [totalRecords]="campaignMessageData?.length"
+                [value]="campaignMessageData"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
-                [(selection)]="selectedCampaignTarget"
-                selectionMode="single"
                 dataKey="code"
                 scrollHeight="400px"
                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                [globalFilterFields]="['description', 'code']"
+                [globalFilterFields]="['messageSubject']"
               >
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="target">Subject <p-sortIcon field="target"></p-sortIcon></th>
-                    <th pSortableColumn="email">Body <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="messageSubject">Subject <p-sortIcon field="messageSubject"></p-sortIcon></th>
+                    <th pSortableColumn="messageBody">Body <p-sortIcon field="messageBody"></p-sortIcon></th>
                     <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
-                    <th pSortableColumn="date">Send to all? <p-sortIcon field="date"></p-sortIcon></th>
-                    <th>Message status</th>
-                    <th>Has image?</th>
+                    <th pSortableColumn="sendAll">Send to all? <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="status">Message status <p-sortIcon field="status"></p-sortIcon></th>
+                    <th pSortableColumn="imageUrl">Has image? <p-sortIcon field="imageUrl"></p-sortIcon></th>
                   </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-campaignTarget>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                <ng-template pTemplate="body" let-campaignMessage>
+                  <tr
+                    class="custom-table"
+                    (click)="onCampaignMessageSelect(campaignMessage)"
+                    [class.selected]="selectedCampaignMessage === campaignMessage">
+                    <td>
+                      <span *ngIf = "campaignMessage?.messageSubject" title="{{campaignMessage?.messageSubject}}">
+                        {{campaignMessage?.messageSubject?.substring(0,15) | titlecase}}...
+                      </span>
+                    </td>
+                    <td>
+                      <span *ngIf = "campaignMessage?.messageBody" title="{{campaignMessage?.messageBody}}">
+                        {{campaignMessage?.messageBody?.substring(0,15) | titlecase}}...
+                      </span>
+                    </td>
+                    <td>{{campaignMessage?.date | date:'mediumDate'}}</td>
+                    <td>{{campaignMessage?.sendAll}}</td>
+                    <td>{{campaignMessage?.status}}</td>
+                    <td>{{campaignMessage?.imageUrl}}</td>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="4">No Campaign Activity Detail(s) Found.</td>
+                    <td colspan="4">No Campaign Message Detail(s) Found.</td>
                   </tr>
                 </ng-template>
               </p-table>
@@ -641,8 +717,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="campaignTargetData?.length"
-                [value]="campaignTargetData"
+                [totalRecords]="trackerUrlData?.length"
+                [value]="trackerUrlData"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
@@ -816,8 +892,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="campaignTargetData?.length"
-                [value]="campaignTargetData"
+                [totalRecords]="campaignTargetSearchData?.length"
+                [value]="campaignTargetSearchData"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
@@ -882,81 +958,99 @@
         ></button>
       </div>
       <div class="modal-body">
-
-        <label class="form-label w-100">Select target group</label>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="clients" value="clients">
-          <label class="form-check-label" for="clients">Clients</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="leads" value="leads">
-          <label class="form-check-label" for="leads">Leads</label>
-        </div>
-        <div class="row my-3">
-          <div class="col-md-6">
-            <label class="form-label w-100">Search criteria</label>
-            <select class="form-select w-75">
-              <option value="1">Active</option>
-              <option value="2">Inactive</option>
-            </select>
+        <form [formGroup]="targetSearchForm">
+          <label class="form-label w-100">Select target group</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="group" id="clients" value="clients" formControlName="group" checked
+                   (change)="filterClients($event)">
+            <label class="form-check-label" for="clients">Clients</label>
           </div>
-          <div class="col-md-6">
-            <label class="form-label w-100">Input search</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search for campaign target"
-              aria-label="search"
-              aria-describedby="search"
-            />
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="group" id="leads" value="leads" formControlName="group"
+                   (change)="filterClients($event)">
+            <label class="form-check-label" for="leads">Leads</label>
+          </div>
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label class="form-label w-100">Search criteria</label>
+              <select class="form-select w-75" formControlName="searchCriteria" (change)="filterClients($event)">
+                <option value="clientTypeName">Account type</option>
+                <option value="name">Name</option>
+                <option value="emailAddress">Email</option>
+                <option value="mobileNumber">Phone number</option>
+                <option value="gender">Gender</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label w-100">Input search</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                aria-label="search"
+                aria-describedby="search"
+                formControlName="searchValue"
+                (keyup.enter)="filterClients($event)"
+              />
+            </div>
+          </div>
+        </form>
+
+        <div class="card border-0">
+          <div class="card-body p-0">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              #campaignsTargetSearchTable
+              (onLazyLoad)="lazyLoadClients($event)"
+              [lazy]="true"
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="clientsData?.totalElements"
+              [value]="clientsData.content"
+              [paginator]="true"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              [(selection)]="selectedCampaignTarget"
+              selectionMode="single"
+              dataKey="code"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              [globalFilterFields]="['description', 'code']"
+            >
+
+              <ng-template pTemplate="header">
+                <tr>
+                  <th></th>
+                  <th pSortableColumn="clientType.clientTypeName">Account type <p-sortIcon field="clientType.clientTypeName"></p-sortIcon></th>
+                  <th pSortableColumn="firstName">Name <p-sortIcon field="firstName"></p-sortIcon></th>
+                  <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                  <th pSortableColumn="mobileNumber">Phone number <p-sortIcon field="mobileNumber"></p-sortIcon></th>
+                  <th pSortableColumn="gender">Gender <p-sortIcon field="gender"></p-sortIcon></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-campaignTarget>
+                <tr>
+                  <td><p-tableCheckbox></p-tableCheckbox></td>
+                  <td>{{campaignTarget?.clientType?.clientTypeName | titlecase}}</td>
+                  <td>{{campaignTarget?.firstName}} {{campaignTarget?.lastName}}</td>
+                  <td>{{campaignTarget?.emailAddress}}</td>
+                  <td>{{campaignTarget?.mobileNumber}}</td>
+                  <td>{{campaignTarget?.gender}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6">No Campaign Target Search Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
         </div>
-        <p-table
-          #campaignsTargetSearchTable
-          [autoLayout]="true"
-          [rowHover]="true"
-          [resizableColumns]="true"
-          [showCurrentPageReport]="true"
-          [rows]="pageSize || 5"
-          [totalRecords]="campaignTargetData?.length"
-          [value]="campaignTargetData"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          [scrollable]="true"
-          [(selection)]="selectedCampaignTarget"
-          selectionMode="single"
-          dataKey="code"
-          scrollHeight="400px"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['description', 'code']"
-        >
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th></th>
-              <th pSortableColumn="target">Account type <p-sortIcon field="target"></p-sortIcon></th>
-              <th pSortableColumn="email">Name <p-sortIcon field="email"></p-sortIcon></th>
-              <th pSortableColumn="date">Email <p-sortIcon field="date"></p-sortIcon></th>
-              <th>Phone number</th>
-              <th>Gender</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-campaignTarget>
-            <tr>
-              <td><p-tableCheckbox></p-tableCheckbox></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="6">No Campaign Target Search Detail(s) Found.</td>
-            </tr>
-          </ng-template>
-        </p-table>
 
       </div>
       <div class="modal-footer border-top-0">
@@ -1004,8 +1098,8 @@
           [resizableColumns]="true"
           [showCurrentPageReport]="true"
           [rows]="pageSize || 5"
-          [totalRecords]="campaignTargetData?.length"
-          [value]="campaignTargetData"
+          [totalRecords]="campaignActivityData?.length"
+          [value]="campaignActivityData"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
@@ -1194,8 +1288,11 @@
           aria-label="Close"
         ></button>
       </div>
+      <form [formGroup]="createCampaignMessageForm">
+
+
       <div class="modal-body">
-        <form [formGroup]="createCampaignMessageForm">
+<!--        <form [formGroup]="createCampaignMessageForm">-->
           <ng-container *ngIf="visibleStatus.msgCampaignType === 'Y'">
             <div>
               <label class="form-label w-100" for="msgCampaignType">Campaign type</label>
@@ -1290,19 +1387,29 @@
               <div *ngIf="h['sendTestTo']?.errors['required']">Send test to is required</div>
             </div>
           </ng-container>
-        </form>
+<!--        </form>-->
       </div>
         <div class="row col-12 ms-0">
           <div class="col-md-6 mb-2">
-            <button type="button" class="btn btn-outline-primary float-start">
+           <!-- <button type="button" class="btn btn-outline-primary float-start">
               <i class="fa-solid fa-calendar-alt w-auto m-auto"></i>
-              Schedule send</button>
+              Schedule send</button>-->
+            <input
+              type="text"
+              class="form-control"
+              id="scheduleDate"
+              placeholder="Schedule send"
+              onfocus="(this.type='datetime-local')"
+              onblur="(this.type='text')"
+              formControlName="scheduleDate"
+            />
           </div>
           <div class="col-md-6">
             <button type="button" class="btn btn-outline-primary me-2">Send test</button>
-            <button type="button" class="btn btn-primary">Save details</button>
+            <button type="button" class="btn btn-primary" (click)="saveCampaignMessage()">Save details</button>
           </div>
         </div>
+      </form>
     </div>
   </div>
 </div>
@@ -1393,3 +1500,48 @@
     </div>
   </div>
 </div>
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Save user'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Users'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+
+<!-- Modal for Viewing Group Members if User from above list was of group Type (type = G) !-->
+<app-dynamic-simple-modal
+  [modalVisible]="groupUserModalVisible"
+  [modalButtonLabel]="'Save team'"
+  [zIndex]="secondModalZIndex"
+  [title]="'Select Default User'"
+  [modalTitle]="'Select team'"
+  [useDynamicContent]="true"
+  (actionEmitter)="processDefaultUser($event)"
+>
+  <div modal-body-content>
+    <app-staff-modal
+      [isLazyLoaded]="false"
+      [staffList]="groupStaffMembers.content"
+      (userSelected)="getSelectedDefaultUser($event)">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the groupUserModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="groupUserModalVisible"
+     [style.z-index]="zIndex"></div>
+
+<app-reusable-input
+  [modalId]="'campaignMessageConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this campaign message?'"
+  (confirmed)="confirmCampaignMessageDelete()"
+  #campaignMessageConfirmationModal
+></app-reusable-input>
+
