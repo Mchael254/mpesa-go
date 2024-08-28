@@ -32,6 +32,7 @@ export const environment = {
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
     [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
+    [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns']
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']

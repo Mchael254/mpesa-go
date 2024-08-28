@@ -121,5 +121,11 @@ export class SystemsService {
     );
   }
 
+  getSystemById(systemID: number) {
+    return this.api.GET<SystemsDto>(
+      `systems/${systemID}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    )
+  }
 
 }
