@@ -188,12 +188,11 @@
   id="agencyModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Define a Branch</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Define an Agency</h5>
         <button
           type="button"
           class="btn-close"
@@ -387,7 +386,6 @@
   id="agencyTransferModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
 >
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
@@ -404,7 +402,7 @@
         <form [formGroup]="createAgencyTransferForm">
           <div class="row">
             <div class="col-6 mb-3">
-              <label for="transferRegion" class="form-label"
+              <label for="currentBranch" class="form-label"
                 >Current Branch</label
               >
               <p-dropdown
@@ -422,18 +420,6 @@
               >
               </p-dropdown>
             </div>
-            <!-- <div class="col-6 mb-3">
-              <label for="currentBranch" class="form-label"
-                >Current Branch</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="currentBranch"
-                placeholder="Current Branch"
-                formControlName="currentBranch"
-              />
-            </div> -->
             <div class="col-6 mb-3">
               <label for="agencyName" class="form-label">Agency</label>
               <input
@@ -447,7 +433,7 @@
             <div class="col-6 mb-3">
               <label for="transferDate" class="form-label">Transfer Date</label>
               <input
-                type="text"
+                type="date"
                 class="form-control"
                 id="transferDate"
                 placeholder="Transfer Date"
@@ -455,7 +441,7 @@
               />
             </div>
             <div class="col-6 mb-3">
-              <label for="transferRegion" class="form-label"
+              <label for="transferBranch" class="form-label"
                 >Transfer to Branch</label
               >
               <p-dropdown
