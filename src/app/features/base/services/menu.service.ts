@@ -151,6 +151,7 @@ export class MenuService {
                 link: '/home/crm/country',
               },
             ],
+            collapsed: true,
           },
           {
             name: 'Org Parameters',
@@ -173,6 +174,7 @@ export class MenuService {
                 link: '/home/crm/payment-modes',
               },
             ],
+            collapsed: true,
           },
           {
             name: 'Account Management',
@@ -195,6 +197,7 @@ export class MenuService {
                 link: '/home/crm/service-provider-types',
               },
             ],
+            collapsed: true,
           },
           {
             name: 'Bank Setups',
@@ -205,6 +208,7 @@ export class MenuService {
                 link: '/home/crm/bank',
               },
             ],
+            collapsed: true,
           },
           {
             name: 'Administration',
@@ -233,11 +237,18 @@ export class MenuService {
                 link: '/home/crm/messages',
               },
             ],
+            collapsed: true,
           },
           {
             name: 'System Reports',
             nameSlug: 'sysrpt',
-            subList: [],
+            subList: [
+              {
+                name: 'Reports',
+                link: '',
+              },
+            ],
+            collapsed: true,
           },
         ],
         collapsed: true,
