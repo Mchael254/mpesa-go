@@ -90,6 +90,7 @@ export class BranchComponent implements OnInit {
   public selectedOrganization: number;
   public selectedOrganizationId: number | null = null;
   public selectedRegion: number;
+  public transferRegion: number;
   public selectedState: number;
   public selectedTown = '';
   public selectedManager = '';
@@ -758,7 +759,58 @@ export class BranchComponent implements OnInit {
     }
   }
 
-  transferBranch() {}
+  transferBranch() {
+    if (this.selectedBranch) {
+      this.openBranchTransferModal();
+      const date = new Date();
+      const formattedDate = date.toISOString().substring(0, 10);
+      this.createBranchTransferForm.patchValue({
+        branchName: this.selectedBranch.name,
+        transferDate: formattedDate,
+      });
+    }
+  }
+
+  saveBranchTransfer() {
+    this.closeBranchTransferModal();
+    const branchTransferFormValues =
+      this.createBranchTransferForm.getRawValue();
+    const fromRegionId = branchTransferFormValues.currentRegion;
+    const toRegionId = branchTransferFormValues.transferRegion;
+    const branchId = this.selectedBranch?.id;
+
+    // this.organizationService
+    //   .transferOrganizationBranch(branchId, fromRegionId, toRegionId)
+    //   .subscribe({
+    //     next: (data) => {
+    //       if (data) {
+    //         this.globalMessagingService.displaySuccessMessage(
+    //           'success',
+    //           'Successfully Transfered Organization Branch'
+    //         );
+    //         this.createBranchTransferForm.reset();
+    //         this.selectedBranch = null;
+    //         this.fetchOrganizationBranch(this.selectedOrg.id, fromRegionId);
+    //       } else {
+    //         this.errorOccurred = true;
+    //         this.errorMessage = 'Something went wrong. Please try Again';
+    //         this.globalMessagingService.displayErrorMessage(
+    //           'Error',
+    //           'Something went wrong. Please try Again'
+    //         );
+    //       }
+    //     },
+    //     error: (err) => {
+    //       this.errorOccurred = true;
+    //       this.errorMessage = err?.error?.errors[0];
+    //       this.globalMessagingService.displayErrorMessage(
+    //         'Error',
+    //         this.errorMessage
+    //       );
+    //       log.info(`error >>>`, err);
+    //     },
+    //   });
+  }
 
   saveBranchDivision() {
     this.closeBranchDivisionModal();
