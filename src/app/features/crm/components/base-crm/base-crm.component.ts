@@ -47,7 +47,12 @@ Relationship Management) application. Each object has the following properties: 
       showSubItems: false,
       subItems: [{ label: 'Banks', link: '/home/crm/bank' }],
     },
-    { label: 'Administration', link: '', showSubItems: false, subItems: [] },
+    {
+      label: 'Administration',
+      link: '',
+      showSubItems: false,
+      subItems: [{ label: 'System Roles', link: '/home/crm/system-roles' }],
+    },
     {
       label: 'Messaging',
       link: '',
@@ -55,11 +60,15 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Message Template', link: '/home/crm/messaging-template' },
         { label: 'Messages History', link: '/home/crm/messages' },
-        { label: 'System Roles', link: '/home/crm/system-roles' },
         { label: 'Scheduler', link: '/home/crm/scheduler' },
       ],
     },
-    { label: 'System Reports', link: '', showSubItems: false, subItems: [] },
+    {
+      label: 'System Reports',
+      link: '',
+      showSubItems: false,
+      subItems: [],
+    },
   ];
 
   campaignMngtItems: Array<{
@@ -90,7 +99,10 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Activities', link: '/home/crm/activities' },
         { label: 'Activity Types', link: '/home/crm/activity-types' },
-        { label: 'Priority Level & Activity Status', link: '/home/crm/priority-level-activity-status' }
+        {
+          label: 'Priority Level & Activity Status',
+          link: '/home/crm/priority-level-activity-status',
+        },
       ],
     },
   ];
