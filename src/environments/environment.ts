@@ -42,6 +42,8 @@ export const environment = {
     [API_CONFIG.NONE_BASE_URL, 'api'],
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
-    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims']
+    [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
+    [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns']
+      // [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, 'http://localhost:10402']
   ]),
 };

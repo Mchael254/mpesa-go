@@ -35,7 +35,7 @@
               placeholder="Search for campaign"
               aria-label="search"
               aria-describedby="search"
-
+              (input)="filterCampaigns($event)"
             />
           </div>
 
@@ -47,94 +47,138 @@
               (click)="showDefinition()"></i>
             </span>
               <span class="icon-circle">
-              <i class="pi pi-pencil"></i>
+              <i class="pi pi-pencil"
+                 (click)="showEditDefinition()"></i>
             </span>
               <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can"
+                 (click)="deleteCampaign()"></i>
             </span>
             </div>
           </div>
         </div>
-        <p-table
-          #campaignsTable
-          [autoLayout]="true"
-          [rowHover]="true"
-          [resizableColumns]="true"
-          [showCurrentPageReport]="true"
-          [rows]="pageSize || 5"
-          [totalRecords]="campaignData?.length"
-          [value]="campaignData"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          [scrollable]="true"
-          [(selection)]="selectedCampaign"
-          selectionMode="single"
-          dataKey="code"
-          scrollHeight="400px"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['description', 'code']"
-        >
+        <div class="card border-0">
+          <div class="card-body p-0">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              #campaignsTable
+              [autoLayout]="true"
+              [paginator]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 10"
+              [totalRecords]="aggregatedCampaignsData?.numberOfElements"
+              [value]="aggregatedCampaignsData?.content"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              selectionMode="single"
+              dataKey="code"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              [globalFilterFields]="['campaign.campaignName']"
+            >
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="gis_exception_code">Campaign name <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-              <th pSortableColumn="objective">Objective <p-sortIcon field="objective"></p-sortIcon></th>
-              <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-              <th>System</th>
-              <th>User</th>
-              <th>Group</th>
-              <th>Organisation</th>
-              <th pSortableColumn="authorised">Starting date <p-sortIcon field="authorised"></p-sortIcon></th>
-              <th pSortableColumn="transactions_date">Closing date <p-sortIcon field="transactions_date"></p-sortIcon></th>
-              <th pSortableColumn="authorised_by">Expected cost <p-sortIcon field="authorised_by"></p-sortIcon></th>
-              <th pSortableColumn="authorised_date">Budgeted cost <p-sortIcon field="authorised_date"></p-sortIcon></th>
-              <th pSortableColumn="exception_by">Actual cost <p-sortIcon field="exception_by"></p-sortIcon></th>
-              <th>Expected revenue</th>
-              <th>Currency</th>
-              <th>Sponsor</th>
-              <th>Campaign type</th>
-              <th>Campaign status</th>
-              <th>Impressions</th>
-              <th>Event</th>
-              <th>Venue</th>
-              <th>Event time</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-campaign>
-            <tr>
-              <td></td>
-              <td>{{campaign.gis_exception_code}}</td>
-              <td></td>
-              <td></td>
-              <td>{{campaign?.set_standard}}</td>
-              <td>{{campaign?.used_standard}}</td>
-              <td>{{campaign?.authorised}}</td>
-              <td>{{campaign?.transactions_date}}</td>
-              <td>{{campaign?.authorised_by}}</td>
-              <td>{{campaign?.authorised_date}}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="21">No Campaign Detail(s) Found.</td>
-            </tr>
-          </ng-template>
-        </p-table>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="campaign.campaignName">Campaign name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.objective">Objective <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.description">Description <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                  <th pSortableColumn="system.shortDesc">System <p-sortIcon field="system.shortDesc"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.user">User <p-sortIcon field="campaign.user"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.teamLeader">Group <p-sortIcon field="campaign.teamLeader"></p-sortIcon></th>
+                  <th pSortableColumn="organization.name">Organisation <p-sortIcon field="organization.name"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpDate">Starting date <p-sortIcon field="campaign.cmpDate"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.expectCloseDate">Closing date <p-sortIcon field="campaign.expectCloseDate"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.expectedCost">Expected cost <p-sortIcon field="campaign.expectedCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpBgtCost">Budgeted cost <p-sortIcon field="campaign.cmpBgtCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpActlCost">Actual cost <p-sortIcon field="campaign.cmpActlCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpExptRevenue">Expected revenue <p-sortIcon field="campaign?.cmpExptRevenue"></p-sortIcon></th>
+                  <th pSortableColumn="currency.name">Currency <p-sortIcon field="currency.name"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.sponsor">Sponsor <p-sortIcon field="campaign.sponsor"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.campaignType">Campaign type <p-sortIcon field="campaign.campaignType"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.status">Campaign status <p-sortIcon field="campaign.status"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.impressionCount">Impressions <p-sortIcon field="campaign.impressionCount"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.events">Event <p-sortIcon field="campaign.events"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.venue">Venue <p-sortIcon field="campaign.venue"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.eventTime">Event time <p-sortIcon field="campaign.eventTime"></p-sortIcon></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-aggregatedCampaign>
+                <tr class="custom-table"
+                    (click)="onCampaignSelect(aggregatedCampaign)"
+                    [class.selected]="selectedCampaign === aggregatedCampaign"
+                >
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.campaign?.campaignName" title="{{aggregatedCampaign.campaign?.campaignName}}">
+                      {{aggregatedCampaign.campaign?.campaignName?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.campaign.objective" title="{{aggregatedCampaign.campaign.objective}}">
+                      {{aggregatedCampaign.campaign.objective?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.campaign?.description" title="{{aggregatedCampaign.campaign?.description}}">
+                      {{aggregatedCampaign.campaign?.description?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>{{aggregatedCampaign?.system?.shortDesc}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.user}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.teamLeader}}</td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.organization?.name" title="{{aggregatedCampaign.organization?.name}}">
+                      {{aggregatedCampaign.organization?.name?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>{{aggregatedCampaign?.campaign?.cmpDate | date:'mediumDate'}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.expectCloseDate | date:'mediumDate'}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.expectedCost | number}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.cmpBgtCost | number}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.cmpActlCost | number}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.cmpExptRevenue | number}}</td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.currency?.name" title="{{aggregatedCampaign.currency?.name}}">
+                      {{aggregatedCampaign.currency?.name?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>{{aggregatedCampaign?.campaign?.sponsor}}</td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign.campaign?.campaignType" title="{{aggregatedCampaign.campaign?.campaignType}}">
+                      {{aggregatedCampaign.campaign?.campaignType?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>{{aggregatedCampaign?.campaign?.status}}</td>
+                  <td>{{aggregatedCampaign?.campaign?.impressionCount}}</td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign?.campaign?.events" title="{{aggregatedCampaign?.campaign?.events}}">
+                      {{aggregatedCampaign?.campaign?.events?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf = "aggregatedCampaign?.campaign?.venue" title="{{aggregatedCampaign?.campaign?.venue}}">
+                      {{aggregatedCampaign?.campaign?.venue?.substring(0,10) | titlecase}}...
+                    </span>
+                  </td>
+                  <td>{{aggregatedCampaign?.campaign?.eventTime | date:'shortTime'}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="21">No Campaign Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
       </ng-container>
       <ng-template #otherTemplates>
         <ng-container *ngIf="showDefinitionMode; else showCampaignAnalytics">
-          <app-campaign-definition (onClickSave)="toggleCampaign()"></app-campaign-definition>
+          <app-campaign-definition (onClickSave)="toggleCampaign()"
+          [systems]="systemsData" [organizations]="organizationData" [currencies]="currencyData" [selectedCampaign]="selectedCampaign"
+          ></app-campaign-definition>
         </ng-container>
 
         <ng-template #showCampaignAnalytics>
@@ -257,3 +301,11 @@
 
   </p-tabView>
 </div>
+
+<app-reusable-input
+  [modalId]="'campaignConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this campaign?'"
+  (confirmed)="confirmCampaignDelete()"
+  #campaignConfirmationModal
+></app-reusable-input>
