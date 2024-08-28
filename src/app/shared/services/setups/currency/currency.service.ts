@@ -37,8 +37,8 @@ export class CurrencyService {
     );
   }
 
-  getCurrencybyId(currencyId){
-    return this.api.GET(`currencies/${currencyId}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
+  getCurrencybyId(currencyId): Observable<CurrencyDTO>{
+    return this.api.GET<CurrencyDTO>(`currencies/${currencyId}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
   }
   createCurrency(data: CurrencyDTO): Observable<CurrencyDTO> {
     return this.api.POST<CurrencyDTO>(

@@ -23,22 +23,26 @@ export class ClientService {
     page: number | null = 0,
     size: number | null = 5,
     sortField: string = 'createdDate',
-    order: string = 'desc'
+    order: string = 'desc',
+    columnName: string = null,
+    columnValue: string = null
   ): Observable<Pagination<ClientDTO>> {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('sortListFields', `${sortField}`)
-      .set('order', `${order}`);
+      .set('order', `${order}`)
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`);
 
     /*if (organizationId !== undefined && organizationId !== null) {
       params['organizationId'] = organizationId.toString();
     }*/
-
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<ClientDTO>>(
       `clients`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
-      params
+      paramObject
     );
   }
 
@@ -206,7 +210,7 @@ export class ClientService {
       params
     );
   }
-  
+
   save(clientData: any): Observable<any> {
     return this.api.POST<any>(
       `clients`,
