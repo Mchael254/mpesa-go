@@ -35,7 +35,7 @@
         <div class="collapse sub-title" [id]="item.nameSlug">
           <ul
             *ngIf="item.menuItems?.length > 0"
-            class="btn-toggle-nav list-unstyled pb-1"
+            class="btn-toggle-nav list-unstyled"
           >
             <ng-container *ngFor="let menuItem of item.menuItems">
               <li>
@@ -60,7 +60,7 @@
                     {{ "base." + menuItem.name | translate }}
                   </button>
                   <div class="collapse sub-title" [id]="menuItem.nameSlug">
-                    <ul class="btn-toggle-nav list-unstyled pb-1">
+                    <ul class="btn-toggle-nav list-unstyled">
                       <li *ngFor="let subMenuItem of menuItem.subList">
                         <a
                           (click)="clickURL(subMenuItem.link)"

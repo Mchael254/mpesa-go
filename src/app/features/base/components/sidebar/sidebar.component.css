@@ -38,7 +38,7 @@
 .sub-title li {
   width: 80%;
   font-size: 8px;
-  padding: 5px;
+  /* padding: 5px; */
 }
 
 .sub-title li:hover {
