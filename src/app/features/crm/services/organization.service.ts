@@ -417,4 +417,11 @@ export class OrganizationService {
       params
     );
   }
+
+  getOrganizationByID(organizationID): Observable<OrganizationDTO> {
+    return this.api.GET<OrganizationDTO>(
+      `organizations/${organizationID}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
 }
