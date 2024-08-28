@@ -1,9 +1,29 @@
-import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import {map, take} from "rxjs";
+import {ProductsService} from "../../../../gis/components/setups/services/products/products.service";
+import {ProductService as LmsProductService} from "../../../../lms/service/product/product.service";
+import {
+  AggregatedCampaignsDTO,
+  CampaignMessagesDTO,
+  CampaignsDTO,
+  CampaignTargetsDTO
+} from "../../../data/campaignsDTO";
+import {StaffDto} from "../../../../entities/data/StaffDto";
+import {CampaignsService} from "../../../services/campaigns..service";
+import {StaffService} from "../../../../entities/services/staff/staff.service";
+import {Pagination} from "../../../../../shared/data/common/pagination";
+import {NgxSpinnerService} from "ngx-spinner";
+import {ReusableInputComponent} from "../../../../../shared/components/reusable-input/reusable-input.component";
+import {Table, TableLazyLoadEvent} from "primeng/table";
+import {ClientService} from "../../../../entities/services/client/client.service";
+import {ClientDTO} from "../../../../entities/data/ClientDTO";
+import {LazyLoadEvent} from "primeng/api";
+import {tap} from "rxjs/operators";
 
 const log = new Logger('CampaignDefinitionComponent');
 @Component({
@@ -12,15 +32,27 @@ const log = new Logger('CampaignDefinitionComponent');
   styleUrls: ['./campaign-definition.component.css']
 })
 export class CampaignDefinitionComponent implements OnInit {
+  @Input() systems: any;
+  @Input() currencies: any;
+  @Input() organizations: any;
+  @Input() selectedCampaign: AggregatedCampaignsDTO;
+  selectedSystem: any;
   products: any[];
   pageSize: 5;
-  campaignTargetData: any[];
+  campaignTargetData: CampaignTargetsDTO[];
   selectedCampaignTarget: any[] = [];
+
+  campaignActivityData: any[];
+  trackerUrlData: any[];
+  campaignTargetSearchData: any[];
 
   editMode: boolean = false;
 
   url = ""
   selectedFile: File;
+
+  productList: AllProduct[] = [];
+  lmsProducts: any[] = [];
 
   navigationLinks: any[] = [
     {
@@ -58,6 +90,7 @@ export class CampaignDefinitionComponent implements OnInit {
   createCampaignActivityForm: FormGroup;
   createCampaignMessageForm: FormGroup;
   createTrackerUrlForm: FormGroup;
+  targetSearchForm: FormGroup;
 
   visibleStatus: any = {
     name: 'Y',
@@ -96,6 +129,7 @@ export class CampaignDefinitionComponent implements OnInit {
     messagesContent: 'Y',
     image: 'Y',
     sendTestTo: 'Y',
+    scheduleDate: 'Y',
   //
     trackerName: 'Y',
     trackerUrl: 'Y',
@@ -107,11 +141,38 @@ export class CampaignDefinitionComponent implements OnInit {
   groupIdCampaignMessages: string = 'campaignMessagesTab';
   groupIdCampaignTrackerUrl: string = 'campaignTrackerUrlTab';
 
+  allUsersModalVisible: boolean = false;
+  groupUserModalVisible: boolean = false;
+  zIndex= 1;
+  secondModalZIndex = 2;
+  selectedMainUser: StaffDto;
+  selectedDefaultUser: StaffDto;
+  groupStaffMembers: Pagination<StaffDto> = <Pagination<StaffDto>>{};
+
+  selectedOptions: any[];
+  campaignMessageData: CampaignMessagesDTO[];
+
+  selectedCampaignMessage: CampaignMessagesDTO;
+
+  @ViewChild('campaignMessageConfirmationModal')
+  campaignMessageConfirmationModal!: ReusableInputComponent;
+
+  @ViewChild('campaignMessagesTable') campaignMessagesTable: Table;
+  @Output() editCampaignClick: EventEmitter<any> = new EventEmitter<any>();
+  clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
+  isSearching: boolean = false;
+
   constructor(
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private mandatoryFieldsService: MandatoryFieldsService,
+    private gisProductService: ProductsService,
+    private lmsProductService: LmsProductService,
+    private campaignsService: CampaignsService,
+    private staffService: StaffService,
+    private spinner: NgxSpinnerService,
+    private clientService: ClientService
   ) {}
 
   ngOnInit(): void {
@@ -142,6 +203,13 @@ export class CampaignDefinitionComponent implements OnInit {
     this.campaignActivityCreateForm();
     this.campaignMessageCreateForm();
     this.campaignTrackerUrlCreateForm();
+    this.targetSearchCreateForm();
+    this.fetchStaffGroupMembers();
+    // log.info(this.systems, this.currencies, this.organizations)
+    log.info("selected campaign>", this.selectedCampaign)
+
+    this.fetchCampaignMessages();
+    this.fetchCampaignTargets();
   }
 
   /**
@@ -248,7 +316,8 @@ export class CampaignDefinitionComponent implements OnInit {
       messagesSubject: [''],
       messagesContent: [''],
       image: [''],
-      sendTestTo: ['']
+      sendTestTo: [''],
+      scheduleDate: ['']
     });
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupIdCampaignMessages).pipe(
       untilDestroyed(this)
@@ -312,6 +381,17 @@ export class CampaignDefinitionComponent implements OnInit {
         this.cdr.detectChanges();
       });
   }
+/**
+ * Initializes the target search form with the specified form controls.
+ */
+  targetSearchCreateForm() {
+    this.targetSearchForm = this.fb.group({
+      group: [''],
+      searchCriteria: [''],
+      searchValue: ['']
+    });
+  }
+
   /**
    * The function returns the controls of a form named createCampaignDefinitionForm.
    * @returns The `controls` property of the `createCampaignDefinitionForm` object is being returned.
@@ -339,19 +419,15 @@ export class CampaignDefinitionComponent implements OnInit {
   /**
    * The function returns the controls of a form named createTrackerUrlForm.
    */
-  /**
-   * The function returns the controls of a form named createTrackerUrlForm.
-   */
   get i() {
     return this.createTrackerUrlForm.controls;
   }
 
-  selectProduct(product: any) {
-
-  }
-
   deleteProduct(product: any) {
-
+    const index = this.selectedOptions.indexOf(product);
+    if (index > -1) {
+      this.selectedOptions.splice(index, 1);
+    }
   }
 
   /**
@@ -483,6 +559,113 @@ export class CampaignDefinitionComponent implements OnInit {
     }
   }
 
+/**
+ * Opens the modal for displaying all users by setting the zIndex to -1 and toggling the visibility of the modal.
+ */
+  openAllUsersModal() {
+    this.zIndex  = -1;
+    this.toggleAllUsersModal(true);
+  }
+
+  /**
+ * Opens the group members modal by adjusting the z-index values and toggling the modal visibility.
+ */
+  openGroupMembersModal() {
+    this.zIndex = -1;
+    this.secondModalZIndex = 1;
+    this.toggleGroupMembersModal(true);
+  }
+
+  /**
+   * The function `toggleAllUsersModal` sets the visibility of the all users modal based on the `display` parameter.
+   */
+  private toggleAllUsersModal(display: boolean) {
+    this.allUsersModalVisible = display;
+  }
+
+  /**
+   * The function `processSelectedUser` toggles a modal and sets the zIndex to 1.
+   */
+  processSelectedUser($event: void) {
+    this.toggleAllUsersModal(false);
+    this.zIndex = 1;
+  }
+
+/**
+ * Toggles the visibility of the group members modal based on the provided display parameter.
+ *
+ * @param display - A boolean value indicating whether to display the group members modal.
+ */
+  private toggleGroupMembersModal(display: boolean){
+    this.groupUserModalVisible = display;
+  }
+
+
+  /**
+   * Sets the selectedMainUser property to the provided event and patches the assignedTo value of the
+   * createCampaignDefinitionForm with the id of the selected user.
+   * @param event - The selected user.
+   */
+  getSelectedUser(event: StaffDto) {
+    this.selectedMainUser = event;
+    log.info(this.selectedMainUser)
+    this.createCampaignDefinitionForm.patchValue({
+      assignedTo: event?.id
+    });
+  }
+
+  /**
+   * Toggles the group members modal and sets the zIndex to 1.
+   * @param event - An event indicating whether to toggle the modal.
+   */
+  processDefaultUser(event: void) {
+    this.toggleGroupMembersModal(false);
+    this.zIndex = 1;
+  }
+
+  /**
+ * Updates the selected default user for the campaign definition form.
+ *
+ * @param event - The StaffDto object representing the selected default user.
+ */
+  getSelectedDefaultUser(event: StaffDto) {
+    this.selectedDefaultUser = event;
+    this.createCampaignDefinitionForm.patchValue({
+      team: event?.id
+    })
+  }
+
+  /**
+ * Hides the all users modal and opens the group members modal.
+ */
+  showGroupMembers() {
+    this.allUsersModalVisible = false;
+    // this.fetchStaffGroupMembers();
+    this.openGroupMembersModal();
+  }
+
+/**
+ * Fetches staff group members by making a call to the staff service with specific parameters.
+ * Updates the groupStaffMembers property with the retrieved data or displays an error message.
+ */
+  fetchStaffGroupMembers() {
+    this.staffService.getStaff(0, null, 'G', null, null, null)
+      .subscribe({
+        next: (data) => {
+          this.groupStaffMembers = data;
+        },
+        error: (err) => {
+          let errorMessage = '';
+          if (err?.error?.msg) {
+            errorMessage = err.error.msg
+          } else {
+            errorMessage = err.message
+          }
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        }
+      })
+  }
+
   /**
    * The function `onFileChange` reads a selected file, converts it to a data URL, and updates the URL
    * displayed.
@@ -545,15 +728,6 @@ export class CampaignDefinitionComponent implements OnInit {
   }
 
   /**
-   * The function `editCampaignMessages` toggles the edit mode and opens a modal for editing campaign
-   * messages.
-   */
-  editCampaignMessages() {
-    this.editMode = !this.editMode;
-    this.openCampaignMessageModal();
-  }
-
-  /**
    * The function `editTrackerUrl` toggles the edit mode and opens a modal for editing a tracker URL.
    */
   editTrackerUrl() {
@@ -561,5 +735,541 @@ export class CampaignDefinitionComponent implements OnInit {
     this.openTrackerUrlModal();
   }
 
+  /**
+   * The function checks the short description of a selected system and fetches corresponding products based on the
+   * description.
+   */
+  onSystemChange() {
+    const sysId = this.selectedSystem;
+
+    if (sysId === 37) {
+      log.info("gis",this.selectedSystem)
+      this.fetchGisProducts();
+
+    } else if (sysId === 27) {
+      log.info("lms",this.selectedSystem)
+      this.fetchLmsProducts();
+
+    } else {
+      this.productList = [];
+    }
+
+  }
+
+  /**
+   * The fetchGisProducts function retrieves all products from the GIS product service and stores them in the productList
+   * array.
+   */
+  fetchGisProducts() {
+    this.productList = [];
+    this.gisProductService.getAllProducts()
+      .pipe(
+        take(1),
+        map(data => {
+          const allProducts: AllProduct[] = [];
+          data.forEach(product => {
+            const combinedProduct: AllProduct = {
+              code: product.code,
+              description: product.description
+            }
+            allProducts.push(combinedProduct);
+          })
+          return allProducts;
+        })
+      )
+      .subscribe(
+        (data) => {
+          this.productList = data;
+          log.info('gis products:', this.productList);
+        })
+  }
+
+  /**
+   * The fetchLmsProducts function retrieves a list of products from an LMS service and assigns it to the productList
+   * variable.
+   */
+  fetchLmsProducts() {
+    this.productList = [];
+    this.lmsProductService.getListOfProduct()
+      .pipe(
+        take(1),
+        map(data => {
+          const allProducts: AllProduct[] = [];
+          data.forEach(product => {
+            const combinedProduct: AllProduct = {
+              code: product.code,
+              description: product.description
+            }
+            allProducts.push(combinedProduct);
+          })
+          return allProducts;
+        })
+      )
+      .subscribe(
+        (data) => {
+          this.productList = data;
+          log.info('lms products:', this.productList);
+        })
+  }
+
+  /**
+   * Saves a campaign by calling the createCampaign or updateCampaign method of the CampaignsService based on whether a campaign is being edited or not.
+   * The payload for the request is built from the values of the campaign definition form.
+   * If the campaign is being edited, the code of the campaign is used to update the campaign.
+   * If the campaign is not being edited, a new campaign is created.
+   * The method displays a success message if the campaign is saved successfully and an error message if the request fails.
+   * If the campaign is being edited, the campaign message form is reset and the campaign message modal is closed.
+   * The selected campaign is set to null after the campaign is saved.
+   */
+  saveCampaign() {
+    this.createCampaignDefinitionForm.markAllAsTouched();
+    if (this.createCampaignDefinitionForm.invalid) {
+      // this.globalMessagingService.displayErrorMessage('Error', 'Fill required fields');
+      return;
+    }
+    if(!this.selectedCampaign) {
+      const campaignDefinitionFormValues = this.createCampaignDefinitionForm.getRawValue();
+
+      const saveCampaignPayload: CampaignsDTO = {
+        actualResponseCount: null,
+        actualRoi: null,
+        actualSalesCount: null,
+        campaignName: campaignDefinitionFormValues.name,
+        campaignType: campaignDefinitionFormValues.campaignType,
+        cmpActlCost: campaignDefinitionFormValues.actualCost,
+        cmpBgtCost: campaignDefinitionFormValues.budgetedCost,
+        cmpDate: campaignDefinitionFormValues.dateFrom,
+        cmpExptRevenue: campaignDefinitionFormValues.expectedRevenue,
+        cmpNumSent: null,
+        code: null,
+        currencies: campaignDefinitionFormValues.currency,
+        description: campaignDefinitionFormValues.description,
+        eventTime: campaignDefinitionFormValues.executionTime,
+        events: campaignDefinitionFormValues.event,
+        expectCloseDate: campaignDefinitionFormValues.dateTo,
+        expectedCost: campaignDefinitionFormValues.expectedCost,
+        expectedResponseCount: null,
+        expectedRoi: null,
+        expectedSalesCount: null,
+        impressionCount: campaignDefinitionFormValues.pageImpressions,
+        objective: campaignDefinitionFormValues.objective,
+        organization: campaignDefinitionFormValues.organization,
+        product: campaignDefinitionFormValues.products[0].code, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
+        sponsor: campaignDefinitionFormValues.sponsor,
+        status: campaignDefinitionFormValues.status,
+        system: campaignDefinitionFormValues.system,
+        targetAudience: null,
+        targetSize: null,
+        teamLeader: campaignDefinitionFormValues.team,
+        user: campaignDefinitionFormValues.assignedTo,
+        venue: campaignDefinitionFormValues.venue
+      }
+
+      log.info("form>>", saveCampaignPayload);
+      this.campaignsService.createCampaign(saveCampaignPayload)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a campaign');
+
+            this.createCampaignDefinitionForm.reset();
+            // this.fetchCampaign();
+          },
+          error => {
+            // log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
+    }
+    else {
+      const campaignDefinitionFormValues = this.createCampaignDefinitionForm.getRawValue();
+      const campaignCode = this.selectedCampaign?.campaign?.code;
+
+      const saveCampaignPayload: CampaignsDTO = {
+        actualResponseCount: null,
+        actualRoi: null,
+        actualSalesCount: null,
+        campaignName: campaignDefinitionFormValues.name,
+        campaignType: campaignDefinitionFormValues.campaignType,
+        cmpActlCost: campaignDefinitionFormValues.actualCost,
+        cmpBgtCost: campaignDefinitionFormValues.budgetedCost,
+        cmpDate: campaignDefinitionFormValues.dateFrom,
+        cmpExptRevenue: campaignDefinitionFormValues.expectedRevenue,
+        cmpNumSent: null,
+        code: campaignCode,
+        currencies: campaignDefinitionFormValues.currency,
+        description: campaignDefinitionFormValues.description,
+        eventTime: campaignDefinitionFormValues.executionTime,
+        events: campaignDefinitionFormValues.event,
+        expectCloseDate: campaignDefinitionFormValues.dateTo,
+        expectedCost: campaignDefinitionFormValues.expectedCost,
+        expectedResponseCount: null,
+        expectedRoi: null,
+        expectedSalesCount: null,
+        impressionCount: campaignDefinitionFormValues.pageImpressions,
+        objective: campaignDefinitionFormValues.objective,
+        organization: campaignDefinitionFormValues.organization,
+        product: campaignDefinitionFormValues.products[0].code || null, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
+        sponsor: campaignDefinitionFormValues.sponsor,
+        status: campaignDefinitionFormValues.status,
+        system: campaignDefinitionFormValues.system,
+        targetAudience: null,
+        targetSize: null,
+        teamLeader: campaignDefinitionFormValues.team,
+        user: campaignDefinitionFormValues.assignedTo,
+        venue: campaignDefinitionFormValues.venue
+      }
+      log.info("campaign edit>", saveCampaignPayload)
+      this.campaignsService.updateCampaign(campaignCode, saveCampaignPayload)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated a campaign');
+
+            this.createCampaignMessageForm.reset();
+            this.closeCampaignMessageModal();
+            this.selectedCampaign = null;
+          },
+          error => {
+            // log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
+    }
+
+  }
+
+  /**
+   * Toggles edit mode for the campaign definition form.
+   *
+   * If a campaign is selected, it populates the form with the campaign's details.
+   * If no campaign is selected, it displays an error message.
+   * @returns {void}
+   */
+
+  editCampaign() {
+    this.editMode = !this.editMode;
+    const campaign = this.selectedCampaign.campaign
+    log.info(">>campaign", campaign)
+    if (campaign) {
+      // this.openCampaignMessageModal();
+      this.createCampaignDefinitionForm.patchValue({
+        name: campaign.campaignName,
+        system: campaign.system,
+        description: campaign.description,
+        objective: campaign.objective,
+        dateFrom: campaign.cmpDate,
+        dateTo: campaign.expectCloseDate,
+        executionTime: campaign.eventTime,
+        assignedTo: campaign.user,
+        organization: campaign.organization,
+        team: campaign.teamLeader,
+        currency: campaign.currencies,
+        budgetedCost: campaign.cmpBgtCost,
+        actualCost: campaign.cmpActlCost,
+        expectedCost: campaign.expectedCost,
+        expectedRevenue: campaign.cmpExptRevenue,
+        sponsor: campaign.sponsor,
+        campaignType: campaign.campaignType,
+        status: campaign.status,
+        pageImpressions: campaign.impressionCount,
+        event: campaign.events,
+        venue: campaign.venue,
+        products: campaign.product
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign is selected!'
+      );
+    }
+  }
+
+  /**
+   * Fetches campaign messages for the selected campaign and sets the campaignMessageData variable.
+   * Also shows a spinner while fetching the messages and hides it after the messages are received.
+   */
+  fetchCampaignMessages() {
+    this.spinner.show();
+    this.campaignsService.getCampaignMessages(this.selectedCampaign?.campaign?.code)
+      .subscribe((data) => {
+        this.campaignMessageData = data;
+        this.spinner.hide();
+
+        log.info("messages>>", data);
+      });
+  }
+
+  /**
+   * Sets the selectedCampaignMessage variable with the selected campaign message.
+   * Logs 'campaign message select' with the campaign message code.
+   * @param campaignMessage The selected campaign message.
+   */
+  onCampaignMessageSelect(campaignMessage: CampaignMessagesDTO) {
+    this.selectedCampaignMessage = campaignMessage;
+    log.info('campaign message select', this.selectedCampaignMessage.code)
+  }
+
+  /**
+   * Saves a campaign message by calling the createCampaignMessage or updateCampaignMessage method of the CampaignsService based on whether a campaign message is being edited or not.
+   * The payload for the request is built from the values of the campaign message form.
+   * If the campaign message is being edited, the code of the campaign message is used to update the campaign message.
+   * If the campaign message is not being edited, a new campaign message is created.
+   * The method displays a success message if the campaign message is saved successfully and an error message if the request fails.
+   * If the campaign message is being edited, the campaign message form is reset and the campaign message modal is closed.
+   * The selected campaign message is set to null after the campaign message is saved.
+   */
+  saveCampaignMessage() {
+    this.createCampaignMessageForm.markAllAsTouched();
+    if (this.createCampaignMessageForm.invalid) {
+      // this.globalMessagingService.displayErrorMessage('Error', 'Fill required fields');
+      return;
+    }
+
+    if(!this.selectedCampaignMessage) {
+      const campaignMessageFormValues = this.createCampaignMessageForm.getRawValue();
+
+      const saveCampaignMessagePayload: CampaignMessagesDTO = {
+        campaignCode: null, //should be added
+        code: null,
+        date: campaignMessageFormValues.scheduleDate, // should be added
+        imageUrl: null, // should be added
+        messageBody: campaignMessageFormValues.messagesContent,
+        messageSubject: campaignMessageFormValues.messagesSubject,
+        messageType: campaignMessageFormValues.msgCampaignType,
+        sendAll: campaignMessageFormValues.sendToAllOptions,
+        status: null
+      }
+      log.info("message>", saveCampaignMessagePayload)
+      this.campaignsService.createCampaignMessage(saveCampaignMessagePayload)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a campaign message');
+
+            this.createCampaignMessageForm.reset();
+            this.closeCampaignMessageModal();
+            this.fetchCampaignMessages();
+          },
+          error => {
+            log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          });
+    }
+    else {
+      const campaignMessageFormValues = this.createCampaignMessageForm.getRawValue()
+      const campaignMessageCode = this.selectedCampaignMessage?.code;
+
+      const saveCampaignMessagePayload: CampaignMessagesDTO = {
+        campaignCode: null, //should be added
+        code: campaignMessageCode,
+        date: campaignMessageFormValues.scheduleDate, // should be added
+        imageUrl: null, // should be added
+        messageBody: campaignMessageFormValues.messagesContent,
+        messageSubject: campaignMessageFormValues.messagesSubject,
+        messageType: campaignMessageFormValues.msgCampaignType,
+        sendAll: campaignMessageFormValues.sendToAllOptions,
+        status: null
+      }
+      log.info("message>", saveCampaignMessagePayload)
+      this.campaignsService.updateCampaignMessage(campaignMessageCode, saveCampaignMessagePayload)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated a campaign message');
+
+            this.createCampaignMessageForm.reset();
+            this.closeCampaignMessageModal();
+            this.fetchCampaignMessages();
+            this.selectedCampaignMessage = null;
+          },
+          error => {
+            // log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          });
+    }
+
+  }
+
+  /**
+   * The function `editCampaignMessage` toggles the edit mode and opens a campaign message
+   * modal. If a campaign message is selected, it populates the form fields with the
+   * selected campaign message's details. If no campaign message is selected, it shows an
+   * error message.
+   */
+  editCampaignMessage() {
+    this.editMode = !this.editMode;
+    if (this.selectedCampaignMessage) {
+      this.openCampaignMessageModal();
+      this.createCampaignMessageForm.patchValue({
+        msgCampaignType: this.selectedCampaignMessage.messageType,
+        sendToAllOptions: this.selectedCampaignMessage.sendAll,
+        messagesSubject: this.selectedCampaignMessage.messageSubject,
+        messagesContent: this.selectedCampaignMessage.messageBody,
+        image: this.selectedCampaignMessage.imageUrl,
+        // sendTestTo: this.selectedCampaignMessage.,
+        scheduleDate: this.selectedCampaignMessage.date
+
+        // logo: this.selectedBank.bankLogo
+      });
+      /*this.url = this.selectedBank.bankLogo ?
+        'data:image/jpeg;base64,' + this.selectedBank.bankLogo : '';*/
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign message is selected!'
+      );
+    }
+  }
+
+  /**
+   * The function `deleteCampaignMessage` shows a confirmation modal to delete a campaign
+   * message. If the user confirms the deletion, it calls the `confirmCampaignMessageDelete`
+   * function to delete the campaign message.
+   */
+  deleteCampaignMessage() {
+    this.campaignMessageConfirmationModal.show();
+  }
+
+  /**
+   * The function `confirmCampaignMessageDelete` deletes a campaign message if the
+   * user confirms the deletion.
+   */
+
+  confirmCampaignMessageDelete() {
+    if (this.selectedCampaignMessage) {
+      const campaignMessageId = this.selectedCampaignMessage.code;
+      this.campaignsService.deleteCampaignMessage(campaignMessageId).subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a campaign message'
+          );
+          this.selectedCampaignMessage = null;
+          this.fetchCampaignMessages();
+        },
+        error => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign message is selected.'
+      );
+    }
+  }
+
+  /**
+   * The function `fetchCampaignTargets` fetches the campaign targets for a
+   * selected campaign. It shows a spinner while fetching the data and hides
+   * it when the data is fetched. It also logs the fetched data to the console.
+   */
+  fetchCampaignTargets() {
+    this.spinner.show();
+    this.campaignsService.getCampaignTargets(this.selectedCampaign?.campaign?.code)
+      .subscribe((data) => {
+        this.campaignTargetData = data;
+        this.spinner.hide();
+
+        log.info("targets>>", data);
+      });
+  }
+
+  /**
+   * The function `getClients` fetches clients from the client service.
+   */
+  getClients(pageIndex: number,
+             pageSize: number,
+             sortField: any = 'createdDate',
+             sortOrder: string = 'desc') {
+    this.spinner.show();
+    return this.clientService.getClients(pageIndex, pageSize, sortField, sortOrder)
+      .pipe( untilDestroyed(this)
+      );
+  }
+
+  /**
+   * The function `lazyLoadClients` is used to fetch clients lazily based on
+   * the event parameters. It is used in the client table to fetch clients based
+   * on the current page index, sort field, sort order, and page size. If the
+   * user is searching for clients, it calls the `filterClients` function to
+   * fetch clients based on the search criteria. Otherwise, it calls the
+   * `getClients` function to fetch clients based on the current page index,
+   * sort field, sort order, and page size. It shows a spinner while fetching
+   * the data and hides it when the data is fetched. It also logs the fetched
+   * data to the console.
+   */
+  lazyLoadClients(event:LazyLoadEvent | TableLazyLoadEvent){
+    const pageIndex = event.first / event.rows;
+    const sortField = event.sortField;
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
+
+    if (this.isSearching) {
+      this.filterClients(null, pageSize)
+    }
+    else {
+      this.getClients(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Clients>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<ClientDTO>) => {
+            this.clientsData = data;
+            this.spinner.hide();
+            this.cdr.detectChanges();
+          },
+          error => {
+            this.spinner.hide();
+          }
+        );
+    }
+  }
+  /**
+   * The function `filterClients` is used to filter clients based on the
+   * search criteria and value. It is called when the user enters a search
+   * criteria and value in the search form. It shows a spinner while fetching
+   * the data and hides it when the data is fetched. If the search criteria and
+   * value are not provided, it displays an error message. It also logs the
+   * fetched data to the console.
+   */
+  filterClients(event, pageSize: number = event.rows) {
+    const sortValues = this.targetSearchForm.getRawValue();
+    log.info('pagesi', pageSize, event)
+
+    log.info('form value', sortValues);
+    const payload: any = {
+      group: sortValues.group ? sortValues.group : '',
+      searchCriteria: sortValues.searchCriteria ? sortValues.searchCriteria : '',
+      searchValue: sortValues.searchValue ? sortValues.searchValue : ''
+    }
+    log.info('form payload', payload);
+    this.isSearching = true;
+    if (payload.searchCriteria && payload.searchValue) {
+      this.clientService
+        .getClients(
+          0, pageSize,
+          '',
+          '',
+          payload.searchCriteria,
+          payload.searchValue)
+        .subscribe((data) => {
+            this.clientsData = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.globalMessagingService.displayErrorMessage('Error', "Search criteria and value is required")
+    }
+
+  }
+
+  /**
+   * The function filters the campaignMessagesTable based on the value entered in
+   * the HTMLInputElement.
+   */
+  filterCampaignMessages(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.campaignMessagesTable.filterGlobal(filterValue, 'contains');
+  }
+
   ngOnDestroy(): void {}
+}
+
+interface AllProduct {
+  code: number,
+  description: string
 }
