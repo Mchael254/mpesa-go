@@ -11,7 +11,7 @@
             class="fa-solid fa-house"
             style="font-size: 15px; padding-right: 9px"
           ></i>
-          {{ "base.home" | translate }} 
+          {{ "base.home" | translate }}
         </span>
       </button>
     </li>
@@ -29,7 +29,7 @@
               class="{{ item.icon }}"
               style="font-size: 15px; padding-right: 9px"
             ></i>
-            {{ 'base.'+item.name | translate }}
+            {{ "base." + item.name | translate }}
           </span>
         </button>
         <div class="collapse sub-title" [id]="item.nameSlug">
@@ -37,36 +37,44 @@
             *ngIf="item.menuItems?.length > 0"
             class="btn-toggle-nav list-unstyled pb-1"
           >
-            <li *ngFor="let menuItem of item.menuItems">
-              <a
-                *ngIf="!menuItem?.isModal"
-                (click)="clickURL(menuItem.link)"
-                class="link-dark rounded"
-                style="font-size: 12px"
-                >{{ 'base.'+menuItem.name | translate }}
-
-                <!-- <div class="collapse sub-title" >
-                  <ul class="btn-toggle-nav list-unstyled pb-1">
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </div> -->
+            <ng-container *ngFor="let menuItem of item.menuItems">
+              <li>
+                <a
+                  *ngIf="!menuItem.subList"
+                  (click)="clickURL(menuItem.link)"
+                  class="link-dark rounded"
+                  style="font-size: 12px"
+                >
+                  {{ "base." + menuItem.name | translate }}
                 </a>
-              
 
-            </li>
-            <li *ngFor="let menuItem of item.menuItems" >
-              <a
-              *ngIf="menuItem.isModal"
-              data-bs-toggle="modal"
-              [attr.data-bs-target]="menuItem.target"
-              (click)="clickURL(menuItem.link)"
-              class="link-dark rounded"
-              style="font-size: 12px"
-              >{{ menuItem.name | translate }}</a
-            >
-            </li>
+                <!-- Submenu for three-level depth -->
+                <ng-container *ngIf="menuItem.subList?.length > 0">
+                  <button
+                    class="btn btn-toggle align-items-center rounded collapsed"
+                    data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#' + menuItem.nameSlug"
+                    [attr.aria-expanded]="false"
+                    style="font-size: 12px"
+                  >
+                    {{ "base." + menuItem.name | translate }}
+                  </button>
+                  <div class="collapse sub-title" [id]="menuItem.nameSlug">
+                    <ul class="btn-toggle-nav list-unstyled pb-1">
+                      <li *ngFor="let subMenuItem of menuItem.subList">
+                        <a
+                          (click)="clickURL(subMenuItem.link)"
+                          class="link-dark rounded"
+                          style="font-size: 12px"
+                        >
+                          {{ "base." + subMenuItem.name | translate }}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </ng-container>
+              </li>
+            </ng-container>
           </ul>
         </div>
       </li>

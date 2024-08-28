@@ -139,56 +139,121 @@ export class MenuService {
         icon: 'fa-solid fa-keyboard',
         menuItems: [
           {
-            name: 'Organization',
-            link: '/home/crm/organization',
-          },
-          {
-            name: 'Countries',
-            link: '/home/crm/country',
+            name: 'Organogram',
+            nameSlug: 'gram',
+            subList: [
+              {
+                name: 'Organization',
+                link: '/home/crm/organization',
+              },
+              {
+                name: 'Countries',
+                link: '/home/crm/country',
+              },
+            ],
           },
           {
             name: 'Org Parameters',
-            link: '/home/crm/user-parameters',
+            nameSlug: 'par',
+            subList: [
+              {
+                name: 'User Parameters',
+                link: '/home/crm/user-parameters',
+              },
+              {
+                name: 'Currencies & Currency Rates',
+                link: '/home/crm/currencies',
+              },
+              {
+                name: 'Required Documents',
+                link: '/home/crm/required-documents',
+              },
+              {
+                name: 'Payment Modes',
+                link: '/home/crm/payment-modes',
+              },
+            ],
           },
           {
-            name: 'Currencies & Currency Rates',
-            link: '/home/crm/currencies',
+            name: 'Account Management',
+            nameSlug: 'accman',
+            subList: [
+              {
+                name: 'Channels',
+                link: '/home/crm/channel',
+              },
+              {
+                name: 'Client Type',
+                link: '/home/crm/client-type',
+              },
+              {
+                name: 'Sectors & Occupation',
+                link: '/home/crm/sectors-occupations',
+              },
+              {
+                name: 'Service Provider Type',
+                link: '/home/crm/service-provider-types',
+              },
+            ],
           },
           {
-            name: 'Service Provider Type',
-            link: '/home/crm/service-provider-types',
+            name: 'Bank Setups',
+            nameSlug: 'banks',
+            subList: [
+              {
+                name: 'Banks',
+                link: '/home/crm/bank',
+              },
+            ],
           },
           {
-            name: 'Required Documents',
-            link: '/home/crm/required-documents',
+            name: 'Administration',
+            nameSlug: 'admn',
+            subList: [
+              {
+                name: 'System Roles',
+                link: '/home/crm/system-roles',
+              },
+            ],
           },
           {
-            name: 'Channels',
-            link: '/home/crm/channel',
+            name: 'Messaging',
+            nameSlug: 'mess',
+            subList: [
+              {
+                name: 'Scheduler',
+                link: '/home/crm/scheduler',
+              },
+              {
+                name: 'Message Template',
+                link: '/home/crm/messaging-template',
+              },
+              {
+                name: 'Messages History',
+                link: '/home/crm/messages',
+              },
+            ],
           },
           {
-            name: 'Client Type',
-            link: '/home/crm/client-type',
-          },
-          {
-            name: 'Sectors & Occupation',
-            link: '/home/crm/sectors-occupations',
+            name: 'System Reports',
+            nameSlug: 'sysrpt',
+            subList: [],
           },
         ],
         collapsed: true,
       },
-      {
-        name: 'Bank Setups',
-        nameSlug: 'banks',
-        icon: 'fa-solid fa-bank',
-        menuItems: [
-          {
-            name: 'Banks',
-            link: '/home/crm/bank',
-          },
-        ],
-        collapsed: true,
-      },
+      // {
+      //   name: 'Bank Setups',
+      //   nameSlug: 'banks',
+      //   icon: 'fa-solid fa-bank',
+      //   menuItems: [
+      //     {
+      //       name: 'Banks',
+      //       link: '/home/crm/bank',
+      //     },
+      //   ],
+      //   collapsed: true,
+      // },
       {
         name: 'Service Desk',
         nameSlug: 'desk',
@@ -232,7 +297,7 @@ export class MenuService {
           {
             name: 'Priority level & Activity status',
             link: '/home/crm/priority-level-activity-status',
-          }
+          },
         ],
         collapsed: true,
       },
@@ -421,7 +486,10 @@ export class MenuService {
         menuItems: [
           { name: 'Dashboards', link: 'home/reportsv2/create-dashboard' },
           { name: 'My Reports', link: 'home/reportsv2/report-management/M' },
-          { name: 'Shared Reports', link: 'home/reportsv2/report-management/S' },
+          {
+            name: 'Shared Reports',
+            link: 'home/reportsv2/report-management/S',
+          },
         ],
 
         collapsed: true,
