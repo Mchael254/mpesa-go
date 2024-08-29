@@ -512,8 +512,13 @@ export class PersonalDetailsComponent implements OnInit {
       .getAllBranches(organizationId, regionId)
       .pipe(
         map((data) => {
-          return this.returnLowerCase(data);
-        })
+          //Remove duplicates based on branch name or id
+          return data.filter(
+            (branch, index, self) =>
+              index === self.findIndex((b) => b.name === branch.name)
+          );
+        }),
+        map((data) => this.returnLowerCase(data))
       )
       .subscribe((data) => {
         this.branchList = data;
