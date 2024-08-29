@@ -1,27 +1,27 @@
 @charset "utf-8";
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap");
 
 * {
-  --primary-color:  #00529B;
-  --grey-color: #868E96;
-
+  --primary-color: #00529b;
+  --grey-color: #868e96;
 }
 
 /* Root (global)*/
-html,body {
-  margin:0;
-  padding:0;
+html,
+body {
+  margin: 0;
+  padding: 0;
   /* font-family: 'Lato', sans-serif; */
   font-family: Roboto !important;
-  color: var(--primary-color)!important;
+  color: var(--primary-color) !important;
 }
 
 .text-primary {
-  color: var(--primary-color)!important;
+  color: var(--primary-color) !important;
 }
 
 .text-success {
-  color: #188623!important;
+  color: #188623 !important;
 }
 
 .btn-primary {
@@ -49,7 +49,8 @@ html,body {
   color: #fff;
 }
 
-.btn-link, a {
+.btn-link,
+a {
   text-decoration: none;
 }
 
@@ -59,11 +60,11 @@ html,body {
 }
 
 .btn-full-width {
-    width: 100%;
+  width: 100%;
 }
 
 .btn-standard-width {
-  width: 120px
+  width: 120px;
 }
 
 .setups .card {
@@ -89,7 +90,7 @@ html,body {
   background: #00529b;
   color: #fff;
   padding: 2px 5px;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .input-group span {
@@ -99,29 +100,27 @@ html,body {
 
 /* Root (global) ends*/
 
-
 /* Root Base n Dashboard starts*/
 .base-container {
   display: flex;
 }
 
-
 /* Side Navigation Starts */
 .base-side-nav .btn {
-  color: var(--primary-color)!important;
+  color: var(--primary-color) !important;
   font-weight: bold;
 }
 
 .base-side-nav .btn .menu-title {
-  margin-left: 10px;
+  margin-left: 15px;
 }
 
 .base-side-nav .btn-toggle-nav li {
-  margin-left: 45px;
+  margin-left: 35px;
   margin-bottom: 10px;
 }
 
-.base-side-nav .btn-toggle-nav li a:link{
+.base-side-nav .btn-toggle-nav li a:link {
   text-decoration: none;
 }
 
@@ -129,7 +128,6 @@ html,body {
   width: max-content;
 }
 /* Side Navigation ends */
-
 
 .base-navbar {
   background: var(--primary-color) !important;
@@ -160,7 +158,7 @@ html,body {
 }
 
 .base-side-nav {
-  width: 228px;
+  width: 250px;
   min-height: 90vh;
   padding: 10px;
 }
@@ -175,13 +173,12 @@ html,body {
   background: #fff;
 }
 
-.base-content .content-nav #navbar .nav-item{
+.base-content .content-nav #navbar .nav-item {
   margin-right: 20px;
 }
 
-
-.base-content .content-nav .navbar #chart ul li a{
-  color: var(--primary-color)!important;
+.base-content .content-nav .navbar #chart ul li a {
+  color: var(--primary-color) !important;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: underline;
@@ -194,11 +191,11 @@ html,body {
   padding-right: 20px;
 }
 
-.base-content .home  {
+.base-content .home {
   min-height: 50vh;
 }
 
-.base-content .home  .card {
+.base-content .home .card {
   position: relative;
   height: 100%;
 }
@@ -219,14 +216,13 @@ html,body {
   text-align: center;
 }
 
-
 .base-content .section-title {
   font-weight: bold;
   color: var(--primary-color);
 }
 
 .base-content .base-content-section .calendar {
-  color: var(--primary-color)!important;
+  color: var(--primary-color) !important;
 }
 
 .base-content .base-content-section .calendar .card-header {
@@ -250,7 +246,7 @@ html,body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #00396C;
+  background: #00396c;
 }
 
 .auth-container .right {
@@ -259,7 +255,6 @@ html,body {
   height: 100vh;
   color: #ffff;
   padding-top: 10vh;
-
 }
 
 .auth-container .left {
@@ -274,7 +269,7 @@ html,body {
 
 .auth-container .left .otp-form {
   max-width: 80%;
-  margin: auto
+  margin: auto;
 }
 
 .slogan {
@@ -283,7 +278,7 @@ html,body {
 }
 
 .slogan p.lead-text {
-  font-size: .875rem;
+  font-size: 0.875rem;
   margin: 0 auto 20px auto;
 }
 
@@ -293,7 +288,7 @@ html,body {
 }
 
 .htxt {
-  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
 }
 
 h2.htxt {
@@ -301,7 +296,7 @@ h2.htxt {
 }
 
 h5.htxt {
-  font-size: .9375rem;
+  font-size: 0.9375rem;
 }
 
 h5.htxt {
@@ -312,10 +307,10 @@ h5.htxt {
 .logo-lg img {
   height: 100px;
   width: 150px;
-
 }
 
-.login-text, .forgot-password-text{
+.login-text,
+.forgot-password-text {
   font-size: 1.625rem;
   font-weight: 700;
   line-height: 2rem;
@@ -328,30 +323,29 @@ h5.htxt {
   color: #000000;
 }
 
-
 /*Login ends*/
 
 /*Common*/
 .form-error-text {
-  float:left;
+  float: left;
 }
 .page-header {
   font-weight: 500 !important;
   font-size: 20px;
   color: #323a46;
 }
-.filter-btn{
-  background: #FAFAFA;
+.filter-btn {
+  background: #fafafa;
   box-sizing: border-box;
 
   letter-spacing: 1.25px;
   text-transform: uppercase;
 
   filter: drop-shadow(0px 4px 4px rgba(61, 164, 255, 0.23));
-  color: #3A3B3F;
+  color: #3a3b3f;
 }
-.fa-filter{
-  color: #9EA0A5;
+.fa-filter {
+  color: #9ea0a5;
 }
 /*Common ends*/
 
@@ -381,15 +375,14 @@ h5.htxt {
   font-size: 12px;
 }
 
-
-.help{
-font-family: 'Lato';
-font-style: normal;
-font-weight: 700;
-font-size: 14px;
-line-height: 17px;
-text-decoration: underline;
-color: #00529B;
+.help {
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 17px;
+  text-decoration: underline;
+  color: #00529b;
 }
 .text-plain:hover {
   border: 1px solid var(--primary-color);
@@ -416,7 +409,7 @@ color: #00529B;
   display: inline-block;
   width: 30px;
   height: 30px;
-  background-color: #00529B;
+  background-color: #00529b;
   border-radius: 50%;
   text-align: center;
   line-height: 30px;
@@ -428,24 +421,24 @@ color: #00529B;
 }
 
 .leftTitle {
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 700;
   font-size: 13px;
   line-height: 19px;
-  color: #00529B;
+  color: #00529b;
   width: 82px;
   padding-bottom: 10px;
   /* border-bottom: 2px solid #00529B; */
 }
 
 .leftHeader {
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 17px;
-  color: #00529B;
+  color: #00529b;
 }
 
 .leftNum {
@@ -456,7 +449,7 @@ color: #00529B;
   color: black;
   display: inline-block;
   padding: 4px 8px 5px 7px;
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -465,7 +458,7 @@ color: #00529B;
 
 /**Gis Ends**/
 .required::after {
-  content: '*'; /* Display an asterisk (*) to indicate required field */
+  content: "*"; /* Display an asterisk (*) to indicate required field */
   color: red; /* Change the color to red (you can customize as per your preference) */
   font-size: 14px; /* Increase the font size for better visibility */
   font-weight: bold; /* Use bold style for the asterisk */
@@ -492,7 +485,6 @@ color: #00529B;
   margin-left: 12px;
   margin-right: 12px;
 }
-
 
 .card {
   background-color: white;
@@ -549,11 +541,8 @@ color: #00529B;
   }
 }
 
-
 .text-end {
   cursor: pointer;
-
-
 }
 .text-end-view {
   border-radius: 2px;
@@ -563,7 +552,6 @@ color: #00529B;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
 }
-
 
 .text-end-view:hover {
   border: 1px solid var(--primary-color);
@@ -600,11 +588,9 @@ color: #00529B;
 }
 
 .form-check-input:checked,
-.form-check-input:active
- {
+.form-check-input:active {
   background-color: #000000;
   border: 2px solid black;
-
 }
 
 .p-datatable .p-datatable-tbody > tr {
@@ -638,7 +624,6 @@ p-celleditor > p-dropdown .p-dropdown {
   background-color: white !important;
   color: var(--primary-color);
   font-weight: 500;
-
 }
 
 .p-button.p-button-icon-only:hover {
@@ -653,11 +638,13 @@ p-table tr > th {
 }
 
 .b-r {
-  width: 2.5rem; height: 2.5rem; border-radius: 10rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10rem;
   background-color: rgb(217, 217, 235);
   /* border: 1px rgb(8, 32, 81) solid; */
-  cursor:pointer;
-  color:var(--primary-color);
+  cursor: pointer;
+  color: var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -665,11 +652,13 @@ p-table tr > th {
 }
 
 .b-r:hover {
-  width: 2.4rem; height: 2.4rem; border-radius: 10rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10rem;
   background-color: rgb(172, 172, 176);
   border: none;
-  cursor:pointer;
-  color:var(--primary-color);
+  cursor: pointer;
+  color: var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -723,7 +712,7 @@ p-table tr > th {
     display: none;
   }
 
-  .auth-container .left  {
+  .auth-container .left {
     width: 100%;
     padding: 2rem;
   }
@@ -761,5 +750,4 @@ p-table tr > th {
     display: block;
     margin-top: 250px;
   }
-
 }

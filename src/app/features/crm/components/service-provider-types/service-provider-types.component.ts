@@ -645,7 +645,7 @@ export class ServiceProviderTypesComponent implements OnInit {
         messageDefault: null,
         reportDays: null,
         shortDescription:
-          serviceProviderTypeActivityFormValues.shortDescription,
+          serviceProviderTypeActivityFormValues.activity_shortDescription,
         spTypeCode: serviceProviderTypeId,
       };
 
@@ -697,7 +697,7 @@ export class ServiceProviderTypesComponent implements OnInit {
         messageDefault: this.selectedServiceProviderTypeActivity.messageDefault,
         reportDays: this.selectedServiceProviderTypeActivity.reportDays,
         shortDescription:
-          serviceProviderTypeActivityFormValues.shortDescription,
+          serviceProviderTypeActivityFormValues.activity_shortDescription,
         spTypeCode: serviceProviderTypeId,
       };
 
@@ -744,7 +744,7 @@ export class ServiceProviderTypesComponent implements OnInit {
     if (this.selectedServiceProviderTypeActivity) {
       this.openServiceProviderTypeActivityModal();
       this.createServiceProviderTypeActivityForm.patchValue({
-        shortDescription:
+        activity_shortDescription:
           this.selectedServiceProviderTypeActivity.shortDescription,
         activity: this.selectedServiceProviderTypeActivity.description,
       });
