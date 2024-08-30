@@ -127,3 +127,90 @@ export interface DocumentsToUploadDTO {
     client: string;
     status: string;
   }
+
+  export interface ClaimCoverTypesDTO {
+    cover_type_code: number;
+    cover_type_description?: string;
+    multiplier_earnings_period?: string;
+    earnings: number;
+    sum_assured?: number;
+    payable_amount?: number;
+    amount_claimed: number;
+    actual_amount_being_paid?: number;
+    button_pay_amount?: number;
+    paid_amount?: number;
+    remarks: string;
+    is_paid?: string;
+    payee?: string;
+    pay_organization?: string;
+    total_coinsurance_amount?: number;
+    savings_amount?: number;
+    original_loan_amount?: number;
+    original_loan_repayment_period?: number;
+    pct_code?: number;
+    payment_installments?: number;
+    interest_savings_amount?: number;
+    occurrence_benefit?: number;
+    occurrence_benefit_rate?: number;
+    pension_allocation_policy_number?: string;
+    pension_allocation_policy_code?: number;
+}
+
+export interface ClaimPolicyDetails {
+    policy_code: number;
+    effective_date: string;
+    underwriting_year: number;
+    client_display: string;
+    payment_frequency: string;
+    occupation_display: string;
+    hazard_display: string;
+    product_short_description: string;
+    product_type: string;
+    branch_display: string;
+    dependent_covered: string;
+    status: string;
+    inception_date: string;
+    savings_rider?: string;
+    pension_category?: string;
+    loan_calculation?: string;
+    group_life_rider?: string;
+    policy_number: string;
+    proposer_code: number;
+    cover_from_date: string;
+    cover_to_date: string;
+    expiry_date: string;
+    coinsurance: string;
+    product_description: string;
+    status_display: string;
+    payment_frequency_display: string;
+    dependent_covered_display: string;
+    savings_rider_display?: string;
+    loan_calculation_display?: string;
+    pension_category_display?: string;
+    endorsement_code: number;
+    proposer_client_code: number;
+    agency_name: string;
+    renewal_area_status: string;
+    payment_group_code: number;
+    payment_group_description: string;
+    umbrella: string;
+    currency_symbol: string;
+    assignee: string;
+    currency_code: number;
+    scheme_name: string;
+    scheme_pin_no?: string;
+    scheme_tax_no?: string;
+    scheme_comm_date?: string;
+    max_entry_age_limit: number;
+    umbrella_product: string;
+    pension_mode?: string;
+    master_policy_number?: string;
+    agency_effective_date?: string;
+    bank_code?: string;
+    bank_name?: string;
+}
+
+export class PayeeDTO {
+    name: string;
+    value: string
+}
