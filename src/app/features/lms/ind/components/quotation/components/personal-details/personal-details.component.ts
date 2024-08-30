@@ -9,12 +9,7 @@ import {
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../../../../shared/services/setups/country/country.service';
 import {
   CountryDto,
@@ -546,11 +541,16 @@ export class PersonalDetailsComponent implements OnInit {
       }
     });
   }
-
+  /** 
+   * Fetches client titles based on the specified organization ID and updates the component's
+   *  clientTitles property.
+   * @param organizationId The organization ID for which client titles are fetched.
+  */
   getClientTitles(organizationId?:number) {
-    this.crm_client_service.getClientTitles(organizationId).subscribe((data) => {
+    this.crm_client_service.getClientTitles(organizationId)
+    .subscribe((data) => {
       this.clientTitles = data; 
-        })
+    });
   }
 
   getSectors(organizationId?:number) {
