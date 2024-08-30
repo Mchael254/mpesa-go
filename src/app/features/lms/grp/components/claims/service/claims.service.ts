@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
-import { ClaimPoliciesDTO } from '../models/claim-models';
+import { ClaimPoliciesDTO, PayeeDTO } from '../models/claim-models';
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +78,20 @@ export class ClaimsService {
     );
   }
   
+  getClaimCoverTypes(clmaiNo: string) {
+    return this.api.GET(`group/claims/claim-cover-types?claimCode=${clmaiNo}&coverTypeCode`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  updateClaimCovers(cover_type_code, payload) {
+    return this.api.PUT(`group/claims/${cover_type_code}/update-cover-details`, payload,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  } 
+
+  getClaimPolicyDetails(policyCode: number, product_code: number) {
+    return this.api.GET(`group/claims/claim-policy-details?policyCode=${policyCode}&productCode=${product_code}&status=&endorsementCode`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
   
+  getPayee(): Observable<PayeeDTO[]> {
+    return this.api.GET(`group/claims/payee`,API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
 
 }
