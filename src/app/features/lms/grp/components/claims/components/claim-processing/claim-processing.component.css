@@ -85,4 +85,7 @@
     line-height: normal; */
 }
 
+td {
+  white-space: nowrap;
+}
   
