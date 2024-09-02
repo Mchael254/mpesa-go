@@ -310,7 +310,8 @@
     text-align: left;
 
 }
-.printClaimLabel{
+
+.printClaimLabel {
     font-family: Roboto;
     font-size: 16px;
     font-weight: 500;
@@ -318,6 +319,26 @@
     text-align: left;
     color: #00529B;
 }
-.printClaimLabel:hover{
+
+.printClaimLabel:hover {
     text-decoration: underline;
+}
+
+#scheduleLabel {
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+
+}
+
+#scheduleInput {
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
 }

@@ -136,6 +136,7 @@
                                 formControlName="subClassCode" (onChange)="onCoverTypeSelected($event.value)"
                                 [placeholder]="coverType" [filterBy]="'description'" [filter]="true"
                                 [ngModel]="coverType"></p-dropdown>
+                               
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('coverTypeCode').hasError('required') && policyRiskForm.get('coverTypeCode').touched"
                                 class="form-text text-danger">
