@@ -300,9 +300,9 @@
                     <option selected="true" disabled="disabled">
                       Select {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | titlecase }}
                     </option>
-                    <option value="EMAIL">Email</option>
-                    <option value="SMS">SMS</option>
-                    <option value="CALL">Call</option>
+                    <option *ngFor="let channel of preferredChannels" [value]="channel.value">
+                      {{ channel.label }}
+                    </option>
                   </select>
                 </div>
 

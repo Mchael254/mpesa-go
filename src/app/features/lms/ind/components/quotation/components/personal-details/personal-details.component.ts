@@ -114,7 +114,13 @@ export class PersonalDetailsComponent implements OnInit {
   openCardId: string | null = null;
   toggleCollapse(cardId: string) {
     this.openCardId = this.openCardId === cardId ? null : cardId;
-  } 
+  }
+  
+  preferredChannels: { value: string, label: string }[] = [
+    { value: 'EMAIL', label: 'Email' },
+    { value: 'SMS', label: 'SMS' },
+    { value: 'CALL', label: 'Call' }
+  ];
 
   constructor(
     private session_storage: SessionStorageService,
