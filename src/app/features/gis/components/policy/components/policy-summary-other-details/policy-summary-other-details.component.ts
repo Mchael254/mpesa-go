@@ -14,7 +14,7 @@ import { Table } from 'primeng/table';
 import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
-import { Clause, subclassClauses, subclassCoverTypeSection } from '../../../setups/data/gisDTO';
+import { Clause, subclassClauses, subclassCoverTypeSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
@@ -23,6 +23,8 @@ import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-c
 import { RequiredDocumentService } from '../../../setups/services/required-documents/required-document.service';
 import { PerilsService } from '../../../setups/services/perils-territories/perils/perils.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
+import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -64,6 +66,9 @@ export class PolicySummaryOtherDetailsComponent {
   selectedClientCode: any;
   clientPrpCode: any;
   filteredClients: any[] = [];
+  scheduleListDetails:any;
+  filteredSchedule:any;
+  commissionTransaction:any;
 
   columns = [
     { label: 'Name', value: 'name' },
@@ -160,6 +165,13 @@ export class PolicySummaryOtherDetailsComponent {
   passedBinderCode: any;
   relatedRiskList:RelatedRisk[]=[];
   selectedRelatedRisk:any;
+  vehicleMakeList: vehicleMake[];
+  vehicleModelList: any;
+  vehicleModelDetails: vehicleModel[];
+  filteredVehicleModel: any;
+  selectedVehicleMakeCode:any;
+  selectedVehicleMake:any;
+  commissionTransactionDetailsForm: FormGroup;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -190,6 +202,8 @@ export class PolicySummaryOtherDetailsComponent {
     public requiredDocumentService: RequiredDocumentService,
     public perilService: PerilsService,
     public authService: AuthService,
+    public vehicleMakeService: VehicleMakeService,
+    public vehicleModelService: VehicleModelService,
 
 
 
@@ -571,7 +585,10 @@ export class PolicySummaryOtherDetailsComponent {
 
 
   addAnotherRisk() {
-    this.router.navigate([`/home/gis/policy/risk-details/`]);
+    // this.router.navigate([`/home/gis/policy/risk-details/`]);
+    log.debug("NAVIGATION:",this.policyDetails.batchNumber)
+    this.router.navigate([`/home/gis/policy/risk-details/edit/${this.policyDetails.batchNumber}`]);
+
 
   }
   applyFilterGlobalRisk($event, stringVal) {
@@ -646,11 +663,13 @@ export class PolicySummaryOtherDetailsComponent {
 
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
-    schedule.riskCode = this.riskCode;
+    schedule.riskCode = this.SelectedRiskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
-    this.quotationService.updateSchedule(schedule).subscribe(data => {
+    this.policyService.updateSchedules(schedule).subscribe(data => {
       this.updatedScheduleData = data;
+      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
+
       console.log('Updated Schedule Data:', this.updatedScheduleData);
       this.updatedSchedule = this.updatedScheduleData._embedded;
       console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
@@ -663,7 +682,6 @@ export class PolicySummaryOtherDetailsComponent {
       try {
 
         this.scheduleDetailsForm.reset()
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
       } catch (error) {
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
@@ -799,9 +817,7 @@ export class PolicySummaryOtherDetailsComponent {
   toggleRiskClauseDetails() {
     this.isRiskClauseDetailsOpen = !this.isRiskClauseDetailsOpen;
   }
-  toggleScheduleDetails() {
-    this.isScheduleDetailOpen = !this.isScheduleDetailOpen;
-  }
+ 
   toggleRiskDetails() {
     this.isRiskDetailsOpen = !this.isRiskDetailsOpen;
   }
@@ -2070,7 +2086,193 @@ export class PolicySummaryOtherDetailsComponent {
       next: (response: any) => {
         this.relatedRiskList =response._embedded
         console.log('Related Risks:', this.relatedRiskList);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully retrived risks')
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+      }
+    })
+  }
+ 
+  toggleScheduleDetails() {
+    console.log("selected risk", this.selectedRisk);
+
+    if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      return; // Exit function early if selectedRisk is not defined
+    }
+
+    // Toggle collapse state only if both selectedRisk and corresponding risk are valid
+    this.isScheduleDetailOpen = !this.isScheduleDetailOpen;
+  }
+  getSchedules(){
+    this.policyService
+    .getSchedules()
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.scheduleListDetails =response._embedded
+        console.log('Schedule List Details:', this.scheduleListDetails);
+        this.filteredSchedule = this.scheduleListDetails.filter(schedule => schedule.riskCode == this.SelectedRiskCode);
+        log.debug("Filtered Schedule:",this.filteredSchedule)
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
+      }
+    })
+  }
+  onEditSchedule(schedule: any) {
+    log.debug('SELECTED SCHEDULE: ',schedule)
+    if(this.selectedSchedule){
+      this.getVehicleMake()
+
+    }
+    this.selectedSchedule = schedule;
+    this.scheduleDetailsForm.patchValue({
+      details: {
+        level1: {
+          registrationNumber: schedule.details.level1.registrationNumber,
+          Make: schedule.details.level1.Make,
+          cubicCapacity: schedule.details.level1.cubicCapacity,
+          yearOfManufacture: schedule.details.level1.yearOfManufacture,
+          value: schedule.details.level1.value,
+          bodyType: schedule.details.level1.bodyType,
+        }
+      },
+    
+    });
+  }
+   getVehicleMake() {
+    this.vehicleMakeService
+      .getAllVehicleMake()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.vehicleMakeList = data;
+            log.debug("VehicleMake", this.vehicleMakeList)
+            this.selectedVehicleMake = this.vehicleMakeList.filter(make => make.name == this.selectedSchedule.details.level1.Make);
+            log.debug("selected vehicle make ", this.selectedVehicleMake);
+            this.selectedVehicleMakeCode = this.selectedVehicleMake[0].code;
+            log.debug("selected vehicle make code", this.selectedVehicleMakeCode);
+            if(this.selectedVehicleMakeCode){
+              this.getVehicleModel()
+            }
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  getVehicleModel() {
+
+    this.vehicleModelService
+      .getAllVehicleModel()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.vehicleModelList = data;
+            log.debug("VehicleModel", this.vehicleModelList);
+            this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
+            log.debug("Vehicle Model Details", this.vehicleModelDetails);
+            this.filteredVehicleModel = this.vehicleModelDetails.filter(model => model.vehicle_make_code == this.selectedVehicleMakeCode);
+            log.debug("Filtered Vehicle Model Details", this.filteredVehicleModel);
+
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  getCommissions(){
+    this.policyService
+    .getCommissions(this.selectedRisk.binderCode,this.selectedRisk.riskIpuCode,this.selectedRisk.subClassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.commissionTransaction =response._embedded
+        console.log(' Comission Transaction:', this.commissionTransaction);
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+      }
+    })
+  }
+  createCommissionTranscDetailsForm() {
+    this.commissionTransactionDetailsForm = this.fb.group({
+      ipuCode: [''],
+      transactionCode: [''],
+      transactionTypeCode: [''],
+    
+    });
+  }
+  addCommission(){
+    this.commissionTransactionDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode)
+    this.commissionTransactionDetailsForm.get('transactionCode').setValue(this.selectedTransaction.transactionCode)
+    this.commissionTransactionDetailsForm.get('transactionTypeCode').setValue(this.selectedTransaction.transactionTypeCode)
+
+    const commissionTransactionDetailsForm = this.commissionTransactionDetailsForm.value;
+    log.debug("Commissions Transaction Form:", commissionTransactionDetailsForm)
+    this.policyService
+    .addCommission(commissionTransactionDetailsForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.commissionTransaction =response._embedded
+        console.log(' Comission Transaction:', this.commissionTransaction);
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+      }
+    })
+  }
+  deleteCommission(){
+    this.policyService
+    .deleteCommission(this.selectedTransaction.code)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("RESPONSE AFTER DELETING COMMISSION:",response)
+        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted commission"');
 
       },
       error: (error) => {

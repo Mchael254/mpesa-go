@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -269,6 +269,22 @@ export class PolicyService {
   }
   getRelatedRisks(riskCode:any,propertId:any){
     return this.api.GET(`v1/related-risks?ipuCode=${riskCode}&propertyId=${propertId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  createSchedules(data:PolicyScheduleDetails[]){
+    return this.api.POST(`v2/schedules`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getSchedules(){
+    return this.api.GET(`v2/schedules`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  updateSchedules(data:PolicyScheduleDetails[]){
+    return this.api.PUT(`v2/schedules`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getCommissions(binderCode:any,riskCode:any,subclassCode:any){
+        return this.api.GET(`v1/commissions?bindCode=${binderCode}&ipuCode=${riskCode}&subClassCode=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getRelationalGroups(subclassCode:any){
+    return this.api.GET(`v1/relation-groups?subClassCode=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }

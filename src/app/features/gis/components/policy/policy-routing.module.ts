@@ -32,7 +32,10 @@ const routes: Routes = [
   },
   {
     path:'policy-product/edit/:policyNo', component:PolicyProductComponent
-  }
+  },
+  {
+    path: 'risk-details/edit/:policyNo', component:RiskDetailsComponent
+  },
 ];
 
 @NgModule({
