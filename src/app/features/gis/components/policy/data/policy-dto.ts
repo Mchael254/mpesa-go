@@ -498,6 +498,45 @@ export interface RelatedRisk {
   policyNumber: string;
   endorsementDifferentAmount: number;
 }
+export interface PolicyScheduleDetails{
+  code:number;
+  details: {
+    level1: {
+      bodyType: string,
+      yearOfManufacture: number,
+      color: string,
+      engineNumber: string,
+      cubicCapacity: number,
+      Make: string,
+      coverType: string,
+      registrationNumber: string,
+      chasisNumber: string,
+      tonnage: string,
+      carryCapacity: number,
+      logBook: string,
+      value: number,
+      age:number,
+      itemNo:number,
+      terrorismApplicable:string,
+      securityDevice1:string,
+      motorAccessories:string,
+      model:string,
+      securityDevice:string,
+      regularDriverName:string,
+      schActive:string,
+      licenceNo:string,
+      driverLicenceDate:string,
+      driverSmsNo:number,
+      driverRelationInsured:string,
+      driverEmailAddress:string
+
+    }
+},
+organizationCode:any;
+riskCode: number,
+transactionType: string,
+version: number
+}
 
 
 

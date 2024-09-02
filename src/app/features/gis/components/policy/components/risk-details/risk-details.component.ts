@@ -163,6 +163,7 @@ export class RiskDetailsComponent {
 
   binderDescription: any;
   passedBinder: any;
+  relationGroups:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
@@ -730,7 +731,8 @@ export class RiskDetailsComponent {
     this.loadAllBinders();
     // this.loadSubclassSectionCovertype();
     this.loadSubclassSectionCovertype();
-
+    if(this.selectedSubclassCode)
+      this.getRequiredGroups()
   }
   loadAllBinders() {
     this.binderService
@@ -1728,7 +1730,7 @@ export class RiskDetailsComponent {
     schedule.details.level1.engineNumber = null;
     schedule.details.level1.cubicCapacity = null;
     schedule.details.level1.Make =this.selectedVehicleMakeName;
-    schedule.details.level1.coverType = this.selectedCoverType;
+    schedule.details.level1.coverType = this.selectedCoverType.coverTypeShortDescription;
     schedule.details.level1.registrationNumber = riskID;
     schedule.details.level1.chasisNumber = null;
     schedule.details.level1.tonnage = null;
@@ -1739,14 +1741,14 @@ export class RiskDetailsComponent {
     schedule.transactionType = "Q";
     schedule.version = 0;
 
-    this.quotationService.createSchedule(schedule).subscribe(
+    this.policyService.createSchedules(schedule).subscribe(
       (data) => {
         try {
           this.scheduleData = data;
           this.scheduleList=this.scheduleData._embedded;
 
           this.csvRisksList =this.scheduleList;
-          console.log("Schedule Data:", this.scheduleData);
+          log.debug("Schedule Data:", this.csvRisksList);
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
 
         } catch (error) {
@@ -1771,4 +1773,17 @@ export class RiskDetailsComponent {
     this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNo}`]);
   
   }
+  getRequiredGroups(){
+    this.policyService.getRelationalGroups(this.selectedSubclassCode).pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+        this.relationGroups = data
+        
+        console.log('Relation Groups', this.relationGroups)
+      }
+
+
+    })
+  
+}
 }
