@@ -10,6 +10,9 @@ import { TicketDetailsComponent } from './components/tickets/ticket-details/tick
 import {
   MassDocumentDispatchComponent
 } from "./components/tickets/mass-document-dispatch/mass-document-dispatch.component";
+import {
+  ReinsuranceApportionmentComponent
+} from "./components/tickets/reinsurance-apportionment/reinsurance-apportionment.component";
 
 const routes: Routes = [
     {
@@ -43,6 +46,10 @@ const routes: Routes = [
   {
     path: 'document-dispatch',
     component: MassDocumentDispatchComponent
+  },
+  {
+    path: 'ticket/reinsurance-apportionment',
+    component: ReinsuranceApportionmentComponent
   },
 ];
 
