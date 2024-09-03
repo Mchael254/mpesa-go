@@ -4,8 +4,15 @@ import {API_CONFIG} from "../../../../environments/api_service_config";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {Observable} from "rxjs";
 import {
-  PreviousCedingDTO, ReinsuranceRiskDetailsDTO,
-  RiskReinsuranceRiskDetailsDTO, RiskReinsurePOSTDTO,
+  PolicyFacreSetupsDTO,
+  PreviousCedingDTO, ReinsuranceFacreCedingDTO,
+  ReinsurancePoolDTO,
+  ReinsuranceRiskDetailsDTO,
+  ReinsuranceXolPremiumDTO,
+  ReinsuranceXolPremParticipantsDTO,
+  RiskReinsuranceDTO,
+  RiskReinsuranceRiskDetailsDTO,
+  RiskReinsurePOSTDTO,
   TreatyParticipantsDTO,
   TreatySetupsDTO
 } from "../data/reinsurance-dto";
@@ -40,13 +47,13 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getRiskReinsurance(current: string, riskCode: number): Observable<any> {
+  getRiskReinsurance(current: string, riskCode: number): Observable<RiskReinsuranceDTO[]> {
 
     let params = new HttpParams()
       .set('current', `${current}`)
       .set('riskCode', `${riskCode}`)
 
-    return this.api.GET<any>(`api/v1/risk-reinsurance?${params}`,
+    return this.api.GET<RiskReinsuranceDTO[]>(`api/v1/risk-reinsurance?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
@@ -59,41 +66,41 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getReinsuranceFacreCeding(policyReinsuranceRiskDetailsCode: number): Observable<any[]> {
+  getReinsuranceFacreCeding(policyReinsuranceRiskDetailsCode: number): Observable<ReinsuranceFacreCedingDTO[]> {
 
     let params = new HttpParams()
       .set('policyReinsuranceRiskDetailsCode', `${policyReinsuranceRiskDetailsCode}`)
 
-    return this.api.GET<any[]>(`api/v1/reinsure-facre-ceding?${params}`,
+    return this.api.GET<ReinsuranceFacreCedingDTO[]>(`api/v1/reinsure-facre-ceding?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getReinsurancePool(riskCode: number, transactionNo: number): Observable<any[]> {
+  getReinsurancePool(riskCode: number, transactionNo: number): Observable<ReinsurancePoolDTO[]> {
 
     let params = new HttpParams()
       .set('riskCode', `${riskCode}`)
       .set('transactionNo', `${transactionNo}`)
 
-    return this.api.GET<any[]>(`api/v1/reinsurancePool?${params}`,
+    return this.api.GET<ReinsurancePoolDTO[]>(`api/v1/reinsurancePool?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getReinsuranceXolPremium(policyReinsuranceRiskDetailsCode: number, riskCode: number): Observable<any[]> {
+  getReinsuranceXolPremium(policyReinsuranceRiskDetailsCode: number, riskCode: number): Observable<ReinsuranceXolPremiumDTO[]> {
 
     let params = new HttpParams()
       .set('policyReinsuranceRiskDetailsCode', `${policyReinsuranceRiskDetailsCode}`)
       .set('riskCode', `${riskCode}`)
 
-    return this.api.GET<any[]>(`api/v1/reinsurance-xol-premium?${params}`,
+    return this.api.GET<ReinsuranceXolPremiumDTO[]>(`api/v1/reinsurance-xol-premium?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getReinsuranceXolPremiumParticipants(policyReinsuranceXolRiskDetailsCode: number): Observable<any[]> {
+  getReinsuranceXolPremiumParticipants(policyReinsuranceXolRiskDetailsCode: number): Observable<ReinsuranceXolPremParticipantsDTO[]> {
 
     let params = new HttpParams()
       .set('policyReinsuranceXolRiskDetailsCode', `${policyReinsuranceXolRiskDetailsCode}`)
 
-    return this.api.GET<any[]>(`api/v1/reinsurance-xol-premium/participants?${params}`,
+    return this.api.GET<ReinsuranceXolPremParticipantsDTO[]>(`api/v1/reinsurance-xol-premium/participants?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
@@ -115,12 +122,12 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getPolicyFacreSetups(batchNo: number): Observable<Pagination<any>> {
+  getPolicyFacreSetups(batchNo: number): Observable<Pagination<PolicyFacreSetupsDTO>> {
 
     let params = new HttpParams()
       .set('batchNo', `${batchNo}`)
 
-    return this.api.GET<Pagination<any>>(`api/v1/policy-facre-setups?${params}`,
+    return this.api.GET<Pagination<PolicyFacreSetupsDTO>>(`api/v1/policy-facre-setups?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
