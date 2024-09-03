@@ -104,9 +104,9 @@ export class PersonalDetailsComponent implements OnInit {
   getFormControlsNameWithErrors: string[] = [];
   identityFormatDesc: { id: number; exampleFormat: string };
   minDate = DataManipulation.getMinDate();
-  occupationsData: any[] = [];
+  occupationData: { occupationId: number; name: string }[] = [];
   fundSource: FundSourceDTO [] = [];
-  sectorData: SectorDTO[] = [];
+  sectorData: SectorDTO[];
   util: Utils;
   clientTypeCode: number;
   organizationId: number;
@@ -156,13 +156,10 @@ export class PersonalDetailsComponent implements OnInit {
     this.getBankList();
     this.getClientType();
     this.getClientTitles();
-    this.getSectors();
+    this.getSectorList();
     this.getFundSource();
 
     this.util = new Utils(this.session_storage);
-
-
-    this.fetchOccupations()
 
     this.formValidation()
     .pipe(concatMap((data) => {
@@ -182,21 +179,6 @@ export class PersonalDetailsComponent implements OnInit {
 
 
     })
-  }
-
-
-  fetchOccupations(organizationId?: number) {
-    this.occupation_service
-      .getOccupations(organizationId)
-      .subscribe( (data) => {
-          // if (data) {
-            this.occupationsData = data;
-            // log.info(`Fetched Occuption Data`, this.occupationsData);
-
-          }
-
-
-      );
   }
 
   formValidation() {
@@ -553,10 +535,29 @@ export class PersonalDetailsComponent implements OnInit {
     });
   }
 
-  getSectors(organizationId?:number) {
-    this.sector_service.getSectors(organizationId).subscribe((data) => {
-      this.sectorData = data;
-      }); 
+  getSectorList(){
+    this.sector_service 
+      .getSectors()
+      .pipe(
+        map((data) => {
+          return this.returnLowerCase(data);
+        })
+      )
+      .subscribe((data: any[]) => {
+         this.sectorData = data;
+      });
+  }
+
+  selectSector(_event: any) {
+    let sectorId = +_event.target.value;
+    this.sector_service.getSectorById(sectorId)
+      .subscribe((sector: SectorDTO) => {
+        // Ensure the occupationData contains objects with occupationId and name
+        this.occupationData = sector.assignedOccupations.map(occupation => ({
+          occupationId: occupation.occupationId,
+          name: occupation.occupationName
+        }));
+      });
   }
 
   getFundSource() {
