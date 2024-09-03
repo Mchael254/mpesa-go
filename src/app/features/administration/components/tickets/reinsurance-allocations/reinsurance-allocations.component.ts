@@ -5,8 +5,14 @@ import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {
   PolicyFacreSetupsDTO,
-  PreviousCedingDTO, ReinsuranceRiskDetailsDTO,
-  RiskReinsuranceRiskDetailsDTO, RiskReinsurePOSTDTO
+  PreviousCedingDTO, ReinsuranceFacreCedingDTO,
+  ReinsurancePoolDTO,
+  ReinsuranceRiskDetailsDTO,
+  ReinsuranceXolPremiumDTO,
+  ReinsuranceXolPremParticipantsDTO,
+  RiskReinsuranceDTO,
+  RiskReinsuranceRiskDetailsDTO,
+  RiskReinsurePOSTDTO, TreatyParticipantsDTO, TreatySetupsDTO
 } from "../../../../gis/data/reinsurance-dto";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
@@ -31,17 +37,17 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   treatyRISummaryForm: FormGroup;
 
   previousCedingData: PreviousCedingDTO[] = [];
-  treatyParticipantData: any[];
-  treatySetupsData: Pagination<any> =  <Pagination<any>>{};
+  treatyParticipantData: TreatyParticipantsDTO[];
+  treatySetupsData: Pagination<TreatySetupsDTO> =  <Pagination<TreatySetupsDTO>>{};
   riskReinsuranceRiskDetailsData: RiskReinsuranceRiskDetailsDTO[] = [];
-  riskReinsuranceDetails: any[];
+  riskReinsuranceDetails: RiskReinsuranceDTO[];
   reinsuranceRiskDetailsData: Pagination<ReinsuranceRiskDetailsDTO> = <Pagination<ReinsuranceRiskDetailsDTO>>{};
-  reinsuranceFacreCedingData: any[];
-  reinsurancePoolData: any[];
-  reinsuranceXolPremiumData: any[];
-  reXolPremiumParticipantData: any[];
+  reinsuranceFacreCedingData: ReinsuranceFacreCedingDTO[];
+  reinsurancePoolData: ReinsurancePoolDTO[];
+  reinsuranceXolPremiumData: ReinsuranceXolPremiumDTO[];
+  reXolPremiumParticipantData: ReinsuranceXolPremParticipantsDTO[];
   treatyCessionsData: Pagination<ReinsuranceRiskDetailsDTO> = <Pagination<ReinsuranceRiskDetailsDTO>>{};
-  previousFacreCedingData: any[];
+  previousFacreCedingData: ReinsuranceFacreCedingDTO[];
   policyFacreSetupsData: Pagination<PolicyFacreSetupsDTO> = <Pagination<PolicyFacreSetupsDTO>>{};
 
   subclassData: Subclasses;
@@ -195,7 +201,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
               "treatyPremium": details['trtsPrem'],
               "facrePRate": details['prrdPrevFacreRate'],
               "facreRiAmt": this.numberWithCommas(details['prrdFacreAmount']),
-              "facreCession": this.numberWithCommas(details['prrdFacreRate']),
+              "facreCession": details['prrdFacreRate'] ? this.numberWithCommas(details['prrdFacreRate']) : null,
               "facrePremium": details['prrdFacrePremium'],
               "totalRiAmt": details['totCededSi'],
               "totalCession": details['totPct'],

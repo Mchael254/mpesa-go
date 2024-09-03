@@ -26,6 +26,7 @@ import { AuthorizePolicyModalComponent } from './components/tickets/authorize-po
 import { MassDocumentDispatchComponent } from './components/tickets/mass-document-dispatch/mass-document-dispatch.component';
 import {MultiSelectModule} from "primeng/multiselect";
 import { TransactionHistoryComponent } from './components/tickets/ticket-details/claim-details/transaction-history/transaction-history.component';
+import { ReinsuranceApportionmentComponent } from './components/tickets/reinsurance-apportionment/reinsurance-apportionment.component';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { TransactionHistoryComponent } from './components/tickets/ticket-details
     RevisionDetailsComponent,
     AuthorizePolicyModalComponent,
     MassDocumentDispatchComponent,
-    TransactionHistoryComponent
+    TransactionHistoryComponent,
+    ReinsuranceApportionmentComponent
   ],
     imports: [
         CommonModule,

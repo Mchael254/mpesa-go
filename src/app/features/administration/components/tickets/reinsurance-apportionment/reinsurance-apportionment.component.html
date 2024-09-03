@@ -1,0 +1,1243 @@
+<div class="base-content-section">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="text-primary mb-3 fw-medium">Reinsurance apportionment</h5>
+      <div class="row">
+        <div class="col-sm-4">
+          <p>
+            <label class="ticketLabel">Policy no:</label>
+            <span class="ticketDesc"></span>
+          </p>
+          <p>
+            <label class="ticketLabel">Sum insured:</label>
+            <span class="ticketDesc"></span>
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p>
+            <label class="ticketLabel">Client:</label>
+            <span class="ticketDesc"></span>
+          </p>
+          <p>
+            <label class="ticketLabel">U/W year:</label>
+            <span class="ticketDesc"></span>
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p>
+            <label class="ticketLabel">Premium:</label>
+            <span class="ticketDesc"></span>
+          </p>
+        </div>
+      </div>
+      <hr class="text-primary">
+      <div class="tab-content" id="ex1-content">
+        <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+          <p-tabView [(activeIndex)]="activeIndex">
+            <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyRiskCeding' | translate }}">
+              <div class="row g-3 align-items-center">
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-2" style="padding-right: 0px">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search"
+                    aria-label="search"
+                    aria-describedby="search">
+                </div>
+                <div class="form-check col-sm-12 col-md-6 col-lg-3">
+                  <div class="form-check ms-2">
+                    <input class="form-check-input" type="checkbox" value="true" id="checkboxId">
+                    <label class="form-label " for="checkboxId">
+                      Risks with excesses
+                    </label>
+                  </div>
+                </div>
+
+                <div class="offset-lg-1 col-sm-12 col-lg-5">
+                  <div class="d-flex justify-content-end">
+                    <button
+                      class="btn btn-outline-primary w-auto" style="font-size: 12px;margin-right: 8px;"
+                      (click)="openTreatySetupModal()">View treaty setups
+                    </button>
+                    <button
+                      class="btn btn-primary" style="font-size: 12px;">{{'mngt_wrkflw.reinsurance.populateAllocations' | translate }}
+                    </button>
+                    <span class="icon-circle ">
+                      <i class="pi pi-pencil" (click)="openRiskCedingModal()"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <p-table
+                [autoLayout]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="riskReinsuranceDetails?.length"
+                [value]="riskReinsuranceDetails"
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                responsiveLayout="stack"
+                [scrollable]="true"
+                scrollHeight="400px"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Select</th>
+                    <th>{{'mngt_wrkflw.policyDetails.riskID' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.current' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.riskDesc' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.subclass' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.specialRetn' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.excess' | translate }}</th>
+                    <th>{{'mngt_wrkflw.reinsurance.excess' | translate }} %</th>
+                    <th>Premium</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-risKCedingDetail>
+                  <tr (click)="selectTreatyRiskCeding(risKCedingDetail)" style="cursor:pointer;">
+                    <td>
+                      <p-tableCheckbox></p-tableCheckbox>
+                    </td>
+                    <td>{{risKCedingDetail.ipuPropertyId}}</td>
+                    <td>{{risKCedingDetail.prrdCurrent }}</td>
+                    <td>
+                      <span title="{{risKCedingDetail.ipuItemDesc}}">
+                        {{risKCedingDetail.ipuItemDesc.substring(0,10)}}...
+                      </span>
+                    </td>
+                    <td>{{subclassData?.description}}</td>
+                    <td>{{risKCedingDetail?.ipuOverrideRiRetention}}</td>
+                    <td>{{risKCedingDetail.prrdAvailFulcBal}}</td>
+                    <td>{{risKCedingDetail.prrdExcessPct}}</td>
+                    <td></td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="9">No Treaty Risk Ceding Detail(s) Found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+            <p-tabPanel header="{{'mngt_wrkflw.reinsurance.policyFacreCeding' | translate }}">
+              <div class="row mb-2">
+                <div class="col sm-4 d-flex align-items-center">
+                  <label class="form-label me-2">Excess SI</label>
+                  <input class="form-control w-auto" type="text">
+                </div>
+                <div class="col sm-4 d-flex align-items-center">
+                  <label class="form-label me-2">Excess PCT</label>
+                  <input class="form-control w-auto" type="text">
+                </div>
+                <div class="col sm-4 d-flex align-items-center">
+                  <label class="form-label me-2">Excess Premium</label>
+                  <input class="form-control w-auto" type="text">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 col-12"></div>
+                <div class="col-sm-6 col-12 d-flex justify-content-end">
+                  <button
+                    class="btn btn-primary" style="font-size: 12px;height: 27px; line-height: normal;">Upload file
+                  </button>
+                  <span class="icon-circle" (click)="openPolicyFacreCedingModal()">
+                <i class="pi pi-plus"></i>
+              </span>
+                  <span class="icon-circle ">
+                <i class="pi pi-pencil"></i>
+              </span>
+                  <span class="icon-circle">
+                <i class="fa-regular fa-trash-can"></i>
+              </span>
+                </div>
+              </div>
+
+              <div>
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                <p-table
+                  [autoLayout]="true"
+                  [rowHover]="true"
+                  [resizableColumns]="true"
+                  [showCurrentPageReport]="true"
+                  [rows]="pageSize || 5"
+                  [totalRecords]="reinsuranceFacreCedingData?.length"
+                  [value]="reinsuranceFacreCedingData"
+                  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                  responsiveLayout="stack"
+                  [scrollable]="true"
+                  scrollHeight="400px"
+                  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.brokerName' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.facreAccountId' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.rateAmount' | translate }}</th>
+                      <th>{{'entities.amount' | translate }}</th>
+                      <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.cessionRate' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.comm' | translate }} %</th>
+                      <th>{{'mngt_wrkflw.reinsurance.commAmt' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.vat' | translate }} %</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-facreCeding>
+                    <tr>
+                      <td>{{facreCeding.agentReinName}}</td>
+                      <td>{{intermediaryData?.name}}</td>
+                      <td>{{facreCeding.agentShtDesc}}</td>
+                      <td>{{facreCeding.amountOrRate}}</td>
+                      <td>{{facreCeding.amount}}</td>
+                      <td>{{facreCeding.wef}}</td>
+                      <td>{{facreCeding.rate}}</td>
+                      <td></td>
+                      <td>{{facreCeding.commissionRate}}</td>
+                      <td>{{facreCeding.commissionAmount}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="10">No Facre Ceding Detail(s) Found.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </p-tabPanel>
+          </p-tabView>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card mt-3" *ngIf="activeIndex === 0">
+    <div class="card-body">
+      <p-tabView>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyRiSummary' | translate }}">
+          <form [formGroup]="treatyRISummaryForm">
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark">{{'mngt_wrkflw.reinsurance.companyNetRetention' | translate }}</label>
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="companyNetPRate">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="companyNetRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="companyNetCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="companyNetPremium">
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark">{{'mngt_wrkflw.reinsurance.reinsurancePool' | translate }}</label>
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="reinsurancePRate">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="reinsuranceRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="reinsuranceCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="reinsurancePremium">
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark">{{'mngt_wrkflw.reinsurance.treatyCessions' | translate }}</label>
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="treatyPRate">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="treatyRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="treatyCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="treatyPremium">
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark">{{'mngt_wrkflw.reinsurance.facreSessions' | translate }}</label>
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="facrePRate">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="facreRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="facreCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="facrePremium">
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark">{{'mngt_wrkflw.reinsurance.total' | translate }}</label>
+              </div>
+              <div class="col-2"></div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="totalRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="totalCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="totalPremium">
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+              <div class="col-4 mb-2">
+                <label class="col-form-label text-dark fw-bold">{{'mngt_wrkflw.reinsurance.excess' | translate }}</label>
+              </div>
+              <div class="col-2"></div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="excessRiAmt">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="excessCession">
+              </div>
+              <div class="col-2">
+                <input type="text" class="form-control" formControlName="excessPremium">
+              </div>
+            </div>
+          </form>
+          <div>
+            <button
+              class="btn btn-primary w-auto" style="font-size: 12px;margin-right: 8px;">Reinsure
+            </button>
+            <button
+              class="btn btn-outline-primary" style="font-size: 12px;">Clear cessions
+            </button>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyCessions' | translate }}">
+          <div>
+            <span class="icon-circle ">
+              <i class="pi pi-pencil" (click)="openTreatyCessionsModal()"></i>
+            </span>
+          </div>
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="reinsuranceRiskDetailsData?.totalElements"
+            [value]="reinsuranceRiskDetailsData?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'mngt_wrkflw.policyDetails.rateType' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.pRate' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.riAmount' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.cession' | translate }} %</th>
+                <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.comm' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.remarks' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-risKRIDetail>
+              <tr (click)="selectRiskRiSummary(risKRIDetail)">
+                <td>{{risKRIDetail.rateType}}</td>
+                <td>{{risKRIDetail.previousCessionRate}}</td>
+                <td>{{risKRIDetail.treatySumInsuredPolicyCurrency}}</td>
+                <td>{{risKRIDetail.cessionPercentage}}</td>
+                <td>{{risKRIDetail.riskPremiumPolicyCurrency | number}}</td>
+                <td>{{risKRIDetail.premiumTaxPolicyCurrency}}</td>
+                <td>{{risKRIDetail.treatyCommissionPolicyCurrency}}</td>
+                <td>{{risKRIDetail.remarks}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="8">No Treaty Cessions Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.facreCeding' | translate }}">
+          <div class="row mb-2">
+            <div class="col sm-4 d-flex align-items-center">
+              <label class="form-label me-2">Excess SI</label>
+              <input class="form-control w-auto" type="text">
+            </div>
+            <div class="col sm-4 d-flex align-items-center">
+              <label class="form-label me-2">Excess PCT</label>
+              <input class="form-control w-auto" type="text">
+            </div>
+            <div class="col sm-4 d-flex align-items-center">
+              <label class="form-label me-2">Excess Premium</label>
+              <input class="form-control w-auto" type="text">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 col-12">
+              <button
+                class="btn btn-primary" style="font-size: 12px;height: 27px; line-height: normal;">{{'mngt_wrkflw.reinsurance.facreOutOfferSlip' | translate }}
+              </button>
+              <button
+                class="btn btn-primary" style="font-size: 12px;height: 27px; line-height: normal;">{{'mngt_wrkflw.reinsurance.reinsurersDebitCreditNote' | translate }}
+              </button>
+            </div>
+            <div class="col-sm-6 col-12 d-flex justify-content-end">
+              <button
+                class="btn btn-primary" style="font-size: 12px;height: 27px; line-height: normal;">Upload file
+              </button>
+              <span class="icon-circle" (click)="openFacreCedingModal()">
+                <i class="pi pi-plus"></i>
+              </span>
+              <span class="icon-circle ">
+                <i class="pi pi-pencil"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="fa-regular fa-trash-can"></i>
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reinsuranceFacreCedingData?.length"
+              [value]="reinsuranceFacreCedingData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.brokerName' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.facreAccountId' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.rateAmount' | translate }}</th>
+                  <th>{{'entities.amount' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.cessionRate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.comm' | translate }} %</th>
+                  <th>{{'mngt_wrkflw.reinsurance.commAmt' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.vat' | translate }} %</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-facreCeding>
+                <tr>
+                  <td>{{facreCeding.agentReinName}}</td>
+                  <td>{{intermediaryData?.name}}</td>
+                  <td>{{facreCeding.agentShtDesc}}</td>
+                  <td>{{facreCeding.amountOrRate}}</td>
+                  <td>{{facreCeding.amount}}</td>
+                  <td>{{facreCeding.wef}}</td>
+                  <td>{{facreCeding.rate}}</td>
+                  <td></td>
+                  <td>{{facreCeding.commissionRate}}</td>
+                  <td>{{facreCeding.commissionAmount}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10">No Facre Ceding Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.reinsurancePool' | translate }}">
+          <div>
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reinsurancePoolData?.length"
+              [value]="reinsurancePoolData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{'mngt_wrkflw.reinsurance.riskPremium' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.trtOwnRetAmt' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.poolRate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.poolAmt' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.poolOwnRetPrem' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.commRate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.commAmt' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.vatRate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.vatAmt' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-reinsurancePool>
+                <tr>
+                  <td>{{reinsurancePool.riskPremiumAmount}}</td>
+                  <td>{{reinsurancePool.riskTrtOwnReturnAmount}}</td>
+                  <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+                  <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
+                  <td>{{reinsurancePool.riskOwnReturnAmount}}</td>
+                  <td>{{reinsurancePool.reinsurancePoolCommisionRate}}</td>
+                  <td>{{reinsurancePool.reinsurancePoolCommisionAmount}}</td>
+                  <td>{{reinsurancePool.reinsurancePoolVatRate}}</td>
+                  <td></td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9">No Reinsurance Pool Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.xolUwCess' | translate }}">
+          <div class="row g-3 align-items-center">
+            <div class="col-3 mb-2" style="padding-right: 0px">
+              <label class="col-form-label" style="font-size: 13px;">{{'mngt_wrkflw.reinsurance.vmlpExcessSI' | translate }}</label>
+            </div>
+            <div class="col-2">
+              <input type="number" class="form-control">
+            </div>
+            <div class="col-2 mb-2">
+              <label class="col-form-label" style="font-size: 13px;">{{'mngt_wrkflw.reinsurance.vmlpExcessPrem' | translate }}</label>
+            </div>
+            <div class="col-2">
+              <input type="number" class="form-control">
+            </div>
+            <div class="col-3">
+              <button
+                class="btn btn-primary" style="font-size: 12px; float: right;">{{'mngt_wrkflw.reinsurance.updatePremRate' | translate }}
+              </button>
+            </div>
+          </div>
+          <div>
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reinsuranceXolPremiumData?.length"
+              [value]="reinsuranceXolPremiumData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{'report.name' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.yr' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.capacity' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.compOwnAmount' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.treatySI' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.vmlpSI' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.premium' | translate }} {{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                  <th>Cession percent</th>
+                  <th>Profit comm discount</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-reinsuranceXolPremium>
+                <tr>
+                  <td>{{reinsuranceXolPremium.arrangementVmlpName}}</td>
+                  <td>{{reinsuranceXolPremium.arrangementSetupsUnderwritingYear}}</td>
+                  <td>{{reinsuranceXolPremium.arrangementCapacity}}</td>
+                  <td>{{reinsuranceXolPremium.compOwnAmount}}</td>
+                  <td>{{reinsuranceXolPremium.actualTreatySumInsured}}</td>
+                  <td>{{reinsuranceXolPremium.actualVmlpSumInsured}}</td>
+                  <td>{{reinsuranceXolPremium.premiumRate}}</td>
+                  <td>{{reinsuranceXolPremium.premium}}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="8">No Reinsurance Xol Premium Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div>
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reXolPremiumParticipantData?.length"
+              [value]="reXolPremiumParticipantData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.reinPremTax' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.sumReinsured' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-reXolPremiumParticipant>
+                <tr>
+                  <td>{{reXolPremiumParticipant.agentName}}</td>
+                  <td>{{reXolPremiumParticipant.participantCedeRate}}</td>
+                  <td>{{reXolPremiumParticipant.participantsPremiumTax}}</td>
+                  <td>{{reXolPremiumParticipant.participantsReinPremiumTax}}</td>
+                  <td>{{reXolPremiumParticipant.participantsSIAmountPcur}}</td>
+                  <td>{{reXolPremiumParticipant.participantPremiumAmountPcur}}</td>
+                  <td>{{reXolPremiumParticipant.participantCommAmountPcur}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="7">No Reinsurance Xol Premium Participants Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyPart' | translate }}">
+          <div>
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="treatyParticipantData?.length"
+              [value]="treatyParticipantData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.reinPremTax' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                  <th>{{'mngt_wrkflw.reinsurance.sumReinsured' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                  <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-treatyParticipant>
+                <tr>
+                  <td>{{treatyParticipant.partName}}</td>
+                  <td>{{treatyParticipant.cedingRate}}</td>
+                  <td>{{treatyParticipant.reinsurancePremiumTax}}</td>
+                  <td>{{treatyParticipant.premiumTax}}</td>
+                  <td>{{treatyParticipant.sumInsuredAmount}}</td>
+                  <td>{{treatyParticipant.premiumAmount}}</td>
+                  <td>{{treatyParticipant.previousCommision}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="7">No Treaty Participants Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="{{'mngt_wrkflw.reinsurance.previousCeding' | translate }}">
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="previousCedingData?.length"
+            [value]="previousCedingData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'mngt_wrkflw.reinsurance.compGrossRet' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.netCompRet' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.facreCeded' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.retentionRate' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.groupRiskPct' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.groupTopLoc' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.riPrem' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-previousCeding>
+              <tr (click)="selectPreviousCedingDetails(previousCeding)">
+                <td>{{ previousCeding.grossCompanyRetention | number }}</td>
+                <td>{{ previousCeding.companyRetention | number }}</td>
+                <td>{{ previousCeding.facreAmount }}</td>
+                <td>{{ previousCeding.companyRetentionRate }}</td>
+                <td>{{ previousCeding.riskPercentage }}</td>
+                <td>{{ previousCeding.topLocation }}</td>
+                <td>{{ previousCeding.reinsurancePremium | number }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Previous Ceding Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <label class="text-dark mt-5 mb-2 fw-medium">{{'mngt_wrkflw.reinsurance.treatyCessions' | translate }}</label>
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="treatyCessionsData?.totalElements"
+            [value]="treatyCessionsData?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.cessionPct' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.comm' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-treatyCession>
+              <tr>
+                <td>{{treatyCession.treatyShortDescription}}</td>
+                <td>{{treatyCession.cessionPolicyCovertype}}</td>
+                <td>{{treatyCession.treatyPremiumPolicyCurrency}}</td>
+                <td>{{treatyCession.treatyCommissionPolicyCurrency}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4">No Treaty Cessions Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <label class="text-dark mt-5 mb-2 fw-medium">{{'mngt_wrkflw.reinsurance.facreSessions' | translate }}</label>
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="previousFacreCedingData?.length"
+            [value]="previousFacreCedingData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-facreCession>
+              <tr>
+                <td>{{facreCession.agentReinName}}</td>
+                <td>{{facreCession.agentShtDesc}}</td>
+                <td>{{facreCession.rate}}</td>
+                <td>{{facreCession.premiumAmount}}</td>
+                <td>{{facreCession.commissionAmount}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4">No Facre Cessions Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+</div>
+
+<!--Treaty Setup Modal-->
+<div class="modal fade" id="treatySetupToggle" aria-hidden="true" aria-labelledby="treatySetupToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="treatySetupToggleLabel">{{'mngt_wrkflw.reinsurance.treatySetup' | translate }}</h1>
+        <button type="button" class="btn-close" (click)="closeTreatySetupModal()"></button>
+      </div>
+      <div class="modal-body">
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="treatySetupsData?.totalElements"
+          [value]="treatySetupsData?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
+              <th>{{'mngt_wrkflw.reinsurance.treatyType' | translate }}</th>
+              <th>{{'mngt_wrkflw.policyDetails.currency' | translate }}</th>
+              <th>{{'mngt_wrkflw.policyDetails.rateType' | translate }}</th>
+              <th>{{'mngt_wrkflw.reinsurance.U/WYear' | translate }}</th>
+              <th>{{'mngt_wrkflw.reinsurance.commRate' | translate }}</th>
+              <th>{{'mngt_wrkflw.reinsurance.siStatingFrom' | translate }}</th>
+              <th>{{'mngt_wrkflw.policyDetails.limit' | translate }}</th>
+              <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-treatySetup>
+            <tr>
+              <td>{{treatySetup.treatyTypeDescription}}</td>
+              <td>{{treatySetup.reinsuranceTreatyTypeShortDescription}}</td>
+              <td>{{treatySetup.currencySymbol}}</td>
+              <td>{{treatySetup.reinsuranceRateType}}</td>
+              <td>{{treatySetup.reinsuranceUnderwritingYear}}</td>
+              <td>{{treatySetup.reinsuranceCommissionRate}}</td>
+              <td>{{treatySetup.classTreatyWefDate}}</td>
+              <td>{{treatySetup.reinsuranceLimit | number}}</td>
+              <td>{{treatySetup.reinsuranceCedeRate}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="9">No Treaty Setup Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer float-end border-top-0">
+        <button class="btn btn-primary">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Treaty Risk Ceding Modal-->
+<div class="modal fade" id="riskCedingEditToggle" aria-hidden="true" aria-labelledby="riskCedingEditToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="riskCedingEditToggleLabel">Treaty risk ceding</h1>
+        <button type="button" class="btn-close" (click)="closeRiskCedingModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <label class="form-label">Retention type</label>
+          <select class="form-control form-select" >
+            <option value="" selected>Select option</option>
+            <option value="">One</option>
+          </select>
+
+          <div class="form-check form-check-inline mt-3">
+            <input class="form-check-input" type="checkbox" value="Y">
+            <label class="form-label">Fac. obligatory allocation</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" value="N">
+            <label class="form-label">Cede to pool</label>
+          </div>
+
+          <label class="form-label">Top location/max exposure</label>
+          <input class="form-control" type="text">
+
+          <label class="form-label">EML %</label>
+          <input class="form-control" type="number">
+
+          <label class="form-label">Special retention on premium or SI</label>
+          <select class="form-control form-select" >
+            <option value="" selected>Select option</option>
+            <option value="">One</option>
+          </select>
+
+          <label class="form-label">Special retention on premium or SI</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="sRetention" value="Y">
+            <label class="form-label">Amount</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="sRetention" value="N">
+            <label class="form-label">Percentage</label>
+          </div>
+          <input class="form-control" type="text">
+
+          <label class="form-label">Excess</label>
+          <input class="form-control" type="text">
+
+          <label class="form-label">Excess percentage</label>
+          <input class="form-control" type="number">
+        </form>
+      </div>
+      <div class="modal-footer float-end border-top-0">
+        <button class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Treaty Risk Cessions Modal-->
+<div class="modal fade" id="treatyCessionsEditToggle" aria-hidden="true" aria-labelledby="treatyCessionsEditToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="treatyCessionsEditToggleLabel">Edit rate</h1>
+        <button type="button" class="btn-close" (click)="closeTreatyCessionsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <label class="form-label">Rate</label>
+          <input class="form-control" type="number">
+
+          <label class="form-label">Reason</label>
+          <input class="form-control" type="text">
+
+          <label class="form-label">Allowed rate: <span>30</span> </label>
+        </form>
+      </div>
+      <div class="modal-footer float-end border-top-0">
+        <button class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Add Facre Ceding Modal-->
+<div class="modal fade" id="facreCedingEditToggle" aria-hidden="true" aria-labelledby="facreCedingEditToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="facreCedingEditToggleLabel">Facre ceding</h1>
+        <button type="button" class="btn-close" (click)="closeFacreCedingModal()"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-borderless">
+          <tbody>
+          <tr>
+            <td class="align-content-center">Excess SI</td>
+            <td class="text-center"><input class="form-control" type="text"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Excess PCT</td>
+            <td style="text-align: center;"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Excess Premium</td>
+            <td class="text-center"><input class="form-control" type="text"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre type</td>
+            <td class="row text-center">
+              <div class="col-6">
+                <select class="form-control form-select" >
+                  <option value="" selected>Select option</option>
+                  <option value="">One</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <select class="form-control form-select" >
+                  <option value="" selected>Select option</option>
+                  <option value="">One</option>
+                </select>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre account name</td>
+            <td class="text-center">
+              <select class="form-control form-select" >
+                <option value="" selected>Select option</option>
+                <option value="">One</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre ID</td>
+            <td class="text-center"><input class="form-control" type="text"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Ceded amount
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="cededAmt" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="cededAmt" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Management
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="mgmt" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="mgmt" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Facre charges
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="facreCharges" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="facreCharges" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Accepted
+              <input class="form-check-input" type="checkbox">
+            </td>
+            <td class="text-center"><input class="form-control" type="date"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Commission
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="commission" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="commission" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre remarks</td>
+            <td class="text-center"><input class="form-control" type="text"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Override premium</td>
+            <td class="text-center">
+              <select class="form-control form-select" >
+                <option value="" selected>Select option</option>
+                <option value="">One</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Override type</td>
+            <td class="text-center">
+              <select class="form-control form-select" >
+                <option value="" selected>Select option</option>
+                <option value="">One</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Override value</td>
+            <td class="text-center"><input class="form-control" type="number"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer float-end border-top-0">
+        <button class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Policy Facre Ceding Modal-->
+<div class="modal fade" id="policyFacreCedingEditToggle" aria-hidden="true" aria-labelledby="policyFacreCedingEditToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="policyFacreCedingEditToggleLabel">Facre ceding</h1>
+        <button type="button" class="btn-close" (click)="closePolicyFacreCedingModal()"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-borderless">
+          <tbody>
+          <tr>
+            <td class="align-content-center">Facre type</td>
+            <td class="row text-center">
+              <div class="col-6">
+                <select class="form-control form-select" >
+                  <option value="" selected>Select option</option>
+                  <option value="">One</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <select class="form-control form-select" >
+                  <option value="" selected>Select option</option>
+                  <option value="">One</option>
+                </select>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre account name</td>
+            <td class="text-center">
+              <select class="form-control form-select" >
+                <option value="" selected>Select option</option>
+                <option value="">One</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="align-content-center">Facre ID</td>
+            <td class="text-center"><input class="form-control" type="text"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Ceded amount
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="cededAmt" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="cededAmt" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Management
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="mgmt" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="mgmt" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Facre charges
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="facreCharges" value="Y">
+                  <label class="form-label">Amount</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="facreCharges" value="N">
+                  <label class="form-label">Percentage</label>
+                </div>
+              </div>
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Accepted
+              <input class="form-check-input" type="checkbox">
+            </td>
+            <td class="text-center"><input class="form-control" type="date"></td>
+          </tr>
+          <tr>
+            <td class="align-content-center">
+              Commission rate
+            </td>
+            <td class="align-content-center"><input class="form-control" type="number"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer float-end border-top-0">
+        <button class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
