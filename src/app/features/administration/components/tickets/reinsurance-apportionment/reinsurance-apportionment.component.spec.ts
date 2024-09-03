@@ -5,7 +5,6 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import {SharedModule} from "../../../../../shared/shared.module";
 import { TranslateLoader, TranslateService, TranslateStore } from '@ngx-translate/core';
-import {AppConfigService} from "../../../../../core/config/app-config-service";
 import {of} from "rxjs";
 
 
@@ -17,7 +16,6 @@ export class MockTranslateService {
 describe('ReinsuranceApportionmentComponent', () => {
   let component: ReinsuranceApportionmentComponent;
   let fixture: ComponentFixture<ReinsuranceApportionmentComponent>;
-  let appConfigServiceStub: AppConfigService;
   let translateServiceStub: TranslateService;
 
   beforeEach(() => {
@@ -33,15 +31,13 @@ describe('ReinsuranceApportionmentComponent', () => {
         { provide: TranslateService},
         { provide: TranslateStore},
         { provide: TranslateLoader},
-        { provide: AppConfigService},
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     });
     fixture = TestBed.createComponent(ReinsuranceApportionmentComponent);
     component = fixture.componentInstance;
-    appConfigServiceStub = TestBed.inject(AppConfigService);
     translateServiceStub = TestBed.inject(TranslateService);
-    // fixture.detectChanges();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
