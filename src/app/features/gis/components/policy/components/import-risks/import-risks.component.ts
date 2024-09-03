@@ -46,6 +46,8 @@ export class ImportRisksComponent {
   riskForm: any;
   riskCode: any;
   batchNo:any;
+  policyForm:any;
+  selectedRisks:any;
 
   constructor(
     public globalMessagingService: GlobalMessagingService,
@@ -85,13 +87,14 @@ export class ImportRisksComponent {
 
   getPolicyDetails(){
     this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
-    log.debug("POLICY DETAILS:",this.policyDetails)
+    this.policyForm = JSON.parse(sessionStorage.getItem('policyProductForm'))
+    log.debug("POLICY DETAILS:",this.policyForm)
     this.batchNo= parseInt(this.policyDetails.batchNumber);
     log.debug("Batch number:",this.batchNo)
     this.policyNumber = this.policyDetails.policyNumber
-    this.coverFrom = sessionStorage.getItem('coverFrom');
-    this.coverTo = sessionStorage.getItem('coverTo');
-    this.productCode = sessionStorage.getItem('productCode');
+    this.coverFrom = this.policyForm.withEffectiveFromDate
+    this.coverTo = this.policyForm.withEffectiveToDate
+    this.productCode = this.policyForm.productCode
 
   }
   getClientDetails(){
@@ -106,10 +109,16 @@ export class ImportRisksComponent {
     })
   }
 
+  // Add a single record
+  loadRisk(){
+    console.log(this.selectedRisks)
+    console.log(this.importedRisk)
+  }
+
   downloadCSVTemplate(): void {
     console.log("TEST")
-    const templateFilePath = '/assets/data/import-risks-template_2.csv';
-    // const templateFilePath = '/assets/data/import-risks-template.csv';
+    const templateFilePath = '/assets/data/cycleTemplate.csv';
+
     const link = document.createElement('a');
     link.setAttribute('target', '_blank');
     link.setAttribute('href', templateFilePath);
@@ -286,6 +295,8 @@ export class ImportRisksComponent {
   //   return true;
   // }
   onFileSelected(event: any): void {
+      
+    
     const file: File = event.target.files[0];
     if (file) {
       this.uploading = 'progress';
@@ -320,7 +331,7 @@ export class ImportRisksComponent {
             console.log("Results after upload:", this.importedRisk);
             this.globalMessagingService.displaySuccessMessage('Success', 'Risks successfully added');
             if(this.importedRisk){
-              this.addPolicyRisk();
+              // this.addPolicyRisk();
             }
             try {
               this.uploadedFileName = file.name;
@@ -342,6 +353,9 @@ export class ImportRisksComponent {
       this.uploadedFileName = '';
       this.uploading = '';
     }
+  // }else{
+  //   this.globalMessagingService.displayInfoMessage('Error', 'Select a subclass to continue');
+  // }
   }
   validateHeaders(expectedHeaders: string[], actualHeaders: string[]): boolean {
     if (expectedHeaders.length !== actualHeaders.length) {
@@ -543,116 +557,139 @@ export class ImportRisksComponent {
   }
   addPolicyRisk() {
    
-    this.policyRiskForm.get('insureds.client.firstName').setValue(this.importedRisk[0]?.INSURED_NAME);
-    this.policyRiskForm.get('insureds.client.lastName').setValue(this.importedRisk[0]?.INSURED_NAME);
-    this.policyRiskForm.get('insureds.client.id').setValue(this.importedRisk[0]?.INSURED_ID);
-    this.policyRiskForm.get('insureds.prpCode').setValue(this.importedRisk[0]?.INSURED_ID);
-    this.policyRiskForm.get('allowedCommissionRate').setValue(890);
-    this.policyRiskForm.get('basicPremium').setValue(890);
-    this.policyRiskForm.get('binderCode').setValue(202420207353);
-    this.policyRiskForm.get('commissionAmount').setValue(890);
-    this.policyRiskForm.get('commissionRate').setValue(2);
-    this.policyRiskForm.get('coverTypeCode').setValue(302);
-    this.policyRiskForm.get('coverTypeShortDescription').setValue(this.importedRisk[0]?.COVER_TYPE);
-    this.policyRiskForm.get('currencyCode').setValue(268);
-    this.policyRiskForm.get('dateCoverFrom').setValue(this.importedRisk[0]?.EFF_DATE);
-    this.policyRiskForm.get('dateCoverTo').setValue(this.importedRisk[0]?.EXP_DATE);
-    this.policyRiskForm.get('delSect').setValue(null);
-    this.policyRiskForm.get('grossPremium').setValue(890);
-    this.policyRiskForm.get('ipuNcdCertNo').setValue(null);
-    this.policyRiskForm.get('loaded').setValue("N");
-    this.policyRiskForm.get('ltaCommission').setValue(890);
-    this.policyRiskForm.get('netPremium').setValue(0);
-    this.policyRiskForm.get('paidPremium').setValue(890);
-    this.policyRiskForm.get('policyBatchNo').setValue(this.batchNo);
-    this.policyRiskForm.get('policyNumber').setValue(this.policyDetails.policyNumber);
-    this.policyRiskForm.get('policyStatus').setValue("NB");
-    this.policyRiskForm.get('productCode').setValue(this.productCode);
-    this.policyRiskForm.get('propertyDescription').setValue(this.importedRisk[0].RISK_DESCRIPTION);
-    this.policyRiskForm.get('propertyId').setValue(this.importedRisk[0].REG_NO);
-    this.policyRiskForm.get('quantity').setValue(0);
-    this.policyRiskForm.get('reinsuranceEndorsementNumber').setValue("N");
-    this.policyRiskForm.get('renewalArea').setValue("N");
-    this.policyRiskForm.get('riskFpOverride').setValue(0);
-    this.policyRiskForm.get('riskIpuCode').setValue(0);
-    this.policyRiskForm.get('stampDuty').setValue(890);
-    this.policyRiskForm.get('subClassCode').setValue(this.selectedSubclassCode);
-    this.policyRiskForm.get('subClassDescription').setValue(this.selectedSubclass.description);
-    this.policyRiskForm.get('transactionType').setValue(this.selectedTransactionType);
-    this.policyRiskForm.get('underwritingYear').setValue(this.currentYear);
-    this.policyRiskForm.get('value').setValue(0);
-    this.policyRiskForm.get('autogenerateCert');
-    this.policyRiskForm.get('cashApplicable');
-    this.policyRiskForm.get('cashLevel');
-    this.policyRiskForm.get('computeMaxExposure');
-    this.policyRiskForm.get('conveyanceType');
-    this.policyRiskForm.get('coverDays').setValue(365);
-    this.policyRiskForm.get('installmentPaymentPercentage');
-    this.policyRiskForm.get('installmentPeriod');
-    this.policyRiskForm.get('ipu_ncd_cert_no');
-    this.policyRiskForm.get('logbookAvailable');
-    this.policyRiskForm.get('logbookUnderInsuredName');
-    this.policyRiskForm.get('maintenanceCover');
-    this.policyRiskForm.get('maxExposureAmount');
-    this.policyRiskForm.get('modelYear').setValue(2015);
-    this.policyRiskForm.get('ncdApplicable');
-    this.policyRiskForm.get('ncdLevel');
-    this.policyRiskForm.get('newRisk');
-    this.policyRiskForm.get('periodRate');
-    this.policyRiskForm.get('quakeFloodZone');
-    this.policyRiskForm.get('regularDriver');
-    this.policyRiskForm.get('retroactiveCover');
-    this.policyRiskForm.get('riskAddress');
-    this.policyRiskForm.get('riskClass');
-    this.policyRiskForm.get('riskDetails');
-    this.policyRiskForm.get('riskLocation');
-    this.policyRiskForm.get('surveyDate');
-    this.policyRiskForm.get('territory');
-    this.policyRiskForm.get('topLocationLevel');
-    this.policyRiskForm.get('town');
-    this.policyRiskForm.get('vehicleMake');
-    this.policyRiskForm.get('vehicleModel');
+    if(this.selectedRisks){
+      if(this.selectedSubclass){
 
-    // const riskForm = this.policyRiskForm.value;
-    const riskForm = this.policyRiskForm.value;
-    this.riskForm = [riskForm];
-
-    log.debug("MY RISK FORM", JSON.stringify(this.policyRiskForm.value))
-    this.policyService
-      .addPolicyRisk(this.batchNo, this.riskForm, this.user)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (data: any) => {
-          if (data) {
-            log.debug("Add risk endpoint response:", data)
-            this.globalMessagingService.displaySuccessMessage('Success', 'Policy Risk has been created');
-            if (data && data._embedded && Array.isArray(data._embedded) && data._embedded.length > 0) {
-              const embedded = data._embedded[0];
-              if (embedded && embedded['IPU_CODE[0]']) {
-                this.riskCode = embedded['IPU_CODE[0]'];
-                log.debug('Risk Code:', this.riskCode);
-                this.createRiskSection();
-                this.createSchedule();
-              }
+      
+      this.policyRiskForm.get('insureds.client.firstName').setValue(this.selectedRisks[0]?.INSURED_NAME);
+      this.policyRiskForm.get('insureds.client.lastName').setValue(this.selectedRisks[0]?.INSURED_NAME);
+      this.policyRiskForm.get('insureds.client.id').setValue(this.selectedRisks[0]?.INSURED_ID);
+      this.policyRiskForm.get('insureds.prpCode').setValue(this.selectedRisks[0]?.INSURED_ID);
+      this.policyRiskForm.get('allowedCommissionRate').setValue(890);
+      this.policyRiskForm.get('basicPremium').setValue(890);
+      this.policyRiskForm.get('binderCode').setValue(202420207353);
+      this.policyRiskForm.get('commissionAmount').setValue(890);
+      this.policyRiskForm.get('commissionRate').setValue(2);
+      this.policyRiskForm.get('coverTypeCode').setValue(302);
+      this.policyRiskForm.get('coverTypeShortDescription').setValue(this.selectedRisks[0]?.COVER_TYPE);
+      this.policyRiskForm.get('currencyCode').setValue(268);
+      this.policyRiskForm.get('dateCoverFrom').setValue(this.selectedRisks[0]?.EFF_DATE);
+      this.policyRiskForm.get('dateCoverTo').setValue(this.selectedRisks[0]?.EXP_DATE);
+      this.policyRiskForm.get('delSect').setValue(null);
+      this.policyRiskForm.get('grossPremium').setValue(890);
+      this.policyRiskForm.get('ipuNcdCertNo').setValue(null);
+      this.policyRiskForm.get('loaded').setValue("N");
+      this.policyRiskForm.get('ltaCommission').setValue(890);
+      this.policyRiskForm.get('netPremium').setValue(0);
+      this.policyRiskForm.get('paidPremium').setValue(890);
+      this.policyRiskForm.get('policyBatchNo').setValue(this.batchNo);
+      this.policyRiskForm.get('policyNumber').setValue(this.policyDetails.policyNumber);
+      this.policyRiskForm.get('policyStatus').setValue("NB");
+      this.policyRiskForm.get('productCode').setValue(this.productCode);
+      this.policyRiskForm.get('propertyDescription').setValue(this.selectedRisks[0].RISK_DESCRIPTION);
+      this.policyRiskForm.get('propertyId').setValue(this.selectedRisks[0].REG_NO);
+      this.policyRiskForm.get('quantity').setValue(0);
+      this.policyRiskForm.get('reinsuranceEndorsementNumber').setValue("N");
+      this.policyRiskForm.get('renewalArea').setValue("N");
+      this.policyRiskForm.get('riskFpOverride').setValue(0);
+      this.policyRiskForm.get('riskIpuCode').setValue(0);
+      this.policyRiskForm.get('stampDuty').setValue(890);
+      this.policyRiskForm.get('subClassCode').setValue(this.selectedSubclassCode);
+      this.policyRiskForm.get('subClassDescription').setValue(this.selectedSubclass.description);
+      this.policyRiskForm.get('transactionType').setValue(this.selectedTransactionType);
+      this.policyRiskForm.get('underwritingYear').setValue(this.currentYear);
+      this.policyRiskForm.get('value').setValue(0);
+      this.policyRiskForm.get('autogenerateCert');
+      this.policyRiskForm.get('cashApplicable');
+      this.policyRiskForm.get('cashLevel');
+      this.policyRiskForm.get('computeMaxExposure');
+      this.policyRiskForm.get('conveyanceType');
+      this.policyRiskForm.get('coverDays').setValue(365);
+      this.policyRiskForm.get('installmentPaymentPercentage');
+      this.policyRiskForm.get('installmentPeriod');
+      this.policyRiskForm.get('ipu_ncd_cert_no');
+      this.policyRiskForm.get('logbookAvailable');
+      this.policyRiskForm.get('logbookUnderInsuredName');
+      this.policyRiskForm.get('maintenanceCover');
+      this.policyRiskForm.get('maxExposureAmount');
+      this.policyRiskForm.get('modelYear').setValue(2015);
+      this.policyRiskForm.get('ncdApplicable');
+      this.policyRiskForm.get('ncdLevel');
+      this.policyRiskForm.get('newRisk');
+      this.policyRiskForm.get('periodRate');
+      this.policyRiskForm.get('quakeFloodZone');
+      this.policyRiskForm.get('regularDriver');
+      this.policyRiskForm.get('retroactiveCover');
+      this.policyRiskForm.get('riskAddress');
+      this.policyRiskForm.get('riskClass');
+      this.policyRiskForm.get('riskDetails');
+      this.policyRiskForm.get('riskLocation');
+      this.policyRiskForm.get('surveyDate');
+      this.policyRiskForm.get('territory');
+      this.policyRiskForm.get('topLocationLevel');
+      this.policyRiskForm.get('town');
+      this.policyRiskForm.get('vehicleMake');
+      this.policyRiskForm.get('vehicleModel');
+  
+      // const riskForm = this.policyRiskForm.value;
+      const riskForm = this.policyRiskForm.value;
+      this.riskForm = [riskForm];
+  
+      log.debug("MY RISK FORM", JSON.stringify(this.policyRiskForm.value))
+      this.policyService
+        .addPolicyRisk(this.batchNo, this.riskForm, this.user)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (data: any) => {
+            if (data) {
+              log.debug("Add risk endpoint response:", data)
+              this.globalMessagingService.displaySuccessMessage('Success', 'Policy Risk has been created');
+              // Remove the added risk from the Imported Risk table
+            const index = this.importedRisk.findIndex(risk => risk.REG_NO === this.selectedRisks[0].REG_NO);
+            console.log('importedRisk:', this.importedRisk);
+            console.log('selectedRisks:', this.selectedRisks);
+            console.log('reg',index)
+            if (index !== -1) {
+              this.importedRisk.forEach(element => {
+                this.importedRisk.splice(index, 1);
+              });
+              
+              this.selectedRisks.length = 0
             }
+              if (data && data._embedded && Array.isArray(data._embedded) && data._embedded.length > 0) {
+                const embedded = data._embedded[0];
+                if (embedded && embedded['IPU_CODE[0]']) {
+                  this.riskCode = embedded['IPU_CODE[0]'];
+                  log.debug('Risk Code:', this.riskCode);
+                  this.createRiskSection();
+                  this.createSchedule();
+                }
+              }
+  
+            }
+            else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Empty response received from the server.';
+              this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+            }
+  
+          },
+          error: (err) => {
+  
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              this.errorMessage
+            );
+            log.info(`error >>>`, err);
+          },
+        })
+      }else{
+        this.globalMessagingService.displayInfoMessage('Error', 'Select a subclass to continue');
+      }
+    }else{
+      this.globalMessagingService.displayInfoMessage('Error', 'Upload a CSV file to continue ');
+    }
 
-          }
-          else {
-            this.errorOccurred = true;
-            this.errorMessage = 'Empty response received from the server.';
-            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
-          }
-
-        },
-        error: (err) => {
-
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            this.errorMessage
-          );
-          log.info(`error >>>`, err);
-        },
-      })
   }
   createRiskSection() {
     throw new Error('Method not implemented.');
@@ -665,5 +702,8 @@ export class ImportRisksComponent {
   }
   previous(){
     this.router.navigate(['/home/gis/policy/policy-product']);
+  }
+  clear(){
+    this.importedRisk.length = 0 
   }
 }

@@ -2114,7 +2114,7 @@ export class PolicySummaryOtherDetailsComponent {
         console.log('Policy  Taxes:', this.policyTaxes);
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
 
-        // Remove the deleted tax from the policy tax Details array
+        // Remove the deleted tax from the policy tax Details array 
         const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
         if (index !== -1) {
           this.filteredPolicyTaxes.splice(index, 1);
