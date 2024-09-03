@@ -114,6 +114,8 @@ export class PolicyProductComponent {
   agentDescription:any;
   currencyDescription:any;
   policyType:any;
+  policyRiskForm:FormGroup;
+  riskForm: any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -251,7 +253,11 @@ export class PolicyProductComponent {
     this.policyProductForm.controls['branchCode'].setValue(this.selectedBranchCode)
     this.policyProductForm.controls['agentCode'].setValue(this.selectedAgentCode)
     this.policyProductForm.controls['currencyCode'].setValue(this.selectedCurrencyCode)
-
+    if(this.policyRiskDetails){
+      const policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
+      console.log(policyDetails)
+       this.addPolicyRisks(policyDetails)
+    }
     const policyForm = this.policyProductForm.value;
     console.log(policyForm)
     this.policyService.updatePolicy(policyForm,this.user)
@@ -263,7 +269,7 @@ export class PolicyProductComponent {
           this.router.navigate(['/home/gis/policy/risk-details']);
           console.log(data)
         }, error: (err) => {
-  
+          this.spinner.hide();
           this.globalMessagingService.displayErrorMessage(
             'Error',
            'Something went wrong while updating the policy. Please try Again'
@@ -458,6 +464,7 @@ export class PolicyProductComponent {
     this.clientCode = this.clientDetails.id;
     this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     sessionStorage.setItem('clientCode', this.clientCode);
+    sessionStorage.setItem('clientName', this.clientName);
     log.debug("Client Code:", this.clientCode)
   }
   /**
@@ -1009,6 +1016,9 @@ export class PolicyProductComponent {
   // }
   createPolicy() {
     this.spinner.show()
+    if (this.policyProductForm.invalid) {
+      this.policyProductForm.markAllAsTouched();  // This will trigger validation for all fields
+    }
     if(this.policyType = "D"){
       this.policyProductForm.get('agentShortDescription').setValue("DIRECT");
       this.policyProductForm.get('agentCode').setValue(0);
@@ -1083,7 +1093,9 @@ export class PolicyProductComponent {
             this.policyDetails = this.policyResponse._embedded[0]
             log.debug("Policy Details", this.policyDetails)
             this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
-
+            if(this.policyRiskDetails){
+              this.addPolicyRisks(this.policyDetails)
+            }
             const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
             sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
             if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
@@ -1127,7 +1139,10 @@ export class PolicyProductComponent {
           }
         },
         error: (err) => {
-
+          this.spinner.hide();
+          const clientName = sessionStorage.getItem('clientName')
+          this.policyProductForm.get('clientCode').setValue(clientName);
+          console.log(clientName)
           this.globalMessagingService.displayErrorMessage(
             'Error',
             this.errorMessage
@@ -1283,14 +1298,144 @@ export class PolicyProductComponent {
       next:(res)=>{
         this.policyRiskDetails = res
         this.policyRiskDetails = this.policyRiskDetails.content
-        console.log(this.policyRiskDetails)
+        console.log(this.policyRiskDetails[0])
         if(this.policyRiskDetails.length < 1){
           this.globalMessagingService.displayErrorMessage('Error','This policy does not have any risks.Select another policy number')
+        }else{
+          this.createRiskForm()
+          this.policyRiskForm.patchValue(this.policyRiskDetails[0])
         }
       }
     })
   }
   
+
+  // GET FROM ANOTHER POLICY
+  
+  createRiskForm() {
+    this.policyRiskForm = this.fb.group({
+      addOrEdit: [''],
+      allowedCommissionRate: [''],
+      // autogenerateCert: [''],
+      basicPremium: [''],
+      binderCode: [''],
+      // cashApplicable: [''],
+      cashLevel: [''],
+      commissionAmount: [''],
+      commissionRate: [''],
+      computeMaxExposure: [''],
+      conveyanceType: [''],
+      coverDays: [''],
+      coverTypeCode: [''],
+      coverTypeShortDescription: [''],
+      currencyCode: [''],
+      dateCoverFrom: [''],
+      dateCoverTo: [''],
+      delSect: [''],
+      grossPremium: [''],
+      installmentPaymentPercentage: [''],
+
+      insureds: this.fb.group({
+        client: this.fb.group({
+          firstName: [''],
+          id: [''],
+          lastName: ['']
+        }),
+        prpCode: ['']
+      }),
+      installmentPeriod: [''],
+
+      ipuNcdCertNo: [''],
+      loaded: [''],
+      logbook: [''],
+      logbookAvailable: [''],
+      // logbookUnderInsuredName: [''],
+      ltaCommission: [''],
+      maintenanceCover: [''],
+      maxExposureAmount: [''],
+      modelYear: [''],
+      ncdApplicable: [''],
+      ncdLevel: [''],
+      netPremium: [''],
+      newRisk: [''],
+      // netPremium: [''],
+      paidPremium: [''],
+      policyBatchNo: [''],
+      policyNumber: [''],
+      policyStatus: [''],
+      periodRate: [''],
+      productCode: [''],
+      propertyDescription: [''],
+      propertyId: [''],
+      quakeFloodZone: [''],
+      quantity: [''],
+      reinsuranceEndorsementNumber: [''],
+      renewalArea: [''],
+      retroactiveCover: [''],
+      riskAddress: [''],
+      riskClass:[''],
+      riskDetails: [''],
+      // regularDriver: [''],
+      riskFpOverride: [''],
+      riskIpuCode: [''],
+      riskLocation: [''],
+      sections: this.fb.array([
+        this.fb.group({
+          divFactor: [0],
+          freeLimit: [0],
+          limitAmount: [0],
+          multiplierRate: [0],
+          pilPremRate: [0],
+          premium: [0],
+          rateType: [''],
+          sectCode: [0],
+          sectIpuCode: [0],
+          sectionCode: [0],
+          sectionDesc: [''],
+          sectionShortDesc: ['']
+        })
+      ]),
+      stampDuty: [''],
+      subClassCode: [''],
+      subClassDescription: [''],
+      transactionType: [''],
+      underwritingYear: [''],
+      value: [''],
+      vehicleMake: [''],
+      vehicleModel: [''],
+      surveyDate: [''],
+      territory: [''],
+      topLocationLevel: [''],
+      // town: [''],
+     
+    });
+  }
+
+  addPolicyRisks(policyDetails){
+  
+    console.log(this.policyRiskForm.value)
+    this.policyRiskForm.get('policyBatchNo').setValue(policyDetails.batchNumber);
+    this.policyRiskForm.get('policyNumber').setValue(policyDetails.policyNumber);
+    const risk = this.policyRiskForm.value
+    console.log(this.policyRiskForm.value)
+    this.riskForm = [risk];
+    this.policyService
+    .addPolicyRisk(policyDetails.batchNumber, this.riskForm, this.user).subscribe({
+     next:(res)=>{
+      console.log(res)
+      this.globalMessagingService.displaySuccessMessage('Success', 'Policy Risk has been created');
+     },
+     error: (err) => {
+
+       this.globalMessagingService.displayErrorMessage(
+         'Error',
+         'Failed to add risks from selected policy. Try again later'
+       );
+       log.info(`error >>>`, err);
+     },
+    })
+  
+  }
   
   }
 

@@ -1,0 +1,14 @@
+.title{
+    color: #00529B;
+    font-size: 16px;
+    font-weight: 500;
+}
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
