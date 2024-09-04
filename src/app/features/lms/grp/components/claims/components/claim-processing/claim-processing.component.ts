@@ -70,7 +70,7 @@ editCoverDetailsForm() {
     this.claimsService.getClaimCoverTypes(this.claimNumber).pipe(untilDestroyed(this)).subscribe((res: ClaimCoverTypesDTO[]) => {
       this.claimCoverTypes = res;
       this.coverTypeCode = this.claimCoverTypes[0].cover_type_code;
-      this.claimableAmount = this.claimCoverTypes[0].earnings;
+      this.claimableAmount = this.claimCoverTypes[0].amount_claimed;
 
       // Patch the claimableAmount field in the form
       this.coverDetailsForm.patchValue({
