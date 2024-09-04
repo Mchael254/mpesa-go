@@ -6,6 +6,7 @@ import { ClaimsService } from '../../service/claims.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
 import { ClaimDetailsDTO } from '../../models/claim-models';
+import { ActivatedRoute } from '@angular/router';
 
 const log = new Logger("ClaimAdmissionComponent");
 @AutoUnsubscribe
@@ -19,18 +20,19 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   steps = stepData;
   claimDetails: ClaimDetailsDTO[] = []
   isClaimAdmitted: boolean = false;
-  claimNumber: string = 'CLM/GLA-722/2024';
+  claimNumber: string;
 
   constructor(
     private messageService: MessageService,
     private fb: FormBuilder,
     private claimsService: ClaimsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private activatedRoute: ActivatedRoute
   ) {}
   
   ngOnInit(): void {
-    
-    this.getClaimDetails();
+    this.getParams();
+    // this.getClaimDetails();
   }
 
   ngOnDestroy(): void {
@@ -51,6 +53,12 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
     { label: 'Driver\'s License', path: 'assets/documents/license.pdf', name: 'ilicense.pdf' },
     { label: 'Social Security Card', path: 'assets/documents/ssc.pdf', name: 'card.pdf' }
   ];
+
+  getParams() {
+    this.claimNumber = this.activatedRoute.snapshot.queryParams['claimNumber'];
+    this.getClaimDetails();
+    this.cdr.detectChanges();
+  }
 
   onAdmitClaim() {
     this.messageService.add({

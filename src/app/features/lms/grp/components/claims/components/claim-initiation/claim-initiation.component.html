@@ -2,6 +2,8 @@
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   </div>
+  <ngx-spinner name="download_view" type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium"
+    bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
   <div class="container">
     <div class="title">{{ "lms.grp.claims.claim_initiation" | translate }}</div>
     <form [formGroup]="claimInitForm">
@@ -16,7 +18,7 @@
           </div>
         </div>
 
-        <div class="col-md-4">
+        <!-- <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
             <label for="policy" style="color: black;">{{ "lms.grp.claims.select_a_policy" | translate }}</label>
             <select class="form-select" [id]="'policy'" formControlName="policy">
@@ -24,8 +26,18 @@
               <option *ngFor="let pol of claimPolicies" [value]="pol.policy_code">{{ pol.policy_no }}</option>
             </select>
           </div>
+        </div> -->
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="policy" style="color: black;">
+              {{ "lms.grp.claims.select_a_policy" | translate }}
+            </label>
+            <p-dropdown [options]="claimPolicies" formControlName="policy" optionLabel="policy_no" [filter]="true"
+              [filterBy]="'policy_no'" [style]="{ width: '100%', height: '37px', 'line-height': '10px' }">
+            </p-dropdown>
+          </div>
         </div>
-
+        
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
             <label for="policyMember" style="color: black;">{{ "lms.grp.claims.select_a_policy_member" | translate }}</label>
@@ -38,12 +50,25 @@
       </div>
 
       <div class="row" style="padding-top: 10px;">
-        <div class="col-md-4">
+        <!-- <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
             <label for="causationType" style="color: black;">{{ "lms.grp.claims.select_a_causation_type" | translate }}</label>
             <select class="form-select" [id]="'causationType'" formControlName="causationType">
               <option selected="true" disabled="disabled"></option>
-              <option *ngFor="let causation of causationTypes " [value]="causation.cause_type">{{ causation.cause_desc | titlecase }}</option>
+              <option *ngFor="let causation of causationTypes " [value]="causation.cause_code">{{ causation.cause_desc | titlecase }}</option>
+            </select>
+          </div>
+        </div> -->
+        <div class="col-md-4">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <label for="causationType" style="color: black;">
+              {{ "lms.grp.claims.select_a_causation_type" | translate }}
+            </label>
+            <select class="form-select" [id]="'causationType'" formControlName="causationType" (change)="onCausationTypeChange($event)">
+              <option selected="true" disabled="disabled"></option>
+              <option *ngFor="let causation of causationTypes" [value]="causation.cause_code">
+                {{ causation.cause_desc | titlecase }}
+              </option>
             </select>
           </div>
         </div>
@@ -53,7 +78,7 @@
             <label for="actualCause" style="color: black;">{{ "lms.grp.claims.select_the_actual_cause" | translate }}</label>
             <select class="form-select" id="actualCause" formControlName="actualCause" (click)="onSelectClick($event)">
               <option selected="true" disabled="disabled">{{ "lms.grp.claims.select_an_option" | translate }}</option>
-              <option *ngFor="let actualCause of actualCauses" [value]="actualCause.causation_cause_code">{{ actualCause.death_disability_description | titlecase }}</option>
+              <option *ngFor="let actualCause of actualCauses" [value]="actualCause.death_disability_cause_code">{{ actualCause.death_disability_description | titlecase }}</option>
               <option class="add-causation-link" [value]="'addCausation'">{{ "lms.grp.claims.add_causation" | translate }}
               </option>
               <p-overlayPanel #op>
