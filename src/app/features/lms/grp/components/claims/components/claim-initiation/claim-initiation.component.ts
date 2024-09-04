@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ClaimsService } from '../../service/claims.service';
 import { Logger } from 'src/app/shared/services';
-import { ActualCauseDTO, CausationTypesDTO, ClaimPoliciesDTO, DocumentsToUploadDTO, FileDetailsDTO, PolicyMemberDTO, ProductListDTO } from '../../models/claim-models';
+import { ActualCauseDTO, CausationTypesDTO, ClaimPoliciesDTO, DocumentsToUploadDTO, FileDetailsDTO, newClaimDTO, PolicyMemberDTO, ProductListDTO } from '../../models/claim-models';
 import { MessageService } from 'primeng/api';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { untilDestroyed } from 'src/app/shared/shared.module';
+import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 const log = new Logger("ClaimInitiationComponent");
@@ -30,18 +32,23 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   policyCode: number;
   policyMembers: PolicyMemberDTO[] = [];
   claimNo: string;
+  trans_no: string;
   documents: DocumentsToUploadDTO[] = [];
   selectedFile: FileDetailsDTO = null;
   endorsementCode: number;
   status: string;
-  claimPolicies: ClaimPoliciesDTO[] = []
+  claimPolicies: ClaimPoliciesDTO[] = [];
+  caus_type: string;
+  caus_sht_desc: string;
 
   constructor(
     private fb: FormBuilder,
     private claimsService: ClaimsService,
     private messageService: MessageService,
     private product_service: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private spinner_Service: NgxSpinnerService,
   ) {}
   
   ngOnInit(): void {
@@ -50,7 +57,7 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
     this.getActualCauses();
     this.getProducts();
     // this.getPolicyMembers();
-    this.getDocumentsToUpload();
+    // this.getDocumentsToUpload();
     // this.getClaimPolicies();
     this.getProductCode();
     this.getPolicyCode();
@@ -100,21 +107,37 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   };
 
   submitClaimInitFormData() {
+    this.spinner_Service.show('download_view');
     const claimformData = this.claimInitForm.value;
     const bookClaimData = {
       product: Number(claimformData.product),
-      pol_code: Number(claimformData.policy),
+      pol_code: Number(claimformData.policy.policy_code),
       polm_code: Number(claimformData.policyMember),
-      caus_type: claimformData.causationType,
-      caus_code: Number(claimformData.actualCause),
+      caus_code: claimformData.causationType,
+      ddc_code: Number(claimformData.actualCause),
       claim_date: this.formatDate(new Date(claimformData.reportDate)),
       loss_date: this.formatDate(new Date(claimformData.occurenceDate)),
-      clm_location: claimformData.locationOfIncident
+      clm_location: claimformData.locationOfIncident,
+      caus_sht_desc: this.caus_sht_desc,
+      caus_type: this.caus_type,
+      trans_type: "LO",
     }
     log.info("submitClaimInitFormData",claimformData, bookClaimData)
-    this.claimsService.createNewClaim(bookClaimData, this.policyCode).subscribe((res) => {
+    this.claimsService.createNewClaim(bookClaimData, this.policyCode).subscribe((res: newClaimDTO) => {
       log.info("createNewClaim", res)
-    });
+      if (res) {
+        this.spinner_Service.hide('download_view');
+        this.messageService.add({severity: 'success', summary: 'Summary', detail: 'Claim initiated successfully'});
+        this.claimNo = res.claim_no;
+        this.trans_no = res.trans_no.toString();
+        this.getDocumentsToUpload();
+      }
+    }, (error) => {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({severity: 'error', summary: 'summary', detail: 'Error initiating claim'});
+
+    }
+  );
   }
 
   getCausationTypes() {
@@ -122,6 +145,16 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
       this.causationTypes = res;
       log.info("getCausationTypes", this.causationTypes)
     });
+  }
+
+  onCausationTypeChange(event: any) {
+    const selectedCauseCode = event.target.value;
+    const selectedCausation = this.causationTypes.find(causation => causation.cause_code === +selectedCauseCode);
+    
+    if (selectedCausation) {
+      this.caus_sht_desc = selectedCausation.cause_short_desc,
+      this.caus_type = selectedCausation.cause_type
+    }
   }
 
   getActualCauses() {
@@ -173,8 +206,8 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
  */
   getDocumentsToUpload() {
     this.claimsService.getDocumetsToUpload(this.claimNo).pipe(untilDestroyed(this)).subscribe((res: DocumentsToUploadDTO[]) => {
-      this.cdr.detectChanges();
       this.documents = res;
+      this.cdr.detectChanges();
     });
   }
 
@@ -191,6 +224,11 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
       this.selectedFile = file;
       log.info('File selected:', this.selectedFile);
       // file upload service call
+      this.router.navigate(['/home/lms/grp/claims/admission'], {
+        queryParams: {
+          claimNumber: this.claimNo,
+        }
+      });
      
     }
   }
@@ -221,7 +259,7 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   getPolicyCode() {
     this.claimInitForm.get('policy').valueChanges.pipe(untilDestroyed(this)).subscribe((res) =>{
       this.claimInitForm.get('policyMember').reset();
-      this.policyCode = res;
+      this.policyCode = res.policy_code;
       this.getPolicyMembers();
       this.cdr.detectChanges();
     });
