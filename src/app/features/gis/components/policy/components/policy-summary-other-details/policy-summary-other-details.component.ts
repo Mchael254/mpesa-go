@@ -172,6 +172,7 @@ export class PolicySummaryOtherDetailsComponent {
   selectedVehicleMakeCode:any;
   selectedVehicleMake:any;
   commissionTransactionDetailsForm: FormGroup;
+  productClauseList:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -341,6 +342,9 @@ export class PolicySummaryOtherDetailsComponent {
           this.getRequiredDocuments();
           this.getPolicyTaxes();
 
+        }
+        if(this.policyDetailsData.product.code){
+          this.getProductClauses()
         }
 
 
@@ -1986,7 +1990,22 @@ export class PolicySummaryOtherDetailsComponent {
     });
   }
   addPolicyTaxes() {
+    this.policyTaxesDetailsForm.get('addOrEdit').setValue("A");
+    this.policyTaxesDetailsForm.get('amount').setValue("A");
+    this.policyTaxesDetailsForm.get('batchNo').setValue(this.batchNo);
+    this.policyTaxesDetailsForm.get('companyLevel').setValue("A");
+    this.policyTaxesDetailsForm.get('endorsementNumber').setValue(this.policyDetailsData.endorsementNo);
+    this.policyTaxesDetailsForm.get('overrideRate').setValue("A");
+    this.policyTaxesDetailsForm.get('polBinder').setValue(this.passedBinderCode);
+    this.policyTaxesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo);
+    this.policyTaxesDetailsForm.get('proCode').setValue(this.policyDetailsData.product.code);
+    this.policyTaxesDetailsForm.get('rate').setValue("A");
+    this.policyTaxesDetailsForm.get('taxRateCode').setValue("A");
+    this.policyTaxesDetailsForm.get('taxType').setValue("A");
+
     const createPolicyTaxesForm = this.policyTaxesDetailsForm.value;
+    log.debug("Add Taxes Form:", createPolicyTaxesForm)
+
 
     this.policyService
       .addPolicyTaxes(createPolicyTaxesForm)
@@ -1994,9 +2013,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: (response: any) => {
           this.policyTaxes = response._embedded
-          console.log('Policy  Taxes:', this.policyTaxes);
-          this.filteredPolicyTaxes = this.policyTaxes.filter(policyTaxes => policyTaxes.batchNo == this.batchNo);
-          log.debug("FILTERED Policy Taxes LIST", this.filteredPolicyTaxes)
+         log.debug("Response after adding tax:", response)
 
         },
         error: (error) => {
@@ -2278,6 +2295,21 @@ export class PolicySummaryOtherDetailsComponent {
       error: (error) => {
 
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+      }
+    })
+  }
+  getProductClauses(){
+    this.quotationService
+    .getProductClauses(this.policyDetailsData.product.code)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.productClauseList = response;
+        log.debug("Product Clause List:",this.productClauseList)
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
       }
     })
   }
