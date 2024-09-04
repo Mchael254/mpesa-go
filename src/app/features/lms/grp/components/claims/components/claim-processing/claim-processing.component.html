@@ -19,7 +19,7 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.branch" | translate }}: </td>
-                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.branch_display | titlecase }}
+                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.branch_display }}
                         </td>
                     </tr>
                 </table>
@@ -28,7 +28,7 @@
                 <table style="width: 100%;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.group_name" | translate }}: </td>
-                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.client_display | titlecase }}</td>
+                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.client_display }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.with_effect_to" | translate }}: </td>
@@ -45,7 +45,7 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.product" | translate }}: </td>
-                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.product_description | titlecase }}</td>
+                        <td style="width: 50%; align-items: right;">{{ claimPolicyDetails[0]?.product_description }}</td>
                     </tr>
                 </table>
             </div>
@@ -151,7 +151,7 @@
                                 </tr>
                                 <tr>
                                     <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.claims.reserved_amount" | translate }}:</td>
-                                    <td style="width: 50%; align-items: right;">{{ cover.earnings | number }}
+                                    <td style="width: 50%; align-items: right;">{{ cover.payable_amount | number }}
                                     </td>
                                 </tr>
                             </table>

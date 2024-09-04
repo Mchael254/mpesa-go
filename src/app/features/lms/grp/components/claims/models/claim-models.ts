@@ -214,3 +214,8 @@ export class PayeeDTO {
     name: string;
     value: string
 }
+
+export class newClaimDTO {
+    claim_no: string;
+    trans_no: number;
+}
