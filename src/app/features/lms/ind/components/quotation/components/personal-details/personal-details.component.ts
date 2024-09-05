@@ -1,32 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, signal, } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../../../../shared/services/setups/country/country.service';
-import {
-  CountryDto,
-  StateDto,
-  TownDto,
-} from '../../../../../../../shared/data/common/countryDto';
-import {
-  Observable,
-  concatMap,
-  debounceTime,
-  distinctUntilChanged,
-  finalize,
-  map,
-  of,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { CountryDto, StateDto, TownDto, } from '../../../../../../../shared/data/common/countryDto';
+import {Observable, concatMap, debounceTime, distinctUntilChanged, finalize, map, of, switchMap, tap, } from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
@@ -35,11 +14,7 @@ import { ClientService as LMSClientService } from '../../../../../service/client
 import { ClientDTO, ClientTitlesDto } from '../../../../../../entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
-import {
-  BankBranchDTO,
-  BankDTO,
-  FundSourceDTO,
-} from '../../../../../../../shared/data/common/bank-dto';
+import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO, } from '../../../../../../../shared/data/common/bank-dto';
 import { BankService } from '../../../../../../../shared/services/setups/bank/bank.service';
 import { CurrencyService } from '../../../../../../../shared/services/setups/currency/currency.service';
 import { OccupationService } from '../../../../../../../shared/services/setups/occupation/occupation.service';
@@ -51,12 +26,12 @@ import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from '../../../../../../lms/util/session_storage_enum';
 import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {DataManipulation} from "../../../../../../../shared/utils/data-manipulation";
-import {Utils} from "../../../../../util/util";
-import {FormsService} from "../../../../../../setups/components/forms/service/forms/forms.service";
-import {QuotationService} from "../../../../../service/quotation/quotation.service";
-import {IdentityTypeService} from "../../../../../service/identityType/identity-type.service";
-import {Pagination} from "../../../../../../../shared/data/common/pagination";
+import { DataManipulation } from "../../../../../../../shared/utils/data-manipulation";
+import { Utils } from "../../../../../util/util";
+import { FormsService } from "../../../../../../setups/components/forms/service/forms/forms.service";
+import { QuotationService } from "../../../../../service/quotation/quotation.service";
+import { IdentityTypeService } from "../../../../../service/identityType/identity-type.service";
+import { Pagination } from "../../../../../../../shared/data/common/pagination";
 import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 
 @Component({
@@ -100,7 +75,7 @@ export class PersonalDetailsComponent implements OnInit {
   townList: TownDto[] = [];
   bankList: BankDTO[] = [];
   bankBranchList: BankBranchDTO[] = [];
-  currencyList: any[];
+  currencyList: CurrencyDTO[];
   getFormControlsNameWithErrors: string[] = [];
   identityFormatDesc: { id: number; exampleFormat: string };
   minDate = DataManipulation.getMinDate();
@@ -144,12 +119,12 @@ export class PersonalDetailsComponent implements OnInit {
     private quotation_service: QuotationService,
     private identity_service: IdentityTypeService,
     // private occu_service: SectorOccupationComponent
-    private clientService: ClientService
+    private clientService: ClientService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
-
 
     this.clientForm = this.getClientDetailsForm();
     this.clientSearch = this.fb.group({
@@ -164,6 +139,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.getClientTitles();
     this.getSectorList();
     this.getFundSource();
+    this.getCurrencies();
 
     this.util = new Utils(this.session_storage);
 
@@ -485,9 +461,6 @@ export class PersonalDetailsComponent implements OnInit {
       )
       .subscribe((data: any[]) => {
         this.countryList = data;
-        this.currencyList = this.countryList.filter(
-          (data) => data?.currency?.name !== null
-        );
       });
   }
   getBranchList(organizationId?:number, regionId?:number) {
@@ -537,11 +510,12 @@ export class PersonalDetailsComponent implements OnInit {
   getClientTitles(organizationId?:number) {
     this.crm_client_service.getClientTitles(organizationId)
     .subscribe((data) => {
-      this.clientTitles = data; 
+      this.clientTitles = data;
+      this.cdr.detectChanges(); 
     });
   }
 
-  getSectorList(){
+  getSectorList() {
     this.sector_service 
       .getSectors()
       .pipe(
@@ -585,6 +559,17 @@ export class PersonalDetailsComponent implements OnInit {
     this.bank_service.getBankBranchById(id).subscribe((data) => {
       this.bankBranchList = data;
     });
+  }
+
+  getCurrencies() {
+    this.bank_service.getCurrencies()
+     .pipe(
+        map((data) => {
+          return this.returnLowerCase(data);
+        })
+      ).subscribe((data) => {
+        this.currencyList = data;
+      })
   }
 
   openModal(name = 'draftModal'): void {

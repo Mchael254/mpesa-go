@@ -455,10 +455,10 @@
                   <select class="form-select form-select mb-1" id="currency_id"
                           placement="right" formControlName="currency_id">
                     <option selected="true" disabled="disabled">Select Currency</option>
-                    <option *ngFor="let data of currencyList | sort : 'asc' : 'name'" [value]="data.id">
+                    <option *ngFor="let currency of currencyList | sort : 'asc' : 'name'" value="{{ currency.id }}">
                       <ng-container>
-                        {{ data?.currency?.name | titlecase }} 
-                        ({{ data?.currency?.symbol }})
+                        {{ currency.name | titlecase }}
+                        ({{ currency.symbol }})
                       </ng-container>
                     </option>
                   </select>
