@@ -2653,6 +2653,9 @@ fetchSecurityDevices(){
     }
   })
 }
+  editRiskClause(event){
+    console.log(event)
+  }
 }
 
 

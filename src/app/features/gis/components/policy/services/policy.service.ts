@@ -332,4 +332,8 @@ export class PolicyService {
 
   }
 
+  editRiskClause(data){
+    return this.api.PUT(`v1/edit-risk-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
 }
+
