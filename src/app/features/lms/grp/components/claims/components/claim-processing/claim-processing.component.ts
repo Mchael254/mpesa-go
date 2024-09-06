@@ -5,8 +5,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { ClaimCoverTypesDTO, ClaimDetailsDTO, ClaimPolicyDetails, PayeeDTO } from '../../models/claim-models';
 import { ClaimsService } from '../../service/claims.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 const log = new Logger("ClaimProcessingComponent")
 @Component({
@@ -24,6 +26,7 @@ export class ClaimProcessingComponent implements OnInit, OnDestroy {
   claimCoverTypes: ClaimCoverTypesDTO[] = [];
   claimPolicyDetails: ClaimPolicyDetails[] = [];
   coverTypeCode: number;
+  coverType: string;
   claimableAmount: number;
   policyCode: number;
   productCode: number;
@@ -34,13 +37,18 @@ export class ClaimProcessingComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private claimsService: ClaimsService,
     private messageService: MessageService,
+    private router: Router,
+    private session_storage: SessionStorageService,
+    private activatedRoute: ActivatedRoute,
+    private confirmationService: ConfirmationService,
   ) { }
 
   ngOnInit(): void {
-    this.editCoverDetailsForm();
-    this.getClaimCoverTypes();
+    this.getParams();
     this.getClaimPolicyDetails();
     this.getClaimInfo();
+    this.getClaimCoverTypes();
+    this.editCoverDetailsForm();
     this.getPayee();
 
   }
@@ -49,8 +57,22 @@ export class ClaimProcessingComponent implements OnInit, OnDestroy {
 
   }
 
-  toggleFormVisibility() {
+  toggleFormVisibility(coverTypeCode: number) {
+    const selectedCover = this.claimCoverTypes.find(cover => cover.cover_type_code === coverTypeCode);
+    if (selectedCover) {
+      this.coverTypeCode = selectedCover.cover_type_code,
+      this.coverType = selectedCover.cover_type_description,
+      this.claimableAmount = selectedCover.amount_claimed,
+
+      // Update the form with the selected cover details
+      this.coverDetailsForm.patchValue({
+        claimableAmount: this.claimableAmount,
+      });
+    }
+  
+    // Toggle form visibility
     this.isFormVisible = !this.isFormVisible;
+    this.cdr.detectChanges();
   }
   
 editCoverDetailsForm() {
@@ -62,6 +84,22 @@ editCoverDetailsForm() {
   });
 }
 
+  getParams() {
+    //to remove once fetched from endpoint
+    const polAndProdCode = this.session_storage.get('polAndProdCode');
+    if (polAndProdCode) {
+      this.productCode = polAndProdCode.productCode;
+      this.policyCode = polAndProdCode.policyCode;
+    }
+    // Get the claim number from the query parameters
+    const claimNumberFromRoute = this.activatedRoute.snapshot.queryParams['claimNumber'];
+
+    // If the claim number from the route is null, empty, or undefined, use the session storage value
+    this.claimNumber = claimNumberFromRoute || this.session_storage.get('claimNumber');
+
+    this.cdr.detectChanges();
+  }
+
  /**
   * The function `getClaimCoverTypes` retrieves claim cover types data and updates the claimableAmount
   * fields in the form.
@@ -69,13 +107,6 @@ editCoverDetailsForm() {
   getClaimCoverTypes() {
     this.claimsService.getClaimCoverTypes(this.claimNumber).pipe(untilDestroyed(this)).subscribe((res: ClaimCoverTypesDTO[]) => {
       this.claimCoverTypes = res;
-      this.coverTypeCode = this.claimCoverTypes[0].cover_type_code;
-      this.claimableAmount = this.claimCoverTypes[0].amount_claimed;
-
-      // Patch the claimableAmount field in the form
-      this.coverDetailsForm.patchValue({
-        claimableAmount: this.claimableAmount
-      });
       this.cdr.detectChanges();
     });
   }
@@ -143,5 +174,62 @@ editCoverDetailsForm() {
       this.coverDetailsForm.reset();
     })
 }
+
+  investigateClaim() {
+    this.router.navigate(['/home/lms/grp/claims/investigation'], {
+      queryParams: {
+        claimNumber: this.claimNumber,
+      }
+    });
+  }
+
+  /**
+   * process claim and proceed without investigation
+   */
+  processClaim() {
+    if (this.coverTypeCode === undefined || this.coverTypeCode === null) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Information',
+        detail: 'Select covertype to process'
+      });
+    } else {
+
+      this.confirmationService.confirm({
+        target: event.target as EventTarget,
+        message: 'Are you sure you want to process Claim for ' + this.coverType + ' ?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptIcon: "none",
+        rejectIcon: "none",
+        rejectButtonStyleClass: "p-button-text",
+        accept: () => {
+          this.claimsService.processClaim(this.claimNumber, this.coverTypeCode).pipe(untilDestroyed(this)).subscribe((res) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Claim processed successfully!'
+            });
+
+            this.router.navigate(['/home/lms/grp/claims/payment'], {
+              queryParams: {
+                claimNumber: this.claimNumber,
+              }
+            });
+          }, () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Claim processing failed!'
+            });
+          });
+        },
+        reject: () => {
+          this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Select another cover to process', life: 3000 });
+        }
+      });
+    }
+  }
+
 
 }

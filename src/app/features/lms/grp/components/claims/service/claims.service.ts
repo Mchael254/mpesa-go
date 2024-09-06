@@ -18,8 +18,8 @@ export class ClaimsService {
     return this.api.GET(`group/claims/causations?productCode=${productCode}`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
 
-  getActualCauses() {
-    return this.api.GET('group/claims/causation-causes',  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  getActualCauses(causationCode: number) {
+    return this.api.GET(`group/claims/causation-causes?causationCode=${causationCode}`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
 
   addActualCause(cause) {
@@ -94,4 +94,14 @@ export class ClaimsService {
     return this.api.GET(`group/claims/payee`,API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
 
+  admitClaim(clm_no: string, claimDetails) {
+    const encodedClaimNo = encodeURIComponent(clm_no);
+    return this.api.PUT(`group/claims/update?clm_no=${encodedClaimNo}`, claimDetails, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  processClaim(claimNumber: string, coverTypeCode: number){
+    const encodedClaimNo = encodeURIComponent(claimNumber);
+    return this.api.POST(`group/claims/process-claim?claim_no=${encodedClaimNo}&cover_code=${coverTypeCode}&min_information_provided`, null, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+  
 }
