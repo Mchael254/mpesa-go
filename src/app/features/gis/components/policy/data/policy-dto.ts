@@ -537,6 +537,40 @@ riskCode: number,
 transactionType: string,
 version: number
 }
+export interface Certificates {
+  agentCode: number;
+  branchCertLot: string;
+  branchCode: number;
+  coverTypeCode: number;
+  ipuCode: number;
+  printStatus: string;
+  subClassCode: number;
+  user: string;
+}
+export interface AddCertificates {
+  batchNo: number;
+  cancellationDate: string;
+  certificateCode: number;
+  certificateNo: number;
+  certificateShortDescription: string;
+  certificateYear: number;
+  checkCertificate: string;
+  code: number;
+  endorsementNo: string;
+  issueDate: string;
+  lotId: string;
+  policyNo: string;
+  printStatus: string;
+  printedDate: string;
+  reasonCancelled: string;
+  riskCode: number;
+  riskId: number;
+  status: string;
+  user: string;
+  withEffectFrom: string;
+  withEffectTo: string;
+}
+
 
 
 

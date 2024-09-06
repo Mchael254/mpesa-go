@@ -69,6 +69,8 @@ export class PolicySummaryOtherDetailsComponent {
   scheduleListDetails:any;
   filteredSchedule:any;
   commissionTransaction:any;
+  selectedCertificate:any;
+  selectedPolicyCertificate:any;
 
   columns = [
     { label: 'Name', value: 'name' },
@@ -136,7 +138,6 @@ export class PolicySummaryOtherDetailsComponent {
 
   requiredDocs: any[] = [];
   selectedDocument: any;
-  selectedCertificate: any;
   remarkDetailsForm: FormGroup;
   selectedRemark: any;
   action: any;
@@ -173,6 +174,10 @@ export class PolicySummaryOtherDetailsComponent {
   selectedVehicleMake:any;
   commissionTransactionDetailsForm: FormGroup;
   productClauseList:any;
+  certificatesDetailsForm: FormGroup;
+  certificatesList:any;
+  addCertificatesForm:FormGroup
+  policyCertificateList:any
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -240,6 +245,9 @@ export class PolicySummaryOtherDetailsComponent {
     this.createRemarkDetailsForm();
     this.createRequiredDocumentsForm();
     this.createPopulatePolicyTaxesDetailsForm();
+    this.createCommissionTranscDetailsForm();
+    this.getCertificatesDetailsForm();
+    this.createCertificatesForm();
   }
   ngOnDestroy(): void { }
 
@@ -1365,8 +1373,8 @@ export class PolicySummaryOtherDetailsComponent {
     this.isCertificatesDetailOpen = !this.isCertificatesDetailOpen;
   }
   openRequiredcertifcateDeleteModal() {
-    log.debug("Selected Document", this.selectedCertificate)
-    if (!this.selectedCertificate) {
+    log.debug("Selected Document", this.selectedPolicyCertificate)
+    if (!this.selectedPolicyCertificate) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a certificate to continue');
     } else {
       document.getElementById("openCertificateModalButtonDelete").click();
@@ -2310,6 +2318,185 @@ export class PolicySummaryOtherDetailsComponent {
       error: (error) => {
 
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
+      }
+    })
+  }
+  getCertificatesDetailsForm() {
+    this.certificatesDetailsForm = this.fb.group({
+      agentCode: [''],
+      branchCertLot: [''],
+      branchCode: [''],
+      coverTypeCode: [''],
+      ipuCode: [''],
+      printStatus: [''],
+      subClassCode: [''],
+      user: [''],
+    
+    });
+  }
+  createCertificatesForm() {
+    this.addCertificatesForm = this.fb.group({
+      batchNo: [''],
+      cancellationDate: [''],
+      certificateCode: [''],
+      certificateNo: [''],
+      certificateShortDescription: [''],
+      certificateYear: [''],
+      checkCertificate: [''],
+      code: [''],
+      endorsementNo: [''],
+      issueDate: [''],
+      lotId: [''],
+      policyNo: [''],
+      printStatus: [''],
+      printedDate: [''],
+      reasonCancelled: [''],
+      riskCode: [''],
+      riskId: [''],
+      status: [''],
+      user: [''],
+      withEffectFrom: [''],
+      withEffectTo: ['']
+    });
+  }
+  
+  getallCertificates(){
+    this.certificatesDetailsForm.get('agentCode').setValue(this.policyDetailsData.agency)
+    this.certificatesDetailsForm.get('branchCertLot').setValue("Y")
+    this.certificatesDetailsForm.get('branchCode').setValue(1)
+    this.certificatesDetailsForm.get('coverTypeCode').setValue(this.selectedRisk.coverTypeCode)
+    this.certificatesDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode)
+    this.certificatesDetailsForm.get('printStatus').setValue("N")
+    this.certificatesDetailsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode)
+    this.certificatesDetailsForm.get('user').setValue(this.user)
+
+    const certificatesDetailsForm = this.certificatesDetailsForm.value;
+    log.debug("Certificates Form:", certificatesDetailsForm)
+
+    this.policyService
+    .getAllCertificates(certificatesDetailsForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.certificatesList = response._embedded;
+        log.debug("Certificates List:",this.certificatesList)
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived certificates details.Try again later');
+      }
+    })
+  }
+  addCertificates(){
+
+    this.addCertificatesForm.get('batchNo').setValue(this.batchNo);
+    this.addCertificatesForm.get('cancellationDate').setValue(this.selectedPolicyCertificate.cancellationDate);
+    this.addCertificatesForm.get('certificateCode').setValue(this.selectedPolicyCertificate.certificateCode);
+    this.addCertificatesForm.get('certificateNo').setValue(this.selectedPolicyCertificate.certificateNo);
+    this.addCertificatesForm.get('certificateShortDescription').setValue(this.selectedPolicyCertificate.certificateShortDescription);
+    this.addCertificatesForm.get('certificateYear').setValue(this.selectedPolicyCertificate.certificateYear);
+    this.addCertificatesForm.get('checkCertificate').setValue(this.selectedPolicyCertificate.checkCertificate);
+    this.addCertificatesForm.get('code').setValue(this.selectedPolicyCertificate.code);
+    this.addCertificatesForm.get('endorsementNo').setValue(this.policyDetailsData.endorsementNo);
+    this.addCertificatesForm.get('issueDate').setValue(this.selectedPolicyCertificate.issueDate);
+    this.addCertificatesForm.get('lotId').setValue(this.selectedPolicyCertificate.lotId);
+    this.addCertificatesForm.get('policyNo').setValue(this.policyDetailsData.policyNo);
+    this.addCertificatesForm.get('printStatus').setValue(this.selectedPolicyCertificate.printStatus);
+    this.addCertificatesForm.get('printedDate').setValue(this.selectedPolicyCertificate.printedDate);
+    this.addCertificatesForm.get('reasonCancelled').setValue(this.selectedPolicyCertificate.reasonCancelled);
+    this.addCertificatesForm.get('riskCode').setValue(this.SelectedRiskCode);
+    this.addCertificatesForm.get('riskId').setValue(this.selectedRisk.propertyId);
+    this.addCertificatesForm.get('status').setValue(this.selectedPolicyCertificate.status);
+    this.addCertificatesForm.get('user').setValue(this.user);
+    this.addCertificatesForm.get('withEffectFrom').setValue(this.selectedPolicyCertificate.withEffectFrom);
+    this.addCertificatesForm.get('withEffectTo').setValue(this.selectedPolicyCertificate.withEffectTo);
+  
+    const addCertificatesForm = this.addCertificatesForm.value;
+    log.debug("Adding Certificates Form:", addCertificatesForm)
+
+    this.policyService
+    .addCertificate(addCertificatesForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("Adding Certificate:",response)
+        this.getPolicyCertificates()
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
+      }
+    })
+  }
+  getPolicyCertificates(){
+    this.policyService
+    .getPolicyCertificates(this.selectedRisk.riskIpuCode,this.selectedRisk.propertyId)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.policyCertificateList= response
+        log.debug("Adding Certificate:",response)
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
+      }
+    })
+  }
+  editCertificates(){
+
+    this.addCertificatesForm.get('batchNo').setValue(this.batchNo);
+    this.addCertificatesForm.get('cancellationDate').setValue(this.selectedPolicyCertificate.cancellationDate);
+    this.addCertificatesForm.get('certificateCode').setValue(this.selectedPolicyCertificate.certificateCode);
+    this.addCertificatesForm.get('certificateNo').setValue(this.selectedPolicyCertificate.certificateNo);
+    this.addCertificatesForm.get('certificateShortDescription').setValue(this.selectedPolicyCertificate.certificateShortDescription);
+    this.addCertificatesForm.get('certificateYear').setValue(this.selectedPolicyCertificate.certificateYear);
+    this.addCertificatesForm.get('checkCertificate').setValue(this.selectedPolicyCertificate.checkCertificate);
+    this.addCertificatesForm.get('code').setValue(this.selectedPolicyCertificate.code);
+    this.addCertificatesForm.get('endorsementNo').setValue(this.policyDetailsData.endorsementNo);
+    this.addCertificatesForm.get('issueDate').setValue(this.selectedPolicyCertificate.issueDate);
+    this.addCertificatesForm.get('lotId').setValue(this.selectedPolicyCertificate.lotId);
+    this.addCertificatesForm.get('policyNo').setValue(this.policyDetailsData.policyNo);
+    this.addCertificatesForm.get('printStatus').setValue(this.selectedPolicyCertificate.printStatus);
+    this.addCertificatesForm.get('printedDate').setValue(this.selectedPolicyCertificate.printedDate);
+    this.addCertificatesForm.get('reasonCancelled').setValue(this.selectedPolicyCertificate.reasonCancelled);
+    this.addCertificatesForm.get('riskCode').setValue(this.SelectedRiskCode);
+    this.addCertificatesForm.get('riskId').setValue(this.selectedRisk.propertyId);
+    this.addCertificatesForm.get('status').setValue(this.selectedPolicyCertificate.status);
+    this.addCertificatesForm.get('user').setValue(this.user);
+    this.addCertificatesForm.get('withEffectFrom').setValue(this.selectedPolicyCertificate.withEffectFrom);
+    this.addCertificatesForm.get('withEffectTo').setValue(this.selectedPolicyCertificate.withEffectTo);
+  
+    const editCertificatesForm = this.addCertificatesForm.value;
+    log.debug("Editing Certificates Form:", editCertificatesForm)
+
+    this.policyService
+    .updateCertificate(editCertificatesForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("Edit Certificate response:",response)
+        this.getPolicyCertificates()
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit  certificates details.Try again later');
+      }
+    })
+  }
+  deleteCertificates(){
+    this.policyService
+    .deleteCertificates(this.selectedPolicyCertificate.code)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("Response after deleting certificate:",response)
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete  certificate details.Try again later');
       }
     })
   }
