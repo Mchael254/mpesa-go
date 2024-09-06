@@ -10,11 +10,14 @@
       <div class="row" style="padding-top: 10px;">
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="product" style="color: black;">{{ "lms.grp.claims.select_a_product" | translate }}</label>
-            <select class="form-select" [id]="'product'" formControlName="product">
+            <label for="product" style="color: black;">{{ "lms.grp.claims.select_a_product" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" [id]="'product'" formControlName="product" [ngClass]="{'is-invalid': highlightInvalid('product')}">
               <option selected="true" disabled="disabled"></option>
               <option *ngFor="let prod of productList" [value]="prod.code">{{ prod.description | titlecase }}</option>
             </select>
+            <div *ngIf="highlightInvalid('product')" class="invalid-feedback">{{ "lms.grp.claims.select_a_product" | translate }}</div>
           </div>
         </div>
 
@@ -31,17 +34,21 @@
           <div class="col-lg-12 col-md-12 col-sm-12">
             <label for="policy" style="color: black;">
               {{ "lms.grp.claims.select_a_policy" | translate }}
+              <span class="text-danger">*</span>
             </label>
-            <p-dropdown [options]="claimPolicies" formControlName="policy" optionLabel="policy_no" [filter]="true"
+            <p-dropdown [options]="claimPolicies" formControlName="policy"  [ngClass]="{'is-invalid': highlightInvalid('policy')}" optionLabel="policy_no" [filter]="true"
               [filterBy]="'policy_no'" [style]="{ width: '100%', height: '37px', 'line-height': '10px' }">
             </p-dropdown>
+            <div *ngIf="highlightInvalid('policy')" class="invalid-feedback">{{ "lms.grp.claims.select_a_policy" | translate }}</div>
           </div>
         </div>
         
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="policyMember" style="color: black;">{{ "lms.grp.claims.select_a_policy_member" | translate }}</label>
-            <select class="form-select" [id]="'policyMember'" formControlName="policyMember">
+            <label for="policyMember" style="color: black;">{{ "lms.grp.claims.select_a_policy_member" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" [id]="'policyMember'" formControlName="policyMember" [ngClass]="{'is-invalid': highlightInvalid('policyMember')}">
               <option selected="true" disabled="disabled"></option>
               <option *ngFor="let mem of policyMembers" [value]="mem.policy_member_code">{{ mem.member_name | titlecase }}</option>
             </select>
@@ -63,8 +70,10 @@
           <div class="col-lg-12 col-md-12 col-sm-12">
             <label for="causationType" style="color: black;">
               {{ "lms.grp.claims.select_a_causation_type" | translate }}
+              <span class="text-danger">*</span>
             </label>
-            <select class="form-select" [id]="'causationType'" formControlName="causationType" (change)="onCausationTypeChange($event)">
+            <select class="form-select" [id]="'causationType'" formControlName="causationType" (change)="onCausationTypeChange($event)"
+            [ngClass]="{'is-invalid': highlightInvalid('causationType')}">
               <option selected="true" disabled="disabled"></option>
               <option *ngFor="let causation of causationTypes" [value]="causation.cause_code">
                 {{ causation.cause_desc | titlecase }}
@@ -75,8 +84,11 @@
 
         <div class="col-md-4">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <label for="actualCause" style="color: black;">{{ "lms.grp.claims.select_the_actual_cause" | translate }}</label>
-            <select class="form-select" id="actualCause" formControlName="actualCause" (click)="onSelectClick($event)">
+            <label for="actualCause" style="color: black;">{{ "lms.grp.claims.select_the_actual_cause" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" id="actualCause" formControlName="actualCause" (click)="onSelectClick($event)"
+            [ngClass]="{'is-invalid': highlightInvalid('actualCause')}">
               <option selected="true" disabled="disabled">{{ "lms.grp.claims.select_an_option" | translate }}</option>
               <option *ngFor="let actualCause of actualCauses" [value]="actualCause.death_disability_cause_code">{{ actualCause.death_disability_description | titlecase }}</option>
               <option class="add-causation-link" [value]="'addCausation'">{{ "lms.grp.claims.add_causation" | translate }}
@@ -156,13 +168,16 @@
         <div class="col-md-4">
           <div>
             <div>
-              <label for="reportDate" style="color: black;">{{ "lms.grp.claims.claim_report_date" | translate }}</label>
+              <label for="reportDate" style="color: black;">{{ "lms.grp.claims.claim_report_date" | translate }}
+                <span class="text-danger">*</span>
+              </label>
             </div>
             <div class="form-group">
               <div>
                 <p-calendar formControlName="reportDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
-                  placeholder="dd/mm/yy">
+                  placeholder="dd/mm/yy" [ngClass]="{'is-invalid': highlightInvalid('reportDate')}">
                 </p-calendar>
+                <div *ngIf="highlightInvalid('product')" class="invalid-feedback">{{ "lms.grp.claims.claim_report_date" | translate }}</div>
               </div>
             </div>
           </div>
@@ -173,13 +188,16 @@
         <div class="col-md-4">
           <div>
             <div>
-              <label for="occurenceDate" style="color: black;">{{ "lms.grp.claims.incident_occurence_date" | translate }}</label>
+              <label for="occurenceDate" style="color: black;">{{ "lms.grp.claims.incident_occurence_date" | translate }}
+                <span class="text-danger">*</span>
+              </label>
             </div>
             <div class="form-group">
               <div>
                 <p-calendar formControlName="occurenceDate" dateFormat="dd/mm/yy" [showIcon]="true"
-                  [showButtonBar]="true" placeholder="dd/mm/yy">
+                  [showButtonBar]="true" placeholder="dd/mm/yy" [ngClass]="{'is-invalid': highlightInvalid('occurenceDate')}">
                 </p-calendar>
+                <div *ngIf="highlightInvalid('product')" class="invalid-feedback">{{ "lms.grp.claims.incident_occurence_date" | translate }}</div>
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@
         </div>
     </div>
     <div class="container">
+        <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, set once, used more than once -->
         <div><span class="title">{{ "lms.grp.claims.policy_details" | translate }}</span></div>
         <div class="row col-12" style="color: black;">
             <div class="col-md-4 col-xs-12 col-sm-12">
@@ -138,9 +139,10 @@
                 <div *ngFor="let cover of claimCoverTypes" class="col-md-4 col-sm-12 mb-4">
                     <div>
                         <span class="title">{{ "lms.grp.claims.cover_types" | translate }}</span>&nbsp;
-                        <i class="pi pi-pencil" (click)="toggleFormVisibility()"></i>
+                        <i class="pi pi-pencil" (click)="toggleFormVisibility(cover.cover_type_code)"></i>
                     </div>
-                    <div><span style="color: black;">{{ cover.cover_type_description | titlecase }}</span></div>
+                    <div (click)="toggleFormVisibility(cover.cover_type_code)"><span class="cvt-desc"
+                        [ngClass]="{'active-cover': cover.cover_type_code === coverTypeCode}">{{ cover.cover_type_description | titlecase }}</span></div>
 
                     <div class="row" style="color: black;">
                         <div class="col-12">
@@ -231,13 +233,13 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-end" style="margin-top: 10px;">
         <div class="inv-container mb-2 mb-md-0 me-md-2">
-            <button class="inv-button w-100 text-nowrap">
+            <button class="inv-button w-100 text-nowrap" (click)="investigateClaim()">
                 <span class="share-text">{{ "lms.grp.claims.investigate_claim" | translate }}</span>
             </button>
         </div>
 
         <div class="proceed">
-            <button class="proceed-button w-100 text-nowrap">
+            <button class="proceed-button w-100 text-nowrap" (click)="processClaim()">
                 <span class="proceed-text">{{ "lms.grp.claims.proceed_without_investigation" | translate }}</span>
             </button>
         </div>
