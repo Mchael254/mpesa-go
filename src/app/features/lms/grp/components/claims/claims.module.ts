@@ -11,6 +11,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ClaimProcessingComponent } from './components/claim-processing/claim-processing.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     OverlayPanelModule,
     RadioButtonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ConfirmDialogModule,
   ]
 })
 export class ClaimsModule { }

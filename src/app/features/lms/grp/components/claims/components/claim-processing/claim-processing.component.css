@@ -88,4 +88,15 @@
 td {
   white-space: nowrap;
 }
+
+.cvt-desc{
+  color: black;
+}
+
+.active-cover {
+  color: rgb(0, 115, 255);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
   
