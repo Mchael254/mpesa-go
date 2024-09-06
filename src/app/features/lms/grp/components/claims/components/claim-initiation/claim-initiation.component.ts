@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ClaimsService } from '../../service/claims.service';
 import { Logger } from 'src/app/shared/services';
@@ -11,6 +11,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 
 const log = new Logger("ClaimInitiationComponent");
@@ -40,6 +41,7 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   claimPolicies: ClaimPoliciesDTO[] = [];
   caus_type: string;
   caus_sht_desc: string;
+  causationCode: number;
 
   constructor(
     private fb: FormBuilder,
@@ -49,12 +51,13 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private spinner_Service: NgxSpinnerService,
+    private session_storage: SessionStorageService,
   ) {}
   
   ngOnInit(): void {
     this.claimForm();
     // this.getCausationTypes();
-    this.getActualCauses();
+    // this.getActualCauses();
     this.getProducts();
     // this.getPolicyMembers();
     // this.getDocumentsToUpload();
@@ -84,13 +87,13 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
 
   claimForm() {
     this.claimInitForm = this.fb.group({
-      product: [""],
-      policy: [""],
-      policyMember: [""],
-      causationType: [""],
-      actualCause: [""],
-      reportDate: [""],
-      occurenceDate: [""],
+      product: ["", Validators.required],
+      policy: ["", Validators.required],
+      policyMember: ["", Validators.required],
+      causationType: ["", Validators.required],
+      actualCause: ["", Validators.required],
+      reportDate: ["", Validators.required],
+      occurenceDate: ["", Validators.required],
       locationOfIncident: [""],
       causationId: [""],
       causationDesc: [""],
@@ -106,7 +109,25 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   };
 
+  // highlights a touched/clicked/dirtified field that is not filled or option not selected
+  highlightInvalid(field: string): boolean {
+    const control = this.claimInitForm.get(field);
+    return control.invalid && (control.dirty || control.touched);
+  }
+
   submitClaimInitFormData() {
+    if(this.claimInitForm.invalid) {
+       /*
+        together with the method -highlightInvalid(field: string), it helps
+         highlight all invalid form fields on click of Book claim button
+         */
+         Object.keys(this.claimInitForm.controls).forEach(field => {
+          const control = this.claimInitForm.get(field);
+          control.markAsTouched({ onlySelf: true });
+        });
+      this.messageService.add({severity: 'warn', summary: 'Warning', detail: 'Fill mandatory fields'});
+      return;
+    } else {
     this.spinner_Service.show('download_view');
     const claimformData = this.claimInitForm.value;
     const bookClaimData = {
@@ -131,6 +152,15 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
         this.claimNo = res.claim_no;
         this.trans_no = res.trans_no.toString();
         this.getDocumentsToUpload();
+        this.cdr.detectChanges();
+        this.session_storage.set('claimNumber', this.claimNo);
+
+        //to remove once fetched
+        this.session_storage.set('polAndProdCode', {
+          productCode: bookClaimData.product,
+          policyCode: bookClaimData.pol_code
+        });
+
       }
     }, (error) => {
       this.spinner_Service.hide('download_view');
@@ -138,17 +168,33 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
 
     }
   );
+}
   }
 
   getCausationTypes() {
     this.claimsService.getCausationTypes(this.productCode).subscribe((res: CausationTypesDTO[]) => {
       this.causationTypes = res;
-      log.info("getCausationTypes", this.causationTypes)
+      this.cdr.detectChanges();
     });
   }
 
+  /**
+   * The function `onCausationTypeChange` handles the change event for a causation type selection,
+   * updating relevant properties based on the selected cause code.
+   * @param {any} event - The `onCausationTypeChange` function takes an `event` parameter as input.
+   * This event parameter is typically an object that represents an event triggered by a user action,
+   * such as a change in a dropdown selection or input field. In this function, we get causation code which is used to fetch
+   * actual causes, hence calling the method getActualCauses() inside it.
+   */
   onCausationTypeChange(event: any) {
+    this.claimInitForm.get('actualCause').reset();
+
     const selectedCauseCode = event.target.value;
+    
+    this.causationCode = selectedCauseCode;
+    this.getActualCauses();
+    this.cdr.detectChanges();
+
     const selectedCausation = this.causationTypes.find(causation => causation.cause_code === +selectedCauseCode);
     
     if (selectedCausation) {
@@ -158,9 +204,9 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   }
 
   getActualCauses() {
-    this.claimsService.getActualCauses().subscribe((res: ActualCauseDTO[]) => {
+    this.claimsService.getActualCauses(this.causationCode).subscribe((res: ActualCauseDTO[]) => {
       this.actualCauses = res;
-      log.info("getActualCauses", this.actualCauses)
+      this.cdr.detectChanges();
     });
   }
 
@@ -185,19 +231,21 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
         detail: 'Actual type successfully added'
       });
       this.getCausationTypes();
+      this.cdr.detectChanges();
     })
   }
 
   getProducts() {
     this.product_service.getListOfProduct('G').subscribe((products) => {
       this.productList = products;
+      this.cdr.detectChanges();
     });
   }
 
   getPolicyMembers() {
     this.claimsService.getPolicyMembers(this.policyCode).subscribe((res: PolicyMemberDTO[]) => {
       this.policyMembers = res;
-      log.info("getPolicyMembers", res);
+      this.cdr.detectChanges();
     });
   }
 
@@ -236,7 +284,7 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   getClaimPolicies() {
       this.claimsService.getClaimPolicies(this.productCode,this.policyCode, this.status, this.endorsementCode).pipe(untilDestroyed(this)).subscribe((res: ClaimPoliciesDTO[]) => {
         this.claimPolicies = res;
-        log.info("getClaimPolicies", res)
+        this.cdr.detectChanges();
       });
   }
 
@@ -250,19 +298,21 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
         this.claimInitForm.get(control).reset();
       });
       this.productCode = res;
+      this.cdr.detectChanges();
       this.getClaimPolicies();
       this.getCausationTypes();
-      this.cdr.detectChanges();
     });
   }
 
   getPolicyCode() {
-    this.claimInitForm.get('policy').valueChanges.pipe(untilDestroyed(this)).subscribe((res) =>{
-      this.claimInitForm.get('policyMember').reset();
-      this.policyCode = res.policy_code;
-      this.getPolicyMembers();
-      this.cdr.detectChanges();
-    });
+    this.claimInitForm.get('policy').valueChanges.pipe(untilDestroyed(this)).subscribe((res) => {
+        if (res && res.policy_code) {
+          this.claimInitForm.get('policyMember').reset();
+          this.policyCode = res.policy_code;
+          this.getPolicyMembers();
+          this.cdr.detectChanges();
+        }
+      });
   }
 
 }
