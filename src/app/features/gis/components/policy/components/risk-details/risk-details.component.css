@@ -30,7 +30,7 @@
     height: 33px;
 }
 .selectInput {
-    height: 30px;
+    height: 25px;
     border-radius: 4px;
 }
 .more {
@@ -43,7 +43,7 @@
     text-decoration-line: underline;
 }
 ::ng-deep .p-dropdown{
-    height: 53%;
+    height: 33px;
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;

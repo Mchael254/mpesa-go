@@ -307,5 +307,9 @@ export class PolicyService {
     return this.api.DELETE(`v1/certificates/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getRiskClass(subclassCode:any,underwritingYear:any){
+    return this.api.GET(`v1/risk-class?subClassCode=${subclassCode}&uwYear=${underwritingYear}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 
 }
