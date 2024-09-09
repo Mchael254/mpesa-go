@@ -1335,11 +1335,12 @@ export class PolicySummaryOtherDetailsComponent {
       .getRequiredDocuments(null, this.passedSubclassCode, this.selectedTransactionType)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (data) => {
+        next: (data:any) => {
 
           if (data) {
 
             log.debug("Required document list:", data);
+            this.requiredDocs = data._embedded
             log.debug("New Business Documents", this.requiredDocs)
           } else {
             this.errorOccurred = true;
@@ -2256,7 +2257,7 @@ export class PolicySummaryOtherDetailsComponent {
       },
       error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived commission transactions details.Try again later');
       }
     })
   }
@@ -2500,6 +2501,7 @@ export class PolicySummaryOtherDetailsComponent {
       }
     })
   }
+ 
 }
 
 
