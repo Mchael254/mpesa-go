@@ -164,6 +164,7 @@ export class RiskDetailsComponent {
   binderDescription: any;
   passedBinder: any;
   relationGroups:any;
+  riskClassList:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
@@ -733,6 +734,7 @@ export class RiskDetailsComponent {
     this.loadSubclassSectionCovertype();
     if(this.selectedSubclassCode)
       this.getRequiredGroups()
+      this.getRiskClasses()
   }
   loadAllBinders() {
     this.binderService
@@ -1784,6 +1786,21 @@ export class RiskDetailsComponent {
 
 
     })
-  
+}
+getRiskClasses(){
+  this.policyService
+  .getRiskClass(this.selectedSubclassCode,this.currentYear)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.riskClassList= response._embedded
+      log.debug("RISK CLASSES:",this.riskClassList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
+    }
+  })
 }
 }
