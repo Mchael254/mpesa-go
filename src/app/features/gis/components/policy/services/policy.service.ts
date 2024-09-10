@@ -327,5 +327,9 @@ export class PolicyService {
     return this.api.GET(`v2/schedules/motor-colour`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getSecurityDevices(){
+    return this.api.GET(`v2/schedules/security-devices`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 
 }
