@@ -1055,13 +1055,15 @@
                                                                                     id="scheduleLabel">{{'gis.quotation.security_device_1'
                                                                                     | translate}}</label>
                                                                                 <div class="col-7">
-                                                                                    <select
-                                                                                        class="form-select form-control-sm mb-1"
-                                                                                        id="scheduleInput"
-                                                                                        formControlName="color">
-                                                                                        <option></option>
-                                                                                        <option></option>
-                                                                                    </select>
+                                                                                   
+                                                                                     
+                                                                                    <p-dropdown
+                                                                                    [options]="securityDevicesList"
+                                                                                    optionValue="type"
+                                                                                    optionLabel="desc"
+                                                                                    formControlName="color"
+                                                                                    [filterBy]="'desc'"
+                                                                                    [filter]="true"></p-dropdown>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1112,13 +1114,13 @@
                                                                                     id="scheduleLabel">{{'gis.quotation.security_device'
                                                                                     | translate}}</label>
                                                                                 <div class="col-7">
-                                                                                    <select
-                                                                                        class="form-select form-control-sm mb-1"
-                                                                                        id="scheduleInput"
-                                                                                        formControlName="color">
-                                                                                        <option></option>
-                                                                                        <option></option>
-                                                                                    </select>
+                                                                                    <p-dropdown
+                                                                                    [options]="securityDevicesList"
+                                                                                    optionValue="type"
+                                                                                    optionLabel="desc"
+                                                                                    formControlName="color"
+                                                                                    [filterBy]="'desc'"
+                                                                                    [filter]="true"></p-dropdown>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

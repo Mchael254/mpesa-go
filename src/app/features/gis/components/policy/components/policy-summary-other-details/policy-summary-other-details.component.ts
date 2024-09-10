@@ -182,6 +182,7 @@ export class PolicySummaryOtherDetailsComponent {
   submittedDocumentResponse:any;
   bodytypesList:any;
   motorColorsList:any;
+  securityDevicesList:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -254,6 +255,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.createCertificatesForm();
     this.fetchBodyTypes();
     this.fetchMotorColours();
+    this.fetchSecurityDevices();
   }
   ngOnDestroy(): void { }
 
@@ -2631,7 +2633,23 @@ fetchMotorColours(){
     },
     error: (error) => {
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
+    }
+  })
+}
+fetchSecurityDevices(){
+  this.policyService
+  .getSecurityDevices()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.securityDevicesList= response._embedded
+      log.debug("Motor Colours:",this.securityDevicesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
     }
   })
 }
