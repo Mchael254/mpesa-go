@@ -178,6 +178,8 @@ export class PolicySummaryOtherDetailsComponent {
   certificatesList:any;
   addCertificatesForm:FormGroup
   policyCertificateList:any
+  addedDocumentList:any;
+  submittedDocumentResponse:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -1865,16 +1867,25 @@ export class PolicySummaryOtherDetailsComponent {
 
 
   addRequiredDocuments() {
+    this.requiredDocumentsForm.get('riskUniqueCode').setValue(this.SelectedRiskCode);
+    this.requiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
+    this.requiredDocumentsForm.get('isMandatory').setValue("N");
+
     const requiredDocForm = this.requiredDocumentsForm.value;
     log.debug('Required Documents Form:', requiredDocForm);
     this.policyService
       .addRequiredDocuments(requiredDocForm, this.user)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response) => {
+        next: (response:any) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Document details added successfully');
 
-          console.log('Success:', response);
+          log.debug('response after adding required doc:', response._embedded);
+          this.submittedDocumentResponse=response._embedded;
+          log.debug("Added Document list:",this.submittedDocumentResponse)
+          if(this.submittedDocumentResponse){
+            this.getRequiredDocsByCode();
+          }
         },
         error: (error) => {
 
@@ -1885,13 +1896,21 @@ export class PolicySummaryOtherDetailsComponent {
 
   deleteRequiredDocuments() {
     this.policyService
-      .deleteRequiredDocument(this.selectedDocument)
+      .deleteRequiredDocument(this.selectedDocument.code)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Document details deleted successfully');
 
           console.log('Success:', response);
+          // Remove the deleted tax from the policy tax Details array
+        const index = this.addedDocumentList.findIndex(doc => doc.code === this.selectedDocument.code);
+        if (index !== -1) {
+          this.addedDocumentList.splice(index, 1);
+        }
+        // Clear the selected risk
+        this.selectedDocument = null;
+
         },
         error: (error) => {
 
@@ -2501,7 +2520,86 @@ export class PolicySummaryOtherDetailsComponent {
       }
     })
   }
+  
+
+onAddRequiredDoc(document: any) {
+  log.debug('SELECTED Document: ',document)
  
+  this.selectedDocument = document;
+  this.requiredDocumentsForm.patchValue({
+    
+        description: document.description,
+        shortDescription: document.shortDescription,
+       
+
+  });
+
+}
+getRequiredDocsByCode() {
+  this.policyService
+    .getRequiredDocumentsByCode(this.submittedDocumentResponse.code)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        if (response && response._embedded) {
+          // Convert the object to an array of its values
+          this.addedDocumentList = [response._embedded];
+        } else {
+          this.addedDocumentList = [];
+        }
+        log.debug("Adding Document list:", this.addedDocumentList);
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve documents by code. Try again later');
+      }
+    });
+}
+onEditRequiredDoc(document: any) {
+  log.debug('SELECTED Document: ',document)
+ 
+  this.selectedDocument = document;
+  this.requiredDocumentsForm.patchValue({
+    
+        description: document.description,
+        shortDescription: document.shortDescription,
+        submissionDate:document.dateSubmitted,
+        remarks:document.remark,
+        referenceNumber:document.referenceNumber,
+        isSubmitted:document.isSubmitted
+
+       
+
+  });
+
+}
+editRequiredDocuments() {
+  this.requiredDocumentsForm.get('riskUniqueCode').setValue(this.SelectedRiskCode);
+  this.requiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
+  this.requiredDocumentsForm.get('isMandatory').setValue("N");
+
+  const requiredDocForm = this.requiredDocumentsForm.value;
+  log.debug('Required Documents Form:', requiredDocForm);
+  this.policyService
+    .editRequiredDocuments(requiredDocForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response:any) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Document details updated successfully');
+
+        log.debug('response after adding required doc:', response._embedded);
+        this.submittedDocumentResponse=response._embedded;
+        log.debug("Added Document list:",this.submittedDocumentResponse)
+        if(this.submittedDocumentResponse){
+          this.getRequiredDocsByCode();
+        }
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+      }
+    });
+}
+
 }
 
 
