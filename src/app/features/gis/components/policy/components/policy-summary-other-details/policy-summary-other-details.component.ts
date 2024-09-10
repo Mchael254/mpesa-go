@@ -181,6 +181,7 @@ export class PolicySummaryOtherDetailsComponent {
   addedDocumentList:any;
   submittedDocumentResponse:any;
   bodytypesList:any;
+  motorColorsList:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -252,6 +253,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.getCertificatesDetailsForm();
     this.createCertificatesForm();
     this.fetchBodyTypes();
+    this.fetchMotorColours();
   }
   ngOnDestroy(): void { }
 
@@ -2609,6 +2611,22 @@ fetchBodyTypes(){
     next: (response: any) => {
       this.bodytypesList= response._embedded
       log.debug("Body Types:",this.bodytypesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+    }
+  })
+}
+fetchMotorColours(){
+  this.policyService
+  .getMotorColors()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorColorsList= response._embedded
+      log.debug("Motor Colours:",this.motorColorsList)
 
     },
     error: (error) => {

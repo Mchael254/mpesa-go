@@ -323,5 +323,9 @@ export class PolicyService {
     return this.api.GET(`v2/schedules/body-type`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getMotorColors(){
+    return this.api.GET(`v2/schedules/motor-colour`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 
 }
