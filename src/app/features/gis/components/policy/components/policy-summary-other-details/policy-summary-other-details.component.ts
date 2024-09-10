@@ -180,6 +180,7 @@ export class PolicySummaryOtherDetailsComponent {
   policyCertificateList:any
   addedDocumentList:any;
   submittedDocumentResponse:any;
+  bodytypesList:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -250,6 +251,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.createCommissionTranscDetailsForm();
     this.getCertificatesDetailsForm();
     this.createCertificatesForm();
+    this.fetchBodyTypes();
   }
   ngOnDestroy(): void { }
 
@@ -2595,11 +2597,26 @@ editRequiredDocuments() {
       },
       error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update document details.Try again later');
       }
     });
 }
+fetchBodyTypes(){
+  this.policyService
+  .getBodyTypes()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.bodytypesList= response._embedded
+      log.debug("Body Types:",this.bodytypesList)
 
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+    }
+  })
+}
 }
 
 
