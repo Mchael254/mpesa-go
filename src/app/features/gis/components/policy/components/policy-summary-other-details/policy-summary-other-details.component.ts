@@ -180,6 +180,9 @@ export class PolicySummaryOtherDetailsComponent {
   policyCertificateList:any
   addedDocumentList:any;
   submittedDocumentResponse:any;
+  bodytypesList:any;
+  motorColorsList:any;
+  securityDevicesList:any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -250,6 +253,9 @@ export class PolicySummaryOtherDetailsComponent {
     this.createCommissionTranscDetailsForm();
     this.getCertificatesDetailsForm();
     this.createCertificatesForm();
+    this.fetchBodyTypes();
+    this.fetchMotorColours();
+    this.fetchSecurityDevices();
   }
   ngOnDestroy(): void { }
 
@@ -2595,11 +2601,58 @@ editRequiredDocuments() {
       },
       error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add document details.Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update document details.Try again later');
       }
     });
 }
+fetchBodyTypes(){
+  this.policyService
+  .getBodyTypes()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.bodytypesList= response._embedded
+      log.debug("Body Types:",this.bodytypesList)
 
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+    }
+  })
+}
+fetchMotorColours(){
+  this.policyService
+  .getMotorColors()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorColorsList= response._embedded
+      log.debug("Motor Colours:",this.motorColorsList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
+    }
+  })
+}
+fetchSecurityDevices(){
+  this.policyService
+  .getSecurityDevices()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.securityDevicesList= response._embedded
+      log.debug("Motor Colours:",this.securityDevicesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
+    }
+  })
+}
 }
 
 
