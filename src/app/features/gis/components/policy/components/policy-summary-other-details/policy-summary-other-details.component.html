@@ -2424,8 +2424,8 @@
                                     </div>
                                     <div class="collapse" id="requiredDocDetails">
 
-                                        <p-table #dt2 [value]="riskDetails" dataKey="code" selectionMode="single"
-                                            [(selection)]="selectedSchedule" [tableStyle]="{'min-width': '50rem'}"
+                                        <p-table #dt2 [value]="addedDocumentList" dataKey="code" selectionMode="single"
+                                            [(selection)]="selectedDocument" [tableStyle]="{'min-width': '50rem'}"
                                             responsiveLayout="scroll" [autoLayout]="true" class='ui-datatable'>
 
 
@@ -2441,14 +2441,15 @@
                                                 </tr>
                                             </ng-template>
 
-                                            <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
-                                                <tr [pSelectableRow]="riskDetails"
-                                                    [class.p-highlight]="riskDetails === selectedRisk">
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
-                                                    <td class="flexible-header"></td>
+                                            <ng-template pTemplate="body" let-addedDocumentList let-ri="rowIndex">
+                                                <tr [pSelectableRow]="addedDocumentList"
+                                                    [class.p-highlight]="addedDocumentList === selectedDocument"
+                                                    (click)="onEditRequiredDoc(selectedDocument)">
+                                                    <td class="flexible-header">{{addedDocumentList.code}}</td>
+                                                    <td class="flexible-header">{{addedDocumentList.isSubmitted}}</td>
+                                                    <td class="flexible-header">{{addedDocumentList.dateSubmitted}}</td>
+                                                    <td class="flexible-header">{{addedDocumentList.remark}}</td>
+                                                    <td class="flexible-header">{{addedDocumentList.referenceNumber}}</td>
 
 
                                                 </tr>
@@ -2511,7 +2512,8 @@
                                                             <ng-template pTemplate="body" let-document
                                                                 let-ri="rowIndex">
                                                                 <tr [pSelectableRow]="document"
-                                                                    [class.p-highlight]="document === selectedDocument">
+                                                                    [class.p-highlight]="document === selectedDocument"
+                                                                   >
 
                                                                     <td>{{document.shortDescription}}</td>
                                                                     <td>{{document.description}}</td>
@@ -2523,9 +2525,10 @@
 
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
+                                                            (click)="onAddRequiredDoc(selectedDocument)"
                                                                 id="saveDetails" data-bs-dismiss="modal"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="#editrequiredDoc">
+                                                                data-bs-target="#saveRequiredDoc">
                                                                 {{'gis.policy.save_details' | translate}}</button>
 
                                                         </div>
@@ -2534,8 +2537,123 @@
                                                 </div>
                                             </div>
                                         </div>
+                                         <!--Save Required Document Modal -->
+                                         <div class="modal fade" #saveRequiredDoc id="saveRequiredDoc" tabindex="-1"
+                                         role="dialog" aria-labelledby="saveRequiredDocLabel" aria-hidden="true">
+                                         <div class="modal-dialog modal-dialog-centered " role="document">
+                                             <div class="modal-content">
+                                                 <div class="modal-body">
+                                                     <button type="button"
+                                                         class="btn-close ms-auto py-2 px-2 float-end"
+                                                         data-bs-dismiss="modal" aria-label="Close"
+                                                         id="close"></button>
+                                                     <h5 class="modal-title mt-2 mb-3 ms-4" id="saveRequiredDoc">
+                                                         {{'gis.policy.edit_required_documents' | translate}}</h5>
+                                                     <form [formGroup]="requiredDocumentsForm">
+                                                         <!-- **ROW 1** -->
+                                                         <div class="row mb-1" id="sectionRows">
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel"> {{'gis.policy.code' |
+                                                                         translate}}</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <input type="text" id="sectionInput"
+                                                                         class="form-control form-control-sm mb-1 ms-2"
+                                                                         formControlName="description">
+                                                                 </div>
+                                                             </div>
+                                                             <div class="col-xl-2"></div>
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel">
+                                                                         {{'gis.policy.description' |
+                                                                         translate}}</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <input type="text" id="sectionInput"
+                                                                         class="form-control form-control-sm mb-1 ms-2"
+                                                                         formControlName="description">
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <!-- **ROW 2** -->
+                                                         <div class="row mb-1" id="sectionRows">
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel">{{'gis.policy.submitted' |
+                                                                         translate}}</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <select
+                                                                         class="form-select form-control-sm mb-1 ms-2"
+                                                                         id="selectedInput"
+                                                                         formControlName="isSubmitted">
+                                                                         <option value="Y">Yes</option>
+                                                                         <option value="N">No</option>
+                                                                         <option value="E">Exempted</option>
+                                                                     </select>
+                                                                 </div>
+                                                             </div>
+                                                             <div class="col-xl-2"></div>
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel">
+                                                                         {{'gis.policy.date_submitted' |
+                                                                         translate}}</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <input type="date" id="sectionInput"
+                                                                         class="form-control form-control-sm mb-1 ms-2"
+                                                                         formControlName="submissionDate">
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <!-- **ROW 3** -->
+                                                         <div class="row " id="sectionRows">
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel"> {{'gis.policy.remarks' |
+                                                                         translate}}</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <input type="text" id="sectionInput"
+                                                                         class="form-control form-control-sm mb-1 ms-2"
+                                                                         formControlName="remark">
+                                                                 </div>
+                                                             </div>
+                                                             <div class="col-xl-2"></div>
+                                                             <div class="col-xl-5">
+                                                                 <div class="mb-1  row">
+                                                                     <label for="minmax-buttons" class=""
+                                                                         id="sectionLabel"> {{'gis.policy.ref_no' |
+                                                                         translate}}.</label>
+                                                                 </div>
+                                                                 <div class="row">
+                                                                     <input type="text" id="sectionInput"
+                                                                         class="form-control form-control-sm mb-1 ms-2"
+                                                                         formControlName="referenceNumber">
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                     </form>
+                                                     <div class="mt-4 d-flex justify-content-end">
+                                                         <button type="button" class="btn btn-primary "
+                                                             id="saveDetails"
+                                                             data-bs-dismiss="modal" (click)="addRequiredDocuments()">{{'gis.policy.save_details' |
+                                                             translate}}</button>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
 
-                                        <!--Add or Edit Required Document Modal -->
+                                        <!--Edit Required Document Modal -->
                                         <div class="modal fade" #editrequiredDoc id="editrequiredDoc" tabindex="-1"
                                             role="dialog" aria-labelledby="editrequiredDocLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered " role="document">
@@ -2559,7 +2677,7 @@
                                                                     <div class="row">
                                                                         <input type="text" id="sectionInput"
                                                                             class="form-control form-control-sm mb-1 ms-2"
-                                                                            formControlName="code">
+                                                                            formControlName="description">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-xl-2"></div>
@@ -2590,8 +2708,8 @@
                                                                             class="form-select form-control-sm mb-1 ms-2"
                                                                             id="selectedInput"
                                                                             formControlName="isSubmitted">
-                                                                            <option>Yes</option>
-                                                                            <option>No</option>
+                                                                            <option value="Y">Yes</option>
+                                                                            <option value="N">No</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -2642,7 +2760,7 @@
                                                         <div class="mt-4 d-flex justify-content-end">
                                                             <button type="button" class="btn btn-primary "
                                                                 id="saveDetails"
-                                                                data-bs-dismiss="modal">{{'gis.policy.save_details' |
+                                                                data-bs-dismiss="modal" (click)="editRequiredDocuments()">{{'gis.policy.save_details' |
                                                                 translate}}</button>
                                                         </div>
                                                     </div>

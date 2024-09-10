@@ -230,10 +230,10 @@ export class PolicyService {
     return this.api.GET(`v1/submitted-required-documents?showAll=${showALL}&subClassCode=${subClassCode}&transLevel=${transLevel}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
   addRequiredDocuments(data:RequiredDocuments ,user){
-    return this.api.POST(`v1/submitted-required-documents?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`v2/submitted-required-documents?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
   deleteRequiredDocument(code:any){
-    return this.api.DELETE(`v1/submitted-required-documents/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.DELETE(`v2/submitted-required-documents/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getRemarks(){
@@ -309,6 +309,14 @@ export class PolicyService {
   }
   getRiskClass(subclassCode:any,underwritingYear:any){
     return this.api.GET(`v1/risk-class?subClassCode=${subclassCode}&uwYear=${underwritingYear}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getRequiredDocumentsByCode(code:any){
+    return this.api.GET(`v2/submitted-required-documents/code/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  editRequiredDocuments(data:RequiredDocuments){
+    return this.api.PUT(`v1/submitted-required-documents`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 
