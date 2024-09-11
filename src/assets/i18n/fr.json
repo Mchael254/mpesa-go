@@ -1147,7 +1147,8 @@
         "reserved_amount": "Montant réservé",
         "investigate_claim": "Enquêter sur la réclamation",
         "proceed_without_investigation": "Procéder sans enquête",
-        "submit": "Soumettre"
+        "submit": "Soumettre",
+        "completed": "Terminé"
       },
       "service_request": {
         "admin": {

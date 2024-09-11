@@ -9,6 +9,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger("ClaimProcessingComponent")
 @Component({
@@ -41,6 +42,7 @@ export class ClaimProcessingComponent implements OnInit, OnDestroy {
     private session_storage: SessionStorageService,
     private activatedRoute: ActivatedRoute,
     private confirmationService: ConfirmationService,
+    private spinner_Service: NgxSpinnerService,
   ) { }
 
   ngOnInit(): void {
@@ -146,6 +148,7 @@ editCoverDetailsForm() {
    * to select a payee if the payee field is empty.
    */
   onSubmitClaimCovDetailsForm() {
+    this.spinner_Service.show('download_view');
     const formValues = this.coverDetailsForm.value;
     const payload = {
       cover_type_code: this.coverTypeCode,
@@ -157,6 +160,7 @@ editCoverDetailsForm() {
     }
 
     if (this.coverDetailsForm.get('payee')?.value === null || this.coverDetailsForm.get('payee')?.value === '') {
+      this.spinner_Service.hide('download_view');
       this.messageService.add({
         severity: 'info',
         summary: 'Information',
@@ -165,13 +169,15 @@ editCoverDetailsForm() {
       return;
     }
     this.claimsService.updateClaimCovers(this.coverTypeCode, payload).pipe(untilDestroyed(this)).subscribe((res) => {
-      this.cdr.detectChanges();
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: 'Claim cover updated!'
+        detail: this.coverType + ' cover updated!'
       });
       this.coverDetailsForm.reset();
+      this.isFormVisible =  !this.isFormVisible;
+      this.cdr.detectChanges();
+      this.spinner_Service.hide('download_view');
     })
 }
 
@@ -187,14 +193,16 @@ editCoverDetailsForm() {
    * process claim and proceed without investigation
    */
   processClaim() {
+    this.spinner_Service.show('download_view');
     if (this.coverTypeCode === undefined || this.coverTypeCode === null) {
+      this.spinner_Service.hide('download_view');
       this.messageService.add({
         severity: 'info',
         summary: 'Information',
         detail: 'Select covertype to process'
       });
     } else {
-
+      this.spinner_Service.hide('download_view');
       this.confirmationService.confirm({
         target: event.target as EventTarget,
         message: 'Are you sure you want to process Claim for ' + this.coverType + ' ?',
@@ -204,7 +212,9 @@ editCoverDetailsForm() {
         rejectIcon: "none",
         rejectButtonStyleClass: "p-button-text",
         accept: () => {
+          this.spinner_Service.show('download_view');
           this.claimsService.processClaim(this.claimNumber, this.coverTypeCode).pipe(untilDestroyed(this)).subscribe((res) => {
+            this.spinner_Service.hide('download_view');
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
@@ -217,6 +227,7 @@ editCoverDetailsForm() {
               }
             });
           }, () => {
+            this.spinner_Service.hide('download_view');
             this.messageService.add({
               severity: 'error',
               summary: 'Error',

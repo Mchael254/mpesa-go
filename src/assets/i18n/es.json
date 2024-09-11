@@ -1147,7 +1147,8 @@
         "reserved_amount": "Monto reservado",
         "investigate_claim": "Investigar reclamo",
         "proceed_without_investigation": "Proceder sin investigación",
-        "submit": "Enviar"
+        "submit": "Enviar",
+        "completed": "Completado"
       },
       "service_request": {
         "admin": {

@@ -1190,7 +1190,8 @@
         "reserved_amount": "Reserved amount",
         "investigate_claim": "Investigate claim",
         "proceed_without_investigation": "Proceed without investigation",
-        "submit": "Submit"
+        "submit": "Submit",
+        "completed": "Completed"
         
       },
       "service_request": {
