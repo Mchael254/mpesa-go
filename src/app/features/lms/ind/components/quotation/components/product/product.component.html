@@ -184,10 +184,12 @@
                   <div class="row" *ngIf="isEscalationYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Escalation Option</label>
-                      <select formControlName="" class="form-select">
+                      <select formControlName="escalationOption" class="form-select">
                         <option [value]="" selected disabled>{{'Select Option'}}</option>
                         <ng-container>
-                          <option></option>
+                          <option *ngFor="let option of escalationOption" [value]="option.value">
+                            {{ option.label }}
+                          </option>
                         </ng-container>
                       </select>
                     </div>
@@ -196,10 +198,14 @@
                       <div>
                         <label class="form-check-label">Escalation Rate</label>
                       </div>
-                      <div>
-                        <div class="mb-1"></div>
-                        <input type="text" class="form-control" formControlName="" style="padding-right: 2rem"/>
-                      </div>
+                      <select formControlName="escalationRate" class="form-select">
+                        <option [value]="" selected disabled>{{'Select Rate'}}</option>
+                        <ng-container *ngFor="let rate of escalationRate">
+                          <option [value]="rate.code">
+                            {{ rate.rate }}
+                          </option>
+                        </ng-container>
+                      </select>
                     </div>
                   </div>
                 </div>

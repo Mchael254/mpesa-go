@@ -1,11 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { concatMap, finalize, first, mergeMap, switchMap, tap } from 'rxjs/operators';
-import {Observable, of} from 'rxjs';
+import {Observable, of, ReplaySubject} from 'rxjs';
 import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 import {ProductService} from "../../../../../service/product/product.service";
 import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
@@ -15,13 +15,23 @@ import {ClientService} from "../../../../../../entities/services/client/client.s
 import {Utils} from "../../../../../util/util";
 import {StringManipulation} from "../../../../../util/string_manipulation";
 import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import { EscalationRateDTO } from '../../models/escalation-rate';
 
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent implements OnInit {
+  breadCrumbItems: BreadCrumbItem[] = [
+    { label: 'Home', url: '/home/dashboard' },
+    { label: 'Quotation', url: '/home/lms/quotation/list' },
+    {
+      label: 'Client Details(Data Entry)',
+      url: '/home/lms/ind/quotation/client-details',
+    },
+  ];
   steps = stepData;
   validationData: any[];
   productForm: FormGroup;
@@ -33,18 +43,17 @@ export class ProductComponent implements OnInit {
   option_product_code: number = 0;
   productTermList = signal([]);
   agentList: any[] = [];
-  breadCrumbItems: BreadCrumbItem[] = [
-    { label: 'Home', url: '/home/dashboard' },
-    { label: 'Quotation', url: '/home/lms/quotation/list' },
-    {
-      label: 'Client Details(Data Entry)',
-      url: '/home/lms/ind/quotation/client-details',
-    },
-  ];
   paymentOfFrequencyList: any[];
   util: any;
   web_quote: any = null;
   getQuotationSubscribe: Observable<any>;
+  escalationRate: EscalationRateDTO[];
+  pop_code: number = 2021415;
+
+  escalationOption: { value: string, label: string }[] = [
+    { value: 'PREMIUM ESCALATION', label: 'Premium Escalation' },
+    { value: 'SUM ASSURED ESCALATION', label: 'Sum Assured Escalation' }
+  ];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -80,6 +89,7 @@ export class ProductComponent implements OnInit {
     this.productForm = this.getproductForm();
     this.getPayFrequencies();
     this.getAgentList();
+    this.getEscalationRate();
     console.log(quote);
 
     if (!quote) {
@@ -262,6 +272,8 @@ export class ProductComponent implements OnInit {
       agent: [],
       escalation_question: [],
       coinsurance_question: [],
+      escalationOption: [],
+      escalationRate: [],
     });
   }
 
@@ -356,6 +368,13 @@ export class ProductComponent implements OnInit {
   selectProductTerm(pCode: any) {
     let pTermVal = +pCode.target.value;
   }
+
+  getEscalationRate() {
+    this.product_service
+      .getProductEscalationRate(this.pop_code).subscribe((data) => {
+      this.escalationRate = data;
+    })
+  } 
 
   getFormData(name: string) {
     const foundData = this.validationData.find((data) => data['name'] === name);
