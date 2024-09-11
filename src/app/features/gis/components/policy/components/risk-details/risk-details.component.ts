@@ -1093,6 +1093,9 @@ export class RiskDetailsComponent {
       });
   }
   addPolicyRisk() {
+    if (this.policyRiskForm.invalid) {
+      this.policyRiskForm.markAllAsTouched();  // This will trigger validation for all fields
+    }
     if (this.passedPolicyRiskDetails){
       this.policyRiskForm.get('addOrEdit').setValue("E");
     }
@@ -1193,7 +1196,7 @@ export class RiskDetailsComponent {
                 this.createSchedule();
               }
             }
-
+            this.policyRiskForm.reset()
           }
           else {
             this.errorOccurred = true;
@@ -1613,7 +1616,7 @@ export class RiskDetailsComponent {
         this.scheduleDetailsForm.reset()
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
       } catch (error) {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+        // this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
         this.scheduleDetailsForm.reset()
       }
@@ -1647,7 +1650,9 @@ export class RiskDetailsComponent {
   }
 
   getImportedRisk() {
-    const policyNo = sessionStorage.getItem('selectedPolicyforRisk')
+    const policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
+    const policyNo = policyDetails.policyNumber
+    console.log(policyNo)
     if (policyNo) {
       console.log(policyNo)
       this.policyService.getPolicyRisks(policyNo).pipe(untilDestroyed(this))
@@ -1659,7 +1664,7 @@ export class RiskDetailsComponent {
               this.policySectionDetails = element.sections
               console.log('section test', element.sections)
             });
-            console.log('risks', this.policyRiskDetails.coverTypeShortDescription)
+            console.log('risks', this.policyRiskDetails)
           }
 
 

@@ -1,15 +1,23 @@
 
     <div class="row">
-        <div class="col-sm-5">   
+        <div class="col-sm-6">   
             <p class="title">{{'gis.policy.policy_details' | translate}}</p>
         </div>
-        <div class="col-sm-7 float-end">
-            <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
+        <div class="col-sm-6 float-end">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
+                    <i class="fa-solid fa-pencil"></i>
+                    </button>
+                <button class="btn btn-primary">Reassign</button>
+                <button class="btn btn-primary" (click)="generateCoverNote()">Generate cover note</button>
+                <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
+            </div>
+            <!-- <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
             <i class="fa-solid fa-pencil"></i>
             </button>
             <button class="btn btn-primary me-4">Reassign</button>
             <button class="btn btn-primary me-4" (click)="generateCoverNote()">Generate cover note</button>
-            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
+            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button> -->
         </div>
     </div>
    
