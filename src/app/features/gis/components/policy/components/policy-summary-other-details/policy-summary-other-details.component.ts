@@ -843,8 +843,8 @@ export class PolicySummaryOtherDetailsComponent {
   }
   onSelectRiskClauses(event: any) {
     this.selectedRiskClause = event;
-    console.log(this.selectedRiskClause)
-    console.log(this.selectedClause)
+    console.log(this.selectedRiskClause,'Selected risk clause ')
+    console.log(this.selectedClause,'selected clause ')
 
   }
   openHelperModal(selectedClause: any) {
@@ -1243,20 +1243,14 @@ export class PolicySummaryOtherDetailsComponent {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
     }
-    // this.subclassService.getSubclassClauses(this.selectedSubclassCode).subscribe(data =>{
-    //   this.SubclauseList=data;
-    //   // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
-    //   // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-    //   log.debug('subclass ClauseList#####',this.SubclauseList)
-    //   this.loadAllClauses()
-    // })
 
     this.policyService.getRiskClauses().subscribe({
       next: (res) => {
         this.SubclauseList = res;
         this.SubclauseList = this.SubclauseList._embedded[0]
-        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode == 20225949312);
+        console.log(this.SubclauseList, 'Risk Clauses')
+        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225946227);
         console.log(this.SubclauseList, 'Unfiltered List')
 
 
@@ -2654,7 +2648,8 @@ fetchSecurityDevices(){
   })
 }
   editRiskClause(event){
-    console.log(event)
+    console.log(event,'edit')
+    console.log(this.selectedRiskClause,'edit var')
   }
 }
 
