@@ -1,16 +1,16 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TableDetail } from '../../../../shared/data/table-detail';
-import {Profile} from "../../../../shared/data/auth/profile";
-import {EntityService} from "../../../entities/services/entity/entity.service";
-import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
-import {AuthService} from "../../../../shared/services/auth.service";
-import {ReportServiceV2} from "../../../reports-v2/services/report.service";
-import {Logger} from "../../../../shared/services";
-import cubejs from "@cubejs-client/core";
-import {AppConfigService} from "../../../../core/config/app-config-service";
-import {ReportService} from "../../../reports/services/report.service";
-import {ChartConfiguration} from "chart.js";
-import {Criteria} from "../../../../shared/data/reports/criteria";
+import { Profile } from '../../../../shared/data/auth/profile';
+import { EntityService } from '../../../entities/services/entity/entity.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { ReportServiceV2 } from '../../../reports-v2/services/report.service';
+import { Logger } from '../../../../shared/services';
+import cubejs from '@cubejs-client/core';
+import { AppConfigService } from '../../../../core/config/app-config-service';
+import { ReportService } from '../../../reports/services/report.service';
+import { ChartConfiguration } from 'chart.js';
+import { Criteria } from '../../../../shared/data/reports/criteria';
 
 const log = new Logger('DashboardComponent');
 
@@ -21,7 +21,6 @@ const log = new Logger('DashboardComponent');
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardComponent implements OnInit {
-
   isPolicyDataReady: boolean = false;
   isQuotationDataReady: boolean = false;
   currency: string = '';
@@ -31,10 +30,10 @@ export class DashboardComponent implements OnInit {
 
   user: Profile;
   chartsData = [];
-  report: {name: string, type: string}[] = [];
+  report: { name: string; type: string }[] = [];
 
   private cubejsApi = cubejs({
-    apiUrl: this.appConfig.config.cubejsDefaultUrl
+    apiUrl: this.appConfig.config.cubejsDefaultUrl,
   });
 
   constructor(
@@ -95,11 +94,11 @@ export class DashboardComponent implements OnInit {
       next: (res) => {
         const reports = res.content;
 
-        for (let i = reports.length-1; i > reports.length-3; i--) {
+        for (let i = reports.length - 1; i > reports.length - 3; i--) {
           const report = reports[i];
           this.report.push({
             name: report.name,
-            type: report.charts[0]?.type ? report.charts[0]?.type : 'bar'
+            type: report.charts[0]?.type ? report.charts[0]?.type : 'bar',
           });
 
           const measures = JSON.parse(report.measures);
@@ -111,33 +110,42 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         const errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-      }
-    })
+      },
+    });
   }
 
   loadChart(criteria) {
-    const {measures, dimensions} = this.splitDimensionsAndMeasures(criteria);
+    const { measures, dimensions } = this.splitDimensionsAndMeasures(criteria);
     const query = {
       measures,
       dimensions,
-      limit: 20
-    }
+      limit: 20,
+    };
 
-    this.cubejsApi.load(query).then(resultSet => {
-      const chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
-      const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
-      const reportData = resultSet.series().map(s => s.series.map(r => r.value));
+    this.cubejsApi.load(query).then(
+      (resultSet) => {
+        const chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
+        const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
+        const reportData = resultSet
+          .series()
+          .map((s) => s.series.map((r) => r.value));
 
-      const datasets = this.reportService.generateReportDatasets(reportLabels, reportData, measures);
-      const chartData = {
-        labels: chartLabels,
-        datasets,
-      };
-      this.chartsData.push(chartData);
-    },
-    (err) => {
-      this.globalMessagingService.displayErrorMessage('CubeJS Error', err);
-    })
+        const datasets = this.reportService.generateReportDatasets(
+          reportLabels,
+          reportData,
+          measures
+        );
+        const chartData = {
+          labels: chartLabels,
+          datasets,
+        };
+        this.chartsData.push(chartData);
+        // log.info(`charts data >>> `, this.chartsData);
+      },
+      (err) => {
+        this.globalMessagingService.displayErrorMessage('CubeJS Error', err);
+      }
+    );
   }
 
   /**
@@ -148,14 +156,14 @@ export class DashboardComponent implements OnInit {
     let measures = [];
     let dimensions = [];
 
-    queryObject.forEach(item => {
+    queryObject.forEach((item) => {
       const criterion = `${item.transaction}.${item.query}`;
       if (item.category === 'metrics') {
         measures.push(criterion);
       } else {
         dimensions.push(criterion);
       }
-    })
-    return { measures, dimensions }
+    });
+    return { measures, dimensions };
   }
 }

@@ -1,35 +1,40 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {ReportService} from "../../reports/services/report.service";
-import {Logger} from "../../../shared/services";
-import {SubjectArea} from "../../../shared/data/reports/subject-area";
-import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
-import {take} from "rxjs/operators";
-import {Criteria} from "../../../shared/data/reports/criteria";
-import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
-import {ReportServiceV2} from "../services/report.service";
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { BreadCrumbItem } from '../../../shared/data/common/BreadCrumbItem';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ReportService } from '../../reports/services/report.service';
+import { Logger } from '../../../shared/services';
+import { SubjectArea } from '../../../shared/data/reports/subject-area';
+import { SubjectAreaCategory } from '../../../shared/data/reports/subject-area-category';
+import { take } from 'rxjs/operators';
+import { Criteria } from '../../../shared/data/reports/criteria';
+import { GlobalMessagingService } from '../../../shared/services/messaging/global-messaging.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SessionStorageService } from '../../../shared/services/session-storage/session-storage.service';
+import { ReportServiceV2 } from '../services/report.service';
 import { ReportV2 } from '../../../shared/data/reports/report';
 import { AuthService } from '../../../shared/services/auth.service';
 import { ChatBotComponent } from '../chat-bot/chat-bot.component';
-import {Profile} from "../../../shared/data/auth/profile";
+import { Profile } from '../../../shared/data/auth/profile';
 
 const log = new Logger('CreateReportComponent');
 @Component({
   selector: 'app-create-report',
   templateUrl: './create-report.component.html',
-  styleUrls: ['./create-report.component.css']
+  styleUrls: ['./create-report.component.css'],
 })
 export class CreateReportComponent implements OnInit {
-
-  @ViewChild(ChatBotComponent) chatBot: ChatBotComponent
+  @ViewChild(ChatBotComponent) chatBot: ChatBotComponent;
 
   createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Criteria',
-      url: '/home/reportsv2/create-report'
+      url: '/home/reportsv2/create-report',
     },
     {
       label: 'Preview',
@@ -72,7 +77,7 @@ export class CreateReportComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private sessionStorageService: SessionStorageService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   /**
@@ -83,7 +88,8 @@ export class CreateReportComponent implements OnInit {
    * @return void
    */
   ngOnInit(): void {
-    const isFromPreview = this.activatedRoute.snapshot.queryParams['fromPreview'];
+    const isFromPreview =
+      this.activatedRoute.snapshot.queryParams['fromPreview'];
     this.isFromPreview = !!isFromPreview;
     this.reportId = this.activatedRoute.snapshot.queryParams['reportId'];
     // const reportParams = this.sessionStorageService.getItem(`reportParams`);
@@ -99,7 +105,7 @@ export class CreateReportComponent implements OnInit {
     }*/
 
     if (this.reportId) {
-      this.getReport(this.reportId)
+      this.getReport(this.reportId);
     }
 
     this.getSubjectAreas();
@@ -113,7 +119,7 @@ export class CreateReportComponent implements OnInit {
   createSearchForm(): void {
     this.searchForm = this.fb.group({
       searchTerm: [''],
-      subjectArea: ['']
+      subjectArea: [''],
     });
   }
 
@@ -125,7 +131,8 @@ export class CreateReportComponent implements OnInit {
    * @return void
    */
   getReport(id: number): void {
-    this.reportServiceV2.getReportById(id)
+    this.reportServiceV2
+      .getReportById(id)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
@@ -140,8 +147,10 @@ export class CreateReportComponent implements OnInit {
           log.info(`dimensions from preview >>> `, this.dimensions);
           log.info(`filters from preview >>> `, this.filters);
         },
-        error: (e) => { log.info(`error >>>`, e)}
-      })
+        error: (e) => {
+          log.info(`error >>>`, e);
+        },
+      });
   }
 
   /**
@@ -155,7 +164,8 @@ export class CreateReportComponent implements OnInit {
     this.subjectAreaCategories = [];
     this.showSubjectAreas = false;
     this.searchForm.reset();
-    this.reportService.getCategoriesBySubjectAreaId(s.id)
+    this.reportService
+      .getCategoriesBySubjectAreaId(s.id)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
@@ -174,7 +184,7 @@ export class CreateReportComponent implements OnInit {
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
-        }
+        },
       });
   }
 
@@ -187,23 +197,22 @@ export class CreateReportComponent implements OnInit {
     this.reportNameRec = event.target.value;
   }
 
-
   /**
    * The function "getSubjectAreas" retrieves subject areas from a report service and logs them.
    */
   getSubjectAreas(): void {
-    this.reportService.getSubjectAreas()
-    .pipe(take(1))
-    .subscribe({
-      next: (res) => {
-        this.subjectAreas = res;
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', err.message);
-      }
-    })
+    this.reportService
+      .getSubjectAreas()
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.subjectAreas = res;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        },
+      });
   }
-
 
   /**
    * The function `selectCriteria` takes in a category, subcategory, and query, and adds them to a criteria array if they
@@ -216,7 +225,6 @@ export class CreateReportComponent implements OnInit {
    * @returns The function does not have a return statement.
    */
   selectCriteria(category, subCategory, query): void {
-
     this.queryObject = {
       category: category.description,
       categoryName: category.name,
@@ -224,11 +232,15 @@ export class CreateReportComponent implements OnInit {
       subCategoryName: subCategory.name,
       transaction: subCategory.value,
       query: query.value,
-      queryName: query.name
-    }
+      queryName: query.name,
+    };
 
     const criterion = `${this.queryObject.transaction}.${this.queryObject.query}`;
-    const checkCriterion = this.checkIfCriterionExists(criterion, this.measures, this.dimensions);
+    const checkCriterion = this.checkIfCriterionExists(
+      criterion,
+      this.measures,
+      this.dimensions
+    );
     if (checkCriterion) {
       const detail = `${this.queryObject.queryName} already selected.`;
       this.globalMessagingService.displayErrorMessage('error', detail);
@@ -267,13 +279,15 @@ export class CreateReportComponent implements OnInit {
    * false otherwise.
    */
   checkIfCriterionExists(criterion, measures, dimensions): boolean {
-    if (measures.indexOf(criterion) === -1 && dimensions.indexOf(criterion) === -1 ) {
+    if (
+      measures.indexOf(criterion) === -1 &&
+      dimensions.indexOf(criterion) === -1
+    ) {
       return false;
     } else {
       return true;
     }
   }
-
 
   /**
    * Deletes a criterion from the list of criteria
@@ -285,7 +299,7 @@ export class CreateReportComponent implements OnInit {
       this.criteria.splice(index, 1);
     }
 
-    const criteriaToRemove = `${criteria.transaction}.${criteria.query}`
+    const criteriaToRemove = `${criteria.transaction}.${criteria.query}`;
     if (criteria.category === 'metrics') {
       const index = this.measures.indexOf(criteriaToRemove);
       this.measures.splice(index, 1);
@@ -296,18 +310,20 @@ export class CreateReportComponent implements OnInit {
 
     let filterToRemove, filterToRemoveIndex;
     this.filters.forEach((filter, index) => {
-      log.info(`filter >>>`, filter)
+      log.info(`filter >>>`, filter);
       if (filter.member === criteriaToRemove) {
         filterToRemove = filter;
         filterToRemoveIndex = index;
-        log.info(`found one >>> `, filterToRemove, filterToRemoveIndex)
+        log.info(`found one >>> `, filterToRemove, filterToRemoveIndex);
       }
     });
     this.filters.splice(filterToRemoveIndex, 1);
-
   }
 
-  updateSubCategoryCategoryAreas(subCategoryElement: any[], subCategory: any): void {
+  updateSubCategoryCategoryAreas(
+    subCategoryElement: any[],
+    subCategory: any
+  ): void {
     this.subCategoryCategoryAreas = subCategoryElement;
     this.selectedSubCategory = subCategory;
   }
@@ -332,9 +348,9 @@ export class CreateReportComponent implements OnInit {
 
     let filters = [];
     if (this.filters.length > 0) {
-      this.filters.forEach(filter => filters.push(filter.filter));
-    } else if(this.selectedReport?.filter) {
-      filters = JSON.parse(this.selectedReport?.filter)
+      this.filters.forEach((filter) => filters.push(filter.filter));
+    } else if (this.selectedReport?.filter) {
+      filters = JSON.parse(this.selectedReport?.filter);
     }
 
     const reportParams = {
@@ -346,17 +362,27 @@ export class CreateReportComponent implements OnInit {
       folder: this.selectedReport?.folder,
       charts: this.selectedReport?.charts,
       createdBy: this.selectedReport?.createdBy,
-    }
+    };
     this.sessionStorageService.setItem(`reportParams`, reportParams);
 
-    const measures = this.criteria.filter(measure => measure.category === 'metrics');
-    const dimensions = this.criteria.filter(measure => measure.category !== 'metrics');
+    const measures = this.criteria.filter(
+      (measure) => measure.category === 'metrics'
+    );
+    const dimensions = this.criteria.filter(
+      (measure) => measure.category !== 'metrics'
+    );
 
     if (measures.length === 0) {
-      this.globalMessagingService.displayErrorMessage("No Measure Selected", "Select measure to continue");
+      this.globalMessagingService.displayErrorMessage(
+        'No Measure Selected',
+        'Select measure to continue'
+      );
       return;
-    } else if(dimensions.length === 0) {
-      this.globalMessagingService.displayErrorMessage("No Filter selected", "Select filters to continue");
+    } else if (dimensions.length === 0) {
+      this.globalMessagingService.displayErrorMessage(
+        'No Filter selected',
+        'Select filters to continue'
+      );
       return;
     }
 
@@ -392,18 +418,16 @@ export class CreateReportComponent implements OnInit {
       name: this.reportNameRec,
       order: 0,
       width: 0,
-      sort: JSON.stringify(this.sort)
-    }
-    // log.info(`report >>>`, report);
-
+      sort: JSON.stringify(this.sort),
+    };
+    log.info(`report >>>`, report, this.isFromPreview);
 
     if (!this.isFromPreview) {
       this.createReport(report);
     } else {
-      this.updateReport(report)
+      this.updateReport(report);
     }
   }
-
 
   /**
    *1. create report and save to backend
@@ -411,19 +435,24 @@ export class CreateReportComponent implements OnInit {
    */
   createReport(report: ReportV2): void {
     log.info(`created report >>> `, report);
-    /*this.reportServiceV2.createReport(report)
+    this.reportServiceV2
+      .createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
           this.reportId = res.id;
-          this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
-            { queryParams: { isEditing: false }});
+          this.router.navigate([`/home/reportsv2/preview/${this.reportId}`], {
+            queryParams: { isEditing: false },
+          });
           log.info(`created report >>> `, res);
         },
         error: (e) => {
-          this.globalMessagingService.displayErrorMessage('error', `${e.status}: ${e.message}`);
-        }
-      });*/
+          this.globalMessagingService.displayErrorMessage(
+            'error',
+            `${e.status}: ${e.message}`
+          );
+        },
+      });
   }
 
   /**
@@ -444,12 +473,22 @@ export class CreateReportComponent implements OnInit {
   updateFilter(filter): void {
     log.info(`filter to save ==> `, filter);
     this.criteria.forEach((criterion) => {
-      if (criterion.query == filter.queryObject.query && filter.filter !== null) {
-        criterion.filter = filter.queryObject.filter
-        this.filters.push(filter)
-      } else if (criterion.query == filter.queryObject.query && filter.filter === null) {
-        this.filters = this.filters.filter(item => item.queryObject.queryName === filter.queryObject.queryName ? null : item);
-        delete criterion.filter
+      if (
+        criterion.query == filter.queryObject.query &&
+        filter.filter !== null
+      ) {
+        criterion.filter = filter.queryObject.filter;
+        this.filters.push(filter);
+      } else if (
+        criterion.query == filter.queryObject.query &&
+        filter.filter === null
+      ) {
+        this.filters = this.filters.filter((item) =>
+          item.queryObject.queryName === filter.queryObject.queryName
+            ? null
+            : item
+        );
+        delete criterion.filter;
       }
     });
     log.info(`filter >>> `, this.filters);
@@ -463,16 +502,25 @@ export class CreateReportComponent implements OnInit {
    */
   updateSort(sort): void {
     this.criteria.forEach((criterion, i) => {
-      if (criterion.query == sort?.queryObject?.query && sort.sortValue !== null) {
-        criterion.sort = sort.queryObject.sort
-        this.sort.push(JSON.stringify(sort.sortValue))
-      } else if (criterion.query === sort?.queryObject?.query && sort.sortValue === null) {
-        this.sort = this.sort.filter(item => {
+      if (
+        criterion.query == sort?.queryObject?.query &&
+        sort.sortValue !== null
+      ) {
+        criterion.sort = sort.queryObject.sort;
+        this.sort.push(JSON.stringify(sort.sortValue));
+      } else if (
+        criterion.query === sort?.queryObject?.query &&
+        sort.sortValue === null
+      ) {
+        this.sort = this.sort.filter((item) => {
           const sortItem = JSON.parse(item);
           // console.log(sortItem, `${sort.queryObject.transaction}.${this.queryObject.query}`);
-          return sortItem[0] !== `${this.queryObject.transaction}.${this.queryObject.query}` ? item : null
+          return sortItem[0] !==
+            `${this.queryObject.transaction}.${this.queryObject.query}`
+            ? item
+            : null;
         });
-        delete criterion.sort
+        delete criterion.sort;
       }
     });
     log.info(`sort >>> `, this.sort);
@@ -483,7 +531,7 @@ export class CreateReportComponent implements OnInit {
    * @returns void
    */
   showAIBot(): void {
-    this.chatBot.showAIBot()
+    this.chatBot.showAIBot();
   }
 
   /**
@@ -495,14 +543,20 @@ export class CreateReportComponent implements OnInit {
    * @returns void
    */
   filterMetricsAndDimensions(event: any, arr: any, filterType: string): void {
-    const valueToFilter = (event.target.value).toLowerCase();
+    const valueToFilter = event.target.value.toLowerCase();
 
-    const filteredData = arr.map(obj => ({ // todo: define type for category area
-      ...obj,
-      categoryAreas: obj.categoryAreas.filter(categoryArea => (categoryArea.name.toLowerCase()).includes(valueToFilter))
-    })).filter(obj => obj.categoryAreas.length > 0);
+    const filteredData = arr
+      .map((obj) => ({
+        // todo: define type for category area
+        ...obj,
+        categoryAreas: obj.categoryAreas.filter((categoryArea) =>
+          categoryArea.name.toLowerCase().includes(valueToFilter)
+        ),
+      }))
+      .filter((obj) => obj.categoryAreas.length > 0);
 
-    filterType === 'metrics' ? this.filteredMetrics = filteredData : this.filteredDimensions = filteredData;
+    filterType === 'metrics'
+      ? (this.filteredMetrics = filteredData)
+      : (this.filteredDimensions = filteredData);
   }
-
 }
