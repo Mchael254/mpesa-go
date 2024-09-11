@@ -34,14 +34,15 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
   policyMembers: PolicyMemberDTO[] = [];
   claimNo: string;
   trans_no: string;
-  documents: DocumentsToUploadDTO[] = [];
-  selectedFile: FileDetailsDTO = null;
   endorsementCode: number;
   status: string;
   claimPolicies: ClaimPoliciesDTO[] = [];
   caus_type: string;
   caus_sht_desc: string;
   causationCode: number;
+  today: Date = new Date();
+  maxOccurrenceDate: Date = new Date();
+  defaultOccurrenceDate: Date | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -115,6 +116,29 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
     return control.invalid && (control.dirty || control.touched);
   }
 
+  /**
+   * The function `onReportDateSelect` sets the max and default occurrence dates based on a selected
+   * report date and resets the occurrence date if it's after the new max date.
+   * @param {any} event - The `onReportDateSelect` function takes an `event` parameter of type `any`.
+   * This event is used to extract a date value, which is then used to set the maximum occurrence date,
+   * default occurrence date, and potentially reset the occurrence date in a form.
+   */
+  onReportDateSelect(event: any) {
+    const reportDate = new Date(event);
+    
+    // Set the max date for the occurrence date to be the selected report date
+    this.maxOccurrenceDate = reportDate;
+    
+    // Set the default date for the occurrence date to scroll the calendar or based on report date selected
+    this.defaultOccurrenceDate = reportDate;
+  
+    // Reset occurrence date if it's after the new max date
+    const occurrenceDate = this.claimInitForm.get('occurenceDate')?.value;
+    if (occurrenceDate && new Date(occurrenceDate) > reportDate) {
+      this.claimInitForm.get('occurenceDate')?.reset();
+    }
+  }
+
   submitClaimInitFormData() {
     if(this.claimInitForm.invalid) {
        /*
@@ -151,8 +175,14 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
         this.messageService.add({severity: 'success', summary: 'Summary', detail: 'Claim initiated successfully'});
         this.claimNo = res.claim_no;
         this.trans_no = res.trans_no.toString();
-        this.getDocumentsToUpload();
         this.cdr.detectChanges();
+
+        /* navigate to claim admission screen after successfully initiating claim */
+        this.router.navigate(['/home/lms/grp/claims/admission'], {
+          queryParams: {
+            claimNumber: this.claimNo,
+          }
+        });
         this.session_storage.set('claimNumber', this.claimNo);
 
         //to remove once fetched
@@ -215,24 +245,44 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
    * message.
    */
   addActualType() {
+    this.spinner_Service.show('download_view');
     const claimformData = this.claimInitForm.value;
     const actaulTypeData = {
-      csc_code: claimformData.causationId,
-      csc_ddc_code: claimformData.causationDesc,
-      csc_sex: claimformData.gender,
-      csc_min_claimable_prd: claimformData.claimableMonths
+      death_disability_cause_code: this.causationCode,
+      death_disability_short_desc: claimformData.causationId,
+      death_disability_description: claimformData.causationDesc,
+      gender: claimformData.gender,
+      min_claimable_prd: claimformData.claimableMonths,
     }
 
     log.info("actaulTypeData", actaulTypeData)
+    if(this.causationCode === null || this.causationCode === undefined) {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Information',
+        detail: 'Select causation type first!'
+      });
+      return;
+    } else {
     this.claimsService.addActualCause(actaulTypeData).subscribe((res) => {
+      this.spinner_Service.hide('download_view');
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
         detail: 'Actual type successfully added'
       });
-      this.getCausationTypes();
+      this.getActualCauses();
       this.cdr.detectChanges();
+    }, (error) => {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Actual type NOT added!'
+      });
     })
+  }
   }
 
   getProducts() {
@@ -249,37 +299,6 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
     });
   }
 
-/**
- * The function `getDocumentsToUpload` retrieves list of documents to upload for a specific claim number. claimNo- 'CLM/GLA-726/2024'
- */
-  getDocumentsToUpload() {
-    this.claimsService.getDocumetsToUpload(this.claimNo).pipe(untilDestroyed(this)).subscribe((res: DocumentsToUploadDTO[]) => {
-      this.documents = res;
-      this.cdr.detectChanges();
-    });
-  }
-
-  /**
-   * The function `onFileSelected` is triggered when a file is selected, and it logs the selected file
-   * and the associated document label.
-   * @param {any} event - The `event` parameter typically represents the event that occurred, such as a
-   * file selection event in this case. It contains information about the event, including the target
-   * element that triggered the event (in this case, the file input element).
-   */
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      log.info('File selected:', this.selectedFile);
-      // file upload service call
-      this.router.navigate(['/home/lms/grp/claims/admission'], {
-        queryParams: {
-          claimNumber: this.claimNo,
-        }
-      });
-     
-    }
-  }
 
   getClaimPolicies() {
       this.claimsService.getClaimPolicies(this.productCode,this.policyCode, this.status, this.endorsementCode).pipe(untilDestroyed(this)).subscribe((res: ClaimPoliciesDTO[]) => {
