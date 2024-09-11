@@ -5,10 +5,11 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ClaimsService } from '../../service/claims.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
-import { ClaimDetailsDTO } from '../../models/claim-models';
+import { ClaimDetailsDTO, DocumentsToUploadDTO, FileDetailsDTO } from '../../models/claim-models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger("ClaimAdmissionComponent");
 @AutoUnsubscribe
@@ -23,6 +24,9 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   claimDetails: ClaimDetailsDTO[] = []
   isClaimAdmitted: boolean = false;
   claimNumber: string;
+  documents: DocumentsToUploadDTO[] = [];
+  selectedFile: FileDetailsDTO[] = [];
+  uploadProgress: number = 0;
 
   constructor(
     private messageService: MessageService,
@@ -31,11 +35,13 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
     private session_storage: SessionStorageService,
-    private router: Router
+    private router: Router,
+    private spinner_Service: NgxSpinnerService,
   ) {}
   
   ngOnInit(): void {
     this.getParams();
+    this.getDocumentsToUpload();
   }
 
   ngOnDestroy(): void {
@@ -49,13 +55,6 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
     whatsapp: ['', Validators.required],
     communicationType: ['', Validators.required],
   })
-
-  documents = [
-    { label: 'National ID', path: 'assets/documents/id.pdf', name: 'id.pdf' },
-    { label: 'Passport', path: 'assets/documents/passport.pdf', name: 'passportpassportpassport.pdf' },
-    { label: 'Driver\'s License', path: 'assets/documents/license.pdf', name: 'ilicense.pdf' },
-    { label: 'Social Security Card', path: 'assets/documents/ssc.pdf', name: 'card.pdf' }
-  ];
 
   formatDate = (date: Date): string => {
     const year = date.getFullYear();
@@ -77,6 +76,7 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
   
 
   onAdmitClaim() {
+    this.spinner_Service.show('download_view');
     if (this.claimDetails && this.claimDetails.length > 0) {
       const claimDetail = this.claimDetails[0];
       
@@ -105,6 +105,7 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
             detail: 'Claim admitted successfully'
           });
           this.cdr.detectChanges();
+          this.spinner_Service.hide('download_view');
         }
       });
   
@@ -114,6 +115,7 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
         summary: 'Warning',
         detail: 'Claim NOT admitted!'
       });
+      this.spinner_Service.hide('download_view');
     }
   }
 
@@ -149,4 +151,47 @@ export class ClaimAdmissionComponent implements OnInit, OnDestroy {
       log.info("getClaimDetails", res)
     });
   }
+  
+
+  /**
+ * The function `getDocumentsToUpload` retrieves list of documents to upload for a specific claim number. claimNo- 'CLM/GLA-726/2024'
+ */
+  getDocumentsToUpload() {
+    this.claimsService.getDocumetsToUpload(this.claimNumber).pipe(untilDestroyed(this)).subscribe((res: DocumentsToUploadDTO[]) => {
+      this.documents = res;
+      this.cdr.detectChanges();
+    });
+  }
+
+  /**
+   * The function `onFileSelected` is triggered when a file is selected, and it logs the selected file
+   * and the associated document label.
+   * @param {any} event - The `event` parameter typically represents the event that occurred, such as a
+   * file selection event in this case. It contains information about the event, including the target
+   * element that triggered the event (in this case, the file input element).
+   */
+  onFileSelected(event: any, index: number): void {
+    const file = event.target.files[0];
+
+    let progress = 0;
+    const interval = setInterval(() => {
+    if (progress < 100) {
+      progress += 1;
+      this.uploadProgress = progress;
+    }
+  }, 1000);
+    if (file) {
+      this.selectedFile[index] = file;
+      // file upload service call
+      clearInterval(interval);
+        this.uploadProgress = 100;
+    }
+  }
+  
+  // Remove a specific file
+  removeFile(index: number): void {
+    this.selectedFile[index] = null; // Remove the file at the specific index
+  }
+  
+
 }
