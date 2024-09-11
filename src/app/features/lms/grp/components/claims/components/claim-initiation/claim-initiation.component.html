@@ -175,7 +175,7 @@
             <div class="form-group">
               <div>
                 <p-calendar formControlName="reportDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
-                  placeholder="dd/mm/yy" [ngClass]="{'is-invalid': highlightInvalid('reportDate')}">
+                  placeholder="dd/mm/yy" [maxDate]="today" (onSelect)="onReportDateSelect($event)"  [ngClass]="{'is-invalid': highlightInvalid('reportDate')}">
                 </p-calendar>
                 <div *ngIf="highlightInvalid('product')" class="invalid-feedback">{{ "lms.grp.claims.claim_report_date" | translate }}</div>
               </div>
@@ -195,7 +195,7 @@
             <div class="form-group">
               <div>
                 <p-calendar formControlName="occurenceDate" dateFormat="dd/mm/yy" [showIcon]="true"
-                  [showButtonBar]="true" placeholder="dd/mm/yy" [ngClass]="{'is-invalid': highlightInvalid('occurenceDate')}">
+                  [showButtonBar]="true" placeholder="dd/mm/yy" [maxDate]="maxOccurrenceDate" [defaultDate]="defaultOccurrenceDate" [ngClass]="{'is-invalid': highlightInvalid('occurenceDate')}">
                 </p-calendar>
                 <div *ngIf="highlightInvalid('product')" class="invalid-feedback">{{ "lms.grp.claims.incident_occurence_date" | translate }}</div>
               </div>
@@ -219,7 +219,7 @@
     </form>
   </div>
 
-  <div class="container mt-2">
+  <!-- <div class="container mt-2">
     <div class="title">{{ "lms.grp.claims.upload_documents" | translate }}</div>
     <div class="row" style="padding-top: 10px;" *ngFor="let document of documents; let i = index">
       <div class="col-md-4 col-sm-12" >
@@ -239,7 +239,7 @@
     </div>
 
 
-  </div>
+  </div> -->
 
   <div class="button-container">
     <button class="book-claim" (click)="submitClaimInitFormData()">{{ "lms.grp.claims.book_claim" | translate }}</button>

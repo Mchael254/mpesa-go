@@ -4,6 +4,8 @@
       <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     </div>
   </div>
+  <ngx-spinner name="download_view" type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium"
+    bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
   <div class="container">
     <div><span class="title">{{ "lms.grp.claims.claim_information" | translate }}</span></div>
     <div class="row col-12" style="color: black;">
@@ -53,7 +55,7 @@
       </div>
     </div>
 
-    <div class="mt-3"><span class="title">{{ "lms.grp.claims.documents" | translate }}</span></div>
+    <!-- <div class="mt-3"><span class="title">{{ "lms.grp.claims.documents" | translate }}</span></div>
 
     <div class="doc-container">
       <div class="document" *ngFor="let doc of documents; let i = index">
@@ -71,7 +73,41 @@
           </span>
         </div>
       </div>
+    </div> -->
+
+    <div class="title">{{ "lms.grp.claims.upload_documents" | translate }}</div>
+    <div class="row">
+      <div class="col-md-6 col-sm-12 docs" *ngFor="let document of documents; let i = index;">
+        <div class="d-flex align-items-center flex-wrap">
+          <label [for]="'document' + i" class="fixed-width-label" style="color: black; width: 200px;">
+            {{ document.document_description | titlecase }}<span style="color: red;">*</span>
+          </label>
+          <div class="form-group">
+            <input type="file" [id]="'document' + i" #fileInput style="display: none;" (change)="onFileSelected($event, i)">
+            <button class="choose-file" (click)="fileInput.click()">
+              <span class="file-text">{{ "lms.grp.claims.choose_file" | translate }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="file-container" *ngIf="selectedFile[i]">
+          <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+          <div class="file-details">
+            <div class="file-name-container">
+              <span class="file-name">{{ selectedFile[i].name }}</span>
+              <span class="completed" *ngIf="uploadProgress === 100">{{ "lms.grp.claims.completed" | translate }}</span>
+            </div>
+            <p-progressBar [value]="uploadProgress" class="progress-bar">
+              <ng-template pTemplate="content" let-value>
+                <span>{{ value }}%</span>
+              </ng-template>
+            </p-progressBar>
+          </div>
+          <i class="pi pi-trash delete-icon" (click)="removeFile(i)"></i>
+        </div>
+        
+      </div>
     </div>
+    
 
   </div>
   <div class="button-container" *ngIf="!isClaimAdmitted">

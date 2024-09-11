@@ -4,6 +4,8 @@
             <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
         </div>
     </div>
+    <ngx-spinner name="download_view" type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium"
+    bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
     <div class="container">
         <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, set once, used more than once -->
         <div><span class="title">{{ "lms.grp.claims.policy_details" | translate }}</span></div>
