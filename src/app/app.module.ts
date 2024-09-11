@@ -37,6 +37,7 @@ export function loadConfig(
   declarations: [
     AppComponent,
     HomeComponent,
+    
   
   ],
   imports: [

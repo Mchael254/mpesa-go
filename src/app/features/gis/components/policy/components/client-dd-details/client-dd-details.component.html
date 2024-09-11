@@ -1,0 +1,89 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row ">
+            <div class="col-sm-4">
+                <h5 class="title"> {{'gis.policy.client_dd_details' | translate}}</h5>
+
+            </div>
+            <div class="col-sm-8 d-flex justify-content-end">
+                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
+                    <i class="fa-solid fa-pencil"></i>
+                </button>
+
+              
+
+            </div>
+        </div>
+    </div>
+    <!-- EDIT CLIENT DD DETAILS MODAL -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+       
+            
+            <div class="modal-body">
+                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="modalTitle">Edit Client DD Details</h5>
+                
+                <!-- ROW 1 -->
+                <div class="row mt-4 mb-4">
+                    <div class="col-sm-6">
+                        <label for="clientName" class="form-label">Client Name</label>
+                        <input type="text" class="form-control" id="clientName" placeholder="">
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="clientName" class="form-label">Account Name</label>
+                        <input type="text" class="form-control" id="clientName" placeholder="">
+                    </div>
+                </div>
+                <!-- ROW 2 --> 
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label for="clientName" class="form-label">Account No.</label>
+                        <input type="text" class="form-control" id="clientName" placeholder="">
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="clientName" class="form-label">Bank Branch</label>
+                        <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name"
+                        optionValue="id" (onChange)="onBranchSelected($event.value)"
+                         [filterBy]="'description'" [filter]="true"
+                        ></p-dropdown>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+    </div>
+</div>
+   
+      
+    <p-table 
+    [value]=" " 
+    selectionMode="single" 
+
+  
+    [tableStyle]="{ 'min-width': '50rem' , 'min-height':'50rem'}">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Client ID</th>
+                <th>Name</th>
+                <th>Id No.</th>
+                <th>Pin No.</th>
+                <th>Account Name</th>
+                <th>Account No.</th>
+                <th>Branch</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr [pSelectableRow]="product">
+                <td>{{ product.code }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.quantity }}</td>
+            </tr>
+        </ng-template>
+</p-table>
+</div>
+<div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-primary me-2">{{'gis.policy.reassign' | translate}}</button>
+</div>

@@ -2013,7 +2013,7 @@
                                                                 class="p-button-rounded p-button-text"></button>
                                                             <button *ngIf="editing" pButton pRipple type="button"
                                                                 pSaveEditableRow icon="pi pi-check"
-                                                                class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                                                class="p-button-rounded p-button-text p-button-success mr-2" (click)="editRiskClause(selectedClauseList)"></button>
                                                             <button *ngIf="editing" pButton pRipple type="button"
                                                                 pCancelEditableRow icon="pi pi-times"
                                                                 class="p-button-rounded p-button-text p-button-danger"></button>
@@ -3787,8 +3787,8 @@
 
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 2">
-                    <h5> {{'gis.policy.client_dd_details' | translate}}</h5>
-                    <p>Details about Client DD...</p>
+                  
+                    <app-client-dd-details></app-client-dd-details>      
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 3">
                     <!-- POLICY TAXES DETAILS -->

@@ -185,7 +185,8 @@ generateCoverNote(){
   }
   this.policyService.generateCoverNote(payload).subscribe({
     next:(res)=>{
-      this.downloadBase64File(res, 'cover_note.pdf');
+      console.log(res)
+      this.downloadBase64FileUpdate(res, 'cover_note.pdf');
       this.globalMessagingService.displaySuccessMessage('Success','Cover note generated successfully ')
     },
     error: (err) => {
@@ -220,6 +221,32 @@ downloadBase64File(base64, filename: string): void {
   window.URL.revokeObjectURL(url);
   a.remove();
 }
+downloadBase64FileUpdate(base64, filename: string): void {
+  // Fix URL-safe Base64 encoding and ensure padding
+  const paddedBase64 = base64.replace(/-/g, '+').replace(/_/g, '/').padEnd(base64.length + (base64.length % 4), '=');
 
+  try {
+    // Decode the base64 string
+    const binaryString = atob(paddedBase64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: 'application/pdf' }); // Adjust the MIME type as needed
+
+    // Create a URL for the blob and trigger the download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  } catch (error) {
+    console.error('Failed to decode Base64 string:', error);
+  }
+}
 
 }
