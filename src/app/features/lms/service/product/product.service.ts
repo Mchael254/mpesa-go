@@ -5,6 +5,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/internal/operators/map';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import { EscalationRateDTO } from '../../ind/components/quotation/models/escalation-rate';
+import { Logger } from 'src/app/shared/services';
+import { HttpParams } from '@angular/common/http';
+
+const log = new Logger('ProductService');
 
 @Injectable({
   providedIn: 'root'
@@ -97,6 +102,19 @@ export class ProductService {
     );
   }
 
+  getProductEscalationRate(pop_code: number): Observable<EscalationRateDTO[]> {
+    log.info('Fetching Rates');
+    const paramObj: { [param: string] : string } = {};
+    if (pop_code !== undefined && pop_code !== null) {
+      paramObj['pop_code'] = pop_code.toString();
+    }
+    const params = new HttpParams({ fromObject: paramObj });
+    return this.api.GET<EscalationRateDTO[]>(
+      `products/2021747/escalation-rates?pop_code=${pop_code}`,
+      API_CONFIG.SETUPS_SERVICE_BASE_URL,
+      params
+    );
+  }
 
 }
 
