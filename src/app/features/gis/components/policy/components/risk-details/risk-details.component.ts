@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
@@ -287,7 +287,7 @@ export class RiskDetailsComponent {
       allowedCommissionRate: [''],
       // autogenerateCert: [''],
       basicPremium: [''],
-      binderCode: [''],
+      binderCode: ['',Validators.required],
       // cashApplicable: [''],
       cashLevel: [''],
       commissionAmount: [''],
@@ -295,11 +295,11 @@ export class RiskDetailsComponent {
       computeMaxExposure: [''],
       conveyanceType: [''],
       coverDays: [''],
-      coverTypeCode: [''],
+      coverTypeCode: ['',Validators.required],
       coverTypeShortDescription: [''],
       currencyCode: [''],
-      dateCoverFrom: [''],
-      dateCoverTo: [''],
+      dateCoverFrom: ['',Validators.required],
+      dateCoverTo: ['',Validators.required],
       delSect: [''],
       grossPremium: [''],
       installmentPaymentPercentage: [''],
@@ -307,7 +307,7 @@ export class RiskDetailsComponent {
       insureds: this.fb.group({
         client: this.fb.group({
           firstName: [''],
-          id: [''],
+          id: ['',Validators.required],
           lastName: ['']
         }),
         prpCode: ['']
@@ -322,11 +322,11 @@ export class RiskDetailsComponent {
       ltaCommission: [''],
       maintenanceCover: [''],
       maxExposureAmount: [''],
-      modelYear: [''],
+      modelYear: ['',Validators.required],
       ncdApplicable: [''],
       ncdLevel: [''],
       netPremium: [''],
-      newRisk: [''],
+      newRisk: ['',Validators.required],
       // netPremium: [''],
       paidPremium: [''],
       policyBatchNo: [''],
@@ -334,8 +334,8 @@ export class RiskDetailsComponent {
       policyStatus: [''],
       periodRate: [''],
       productCode: [''],
-      propertyDescription: [''],
-      propertyId: [''],
+      propertyDescription: ['',Validators.required],
+      propertyId: ['',Validators.required],
       quakeFloodZone: [''],
       quantity: [''],
       reinsuranceEndorsementNumber: [''],
@@ -365,13 +365,13 @@ export class RiskDetailsComponent {
         })
       ]),
       stampDuty: [''],
-      subClassCode: [''],
+      subClassCode: ['',Validators.required],
       subClassDescription: [''],
       transactionType: [''],
       underwritingYear: [''],
       value: [''],
-      vehicleMake: [''],
-      vehicleModel: [''],
+      vehicleMake: ['',Validators.required],
+      vehicleModel: ['',Validators.required],
       surveyDate: [''],
       territory: [''],
       topLocationLevel: [''],
