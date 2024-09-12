@@ -1,5 +1,5 @@
 <div class="container ">
-    <p class="titleMain mt-3">{{ 'gis.policy.underwriting_new_transaction' | translate }}</p>
+    <p class="titleMain mt-3 ms-4">{{ 'gis.policy.underwriting_new_transaction' | translate }}</p>
     <div class="container mx-2 mt-n1">
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body">
@@ -34,26 +34,26 @@
                     <!-- New Business Content -->
                     <form [formGroup]="newBusinessForm">
 
-                    <p class="questions-text"> {{'gis.policy.is_the_policy_short_period' | translate}}</p>
+                    <p class="questions-text"> {{'gis.policy.is_the_policy_short_period' | translate}}?</p>
                     <div class="d-flex ">
                         <div class="form-check  me-3">
                             <input class="form-check-input" type="radio" name="flexRadioDefault5" id="flexRadioDefault5">
-                            <label class="form-check-label" for="flexRadioDefault5">{{'gis.policy.yes' | translate}} </label>
+                            <label class="form-radio-label" for="flexRadioDefault5">{{'gis.policy.yes' | translate}} </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault5" id="flexRadioDefault6">
-                            <label class="form-check-label" for="flexRadioDefault6">{{'gis.policy.no' | translate}} </label>
+                            <input class="form-check-input" type="radio" name="flexRadioDefault5" id="flexRadioDefault6" checked>
+                            <label class="form-radio-label" for="flexRadioDefault6">{{'gis.policy.no' | translate}} </label>
                         </div>
                     </div>
                     <p class="mt-4 questions-text">{{'gis.policy.is_the_policy_renewable' | translate}}?</p>
                     <div class="d-flex ">
                         <div class="form-check  me-3">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault7" id="flexRadioDefault7">
-                            <label class="form-check-label" for="flexRadioDefault7">{{'gis.policy.yes' | translate}} </label>
+                            <input class="form-check-input" type="radio" name="flexRadioDefault7" id="flexRadioDefault7" checked>
+                            <label class="form-radio-label" for="flexRadioDefault7">{{'gis.policy.yes' | translate}} </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="flexRadioDefault7" id="flexRadioDefault8">
-                            <label class="form-check-label" for="flexRadioDefault8">{{'gis.policy.no' | translate}} </label>
+                            <label class="form-radio-label" for="flexRadioDefault8">{{'gis.policy.no' | translate}} </label>
                         </div>
 
                     </div>
@@ -61,12 +61,12 @@
                     <div class="d-flex ">
                         <div class="form-check me-3">
                             <input class="form-check-input" type="radio" name="isClientNew" id="flexRadioDefault9" formControlName="isClientNew" [value]="true">
-                            <label class="form-check-label" for="flexRadioDefault9">{{ 'gis.policy.yes' | translate }}</label>
+                            <label class="form-radio-label" for="flexRadioDefault9">{{ 'gis.policy.yes' | translate }}</label>
                           </div>
                         
                           <div class="form-check">
                             <input class="form-check-input" type="radio" name="isClientNew" id="flexRadioDefault10" formControlName="isClientNew" [value]="false">
-                            <label class="form-check-label" for="flexRadioDefault10">{{ 'gis.policy.no' | translate }}</label>
+                            <label class="form-radio-label" for="flexRadioDefault10">{{ 'gis.policy.no' | translate }}</label>
                           </div>
                     </div>
                 </form>
@@ -90,7 +90,7 @@
 
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-primary me-2">{{'gis.policy.cancel' | translate}}</button>
+            <button type="button" class="btn btn-outline-primary me-2" (click)="onCancelClick()">{{'gis.policy.cancel' | translate}}</button>
             <button type="button" class="btn btn-primary" (click)="onNextClick()">{{'gis.policy.next' | translate}}</button>
         </div>
 

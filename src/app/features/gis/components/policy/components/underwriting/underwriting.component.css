@@ -1,6 +1,6 @@
 .titleMain {
     font-family: Lato;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 14px;
     letter-spacing: 0em;
@@ -11,7 +11,7 @@
 .subTitle {
     font-family: Roboto;
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 19px;
     letter-spacing: 0em;
     text-align: left;
@@ -28,11 +28,20 @@
     text-align: left;
 
 }
+.form-radio-label {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+
+}
 
 .questions-text {
     font-family: Roboto;
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 19px;
     letter-spacing: 0em;
     text-align: left;
