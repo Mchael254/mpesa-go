@@ -56,20 +56,11 @@
           <div class="row">
 
             <div class="col-lg-4 col-md-6 col-sm-12 px-4 text-black">
+               <div>&nbsp;</div>
+                <label class="form-check-label required">{{ coverageOptionLabel }}</label>
               <div>
-                <label class="form-check-label required">Coverage Option</label>
-              </div>
-              <div >
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="sum_as" formControlName="sa_prem_select" value="SA"/>
-                  <label class="form-check-label" for="sum_as">Sum Assured</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="prem" formControlName="sa_prem_select" value="P"/>
-                  <label class="form-check-label" for="prem">Premium</label>
-                </div>
                 <div class="mb-1"></div>
-                <input type="text" class="form-control" formControlName="sa_prem_amount" style="padding-right: 2rem"/>
+                <input type="text" class="form-control" formControlName="" style="padding-right: 2rem"/>
               </div>
             </div>
 
@@ -238,10 +229,12 @@
                   <div class="row" *ngIf="isCoinsuranceYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Leader</label>
-                      <select formControlName="" class="form-select">
+                      <select formControlName="leaderOption" class="form-select">
                         <option [value]="" selected disabled>{{'Select Option'}}</option>
-                        <ng-container>
-                          <option></option>
+                        <ng-container *ngFor="let option of leaderOption">
+                          <option [value]="option.code">
+                            {{ option.short_description }} - {{ option.name | titlecase  }}
+                          </option>
                         </ng-container>
                       </select>
                     </div>
@@ -252,17 +245,19 @@
                       </div>
                       <div>
                         <div class="mb-1"></div>
-                        <input type="text" class="form-control" formControlName="" style="padding-right: 2rem"/>
+                        <input type="text" class="form-control" formControlName="leaderShare" style="padding-right: 2rem"/>
                       </div>
                     </div>
                   </div>
                   <div class="row" *ngIf="isCoinsuranceYes">
                     <div class="col-lg-4 col-md-6 col-sm-12 px-4">
                       <label  class="form-check-label">Select Coinsurer</label>
-                      <select formControlName="" class="form-select">
+                      <select formControlName="coinsurerOption" class="form-select">
                         <option [value]="" selected disabled>{{'Select Coinsurer'}}</option>
-                        <ng-container>
-                          <option></option>
+                        <ng-container *ngFor="let option of coinsurerOption">
+                          <option [value]="option.code ">
+                            {{ option.short_description }} - {{ option.name | titlecase  }}
+                          </option>
                         </ng-container>
                       </select>
                     </div>
@@ -273,7 +268,7 @@
                       </div>
                       <div>
                         <div class="mb-1"></div>
-                        <input type="text" class="form-control" formControlName="sa_prem_amount" style="padding-right: 2rem"/>
+                        <input type="text" class="form-control" formControlName="coinsurerShare" style="padding-right: 2rem"/>
                       </div>
                     </div>
                   </div>
