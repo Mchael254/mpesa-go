@@ -71,6 +71,10 @@ export class UnderwritingComponent {
         // Handle other transaction types
       }
   }
+  onCancelClick(){
+    this.router.navigate(['/home/lms/policy/list']);
+
+  }
   
   
   
