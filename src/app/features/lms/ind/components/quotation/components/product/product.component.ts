@@ -1,21 +1,23 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { concatMap, finalize, first, mergeMap, switchMap, tap } from 'rxjs/operators';
-import {Observable, of, ReplaySubject} from 'rxjs';
-import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
-import {ProductService} from "../../../../../service/product/product.service";
-import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
-import {PayFrequencyService} from "../../../../../grp/components/quotation/service/pay-frequency/pay-frequency.service";
-import {QuotationService} from "../../../../../service/quotation/quotation.service";
-import {ClientService} from "../../../../../../entities/services/client/client.service";
-import {Utils} from "../../../../../util/util";
-import {StringManipulation} from "../../../../../util/string_manipulation";
-import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { SessionStorageService } from "../../../../../../../shared/services/session-storage/session-storage.service";
+import { ProductService } from "../../../../../service/product/product.service";
+import { ToastService } from "../../../../../../../shared/services/toast/toast.service";
+import { PayFrequencyService } from "../../../../../grp/components/quotation/service/pay-frequency/pay-frequency.service";
+import { QuotationService } from "../../../../../service/quotation/quotation.service";
+import { ClientService } from "../../../../../../entities/services/client/client.service";
+import { Utils} from "../../../../../util/util";
+import { StringManipulation } from "../../../../../util/string_manipulation";
+import { SESSION_KEY } from "../../../../../util/session_storage_enum";
 import { EscalationRateDTO } from '../../models/escalation-rate';
+import { LeaderOptionDTO } from '../../models/leader-option';
+import { CoinsurerOptionDTO } from '../../models/coinsurer-option';
 
 @Component({
   selector: 'app-product',
@@ -35,20 +37,24 @@ export class ProductComponent implements OnInit {
   steps = stepData;
   validationData: any[];
   productForm: FormGroup;
-  productList: any[] = [];
-  coverTypeList = signal([]);
-  productOptionList: any[];
+  productList: any[] = []; // List of products to choose from
+  coverTypeList = signal([]); // Dynamic cover type list based on product selection
+  productOptionList: any[]; // Options for the selected product
   isOptionReady: boolean;
   isTermReady: boolean;
   option_product_code: number = 0;
-  productTermList = signal([]);
+  productTermList = signal([]); // Term list that may be dependent on the product
   agentList: any[] = [];
   paymentOfFrequencyList: any[];
   util: any;
   web_quote: any = null;
   getQuotationSubscribe: Observable<any>;
   escalationRate: EscalationRateDTO[];
+  leaderOption: LeaderOptionDTO[] = [];
+  coinsurerOption: CoinsurerOptionDTO[] = [];
   pop_code: number = 2021415;
+  endr_code: number = 2024642021;
+  coverageOptionLabel: string = 'Coverage Option';  // Default label
 
   escalationOption: { value: string, label: string }[] = [
     { value: 'PREMIUM ESCALATION', label: 'Premium Escalation' },
@@ -90,13 +96,15 @@ export class ProductComponent implements OnInit {
     this.getPayFrequencies();
     this.getAgentList();
     this.getEscalationRate();
+    this.getLeaderOption();
+    this.getCoinsurerOption();
     console.log(quote);
 
     if (!quote) {
       this.getQuotationSubscribe = this.getProduct().pipe(
         concatMap((products) => {
           this.productList = [...products];
-          return this.getTelQuote();
+          return this.getTelQuote(); // Telephone-based quote if no existing quote
         }),
         finalize(() => this.spinner.hide('product_view'))
       );
@@ -105,13 +113,14 @@ export class ProductComponent implements OnInit {
         concatMap((products) => {
 
           this.productList = [...products];
-          return this.getWebQuote();
+          return this.getWebQuote(); // Web-based quote if quote exists
         }),
         finalize(() => this.spinner.hide('product_view'))
       );
     }
     this.getQuotationSubscribe
     .pipe(concatMap((data: any)=>{
+      // Check if agent code exists, fetch agent details if found
       if(data?.agent_code){
         return this.getAgentByCode(data?.agent_code).pipe(concatMap(agent_details =>{
           this.productForm.get('agent').patchValue(agent_details);
@@ -125,21 +134,21 @@ export class ProductComponent implements OnInit {
 
     }))
     .subscribe((final_quote) => {
-      this.productForm
-        .get('freq_payment')
-        .patchValue(final_quote['payment_frequency']);
+      // Patch the form with the final quote data
+      this.productForm.get('freq_payment').patchValue(final_quote['payment_frequency']);
       this.productForm.get('term').patchValue(final_quote['policy_term']);
       this.productForm.get('agent').patchValue(final_quote['agent_code']);
 
       if (quote?.sum_insured && quote?.sum_insured>0) {
-        this.productForm.get('sa_prem_select').patchValue('SA');
+        this.productForm.get('sa_prem_select').patchValue('SA'); 
         this.productForm.get('sa_prem_amount').patchValue(final_quote['sum_insured']);
       }else{
-        this.productForm.get('sa_prem_select').patchValue('P');
+        this.productForm.get('sa_prem_select').patchValue('P'); 
       }
       this.toast.success('Fetch data successfully', 'Product Selection'.toUpperCase())
     },
     err =>{
+      // Handle fetch failure
       this.toast.danger('Fail to fetch data successfully, try again!', 'Product Selection'.toUpperCase())
 
     });
@@ -261,19 +270,30 @@ export class ProductComponent implements OnInit {
 
   getproductForm() {
     return this.fb.group({
-      product: [],
-      option: [],
-      term: [],
-      sa_prem_select: [],
-      sa_prem_amount: [],
-      freq_payment: [],
-      proposal_date: [],
-      proposal_sign_date: [],
-      agent: [],
-      escalation_question: [],
-      coinsurance_question: [],
-      escalationOption: [],
-      escalationRate: [],
+      // Product-related fields
+      product: ['', Validators.required], // Product selection (required)
+      option: ['', Validators.required], // Option (required)
+      term: ['', Validators.required], // Term (required)
+
+      // Sum Assured / Premium selection
+      sa_prem_select: ['', Validators.required],
+      sa_prem_amount: ['', [Validators.required, Validators.min(0)]], // Ensures non-negative values
+
+      // Frequency of payment and agent
+      freq_payment: ['', Validators.required], // Frequency of payment (required)
+      agent: ['', Validators.required], 
+
+       // Proposal dates
+      proposal_date: ['', Validators.required], // Proposal date (required)
+      proposal_sign_date: ['', Validators.required], // Proposal sign date (required)
+      
+      escalation_question: ['', Validators.required],
+      coinsurance_question: ['', Validators.required],
+      escalationOption: ['', Validators.required],
+      escalationRate: ['', Validators.required],
+      leaderOption: ['', Validators.required],
+      leaderShare: ['', Validators.required],
+      coinsurerShare: ['', Validators.required]
     });
   }
 
@@ -287,7 +307,6 @@ export class ProductComponent implements OnInit {
     // this.productForm.get('option').setValue(-1);
     // this.productForm.get('term').setValue(-1);
     // this.productForm.get('sa_prem_amount').setValue(0);
-
     let productCode = +event.target.value;
     if (productCode > 0) {
       this.spinner.show('product_view');
@@ -301,11 +320,25 @@ export class ProductComponent implements OnInit {
         .subscribe((productOptions) => {
           this.productOptionList = [...productOptions];
           this.isOptionReady = true;
-          let prod;
-          prod = this.productList.filter((m) => {
-            return m['code'] === productCode;
-          });
 
+          // Find the selected product from the product list
+          let selectedProduct = this.productList.find((m) => m['code'] === productCode);
+
+          // Extract the calculate_from field
+          let calculateFrom = selectedProduct?.calculate_from;
+
+          // Set the label based on the calculate_from value
+          if (calculateFrom === 'S') {
+            this.coverageOptionLabel = 'Sum Assured';
+          } else if (calculateFrom === 'P') {
+            this.coverageOptionLabel = 'Premium';
+          } else if (calculateFrom === 'B') {
+            this.coverageOptionLabel = 'Both';
+          } else  {
+            this.coverageOptionLabel = 'Null';  
+          }
+
+          // Clear the cover type list (if needed)
           this.coverTypeList.set([]);
           this.spinner.hide('product_view');
         });
@@ -313,7 +346,6 @@ export class ProductComponent implements OnInit {
       this.isOptionReady = false;
       this.isTermReady = false;
       this.spinner.hide('product_view');
-      // this.isPremAssuredReady = false;
     }
   }
 
@@ -374,7 +406,19 @@ export class ProductComponent implements OnInit {
       .getProductEscalationRate(this.pop_code).subscribe((data) => {
       this.escalationRate = data;
     })
-  } 
+  }
+  
+  getLeaderOption() {
+    this.product_service.getProductLeaderOption(this.endr_code).subscribe((data) => {
+      this.leaderOption = data;
+    })
+  }
+
+  getCoinsurerOption() {
+    this.product_service.getProductCoinsurerOption(this.endr_code).subscribe((data) => {
+      this.coinsurerOption = data;
+    })
+  }
 
   getFormData(name: string) {
     const foundData = this.validationData.find((data) => data['name'] === name);

@@ -8,6 +8,8 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 import { EscalationRateDTO } from '../../ind/components/quotation/models/escalation-rate';
 import { Logger } from 'src/app/shared/services';
 import { HttpParams } from '@angular/common/http';
+import { LeaderOptionDTO } from '../../ind/components/quotation/models/leader-option';
+import { CoinsurerOptionDTO } from '../../ind/components/quotation/models/coinsurer-option';
 
 const log = new Logger('ProductService');
 
@@ -89,6 +91,7 @@ export class ProductService {
     }),
     );
   }
+
   getProductOptionByCode(product_option: number){
     return this.api.GET(`product-options/${product_option}`, API_CONFIG.SETUPS_SERVICE_BASE_URL);
   }
@@ -115,6 +118,36 @@ export class ProductService {
       params
     );
   }
+
+  getProductLeaderOption(endr_code: number): Observable<LeaderOptionDTO[]> {
+    log.info('Fetching Leader Options');
+    const paramObj: { [param: string] : string } = {};
+    if (endr_code !== undefined && endr_code !== null) {
+      paramObj['endr_code'] = endr_code.toString();
+    }
+    const params = new HttpParams({ fromObject: paramObj });
+    return this.api.GET<LeaderOptionDTO[]>(
+      `individual/parties/insurance-companies?endr_code=${endr_code}`,
+      API_CONFIG.UNDERWRITING_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  getProductCoinsurerOption(endr_code): Observable<CoinsurerOptionDTO[]> {
+    log.info('Fetching Coinsurer Options');
+    const paramObj: { [param: string] : string } = {};
+    if (endr_code !== undefined && endr_code !== null) {
+      paramObj['endr_code'] = endr_code.toString();
+    }
+    const params = new HttpParams({ fromObject: paramObj });
+    return this.api.GET<CoinsurerOptionDTO[]>(
+      `individual/parties/insurance-companies?endr_code=${endr_code}`,
+      API_CONFIG.UNDERWRITING_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  
 
 }
 
