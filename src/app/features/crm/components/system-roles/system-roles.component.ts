@@ -1,25 +1,24 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {SystemsDto} from "../../../../shared/data/common/systemsDto";
-import {Logger} from "../../../../shared/services";
-import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
-import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
-import {SystemRole} from "../../../../shared/data/common/system-role";
-import {NgxSpinnerService} from "ngx-spinner";
-import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {ProcessArea} from "../../../../shared/data/common/process-area";
-import {ProcessSubArea} from "../../../../shared/data/common/process-sub-area";
-import {RoleArea} from "../../../../shared/data/common/role-area";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { SystemsDto } from '../../../../shared/data/common/systemsDto';
+import { Logger } from '../../../../shared/services';
+import { SystemsService } from '../../../../shared/services/setups/systems/systems.service';
+import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
+import { SystemRole } from '../../../../shared/data/common/system-role';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ProcessArea } from '../../../../shared/data/common/process-area';
+import { ProcessSubArea } from '../../../../shared/data/common/process-sub-area';
+import { RoleArea } from '../../../../shared/data/common/role-area';
 
 const log = new Logger('SystemRolesComponent');
 
 @Component({
   selector: 'app-system-roles',
   templateUrl: './system-roles.component.html',
-  styleUrls: ['./system-roles.component.css']
+  styleUrls: ['./system-roles.component.css'],
 })
 export class SystemRolesComponent implements OnInit {
-
   @ViewChild('closebutton') closebutton;
   @ViewChild('closeDeleteButton') closeDeleteButton;
 
@@ -34,12 +33,12 @@ export class SystemRolesComponent implements OnInit {
   selectedSystem: SystemsDto = {
     id: undefined,
     shortDesc: undefined,
-    systemName: undefined
-  }
+    systemName: undefined,
+  };
   shouldShowSystems: boolean = false;
 
   systemRoles: SystemRole[] = [];
-  selectedRole: SystemRole = {id: undefined, roleName: undefined};
+  selectedRole: SystemRole = { id: undefined, roleName: undefined };
   shouldShowRoles: boolean = false;
   rolesErrorMessage: string = '';
 
@@ -56,9 +55,8 @@ export class SystemRolesComponent implements OnInit {
     private systemsService: SystemsService,
     private spinner: NgxSpinnerService,
     private globalMessagingService: GlobalMessagingService,
-    private fb: FormBuilder,
-  ) {
-  }
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.fetchSystems();
@@ -74,8 +72,8 @@ export class SystemRolesComponent implements OnInit {
       shortDesc: [''],
       createdAt: [''],
       status: [''],
-      authorized: ['']
-    })
+      authorized: [''],
+    });
   }
 
   /**
@@ -84,20 +82,19 @@ export class SystemRolesComponent implements OnInit {
   fetchSystems(): void {
     this.shouldShowSystems = false;
     this.spinner.show();
-    this.systemsService.getSystems()
-      .subscribe({
-        next: (res: SystemsDto[]) => {
-          this.systems = res;
-          this.spinner.hide();
-          this.shouldShowSystems = true;
-        },
-        error: (err) => {
-          let errorMessage = err?.error?.message ?? err.message
-          this.spinner.hide();
-          this.shouldShowSystems = true;
-          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        }
-      })
+    this.systemsService.getSystems().subscribe({
+      next: (res: SystemsDto[]) => {
+        this.systems = res;
+        this.spinner.hide();
+        this.shouldShowSystems = true;
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.spinner.hide();
+        this.shouldShowSystems = true;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   /**
@@ -116,16 +113,20 @@ export class SystemRolesComponent implements OnInit {
       next: (roles: SystemRole[]) => {
         this.systemRoles = roles;
         this.spinner.hide();
-        if (roles.length === 0) this.rolesErrorMessage = 'No roles found for selected system';
+        if (roles.length === 0)
+          this.rolesErrorMessage = 'No roles found for selected system';
         this.shouldShowRoles = true;
       },
       error: (err) => {
-        this.rolesErrorMessage = err?.error?.message ?? err.message
+        this.rolesErrorMessage = err?.error?.message ?? err.message;
         this.spinner.hide();
         this.shouldShowRoles = true;
-        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
-      }
-    })
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.rolesErrorMessage
+        );
+      },
+    });
   }
 
   /**
@@ -139,10 +140,10 @@ export class SystemRolesComponent implements OnInit {
         this.roleAreas = res;
       },
       error: (error) => {
-        const errorMessage = error?.error?.message ?? error.message
-        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
-      }
-    })
+        const errorMessage = error?.error?.message ?? error.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
     this.shouldShowRoleAreas = true;
   }
 
@@ -151,8 +152,8 @@ export class SystemRolesComponent implements OnInit {
     let role: SystemRole = {
       ...formValues,
       authorized: formValues.authorized === true ? 'Y' : 'N',
-      systemCode: this.selectedSystem?.id
-    }
+      systemCode: this.selectedSystem?.id,
+    };
 
     if (this.selectedRole.id === undefined) {
       this.createRole(role);
@@ -172,41 +173,53 @@ export class SystemRolesComponent implements OnInit {
   createRole(role: SystemRole): void {
     this.systemsService.createRole(role).subscribe({
       next: (role) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully created.')
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Role successfully created.'
+        );
         this.fetchSystemRoles(this.selectedSystem.id);
         this.closebutton.nativeElement.click();
       },
       error: (err) => {
-        this.rolesErrorMessage = err?.error?.message ?? err.message
-        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
-      }
-    })
+        this.rolesErrorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.rolesErrorMessage
+        );
+      },
+    });
   }
 
   editRole(role: SystemRole): void {
     this.systemsService.editRole(role).subscribe({
       next: (role) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully updated.');
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Role successfully updated.'
+        );
         this.fetchSystemRoles(this.selectedSystem.id);
         this.closebutton.nativeElement.click();
       },
       error: (err) => {
-        this.rolesErrorMessage = err?.error?.message ?? err.message
-        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
-      }
-    })
+        this.rolesErrorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.rolesErrorMessage
+        );
+      },
+    });
   }
 
   prepareEditRole(): void {
     this.roleForm.patchValue({
       ...this.selectedRole,
       authorized: this.selectedRole.authorized === 'Y',
-      createdAt: new Date(this.selectedRole.createdAt)
+      createdAt: new Date(this.selectedRole.createdAt),
     });
   }
 
   resetFormValues(): void {
-    this.selectedRole = {id: undefined, roleName: undefined};
+    this.selectedRole = { id: undefined, roleName: undefined };
     this.roleForm.reset();
   }
 
@@ -221,13 +234,19 @@ export class SystemRolesComponent implements OnInit {
     }*/
     this.systemsService.deleteRole(this.selectedRole.id).subscribe({
       next: () => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Role successfully deleted.'
+        );
         this.fetchSystemRoles(this.selectedSystem.id);
       },
       error: (err) => {
-        this.rolesErrorMessage = err?.error?.message ?? err.message
-        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
-      }
+        this.rolesErrorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.rolesErrorMessage
+        );
+      },
     });
     this.closeDeleteButton.nativeElement.click();
   }
@@ -239,10 +258,10 @@ export class SystemRolesComponent implements OnInit {
         this.processAreas = res;
       },
       error: (error) => {
-        const errorMessage = error?.error?.message ?? error.message
-        this.globalMessagingService.displayErrorMessage("Error", errorMessage);
-      }
-    })
+        const errorMessage = error?.error?.message ?? error.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   /*fetchProcessSubAreas(processArea: ProcessArea): void {
@@ -256,5 +275,4 @@ export class SystemRolesComponent implements OnInit {
       }
     })
   }*/
-
 }
