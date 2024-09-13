@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
-import { ClaimPoliciesDTO, PayeeDTO } from '../models/claim-models';
+import { ClaimPoliciesDTO, PayeeDTO, PaymentMethod, VoucherProcessingDTO } from '../models/claim-models';
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +79,7 @@ export class ClaimsService {
   }
   
   getClaimCoverTypes(clmaiNo: string) {
-    return this.api.GET(`group/claims/claim-cover-types?claimCode=${clmaiNo}&coverTypeCode`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+    return this.api.GET(`group/claims/claim-cover-types?claimNo=${clmaiNo}&coverTypeCode`,  API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
 
   updateClaimCovers(cover_type_code, payload) {
@@ -102,6 +102,15 @@ export class ClaimsService {
   processClaim(claimNumber: string, coverTypeCode: number){
     const encodedClaimNo = encodeURIComponent(claimNumber);
     return this.api.POST(`group/claims/process-claim?claim_no=${encodedClaimNo}&cover_code=${coverTypeCode}&min_information_provided`, null, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  getPayMethods(): Observable<PaymentMethod[]> {
+    return this.api.GET(`group/claims/pay-method`,API_CONFIG.CLAIMS_SERVICE_BASE_URL);
+  }
+
+  processVoucher(claimNumber: string, voucherDetails: VoucherProcessingDTO){
+    const encodedClaimNo = encodeURIComponent(claimNumber);
+    return this.api.POST(`group/claims/process-vouchers?claim_no=${encodedClaimNo}`, voucherDetails, API_CONFIG.CLAIMS_SERVICE_BASE_URL);
   }
   
 }

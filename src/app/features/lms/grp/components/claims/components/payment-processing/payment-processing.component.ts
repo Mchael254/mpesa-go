@@ -4,6 +4,14 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Logger } from 'src/app/shared/services';
 import { Dropdown } from 'primeng/dropdown';
+import { Observable } from 'rxjs';
+import { PaymentMethod } from '../../models/claim-models';
+import { ClaimsService } from '../../service/claims.service';
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { ActivatedRoute } from '@angular/router';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { MessageService } from 'primeng/api';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger("PaymentProcessingComponent")
 @Component({
@@ -23,15 +31,29 @@ export class PaymentProcessingComponent implements OnInit, OnDestroy {
   isVoucherProcessed: boolean = false;
   isSendForSupervisorApproval: boolean = false;
   isSupervisorApproved: boolean = false;
+  payMethod$: Observable<PaymentMethod[]>;
+  claimNumber: string;
+  transactionNumber: number;
+  memberCode: number;
+  payee: string;
+  amount: number;
 
   constructor(
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private claimsService: ClaimsService,
+    private activatedRoute: ActivatedRoute,
+    private session_storage: SessionStorageService,
+    private messageService: MessageService,
+    private spinner_Service: NgxSpinnerService,
   ) {}
   
   ngOnInit(): void {
+    this.getParams();
     this.claimPaymentProcessingForm();
     this.assigningSupervisorForm();
+    this.getPayMethods();
+    this.getPayee()
   }
 
   ngOnDestroy(): void {
@@ -89,6 +111,40 @@ export class PaymentProcessingComponent implements OnInit, OnDestroy {
     });
   }
 
+  getParams() {
+    const claimNumberFromRoute = this.activatedRoute.snapshot.queryParams['claimNumber'];
+
+    // If the claim number from the route is null, empty, or undefined, use the session storage value
+    this.claimNumber = claimNumberFromRoute || this.session_storage.get('claimNumber');
+    this.transactionNumber =  this.session_storage.get('transactionNumber');
+    this.memberCode = +this.session_storage.get('polMemCode');
+    this.amount = +this.session_storage.get('amount');
+  }
+
+  patchFormData() {
+    this.paymentProcessingForm.patchValue({
+      payee: this.payee.charAt(0).toUpperCase() + this.payee.slice(1).toLowerCase(),
+      amount: this.amount,
+    });
+  }
+  
+
+  getPayee() {
+    const storedPayee = this.session_storage.get('payee');  // Get payee from session_storage
+    this.claimsService.getPayee().pipe(untilDestroyed(this)).subscribe((res) => {
+  
+      // Find the matching object in the response where the name matches the stored payee
+      const matchingPayee = res.find((item) => item.name === storedPayee);
+
+      // If a match is found, set the corresponding value, otherwise use the stored payee as a fallback
+      this.payee = matchingPayee ? matchingPayee.value : storedPayee;
+  
+      // Call patchFormData() after getting the payee
+      this.patchFormData();
+    });
+  }
+  
+
   accountDetails = [
     { accountNumber: '123456', bankName: 'Equity Bank' },
     { accountNumber: '234567', bankName: 'KCB Bank' },
@@ -131,6 +187,13 @@ export class PaymentProcessingComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * The function `getPayMethods()` retrieves list of pay methods and assign to stream payMethod$
+   */
+  getPayMethods() {
+    this.payMethod$ = this.claimsService.getPayMethods()
+  }
+
   addAccount() {
     const formValues = this.paymentProcessingForm.value;
     // log.info("New account details", formValues.newAccountNumber, formValues.bankName);
@@ -144,7 +207,30 @@ export class PaymentProcessingComponent implements OnInit, OnDestroy {
   }
 
   onProcessVoucherClick() {
-    this.isVoucherProcessed =  true;
+    this.spinner_Service.show('download_view');
+    const voucherDetails = {
+      username: "ADMIN",
+      member_code: this.memberCode,
+      claim_trans_no: this.transactionNumber
+    }
+    this.claimsService.processVoucher(this.claimNumber, voucherDetails).pipe(untilDestroyed(this)).subscribe((res) => {
+      this.spinner_Service.hide('download_view');
+      this.isVoucherProcessed = true;
+      this.cdr.detectChanges();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Voucher processed successfully'
+      });
+    }, (error) => {
+      this.spinner_Service.hide('download_view');
+      this.isVoucherProcessed = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Voucher NOT processed!'
+      });
+    });
   }
 
   onMakeReadyClick() {
