@@ -253,18 +253,6 @@ export class MenuService {
         ],
         collapsed: true,
       },
-      // {
-      //   name: 'Bank Setups',
-      //   nameSlug: 'banks',
-      //   icon: 'fa-solid fa-bank',
-      //   menuItems: [
-      //     {
-      //       name: 'Banks',
-      //       link: '/home/crm/bank',
-      //     },
-      //   ],
-      //   collapsed: true,
-      // },
       {
         name: 'Service Desk',
         nameSlug: 'desk',
@@ -278,36 +266,61 @@ export class MenuService {
         icon: 'fa-solid fa-align-center',
         menuItems: [
           {
-            name: 'Campaigns',
-            link: '/home/crm/campaigns',
+            name: 'Campaign Management',
+            nameSlug: 'camp',
+            subList: [
+              {
+                name: 'Campaigns',
+                link: '/home/crm/campaigns',
+              },
+              {
+                name: 'Client Attributes',
+                link: '/home/crm/client-attributes',
+              },
+              {
+                name: 'Product Attributes',
+                link: '/home/crm/product-attributes',
+              },
+            ],
+            collapsed: true,
           },
           {
-            name: 'Client Attributes',
-            link: '/home/crm/client-attributes',
+            name: 'Leads and Potentials',
+            nameSlug: 'leadmgt',
+            subList: [
+              {
+                name: 'Leads',
+                link: '/home/crm/organization',
+              },
+              {
+                name: 'Lead Sources & Statuses',
+                link: '/home/crm/lead-sources-statuses',
+              },
+            ],
+            collapsed: true,
           },
           {
-            name: 'Product Attributes',
-            link: '/home/crm/product-attributes',
-          },
-        ],
-        collapsed: true,
-      },
-      {
-        name: 'Activity Management',
-        nameSlug: 'activity',
-        icon: 'fa-solid fa-align-center',
-        menuItems: [
-          {
-            name: 'Activities',
-            link: '/home/crm/activities',
-          },
-          {
-            name: 'Activity Types',
-            link: '/home/crm/activity-types',
-          },
-          {
-            name: 'Priority level & Activity status',
-            link: '/home/crm/priority-level-activity-status',
+            name: 'Activity Management',
+            nameSlug: 'activityMgnt',
+            subList: [
+              {
+                name: 'Activities',
+                link: '/home/crm/activities',
+              },
+              {
+                name: 'Activity Types',
+                link: '/home/crm/activity-types',
+              },
+              {
+                name: 'Priority level & Activity status',
+                link: '/home/crm/priority-level-activity-status',
+              },
+              {
+                name: 'Prospects',
+                link: '/home/crm',
+              },
+            ],
+            collapsed: true,
           },
         ],
         collapsed: true,
