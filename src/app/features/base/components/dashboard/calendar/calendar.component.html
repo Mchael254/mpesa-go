@@ -9,8 +9,8 @@
             formControlName="dateRange"
             (change)="fetchFilteredEvents()"
           >
-            <option *ngFor="let range of dateRange" [value]="range" >
-              <span>{{ 'base.'+range | translate | titlecase }}</span>
+            <option *ngFor="let range of dateRange" [value]="range">
+              <span>{{ "base." + range | translate | titlecase }}</span>
             </option>
           </select>
         </div>
@@ -23,7 +23,7 @@
             id="gotoPrevNext"
           >
             <option *ngFor="let month of months" [value]="month">
-              <span>{{ 'base.'+month | translate | titlecase }}</span>
+              <span>{{ "base." + month | translate | titlecase }}</span>
             </option>
           </select>
         </div>
@@ -44,7 +44,7 @@
             class="btn btn-sm create-event-button"
             (click)="activateCreateEvent('create')"
           >
-            {{ 'base.create_event' | translate }}
+            {{ "base.create_event" | translate }}
           </button>
         </div>
       </div>
@@ -52,7 +52,6 @@
   </div>
 
   <div class="card-body">
-
     <ng-container *ngIf="calendarView === 'DAY' || calendarView === 'WEEK'">
       <div class="row">
         <div class="col-sm-7">
@@ -71,16 +70,28 @@
                 <div class="event">
                   <div class="row">
                     <div class="col-sm-10 col-10">
-                      <span class="fw-medium">{{event?.title | titlecase}}</span> <br>
-                      <span>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</span>
+                      <span class="fw-medium">{{
+                        event?.title | titlecase
+                      }}</span>
+                      <br />
+                      <span
+                        >{{ event?.startDate | date : "shortTime" }} -
+                        {{ event?.endDate | date : "shortTime" }}</span
+                      >
                     </div>
                     <div class="col-sm-2 col-2">
-                  <span class="inactive mr-2" style="font-size: 0.9em">
-                    {{ event?.startDate | date: 'EE '}}
-                  </span>
-                      <span style="color: var(--primary-color); font-weight: bold; font-size: 1.2em">
-                    {{ event?.startDate | date: 'dd'}}
-                  </span>
+                      <span class="inactive mr-2" style="font-size: 0.9em">
+                        {{ event?.startDate | date : "EE " }}
+                      </span>
+                      <span
+                        style="
+                          color: var(--primary-color);
+                          font-weight: bold;
+                          font-size: 1.2em;
+                        "
+                      >
+                        {{ event?.startDate | date : "dd" }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -88,7 +99,7 @@
             </ng-container>
             <ng-template #noEvent>
               <div class="event">
-                <p>{{ 'base.no_event_for_date' | translate }}</p>
+                <p>{{ "base.no_event_for_date" | translate }}</p>
               </div>
             </ng-template>
           </div>
@@ -116,15 +127,18 @@
             <div class="row">
               <div class="col-sm-8 col-8">
                 <span
-                  style="padding: 10px;
-                   border-radius: 100%;
-                   background: var(--primary-color);
-                   color: #fff;
-                   margin-right: 10px"
+                  style="
+                    padding: 10px;
+                    border-radius: 100%;
+                    background: var(--primary-color);
+                    color: #fff;
+                    margin-right: 10px;
+                  "
                 >
                   {{ selectedDate }}
                 </span>
-                {{ months[currMonth] | titlecase }}, {{ daysOfTheWeek[dayOfWeek] | titlecase }}
+                {{ months[currMonth] | titlecase }},
+                {{ daysOfTheWeek[dayOfWeek] | titlecase }}
               </div>
               <div class="col-sm-4 col-4">
                 <span>
@@ -133,7 +147,8 @@
                     styleClass="calendar-input"
                     formControlName="eventDate"
                     (onSelect)="sliceTime(startTime)"
-                    [minDate]="date">
+                    [minDate]="date"
+                  >
                   </p-calendar>
                 </span>
               </div>
@@ -141,16 +156,21 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="mb-3">
-                  <label for="organiser" class="form-label">{{ 'base.organiser' | translate }}</label>
+                  <label for="organiser" class="form-label">{{
+                    "base.organiser" | translate
+                  }}</label>
                   <input
                     type="text"
                     class="form-control"
                     id="organiser"
-                    [value]="loggedInUser" disabled
-                  >
+                    [value]="loggedInUser.userName"
+                    disabled
+                  />
                 </div>
                 <div class="mb-3">
-                  <label for="attendees" class="form-label">{{ 'base.attendees_participants' | translate }}</label>
+                  <label for="attendees" class="form-label">{{
+                    "base.attendees_participants" | translate
+                  }}</label>
                   <textarea
                     class="form-control"
                     id="attendees"
@@ -164,59 +184,83 @@
           <div class="col-sm-8">
             <div class="row">
               <div class="col-sm-12 mb-3">
-                <label for="title" class="form-label">{{ 'base.title_subject' | translate }}</label>
+                <label for="title" class="form-label">{{
+                  "base.title_subject" | translate
+                }}</label>
                 <input
                   type="text"
                   class="form-control"
                   id="title"
                   formControlName="eventTitle"
-                >
+                />
               </div>
               <div class="col-sm-6">
                 <div class="row">
                   <div class="col-sm-12 mb-3">
-                    <label for="location" class="form-label">{{ 'base.location' | translate }}</label>
+                    <label for="location" class="form-label">{{
+                      "base.location" | translate
+                    }}</label>
                     <input
                       type="text"
                       class="form-control"
                       id="location"
                       formControlName="location"
-                    >
+                    />
                   </div>
                 </div>
                 <div class="row mb-3">
                   <div class="col-sm-6 col-6">
-                    <label for="timeFrom" class="form-label">{{ 'base.time_from' | translate }}</label>
-                    <select class="form-select" id="timeFrom" formControlName="fromDate" (click)="timeFromEvent($event)">
-                      <option *ngFor="let time of slicedTimeFrom" [value]="time">
-                        <span>{{ time | date: 'shortTime' }}</span>
+                    <label for="timeFrom" class="form-label">{{
+                      "base.time_from" | translate
+                    }}</label>
+                    <select
+                      class="form-select"
+                      id="timeFrom"
+                      formControlName="fromDate"
+                      (click)="timeFromEvent($event)"
+                    >
+                      <option
+                        *ngFor="let time of slicedTimeFrom"
+                        [value]="time"
+                      >
+                        <span>{{ time | date : "shortTime" }}</span>
                       </option>
                     </select>
                   </div>
                   <div class="col-sm-6 col-6">
-                    <label for="timeTo" class="form-label">{{ 'base.time_to' | translate }}</label>
-                    <select class="form-select" id="timeTo" formControlName="toDate">
+                    <label for="timeTo" class="form-label">{{
+                      "base.time_to" | translate
+                    }}</label>
+                    <select
+                      class="form-select"
+                      id="timeTo"
+                      formControlName="toDate"
+                    >
                       <option *ngFor="let time of slicedTimeTo" [value]="time">
-                        <span>{{ time | date: 'shortTime' }}</span>
+                        <span>{{ time | date : "shortTime" }}</span>
                       </option>
                     </select>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-sm-12">
-                    <label for="status" class="form-label">{{ 'base.status' | translate }}</label>
+                    <label for="status" class="form-label">{{
+                      "base.status" | translate
+                    }}</label>
                     <input
                       type="text"
                       class="form-control"
                       id="status"
                       formControlName="status"
-                    >
+                    />
                   </div>
                 </div>
               </div>
 
               <div class="col-sm-6">
-                <label for="details" class="form-label">{{ 'base.description_details' | translate }}</label>
+                <label for="details" class="form-label">{{
+                  "base.description_details" | translate
+                }}</label>
                 <textarea
                   class="form-control"
                   id="details"
@@ -232,24 +276,23 @@
               (click)="activateCreateEvent('DAY')"
               id="activateCreateEvent"
             >
-            <i class="fa-solid fa-circle-arrow-left"></i>
-            {{ 'base.back' | translate }}
+              <i class="fa-solid fa-circle-arrow-left"></i>
+              {{ "base.back" | translate }}
             </button>
           </div>
           <div class="col-sm-2 col-6 offset-sm-8 text-end event-button">
             <i class="fa fa-floppy-o" aria-hidden="true"></i>
             <button
-              class="btn text-end-view"
+              class="btn btn-primary text-end-view"
               (click)="createEvent()"
               id="createEvent"
             >
               <i class="fa-solid fa-floppy-disk"></i>
-              {{ 'base.save' | translate }}
+              {{ "base.save" | translate }}
             </button>
           </div>
         </div>
       </form>
     </ng-container>
-
   </div>
 </div>

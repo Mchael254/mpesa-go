@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
-import {ApiService} from "../../../shared/services/api/api.service";
-import {Observable} from "rxjs";
-import {API_CONFIG} from "../../../../environments/api_service_config";
-import {CampaignMessagesDTO, CampaignsDTO, CampaignTargetsDTO} from "../data/campaignsDTO";
-import {HttpParams} from "@angular/common/http";
-import {UtilService} from "../../../shared/services";
+import { ApiService } from '../../../shared/services/api/api.service';
+import { Observable } from 'rxjs';
+import { API_CONFIG } from '../../../../environments/api_service_config';
+import {
+  CampaignMessagesDTO,
+  CampaignsDTO,
+  CampaignTargetsDTO,
+} from '../data/campaignsDTO';
+import { HttpParams } from '@angular/common/http';
+import { UtilService } from '../../../shared/services';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CampaignsService {
-
-  constructor(private apiService: ApiService, private utilService: UtilService) { }
+  constructor(
+    private apiService: ApiService,
+    private utilService: UtilService
+  ) {}
 
   getCampaigns(): Observable<CampaignsDTO[]> {
     return this.apiService.GET<CampaignsDTO[]>(
@@ -28,7 +34,10 @@ export class CampaignsService {
     );
   }
 
-  updateCampaign(campaignId: number, data: CampaignsDTO): Observable<CampaignsDTO> {
+  updateCampaign(
+    campaignId: number,
+    data: CampaignsDTO
+  ): Observable<CampaignsDTO> {
     return this.apiService.PUT<CampaignsDTO>(
       `campaigns/${campaignId}`,
       data,
@@ -43,9 +52,10 @@ export class CampaignsService {
     );
   }
 
-  getCampaignMessages(campaignCode: number = null): Observable<CampaignMessagesDTO[]> {
-    const params = new HttpParams()
-      .set('campaignCode', `${campaignCode}`);
+  getCampaignMessages(
+    campaignCode: number = null
+  ): Observable<CampaignMessagesDTO[]> {
+    const params = new HttpParams().set('campaignCode', `${campaignCode}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.apiService.GET<CampaignMessagesDTO[]>(
       `messages`,
@@ -54,7 +64,9 @@ export class CampaignsService {
     );
   }
 
-  createCampaignMessage(data: CampaignMessagesDTO): Observable<CampaignMessagesDTO> {
+  createCampaignMessage(
+    data: CampaignMessagesDTO
+  ): Observable<CampaignMessagesDTO> {
     return this.apiService.POST<CampaignMessagesDTO>(
       `messages`,
       JSON.stringify(data),
@@ -62,7 +74,10 @@ export class CampaignsService {
     );
   }
 
-  updateCampaignMessage(campaignMessageId: number, data: CampaignMessagesDTO): Observable<CampaignMessagesDTO> {
+  updateCampaignMessage(
+    campaignMessageId: number,
+    data: CampaignMessagesDTO
+  ): Observable<CampaignMessagesDTO> {
     return this.apiService.PUT<CampaignMessagesDTO>(
       `messages/${campaignMessageId}`,
       data,
@@ -77,9 +92,10 @@ export class CampaignsService {
     );
   }
 
-  getCampaignTargets(campaignCode: number = null): Observable<CampaignTargetsDTO[]> {
-    const params = new HttpParams()
-      .set('campaignCode', `${campaignCode}`);
+  getCampaignTargets(
+    campaignCode: number = null
+  ): Observable<CampaignTargetsDTO[]> {
+    const params = new HttpParams().set('campaignCode', `${campaignCode}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.apiService.GET<CampaignTargetsDTO[]>(
       `targets`,
@@ -88,7 +104,10 @@ export class CampaignsService {
     );
   }
 
-  updateCampaignTarget(campaignTargetId: number, data: CampaignTargetsDTO): Observable<CampaignTargetsDTO> {
+  updateCampaignTarget(
+    campaignTargetId: number,
+    data: CampaignTargetsDTO
+  ): Observable<CampaignTargetsDTO> {
     return this.apiService.PUT<CampaignTargetsDTO>(
       `targets/${campaignTargetId}`,
       data,
@@ -102,4 +121,20 @@ export class CampaignsService {
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
+
+  /**
+   * Activity APIs
+   */
+
+  getActivities(): Observable<any[]> {
+    // const params = new HttpParams()
+    //   .set('campaignCode', `${campaignCode}`);
+    // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.apiService.GET<any[]>(
+      `activities`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  /** Activity APIs end */
 }

@@ -1,18 +1,19 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {Logger} from "../../../../../shared/services";
-import {StaffDto} from "../../../../entities/data/StaffDto";
-import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
+import { Logger } from '../../../../../shared/services';
+import { StaffDto } from '../../../../entities/data/StaffDto';
+import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
+import { CampaignsService } from '../../../services/campaigns..service';
 
 const log = new Logger('ActivitiesComponent');
 @Component({
   selector: 'app-activities',
   templateUrl: './activities.component.html',
-  styleUrls: ['./activities.component.css']
+  styleUrls: ['./activities.component.css'],
 })
-export class ActivitiesComponent implements OnInit{
+export class ActivitiesComponent implements OnInit {
   pageSize: 5;
   activityData: any[];
   selectedActivity: any[] = [];
@@ -42,12 +43,12 @@ export class ActivitiesComponent implements OnInit{
     team: 'Y',
     emailTemplate: 'Y',
     sendReminder: 'Y',
-  //
+    //
     noteSubject: 'Y',
     relateTo: 'Y',
     noteDescription: 'Y',
     attachment: 'Y',
-  //
+    //
     taskSubject: 'Y',
     taskStartDate: 'Y',
     taskEndDate: 'Y',
@@ -55,13 +56,13 @@ export class ActivitiesComponent implements OnInit{
     priority: 'Y',
   };
 
-  url = ""
+  url = '';
   selectedFile: File;
   allUsersModalVisible: boolean = false;
   showDefaultUser: boolean = false;
   selectedMainUser: StaffDto;
-  zIndex= 1;
-  firstModalZIndex =  2;
+  zIndex = 1;
+  firstModalZIndex = 2;
 
   groupId: string = 'activityMngtActivityTab';
   groupIdNote: string = 'activityMngtNoteTab';
@@ -72,12 +73,14 @@ export class ActivitiesComponent implements OnInit{
     private mandatoryFieldsService: MandatoryFieldsService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
+    private campaignService: CampaignsService
   ) {}
 
   ngOnInit(): void {
     this.activityCreateForm();
     this.noteCreateForm();
     this.taskCreateForm();
+    this.getActivities();
   }
 
   /* The `activityCreateForm()` function is responsible for setting up the form controls */
@@ -96,20 +99,24 @@ export class ActivitiesComponent implements OnInit{
       team: [''],
       emailTemplate: [''],
       sendReminder: [''],
-      reminderTime: ['']
+      reminderTime: [''],
     });
-    this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
-      untilDestroyed(this)
-    )
-      .subscribe((response) =>{
-        response.forEach((field) =>{
+    this.mandatoryFieldsService
+      .getMandatoryFieldsByGroupId(this.groupId)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        response.forEach((field) => {
           for (const key of Object.keys(this.createActivityForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.createActivityForm.controls[key].addValidators(Validators.required);
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
+                this.createActivityForm.controls[key].addValidators(
+                  Validators.required
+                );
                 this.createActivityForm.controls[key].updateValueAndValidity();
-                const label = document.querySelector(`label[for=${field.frontedId}]`);
+                const label = document.querySelector(
+                  `label[for=${field.frontedId}]`
+                );
                 if (label) {
                   const asterisk = document.createElement('span');
                   asterisk.innerHTML = ' *';
@@ -119,10 +126,10 @@ export class ActivitiesComponent implements OnInit{
               }
             }
           }
-        })
+        });
         this.cdr.detectChanges();
       });
-  };
+  }
 
   /* The `noteCreateForm()` function is responsible for setting up the form controls for creating a
   note. */
@@ -131,20 +138,24 @@ export class ActivitiesComponent implements OnInit{
       noteSubject: [''],
       relateTo: [''],
       noteDescription: [''],
-      attachment: ['']
+      attachment: [''],
     });
-    this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupIdNote).pipe(
-      untilDestroyed(this)
-    )
-      .subscribe((response) =>{
-        response.forEach((field) =>{
+    this.mandatoryFieldsService
+      .getMandatoryFieldsByGroupId(this.groupIdNote)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        response.forEach((field) => {
           for (const key of Object.keys(this.createNoteForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.createNoteForm.controls[key].addValidators(Validators.required);
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
+                this.createNoteForm.controls[key].addValidators(
+                  Validators.required
+                );
                 this.createNoteForm.controls[key].updateValueAndValidity();
-                const label = document.querySelector(`label[for=${field.frontedId}]`);
+                const label = document.querySelector(
+                  `label[for=${field.frontedId}]`
+                );
                 if (label) {
                   const asterisk = document.createElement('span');
                   asterisk.innerHTML = ' *';
@@ -154,10 +165,10 @@ export class ActivitiesComponent implements OnInit{
               }
             }
           }
-        })
+        });
         this.cdr.detectChanges();
       });
-  };
+  }
 
   /* The `taskCreateForm()` function in the provided TypeScript code is responsible for setting up the
   form controls for creating a task. */
@@ -167,20 +178,24 @@ export class ActivitiesComponent implements OnInit{
       taskStartDate: [''],
       taskEndDate: [''],
       taskRelatedTo: [''],
-      priority: ['']
+      priority: [''],
     });
-    this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupIdTask).pipe(
-      untilDestroyed(this)
-    )
-      .subscribe((response) =>{
-        response.forEach((field) =>{
+    this.mandatoryFieldsService
+      .getMandatoryFieldsByGroupId(this.groupIdTask)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        response.forEach((field) => {
           for (const key of Object.keys(this.createTaskForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.createTaskForm.controls[key].addValidators(Validators.required);
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
+                this.createTaskForm.controls[key].addValidators(
+                  Validators.required
+                );
                 this.createTaskForm.controls[key].updateValueAndValidity();
-                const label = document.querySelector(`label[for=${field.frontedId}]`);
+                const label = document.querySelector(
+                  `label[for=${field.frontedId}]`
+                );
                 if (label) {
                   const asterisk = document.createElement('span');
                   asterisk.innerHTML = ' *';
@@ -190,14 +205,14 @@ export class ActivitiesComponent implements OnInit{
               }
             }
           }
-        })
+        });
         this.cdr.detectChanges();
       });
-  };
+  }
 
- /**
-  * The function returns the controls of a form named createActivityForm.
-  */
+  /**
+   * The function returns the controls of a form named createActivityForm.
+   */
   get g() {
     return this.createActivityForm.controls;
   }
@@ -291,9 +306,9 @@ export class ActivitiesComponent implements OnInit{
     }
   }
 
- /**
-  * The `editActivity` function toggles the edit mode and opens a modal for defining an activity.
-  */
+  /**
+   * The `editActivity` function toggles the edit mode and opens a modal for defining an activity.
+   */
   editActivity() {
     this.editMode = !this.editMode;
     this.openDefineActivityModal();
@@ -324,14 +339,14 @@ export class ActivitiesComponent implements OnInit{
    */
   onFileChange(event) {
     if (event.target.files) {
-      var reader = new FileReader()
+      var reader = new FileReader();
       this.selectedFile = event.target.files[0];
-      reader.readAsDataURL(event.target.files[0])
+      reader.readAsDataURL(event.target.files[0]);
       reader.onload = (event: any) => {
         this.url = event.target.result;
         this.cdr.detectChanges();
         log.info(this.url);
-      }
+      };
     }
   }
 
@@ -340,7 +355,7 @@ export class ActivitiesComponent implements OnInit{
    * users modal.
    */
   openAllUsersModal() {
-    this.zIndex  = -1;
+    this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
 
@@ -366,7 +381,17 @@ export class ActivitiesComponent implements OnInit{
     /*this.debtOwnerForm.patchValue({
       modalUserAssignTo: event?.username
     });*/
-    log.info('user>', event)
+    log.info('user>', event);
+  }
+
+  getActivities(): void {
+    this.campaignService.getActivities().subscribe({
+      next: (data) => {
+        this.activityData = data;
+        log.info(`Activity data >>> `, data);
+      },
+      error: (err) => {},
+    });
   }
 
   ngOnDestroy(): void {}
