@@ -174,6 +174,8 @@ editCoverDetailsForm() {
         summary: 'Success',
         detail: this.coverType + ' cover updated!'
       });
+      this.session_storage.set('payee', formValues.payee);
+      this.session_storage.set('amount', this.claimableAmount);
       this.coverDetailsForm.reset();
       this.isFormVisible =  !this.isFormVisible;
       this.cdr.detectChanges();

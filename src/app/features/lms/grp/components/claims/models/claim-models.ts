@@ -219,3 +219,15 @@ export class newClaimDTO {
     claim_no: string;
     trans_no: number;
 }
+
+export class PaymentMethod {
+    name: string;
+    value: string;
+  }
+
+  export class VoucherProcessingDTO {
+    username: string;
+    member_code: number;
+    claim_trans_no: number;
+  }
+  
