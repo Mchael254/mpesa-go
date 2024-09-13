@@ -54,30 +54,39 @@
  <div class="main">
     <div class="container">
         <div class="profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-            </svg>
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_4_54329)">
+              <rect width="60" height="60" rx="30" fill="white" />
+              <rect x="18" y="10" width="24" height="24" rx="12" fill="#004B8E" />
+              <rect x="-15" y="40" width="90" height="90" rx="45" fill="#004B8E" />
+            </g>
+            <rect x="0.25" y="0.25" width="59.5" height="59.5" rx="29.75" stroke="#00529B" stroke-width="0.5" />
+            <defs>
+              <clipPath id="clip0_4_54329">
+                <rect width="60" height="60" rx="30" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
         </div>
     
         <div class="info">
             <div>
-                <label class="label-name" for="name">Name:</label>
+                <label class="label-name" for="name">{{ "lms.grp.member_portal.name" | translate }}:</label>
                 <span class="label-desc" id="name">{{ userProfileData.fullName }}</span>
             </div>
     
             <div>
-                <label class="label-name" for="national-id">National ID:</label>
+                <label class="label-name" for="national-id">{{ "lms.grp.member_portal.national_id" | translate }}:</label>
                 <span class="label-desc" id="national-id">{{ userProfileData.idNo }}</span>
             </div>
 
             <div>
-                <label class="label-name" for="phone">Phone number:</label>
+                <label class="label-name" for="phone">{{ "lms.grp.member_portal.phone_number" | translate }}:</label>
                 <span class="label-desc" id="phone">{{ userProfileData.teleponeNo }}</span>
             </div>
     
             <div>
-                <label class="label-name" for="email">Email:</label>
+                <label class="label-name" for="email">{{ "lms.grp.member_portal.email" | translate }}:</label>
                 <span class="label-desc" id="email">{{ userProfileData.userName }}</span>
             </div>
     
@@ -85,9 +94,9 @@
     </div>
     
 
-    <div class="dashboard">Dashboard</div>
+    <div class="dashboard">{{ "lms.grp.member_portal.dashboard" | translate }}</div>
     <div class="container2">
-        <div class="title"><span id="title">Policies</span></div>
+        <div class="title"><span id="title">{{ "lms.grp.member_portal.policies" | translate }}</span></div>
 
         <ng-container *ngIf="memberPolicies && memberPolicies.length > 0">
             <div *ngFor="let memberPols of memberPolicies; let i = index" class="box" (click)="navigateToPolDets(memberPols)">
@@ -95,24 +104,24 @@
               <div class="scroll-content">
                 <table>
                   <tr>
-                    <td>Policy:</td>
+                    <td class="td-label">{{ "lms.grp.member_portal.policy" | translate }}:</td>
                     <td class="td-data">{{ memberPols?.description | titlecase }}</td>
                   </tr>
                   <tr>
-                    <td>Policy number:</td>
+                    <td class="td-label">{{ "lms.grp.member_portal.policy_number" | translate }}:</td>
                     <td class="td-data">{{ memberPols?.policy_number }}</td>
                   </tr>
                   <tr>
-                    <td>Member number:</td>
+                    <td class="td-label">{{ "lms.grp.member_portal.member_number" | translate }}:</td>
                     <td class="td-data">{{ memberPols?.member_number }}</td>
                   </tr>
                   <tr>
-                    <td>
+                    <td class="td-label">
                       <ng-container *ngIf="memberPols?.product_type === 'EARN'; else fundValueLabel">
-                        Sum assured:
+                        {{ "lms.grp.member_portal.sum_assured" | translate }}:
                       </ng-container>
                       <ng-template #fundValueLabel>
-                        Fund value:
+                        {{ "lms.grp.member_portal.fund_value" | translate }}:
                       </ng-template>
                     </td>
                     <td class="td-data">
