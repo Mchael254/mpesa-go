@@ -121,20 +121,4 @@ export class CampaignsService {
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
-
-  /**
-   * Activity APIs
-   */
-
-  getActivities(): Observable<any[]> {
-    // const params = new HttpParams()
-    //   .set('campaignCode', `${campaignCode}`);
-    // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    return this.apiService.GET<any[]>(
-      `activities`,
-      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
-    );
-  }
-
-  /** Activity APIs end */
 }

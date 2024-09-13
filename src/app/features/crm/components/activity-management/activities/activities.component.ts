@@ -6,6 +6,8 @@ import { Logger } from '../../../../../shared/services';
 import { StaffDto } from '../../../../entities/data/StaffDto';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { CampaignsService } from '../../../services/campaigns..service';
+import { Activity } from '../../../data/activity';
+import { ActivityService } from '../../../services/activity.service';
 
 const log = new Logger('ActivitiesComponent');
 @Component({
@@ -15,7 +17,7 @@ const log = new Logger('ActivitiesComponent');
 })
 export class ActivitiesComponent implements OnInit {
   pageSize: 5;
-  activityData: any[];
+  activityData: Activity[];
   selectedActivity: any[] = [];
   notesAndAttachmentsData: any[];
   selectedNotes: any[] = [];
@@ -73,7 +75,7 @@ export class ActivitiesComponent implements OnInit {
     private mandatoryFieldsService: MandatoryFieldsService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
-    private campaignService: CampaignsService
+    private activityService: ActivityService
   ) {}
 
   ngOnInit(): void {
@@ -385,13 +387,18 @@ export class ActivitiesComponent implements OnInit {
   }
 
   getActivities(): void {
-    this.campaignService.getActivities().subscribe({
+    this.activityService.getActivities().subscribe({
       next: (data) => {
         this.activityData = data;
         log.info(`Activity data >>> `, data);
       },
       error: (err) => {},
     });
+  }
+
+  createActivity(): void {
+    const formValues = this.createActivityForm.getRawValue();
+    log.info(`form values >>> `, formValues);
   }
 
   ngOnDestroy(): void {}
