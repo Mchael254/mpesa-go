@@ -187,6 +187,9 @@
     "Activities": "活动",
     "Activity Types": "活动类型",
     "Priority level & Activity status": "优先级 & 活动状态",
+    "Leads and Potentials": "潜在客户和潜力",
+    "Lead Sources & Statuses": "潜在客户来源和状态",
+    "Leads": "潜在客户",
     "general": "一般",
     "life_ind": "个人寿险",
     "life_group": "团体寿险",
@@ -235,7 +238,11 @@
     "confirm_delete": "确认删除",
     "are_you_sure": "你确定吗?",
     "cancel": "取消",
-    "delete": "删除"
+    "delete": "删除",
+    "lead_sources": "潜在客户来源",
+    "no_lead_source_found": "未找到潜在客户来源",
+    "lead_statuses": "潜在客户状态",
+    "no_lead_status_found": "未找到潜在客户状态"
   },
   "entities": {
     "account_number": "帐号",
@@ -1009,7 +1016,7 @@
       "used_rate": "使用费率",
       "commission_amount": "佣金金额",
       "withholding_rate": "预扣率",
-       "code": "代码"
+      "code": "代码"
     }
   },
   "lms": {
@@ -1312,7 +1319,6 @@
       "paymentType": "付款类型",
       "bankAccount": "银行账户",
       "chequeNo": "支票号",
-      "exciseDuty": "消费税",
       "payee": "收款人",
       "paymentMode": "支付方式",
       "authorised": "已授权",

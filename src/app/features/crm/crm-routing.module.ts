@@ -22,13 +22,12 @@ import { SystemRolesComponent } from './components/system-roles/system-roles.com
 import { CampaignsComponent } from './components/campaigns/campaigns.component';
 import { CampaignDefinitionComponent } from './components/campaigns/campaign-definition/campaign-definition.component';
 import { SchedulerComponent } from './components/scheduler/scheduler.component';
-import { ClientAttributesComponent } from "./components/campaigns/client-attributes/client-attributes.component";
-import { ProductAttributesComponent } from "./components/campaigns/product-attributes/product-attributes.component";
-import {ActivitiesComponent} from "./components/activity-management/activities/activities.component";
-import {ActivityTypesComponent} from "./components/activity-management/activity-types/activity-types.component";
-import {
-  PriorityLevelsActivityStatusComponent
-} from "./components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component";
+import { ClientAttributesComponent } from './components/campaigns/client-attributes/client-attributes.component';
+import { ProductAttributesComponent } from './components/campaigns/product-attributes/product-attributes.component';
+import { ActivitiesComponent } from './components/activity-management/activities/activities.component';
+import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
+import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
+import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses/lead-sources-statuses.component';
 
 const routes: Routes = [
   {
@@ -138,6 +137,10 @@ const routes: Routes = [
   {
     path: 'priority-level-activity-status',
     component: PriorityLevelsActivityStatusComponent,
+  },
+  {
+    path: 'lead-sources-statuses',
+    component: LeadSourcesStatusesComponent,
   },
 ];
 
