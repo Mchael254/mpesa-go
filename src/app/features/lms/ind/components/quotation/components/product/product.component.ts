@@ -55,6 +55,7 @@ export class ProductComponent implements OnInit {
   pop_code: number = 2021415;
   endr_code: number = 2024642021;
   coverageOptionLabel: string = 'Coverage Option';  // Default label
+  calculateFrom: string = '';  // Store the value of calculate_from
 
   escalationOption: { value: string, label: string }[] = [
     { value: 'PREMIUM ESCALATION', label: 'Premium Escalation' },
@@ -323,6 +324,7 @@ export class ProductComponent implements OnInit {
 
           // Find the selected product from the product list
           let selectedProduct = this.productList.find((m) => m['code'] === productCode);
+          this.calculateFrom = selectedProduct?.calculate_from || '';  // Capture the calculate_from value
 
           // Extract the calculate_from field
           let calculateFrom = selectedProduct?.calculate_from;
@@ -335,7 +337,7 @@ export class ProductComponent implements OnInit {
           } else if (calculateFrom === 'B') {
             this.coverageOptionLabel = 'Both';
           } else  {
-            this.coverageOptionLabel = 'Null';  
+            this.coverageOptionLabel = 'Coverage Option';  
           }
 
           // Clear the cover type list (if needed)
