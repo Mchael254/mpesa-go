@@ -146,9 +146,12 @@ export class RiskDetailsComponent {
   scheduleDetailsForm: FormGroup;
   scheduleData: any;
   scheduleList: any;
+  scheduleArray: any[]=[];
   selectedSchedule: any;
   updatedSchedule: any;
   updatedScheduleData: any;
+  failedCounter:number = 0;
+  successCounter:number = 0;
   modelYear: any;
 
   passedPolicyRiskDetails: RiskInformation;
@@ -1546,7 +1549,7 @@ export class RiskDetailsComponent {
 
   downloadCSVTemplate(): void {
     console.log("TEST")
-    const templateFilePath = '/assets/data/Template.csv';
+    const templateFilePath = '/assets/data/private-motor-schedule-template.csv';
     const link = document.createElement('a');
     link.setAttribute('target', '_blank');
     link.setAttribute('href', templateFilePath);
@@ -1564,15 +1567,102 @@ export class RiskDetailsComponent {
 
       Papa.parse(file, {
         complete: (result: any) => {
-          console.log('file result', result.data[0])
+          console.log('file result', result.data)
           this.csvRisksList = result.data
           // Assuming CSV has header row, you can access data with result.data
+          // ADDING A SCHEDULE
+          this.csvRisksList.forEach(element => {
+            console.log(element,'element')
+            const csvRisksList = element
+            const schedule = this.scheduleDetailsForm.value;
+             // Set specific values for uploaded fields
+            schedule.details.level1.bodyType = csvRisksList.bodyType;
+            schedule.details.level1.yearOfManufacture = csvRisksList.yearOfManufacture;
+            schedule.details.level1.color = csvRisksList.color;
+            schedule.details.level1.engineNumber = csvRisksList.engineNumber;
+            schedule.details.level1.cubicCapacity = csvRisksList.cubicCapacity;
+            schedule.details.level1.Make =csvRisksList.Make;
+            schedule.details.level1.coverType = csvRisksList.coverType;
+            schedule.details.level1.registrationNumber = csvRisksList.registrationNumber;
+            schedule.details.level1.chasisNumber = csvRisksList.chasisNumber;
+            schedule.details.level1.tonnage = csvRisksList.tonnage;
+            schedule.details.level1.carryCapacity = csvRisksList.carryCapacity;
+            schedule.details.level1.logBook = csvRisksList.logBook;
+            schedule.details.level1.value = csvRisksList.value;
+            schedule.riskCode = csvRisksList.riskCode;
+            schedule.transactionType = "Q";
+            schedule.version = 0;
+            console.log(this.scheduleDetailsForm.value)
 
+
+            this.policyService.createSchedules(schedule).subscribe(
+              (data) => {
+                try {
+                  this.scheduleData = data;
+                  this.scheduleList=this.scheduleData._embedded;
+                  this.scheduleList.forEach(element => {
+                    console.log(element,'step2')
+                    console.log(element.details.level1,'step2')
+                    const level1 =  element.details.level1
+                    const scheduleArray = [];
+                    console.log(level1,'level1')
+                    this.scheduleArray.push(level1)
+                    console.log(this.scheduleArray,'scheduleArray')
+                  });
+                  console.log(this.scheduleArray,'schedule array outside')
+                 
+                  log.debug("Schedule Data:", this.scheduleList);
+                  this.successCounter+1
+                 
+        
+                } catch (error) {
+                  this.failedCounter = this.failedCounter+1
+                  console.log(this.failedCounter)
+        
+                }
+              },
+              (error) => {
+                // console.error('Error creating schedule:', error);
+               
+        
+              }
+            );
+          });
+          console.log("Sucessful schedules",this.successCounter)
+          console.log("Failed schedules",this.failedCounter)
+          // if(this.successCounter>0){
+          //   console.log("Sucessful schedules",this.successCounter)
+          // }
+          // if(this.failedCounter>0){
+          //   console.log("Failed schedules",this.failedCounter)
+          // }
+          
+          
           try {
 
             this.uploadedFileName = file.name;
             sessionStorage.setItem('uploadedFileName', this.uploadedFileName)
             this.uploading = 'success';
+          
+       
+        
+            // Set specific default values for some fields
+            // schedule.details.level1.bodyType = csvRisksList.bodyType;
+            // schedule.details.level1.yearOfManufacture = csvRisksList.yearOfManufacture;
+            // schedule.details.level1.color = csvRisksList.color;
+            // schedule.details.level1.engineNumber = csvRisksList.engineNumber;
+            // schedule.details.level1.cubicCapacity = csvRisksList.cubicCapacity;
+            // schedule.details.level1.Make =csvRisksList.Make;
+            // schedule.details.level1.coverType = csvRisksList.coverType;
+            // schedule.details.level1.registrationNumber = csvRisksList.registrationNumber;
+            // schedule.details.level1.chasisNumber = csvRisksList.chasisNumber;
+            // schedule.details.level1.tonnage = csvRisksList.tonnage;
+            // schedule.details.level1.carryCapacity = csvRisksList.carryCapacity;
+            // schedule.details.level1.logBook = csvRisksList.logBook;
+            // schedule.details.level1.value = csvRisksList.value;
+            // schedule.riskCode = csvRisksList.riskCode;
+            // schedule.transactionType = "Q";
+            // schedule.version = 0;
           } catch (e) {
             console.log(`file upload failed >>> `, e);
           }
@@ -1753,9 +1843,18 @@ export class RiskDetailsComponent {
         try {
           this.scheduleData = data;
           this.scheduleList=this.scheduleData._embedded;
-
+          this.scheduleList.forEach(element => {
+            console.log(element,'step2')
+            console.log(element.details.level1,'step2')
+            const level1 =  element.details.level1
+            const scheduleArray = [];
+            console.log(level1,'level1')
+            this.scheduleArray.push(level1)
+            console.log(this.scheduleArray,'scheduleArray')
+          });
+          console.log(this.scheduleArray,'schedule array outside')
           this.csvRisksList =this.scheduleList;
-          log.debug("Schedule Data:", this.csvRisksList);
+          log.debug("Schedule Data:", this.scheduleList);
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
 
         } catch (error) {
