@@ -7,7 +7,7 @@
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
-import {API_CONFIG} from './api_service_config';
+import { API_CONFIG } from './api_service_config';
 
 export const environment = {
   production: false,
@@ -43,7 +43,8 @@ export const environment = {
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
     [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
-    [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns']
-      // [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, 'http://localhost:10402']
+    [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns'],
+    [API_CONFIG.CHART_SERVICE_BASE_URL, '/crm/chart'],
+    // [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, 'http://localhost:10402']
   ]),
 };
