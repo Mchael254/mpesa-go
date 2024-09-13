@@ -1,7 +1,8 @@
 <div class="base-content-section">
   <div class="row me-4">
     <div class="col-8">
-      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
       {
         label: 'Administration',
         url: '/home/crm'
@@ -18,13 +19,13 @@
         label: 'Activities',
         url: ''
       }
-    ]">
+    ]"
+      >
       </app-dynamic-breadcrumb>
     </div>
   </div>
   <div class="card">
     <div class="card-body">
-
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <h5 class="text-dark">Activities</h5>
@@ -32,9 +33,11 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefineActivityModal()"></i>
+            <span class="icon-circle">
+              <i
+                class="fa-solid fa-plus"
+                (click)="openDefineActivityModal()"
+              ></i>
             </span>
             <span class="icon-circle">
               <i class="pi pi-pencil" (click)="editActivity()"></i>
@@ -64,19 +67,30 @@
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
-
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">Subject <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="objective">Start Date <p-sortIcon field="objective"></p-sortIcon></th>
-            <th pSortableColumn="description">End Date <p-sortIcon field="description"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">
+              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="objective">
+              Start Date <p-sortIcon field="objective"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              End Date <p-sortIcon field="description"></p-sortIcon>
+            </th>
             <th>Duration</th>
             <th>Location</th>
             <th>Assigned To</th>
             <th>Related To</th>
-            <th pSortableColumn="authorised">Status <p-sortIcon field="authorised"></p-sortIcon></th>
-            <th pSortableColumn="transactions_date">Type <p-sortIcon field="transactions_date"></p-sortIcon></th>
-            <th pSortableColumn="authorised_by">Description <p-sortIcon field="authorised_by"></p-sortIcon></th>
+            <th pSortableColumn="authorised">
+              Status <p-sortIcon field="authorised"></p-sortIcon>
+            </th>
+            <th pSortableColumn="transactions_date">
+              Type <p-sortIcon field="transactions_date"></p-sortIcon>
+            </th>
+            <th pSortableColumn="authorised_by">
+              Description <p-sortIcon field="authorised_by"></p-sortIcon>
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-activity>
@@ -104,7 +118,6 @@
 
   <div class="card mt-3">
     <div class="card-body">
-
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <h5 class="text-dark">Notes and attachments</h5>
@@ -112,13 +125,11 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefineNoteModal()"></i>
+            <span class="icon-circle">
+              <i class="fa-solid fa-plus" (click)="openDefineNoteModal()"></i>
             </span>
             <span class="icon-circle">
-              <i class="pi pi-pencil"
-                 (click)="editNote()"></i>
+              <i class="pi pi-pencil" (click)="editNote()"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -145,13 +156,20 @@
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
-
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">Subject <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="objective">Related To <p-sortIcon field="objective"></p-sortIcon></th>
-            <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-            <th pSortableColumn="authorised">Attachment <p-sortIcon field="authorised"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">
+              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="objective">
+              Related To <p-sortIcon field="objective"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              Description <p-sortIcon field="description"></p-sortIcon>
+            </th>
+            <th pSortableColumn="authorised">
+              Attachment <p-sortIcon field="authorised"></p-sortIcon>
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-note>
@@ -173,7 +191,6 @@
 
   <div class="card mt-3">
     <div class="card-body">
-
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <h5 class="text-dark">Tasks</h5>
@@ -181,9 +198,8 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefineTaskModal()"></i>
+            <span class="icon-circle">
+              <i class="fa-solid fa-plus" (click)="openDefineTaskModal()"></i>
             </span>
             <span class="icon-circle">
               <i class="pi pi-pencil" (click)="editTask()"></i>
@@ -213,13 +229,20 @@
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
-
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">Subject <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="objective">Start Date <p-sortIcon field="objective"></p-sortIcon></th>
-            <th pSortableColumn="description">End Date <p-sortIcon field="description"></p-sortIcon></th>
-            <th pSortableColumn="authorised">Status <p-sortIcon field="authorised"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">
+              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="objective">
+              Start Date <p-sortIcon field="objective"></p-sortIcon>
+            </th>
+            <th pSortableColumn="description">
+              End Date <p-sortIcon field="description"></p-sortIcon>
+            </th>
+            <th pSortableColumn="authorised">
+              Status <p-sortIcon field="authorised"></p-sortIcon>
+            </th>
             <th>Priority</th>
             <th>Related To</th>
           </tr>
@@ -245,7 +268,6 @@
 
   <div class="card mt-3">
     <div class="card-body">
-
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <h5 class="text-dark">Participants</h5>
@@ -255,8 +277,7 @@
           <div class="float-end">
             <button class="btn btn-primary">Send invite</button>
             <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openAllUsersModal()"></i>
+              <i class="fa-solid fa-plus" (click)="openAllUsersModal()"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -283,12 +304,15 @@
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
-
         <ng-template pTemplate="header">
           <tr>
             <th></th>
-            <th pSortableColumn="gis_exception_code">Name <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="objective">Email <p-sortIcon field="objective"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">
+              Name <p-sortIcon field="gis_exception_code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="objective">
+              Email <p-sortIcon field="objective"></p-sortIcon>
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-participant>
@@ -298,7 +322,6 @@
             </td>
             <td></td>
             <td></td>
-
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -317,11 +340,15 @@
   #newActivity
   id="newActivity"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="exampleModalLabel"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} {{ editMode ? 'an activity' : 'a new activity' }}</h5>
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }}
+          {{ editMode ? "an activity" : "a new activity" }}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -340,38 +367,82 @@
                   class="form-control"
                   id="subject"
                   formControlName="subject"
-                  [ngClass]="{ 'is-invalid': g['subject']?.invalid && (g['subject']?.dirty || g['subject']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['subject']?.invalid &&
+                      (g['subject']?.dirty || g['subject']?.touched)
+                  }"
                 />
-                <div *ngIf="g['subject']?.invalid && (g['subject']?.dirty || g['subject']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['subject']?.errors['required']">Subject is required</div>
+                <div
+                  *ngIf="
+                    g['subject']?.invalid &&
+                    (g['subject']?.dirty || g['subject']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['subject']?.errors['required']">
+                    Subject is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.activityType === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="activityType">Activity type</label>
-                <select id="activityType" class="form-select" formControlName="activityType"
-                        [ngClass]="{ 'is-invalid': g['activityType']?.invalid && (g['activityType']?.dirty || g['activityType']?.touched) }">
+                <label class="form-label w-100" for="activityType"
+                  >Activity type</label
+                >
+                <select
+                  id="activityType"
+                  class="form-select"
+                  formControlName="activityType"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['activityType']?.invalid &&
+                      (g['activityType']?.dirty || g['activityType']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="g['activityType']?.invalid && (g['activityType']?.dirty || g['activityType']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['activityType']?.errors['required']">Activity type is required</div>
+                <div
+                  *ngIf="
+                    g['activityType']?.invalid &&
+                    (g['activityType']?.dirty || g['activityType']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['activityType']?.errors['required']">
+                    Activity type is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.description === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="description">Description</label>
+                <label class="form-label w-100" for="description"
+                  >Description</label
+                >
                 <input
                   type="text"
                   class="form-control"
                   id="description"
                   formControlName="description"
-                  [ngClass]="{ 'is-invalid': g['description']?.invalid && (g['description']?.dirty || g['description']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['description']?.invalid &&
+                      (g['description']?.dirty || g['description']?.touched)
+                  }"
                 />
-                <div *ngIf="g['description']?.invalid && (g['description']?.dirty || g['description']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['description']?.errors['required']">Description is required</div>
+                <div
+                  *ngIf="
+                    g['description']?.invalid &&
+                    (g['description']?.dirty || g['description']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['description']?.errors['required']">
+                    Description is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -383,53 +454,112 @@
                   class="form-control"
                   id="location"
                   formControlName="location"
-                  [ngClass]="{ 'is-invalid': g['location']?.invalid && (g['location']?.dirty || g['location']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['location']?.invalid &&
+                      (g['location']?.dirty || g['location']?.touched)
+                  }"
                 />
-                <div *ngIf="g['location']?.invalid && (g['location']?.dirty || g['location']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['location']?.errors['required']">Location is required</div>
+                <div
+                  *ngIf="
+                    g['location']?.invalid &&
+                    (g['location']?.dirty || g['location']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['location']?.errors['required']">
+                    Location is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.assignedTo === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="assignedTo">Assigned To</label>
+                <label class="form-label w-100" for="assignedTo"
+                  >Assigned To</label
+                >
                 <input
                   type="text"
                   class="form-control"
                   id="assignedTo"
                   formControlName="assignedTo"
-                  [ngClass]="{ 'is-invalid': g['assignedTo']?.invalid && (g['assignedTo']?.dirty || g['assignedTo']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['assignedTo']?.invalid &&
+                      (g['assignedTo']?.dirty || g['assignedTo']?.touched)
+                  }"
                 />
-                <div *ngIf="g['assignedTo']?.invalid && (g['assignedTo']?.dirty || g['assignedTo']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['assignedTo']?.errors['required']">Assigned to is required</div>
+                <div
+                  *ngIf="
+                    g['assignedTo']?.invalid &&
+                    (g['assignedTo']?.dirty || g['assignedTo']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['assignedTo']?.errors['required']">
+                    Assigned to is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.relatedAccount === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="relatedAccount">Related Account</label>
-                <select id="relatedAccount" class="form-select" formControlName="relatedAccount"
-                        [ngClass]="{ 'is-invalid': g['relatedAccount']?.invalid && (g['relatedAccount']?.dirty || g['relatedAccount']?.touched) }">
+                <label class="form-label w-100" for="relatedAccount"
+                  >Related Account</label
+                >
+                <select
+                  id="relatedAccount"
+                  class="form-select"
+                  formControlName="relatedAccount"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['relatedAccount']?.invalid &&
+                      (g['relatedAccount']?.dirty ||
+                        g['relatedAccount']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="g['relatedAccount']?.invalid && (g['relatedAccount']?.dirty || g['relatedAccount']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['relatedAccount']?.errors['required']">Related account is required</div>
+                <div
+                  *ngIf="
+                    g['relatedAccount']?.invalid &&
+                    (g['relatedAccount']?.dirty || g['relatedAccount']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['relatedAccount']?.errors['required']">
+                    Related account is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.startDate === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="startDate">Start Date</label>
+                <label class="form-label w-100" for="startDate"
+                  >Start Date</label
+                >
                 <input
                   type="date"
                   class="form-control"
                   id="startDate"
                   formControlName="startDate"
-                  [ngClass]="{ 'is-invalid': g['startDate']?.invalid && (g['startDate']?.dirty || g['startDate']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['startDate']?.invalid &&
+                      (g['startDate']?.dirty || g['startDate']?.touched)
+                  }"
                 />
-                <div *ngIf="g['startDate']?.invalid && (g['startDate']?.dirty || g['startDate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['startDate']?.errors['required']">Start date is required</div>
+                <div
+                  *ngIf="
+                    g['startDate']?.invalid &&
+                    (g['startDate']?.dirty || g['startDate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['startDate']?.errors['required']">
+                    Start date is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -441,10 +571,22 @@
                   class="form-control"
                   id="endDate"
                   formControlName="endDate"
-                  [ngClass]="{ 'is-invalid': g['endDate']?.invalid && (g['endDate']?.dirty || g['endDate']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['endDate']?.invalid &&
+                      (g['endDate']?.dirty || g['endDate']?.touched)
+                  }"
                 />
-                <div *ngIf="g['endDate']?.invalid && (g['endDate']?.dirty || g['endDate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['endDate']?.errors['required']">End date is required</div>
+                <div
+                  *ngIf="
+                    g['endDate']?.invalid &&
+                    (g['endDate']?.dirty || g['endDate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['endDate']?.errors['required']">
+                    End date is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -456,10 +598,22 @@
                   class="form-control"
                   id="duration"
                   formControlName="duration"
-                  [ngClass]="{ 'is-invalid': g['duration']?.invalid && (g['duration']?.dirty || g['duration']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['duration']?.invalid &&
+                      (g['duration']?.dirty || g['duration']?.touched)
+                  }"
                 />
-                <div *ngIf="g['duration']?.invalid && (g['duration']?.dirty || g['duration']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['duration']?.errors['required']">Duration is required</div>
+                <div
+                  *ngIf="
+                    g['duration']?.invalid &&
+                    (g['duration']?.dirty || g['duration']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['duration']?.errors['required']">
+                    Duration is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -471,58 +625,134 @@
                   class="form-control"
                   id="status"
                   formControlName="status"
-                  [ngClass]="{ 'is-invalid': g['status']?.invalid && (g['status']?.dirty || g['status']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['status']?.invalid &&
+                      (g['status']?.dirty || g['status']?.touched)
+                  }"
                 />
-                <div *ngIf="g['status']?.invalid && (g['status']?.dirty || g['status']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['status']?.errors['required']">Status is required</div>
+                <div
+                  *ngIf="
+                    g['status']?.invalid &&
+                    (g['status']?.dirty || g['status']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['status']?.errors['required']">
+                    Status is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.team === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="team">Team</label>
-                <select id="team" class="form-select" formControlName="team"
-                        [ngClass]="{ 'is-invalid': g['team']?.invalid && (g['team']?.dirty || g['team']?.touched) }">
+                <select
+                  id="team"
+                  class="form-select"
+                  formControlName="team"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['team']?.invalid &&
+                      (g['team']?.dirty || g['team']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="g['team']?.invalid && (g['team']?.dirty || g['team']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['team']?.errors['required']">Team is required</div>
+                <div
+                  *ngIf="
+                    g['team']?.invalid &&
+                    (g['team']?.dirty || g['team']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['team']?.errors['required']">
+                    Team is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.emailTemplate === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="emailTemplate">Email Template</label>
-                <select id="emailTemplate" class="form-select" formControlName="emailTemplate"
-                        [ngClass]="{ 'is-invalid': g['emailTemplate']?.invalid && (g['emailTemplate']?.dirty || g['emailTemplate']?.touched) }">
+                <label class="form-label w-100" for="emailTemplate"
+                  >Email Template</label
+                >
+                <select
+                  id="emailTemplate"
+                  class="form-select"
+                  formControlName="emailTemplate"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['emailTemplate']?.invalid &&
+                      (g['emailTemplate']?.dirty || g['emailTemplate']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="g['emailTemplate']?.invalid && (g['emailTemplate']?.dirty || g['emailTemplate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['emailTemplate']?.errors['required']">Email template is required</div>
+                <div
+                  *ngIf="
+                    g['emailTemplate']?.invalid &&
+                    (g['emailTemplate']?.dirty || g['emailTemplate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['emailTemplate']?.errors['required']">
+                    Email template is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.sendReminder === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="sendReminder">Send reminder?</label>
+                <label class="form-label w-100" for="sendReminder"
+                  >Send reminder?</label
+                >
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" formControlName="sendReminder" id="sendReminder" value="Y">
-                  <label class="form-check-label text-black" for="sendReminder">Yes</label>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    formControlName="sendReminder"
+                    id="sendReminder"
+                    value="Y"
+                  />
+                  <label class="form-check-label text-black" for="sendReminder"
+                    >Yes</label
+                  >
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" formControlName="sendReminder" id="sendReminder" value="N">
-                  <label class="form-check-label text-black" for="sendReminder">No</label>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    formControlName="sendReminder"
+                    id="sendReminder"
+                    value="N"
+                  />
+                  <label class="form-check-label text-black" for="sendReminder"
+                    >No</label
+                  >
                 </div>
-                <div *ngIf="g['sendReminder']?.invalid && (g['sendReminder']?.dirty || g['sendReminder']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['sendReminder']?.errors['required']">Send reminder is required</div>
+                <div
+                  *ngIf="
+                    g['sendReminder']?.invalid &&
+                    (g['sendReminder']?.dirty || g['sendReminder']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['sendReminder']?.errors['required']">
+                    Send reminder is required
+                  </div>
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="createActivityForm.get('sendReminder').value === 'Y'">
+            <ng-container
+              *ngIf="createActivityForm.get('sendReminder').value === 'Y'"
+            >
               <div class="col-md-6">
-                <label class="form-label w-100" for="reminderTime">Reminder Time</label>
+                <label class="form-label w-100" for="reminderTime"
+                  >Reminder Time</label
+                >
                 <input
                   type="datetime-local"
                   class="form-control"
@@ -535,7 +765,13 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createActivity()"
+        >
+          Save details
+        </button>
       </div>
     </div>
   </div>
@@ -547,11 +783,15 @@
   #newNote
   id="newNote"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="exampleModalLabel"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'note' : 'new note' }}</h5>
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }} a
+          {{ editMode ? "note" : "new note" }}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -564,42 +804,92 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.noteSubject === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="noteSubject">Subject</label>
+                <label class="form-label w-100" for="noteSubject"
+                  >Subject</label
+                >
                 <input
                   type="text"
                   class="form-control"
                   id="noteSubject"
                   formControlName="noteSubject"
-                  [ngClass]="{ 'is-invalid': f['noteSubject']?.invalid && (f['noteSubject']?.dirty || f['noteSubject']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['noteSubject']?.invalid &&
+                      (f['noteSubject']?.dirty || f['noteSubject']?.touched)
+                  }"
                 />
-                <div *ngIf="f['noteSubject']?.invalid && (f['noteSubject']?.dirty || f['noteSubject']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['noteSubject']?.errors['required']">Subject is required</div>
+                <div
+                  *ngIf="
+                    f['noteSubject']?.invalid &&
+                    (f['noteSubject']?.dirty || f['noteSubject']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['noteSubject']?.errors['required']">
+                    Subject is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.relateTo === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="relateTo">Related To</label>
-                <select id="relateTo" class="form-select" formControlName="relateTo"
-                        [ngClass]="{ 'is-invalid': f['relateTo']?.invalid && (f['relateTo']?.dirty || f['relateTo']?.touched) }">
+                <label class="form-label w-100" for="relateTo"
+                  >Related To</label
+                >
+                <select
+                  id="relateTo"
+                  class="form-select"
+                  formControlName="relateTo"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['relateTo']?.invalid &&
+                      (f['relateTo']?.dirty || f['relateTo']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="f['relateTo']?.invalid && (f['relateTo']?.dirty || f['relateTo']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['relateTo']?.errors['required']">Related to is required</div>
+                <div
+                  *ngIf="
+                    f['relateTo']?.invalid &&
+                    (f['relateTo']?.dirty || f['relateTo']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['relateTo']?.errors['required']">
+                    Related to is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.noteDescription === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="noteDescription">Description</label>
+                <label class="form-label w-100" for="noteDescription"
+                  >Description</label
+                >
                 <textarea
                   class="form-control"
                   id="noteDescription"
-                  formControlName="noteDescription" rows="3"
-                  [ngClass]="{ 'is-invalid': f['noteDescription']?.invalid && (f['noteDescription']?.dirty || f['noteDescription']?.touched) }"></textarea>
-                <div *ngIf="f['noteDescription']?.invalid && (f['noteDescription']?.dirty || f['noteDescription']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['noteDescription']?.errors['required']">Description is required</div>
+                  formControlName="noteDescription"
+                  rows="3"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['noteDescription']?.invalid &&
+                      (f['noteDescription']?.dirty ||
+                        f['noteDescription']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    f['noteDescription']?.invalid &&
+                    (f['noteDescription']?.dirty ||
+                      f['noteDescription']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['noteDescription']?.errors['required']">
+                    Description is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -607,14 +897,36 @@
               <div class="col-md-12">
                 <label class="form-label w-100">Attachment</label>
                 <div class="mt-2" (change)="onFileChange($event)">
-                  <img *ngIf="url !== '' && url" [src]="url" alt="" id="photo" />
-                  <input type="file" id="inputImg" accept="image/jpeg, image/png" hidden />
-                  <label *ngIf="url === ''" for="inputImg" class="img_upload">Upload file</label>
-                  <label for="inputImg" *ngIf="url !== ''" class="img_edit">{{ 'entities.edit' | translate | titlecase }}</label>
+                  <img
+                    *ngIf="url !== '' && url"
+                    [src]="url"
+                    alt=""
+                    id="photo"
+                  />
+                  <input
+                    type="file"
+                    id="inputImg"
+                    accept="image/jpeg, image/png"
+                    hidden
+                  />
+                  <label *ngIf="url === ''" for="inputImg" class="img_upload"
+                    >Upload file</label
+                  >
+                  <label for="inputImg" *ngIf="url !== ''" class="img_edit">{{
+                    "entities.edit" | translate | titlecase
+                  }}</label>
                 </div>
 
-                <div *ngIf="f['endDate']?.invalid && (f['endDate']?.dirty || f['endDate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['endDate']?.errors['required']">End date is required</div>
+                <div
+                  *ngIf="
+                    f['endDate']?.invalid &&
+                    (f['endDate']?.dirty || f['endDate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['endDate']?.errors['required']">
+                    End date is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -634,11 +946,15 @@
   #newTask
   id="newTask"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="exampleModalLabel"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'task' : 'new task' }}</h5>
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }} a
+          {{ editMode ? "task" : "new task" }}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -651,72 +967,148 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.taskSubject === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="taskSubject">Subject</label>
+                <label class="form-label w-100" for="taskSubject"
+                  >Subject</label
+                >
                 <input
                   type="text"
                   class="form-control"
                   id="taskSubject"
                   formControlName="taskSubject"
-                  [ngClass]="{ 'is-invalid': h['taskSubject']?.invalid && (h['taskSubject']?.dirty || h['taskSubject']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      h['taskSubject']?.invalid &&
+                      (h['taskSubject']?.dirty || h['taskSubject']?.touched)
+                  }"
                 />
-                <div *ngIf="h['taskSubject']?.invalid && (h['taskSubject']?.dirty || h['taskSubject']?.touched)" class="form-text text-danger">
-                  <div *ngIf="h['taskSubject']?.errors['required']">Subject is required</div>
+                <div
+                  *ngIf="
+                    h['taskSubject']?.invalid &&
+                    (h['taskSubject']?.dirty || h['taskSubject']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="h['taskSubject']?.errors['required']">
+                    Subject is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.taskStartDate === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="taskStartDate">Start Date</label>
+                <label class="form-label w-100" for="taskStartDate"
+                  >Start Date</label
+                >
                 <input
                   type="date"
                   class="form-control"
                   id="taskStartDate"
                   formControlName="taskStartDate"
-                  [ngClass]="{ 'is-invalid': h['taskStartDate']?.invalid && (h['taskStartDate']?.dirty || h['taskStartDate']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      h['taskStartDate']?.invalid &&
+                      (h['taskStartDate']?.dirty || h['taskStartDate']?.touched)
+                  }"
                 />
-                <div *ngIf="h['taskStartDate']?.invalid && (h['taskStartDate']?.dirty || h['taskStartDate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="h['taskStartDate']?.errors['required']">Start date is required</div>
+                <div
+                  *ngIf="
+                    h['taskStartDate']?.invalid &&
+                    (h['taskStartDate']?.dirty || h['taskStartDate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="h['taskStartDate']?.errors['required']">
+                    Start date is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.taskEndDate === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="taskEndDate">End Date</label>
+                <label class="form-label w-100" for="taskEndDate"
+                  >End Date</label
+                >
                 <input
                   type="date"
                   class="form-control"
                   id="taskEndDate"
                   formControlName="taskEndDate"
-                  [ngClass]="{ 'is-invalid': h['taskEndDate']?.invalid && (h['taskEndDate']?.dirty || h['taskEndDate']?.touched) }"
+                  [ngClass]="{
+                    'is-invalid':
+                      h['taskEndDate']?.invalid &&
+                      (h['taskEndDate']?.dirty || h['taskEndDate']?.touched)
+                  }"
                 />
-                <div *ngIf="h['taskEndDate']?.invalid && (h['taskEndDate']?.dirty || h['taskEndDate']?.touched)" class="form-text text-danger">
-                  <div *ngIf="h['taskEndDate']?.errors['required']">End date is required</div>
+                <div
+                  *ngIf="
+                    h['taskEndDate']?.invalid &&
+                    (h['taskEndDate']?.dirty || h['taskEndDate']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="h['taskEndDate']?.errors['required']">
+                    End date is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.taskRelatedTo === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="taskRelatedTo">Related To</label>
-                <select id="taskRelatedTo" class="form-select" formControlName="taskRelatedTo"
-                        [ngClass]="{ 'is-invalid': h['taskRelatedTo']?.invalid && (h['taskRelatedTo']?.dirty || h['taskRelatedTo']?.touched) }">
+                <label class="form-label w-100" for="taskRelatedTo"
+                  >Related To</label
+                >
+                <select
+                  id="taskRelatedTo"
+                  class="form-select"
+                  formControlName="taskRelatedTo"
+                  [ngClass]="{
+                    'is-invalid':
+                      h['taskRelatedTo']?.invalid &&
+                      (h['taskRelatedTo']?.dirty || h['taskRelatedTo']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="h['taskRelatedTo']?.invalid && (h['taskRelatedTo']?.dirty || h['taskRelatedTo']?.touched)" class="form-text text-danger">
-                  <div *ngIf="h['taskRelatedTo']?.errors['required']">Related to is required</div>
+                <div
+                  *ngIf="
+                    h['taskRelatedTo']?.invalid &&
+                    (h['taskRelatedTo']?.dirty || h['taskRelatedTo']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="h['taskRelatedTo']?.errors['required']">
+                    Related to is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.priority === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="priority">Priority</label>
-                <select id="priority" class="form-select" formControlName="priority"
-                        [ngClass]="{ 'is-invalid': h['priority']?.invalid && (h['priority']?.dirty || h['priority']?.touched) }">
+                <select
+                  id="priority"
+                  class="form-select"
+                  formControlName="priority"
+                  [ngClass]="{
+                    'is-invalid':
+                      h['priority']?.invalid &&
+                      (h['priority']?.dirty || h['priority']?.touched)
+                  }"
+                >
                   <option value=""></option>
                   <option value=""></option>
                 </select>
-                <div *ngIf="h['priority']?.invalid && (h['priority']?.dirty || h['priority']?.touched)" class="form-text text-danger">
-                  <div *ngIf="h['priority']?.errors['required']">Priority is required</div>
+                <div
+                  *ngIf="
+                    h['priority']?.invalid &&
+                    (h['priority']?.dirty || h['priority']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="h['priority']?.errors['required']">
+                    Priority is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -747,5 +1139,8 @@
   <!---Use content projection !-->
 </app-dynamic-simple-modal>
 <!-- add backdrop element that is shown when the allUsersModalVisible is true and has a lower z-index value -->
-<div class="modal-backdrop fade" *ngIf="allUsersModalVisible"
-     [style.z-index]="firstModalZIndex"></div>
+<div
+  class="modal-backdrop fade"
+  *ngIf="allUsersModalVisible"
+  [style.z-index]="firstModalZIndex"
+></div>

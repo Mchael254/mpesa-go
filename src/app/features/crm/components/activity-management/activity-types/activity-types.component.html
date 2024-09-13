@@ -1,7 +1,8 @@
 <div class="base-content-section">
   <div class="row me-4">
     <div class="col-8">
-      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
       {
         label: 'Administration',
         url: '/home/crm'
@@ -18,46 +19,57 @@
         label: 'Activity types',
         url: ''
       }
-    ]">
+    ]"
+      >
       </app-dynamic-breadcrumb>
     </div>
   </div>
   <div class="card">
     <div class="card-body">
-
       <div class="row mb-2">
         <div class="col-md-12">
-          <label class="form-label w-100 text-black fs-5 fw-medium" for="sendReminder">System</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="CRM">
-            <label class="form-check-label text-black" for="sendReminder">
-              Customer relationship management system
-            </label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="FMS">
-            <label class="form-check-label text-black" for="sendReminder">
-              Financial management system
-            </label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="GIS">
-            <label class="form-check-label text-black" for="sendReminder">
-              General insurance system
-            </label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="HRMS">
-            <label class="form-check-label text-black" for="sendReminder">
-              Human resource management system
-            </label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="sendReminder" name="sendReminder" value="LMS">
-            <label class="form-check-label text-black" for="sendReminder">
-              Life management system
-            </label>
-          </div>
+          <label
+            class="form-label w-100 text-black fs-5 fw-medium"
+            for="sendReminder"
+            >System</label
+          >
+          <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
+            <p class="mt-3 fw-bold">{{ "crm.system_roles" | translate }}</p>
+            <div class="form-div px-3">
+              <form>
+                <div class="row">
+                  <ng-container *ngFor="let system of systems">
+                    <div class="col-sm-4 my-2">
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input select-system"
+                          type="radio"
+                          name="system"
+                          value="{{ system.id }}"
+                          (click)="selectSystem(system)"
+                          [checked]="selectedSystem?.id === system.id"
+                        />
+                        <label class="form-check-label" for="{{ system.id }}">{{
+                          system.systemName | titlecase
+                        }}</label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </form>
+            </div>
+          </ng-container>
+          <ng-template #showSystemsLoading>
+            <div class="my-5 mx-5">
+              <ngx-spinner
+                type="ball-clip-rotate-multiple"
+                [fullScreen]="false"
+                color="#00529B"
+                size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"
+              ></ngx-spinner>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -72,14 +84,17 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefineActivityTypeModal()"></i>
+            <span class="icon-circle" (click)="openDefineActivityTypeModal()">
+              <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editActivityType()"></i>
+            <span class="icon-circle" (click)="editActivityType()">
+              <i class="pi pi-pencil"></i>
             </span>
-            <span class="icon-circle">
+            <span
+              class="icon-circle"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteActivityTypeModal"
+            >
               <i class="fa-regular fa-trash-can"></i>
             </span>
           </div>
@@ -99,21 +114,21 @@
         [scrollable]="true"
         [(selection)]="selectedActivityType"
         selectionMode="single"
-        dataKey="code"
+        dataKey="id"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
-
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-
+            <th pSortableColumn="gis_exception_code">
+              Description <p-sortIcon field="gis_exception_code"></p-sortIcon>
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-activityType>
-          <tr>
-            <td></td>
+          <tr [pSelectableRow]="activityType" (click)="attachSystem()">
+            <td>{{ activityType.desc }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -132,11 +147,14 @@
   #newActivityType
   id="newActivityType"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="exampleModalLabel"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} an {{ editMode ? 'activity type' : 'activity type' }}</h5>
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }} an activity type
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -149,14 +167,30 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.description === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="description">Description</label>
+                <label class="form-label w-100" for="description"
+                  >Description</label
+                >
                 <textarea
                   class="form-control"
                   id="description"
-                  formControlName="description" rows="3"
-                  [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }"></textarea>
-                <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                  formControlName="description"
+                  rows="3"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['description']?.invalid &&
+                      (f['description']?.dirty || f['description']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    f['description']?.invalid &&
+                    (f['description']?.dirty || f['description']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['description']?.errors['required']">
+                    Description is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -164,7 +198,45 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createActivityType()"
+        >
+          Save details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Delete Activity Modal -->
+<div
+  class="modal fade"
+  id="deleteActivityModal"
+  tabindex="-1"
+  aria-labelledby="deleteActivityModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteActivityModalLabel">
+          Are you sure you want to delete the activity type
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
