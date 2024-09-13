@@ -126,9 +126,10 @@
     align-items: center;
     background-color: white;
     border-radius: 4px;
-    min-height: 120px;
     margin-bottom: 30px;
     padding-left: 50px;
+    height: 76px;
+    width: 100%;
     
 }
 
@@ -147,22 +148,36 @@
 }
 
 .label-name {
-    color: grey;
     margin-right: 10px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .label-desc {
-    color: black;
+    color: #000000;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
 }
 
 .profile {
-    padding-right: 30px;
+    padding-right: 50px;
 }
 
 .dashboard {
     padding-bottom: 8px;
-    font-weight: 400;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
     font-size: 20px;
+    line-height: 20px;
+    color: #00529B;
 }
 
   .container2 {
@@ -202,9 +217,23 @@ table {
     margin-bottom: 40px;
 }
 
+.td-label {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #00529B;
+}
+
 .td-data {
-    color: black;
     white-space: nowrap;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #000000;
 }
 
 td:first-child {
@@ -217,16 +246,28 @@ td:first-child {
     top: 0;
     right: 0;
     background-color: #00529B;
-    color: white;
     padding: 1px 10px 1px 20px;
     border-radius: 0 15px 0 20px;
     width: 100px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #FFFFFF;
+    justify-content: center;
+    text-align: center;
 }
 
 .title {
     width: 100%;
     margin-bottom: 10px;
-    color: #000;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 20px;
+    color: #000000;
 }
 
 .scroll-content {
@@ -246,6 +287,11 @@ td:first-child {
         align-items: flex-start;
         padding: 20px;
         flex-wrap: wrap;
+        height: auto;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        overflow: auto;
     }
 
     .container > div {
@@ -259,6 +305,7 @@ td:first-child {
         flex-grow: 1;
         width: 100%;
         text-align: center;
+        justify-content: center;align-items: center;
     }
 
     .info > div {
@@ -274,5 +321,7 @@ td:first-child {
         width: 100%;
         text-align: center;
         padding-left: 20px;
+        justify-content: center;
+        align-items: center;
     }
 }

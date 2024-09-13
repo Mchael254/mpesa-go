@@ -8,20 +8,20 @@
             <!-- <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
                 Pension account summary</div> -->
                 <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
-                    {{ investment || investmentWithRider ? 'Investment summary' : 'Pension account summary' }}
+                    {{ (investment || investmentWithRider) ? ("lms.grp.member_portal.investment_summary" | translate) : ("lms.grp.member_portal.pension_account_summary" | translate) }}
                 </div>                
                 <div *ngIf="pensionWithLifeRider || investmentWithRider" class="nav-link" (click)="showContent('cover_types')"
-                [class.active]="selectedContent === 'cover_types'">Cover types</div>
+                [class.active]="selectedContent === 'cover_types'">{{ "lms.grp.member_portal.cover_types" | translate }}</div>
             <div class="nav-link" (click)="showContent('transactions')"
-                [class.active]="selectedContent === 'transactions'">Transactions</div>
+                [class.active]="selectedContent === 'transactions'">{{ "lms.grp.member_portal.transactions" | translate }}</div>
         </div>
     </div>
 
     <div class="container2">
         <ng-container *ngIf="!gla">
         <div *ngIf="selectedContent === 'summary'">
-            <div class="title-desc" *ngIf="!investment && !investmentWithRider">Pension account summary</div>
-            <div class="title-desc" *ngIf="investment || investmentWithRider">Investment summary</div>
+            <div class="title-desc" *ngIf="!investment && !investmentWithRider">{{ "lms.grp.member_portal.pension_account_summary" | translate }}</div>
+            <div class="title-desc" *ngIf="investment || investmentWithRider">{{ "lms.grp.member_portal.investment_summary" | translate }}</div>
 
 
             <div class="pension-table-container col-12" *ngIf="memberDetails">
@@ -29,31 +29,31 @@
                 <div class="col-6">
                     <table class="pension-table">
                         <tr>
-                            <td class="table-label">Name:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.name" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.name | titlecase }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Date of birth:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.date_of_birth" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.date_of_birth }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Date of joining scheme:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.date_of_joining_scheme" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.effective_from_date }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Years to retirement:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.years_to_retirement" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.future_service_years }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
-                            <td class="table-label">Employee contribution:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.employee_contribution" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.employee_contri | number }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
-                            <td class="table-label">Interest:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.interest" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.pens_interest_pct }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Interim interest rate:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.interim_interest_rate" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.pens_interest_pct }}</td>
                         </tr>
                     </table>
@@ -62,35 +62,35 @@
                 <div class="col-6">
                     <table class="pension-table">
                         <tr>
-                            <td class="table-label">Gender:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.gender" | translate }}:</td>
                             <td class="table-label-desc">{{ getGenderLabel(memberDetails[0]?.gender) }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Member number:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.member_number" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.member_number }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Group:</td>
-                            <td class="table-label-desc">{{ memberDetails[0]?.scheme_name }}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.group" | translate }}:</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.scheme_name | titlecase }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
-                            <td class="table-label">Employer contribution:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.employer_contribution" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.employer_contri | number }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
-                            <td class="table-label">Annual salary:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.annual_salary" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.annual_earnings | number }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
-                            <td class="table-label">Contribution:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.contribution" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.name }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
-                            <td class="table-label">Total fund value:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.total_fund_value" | translate }}:</td>
                             <td class="table-label-desc">{{ memberDetails[0]?.name }}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Status:</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.status" | translate }}:</td>
                             <td class="table-label-desc">{{ getStatusLabel(memberDetails[0]?.pension_status) }}</td>
                         </tr>
                     </table>
@@ -101,7 +101,7 @@
             <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div>
             <div class="pension-table-container col-12">
                 <div class="col-6">
-                    <div class="title-desc" style="color: black;">Employee contribution</div>
+                    <div class="emp-contr">Employee contribution</div>
 
                     <table class="pension-table">
                         <tr>
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="col-6">
-                    <div class="title-desc col-6" style="color: black;">Employer contribution</div>
+                    <div class="emp-contr col-6">Employer contribution</div>
 
                     <table class="pension-table">
                         <tr>
@@ -155,20 +155,20 @@
                 </div>
             </div>
 
-            <div class="statement-desc" style="color: black;">Pension account totals <b>Ksh. 20,000,000</b></div>
+            <div class="account-totals">Pension account totals <b>Ksh. 20,000,000</b></div>
         </ng-container>
             <div class="download-link mt-2" *ngIf="blobUrl">
                 <a href="#" (click)="downloadReport($event)">
                   <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
                   <span class="download-link">
-                    {{ investment || investmentWithRider ? 'Investment summary report' : 'Pension account summary report' }}
+                    {{ (investment || investmentWithRider) ? ("lms.grp.member_portal.investment_summary_report" | translate) : ("lms.grp.member_portal.pension_account_summary_report" | translate) }}
                   </span>
                 </a>
               </div>
 
-            <div class="title-desc mt-3">Valuations</div>
+            <div class="title-desc mt-3">{{ "lms.grp.member_portal.valuations" | translate }}</div>
             <div class="filter-options">
-                <label for="filterBy" style="color: black;">Filter by</label>
+                <label for="filterBy" style="color: black;">{{ "lms.grp.member_portal.filter_by" | translate }}</label>
                 <select class="form-select">
                     <ng-container *ngFor="let option ">
                         <option [value]="">{{ option['category_category'] | titlecase }}</option>
@@ -184,13 +184,13 @@
             <p-table [value]="memberBalances" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: calc(100% / 7);">Year</th>
-                        <th style="width: calc(100% / 7);">Period</th>
-                        <th id="table-align" style="width: calc(100% / 7);">Balance B/F</th>
-                        <th id="table-align" style="width: calc(100% / 7);">Contribution</th>
-                        <th id="table-align" style="width: calc(100% / 7);">Rate</th>
-                        <th id="table-align" style="width: calc(100% / 7);">Interest</th>
-                        <th id="table-align"  style="width: calc(100% / 7);">Balance C/F</th>
+                        <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.year" | translate }}</th>
+                        <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.period" | translate }}</th>
+                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_brought_forward" | translate }}</th>
+                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.contribution" | translate }}</th>
+                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.rate" | translate }}</th>
+                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.interest" | translate }}</th>
+                        <th id="table-align"  style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_carried_forward" | translate }}</th>
                         <th class="action-column" style="width: 10px;"></th>
                     </tr>
                 </ng-template>
@@ -208,8 +208,8 @@
                                 <p-overlayPanel #op>
                                     <div>
                                         <!-- Download button -->
-                                        <p-button label="Download" icon="pi pi-download" styleClass="p-button-rounded p-button-text"
-                                            severity="primary"></p-button>
+                                        <p-button label="" icon="pi pi-download" styleClass="p-button-rounded p-button-text"
+                                            severity="primary">{{ "lms.grp.member_portal.download" | translate }}</p-button>
                                     </div>
                                 </p-overlayPanel>
                                 <!-- Ellipsis container -->
@@ -225,7 +225,7 @@
             <div class=" mt-3">
                 <a href="#">
                     <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
-                    <span class="download-link">Valuations report</span>
+                    <span class="download-link">{{ "lms.grp.member_portal.valuations_report" | translate }}</span>
                 </a>
             </div>
 
@@ -257,18 +257,18 @@
 
         <ng-container *ngIf="!gla">
         <div *ngIf="selectedContent === 'transactions'">
-            <div class="title-desc">Receipts</div>
+            <div class="title-desc">{{ "lms.grp.member_portal.receipts" | translate }}</div>
             <div>
                 <div class="filter-options">
                     <select class="form-select">
-                        <option value="" disabled selected>Select Year</option>
+                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_year" | translate }}</option>
                         <ng-container *ngFor="let year of years">
                             <option [value]="year">{{ year }}</option>
                         </ng-container>
                     </select>
 
                     <select class="form-select">
-                        <option value="" disabled selected>Select Month</option>
+                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_month" | translate }}</option>
                         <ng-container *ngFor="let month of months">
                             <option [value]="month">{{ month }}</option>
                         </ng-container>
@@ -279,14 +279,14 @@
                 [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: calc(100% / 8);">Receipt number</th>
-                            <th style="width: calc(100% / 8);">Date</th>
-                            <th id="table-align" style="width: calc(100% / 8);">Contribution</th>
-                            <th style="width: calc(100% / 8);">Voluntary contribution</th>
-                            <th style="width: calc(100% / 8);">Transfer value</th>
-                            <th id="table-align" style="width: calc(100% / 8);">Severance</th>
-                            <th id="table-align" style="width: calc(100% / 8);">Account total</th>
-                            <th id="table-align" style="width: calc(100% / 8);">Total pension account</th>
+                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.receipt_number" | translate }}</th>
+                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.date" | translate }}</th>
+                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.contribution" | translate }}</th>
+                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.voluntary_contribution" | translate }}</th>
+                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.transfer_value" | translate }}</th>
+                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.severance" | translate }}</th>
+                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.account_total" | translate }}</th>
+                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.total_pension_account" | translate }}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
@@ -304,17 +304,17 @@
                 </p-table>
             </div>
             <div style="margin-top: 40px;">
-                <div class="title-desc">Withdrawals</div>
+                <div class="title-desc">{{ "lms.grp.member_portal.withdrawals" | translate }}</div>
                 <div class="filter-options">
                     <select class="form-select">
-                        <option value="" disabled selected>Select Year</option>
+                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_year" | translate }}</option>
                         <ng-container *ngFor="let year of years">
                             <option [value]="year">{{ year }}</option>
                         </ng-container>
                     </select>
 
                     <select class="form-select">
-                        <option value="" disabled selected>Select Month</option>
+                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_month" | translate }}</option>
                         <ng-container *ngFor="let month of months">
                             <option [value]="month">{{ month }}</option>
                         </ng-container>
@@ -324,12 +324,12 @@
                 <p-table [value]="withdrawals" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: calc(100% / 6);">Date</th>
-                            <th style="width: calc(100% / 6);">Payment method</th>
-                            <th style="width: calc(100% / 6);">Bank</th>
-                            <th style="width: calc(100% / 6);">Account number</th>
-                            <th style="width: calc(100% / 6);">Payee</th>
-                            <th style="width: calc(100% / 6); text-align: right;">Amount</th>
+                            <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.date" | translate }}</th>
+                            <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.payment_method" | translate }}</th>
+                            <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.bank" | translate }}</th>
+                            <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.account_number" | translate }}</th>
+                            <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.payee" | translate }}</th>
+                            <th style="width: calc(100% / 6); text-align: right;">{{ "lms.grp.member_portal.amount" | translate }}</th>
                             <th class="action-column" style="width: 10px;"></th>
                         </tr>
                     </ng-template>
@@ -413,27 +413,27 @@
 
         <ng-container *ngIf="gla">
             <div>
-            <div class="title-desc" style="font-size: 20px;">Cover types</div>
+            <div class="title-desc">{{ "lms.grp.member_portal.cover_types" | translate }}</div>
             <div class="cvt-container">
                 <div *ngFor="let memCovers of memberCovers; let i = index" class="box">
-                    <label class="active-label">{{memberCovers[0]?.pcm_status | titlecase}}</label>
+                    <label class="active-label">{{ getStatusLabel(memCovers?.pcm_status) }}</label>
                     <div class="scroll-content">
-                    <table>
+                      <table>
                         <tr>
-                            <td>Cover:</td>
-                            <td class="td-data">{{memberCovers[0]?.cvt_desc | titlecase}}</td>
+                          <td class="td-label">{{ "lms.grp.member_portal.cover" | translate }}:</td>
+                          <td class="td-data">{{ memCovers?.cvt_desc | titlecase }}</td>
                         </tr>
                         <tr>
-                            <td>Coverage period:</td>
-                            <td class="td-data">{{ memberCovers[0]?.pcm_cover_wef_date }} - {{ memberCovers[0]?.pcm_cover_wet_date }}</td>
+                          <td class="td-label">{{ "lms.grp.member_portal.coverage_period" | translate }}:</td>
+                          <td class="td-data">{{ memCovers?.pcm_cover_wef_date }} - {{ memCovers?.pcm_cover_wet_date }}</td>
                         </tr>
                         <tr>
-                            <td>Sum assured:</td>
-                            <td class="td-data">{{memberCovers[0]?.pcm_sa | number}}</td>
+                          <td class="td-label">{{ "lms.grp.member_portal.sum_assured" | translate }}:</td>
+                          <td class="td-data">{{ memCovers?.pcm_sa | number }}</td>
                         </tr>
-                    </table>
+                      </table>
                     </div>
-                </div>
+                  </div>
             </div>
             </div>
     
@@ -448,68 +448,68 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title float-left" id="receiptsModal">Receipts summary</h5>
+          <div class="modal-title float-left table-label" style="color: #00529B;" id="receiptsModal">{{ "lms.grp.member_portal.receipt_summary" | translate }}</div>
           <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
           (click)="closeReceiptsModal()"></button>
         </div>
         <div class="modal-body">
             <div class="pension-table-container col-12" *ngIf="detailedMemContrReceipts">
                 <div class="col-6">
-                    <div class="title-desc" style="color: black;">Employee contribution</div>
+                    <div class="emp-contr">{{ "lms.grp.member_portal.employee_contribution" | translate }}</div>
 
                     <table class="receipt-table">
                         <tr>
-                            <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.employee_amount | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.employee_amount | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Trasfer amount:</td>
-                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.transfer_amount" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.annual_voluntary_contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Cost of benefits:</td>
-                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.cost_of_benefits" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Total contribution:</td>
-                            <td class="table-label-desc">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.total_contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="col-6">
-                    <div class="title-desc col-6" style="color: black;">Employer contribution</div>
+                    <div class="emp-contr col-6">{{ "lms.grp.member_portal.employer_contribution" | translate }}</div>
 
                     <table class="receipt-table">
                         <tr>
-                            <td class="table-label">Contribution:</td>
-                            <td class="receipts-summary">{{detailedMemContrReceipts[0]?.employer_amount | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.employer_amount | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Trasfer amount:</td>
-                            <td class="receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.transfer_amount" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.annual_voluntary_contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Cost of benefits:</td>
-                            <td class="receipts-summary">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.cost_of_benefits" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.cost_of_past_benefits | number}}</td>
                         </tr>
                         <tr>
-                            <td class="table-label">Total contribution:</td>
-                            <td class="receipts-summary">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
+                            <td class="table-label">{{ "lms.grp.member_portal.total_contribution" | translate }}:</td>
+                            <td class="table-label-desc receipts-summary">{{detailedMemContrReceipts[0]?.total_amount | number}}</td>
                         </tr>
                     </table>
                 </div>
             </div>
 
-            <div class="statement-desc" style="color: black;">Total account contributions <b>{{ totalContributions | number }}</b></div>
+            <div class="account-totals">{{ "lms.grp.member_portal.total_account_contributions" | translate }} <b>{{ totalContributions | number }}</b></div>
             
         </div>
         <div class="modal-footer">

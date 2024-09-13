@@ -204,7 +204,6 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     if(memberPensionDepReceipts){
       this.pensionDepositCode = memberPensionDepReceipts.pension_member_dep_code;
       this.policyMemCode = memberPensionDepReceipts.policy_member_code;
-      log.info("memberPensionDepReceiptsPassed", memberPensionDepReceipts, this.pensionDepositCode, this.policyMemCode);
       this.getDetMemDepConReceipts();
       this.showReceiptsModal();
       this.cdr.detectChanges();
@@ -242,26 +241,20 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   getMemberDetails() {
     this.dashboardService.getMemberDetails(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberDetailsDTO[]) => {
-    // this.dashboardService.getMemberDetails(2021111, 20211250237).subscribe((res: MemberDetailsDTO[]) => {
       this.memberDetails =  res;
-      log.info("getMemberDetails", this.memberDetails)
       this.cdr.detectChanges();
     });
   }
 
   getMemberAllPensionDepositReceipts() {
     this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
-      // this.dashboardService.getMemberAllPensionDepositReceipts(2021118, 20211250493).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
       this.memberPensionDepReceipts = res;
-      log.info("MemberAllPensionDepositReceipts-->", this.memberPensionDepReceipts)
       this.cdr.detectChanges();
     });
   }
 
   getValuations() {
     this.dashboardService.getMemberBalances(this.selectedPolicyCode, this.policyMemCode).subscribe((res: memberBalancesDTO[]) => {
-      // this.dashboardService.getMemberBalances(2022169, 20221254139).subscribe((res: memberBalancesDTO[]) => {
-      log.info("MemberBalances", res)
       this.memberBalances = res;
       this.cdr.detectChanges();
     });
@@ -269,18 +262,14 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   getMemberCovers() {
     this.dashboardService.getMemberCovers(this.policyMemCode, this.endorsementCode).subscribe((res: MemberCoversDTO[]) => {
-    // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO[]) => {
       this.memberCovers = res;
-      log.info("getMemberCovers", this.memberCovers)
       this.cdr.detectChanges();
     });
   }
 
   getMemberWithdrawals() {
     this.dashboardService.getMemberWithdrawals(this.selectedPolicyCode, this.policyMemCode).subscribe((res: MemberWithdrawalsDTO[]) => {
-      // this.dashboardService.getMemberWithdrawals(2024839, 20241259568).subscribe((res: MemberWithdrawalsDTO[]) => {
       this.withdrawals = res;
-      log.info("withdrawals", this.withdrawals)
       this.cdr.detectChanges();
     });
   }
@@ -288,7 +277,6 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   getReports() {
     this.dashboardService.getReports(this.rptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode).subscribe((res) => {
-      log.info("getReports", res)
       const blob = new Blob([res], { type: 'application/pdf' });
       this.blobUrl = window.URL.createObjectURL(blob);
       this.cdr.detectChanges();
