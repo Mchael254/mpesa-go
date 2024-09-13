@@ -184,6 +184,8 @@ export class ClaimInitiationComponent implements OnInit, OnDestroy {
           }
         });
         this.session_storage.set('claimNumber', this.claimNo);
+        this.session_storage.set('transactionNumber', this.trans_no);
+        this.session_storage.set('polMemCode', +claimformData.policyMember);
 
         //to remove once fetched
         this.session_storage.set('polAndProdCode', {
