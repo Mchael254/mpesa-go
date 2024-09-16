@@ -199,6 +199,9 @@
     "Activities": "Activities",
     "Activity Types": "Activity Types",
     "Priority level & Activity status": "Priority level & Activity status",
+    "Leads and Potentials": "Leads and Potentials",
+    "Lead Sources & Statuses": "Lead Sources & Statuses",
+    "Leads": "Leads",
     "general": "General",
     "life_ind": "Life Individual",
     "life_group": "Life Group",
@@ -260,7 +263,11 @@
     "threshold_type": "Threshold Type",
     "threshold_value": "Threshold Value",
     "select_template": "Select Template",
-    "no_templates_found": "No Template Found"
+    "no_templates_found": "No Template Found",
+    "lead_sources": "Lead Sources",
+    "no_lead_source_found": "No Lead Source found",
+    "lead_statuses": "Lead Statuses",
+    "no_lead_status_found": "No Lead Status found"
   },
   "entities": {
     "account_number": "Account Number",

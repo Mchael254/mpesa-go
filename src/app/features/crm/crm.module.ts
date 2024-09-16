@@ -41,6 +41,7 @@ import { ActivitiesComponent } from './components/activity-management/activities
 import { EntitiesModule } from '../entities/entities.module';
 import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
 import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
+import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses/lead-sources-statuses.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { PriorityLevelsActivityStatusComponent } from './components/activity-man
     ActivitiesComponent,
     ActivityTypesComponent,
     PriorityLevelsActivityStatusComponent,
+    LeadSourcesStatusesComponent,
   ],
   imports: [
     CommonModule,
