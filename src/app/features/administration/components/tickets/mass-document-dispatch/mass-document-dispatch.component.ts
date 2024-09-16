@@ -434,9 +434,10 @@ export class MassDocumentDispatchComponent implements OnInit {
   fetchReport(report: any) {
     this.isLoadingReport = true;
 
-    console.log('rpt>', report);
+    log.info('rpt>', report);
     if (!report.reportCode) {
       log.info('no report code');
+      this.isLoadingReport = false;
       return
     }
     this.reportService.fetchReport(report?.reportCode)
