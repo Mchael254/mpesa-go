@@ -81,6 +81,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     });
   }
 
+  /**
+   * The function opens the treaty setup modal window.
+   */
   openTreatySetupModal() {
     const modal = document.getElementById('treatySetupToggle');
     if (modal) {
@@ -93,6 +96,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function closes the treaty setup modal window.
+   */
   closeTreatySetupModal() {
     const modal = document.getElementById('treatySetupToggle');
     if (modal) {
@@ -105,6 +111,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function opens the risk ceding modal window.
+   */
   openRiskCedingModal() {
     const modal = document.getElementById('riskCedingEditToggle');
     if (modal) {
@@ -117,6 +126,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function closes the risk ceding modal window.
+   */
   closeRiskCedingModal() {
     const modal = document.getElementById('riskCedingEditToggle');
     if (modal) {
@@ -129,6 +141,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function opens the treaty cessions modal window.
+   */
   openTreatyCessionsModal() {
     const modal = document.getElementById('treatyCessionsEditToggle');
     if (modal) {
@@ -141,6 +156,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+   /**
+   * The function closes the treaty cessions modal window.
+   */
   closeTreatyCessionsModal() {
     const modal = document.getElementById('treatyCessionsEditToggle');
     if (modal) {
@@ -153,6 +171,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function opens the facre ceding modal window.
+   */
   openFacreCedingModal() {
     const modal = document.getElementById('facreCedingEditToggle');
     if (modal) {
@@ -165,6 +186,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function closes the facre ceding modal window.
+   */
   closeFacreCedingModal() {
     const modal = document.getElementById('facreCedingEditToggle');
     if (modal) {
@@ -177,6 +201,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+  /**
+   * The function opens the policy facre ceding modal window.
+   */
   openPolicyFacreCedingModal() {
     const modal = document.getElementById('policyFacreCedingEditToggle');
     if (modal) {
@@ -189,6 +216,9 @@ export class ReinsuranceApportionmentComponent implements OnInit {
     }
   }
 
+   /**
+   * The function closes the policy facre ceding modal window.
+   */
   closePolicyFacreCedingModal() {
     const modal = document.getElementById('policyFacreCedingEditToggle');
     if (modal) {
