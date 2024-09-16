@@ -32,9 +32,13 @@ export class ReinsuranceService {
     return this.api.POST<any>(`api/v1/treaties/populate`, data, API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getTreatyParticipant(reinsuranceRiskDetailsCode: number): Observable<TreatyParticipantsDTO[]> {
+  getTreatyParticipant(reinsuranceRiskDetailsCode: number, treatyParticipantCode: number): Observable<TreatyParticipantsDTO[]> {
 
-    return this.api.GET<TreatyParticipantsDTO[]>(`api/v1/treatyParticipants?reinsuranceRiskDetailsCode=${reinsuranceRiskDetailsCode}`,
+    let params = new HttpParams()
+      .set('reinsuranceRiskDetailsCode', `${reinsuranceRiskDetailsCode}`)
+      .set('treatyParticipantCode', `${treatyParticipantCode}`)
+
+    return this.api.GET<TreatyParticipantsDTO[]>(`api/v1/treatyParticipants?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 

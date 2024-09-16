@@ -125,7 +125,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    */
   getTreatyParticipant() {
     this.spinner.show();
-    this.reinsuranceService.getTreatyParticipant(this.reinsuranceRiskDetailsData?.content[0]?.code)
+    this.reinsuranceService.getTreatyParticipant(this.reinsuranceRiskDetailsData?.content[0]?.code, this.reinsuranceRiskDetailsData?.content[0]?.code)
       .pipe(
         untilDestroyed(this),
       )
