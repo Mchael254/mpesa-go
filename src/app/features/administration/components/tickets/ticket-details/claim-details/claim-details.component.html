@@ -244,7 +244,7 @@
   </div>
 </div>
 
-<div class="mt-4 mb-2">
+<div class="mt-4 mb-2" *ngIf ="claimTransaction">
  <app-revision-details
    [selectedSpringTickets]="selectedSpringTickets"
    [claimPaymentTransaction]="claimPaymentTransaction"
