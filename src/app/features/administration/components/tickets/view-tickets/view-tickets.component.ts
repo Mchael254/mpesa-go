@@ -140,6 +140,7 @@ export class ViewTicketsComponent implements OnInit {
       // Navigate to the same route without query parameters
       this.router.navigate([], navigationExtras);
     }*/
+    this.localStorageService.removeItem('policyDetails');
   }
 
   getAllTicketsFromCubeJs() {
