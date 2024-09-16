@@ -1,0 +1,338 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="leadsBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="col-6">
+        <div class="card mb-3">
+          <div class="card-header bg-transparent float-start">
+            <span class="float-start mt-3">{{
+              "crm.lead_sources" | translate
+            }}</span>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-sm-6 col-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search by description"
+                  aria-label="search"
+                  aria-describedby="search"
+                  (input)="filterLeadSources($event)"
+                />
+              </div>
+              <div class="col-sm-6 col-6">
+                <div class="float-end">
+                  <span class="icon-circle"
+                    ><i
+                      class="fa-solid fa-plus"
+                      (click)="createLeadSource()"
+                    ></i
+                  ></span>
+                  <span class="icon-circle"
+                    ><i class="pi pi-pencil" (click)="editLeadSource()"></i
+                  ></span>
+                  <span class="icon-circle"
+                    ><i
+                      class="fa-regular fa-trash-can"
+                      (click)="deleteLeadSource()"
+                    ></i
+                  ></span>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-12">
+                <p-table
+                  #sourceTable
+                  [value]="leadSourcesData"
+                  styleClass="p-datatable-sm"
+                  responsiveLayout="scroll"
+                  [scrollable]="true"
+                  scrollHeight="400px"
+                  class="ui-datatable"
+                  [globalFilterFields]="['description']"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="head" pSortableColumn="description">
+                        {{ "crm.description" | translate
+                        }}<p-sortIcon field="description"></p-sortIcon>
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-source>
+                    <tr
+                      class="custom-table"
+                      (click)="onLeadSourcesRowSelect(source)"
+                      [class.selected]="selectedLeadSource === source"
+                    >
+                      <td class="body">{{ source.description }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8">
+                        {{ "crm.no_lead_source_found" | translate }}.
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card mb-3">
+          <div class="card-header bg-transparent float-start">
+            <span class="float-start mt-3">{{
+              "crm.lead_statuses" | translate
+            }}</span>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-sm-6 col-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search by description"
+                  aria-label="search"
+                  aria-describedby="search"
+                  (input)="filterLeadStatuses($event)"
+                />
+              </div>
+              <div class="col-sm-6 col-6">
+                <div class="float-end">
+                  <span class="icon-circle"
+                    ><i
+                      class="fa-solid fa-plus"
+                      (click)="createLeadStatus()"
+                    ></i
+                  ></span>
+                  <span class="icon-circle"
+                    ><i class="pi pi-pencil" (click)="editLeadStatus()"></i
+                  ></span>
+                  <span class="icon-circle"
+                    ><i
+                      class="fa-regular fa-trash-can"
+                      (click)="deleteLeadStatus()"
+                    ></i
+                  ></span>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-12">
+                <p-table
+                  #statusTable
+                  [value]="leadStatusesData"
+                  styleClass="p-datatable-sm"
+                  responsiveLayout="scroll"
+                  [scrollable]="true"
+                  scrollHeight="400px"
+                  class="ui-datatable"
+                  [globalFilterFields]="['description']"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="head" pSortableColumn="description">
+                        {{ "crm.description" | translate
+                        }}<p-sortIcon field="description"></p-sortIcon>
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-status>
+                    <tr
+                      class="custom-table"
+                      (click)="onLeadStatusesRowSelect(status)"
+                      [class.selected]="selectedLeadStatus === status"
+                    >
+                      <td class="body">{{ status.description }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8">
+                        {{ "crm.no_lead_status_found" | translate }}.
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="sourceModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="false"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          {{ "crm.lead_sources" | translate }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeLeadSourceModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createLeadSourceForm">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="description" class="form-label">{{
+                "crm.description" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                placeholder="Description"
+                formControlName="description"
+                [ngClass]="{
+                  'is-invalid':
+                    f['description']?.invalid &&
+                    (f['description']?.dirty ||
+                      f['description']?.touched ||
+                      submitted)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['description']?.invalid &&
+                  (f['description']?.dirty ||
+                    f['description']?.touched ||
+                    submitted)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['description']?.errors
+                }"
+              >
+                <div *ngIf="f['description']?.errors['required']">
+                  Description is required
+                </div>
+                <div *ngIf="f['description'].errors?.['maxlength']">
+                  Description cannot exceed 25 characters
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveLeadSource()"
+        >
+          {{ "crm.save_details" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="statusModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="false"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          {{ "crm.lead_statuses" | translate }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeLeadStatusModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createLeadStatusForm">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="statusDescription" class="form-label">{{
+                "crm.description" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="statusDescription"
+                placeholder="Description"
+                formControlName="statusDescription"
+                [ngClass]="{
+                  'is-invalid':
+                    g['statusDescription']?.invalid &&
+                    (g['statusDescription']?.dirty ||
+                      g['statusDescription']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  g['statusDescription']?.invalid &&
+                  (g['statusDescription']?.dirty ||
+                    g['statusDescription']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && g['statusDescription']?.errors
+                }"
+              >
+                <div *ngIf="g['statusDescription']?.errors['required']">
+                  Description is required
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveLeadStatus()"
+        >
+          {{ "crm.save_details" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-reusable-input
+  [modalId]="'leadSourceConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this lead source?'"
+  (confirmed)="confirmLeadSourceDelete()"
+  #leadSourceConfirmationModal
+></app-reusable-input>
+
+<app-reusable-input
+  [modalId]="'leadStatusConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this lead status?'"
+  (confirmed)="confirmLeadStatusDelete()"
+  #leadStatusConfirmationModal
+></app-reusable-input>

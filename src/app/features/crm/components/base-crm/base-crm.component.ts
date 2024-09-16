@@ -90,7 +90,16 @@ Relationship Management) application. Each object has the following properties: 
       label: 'Leads and Potentials',
       link: '',
       showSubItems: false,
-      subItems: [],
+      subItems: [
+        {
+          label: 'Leads',
+          link: '/home/crm',
+        },
+        {
+          label: 'Lead Sources & Statuses',
+          link: '/home/crm/lead-sources-statuses',
+        },
+      ],
     },
     {
       label: 'Activity Management',
