@@ -1050,8 +1050,8 @@
       "commission_amount": "Commission amount",
       "withholding_rate": "Withholding rate",
       "code": "Code",
-      "select_risk_peril":"Select Risk Peril",
-      "risk_service_list":"Risk Service List",
+      "select_risk_peril": "Select Risk Peril",
+      "risk_service_list": "Risk Service List",
       "reassign": "Reassign"
     }
   },
@@ -1265,7 +1265,6 @@
         "proceed_without_investigation": "Proceed without investigation",
         "submit": "Submit",
         "completed": "Completed"
-        
       },
       "service_request": {
         "admin": {
@@ -1399,7 +1398,9 @@
     "view_all": "View All",
     "visualization": "Visualization",
     "yes": "Yes",
-    "ytd_premium": "YTD Premium"
+    "ytd_premium": "YTD Premium",
+    "new_report": "New Report",
+    "new_dashboard": "New Dashboard"
   },
   "setups": {},
   "mngt_wrkflw": {

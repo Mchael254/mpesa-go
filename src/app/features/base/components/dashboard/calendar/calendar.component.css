@@ -3,7 +3,7 @@
   color: var(--primary-color);
   padding: 5px 10px;
   float: right;
-  font-weight: bold
+  font-weight: bold;
 }
 
 .events {
@@ -13,7 +13,7 @@
   padding: 5px;
   height: 390px;
   overflow-y: auto;
-  position: relative
+  position: relative;
 }
 
 .event {
@@ -39,7 +39,6 @@
   font-weight: bold !important;
 }
 
-
 ::ng-deep .card.calendar {
   font-size: 0.9rem;
   border: 0;
@@ -51,10 +50,8 @@
   font-size: 1rem;
 }
 
-
 .text-end {
   cursor: pointer;
-
 }
 .text-end-view {
   border-radius: 2px;
@@ -72,7 +69,6 @@
   padding: 0.6rem 1.3rem;
   font-size: 12px;
 }
-
 
 /* resoponsiveness */
 @media (max-width: 576px) {

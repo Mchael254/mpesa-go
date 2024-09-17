@@ -1,6 +1,7 @@
 .section-title {
   font-size: 15px;
   text-transform: uppercase;
+  cursor: pointer;
 }
 
 .transactions_container {

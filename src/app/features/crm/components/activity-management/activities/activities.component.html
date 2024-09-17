@@ -128,8 +128,8 @@
             <span class="icon-circle">
               <i class="fa-solid fa-plus" (click)="openDefineNoteModal()"></i>
             </span>
-            <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editNote()"></i>
+            <span class="icon-circle" (click)="editNote()">
+              <i class="pi pi-pencil"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -201,8 +201,8 @@
             <span class="icon-circle">
               <i class="fa-solid fa-plus" (click)="openDefineTaskModal()"></i>
             </span>
-            <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editTask()"></i>
+            <span class="icon-circle" (click)="editTask()">
+              <i class="pi pi-pencil"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -768,7 +768,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          (click)="createActivity()"
+          (click)="createUpdateActivity()"
         >
           Save details
         </button>
@@ -1116,7 +1116,13 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createUpdateActivityTask()"
+        >
+          Save details
+        </button>
       </div>
     </div>
   </div>
