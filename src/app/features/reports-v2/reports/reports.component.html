@@ -1,159 +1,201 @@
 <div class="base-content-section dashboard">
-    <div class="row">
-        <div class="col-sm-6 col-12 mb-3">
-            <div class="card fixed-height-card">
-                <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-top">{{ 'report.reports' | translate }}
-                        <!-- <i class="fa fa-chevron-right" aria-hidden="true"></i> -->
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 col-4 card-image">
-                            <img src="assets/images/report-files.png" alt="reports">
-                        </div>
-                        <div class="col-md-8 col-8 float-start d-flex flex-column">
-                            <p class="testimony-txt">
-                                {{ 'report.report_desc' | translate }}
-                            </p>
-                            <div class="mt-auto card-btn">
-                                <button type="button" id="create-report-btn"
-                                    class="btn btn-primary mt-auto align-self-end" (click)="createReports()">
-                                    {{ 'report.explore_reports' | translate | sentenceCase}}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-sm-6 col-12 mb-3">
+      <div class="card fixed-height-card">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3 head-top"
+            >{{ "report.reports" | translate }}
+            <!-- <i class="fa fa-chevron-right" aria-hidden="true"></i> -->
+          </span>
         </div>
-
-        <div class="col-sm-6 col-12 mb-3">
-            <div class="card fixed-height-card">
-                <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-top">{{ 'report.dashboards' | translate }}
-                        <!-- <i class="fa fa-chevron-right" aria-hidden="true"></i> -->
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 col-4 card-image">
-                            <img src="assets/images/dashboard-pie.png" alt="dashboard-reports">
-                        </div>
-                        <div class="col-md-8 col-8 d-flex flex-column">
-                            <p class="testimony-txt">
-                                {{ 'report.dashboard_desc' | translate }}
-                            </p>
-                            <div class="mt-auto card-btn">
-                                <button type="button" class="btn btn-primary" (click)="createDashboards()">
-                                    {{ 'report.explore_dashboard' | translate | sentenceCase }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 col-4 card-image">
+              <img src="assets/images/report-files.png" alt="reports" />
             </div>
+            <div class="col-md-8 col-8 float-start d-flex flex-column">
+              <p class="testimony-txt">
+                {{ "report.report_desc" | translate }}
+              </p>
+              <div class="mt-auto card-btn">
+                <button
+                  type="button"
+                  id="create-report-btn"
+                  class="btn btn-primary mt-auto align-self-end"
+                  (click)="createReports()"
+                >
+                  {{ "report.new_report" | translate | sentenceCase }}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="col-sm-6 col-12 mb-3">
-            <div class="card fixed-height-card">
-                <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-bottom">{{ 'report.glance_into_reports' | translate }}</span>
-                </div>
-                <div class="card-body">
-                    <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'myReports'}"
-                        (click)="myReports()">
-                        {{ 'report.my_reports' | translate | sentenceCase }}
-                    </button>
-                    <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'sharedReports'}"
-                        (click)="sharedReports()">
-                        {{ 'report.shared_reports' | translate | sentenceCase }}
-                    </button>
-    
-                    <div class="tab-content mt-3 mb-3">
-                        <div *ngIf="activeTab === 'myReports'">
-                            <div class="row">
-                                <div class="col-md-3 col-4">
-                                    <h5>{{ 'report.id' | translate }}</h5>
-                                    <ul>
-                                        <li *ngFor="let item of myReportsList">{{ item.id }}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-9 col-8">
-                                    <h5>{{ 'report.name' | translate }}</h5>
-                                    <ul>
-                                        <li *ngFor="let item of myReportsList">{{ item.name }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="activeTab === 'sharedReports'">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <h5>{{ 'report.id' | translate }}</h5>
-                                    <ul>
-                                        <li *ngFor="let item of anotherTabList">{{ item.id }}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-9">
-                                    <h5>{{ 'report.name' | translate }}</h5>
-                                    <ul>
-                                        <li *ngFor="let item of anotherTabList">{{ item.name }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
-                        (click)="viewReports()">
-                        {{ 'report.view_all' | translate | sentenceCase }}
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-12 mb-3">
-            <div class="card fixed-height-card">
-                <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-bottom">{{ 'report.glance_into_dashboards' | translate }}</span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-header bg-transparent head-sm">{{ 'report.finance' | translate }}</div>
-                                <div class="card-body">
-                                    <img src="assets/images/finance.png" alt="dashboard-reports">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-header bg-transparent head-sm">{{ 'report.operations' | translate }}</div>
-                                <div class="card-body">
-                                    <img src="assets/images/operations.png" alt="dashboard-reports">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-header bg-transparent head-sm">{{ 'report.other' | translate }}</div>
-                                <div class="card-body">
-                                    <img src="assets/images/other.png" alt="dashboard-reports">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
-                        (click)="viewReports()">
-                        {{ 'report.view_all' | translate | sentenceCase }}
-                    </button>
-                </div>
-            </div>
-        </div>        
+      </div>
     </div>
-</div>
 
+    <div class="col-sm-6 col-12 mb-3">
+      <div class="card fixed-height-card">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3 head-top"
+            >{{ "report.dashboards" | translate }}
+            <!-- <i class="fa fa-chevron-right" aria-hidden="true"></i> -->
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 col-4 card-image">
+              <img
+                src="assets/images/dashboard-pie.png"
+                alt="dashboard-reports"
+              />
+            </div>
+            <div class="col-md-8 col-8 d-flex flex-column">
+              <p class="testimony-txt">
+                {{ "report.dashboard_desc" | translate }}
+              </p>
+              <div class="mt-auto card-btn">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="createDashboards()"
+                >
+                  {{ "report.new_dashboard" | translate | sentenceCase }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-12 mb-3">
+      <div class="card fixed-height-card">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3 head-bottom">{{
+            "report.glance_into_reports" | translate
+          }}</span>
+        </div>
+        <div class="card-body">
+          <button
+            type="button"
+            class="btn-tab"
+            [ngClass]="{ active: activeTab === 'myReports' }"
+            (click)="myReports()"
+          >
+            {{ "report.my_reports" | translate | sentenceCase }}
+          </button>
+          <button
+            type="button"
+            class="btn-tab"
+            [ngClass]="{ active: activeTab === 'sharedReports' }"
+            (click)="sharedReports()"
+          >
+            {{ "report.shared_reports" | translate | sentenceCase }}
+          </button>
+
+          <div class="tab-content mt-3 mb-3">
+            <div *ngIf="activeTab === 'myReports'">
+              <div class="row">
+                <div class="col-md-3 col-4">
+                  <h5>{{ "report.id" | translate }}</h5>
+                  <ul>
+                    <li *ngFor="let item of myReportsList">{{ item.id }}</li>
+                  </ul>
+                </div>
+                <div class="col-md-9 col-8">
+                  <h5>{{ "report.name" | translate }}</h5>
+                  <ul>
+                    <li *ngFor="let item of myReportsList">{{ item.name }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="activeTab === 'sharedReports'">
+              <div class="row">
+                <div class="col-md-3">
+                  <h5>{{ "report.id" | translate }}</h5>
+                  <ul>
+                    <li *ngFor="let item of anotherTabList">{{ item.id }}</li>
+                  </ul>
+                </div>
+                <div class="col-md-9">
+                  <h5>{{ "report.name" | translate }}</h5>
+                  <ul>
+                    <li *ngFor="let item of anotherTabList">{{ item.name }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
+            (click)="viewReports()"
+          >
+            {{ "report.view_all" | translate | sentenceCase }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-12 mb-3">
+      <div class="card fixed-height-card">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3 head-bottom">{{
+            "report.glance_into_dashboards" | translate
+          }}</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-4">
+              <div class="card">
+                <div class="card-header bg-transparent head-sm">
+                  {{ "report.finance" | translate }}
+                </div>
+                <div class="card-body">
+                  <img
+                    src="assets/images/finance.png"
+                    alt="dashboard-reports"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card">
+                <div class="card-header bg-transparent head-sm">
+                  {{ "report.operations" | translate }}
+                </div>
+                <div class="card-body">
+                  <img
+                    src="assets/images/operations.png"
+                    alt="dashboard-reports"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card">
+                <div class="card-header bg-transparent head-sm">
+                  {{ "report.other" | translate }}
+                </div>
+                <div class="card-body">
+                  <img src="assets/images/other.png" alt="dashboard-reports" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
+            (click)="viewReports()"
+          >
+            {{ "report.view_all" | translate | sentenceCase }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- applies bottom spacing on mobile devices -->
 <div class="mobile-bottom"></div>

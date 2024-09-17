@@ -171,13 +171,13 @@ export class ActivityTypesComponent implements OnInit {
     };
 
     if (!this.editMode) {
-      this.createNewActivityTpe(activityType);
+      this.createNewActivityType(activityType);
     } else {
-      this.updateActivityTpe(activityType);
+      this.updateActivityType(activityType);
     }
   }
 
-  createNewActivityTpe(activityType: ActivityType): void {
+  createNewActivityType(activityType: ActivityType): void {
     this.activityService.createActivityType(activityType).subscribe({
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage(
@@ -194,7 +194,7 @@ export class ActivityTypesComponent implements OnInit {
     });
   }
 
-  updateActivityTpe(activityType: ActivityType): void {
+  updateActivityType(activityType: ActivityType): void {
     this.activityService.updateActivityType(activityType).subscribe({
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage(
@@ -216,6 +216,7 @@ export class ActivityTypesComponent implements OnInit {
       next: (data) => {
         log.info(`activity types >>> `, data);
         this.activityTypeData = data;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -224,28 +225,17 @@ export class ActivityTypesComponent implements OnInit {
     });
   }
 
-  // deleteActivityType(): void {
-  //   const id = this.selectedActivityType.id;
-
-  //   this.activityService.deleteActivityType(id).subscribe({
-  //     next: (res) => {
-  //       log.info(`activity type deleted >>> `, res);
-  //       this.getActivityTypes();
-  //     },
-  //     error: (err) => {
-  //       let errorMessage = err?.error?.message ?? err.message;
-  //       this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-  //     },
-  //   });
-  // }
-
   confirmDeleteActivityType(): void {
     const id = this.selectedActivityType.id;
 
     this.activityService.deleteActivityType(id).subscribe({
       next: (res) => {
-        log.info(`activity type deleted >>> `, res);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity type deleted successfully!'
+        );
         this.getActivityTypes();
+        // close modal after delete
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;

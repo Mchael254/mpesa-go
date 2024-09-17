@@ -387,12 +387,12 @@ export class CalendarComponent implements OnInit {
     const eventFormValues = this.newEventForm.getRawValue();
 
     const saveCalendarEvent: SaveCalendarEventDTO = {
-      StartDate: this.newEventDate,
+      // StartDate: this.newEventDate,
       code: 0,
       endDate: new Date(eventFormValues.toDate).toISOString(),
       location: eventFormValues.location,
       memo: eventFormValues.details,
-      startDate: new Date(eventFormValues.fromDate).toISOString(),
+      startDate: new Date(eventFormValues.eventDate).toISOString(),
       title: eventFormValues.eventTitle,
       user: this.loggedInUser.userName,
     };

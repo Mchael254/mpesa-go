@@ -24,10 +24,18 @@
           </select>
         </div>
         <div class="offset-2 col-sm-4 text-end">
-          <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/quotation/quick-quote">
+          <a
+            type="button"
+            class="btn btn-primary btn-sm"
+            routerLink="/home/gis/quotation/quick-quote"
+          >
             {{ "entities.create_quick_quote" | translate }}
           </a>
-          <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/quotation/quotations-client-details">
+          <a
+            type="button"
+            class="btn btn-primary btn-sm"
+            routerLink="/home/gis/quotation/quotations-client-details"
+          >
             {{ "entities.create_normal_quote" | translate }}
           </a>
         </div>
@@ -123,9 +131,9 @@
   <h5>{{ "entities.policies" | translate }}</h5>
   <p-tabView>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.general" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.general" | translate }}</span>
+      </ng-template>
       <div class="row">
         <div class="col-sm-4">
           <div class="mb-3">
@@ -137,7 +145,11 @@
           </div>
         </div>
         <div class="offset-2 col-sm-6 text-end">
-          <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/policy/underwriting">
+          <a
+            type="button"
+            class="btn btn-primary btn-sm"
+            routerLink="/home/gis/policy/underwriting"
+          >
             {{ "entities.create_new_policy" | translate }}
           </a>
           <p class="policy-sort">
@@ -147,7 +159,9 @@
       </div>
       <div class="row">
         <ng-container *ngIf="isPolicyDataReady; else policyLoading">
-          <ng-container *ngIf="partyTypeShtDesc === 'C'">
+          <ng-container
+            *ngIf="partyTypeShtDesc === 'C' || partyTypeShtDesc === 'CLIENT'"
+          >
             <p-table
               [value]="gis_policies?.content"
               [paginator]="true"
@@ -196,7 +210,9 @@
             </p-table>
           </ng-container>
 
-          <ng-container *ngIf="partyTypeShtDesc === 'A'">
+          <ng-container
+            *ngIf="partyTypeShtDesc === 'A' || partyTypeShtDesc === 'AGENT'"
+          >
             <p-table
               [value]="gis_policies"
               [paginator]="true"
@@ -245,7 +261,9 @@
             </p-table>
           </ng-container>
 
-          <ng-container *ngIf="partyTypeShtDesc === 'S'">
+          <ng-container
+            *ngIf="partyTypeShtDesc === 'S' || partyTypeShtDesc === 'SPR'"
+          >
             <p-table
               [value]="gis_policies"
               [paginator]="true"
@@ -304,9 +322,9 @@
       </div>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.life_ind" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.life_ind" | translate }}</span>
+      </ng-template>
       <p>
         Sed ut perspiciatis unde omnis iste natus error sit voluptatem
         accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
@@ -318,20 +336,16 @@
       </p>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.life_group" | translate }}</span>
-          </ng-template>
-      <p>
-        At vero eos
-      </p>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.life_group" | translate }}</span>
+      </ng-template>
+      <p>At vero eos</p>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.pension" | translate }}</span>
-          </ng-template>
-      <p>
-        At vero
-      </p>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.pension" | translate }}</span>
+      </ng-template>
+      <p>At vero</p>
     </p-tabPanel>
   </p-tabView>
 </div>
@@ -340,9 +354,9 @@
   <h5>{{ "entities.claims" | translate }}</h5>
   <p-tabView>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.general" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.general" | translate }}</span>
+      </ng-template>
       <div class="row">
         <div class="col-sm-4">
           <div class="mb-3">
@@ -365,7 +379,9 @@
       </div>
 
       <ng-container *ngIf="isClaimDataReady; else claimsLoading">
-        <ng-container *ngIf="partyTypeShtDesc === 'C'">
+        <ng-container
+          *ngIf="partyTypeShtDesc === 'C' || partyTypeShtDesc === 'CLIENT'"
+        >
           <div class="row">
             <p-table
               [value]="gis_claims?.content"
@@ -416,7 +432,9 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="partyTypeShtDesc === 'A'">
+        <ng-container
+          *ngIf="partyTypeShtDesc === 'A' || partyTypeShtDesc === 'AGENT'"
+        >
           <div class="row">
             <p-table
               [value]="gis_claims"
@@ -467,7 +485,9 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="partyTypeShtDesc === 'S'">
+        <ng-container
+          *ngIf="partyTypeShtDesc === 'S' || partyTypeShtDesc === 'SPR'"
+        >
           <div class="row">
             <p-table
               [value]="gis_claims"
@@ -527,9 +547,9 @@
       </ng-template>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.life_ind" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.life_ind" | translate }}</span>
+      </ng-template>
       <p>
         Sed ut perspiciatis unde omnis iste natus error sit voluptatem
         accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
@@ -541,9 +561,9 @@
       </p>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.life_group" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.life_group" | translate }}</span>
+      </ng-template>
       <p>
         At vero eos et accusamus et iusto odio dignissimos ducimus qui
         blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
@@ -555,9 +575,9 @@
       </p>
     </p-tabPanel>
     <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span class="tabTitle">{{ "base.pension" | translate }}</span>
-          </ng-template>
+      <ng-template pTemplate="header">
+        <span class="tabTitle">{{ "base.pension" | translate }}</span>
+      </ng-template>
       <p>
         At vero eos et accusamus et iusto odio dignissimos ducimus qui
         blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
