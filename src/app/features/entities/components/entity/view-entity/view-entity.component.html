@@ -1,519 +1,794 @@
-<div class="mx-4 my-4" style="position: relative;">
-  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+<div class="mx-4 my-4" style="position: relative">
+  <ngx-spinner
+    type="ball-clip-rotate-multiple"
+    [fullScreen]="false"
+    color="#00529B"
+    size="medium"
+    bdColor="rgba(255, 255, 255, 0.966)"
+  ></ngx-spinner>
 
-    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
-                aria-controls="ex1-tabs-1" aria-selected="false">{{ 'entities.overview' | translate }}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
-                aria-selected="true">{{ 'entities.transactions' | translate }}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
-                aria-selected="false">{{ 'entities.reports' | translate }}</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="ex1-content">
-        <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-2" (change)="onFileChange($event)">
-                                    <img *ngIf="url !== '' && url" [src]="url" alt="" class="img_upload" />
-                                    <input type="file" id="inputUploadProfile" formControlName="profilePicture" hidden />
-                                    <label *ngIf="url === ''" for="inputUploadProfile" class="img_upload"></label>
-                                    <div>
-                                        <label for="inputUploadProfile" *ngIf="url === ''" class="img_edit">
-                                            <i class="fa fa-camera" aria-hidden="true"></i>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4 col-4 entityTitle">
-                                    <h2>{{ entityPartyIdDetails?.name | titlecase }}</h2>
-                                    <select id="rolesDropDown" (change)="selectAccount($event)">
-                                        <option *ngFor="let role of entityAccountIdDetails" [value]="role.id"
-                                            [selected]="partyAccountDetails?.partyType?.partyTypeName === role.partyType.partyTypeName">
-                                            {{ role?.partyType.partyTypeName }} {{ 'entities.account' | translate }}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-6 col-6 account_role_actions float-end">
-                                    <button class="img_up" id="btn-assign-roles" data-bs-toggle="modal" data-bs-target="#selectRoleModal">
-                                        <i class="pi pi-user-plus" aria-hidden="true"></i>
-                                        {{ 'entities.assign_role' | translate }}
-                                    </button>
-                                    <button class="img_up" id="btn-manage-roles" (click)="manageRoles(entityPartyIdDetails?.id)">
-                                        <i class="pi pi-user-edit" aria-hidden="true"></i>
-                                        {{ 'entities.manage_roles' | translate }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header bg-transparent">{{ 'entities.profile' | translate | uppercase }}</div>
-                        <div class="card-body">
-                            <div *ngFor="let role of entityAccountIdDetails" class="accounts_container">
-                                <label for="partyType" class="entity_accounts_list">
-                                    <span (click)="editEntities(entityPartyIdDetails?.id)" id="rolesName" style="cursor: pointer;">
-                                        {{ role?.partyType.partyTypeName }}</span><br>
-                                    <span id="roleAssignDate">{{ role?.effectiveDateFrom | date: 'dd-MMM-yyy' }}</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header bg-transparent">
-                          {{ 'entities.client_information' | translate | uppercase }}
-                        </div>
-                        <div class="card-body">
-                            <div class="row entityAccountDetails">
-                                <div class="col-4">
-                                    <div class="row">
-                                        <div class="col-12 entityLabels">
-                                            <label for="location">{{ 'entities.location' | translate }}</label><br><br
-                                                *ngIf="partyAccountDetails?.address?.physical_address == null">
-                                            <p class="entityDetails" id="location">{{ partyAccountDetails?.address?.physical_address
-                                                }}</p>
-                                        </div>
-                                        <div class="col-12 entityLabels">
-                                            <label for="phoneNumber">{{ 'entities.phone_number' | translate }}</label><br><br *ngIf="partyAccountDetails?.contactDetails?.phoneNumber  == null">
-                                            <p class="entityDetails" id="phoneNumber">{{ partyAccountDetails?.contactDetails?.phoneNumber }}</p>
-                                        </div>
-                                        <div class="col-12 entityLabels">
-                                            <label for="emailAddress">{{ 'entities.email_address' | translate }}</label><br>
-                                            <p class="entityDetails" id="emailAddress">{{ partyAccountDetails?.contactDetails?.emailAddress }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="row">
-                                      <div class="col-12 entityLabels">
-                                        <label for="status">{{ 'entities.status' | translate }}</label><br><br *ngIf="partyAccountDetails?.status  == null">
-                                        <p class="entityDetails" id="status" style="color: #04B400;">{{ partyAccountDetails?.status }}</p>
-                                      </div>
-                                      <div class="col-12 entityLabels">
-                                        <label for="type">{{ 'entities.type' | translate }}</label><br><br *ngIf="partyAccountDetails?.category  == null">
-                                        <p class="entityDetails" id="type">{{ partyAccountDetails?.category }}</p>
-                                      </div>
-                                      <div class="col-12 entityLabels">
-                                        <label for="customerSince">{{ 'entities.customer_since' | translate }}</label><br>
-                                        <p class="entityDetails" id="customerSince">{{ partyAccountDetails?.effectiveDateFrom | date: 'dd-MMM-yyy' }}</p>
-                                      </div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="row">
-                                      <div class="col-12 entityLabels">
-                                        <label for="taxId">{{ 'entities.tax_id' | translate }}</label><br>
-                                        <p class="entityDetails" id="taxId">{{ partyAccountDetails?.pinNumber }}</p>
-                                      </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header bg-transparent">{{ 'entities.basic_information' | translate }}</div>
-                            <div class="card-body">
-
-                                <div class="row entityAccountDetails">
-                                    <div class="col-4">
-                                      <div class="row">
-                                        <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="entityName">{{ 'entities.entity_name' | translate }}</label><br><br *ngIf="entityPartyIdDetails?.name == null">
-                                          <p class="entityDetails" id="entityName">{{ entityPartyIdDetails?.name}}</p>
-                                        </div>
-                                        <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="pinNumber">{{ 'entities.pin_number' | translate }}</label><br>
-                                          <p class="entityDetails" id="pinNumber">{{ entityPartyIdDetails?.pinNumber }}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                <div class="col-4">
-                                    <div class="row">
-                                        <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="partyType">{{ 'entities.party_type' | translate }}</label><br><br *ngIf="partyAccountDetails?.partyType?.partyTypeName == null">
-                                          <p class="entityDetails" id="partyType">{{ partyAccountDetails?.partyType?.partyTypeName  }}</p>
-                                        </div>
-                                        <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="idNumber">{{ 'entities.id_number' | translate }}</label><br>
-                                          <p class="entityDetails" id="idNumber">{{ entityPartyIdDetails?.identityNumber }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="row">
-                                        <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="partyIdType">{{ 'entities.party_id_type' | translate }}</label><br>
-                                          <p class="entityDetails" id="partyIdType">{{ entityPartyIdDetails?.modeOfIdentity.name }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link active"
+        id="ex1-tab-1"
+        data-bs-toggle="tab"
+        href="#ex1-tabs-1"
+        role="tab"
+        aria-controls="ex1-tabs-1"
+        aria-selected="false"
+        >{{ "entities.overview" | translate }}</a
+      >
+    </li>
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        id="ex1-tab-2"
+        data-bs-toggle="tab"
+        href="#ex1-tabs-2"
+        role="tab"
+        aria-controls="ex1-tabs-2"
+        aria-selected="true"
+        >{{ "entities.transactions" | translate }}</a
+      >
+    </li>
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        id="ex1-tab-3"
+        data-bs-toggle="tab"
+        href="#ex1-tabs-3"
+        role="tab"
+        aria-controls="ex1-tabs-3"
+        aria-selected="false"
+        >{{ "entities.reports" | translate }}</a
+      >
+    </li>
+  </ul>
+  <div class="tab-content" id="ex1-content">
+    <div
+      class="tab-pane fade show active"
+      id="ex1-tabs-1"
+      role="tabpanel"
+      aria-labelledby="ex1-tab-1"
+    >
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-2" (change)="onFileChange($event)">
+                  <img
+                    *ngIf="url !== '' && url"
+                    [src]="url"
+                    alt=""
+                    class="img_upload"
+                  />
+                  <input
+                    type="file"
+                    id="inputUploadProfile"
+                    formControlName="profilePicture"
+                    hidden
+                  />
+                  <label
+                    *ngIf="url === ''"
+                    for="inputUploadProfile"
+                    class="img_upload"
+                  ></label>
+                  <div>
+                    <label
+                      for="inputUploadProfile"
+                      *ngIf="url === ''"
+                      class="img_edit"
+                    >
+                      <i class="fa fa-camera" aria-hidden="true"></i>
+                    </label>
+                  </div>
                 </div>
-                <div class="col-md-6 entityAccInfo">
-                    <div class="card">
-                        <div class="card-header bg-transparent">{{ 'entities.more_information' | translate | uppercase }}</div>
-                        <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-6 card-view ">
-                                    <div class="card-content">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-user fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.client_details' | translate }}</h6>
-                                            <p>{{ 'entities.view_entity_details' | translate }}</p>
-                                        </span>
-                                        <span class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-6 card-view ">
-                                    <div class="card-content" (click)="goToViewClaims(entityPartyIdDetails?.id)">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-heart fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.claims' | translate }}</h6>
-                                            <p>{{ 'entities.view_claims' | translate }}</p>
-                                        </span>
-                                        <span  class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 card-view">
-                                    <div class="card-content" (click)="goToViewQuotations(entityPartyIdDetails?.id)">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-cart-shopping fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.quotations' | translate }}</h6>
-                                            <p>{{ 'entities.view_quotations' | translate }}</p>
-                                        </span>
-                                        <span class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-6 card-view">
-                                    <div class="card-content" (click)="goToViewPayments()">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-credit-card fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.payments' | translate }}</h6>
-                                            <p>{{ 'entities.view_payments' | translate }}</p>
-                                        </span>
-                                        <span  class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 card-view">
-                                    <div class="card-content" (click)="goToViewPolicies(entityPartyIdDetails?.id)">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-shield fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.policies' | translate }}</h6>
-                                            <p>{{ 'entities.view_policies' | translate }}</p>
-                                        </span>
-                                        <span class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-6 card-view">
-                                    <div class="card-content">
-                                        <span class="img-left">
-                                            <i class="fa-solid fa-cube fa-2xl"></i>
-                                        </span>
-                                        <span class="card-txt">
-                                            <h6>{{ 'entities.related_accounts' | translate }}</h6>
-                                            <p>{{ 'entities.view_related_accounts' | translate }}</p>
-                                        </span>
-                                        <span  class="img-right">
-                                            <i class="fa-solid fa-grid fa-2xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-sm-4 col-4 entityTitle">
+                  <h2>{{ entityPartyIdDetails?.name | titlecase }}</h2>
+                  <select id="rolesDropDown" (change)="selectAccount($event)">
+                    <option
+                      *ngFor="let role of entityAccountIdDetails"
+                      [value]="role.id"
+                      [selected]="
+                        partyAccountDetails?.partyType?.partyTypeName ===
+                        role.partyType.partyTypeName
+                      "
+                    >
+                      {{ role?.partyType.partyTypeName }}
+                      {{ "entities.account" | translate }} xx
+                    </option>
+                  </select>
                 </div>
+                <div class="col-sm-6 col-6 account_role_actions float-end">
+                  <button
+                    class="img_up"
+                    id="btn-assign-roles"
+                    data-bs-toggle="modal"
+                    data-bs-target="#selectRoleModal"
+                  >
+                    <i class="pi pi-user-plus" aria-hidden="true"></i>
+                    {{ "entities.assign_role" | translate }}
+                  </button>
+                  <button
+                    class="img_up"
+                    id="btn-manage-roles"
+                    (click)="manageRoles(entityPartyIdDetails?.id)"
+                  >
+                    <i class="pi pi-user-edit" aria-hidden="true"></i>
+                    {{ "entities.manage_roles" | translate }}
+                  </button>
+                </div>
+              </div>
             </div>
-
+          </div>
+          <div class="card">
+            <div class="card-header bg-transparent">
+              {{ "entities.profile" | translate | uppercase }}
+            </div>
+            <div class="card-body">
+              <div
+                *ngFor="let role of entityAccountIdDetails"
+                class="accounts_container"
+              >
+                <label for="partyType" class="entity_accounts_list">
+                  <span
+                    (click)="editEntities(entityPartyIdDetails?.id)"
+                    id="rolesName"
+                    style="cursor: pointer"
+                  >
+                    {{ role?.partyType.partyTypeName }}</span
+                  ><br />
+                  <span id="roleAssignDate">{{
+                    role?.effectiveDateFrom | date : "dd-MMM-yyy"
+                  }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header bg-transparent">
+              {{ "entities.client_information" | translate | uppercase }}
+            </div>
+            <div class="card-body">
+              <div class="row entityAccountDetails">
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label for="location">{{
+                        "entities.location" | translate
+                      }}</label
+                      ><br /><br
+                        *ngIf="
+                          partyAccountDetails?.address?.physical_address == null
+                        "
+                      />
+                      <p class="entityDetails" id="location">
+                        {{ partyAccountDetails?.address?.physical_address }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label for="phoneNumber">{{
+                        "entities.phone_number" | translate
+                      }}</label
+                      ><br /><br
+                        *ngIf="
+                          partyAccountDetails?.contactDetails?.phoneNumber ==
+                          null
+                        "
+                      />
+                      <p class="entityDetails" id="phoneNumber">
+                        {{ partyAccountDetails?.contactDetails?.phoneNumber }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label for="emailAddress">{{
+                        "entities.email_address" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="emailAddress">
+                        {{ partyAccountDetails?.contactDetails?.emailAddress }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label for="status">{{
+                        "entities.status" | translate
+                      }}</label
+                      ><br /><br *ngIf="partyAccountDetails?.status == null" />
+                      <p
+                        class="entityDetails"
+                        id="status"
+                        style="color: #04b400"
+                      >
+                        {{ partyAccountDetails?.status }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label for="type">{{ "entities.type" | translate }}</label
+                      ><br /><br
+                        *ngIf="partyAccountDetails?.category == null"
+                      />
+                      <p class="entityDetails" id="type">
+                        {{ partyAccountDetails?.category }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label for="customerSince">{{
+                        "entities.customer_since" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="customerSince">
+                        {{
+                          partyAccountDetails?.effectiveDateFrom
+                            | date : "dd-MMM-yyy"
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label for="taxId">{{
+                        "entities.tax_id" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="taxId">
+                        {{ partyAccountDetails?.pinNumber }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header bg-transparent">
+              {{ "entities.basic_information" | translate }}
+            </div>
+            <div class="card-body">
+              <div class="row entityAccountDetails">
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label class="mb-1" for="entityName">{{
+                        "entities.entity_name" | translate
+                      }}</label
+                      ><br /><br *ngIf="entityPartyIdDetails?.name == null" />
+                      <p class="entityDetails" id="entityName">
+                        {{ entityPartyIdDetails?.name }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label class="mb-1" for="pinNumber">{{
+                        "entities.pin_number" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="pinNumber">
+                        {{ entityPartyIdDetails?.pinNumber }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label class="mb-1" for="partyType">{{
+                        "entities.party_type" | translate
+                      }}</label
+                      ><br /><br
+                        *ngIf="
+                          partyAccountDetails?.partyType?.partyTypeName == null
+                        "
+                      />
+                      <p class="entityDetails" id="partyType">
+                        {{ partyAccountDetails?.partyType?.partyTypeName }}
+                      </p>
+                    </div>
+                    <div class="col-12 entityLabels">
+                      <label class="mb-1" for="idNumber">{{
+                        "entities.id_number" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="idNumber">
+                        {{ entityPartyIdDetails?.identityNumber }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 entityLabels">
+                      <label class="mb-1" for="partyIdType">{{
+                        "entities.party_id_type" | translate
+                      }}</label
+                      ><br />
+                      <p class="entityDetails" id="partyIdType">
+                        {{ entityPartyIdDetails?.modeOfIdentity.name }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-          {{ 'entities.transactions_content' | translate }}
-                    <div class="row">
-                      <div class="col-12 mb-3">
-                        <button type="button" class="btn float-left-element" id="btn-new-policy">{{ 'entities.new_policy' | translate }}</button>
-                        <button type="button" class="btn float-left-element" id="btn-new-quote">{{ 'entities.new_quote' | translate }}</button>
-                        <button type="button" class="btn float-left-element" id="btn-new-claim">{{ 'entities.new_claim' | translate }}</button>
+        <div class="col-md-6 entityAccInfo">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              {{ "entities.more_information" | translate | uppercase }}
+            </div>
+            <div class="card-body">
+              <div class="row mb-2">
+                <div class="col-6 card-view">
+                  <div class="card-content">
+                    <span class="img-left">
+                      <i class="fa-solid fa-user fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.client_details" | translate }}</h6>
+                      <p>{{ "entities.view_entity_details" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-6 card-view">
+                  <div
+                    class="card-content"
+                    (click)="goToViewClaims(entityPartyIdDetails?.id)"
+                  >
+                    <span class="img-left">
+                      <i class="fa-solid fa-heart fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.claims" | translate }}</h6>
+                      <p>{{ "entities.view_claims" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-6 card-view">
+                  <div
+                    class="card-content"
+                    (click)="goToViewQuotations(entityPartyIdDetails?.id)"
+                  >
+                    <span class="img-left">
+                      <i class="fa-solid fa-cart-shopping fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.quotations" | translate }}</h6>
+                      <p>{{ "entities.view_quotations" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-6 card-view">
+                  <div class="card-content" (click)="goToViewPayments()">
+                    <span class="img-left">
+                      <i class="fa-solid fa-credit-card fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.payments" | translate }}</h6>
+                      <p>{{ "entities.view_payments" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-6 card-view">
+                  <div
+                    class="card-content"
+                    (click)="goToViewPolicies(entityPartyIdDetails?.id)"
+                  >
+                    <span class="img-left">
+                      <i class="fa-solid fa-shield fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.policies" | translate }}</h6>
+                      <p>{{ "entities.view_policies" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-6 card-view">
+                  <div class="card-content">
+                    <span class="img-left">
+                      <i class="fa-solid fa-cube fa-2xl"></i>
+                    </span>
+                    <span class="card-txt">
+                      <h6>{{ "entities.related_accounts" | translate }}</h6>
+                      <p>{{ "entities.view_related_accounts" | translate }}</p>
+                    </span>
+                    <span class="img-right">
+                      <i class="fa-solid fa-grid fa-2xl"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="ex1-tabs-2"
+      role="tabpanel"
+      aria-labelledby="ex1-tab-2"
+    >
+      {{ "entities.transactions_content" | translate }}
+      <div class="row">
+        <div class="col-12 mb-3">
+          <button
+            type="button"
+            class="btn float-left-element"
+            id="btn-new-policy"
+          >
+            {{ "entities.new_policy" | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn float-left-element"
+            id="btn-new-quote"
+          >
+            {{ "entities.new_quote" | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn float-left-element"
+            id="btn-new-claim"
+          >
+            {{ "entities.new_claim" | translate }}
+          </button>
+        </div>
+        <div class="col-lg-3">
+          <div class="card mb-3" style="height: 97%">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">John Doe</h6>
+              <div class="dropdown">
+                <select class="form-control" id="accountDropDown">
+                  <option>{{ "entities.client_account" | translate }}t</option>
+                </select>
+              </div>
+              <span class="float-right">
+                <p class="editCard">{{ "entities.edit" | translate }}</p>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">{{ "entities.status" | translate }}</h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Active</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">{{ "entities.contact" | translate }}</h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Lavington, Nairobi</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">{{ "entities.type" | translate }}</h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">T123456789</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.phone_number" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">0720000000/02 7800 0040</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.email_address" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">doe@gmail.com</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.customer_since" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">20/02/2022</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card mb-3" style="height: 97%">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.statement_summary" | translate }}
+              </h6>
+              <span class="float-right">
+                <i class="fa fa-ellipsis-v dotsV"></i>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.policies_in_force" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">200</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.in_force_premium" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Ksh 40,000.00</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.outstanding_premium" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Ksh 40,000.00</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">{{ "entities.ltv" | translate }}</h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Ksh 70,000.00</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.unallocated_cash" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">Ksh 40,000.00</p>
+                </div>
+
+                <div class="col-5 pl-2">
+                  <h6 class="accHead">
+                    {{ "entities.loss_ratio" | translate }}
+                  </h6>
+                </div>
+                <div class="col-1">
+                  <p>:</p>
+                </div>
+                <div class="col-5 pr-2">
+                  <p class="accText">20</p>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+              <button
+                class="btn btn-outline-secondary float-right btnTransactions"
+              >
+                {{ "entities.view_full_report" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card mb-3" style="height: 97%">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.activities" | translate }}
+              </h6>
+              <span class="float-right">
+                <i class="fa fa-ellipsis-v dotsV"></i>
+              </span>
+            </div>
+            <div class="card-body">
+              <nav class="mb-2">
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <a
+                    class="nav-item nav-link active"
+                    id="nav-overdue-tab"
+                    data-toggle="tab"
+                    href="#nav-overdue"
+                    role="tab"
+                    aria-controls="nav-overdue"
+                    aria-selected="true"
+                  >
+                    {{ "entities.overdue" | translate }}
+                  </a>
+                  <a
+                    class="nav-item nav-link"
+                    id="nav-upcoming-tab"
+                    data-toggle="tab"
+                    href="#nav-upcoming"
+                    role="tab"
+                    aria-controls="nav-upcoming"
+                    aria-selected="false"
+                  >
+                    {{ "entities.upcoming" | translate }}
+                  </a>
+                </div>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="nav-overdue"
+                  role="tabpanel"
+                  aria-labelledby="nav-overdue-tab"
+                >
+                  <div class="accordion" id="accordionExample">
+                    <div class="card">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button
+                            class="btn btn-block text-left accordionTitle"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseOne"
+                            aria-expanded="true"
+                            aria-controls="collapseOne"
+                          >
+                            Follow up on policy LT3456K
+                          </button>
+                        </h2>
                       </div>
-                      <div class="col-lg-3">
-                        <div class="card mb-3" style="height: 97%">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">John Doe</h6>
-                            <div class="dropdown">
-                              <select class="form-control" id="accountDropDown" >
-                                <option >{{ 'entities.client_account' | translate }}t</option>
-                              </select>
-                            </div>
-                            <span class="float-right">
-                                <p class="editCard">{{ 'entities.edit' | translate }}</p>
-                            </span>
-                          </div>
-                          <div class="card-body">
-                            <div class="row">
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.status' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                               <p class="accText">Active</p>
-                              </div>
 
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.contact' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">Lavington, Nairobi</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.type' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">T123456789</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.phone_number' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">0720000000/02 7800 0040</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.email_address' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">doe@gmail.com</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.customer_since' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">20/02/2022</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div
+                        id="collapseOne"
+                        class="collapse show"
+                        aria-labelledby="headingOne"
+                        data-parent="#accordionExample"
+                      >
+                        <div class="card-body accText">Lorem ipsum</div>
                       </div>
-                      <div class="col-lg-3">
-                        <div class="card mb-3" style="height: 97%">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.statement_summary' | translate }}</h6>
-                            <span class="float-right">
-                                <i class="fa fa-ellipsis-v dotsV"></i>
-                            </span>
-                          </div>
-                          <div class="card-body">
-                            <div class="row">
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.policies_in_force' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">200</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.in_force_premium' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">Ksh 40,000.00</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.outstanding_premium' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">Ksh 40,000.00</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.ltv' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">Ksh 70,000.00</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.unallocated_cash' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">Ksh 40,000.00</p>
-                              </div>
-
-                              <div class="col-5 pl-2">
-                                <h6 class="accHead">{{ 'entities.loss_ratio' | translate }}</h6>
-                              </div>
-                              <div class="col-1">
-                                <p>:</p>
-                              </div>
-                              <div class="col-5 pr-2">
-                                <p class="accText">20</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary float-right btnTransactions">
-                              {{ 'entities.view_full_report' | translate }}
-                            </button>
-                          </div>
-                        </div>
+                    </div>
+                    <div class="card">
+                      <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                          <button
+                            class="btn btn-block text-left collapsed accordionTitle"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwo"
+                            aria-expanded="false"
+                            aria-controls="collapseTwo"
+                          >
+                            Follow up on policy LT3456K
+                          </button>
+                        </h2>
                       </div>
-                      <div class="col-lg-3">
-                        <div class="card mb-3" style="height: 97%">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.activities' | translate }}</h6>
-                            <span class="float-right">
-                                <i class="fa fa-ellipsis-v dotsV"></i>
-                            </span>
-                          </div>
-                          <div class="card-body">
-                            <nav class="mb-2">
-                              <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <a class="nav-item nav-link active" id="nav-overdue-tab" data-toggle="tab" href="#nav-overdue" role="tab" aria-controls="nav-overdue" aria-selected="true">
-                                  {{ 'entities.overdue' | translate }}
-                                </a>
-                                <a class="nav-item nav-link" id="nav-upcoming-tab" data-toggle="tab" href="#nav-upcoming" role="tab" aria-controls="nav-upcoming" aria-selected="false">
-                                  {{ 'entities.upcoming' | translate }}
-                                </a>
-                              </div>
-                            </nav>
-                            <div class="tab-content" id="nav-tabContent">
-                              <div class="tab-pane fade show active" id="nav-overdue" role="tabpanel" aria-labelledby="nav-overdue-tab">
-                                <div class="accordion" id="accordionExample">
-                                  <div class="card">
-                                    <div class="card-header" id="headingOne">
-                                      <h2 class="mb-0">
-                                        <button class="btn btn-block text-left accordionTitle" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                          Follow up on policy LT3456K
-                                        </button>
-                                      </h2>
-                                    </div>
-
-                                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                                      <div class="card-body accText">
-                                        Lorem ipsum
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="card">
-                                    <div class="card-header" id="headingTwo">
-                                      <h2 class="mb-0">
-                                        <button class="btn btn-block text-left collapsed accordionTitle" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                          Follow up on policy LT3456K
-                                        </button>
-                                      </h2>
-                                    </div>
-                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                                      <div class="card-body accText">
-                                        Lorem ipsum
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="card">
-                                    <div class="card-header" id="headingThree">
-                                      <h2 class="mb-0">
-                                        <button class="btn btn-block text-left collapsed accordionTitle" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                          Follow up on policy LT3456K
-                                        </button>
-                                      </h2>
-                                    </div>
-                                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                                      <div class="card-body accText">
-                                        Lorem ipsum
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="tab-pane fade" id="nav-upcoming" role="tabpanel" aria-labelledby="nav-upcoming-tab">
-                                ....
-                              </div>
-                            </div>
-                          </div>
-                          <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary btnTransactions">
-                              {{ 'entities.add_new' | translate }}
-                            </button>
-                            <button class="btn btn-outline-secondary float-right btnTransactions">
-                              {{ 'entities.view_full_report' | translate }}
-                            </button>
-                          </div>
-                        </div>
+                      <div
+                        id="collapseTwo"
+                        class="collapse"
+                        aria-labelledby="headingTwo"
+                        data-parent="#accordionExample"
+                      >
+                        <div class="card-body accText">Lorem ipsum</div>
                       </div>
-                      <div class="col-lg-3">
-                        <div class="card mb-3" style="height: 97%">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.products_performance' | translate }}</h6>
-                            <span class="float-right">
-                                <i class="fa fa-ellipsis-v dotsV"></i>
-                            </span>
-                          </div>
-                          <div class="card-body">
-                            <!-- <canvas
+                    </div>
+                    <div class="card">
+                      <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                          <button
+                            class="btn btn-block text-left collapsed accordionTitle"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseThree"
+                            aria-expanded="false"
+                            aria-controls="collapseThree"
+                          >
+                            Follow up on policy LT3456K
+                          </button>
+                        </h2>
+                      </div>
+                      <div
+                        id="collapseThree"
+                        class="collapse"
+                        aria-labelledby="headingThree"
+                        data-parent="#accordionExample"
+                      >
+                        <div class="card-body accText">Lorem ipsum</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="tab-pane fade"
+                  id="nav-upcoming"
+                  role="tabpanel"
+                  aria-labelledby="nav-upcoming-tab"
+                >
+                  ....
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+              <button class="btn btn-outline-secondary btnTransactions">
+                {{ "entities.add_new" | translate }}
+              </button>
+              <button
+                class="btn btn-outline-secondary float-right btnTransactions"
+              >
+                {{ "entities.view_full_report" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card mb-3" style="height: 97%">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.products_performance" | translate }}
+              </h6>
+              <span class="float-right">
+                <i class="fa fa-ellipsis-v dotsV"></i>
+              </span>
+            </div>
+            <div class="card-body">
+              <!-- <canvas
                               baseChart
                                 [datasets]="pieChartData"
                                 [labels]="pieChartLabels"
@@ -523,226 +798,356 @@
                                 [legend]="pieChartLegend"
                             >
                             </canvas> -->
-                          </div>
-                          <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary float-right btnTransactions">
-                              {{ 'entities.view_full_report' | translate }}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-lg-6">
-                        <div class="card">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.recent_policies' | translate }}</h6>
-                            <p class="mb-0">A list of the policies transacted</p>
-                            <span class="float-right">
-                                <p class="viewAll">{{ 'entities.view_all' | translate }}</p>
-                            </span>
-                          </div>
-                          <div class="card-body p-0">
-                            <p-table
-                                     [autoLayout]="true"
-                                     [paginator]="true"
-                                     [rowHover]="true"
-                                     [resizableColumns]="true"
-                                     [showCurrentPageReport]="true"
-                                     [rows]="pageSize"
-                                     [totalRecords]="policies.totalElements"
-                                     [value]="policies.content"
-                                     styleClass="p-datatable-sm"
-                                     responsiveLayout="scroll" class='ui-datatable'
-                                     currentPageReportTemplate="{first} - {last} of {totalRecords}">
-                              <ng-template pTemplate="header">
-                                <tr>
-                                  <th pSortableColumn="policyNumber"  class="head">{{ 'entities.policy_number' | translate }}<p-sortIcon field="policyNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="client"  class="head">{{ 'entities.client' | translate }}<p-sortIcon field="client"></p-sortIcon></th>
-                                  <th pSortableColumn="status"  class="head">{{ 'entities.status' | translate }}<p-sortIcon field="status"></p-sortIcon></th>
-                                  <th pSortableColumn="coverFrom"  class="head">{{ 'entities.cover_from' | translate }}<p-sortIcon field="coverFrom"></p-sortIcon></th>
-                                  <th pSortableColumn="coverTo"  class="head">{{ 'entities.cover_to' | translate }}<p-sortIcon field="coverTo"></p-sortIcon></th>
-                                  <th pSortableColumn="premium"  class="head">{{ 'entities.premium' | translate }}(KES)<p-sortIcon field="premium"></p-sortIcon></th>
-                                  <th class="head">{{ 'entities.actions' | translate }}</th>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="body" let-policy>
-                                <tr>
-                                  <td class="body">{{policy?.policy_no}}</td>
-                                  <td class="body">{{policy?.product?.description | titlecase}}</td>
-                                  <td class="body">{{policy?.insureds?.client?.first_name | titlecase}} {{policy?.insureds?.client?.last_name | titlecase}}</td>
-                                  <td class="body">{{policy?.policy_status | titlecase}}</td>
-                                  <td class="body">{{policy?.wef_dt | titlecase}}</td>
-                                  <td class="body">{{policy?.wet_dt}}</td>
-                                  <td class="body">{{policy?.premium}}</td>
-                                  <td>
-                                    <button type="button" class="btn btn-outline-secondary" id="btn_view_policy" >{{ 'entities.view' | translate }}</button>
-                                  </td>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="emptymessage">
-                                <tr>
-                                  <td colspan="8">{{ 'entities.no_policy_found' | translate }}</td>
-                                </tr>
-                              </ng-template>
-                            </p-table>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="card">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.recent_quotations' | translate }}</h6>
-                            <p class="mb-0">A list of the quotes transacted</p>
-                            <span class="float-right">
-                                <p class="viewAll">{{ 'entities.view_all' | translate }}</p>
-                            </span>
-                          </div>
-                          <div class="card-body p-0">
-                            <p-table
-                              [autoLayout]="true"
-                              [paginator]="true"
-                              [rowHover]="true"
-                              [resizableColumns]="true"
-                              [showCurrentPageReport]="true"
-                              [rows]="pageSize"
-                              [totalRecords]="quotations.totalElements"
-                              [value]="quotations.content"
-                              styleClass="p-datatable-sm"
-                              responsiveLayout="scroll" class='ui-datatable'
-                              currentPageReportTemplate="{first} - {last} of {totalRecords}">
-                              <ng-template pTemplate="header">
-                                <tr>
-                                  <th pSortableColumn="no"  class="head">{{ 'entities.quotation_number' | translate }}<p-sortIcon field="no"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="premium"  class="head">{{ 'entities.premium' | translate }}(KES)<p-sortIcon field="premium"></p-sortIcon></th>
-                                  <th pSortableColumn="coverFrom"  class="head">{{ 'entities.cover_from' | translate }}<p-sortIcon field="coverFrom"></p-sortIcon></th>
-                                  <th pSortableColumn="coverTo"  class="head">{{ 'entities.cover_to' | translate }}<p-sortIcon field="coverTo"></p-sortIcon></th>
-                                  <th pSortableColumn="client"  class="head">{{ 'entities.client' | translate }}<p-sortIcon field="client"></p-sortIcon></th>
-                                  <th class="head">{{ 'entities.actions' | translate }}</th>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="body" let-quotation>
-                                <tr>
-                                  <td class="body">{{quotation?.no | uppercase}}</td>
-                                  <td class="body">{{quotation?.quotation_product?.product?.insurance_type | titlecase}}</td>
-                                  <td class="body">{{quotation?.premium}}</td>
-                                  <td class="body">{{quotation?.cover_from | titlecase}}</td>
-                                  <td class="body">{{quotation?.cover_to}}</td>
-                                  <td class="body">{{quotation?.client | titlecase}}</td>
-                                  <td>
-                                    <button type="button" class="btn" id="btn_view_quotation" >{{ 'entities.view' | translate }}</button>
-                                  </td>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="emptymessage">
-                                <tr>
-                                  <td colspan="7">{{ 'entities.no_quotation_found' | translate }}</td>
-                                </tr>
-                              </ng-template>
-                            </p-table>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-6 mt-2">
-                        <div class="card">
-                          <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">{{ 'entities.claim_tracking_insights' | translate }}</h6>
-                            <p class="mb-0">Keep track of the insights on claims</p>
-                            <span class="float-right">
-                                <p class="viewAll">View all</p>
-                            </span>
-                          </div>
-                          <div class="card-body p-0">
-                            <p-table
-                              [autoLayout]="true"
-                              [paginator]="true"
-                              [rowHover]="true"
-                              [resizableColumns]="true"
-                              [showCurrentPageReport]="true"
-                              [rows]="pageSize"
-                              [totalRecords]="claims.totalElements"
-                              [value]="claims.content"
-                              styleClass="p-datatable-sm"
-                              responsiveLayout="scroll" class='ui-datatable'
-                              currentPageReportTemplate="{first} - {last} of {totalRecords}">
-                              <ng-template pTemplate="header">
-                                <tr>
-                                  <th pSortableColumn="claimNumber"  class="head">{{ 'entities.claim_number' | translate }}<p-sortIcon field="claimNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="policyNumber"  class="head">{{ 'entities.policy_number' | translate }}<p-sortIcon field="policyNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="status"  class="head">{{ 'entities.status' | translate }}<p-sortIcon field="status"></p-sortIcon></th>
-                                  <th pSortableColumn="notificationDate"  class="head">{{ 'entities.notification_date' | translate }}<p-sortIcon field="notificationDate"></p-sortIcon></th>
-                                  <th pSortableColumn="total_claim_amount"  class="head">{{ 'entities.incurred_amount' | translate }}<p-sortIcon field="total_claim_amount"></p-sortIcon></th>
-                                  <th class="head">{{ 'entities.actions' | translate }}</th>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="body" let-claim>
-                                <tr>
-                                  <td class="body">{{claim?.claim_no}}</td>
-                                  <td class="body">{{claim?.pol_policy_no}}</td>
-                                  <td class="body">{{claim?.product?.description | titlecase}}</td>
-                                  <td class="body">{{claim?.claim_status | titlecase}}</td>
-                                  <td class="body">{{claim?.notificationDate}}</td>
-                                  <td class="body">{{claim?.total_claim_amount}}</td>
-                                  <td>
-                                    <button type="button" class="btn" id="btn_view_claim" >{{ 'entities.view' | translate }}</button>
-                                  </td>
-                                </tr>
-                              </ng-template>
-                              <ng-template pTemplate="emptymessage">
-                                <tr>
-                                  <td colspan="8">{{ 'entities.no_claim_found' | translate }}</td>
-                                </tr>
-                              </ng-template>
-                            </p-table>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+              <button
+                class="btn btn-outline-secondary float-right btnTransactions"
+              >
+                {{ "entities.view_full_report" | translate }}
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-          {{ 'entities.reports_content' | translate }}
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.recent_policies" | translate }}
+              </h6>
+              <p class="mb-0">A list of the policies transacted</p>
+              <span class="float-right">
+                <p class="viewAll">{{ "entities.view_all" | translate }}</p>
+              </span>
+            </div>
+            <div class="card-body p-0">
+              <p-table
+                [autoLayout]="true"
+                [paginator]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize"
+                [totalRecords]="policies.totalElements"
+                [value]="policies.content"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                class="ui-datatable"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="policyNumber" class="head">
+                      {{ "entities.policy_number" | translate
+                      }}<p-sortIcon field="policyNumber"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="product" class="head">
+                      {{ "entities.product" | translate
+                      }}<p-sortIcon field="product"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="client" class="head">
+                      {{ "entities.client" | translate
+                      }}<p-sortIcon field="client"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="status" class="head">
+                      {{ "entities.status" | translate
+                      }}<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="coverFrom" class="head">
+                      {{ "entities.cover_from" | translate
+                      }}<p-sortIcon field="coverFrom"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="coverTo" class="head">
+                      {{ "entities.cover_to" | translate
+                      }}<p-sortIcon field="coverTo"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="premium" class="head">
+                      {{ "entities.premium" | translate }}(KES)<p-sortIcon
+                        field="premium"
+                      ></p-sortIcon>
+                    </th>
+                    <th class="head">{{ "entities.actions" | translate }}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-policy>
+                  <tr>
+                    <td class="body">{{ policy?.policy_no }}</td>
+                    <td class="body">
+                      {{ policy?.product?.description | titlecase }}
+                    </td>
+                    <td class="body">
+                      {{ policy?.insureds?.client?.first_name | titlecase }}
+                      {{ policy?.insureds?.client?.last_name | titlecase }}
+                    </td>
+                    <td class="body">
+                      {{ policy?.policy_status | titlecase }}
+                    </td>
+                    <td class="body">{{ policy?.wef_dt | titlecase }}</td>
+                    <td class="body">{{ policy?.wet_dt }}</td>
+                    <td class="body">{{ policy?.premium }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="btn_view_policy"
+                      >
+                        {{ "entities.view" | translate }}
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">
+                      {{ "entities.no_policy_found" | translate }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
         </div>
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.recent_quotations" | translate }}
+              </h6>
+              <p class="mb-0">A list of the quotes transacted</p>
+              <span class="float-right">
+                <p class="viewAll">{{ "entities.view_all" | translate }}</p>
+              </span>
+            </div>
+            <div class="card-body p-0">
+              <p-table
+                [autoLayout]="true"
+                [paginator]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize"
+                [totalRecords]="quotations.totalElements"
+                [value]="quotations.content"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                class="ui-datatable"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="no" class="head">
+                      {{ "entities.quotation_number" | translate
+                      }}<p-sortIcon field="no"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="product" class="head">
+                      {{ "entities.product" | translate
+                      }}<p-sortIcon field="product"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="premium" class="head">
+                      {{ "entities.premium" | translate }}(KES)<p-sortIcon
+                        field="premium"
+                      ></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="coverFrom" class="head">
+                      {{ "entities.cover_from" | translate
+                      }}<p-sortIcon field="coverFrom"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="coverTo" class="head">
+                      {{ "entities.cover_to" | translate
+                      }}<p-sortIcon field="coverTo"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="client" class="head">
+                      {{ "entities.client" | translate
+                      }}<p-sortIcon field="client"></p-sortIcon>
+                    </th>
+                    <th class="head">{{ "entities.actions" | translate }}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-quotation>
+                  <tr>
+                    <td class="body">{{ quotation?.no | uppercase }}</td>
+                    <td class="body">
+                      {{
+                        quotation?.quotation_product?.product?.insurance_type
+                          | titlecase
+                      }}
+                    </td>
+                    <td class="body">{{ quotation?.premium }}</td>
+                    <td class="body">
+                      {{ quotation?.cover_from | titlecase }}
+                    </td>
+                    <td class="body">{{ quotation?.cover_to }}</td>
+                    <td class="body">{{ quotation?.client | titlecase }}</td>
+                    <td>
+                      <button type="button" class="btn" id="btn_view_quotation">
+                        {{ "entities.view" | translate }}
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="7">
+                      {{ "entities.no_quotation_found" | translate }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mt-2">
+          <div class="card">
+            <div class="card-header bg-transparent border-bottom-0 pl-2">
+              <h6 class="cardHeader">
+                {{ "entities.claim_tracking_insights" | translate }}
+              </h6>
+              <p class="mb-0">Keep track of the insights on claims</p>
+              <span class="float-right">
+                <p class="viewAll">View all</p>
+              </span>
+            </div>
+            <div class="card-body p-0">
+              <p-table
+                [autoLayout]="true"
+                [paginator]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize"
+                [totalRecords]="claims.totalElements"
+                [value]="claims.content"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                class="ui-datatable"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="claimNumber" class="head">
+                      {{ "entities.claim_number" | translate
+                      }}<p-sortIcon field="claimNumber"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="policyNumber" class="head">
+                      {{ "entities.policy_number" | translate
+                      }}<p-sortIcon field="policyNumber"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="product" class="head">
+                      {{ "entities.product" | translate
+                      }}<p-sortIcon field="product"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="status" class="head">
+                      {{ "entities.status" | translate
+                      }}<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="notificationDate" class="head">
+                      {{ "entities.notification_date" | translate
+                      }}<p-sortIcon field="notificationDate"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="total_claim_amount" class="head">
+                      {{ "entities.incurred_amount" | translate
+                      }}<p-sortIcon field="total_claim_amount"></p-sortIcon>
+                    </th>
+                    <th class="head">{{ "entities.actions" | translate }}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-claim>
+                  <tr>
+                    <td class="body">{{ claim?.claim_no }}</td>
+                    <td class="body">{{ claim?.pol_policy_no }}</td>
+                    <td class="body">
+                      {{ claim?.product?.description | titlecase }}
+                    </td>
+                    <td class="body">{{ claim?.claim_status | titlecase }}</td>
+                    <td class="body">{{ claim?.notificationDate }}</td>
+                    <td class="body">{{ claim?.total_claim_amount }}</td>
+                    <td>
+                      <button type="button" class="btn" id="btn_view_claim">
+                        {{ "entities.view" | translate }}
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">
+                      {{ "entities.no_claim_found" | translate }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <div
+      class="tab-pane fade"
+      id="ex1-tabs-3"
+      role="tabpanel"
+      aria-labelledby="ex1-tab-3"
+    >
+      {{ "entities.reports_content" | translate }}
+    </div>
+  </div>
 </div>
 <!-- modal -->
 <form [formGroup]="selectRoleModalForm" aria-labelledby="title">
-    <div class="modal fade" id="selectRoleModal" tabindex="-1" role="dialog" aria-labelledby="selectRoleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"></h5>
-                    <button type="button" #closebutton class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeBtn">
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h6>{{ 'entities.roles' | translate }}</h6>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-check form-check-inline"
-                                            *ngFor="let role of unAssignedPartyTypes">
-                                            <input class="form-check-input" type="radio" name="partyType"
-                                                id="radioRoles" [value]="role.partyTypeName" formControlName="partyType"
-                                                (click)="onAssignRole(role)">
-                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName
-                                                }}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div
+    class="modal fade"
+    id="selectRoleModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="selectRoleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button
+            type="button"
+            #closebutton
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            id="closeBtn"
+          ></button>
         </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12">
+                <h6>{{ "entities.roles" | translate }}</h6>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div
+                      class="form-check form-check-inline"
+                      *ngFor="let role of unAssignedPartyTypes"
+                    >
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="partyType"
+                        id="radioRoles"
+                        [value]="role.partyTypeName"
+                        formControlName="partyType"
+                        (click)="onAssignRole(role)"
+                      />
+                      <label class="form-check-label" for="partyType">{{
+                        role.partyTypeName
+                      }}</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </form>
 
 <div class="mobile-bottom"></div>
-

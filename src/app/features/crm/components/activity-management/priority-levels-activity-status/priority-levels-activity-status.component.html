@@ -1,7 +1,8 @@
 <div class="base-content-section">
   <div class="row me-4">
     <div class="col-8">
-      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
       {
         label: 'Administration',
         url: '/home/crm'
@@ -18,7 +19,8 @@
         label: 'Priority level and activity status',
         url: ''
       }
-    ]">
+    ]"
+      >
       </app-dynamic-breadcrumb>
     </div>
   </div>
@@ -33,16 +35,22 @@
 
             <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
               <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefinePriorityLevelModal()"></i>
-            </span>
-                <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editPriorityLevel()"></i>
-            </span>
-                <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                <span
+                  class="icon-circle"
+                  (click)="openDefinePriorityLevelModal()"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </span>
+                <span class="icon-circle" (click)="editPriorityLevel()">
+                  <i class="pi pi-pencil"></i>
+                </span>
+                <span
+                  class="icon-circle"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deletePriorityLevelModal"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </span>
               </div>
             </div>
           </div>
@@ -58,23 +66,24 @@
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
-            [(selection)]="selectedPriorityLevels"
+            [(selection)]="selectedPriorityLevel"
             selectionMode="single"
-            dataKey="code"
+            dataKey="id"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
             [globalFilterFields]="['description', 'code']"
           >
-
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-
+                <th pSortableColumn="gis_exception_code">
+                  Description
+                  <p-sortIcon field="gis_exception_code"></p-sortIcon>
+                </th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-priorityLevel>
-              <tr>
-                <td></td>
+              <tr [pSelectableRow]="priorityLevel">
+                <td>{{ priorityLevel.desc }}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -85,7 +94,6 @@
           </p-table>
         </div>
       </div>
-
     </div>
     <div class="col-md-6">
       <div class="card">
@@ -97,16 +105,18 @@
 
             <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
               <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openActivityStatusModal()"></i>
-            </span>
                 <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editActivityStatus()"></i>
-            </span>
+                  <i
+                    class="fa-solid fa-plus"
+                    (click)="openActivityStatusModal()"
+                  ></i>
+                </span>
                 <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
+                  <i class="pi pi-pencil" (click)="editActivityStatus()"></i>
+                </span>
+                <span class="icon-circle">
+                  <i class="fa-regular fa-trash-can"></i>
+                </span>
               </div>
             </div>
           </div>
@@ -129,16 +139,17 @@
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
             [globalFilterFields]="['description', 'code']"
           >
-
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="gis_exception_code">Description <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-
+                <th pSortableColumn="gis_exception_code">
+                  Description
+                  <p-sortIcon field="gis_exception_code"></p-sortIcon>
+                </th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-activityType>
+            <ng-template pTemplate="body" let-activityStatus>
               <tr>
-                <td></td>
+                <td>{{ activityStatus.desc }}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -159,11 +170,15 @@
   #newPriorityLevel
   id="newPriorityLevel"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="exampleModalLabel"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'priority level' : 'new priority level' }}</h5>
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }} a
+          {{ editMode ? "priority level" : "new priority level" }}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -176,27 +191,162 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="shortDescription">Short description</label>
+                <label class="form-label w-100" for="shortDescription"
+                  >Short description</label
+                >
                 <textarea
                   class="form-control"
                   id="shortDescription"
-                  formControlName="shortDescription" rows="2"
-                  [ngClass]="{ 'is-invalid': f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched) }"></textarea>
-                <div *ngIf="f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['shortDescription']?.errors['required']">Short description is required</div>
+                  formControlName="shtDesc"
+                  rows="2"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['shortDescription']?.invalid &&
+                      (f['shortDescription']?.dirty ||
+                        f['shortDescription']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    f['shortDescription']?.invalid &&
+                    (f['shortDescription']?.dirty ||
+                      f['shortDescription']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['shortDescription']?.errors['required']">
+                    Short description is required
+                  </div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.description === 'Y'">
               <div class="col-md-12">
-                <label class="form-label w-100" for="description">Description</label>
+                <label class="form-label w-100" for="description"
+                  >Description</label
+                >
                 <textarea
                   class="form-control"
                   id="description"
-                  formControlName="description" rows="3"
-                  [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }"></textarea>
-                <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                  formControlName="desc"
+                  rows="3"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['description']?.invalid &&
+                      (f['description']?.dirty || f['description']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    f['description']?.invalid &&
+                    (f['description']?.dirty || f['description']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['description']?.errors['required']">
+                    Description is required
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createPriorityLevel()"
+        >
+          Save details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Create activity status modal-->
+<div
+  class="modal fade"
+  #newActivityStatus
+  id="newActivityStatus"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Define" }}
+          {{ editMode ? "an activity status" : "new activity status" }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeActivityStatusModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createNewActivityStatusForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="shortDescription"
+                  >Short description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="shortDescription"
+                  formControlName="shortDescription"
+                  rows="2"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['shortDescription']?.invalid &&
+                      (g['shortDescription']?.dirty ||
+                        g['shortDescription']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    g['shortDescription']?.invalid &&
+                    (g['shortDescription']?.dirty ||
+                      g['shortDescription']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['shortDescription']?.errors['required']">
+                    Short description is required
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="description"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="description"
+                  formControlName="description"
+                  rows="3"
+                  [ngClass]="{
+                    'is-invalid':
+                      g['description']?.invalid &&
+                      (g['description']?.dirty || g['description']?.touched)
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="
+                    g['description']?.invalid &&
+                    (g['description']?.dirty || g['description']?.touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="g['description']?.errors['required']">
+                    Description is required
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -210,58 +360,43 @@
   </div>
 </div>
 
-<!--Create activity status modal-->
+<!--Delete Priority Level Modal -->
 <div
   class="modal fade"
-  #newActivityStatus
-  id="newActivityStatus"
+  id="deletePriorityLevelModal"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel">
+  aria-labelledby="deletePriorityLevelModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title text-black">{{ editMode ? 'Edit' : 'Define' }} {{ editMode ? 'an activity status' : 'new activity status' }}</h5>
+      <div class="modal-header" style="border: none">
+        <h1 class="modal-title fs-5 text-danger" id="deleteActivityModalLabel">
+          Confirm delete!
+        </h1>
         <button
           type="button"
           class="btn-close"
-          (click)="closeActivityStatusModal()"
+          data-bs-dismiss="modal"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createNewActivityStatusForm">
-          <div class="row my-3">
-            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
-              <div class="col-md-12">
-                <label class="form-label w-100" for="shortDescription">Short description</label>
-                <textarea
-                  class="form-control"
-                  id="shortDescription"
-                  formControlName="shortDescription" rows="2"
-                  [ngClass]="{ 'is-invalid': g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched) }"></textarea>
-                <div *ngIf="g['shortDescription']?.invalid && (g['shortDescription']?.dirty || g['shortDescription']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['shortDescription']?.errors['required']">Short description is required</div>
-                </div>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="visibleStatus.description === 'Y'">
-              <div class="col-md-12">
-                <label class="form-label w-100" for="description">Description</label>
-                <textarea
-                  class="form-control"
-                  id="description"
-                  formControlName="description" rows="3"
-                  [ngClass]="{ 'is-invalid': g['description']?.invalid && (g['description']?.dirty || g['description']?.touched) }"></textarea>
-                <div *ngIf="g['description']?.invalid && (g['description']?.dirty || g['description']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['description']?.errors['required']">Description is required</div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
-        </form>
+        <p class="fs-5 text-muted">
+          Are you sure you want to delete the priority level
+        </p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+      <div class="modal-footer" style="border: none">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDeletePriorityLevel()"
+        >
+          Confirm Delete
+        </button>
       </div>
     </div>
   </div>

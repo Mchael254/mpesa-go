@@ -247,7 +247,7 @@ export class ReportService {
     //   { headers: this.headers }
     // );
     return this.apiService.POST<CreateUpdateDashboardDTO>(
-      `chart/dashboards`,
+      `dashboards`,
       JSON.stringify(dashboard),
       API_CONFIG.CHART_SERVICE_BASE_URL
     );

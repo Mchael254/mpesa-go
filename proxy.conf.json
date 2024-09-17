@@ -1,20 +1,20 @@
 {
   "/crm": {
-     "target": "http://10.176.18.211:1025/",
-     "secure": false,
-     "changeOrigin": true,
-     "logLevel": "debug"
+    "target": "http://192.0.0.169:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   },
 
   "/oauth": {
-     "target": "http://10.176.18.211:1025/",
-     "secure": false,
-     "changeOrigin": true,
-     "logLevel": "debug"
+    "target": "http://192.0.0.169:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   },
 
   "/user": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -27,27 +27,27 @@
     "logLevel": "debug"
   },
   "/lms": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/gis": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
- },
+  },
   "/turnquest": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/notification": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -59,13 +59,13 @@
     "logLevel": "debug"
   },
   "/premium": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/reinsurance": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -76,12 +76,12 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
-    "/alfrescoServices": {
-      "target": "https://mutual-uat.turnkeyafrica.com/",
-      "secure": false,
-      "changeOrigin": true,
-      "logLevel": "debug"
-      },
+  "/alfrescoServices": {
+    "target": "https://mutual-uat.turnkeyafrica.com/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/fms": {
     "target": "http://10.176.18.215:1025/",
     "secure": false,
@@ -89,10 +89,9 @@
     "logLevel": "debug"
   },
   "/etims": {
-    "target": "http://10.176.18.211:1025/",
+    "target": "http://192.0.0.169:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   }
-
 }

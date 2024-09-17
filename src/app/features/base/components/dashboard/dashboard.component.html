@@ -26,7 +26,9 @@
               [chartType]="'bar'"
               [chartTitle]="report[0].type"
             ></app-dynamic-chart>
-            <p class="text-primary text-center mt-2 fw-bold">{{ report[0].name }}</p>
+            <p class="text-primary text-center mt-2 fw-bold">
+              {{ report[0].name }}
+            </p>
           </ng-container>
           <ng-template #chartLoading>
             <div class="text-center">
@@ -48,7 +50,9 @@
               [chartType]="'line'"
               [chartTitle]="report[1].type"
             ></app-dynamic-chart>
-            <p class="text-primary text-center mt-2 fw-bold">{{ report[1].name }}</p>
+            <p class="text-primary text-center mt-2 fw-bold">
+              {{ report[1].name }}
+            </p>
           </ng-container>
           <ng-template #chartLoading>
             <div class="text-center">
@@ -67,7 +71,9 @@
   <div class="row">
     <!-- BEGINS POLICY LIST (LMS/GIS) -->
     <div class="col-sm-12 transactions_container">
-      <p class="transactions">{{ "base.my_policies" | translate }}</p>
+      <p class="transactions section-title">
+        {{ "base.my_policies" | translate }}
+      </p>
       <p-tabView styleClass="tabview-custom">
         <p-tabPanel>
           <ng-template pTemplate="header">
@@ -75,7 +81,11 @@
           </ng-template>
           <div class="row">
             <div class="offset-8 col-sm-4 text-end mb-2">
-              <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/policy/underwriting">
+              <a
+                type="button"
+                class="btn btn-primary btn-sm"
+                routerLink="/home/gis/policy/underwriting"
+              >
                 {{ "entities.create_new_policy" | translate }}
               </a>
             </div>
@@ -164,7 +174,9 @@
 
     <!-- BEGINS QUOTATOIN LIST (LMS/GIS) -->
     <div class="col-sm-12 transactions_container" id="lms-gis-policy-list">
-      <p class="transactions">{{ "base.my_quotations" | translate }}</p>
+      <p class="transactions section-title">
+        {{ "base.my_quotations" | translate }}
+      </p>
       <p-tabView>
         <p-tabPanel>
           <ng-template pTemplate="header">
@@ -172,10 +184,18 @@
           </ng-template>
           <div class="row">
             <div class="offset-8 col-sm-4 text-end mb-2">
-              <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/quotation/quick-quote">
+              <a
+                type="button"
+                class="btn btn-primary btn-sm"
+                routerLink="/home/gis/quotation/quick-quote"
+              >
                 {{ "entities.create_quick_quote" | translate }}
               </a>
-              <a type="button" class="btn btn-primary btn-sm" routerLink="/home/gis/quotation/quotations-client-details">
+              <a
+                type="button"
+                class="btn btn-primary btn-sm"
+                routerLink="/home/gis/quotation/quotations-client-details"
+              >
                 {{ "entities.create_normal_quote" | translate }}
               </a>
               <!-- <p class="policy-sort">
