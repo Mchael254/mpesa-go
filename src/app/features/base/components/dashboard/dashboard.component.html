@@ -91,56 +91,52 @@
             </div>
           </div>
           <ng-container *ngIf="isPolicyDataReady; else policyLoading">
-            <ng-container>
-              <p-table
-                [value]="gis_policies"
-                [paginator]="true"
-                [rows]="5"
-                [showCurrentPageReport]="true"
-                [tableStyle]="{ 'min-width': '50rem' }"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                [rowsPerPageOptions]="[5, 10, 20, 50]"
-              >
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th>{{ "entities.policy_no" | translate }}</th>
-                    <th style="width: 30%">
-                      {{ "entities.client_name" | translate }}
-                    </th>
-                    <th>
-                      {{ "entities.sum_insured" | translate }}({{ currency }})
-                    </th>
-                    <th>
-                      {{ "entities.premium" | translate }}({{ currency }})
-                    </th>
-                    <th>{{ "entities.intermediary" | translate }}</th>
-                    <th>{{ "entities.date_created" | translate }}</th>
-                    <th>{{ "entities.cover_from" | translate }}</th>
-                    <th>{{ "entities.cover_to" | translate }}</th>
-                    <th>{{ "entities.status" | translate }}</th>
-                    <th>{{ "entities.action" | translate }}</th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-policy>
-                  <tr>
-                    <td>{{ policy?.policyNo }}</td>
-                    <td>{{ policy?.clientName }}</td>
-                    <td>{{ policy?.totalSumInsured | currency : " " }}</td>
-                    <td>{{ policy?.premium | currency : " " }}</td>
-                    <td>{{ policy?.agency }}</td>
-                    <td>{{ policy?.preparedDate }}</td>
-                    <td>{{ policy?.wefDt }}</td>
-                    <td>{{ policy?.wetDt }}</td>
-                    <td>{{ policy?.authorizedStatus }}</td>
-                    <td>
-                      <button type="button" class="btn btn-link text-primary">
-                        <i class="pi pi-eye" style="padding: 0 2px 0 0"> </i>
-                      </button>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </ng-container>
+            <p-table
+              [value]="gis_policies"
+              [paginator]="true"
+              [rows]="5"
+              [showCurrentPageReport]="true"
+              [tableStyle]="{ 'min-width': '50rem' }"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              [rowsPerPageOptions]="[5, 10, 20, 50]"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{ "entities.policy_no" | translate }}</th>
+                  <th style="width: 30%">
+                    {{ "entities.client_name" | translate }}
+                  </th>
+                  <th>
+                    {{ "entities.sum_insured" | translate }}({{ currency }})
+                  </th>
+                  <th>{{ "entities.premium" | translate }}({{ currency }})</th>
+                  <th>{{ "entities.intermediary" | translate }}</th>
+                  <th>{{ "entities.date_created" | translate }}</th>
+                  <th>{{ "entities.cover_from" | translate }}</th>
+                  <th>{{ "entities.cover_to" | translate }}</th>
+                  <th>{{ "entities.status" | translate }}</th>
+                  <th>{{ "entities.action" | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-policy>
+                <tr>
+                  <td>{{ policy?.policyNo }}</td>
+                  <td>{{ policy?.clientName }}</td>
+                  <td>{{ policy?.totalSumInsured | currency : " " }}</td>
+                  <td>{{ policy?.premium | currency : " " }}</td>
+                  <td>{{ policy?.agency }}</td>
+                  <td>{{ policy?.preparedDate }}</td>
+                  <td>{{ policy?.wefDt }}</td>
+                  <td>{{ policy?.wetDt }}</td>
+                  <td>{{ policy?.authorizedStatus }}</td>
+                  <td>
+                    <button type="button" class="btn btn-link text-primary">
+                      <i class="pi pi-eye" style="padding: 0 2px 0 0"> </i>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
           </ng-container>
           <ng-template #policyLoading>
             <div class="text-center">

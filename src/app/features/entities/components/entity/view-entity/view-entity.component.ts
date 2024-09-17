@@ -97,6 +97,8 @@ export class ViewEntityComponent implements OnInit {
   nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
+  partyTypes: PartyTypeDto[];
+
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
@@ -361,6 +363,9 @@ export class ViewEntityComponent implements OnInit {
         allPartyTypes = data.filter(
           (partyType) => partyType?.partyTypeLevel === 1
         );
+
+        this.partyTypes = allPartyTypes;
+
         this.unAssignedPartyTypes = allPartyTypes.filter(
           (o) =>
             !assignedPartyTypes.find(
@@ -371,6 +376,7 @@ export class ViewEntityComponent implements OnInit {
         );
         log.info('Assigned party types: ', assignedPartyTypes);
         log.info('Unassigned party types: ', this.unAssignedPartyTypes);
+        log.info('All party types >>>', allPartyTypes);
 
         // this.unAssignedPartyTypes = this.unAssignedPartyTypes.length ? this.unAssignedPartyTypes : allPartyTypes;
       });
@@ -452,7 +458,8 @@ export class ViewEntityComponent implements OnInit {
     this.entityTransactions.fetchTransactionsByPartyAndAccountCode(
       partyTypeShtDesc,
       id,
-      username
+      username,
+      this.partyTypes
     );
   }
 

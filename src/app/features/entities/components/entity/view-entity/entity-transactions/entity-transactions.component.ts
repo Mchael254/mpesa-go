@@ -4,6 +4,7 @@ import { ClaimsDTO } from '../../../../../gis/data/claims-dto';
 import { EntityService } from '../../../../services/entity/entity.service';
 import { Logger } from '../../../../../../shared/services';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { PartyTypeDto } from 'src/app/features/entities/data/partyTypeDto';
 
 const log = new Logger('EntityTransactionComponent');
 
@@ -39,17 +40,26 @@ export class EntityTransactionsComponent implements OnInit {
   fetchTransactionsByPartyAndAccountCode(
     partyTypeShtDesc: string,
     id: number,
-    username: string
+    username: string,
+    partyTypes: PartyTypeDto[]
   ): void {
     this.partyTypeShtDesc = partyTypeShtDesc;
-    switch (partyTypeShtDesc) {
+
+    const partyShtDesc = partyTypes.filter(
+      (partyType) => partyType.partyTypeShtDesc === partyTypeShtDesc
+    )[0].partyTypeShtDesc;
+
+    switch (partyShtDesc) {
       case 'A':
+      case 'AGENT':
         this.fetchTransactionsByAgentCode(id);
         break;
       case 'S':
+      case 'SPR':
         this.fetchTransactionsByUser(username);
         break;
       case 'C':
+      case 'CLIENT':
         this.fetchTransactionsByClientId(id);
         break;
       default:
