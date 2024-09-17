@@ -247,10 +247,7 @@ export class TicketsService {
 
     const loggedInUser = this.authService.getCurrentUser();
     const supervisor = loggedInUser?.code;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
+
     let params = new HttpParams()
       .set('fromDate', `${fromDate}`)
       .set('supervisor', `${supervisor}`)
@@ -259,11 +256,7 @@ export class TicketsService {
 
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.http.get<TransactionsCountDTO[]>(`/${this.baseUrl}/workflow/api/v1/gis-transactions/count-per-module`,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<TransactionsCountDTO[]>(`api/v1/gis-transactions/count-per-module?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   // get all departments
