@@ -1,249 +1,589 @@
 <div>
-    <!-- Top Header Text and Breadcrumb !-->
-    <div class="d-flex justify-content-between my-4 ms-4">
-        <div class="mr-auto p-2">
-            <h6 class="htxt page-header" style="font-size: 15px; font-weight: 900;">{{'entities.new_entity' | translate | uppercase}}</h6>
-        </div>
-        <div class="me-4">
-            <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
-            </app-dynamic-breadcrumb>
-        </div>
+  <!-- Top Header Text and Breadcrumb !-->
+  <div class="d-flex justify-content-between my-4 ms-4">
+    <div class="mr-auto p-2">
+      <h6 class="htxt page-header" style="font-size: 15px; font-weight: 900">
+        {{ "entities.new_entity" | translate | uppercase }}
+      </h6>
     </div>
-    <div class="my-4 ms-4 me-4">
-        <div class="card col-md-12 col-lg-12 col-xxl-12">
-          <ng-container *ngIf="isLoading">
-            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" [style]="'width:' + progressBarWidth + '%'"></div>
+    <div class="me-4">
+      <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="my-4 ms-4 me-4">
+    <div class="card col-md-12 col-lg-12 col-xxl-12">
+      <ng-container *ngIf="isLoading">
+        <div
+          class="progress"
+          role="progressbar"
+          aria-label="Animated striped example"
+          aria-valuenow="75"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            [style]="'width:' + progressBarWidth + '%'"
+          ></div>
+        </div>
+      </ng-container>
+      <div class="card-body">
+        <ng-container *ngIf="isEntityExisting">
+          <div class="text-center">
+            <div
+              class="alert alert-primary alert-dismissible fade show"
+              role="alert"
+            >
+              The entity with
+              <span class="fw-bold"
+                >ID: {{ foundEntity.identityNumber }} and PIN:
+                {{ foundEntity.pinNumber }}
+              </span>
+              already exists. Assign a role instead.
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+              <button
+                class="btn btn-primary mx-3"
+                (click)="redirectToViewExistingEntity()"
+              >
+                Assign Role to Entity
+              </button>
             </div>
-          </ng-container>
-            <div class="card-body">
-              <ng-container *ngIf="isEntityExisting">
-                <div class="text-center">
-                  <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                    The entity with <span class="fw-bold">ID: {{ foundEntity.identityNumber }} and PIN: {{ foundEntity.pinNumber }} </span>
-                    already exists. Assign a role instead.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    <button class="btn btn-primary mx-3" (click)="redirectToViewExistingEntity()">Assign Role to Entity</button>
+          </div>
+        </ng-container>
+        <form [formGroup]="entityRegistrationForm">
+          <div class="row">
+            <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="assign_role">{{
+                  "entities.select_role" | translate | titlecase
+                }}</label>
+                <p-dropdown
+                  [options]="roleType"
+                  [(ngModel)]="selectedItem"
+                  optionLabel="partyTypeName"
+                  optionValue="id"
+                  formControlName="assign_role"
+                  id="assign_role"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select Role"
+                  [disabled]="disableRole"
+                  [ngClass]="{
+                    'p-dropdown-invalid':
+                      f['assign_role']?.invalid &&
+                      (f['assign_role']?.dirty || f['assign_role']?.touched)
+                  }"
+                >
+                </p-dropdown>
+                <div
+                  *ngIf="
+                    f['assign_role']?.invalid &&
+                    (f['assign_role']?.dirty || f['assign_role']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['assign_role']?.errors
+                  }"
+                >
+                  <div *ngIf="f['assign_role']?.errors['required']">
+                    Role is required
                   </div>
                 </div>
-              </ng-container>
-                <form [formGroup]="entityRegistrationForm">
-                    <div class="row">
-                        <ng-container *ngIf="visibleStatus.category === 'Y'">
-                            <div class="col-md-4 col-6 pad-1" >
-                                <label for="category">{{ 'entities.party_type' | translate | titlecase }}</label>
-                                <select id="category" class="form-select" placeholder="Select Party Type"
-                                    formControlName="category"
-                                    [ngClass]="{ 'is-invalid': f['category'].invalid && (f['category'].dirty || f['category'].touched) }">
-                                    <option value="" selected>{{ 'entities.primary' | translate | titlecase }} {{ 'entities.party_type' | translate | titlecase }}</option>
-                                    <option value="I">{{ 'entities.individual' | translate | titlecase }}</option>
-                                    <option value="C">{{ 'entities.corporate' | translate | titlecase }}</option>
-                                </select>
-                                <div *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)"
-                                    class="form-text text-danger">
-                                    <div *ngIf="f['category']?.errors['required']">{{ 'entities.category_required' | translate | titlecase }}</div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
-                            <div class="col-md-4 col-6 md-col-4 pad-1">
-                                <label for="date_of_birth">{{ 'entities.dob' | translate | titlecase }}</label>
-                                <input type="text"
-                                    class="form-control"
-                                    name="inputDateOfBirth"
-                                    onfocus="(this.type='date')"
-                                    onblur="(this.type='text')"
-                                    id="date_of_birth"
-                                    [max]="eighteenYearsAgo | date:'yyyy-MM-dd'"
-                                    formControlName="date_of_birth"
-                                    [ngClass]="{ 'is-invalid': f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched) }">
-                                <div *ngIf="f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)"
-                                    class="form-text text-danger"
-                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['date_of_birth']?.errors }">
-                                    <div *ngIf="f['date_of_birth']?.errors['required']">
-                                        {{ 'entities.dob' | translate | titlecase }} {{ 'entities.required' | translate }}
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="entity_name">{{ 'entities.entity' | translate | titlecase }} {{ 'entities.name' | translate | titlecase }}</label>
-                                <input type="text" class="form-control" id="entity_name"  formControlName="entity_name"
-                                    [ngClass]="{ 'is-invalid': f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched) }">
-                                <div *ngIf="f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched)"
-                                    class="form-text text-danger"
-                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['entity_name']?.errors }">
-                                    <div *ngIf="f['entity_name']?.errors['required']">
-                                        {{ 'entities.name' | translate | titlecase }} {{ 'entities.required' | translate }}
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="mode_of_identity">
-                                    {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }}
-                                </label>
-                                <select id="mode_of_identity" class="form-select" placeholder="Primary ID Type"
-                                    formControlName="mode_of_identity"
-                                    [ngClass]="{ 'is-invalid': f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched) }">
-                                    <option value="" selected disabled>
-                                        {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }}
-                                    </option>
-                                    <option *ngFor="let type of  modeIdentityType" [value]="type.id">
-                                        {{ type.name }} <!-- return translation from backend -->
-                                    </option>
-                                </select>
-                                <div *ngIf="f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched)"
-                                    class="form-text text-danger"
-                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['mode_of_identity']?.errors }">
-                                    <div *ngIf="f['mode_of_identity']?.errors['required']">
-                                        {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }} {{ 'entities.required' | translate }}
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="identity_number">{{ 'entities.id_number' | translate }}</label>
-                                <input type="text" class="form-control" id="identity_number"
-                                    formControlName="identity_number"
-                                    [ngClass]="{ 'is-invalid': f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched) }">
-                                <div *ngIf="f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched)"
-                                    class="form-text text-danger"
-                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['identity_number']?.errors }">
-                                    <div *ngIf="f['identity_number']?.errors['required']">
-                                        {{ 'entities.id_number' | translate }} {{ 'entities.required' | translate }}
-                                    </div>
-                                    <div *ngIf="f['identity_number'].errors['pattern']">
-                                        {{ 'entities.id_number' | translate }} {{ 'entities.format' | translate }} 12345678
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="pin_number">{{ 'entities.pin_number' | translate }}</label>
-                                <input type="text" class="form-control" id="pin_number"
-                                    formControlName="pin_number"
-                                    [ngClass]="{ 'is-invalid': f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched) }">
-                                <div *ngIf="f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched)"
-                                    class="form-text text-danger"
-                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['pin_number']?.errors }">
-                                    <div *ngIf="f['pin_number']?.errors['required']">
-                                        {{ 'entities.pin_number' | translate }} {{ 'entities.required' | translate }}
-                                    </div>
-                                    <div *ngIf="f['pin_number'].errors['pattern']">
-                                        {{ 'entities.pin_number' | translate }} {{ 'entities.format' | translate }} A123456789R
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </div>
-                    <div class="row">
-                        <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="assign_role">{{ 'entities.assign_role' | translate | titlecase }} ({{ 'entities.optional' | translate }})</label>
-                                <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
-                                    [disabled]="true">
-                            </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.category === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="category">{{
+                  "entities.party_type" | translate | titlecase
+                }}</label>
+                <select
+                  id="category"
+                  class="form-select"
+                  placeholder="Select Party Type"
+                  formControlName="category"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['category'].invalid &&
+                      (f['category'].dirty || f['category'].touched)
+                  }"
+                >
+                  <option value="" selected>
+                    {{ "entities.primary" | translate | titlecase }}
+                    {{ "entities.party_type" | translate | titlecase }}
+                  </option>
+                  <option value="I">
+                    {{ "entities.individual" | translate | titlecase }}
+                  </option>
+                  <option value="C">
+                    {{ "entities.corporate" | translate | titlecase }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="
+                    f['category'].invalid &&
+                    (f['category'].dirty || f['category'].touched)
+                  "
+                  class="form-text text-danger"
+                >
+                  <div *ngIf="f['category']?.errors['required']">
+                    {{ "entities.category_required" | translate | titlecase }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
+              <div class="col-md-4 col-6 md-col-4 pad-1">
+                <label for="date_of_birth">{{
+                  "entities.dob" | translate | titlecase
+                }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="inputDateOfBirth"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  id="date_of_birth"
+                  [max]="eighteenYearsAgo | date : 'yyyy-MM-dd'"
+                  formControlName="date_of_birth"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['date_of_birth']?.invalid &&
+                      (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['date_of_birth']?.invalid &&
+                    (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['date_of_birth']?.errors
+                  }"
+                >
+                  <div *ngIf="f['date_of_birth']?.errors['required']">
+                    {{ "entities.dob" | translate | titlecase }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="entity_name"
+                  >{{ "entities.entity" | translate | titlecase }}
+                  {{ "entities.name" | translate | titlecase }}</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="entity_name"
+                  formControlName="entity_name"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['entity_name']?.invalid &&
+                      (f['entity_name']?.dirty || f['entity_name']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['entity_name']?.invalid &&
+                    (f['entity_name']?.dirty || f['entity_name']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['entity_name']?.errors
+                  }"
+                >
+                  <div *ngIf="f['entity_name']?.errors['required']">
+                    {{ "entities.name" | translate | titlecase }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="mode_of_identity">
+                  {{ "entities.primary" | translate | titlecase }}
+                  {{ "entities.id_type" | translate }}
+                </label>
+                <select
+                  id="mode_of_identity"
+                  class="form-select"
+                  placeholder="Primary ID Type"
+                  formControlName="mode_of_identity"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['mode_of_identity']?.invalid &&
+                      (f['mode_of_identity']?.dirty ||
+                        f['mode_of_identity']?.touched)
+                  }"
+                >
+                  <option value="" selected disabled>
+                    {{ "entities.primary" | translate | titlecase }}
+                    {{ "entities.id_type" | translate }}
+                  </option>
+                  <option
+                    *ngFor="let type of modeIdentityType"
+                    [value]="type.id"
+                  >
+                    {{ type.name }}
+                    <!-- return translation from backend -->
+                  </option>
+                </select>
+                <div
+                  *ngIf="
+                    f['mode_of_identity']?.invalid &&
+                    (f['mode_of_identity']?.dirty ||
+                      f['mode_of_identity']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['mode_of_identity']?.errors
+                  }"
+                >
+                  <div *ngIf="f['mode_of_identity']?.errors['required']">
+                    {{ "entities.primary" | translate | titlecase }}
+                    {{ "entities.id_type" | translate }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="identity_number">{{
+                  "entities.id_number" | translate
+                }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="identity_number"
+                  formControlName="identity_number"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['identity_number']?.invalid &&
+                      (f['identity_number']?.dirty ||
+                        f['identity_number']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['identity_number']?.invalid &&
+                    (f['identity_number']?.dirty ||
+                      f['identity_number']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['identity_number']?.errors
+                  }"
+                >
+                  <div *ngIf="f['identity_number']?.errors['required']">
+                    {{ "entities.id_number" | translate }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                  <div *ngIf="f['identity_number'].errors['pattern']">
+                    {{ "entities.id_number" | translate }}
+                    {{ "entities.format" | translate }} 12345678
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="pin_number">{{
+                  "entities.pin_number" | translate
+                }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="pin_number"
+                  formControlName="pin_number"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['pin_number']?.invalid &&
+                      (f['pin_number']?.dirty || f['pin_number']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['pin_number']?.invalid &&
+                    (f['pin_number']?.dirty || f['pin_number']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['pin_number']?.errors
+                  }"
+                >
+                  <div *ngIf="f['pin_number']?.errors['required']">
+                    {{ "entities.pin_number" | translate }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                  <div *ngIf="f['pin_number'].errors['pattern']">
+                    {{ "entities.pin_number" | translate }}
+                    {{ "entities.format" | translate }} A123456789R
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="inputProfileImg">{{
+                  "entities.profile_photo" | translate | titlecase
+                }}</label>
 
-                            <div class="col-md-4 col-6 pad-1">
-                                <label for="rolesButton">{{ 'entities.select_role' | translate | titlecase }}</label>
-                                <button type="button" id="rolesButton" class="btn btn-outline-primary btn-md btn-block"
-                                    data-bs-toggle="modal" data-bs-target="#selectRoleModal" [disabled]="disableRole">
-                                    {{ 'entities.select_role' | translate | titlecase }}
-                                </button>
-                            </div>
-                        </ng-container>
-                    </div>
-                    <div class="row">
-                        <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
-                            <div class="col-md-4 col-12 pad-1">
-                                <label for="inputProfileImg">{{ 'entities.profile_photo' | translate | titlecase }}</label>
-                              <p style="padding:7px; border-left: solid 3px #00529b; color: #00529b">
-                                <i class="fa-solid fa-info-circle"></i>
-                                <strong> {{ 'entities.note' | translate | titlecase }} - </strong> png, jpeg or jpg
-                              </p>
-                                <div (change)="onFileChange($event)">
-                                    <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
-                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" accept="image/jpeg, image/png" hidden />
-                                    <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i> {{ 'entities.upload_image' | translate | titlecase }}</label>
-                                    <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">{{ 'entities.edit' | translate | titlecase }}</label>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="lower-navigation pad-1">
-            <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
-            <span class="float-end">
+                <div style="display: flex; align-items: center">
+                  <div
+                    (change)="onFileChange($event)"
+                    style="display: inline-block; margin-right: 10px"
+                  >
+                    <img
+                      *ngIf="url !== '' && url"
+                      [src]="url"
+                      alt=""
+                      id="profile-photo"
+                    />
+                    <input
+                      type="file"
+                      id="inputProfileImg"
+                      formControlName="profilePiture"
+                      accept="image/jpeg, image/png"
+                      hidden
+                    />
+                    <label
+                      *ngIf="url === ''"
+                      for="inputProfileImg"
+                      class="img_upload"
+                    >
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      {{ "entities.upload_image" | translate | titlecase }}
+                    </label>
+                    <label
+                      for="inputProfileImg"
+                      *ngIf="url !== ''"
+                      class="img_edit"
+                      >{{ "entities.edit" | translate | titlecase }}</label
+                    >
+                  </div>
+
+                  <p
+                    style="
+                      padding: 7px;
+                      border-left: solid 3px #00529b;
+                      color: #00529b;
+                      margin: 0;
+                      display: inline-block;
+                    "
+                  >
+                    <i class="fa-solid fa-info-circle"></i>
+                    <strong>
+                      {{ "entities.note" | translate | titlecase }} -
+                    </strong>
+                    png, jpeg or jpg
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <!-- <div class="row">
+            <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
+              <div class="col-md-4 col-6 pad-1">
+                <label for="assign_role"
+                  >{{ "entities.assign_role" | translate | titlecase }} ({{
+                    "entities.optional" | translate
+                  }})</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="assign_role"
+                  placeholder="selected Role"
+                  formControlName="assign_role"
+                  [disabled]="true"
+                />
+              </div>
+
+              <div class="col-md-4 col-6 pad-1">
+                <label for="rolesButton">{{
+                  "entities.select_role" | translate | titlecase
+                }}</label>
                 <button
-                    style="padding: 0.4 0.5rem;"
-                    type="button" id="nextButton"
-                    class="btn btn-primary" (click)="onSubmit()"
-                ><i class="fa-solid fa-circle-arrow-right"></i> {{ 'entities.next' | translate | titlecase }}
-            </button>
-            </span>
-        </div>
+                  type="button"
+                  id="rolesButton"
+                  class="btn btn-outline-primary btn-md btn-block"
+                  data-bs-toggle="modal"
+                  data-bs-target="#selectRoleModal"
+                  [disabled]="disableRole"
+                >
+                  {{ "entities.select_role" | translate | titlecase }}
+                </button>
+              </div>
+            </ng-container>
+          </div>
+          <div class="row">
+            <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
+              <div class="col-md-4 col-12 pad-1">
+                <label for="inputProfileImg">{{
+                  "entities.profile_photo" | translate | titlecase
+                }}</label>
+                <p
+                  style="
+                    padding: 7px;
+                    border-left: solid 3px #00529b;
+                    color: #00529b;
+                  "
+                >
+                  <i class="fa-solid fa-info-circle"></i>
+                  <strong>
+                    {{ "entities.note" | translate | titlecase }} -
+                  </strong>
+                  png, jpeg or jpg
+                </p>
+                <div (change)="onFileChange($event)">
+                  <img
+                    *ngIf="url !== '' && url"
+                    [src]="url"
+                    alt=""
+                    id="profile-photo"
+                  />
+                  <input
+                    type="file"
+                    id="inputProfileImg"
+                    formControlName="profilePiture"
+                    accept="image/jpeg, image/png"
+                    hidden
+                  />
+                  <label
+                    *ngIf="url === ''"
+                    for="inputProfileImg"
+                    class="img_upload"
+                  >
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    {{ "entities.upload_image" | translate | titlecase }}</label
+                  >
+                  <label
+                    for="inputProfileImg"
+                    *ngIf="url !== ''"
+                    class="img_edit"
+                    >{{ "entities.edit" | translate | titlecase }}</label
+                  >
+                </div>
+              </div>
+            </ng-container>
+          </div> -->
+        </form>
+      </div>
     </div>
-
+    <div class="lower-navigation pad-1">
+      <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+      <span class="float-end">
+        <button
+          style="padding: 0.4 0.5rem"
+          type="button"
+          id="nextButton"
+          class="btn btn-primary"
+          (click)="onSubmit()"
+        >
+          <i class="fa-solid fa-circle-arrow-right"></i>
+          {{ "entities.next" | translate | titlecase }}
+        </button>
+      </span>
+    </div>
+  </div>
 </div>
 <!-- modal -->
 <form [formGroup]="selectRoleModalForm" aria-labelledby="title">
-    <div class="modal fade" id="selectRoleModal" tabindex="-1" aria-labelledby="selectRoleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="selectRoleModalLabel"></h5>
-                    <button type="button" #closebutton class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeBtn"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h6 class="black-text">{{ 'entities.roles' | translate | titlecase }}</h6>
-                                <div class="row">
-                                    <div class="col-md-12 black-text">
-                                        <div class="form-check form-check-inline" *ngFor="let role of partyLevel1">
-                                            <input class="form-check-input" type="radio" name="partyType"
-                                                id="radioRoles" [value]="role.partyTypeName" formControlName="partyType"
-                                                (click)="onAssignRole(role)">
-                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName}}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h6 class="black-text">{{ 'entities.others' | translate | titlecase }}</h6>
-                                <div class="row">
-                                    <ng-container *ngFor="let role of partyLevel2">
-                                        <div class="col-sm-4 black-text">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="partyType"
-                                                    id="radioOthers" [value]="role.partyTypeName"
-                                                    formControlName="partyType" (click)="onAssignRole(role)">
-                                                <label class="form-check-label" for="partyType">{{ role.partyTypeName
-                                                    }}</label>
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div
+    class="modal fade"
+    id="selectRoleModal"
+    tabindex="-1"
+    aria-labelledby="selectRoleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="selectRoleModalLabel"></h5>
+          <button
+            type="button"
+            #closebutton
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            id="closeBtn"
+          ></button>
         </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12">
+                <h6 class="black-text">
+                  {{ "entities.roles" | translate | titlecase }}
+                </h6>
+                <div class="row">
+                  <div class="col-md-12 black-text">
+                    <div
+                      class="form-check form-check-inline"
+                      *ngFor="let role of partyLevel1"
+                    >
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="partyType"
+                        id="radioRoles"
+                        [value]="role.partyTypeName"
+                        formControlName="partyType"
+                        (click)="onAssignRole(role)"
+                      />
+                      <label class="form-check-label" for="partyType">{{
+                        role.partyTypeName
+                      }}</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <h6 class="black-text">
+                  {{ "entities.others" | translate | titlecase }}
+                </h6>
+                <div class="row">
+                  <ng-container *ngFor="let role of partyLevel2">
+                    <div class="col-sm-4 black-text">
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="partyType"
+                          id="radioOthers"
+                          [value]="role.partyTypeName"
+                          formControlName="partyType"
+                          (click)="onAssignRole(role)"
+                        />
+                        <label class="form-check-label" for="partyType">{{
+                          role.partyTypeName
+                        }}</label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </form>
 
 <div class="mobile-bottom"></div>
