@@ -69,7 +69,7 @@ export class AuthorizationTabComponent implements OnInit, OnChanges{
   }
 
   ngOnChanges() {
-    this.subscribeToEtimsFetchDetails();
+    // this.subscribeToEtimsFetchDetails();
   }
 
   subscribeToEtimsFetchDetails() {
