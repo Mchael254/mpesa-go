@@ -11,7 +11,8 @@ import {SubclassesService} from "../../../../gis/components/setups/services/subc
 import {IntermediaryService} from "../../../../entities/services/intermediary/intermediary.service";
 import {AppConfigService} from "../../../../../core/config/app-config-service";
 import {ReinsuranceRiskDetailsDTO, RiskReinsuranceRiskDetailsDTO} from "../../../../gis/data/reinsurance-dto";
-import any = jasmine.any;
+import {TranslateLoader, TranslateService, TranslateStore} from "@ngx-translate/core";
+
 
 const reinsuranceRiskMock: ReinsuranceRiskDetailsDTO = {
   batchNo: 0,
@@ -102,6 +103,12 @@ export class MockReinsuranceService {
   getPolicyFacreSetups = jest.fn().mockReturnValue(of())
   populateTreaties = jest.fn().mockReturnValue(of())
 }
+
+export class MockTranslateService {
+  getTranslation = jest.fn().mockReturnValue(of());
+  get = jest.fn().mockReturnValue(of());
+}
+
 describe('ReinsuranceAllocationsComponent', () => {
   let component: ReinsuranceAllocationsComponent;
   let fixture: ComponentFixture<ReinsuranceAllocationsComponent>;
@@ -111,6 +118,7 @@ describe('ReinsuranceAllocationsComponent', () => {
   let intermediaryServiceStub: IntermediaryService;
   let appConfigServiceStub: AppConfigService;
   let loggerSpy: jest.SpyInstance;
+  let translateServiceStub: TranslateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -127,6 +135,9 @@ describe('ReinsuranceAllocationsComponent', () => {
         { provide: SubclassesService },
         { provide: IntermediaryService },
         { provide: AppConfigService, useClass: MockAppConfigService },
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateStore },
+        { provide: TranslateLoader },
 
       ]
     });
@@ -138,6 +149,7 @@ describe('ReinsuranceAllocationsComponent', () => {
     intermediaryServiceStub = TestBed.inject(IntermediaryService);
     appConfigServiceStub = TestBed.inject(AppConfigService);
     loggerSpy = jest.spyOn(Logger.prototype, 'info');
+    translateServiceStub = TestBed.inject(TranslateService);
     fixture.detectChanges();
   });
 
@@ -151,7 +163,7 @@ describe('ReinsuranceAllocationsComponent', () => {
     jest.spyOn(reinsuranceServiceStub, 'getTreatyParticipant');
     component.selectRiskRiSummary(mockData);
     component.getTreatyParticipant();
-    expect(reinsuranceServiceStub.getTreatyParticipant).toHaveBeenCalledWith(component.reinsuranceRiskDetailsData.content[0].code);
+    expect(reinsuranceServiceStub.getTreatyParticipant).toHaveBeenCalledWith(component.reinsuranceRiskDetailsData.content[0].code, component.reinsuranceRiskDetailsData.content[0].code);
 
   });
 

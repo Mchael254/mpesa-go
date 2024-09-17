@@ -508,7 +508,10 @@ export class ReinsuranceAllocationsComponent implements OnInit {
     this.getTreatyCessions();
     this.getPreviousFacreCeding();
     this.getPolicyFacreSetups();
-    this.getTreatySetups();
+    if (this.reinsuranceRiskDetailsData.content.length > 0) {
+      this.getTreatySetups();
+    }
+
   }
 
   /**
