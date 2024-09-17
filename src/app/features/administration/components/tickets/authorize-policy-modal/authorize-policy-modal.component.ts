@@ -292,13 +292,20 @@ export class AuthorizePolicyModalComponent implements OnInit {
     log.info('schedule>>', scheduleFormValues);
 
     //this will be removed when we get dispatch endpoint
-    if (scheduleFormValues.scheduleReadyAuth === 'Y') {
+    /*if (scheduleFormValues.scheduleReadyAuth === 'Y') {
       // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
+      /!*this.prepareDocuments();
+      this.savePreparedDocs();*!/
+      // this.onSave();
+    }*/
+    if (scheduleFormValues.dispatchDocuments === 'Y') {
       this.prepareDocuments();
       this.savePreparedDocs();
-      this.onSave();
     }
-    this.saveDispatchRejection();
+    else {
+      this.saveDispatchRejection();
+    }
+    // this.saveDispatchRejection();
     setTimeout(() => {
 
     this.policiesService.authorisePolicy(this.batchNo, scheduleFormValues.scheduleReadyAuth, this.dateToday)
@@ -307,7 +314,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
           this.scheduleData = data;
           log.info('save schedule>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized policy');
-          this.saveToEtims();
+          // this.saveToEtims();
           this.isLoading = false;
           this.closeScheduleModal();
           this.closeDebtOwnerModal();
