@@ -209,8 +209,10 @@
   </div>
 </div>
 
+<div *ngIf ="policyDetails">
 <app-authorize-policy-modal>
 </app-authorize-policy-modal>
+</div>
 
 <app-reassign-ticket-modal
   [selectedTickets]="[selectedSpringTickets]"
