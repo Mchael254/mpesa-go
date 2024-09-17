@@ -470,6 +470,7 @@ export class RevisionDetailsComponent implements OnInit {
           // this.makeReadyData = data;
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully made ready claim transaction');
           this.isLoadingMakeUndo = false;
+          this.fetchClaimExceptions();
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
