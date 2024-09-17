@@ -6,7 +6,12 @@ import { Logger } from '../../../../../shared/services';
 import { StaffDto } from '../../../../entities/data/StaffDto';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { CampaignsService } from '../../../services/campaigns..service';
-import { Activity } from '../../../data/activity';
+import {
+  Activity,
+  ActivityNote,
+  ActivityParticipant,
+  ActivityTask,
+} from '../../../data/activity';
 import { ActivityService } from '../../../services/activity.service';
 
 const log = new Logger('ActivitiesComponent');
@@ -18,13 +23,13 @@ const log = new Logger('ActivitiesComponent');
 export class ActivitiesComponent implements OnInit {
   pageSize: 5;
   activityData: Activity[];
-  selectedActivity: any[] = [];
-  notesAndAttachmentsData: any[];
-  selectedNotes: any[] = [];
-  tasksData: any[];
-  selectedTask: any[] = [];
-  partipantsData: any[];
-  selectedParticipant: any[] = [];
+  selectedActivity: Activity;
+  notesAndAttachmentsData: ActivityNote[];
+  selectedNotes: ActivityNote;
+  tasksData: ActivityTask[];
+  selectedTask: ActivityTask;
+  partipantsData: ActivityParticipant[];
+  selectedParticipant: ActivityParticipant;
 
   editMode: boolean = false;
   createActivityForm: FormGroup;
@@ -391,14 +396,349 @@ export class ActivitiesComponent implements OnInit {
       next: (data) => {
         this.activityData = data;
         log.info(`Activity data >>> `, data);
+        this.cdr.detectChanges();
       },
-      error: (err) => {},
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
     });
   }
 
-  createActivity(): void {
+  createUpdateActivity(): void {
     const formValues = this.createActivityForm.getRawValue();
-    log.info(`form values >>> `, formValues);
+    const activity: Activity = {
+      id: this.selectedActivity?.id || null,
+      activityTypeCode: formValues.activityType,
+      wef: formValues.startDate,
+      wet: formValues.endDate,
+      duration: formValues.duration,
+      subject: formValues.subject,
+      location: formValues.location,
+      assignedTo: formValues.assignedTo,
+      relatedTo: formValues.relatedAccount,
+      statusId: formValues.status,
+      desc: formValues.description,
+      reminder: formValues.reminder,
+      team: formValues.team,
+      reminderTime: formValues.reminderTime,
+      messageCode: formValues.emailTemplate,
+    };
+
+    if (!this.editMode) {
+      this.createActivity(activity);
+    } else {
+      this.updateActivity(activity);
+    }
+  }
+
+  createActivity(activity: Activity): void {
+    this.activityService.createActivity(activity).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity created successfully!'
+        );
+        this.getActivities();
+        this.closeDefineActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  updateActivity(activity: Activity): void {
+    this.activityService.updateActivity(activity).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity updated successfully!'
+        );
+        this.getActivities();
+        this.closeDefineActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  confirmDeleteActivity(): void {
+    const id = this.selectedActivity.id;
+
+    this.activityService.deleteActivity(id).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity deleted successfully!'
+        );
+        this.getActivities();
+        // close modal after delete
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityTasks(): void {
+    this.activityService.getActivityTasks().subscribe({
+      next: (data) => {
+        this.tasksData = data;
+        log.info(`Activity Task data >>> `, data);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  createUpdateActivityTask(): void {
+    const formValues = this.createTaskForm.getRawValue();
+    const activityTask: ActivityTask = {
+      id: this.selectedTask?.id || null,
+      actCode: formValues.actCode,
+      dateFrom: formValues.taskStartDate,
+      dateTo: formValues.taskEndDate,
+      subject: formValues.taskSubject,
+      statusId: formValues.statusId,
+      priorityCode: formValues.priority,
+      accCode: formValues.accCode,
+    };
+
+    if (!this.editMode) {
+      this.createActivityTask(activityTask);
+    } else {
+      this.updateActivityTask(activityTask);
+    }
+  }
+
+  createActivityTask(activityTask: ActivityTask): void {
+    this.activityService.createActivityTask(activityTask).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Task created successfully!'
+        );
+        this.getActivities();
+        this.closeDefineActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  updateActivityTask(activityTask: ActivityTask): void {
+    this.activityService.updateActivityTask(activityTask).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Task updated successfully!'
+        );
+        this.getActivities();
+        this.closeDefineActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  confirmDeleteActivityTask(): void {
+    const id = this.selectedTask.id;
+
+    this.activityService.deleteActivityTask(id).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Task deleted successfully!'
+        );
+        this.getActivityTasks();
+        // close modal after delete
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityNotes(): void {
+    this.activityService.getActivityNotes().subscribe({
+      next: (data) => {
+        // this.note = data;
+        log.info(`Activity notes data >>> `, data);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  createUpdateActivityNote(): void {
+    const formValues = this.createNoteForm.getRawValue();
+    const activityNote: ActivityNote = {
+      id: this.selectedNotes.id || null,
+      accCode: 0,
+      contactCode: 0,
+      subject: formValues.noteSubject,
+      notes: '',
+      attachment: undefined,
+      actCode: 0,
+      attachmentType: formValues.attachment,
+      fileName: '',
+    };
+
+    if (!this.editMode) {
+      this.createActivityNote(activityNote);
+    } else {
+      this.updateActivityNote(activityNote);
+    }
+  }
+
+  createActivityNote(activityNote: ActivityNote): void {
+    this.activityService.createActivityNote(activityNote).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Note created successfully!'
+        );
+        this.getActivityNotes();
+        // this.closeDefineActivityNoteModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  updateActivityNote(activityNote: ActivityNote): void {
+    this.activityService.updateActivityNote(activityNote).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Note updated successfully!'
+        );
+        this.getActivityNotes();
+        // this.closeDefineActivityNoteModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  confirmDeleteActivityNote(): void {
+    const id = this.selectedNotes.id;
+
+    this.activityService.deleteActivityNote(id).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Note deleted successfully!'
+        );
+        this.getActivityNotes();
+        // close modal after delete
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityParticipants(): void {
+    this.activityService.getActivityParticipants().subscribe({
+      next: (data) => {
+        this.partipantsData = data;
+        log.info(`Activity participants data >>> `, data);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  createUpdateActivityParticipant(): void {
+    // const formValues = this..getRawValue();
+    // const activityParticipant: ActivityParticipant = {
+    //   id: this.selectedParticipant.id || null,
+    //   name: '',
+    //   emailAddress: ''
+    // };
+    // if (!this.editMode) {
+    //   this.createActivityParticipant(activityParticipant);
+    // } else {
+    //   this.updateActivityParticipant(activityParticipant);
+    // }
+  }
+
+  createActivityParticipant(participant: ActivityParticipant): void {
+    this.activityService.createParticipant(participant).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Participant created successfully!'
+        );
+        this.getActivityParticipants();
+        // this.closeDefineActivityNoteModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  updateActivityParticipant(participant: ActivityParticipant): void {
+    this.activityService.updateParticipant(participant).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Participant updated successfully!'
+        );
+        this.getActivityNotes();
+        // this.closeDefineActivityNoteModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  confirmDeleteActivityParticipant(): void {
+    const id = this.selectedParticipant?.id;
+
+    this.activityService.deleteParticipant(id).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity Participant deleted successfully!'
+        );
+        this.getActivityParticipants();
+        // close modal after delete
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   ngOnDestroy(): void {}
