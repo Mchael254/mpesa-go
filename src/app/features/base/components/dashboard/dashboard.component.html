@@ -103,7 +103,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.policy_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th style="min-width: 20%">
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -228,7 +228,7 @@
               <ng-template pTemplate="body" let-quot>
                 <tr>
                   <td>{{ quot?.no }}</td>
-                  <td style="width: 30%">
+                  <td style="min-width: 20%">
                     {{ quot?.clientCode }}
                   </td>
                   <td>{{ quot?.sumInsured | currency : " " }}</td>
