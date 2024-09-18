@@ -378,8 +378,11 @@
                 === '' ? ticket?.ticket.policyNo : '' }}
             <td class="body">{{ ticket.clientName }}</td>
             <td class="body">{{ ticket.agentName }}</td>
-            <td class="body">{{ ticket.ticket.reporter }}</td>
-            <td class="body">{{ ticket.ticket.assignee }}</td>
+            <td class="body">
+<!--              {{ ticket.ticket.reporter }}-->
+              PMUTUA
+            </td>
+            <td class="body">{{ ticket.ticket.assignee === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticket.assignee }}</td>
             <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
               <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
               <!-- Details -->
