@@ -229,6 +229,7 @@ export class ViewEntityComponent implements OnInit {
     this.getPaymentDetails(partyAccountDetails);
     this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
     this.nokDetails = partyAccountDetails.nextOfKinDetailsList;
+    this.fetchTransactions(partyAccountDetails);
     this.cdr.detectChanges();
   }
 

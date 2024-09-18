@@ -162,12 +162,12 @@ export class ActivityTypesComponent implements OnInit {
     }
   }
 
-  createActivityType(): void {
+  saveActivivty(): void {
     const formValues = this.createNewActivityTypeForm.getRawValue();
     const activityType: ActivityType = {
       id: this.selectedActivityType?.id || null,
       desc: formValues.description,
-      systemCode: this.selectedSystem.id,
+      systemCode: this.selectedSystem.id || this.selectedActivityType?.id,
     };
 
     if (!this.editMode) {

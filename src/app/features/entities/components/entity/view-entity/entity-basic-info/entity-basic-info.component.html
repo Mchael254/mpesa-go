@@ -58,7 +58,7 @@
   </div>
   <div class="col-sm-2 mt-4">
     <p *ngIf="partyAccountDetails?.status">
-      Status
+      {{ "entities.status" | translate }}
       <span class="badge text-bg-success ms-4 px-3 py-1">
         {{ partyAccountDetails?.status === "A" ? "Active" : "Inactive" }}
       </span>
@@ -69,73 +69,107 @@
 <div class="row">
   <div class="col-sm-12">
     <h5 class="mt-5">
-      Basic Information
+      {{ "entities.basic_information" | translate }}
       <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%">
         <i class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
       </button>
     </h5>
   </div>
-  <div class="col-sm-3">
+  <div class="col-sm-4">
     <table class="table table-borderless">
       <tbody>
         <tr>
-          <td>Primary party type</td>
-          <th>{{ partyAccountDetails?.partyType?.partyTypeName }}</th>
+          <td>{{ "entities.party_type" | translate }}</td>
+          <th>
+            <span *ngIf="partyAccountDetails?.clientDto?.clientType?.category">
+              {{ partyAccountDetails?.clientDto?.clientType?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.agentDto?.category">
+              {{ partyAccountDetails?.agentDto?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.serviceProviderDto?.category">
+              {{ partyAccountDetails?.serviceProviderDto?.category }}
+            </span>
+          </th>
         </tr>
         <tr>
-          <td>Primary ID type</td>
+          <td>{{ "entities.primary_id_type" | translate }}</td>
           <th>{{ entityPartyIdDetails?.modeOfIdentity?.name }}</th>
         </tr>
         <tr>
-          <td>Passport no.</td>
-          <th>[Not provided]</th>
+          <td *ngIf="partyAccountDetails?.clientDto?.passportNumber">
+            {{ "entities.passport_number" | translate }}
+          </td>
+          <th>{{ partyAccountDetails?.clientDto?.passportNumber }}</th>
         </tr>
         <tr *ngIf="partyAccountDetails?.clientDto?.occupation?.name">
-          <td>Occupation</td>
+          <td>{{ "entities.occupation" | translate }}</td>
           <th>{{ partyAccountDetails?.clientDto?.occupation?.name }}</th>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="col-sm-3 offset-1">
+  <div class="col-sm-4">
     <table class="table table-borderless">
       <tbody>
+        <tr>
+          <td>
+            {{
+              partyAccountDetails?.partyType?.partyTypeName === "Agent"
+                ? "Account"
+                : partyAccountDetails?.partyType?.partyTypeName
+            }}
+            type
+          </td>
+          <th>
+            <span
+              *ngIf="partyAccountDetails?.clientDto?.clientType?.clientTypeName"
+            >
+              {{ partyAccountDetails?.clientDto?.clientType?.clientTypeName }}
+            </span>
+            <span *ngIf="partyAccountDetails?.agentDto?.accountType">
+              {{ partyAccountDetails?.agentDto?.accountType }}
+            </span>
+            <span
+              *ngIf="
+                partyAccountDetails?.serviceProviderDto?.providerType?.name
+              "
+            >
+              {{ partyAccountDetails?.serviceProviderDto?.providerType?.name }}
+            </span>
+          </th>
+        </tr>
         <tr *ngIf="partyAccountDetails?.userDto?.username">
-          <td>Username</td>
+          <td>{{ "entities.username" | translate }}</td>
           <th>{{ partyAccountDetails?.userDto?.username }}</th>
         </tr>
+
         <tr>
-          <td>Date of birth</td>
-          <th>{{ partyAccountDetails?.dateOfBirth | date }}</th>
-        </tr>
-        <tr>
-          <td>ID no.</td>
+          <td>{{ "entities.id_number" | translate }}</td>
           <th>{{ entityPartyIdDetails?.identityNumber }}</th>
         </tr>
-        <!-- <tr *ngIf="partyAccountDetails?.contactDetails?.phoneNumber">
-                <td>Mobile no.</td>
-                <th>{{ partyAccountDetails?.contactDetails?.phoneNumber }}</th>
-              </tr> -->
+        <tr *ngIf="partyAccountDetails?.clientDto?.clientTitle">
+          <td>{{ "entities.title" | translate }}</td>
+          <th>
+            <!-- {{ partyAccountDetails?.contactDetails?.title?.shortDescription }} -->
+            {{ partyAccountDetails?.clientDto?.clientTitle }}
+          </th>
+        </tr>
       </tbody>
     </table>
   </div>
-  <div class="col-sm-3 offset-1">
+  <div class="col-sm-4">
     <table class="table table-borderless">
       <tbody>
         <tr>
-          <td>Title</td>
-          <th>
-            {{ partyAccountDetails?.contactDetails?.title?.shortDescription }}
-          </th>
+          <td>{{ "entities.dob" | translate }}</td>
+          <th>{{ partyAccountDetails?.dateOfBirth | date }}</th>
         </tr>
+
         <tr>
-          <td>PIN no.</td>
+          <td>{{ "entities.pin_number" | translate }}</td>
           <th>{{ partyAccountDetails?.pinNumber }}</th>
         </tr>
-        <!-- <tr>
-                <td>Email address</td>
-                <th>{{ partyAccountDetails?.contactDetails?.emailAddress }}</th>
-              </tr> -->
       </tbody>
     </table>
   </div>
@@ -152,7 +186,9 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Assign roles</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">
+          {{ "entities.assign_role" | translate }}
+        </h1>
         <button
           type="button"
           class="btn-close"
