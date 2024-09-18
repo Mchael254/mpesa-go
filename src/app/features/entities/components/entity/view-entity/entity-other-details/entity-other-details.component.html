@@ -1,315 +1,336 @@
 <div class="row">
   <div class="col-sm-12">
-    <h5 class=" mt-5">
-        Additional Information
-        <ng-container *ngIf="!['contact', 'nok'].includes(activeTab)">
-          <button
-            class="btn btn-light btn-sm ms-4"
-            style="border-radius: 100%;" data-bs-toggle="modal"
-            data-bs-target="#editModal"
-            (click)="prepareDetailsForEdit(); confirmFormReadyStatus(false)"
-          >
-            <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
-          </button>
-        </ng-container>
+    <h5 class="mt-5">
+      Additional Information
+      <ng-container *ngIf="!['nok'].includes(activeTab)">
+        <button
+          class="btn btn-light btn-sm ms-4"
+          style="border-radius: 100%"
+          data-bs-toggle="modal"
+          data-bs-target="#editModal"
+          (click)="prepareDetailsForEdit(); confirmFormReadyStatus(false)"
+        >
+          <i class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
+        </button>
+      </ng-container>
     </h5>
-</div>
+  </div>
 </div>
 <p-tabView (onChange)="setActiveTab($event)">
   <p-tabPanel header="Contact Details">
-      <div class="row">
-          <div class="col-sm-3">
-              <table class="table table-borderless">
-                  <tbody>
-                    <tr>
-                      <td>Mobile number</td>
-                      <th>{{ partyAccountDetails?.contactDetails?.smsNumber }}</th>
-                    </tr>
-                    <tr>
-                      <td>County</td>
-                      <th>
-                        {{ states[partyAccountDetails?.address?.state_id]?.name }}
-                      </th>
-                    </tr>
-                  </tbody>
-              </table>
-          </div>
-          <div class="col-sm-3 offset-1">
-              <table class="table table-borderless">
-                  <tbody>
-                    <tr>
-                      <td>Email address</td>
-                      <th>{{ partyAccountDetails?.contactDetails?.emailAddress }}</th>
-                    </tr>
-                    <tr>
-                      <td>Physical address</td>
-                      <th>
-                        {{ partyAccountDetails?.address?.house_number }}
-                        {{ partyAccountDetails?.address?.physical_address }}
-                      </th>
-                    </tr>
-                  </tbody>
-              </table>
-          </div>
-          <div class="col-sm-3 offset-1">
-              <table class="table table-borderless">
-                  <tbody>
-                    <tr>
-                      <td>Country</td>
-                      <th>
-                        {{ getCountryName(partyAccountDetails?.address?.country_id) }}
-                      </th>
-                    </tr>
-                  </tbody>
-              </table>
-          </div>
+    <div class="row">
+      <div class="col-sm-3">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Mobile number</td>
+              <th>{{ partyAccountDetails?.contactDetails?.smsNumber }}</th>
+            </tr>
+            <tr>
+              <td>County</td>
+              <th>
+                {{ states[partyAccountDetails?.address?.state_id]?.name }}
+              </th>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Email address</td>
+              <th>{{ partyAccountDetails?.contactDetails?.emailAddress }}</th>
+            </tr>
+            <tr>
+              <td>Physical address</td>
+              <th>
+                {{ partyAccountDetails?.address?.house_number }}
+                {{ partyAccountDetails?.address?.physical_address }}
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Country</td>
+              <th>
+                {{ getCountryName(partyAccountDetails?.address?.country_id) }}
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </p-tabPanel>
 
-    <p-tabPanel
-      id="get-payment-details"
-      header="Bank Details"
-      *ngIf="bankDetails"
-    >
-        <div class="row">
-            <div class="col-sm-3">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Bank</td>
-                        <th>{{ bankDetails?.bankName }}</th>
-                      </tr>
-                      <tr>
-                        <td>Branch</td>
-                        <th>{{ bankBranch?.name }} </th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Account no.</td>
-                        <th>{{ bankDetails?.accountNo }}</th>
-                      </tr>
-                      <tr>
-                        <td>Payment method</td>
-                        <th>{{ bankDetails?.paymentMethod }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Account type</td>
-                        <th>{{ bankDetails?.accountType }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </p-tabPanel>
-
-    <p-tabPanel
-      id="get-wealth-aml-details"
-      header="Wealth Details"
-      *ngIf="wealthAmlDetails?.id"
-      (click)="getWealthAmlDetails()"
-    >
-        <div class="row">
-            <div class="col-sm-3">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Nationality</td>
-                        <th>
-                          {{ getCountryName(wealthAmlDetails?.nationality_country_id )}}
-                        </th>
-                      </tr>
-                      <tr>
-                        <td>Citizenship</td>
-                        <th>
-                          {{ getCountryName(wealthAmlDetails?.citizenship_country_id) }}
-                        </th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Source of funds</td>
-                        <th>{{ wealthAmlDetails?.funds_source }}</th>
-                      </tr>
-                      <tr>
-                        <td>Sector</td>
-                        <th>{{ sector?.name }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Type of employment</td>
-                        <th>{{ wealthAmlDetails?.employment_type }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </p-tabPanel>
-
-    <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails?.id">
-        <div class="row">
-            <div class="col-sm-3">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Trading names</td>
-                        <th>{{ wealthAmlDetails?.trading_name }}</th>
-                      </tr>
-                      <tr>
-                        <td>Operation country</td>
-                        <th>{{ wealthAmlDetails?.operating_country_id }}</th>
-                      </tr>
-                      <tr>
-                        <td>Parent country</td>
-                        <th>{{ wealthAmlDetails?.parent_country_id }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Entities company</td>
-                        <th>xxx</th>
-                      </tr>
-                      <tr>
-                        <td>Cert. reg. no.</td>
-                        <th>xxx</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-3 offset-1">
-                <table class="table table-borderless">
-                    <tbody>
-                      <tr>
-                        <td>Cert. reg. year</td>
-                        <th>xxx</th>
-                      </tr>
-                      <tr>
-                        <td>Source of wealth</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </p-tabPanel>
-
-    <p-tabPanel header="Next of kin" *ngIf="nokList?.length > 0">
-<!--    <p-tabPanel header="Next of kin" >-->
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Identity type</th>
-                    <th>Identifier no</th>
-                    <th>Full names</th>
-                    <th>Relation</th>
-                    <th>Date of birth</th>
-                    <th>Mobile no.</th>
-                    <th>Email address</th>
-                  <th></th>
-                </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let nok of nokList">
-                <td>{{ nok?.modeOfIdentity?.name }}</td>
-                <td>{{ nok?.identityNumber }}</td>
-                <td>{{ nok?.fullName | titlecase }}</td>
-                <td>{{ nok?.relationship | titlecase }}</td>
-                <td>[Not provided]</td>
-                <td>{{ nok?.smsNumber }}</td>
-                <td>{{ nok?.emailAddress | lowercase }}</td>
-                <td>
-                  <button
-                    class="btn btn-light btn-sm ms-4"
-                    style="border-radius: 100%;" data-bs-toggle="modal"
-                    data-bs-target="#editModal"
-                    (click)="prepareNokForEdit(nok)"
-                  >
-                    <i class="fa fa-pencil" style="color:#00529B; font-size: 0.8em;"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
+  <p-tabPanel
+    id="get-payment-details"
+    header="Bank Details"
+    *ngIf="bankDetails"
+  >
+    <div class="row">
+      <div class="col-sm-3">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Bank</td>
+              <th>{{ bankDetails?.bankName }}</th>
+            </tr>
+            <tr>
+              <td>Branch</td>
+              <th>{{ bankBranch?.name }}</th>
+            </tr>
+          </tbody>
         </table>
-    </p-tabPanel>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Account no.</td>
+              <th>{{ bankDetails?.accountNo }}</th>
+            </tr>
+            <tr>
+              <td>Payment method</td>
+              <th>{{ bankDetails?.paymentMethod }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Account type</td>
+              <th>{{ bankDetails?.accountType }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </p-tabPanel>
+
+  <p-tabPanel
+    id="get-wealth-aml-details"
+    header="Wealth Details"
+    *ngIf="wealthAmlDetails?.id"
+    (click)="getWealthAmlDetails()"
+  >
+    <div class="row">
+      <div class="col-sm-3">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Nationality</td>
+              <th>
+                {{ getCountryName(wealthAmlDetails?.nationality_country_id) }}
+              </th>
+            </tr>
+            <tr>
+              <td>Citizenship</td>
+              <th>
+                {{ getCountryName(wealthAmlDetails?.citizenship_country_id) }}
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Source of funds</td>
+              <th>{{ wealthAmlDetails?.funds_source }}</th>
+            </tr>
+            <tr>
+              <td>Sector</td>
+              <th>{{ sector?.name }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Type of employment</td>
+              <th>{{ wealthAmlDetails?.employment_type }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </p-tabPanel>
+
+  <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails?.id">
+    <div class="row">
+      <div class="col-sm-3">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Trading names</td>
+              <th>{{ wealthAmlDetails?.trading_name }}</th>
+            </tr>
+            <tr>
+              <td>Operation country</td>
+              <th>{{ wealthAmlDetails?.operating_country_id }}</th>
+            </tr>
+            <tr>
+              <td>Parent country</td>
+              <th>{{ wealthAmlDetails?.parent_country_id }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Entities company</td>
+              <th>xxx</th>
+            </tr>
+            <tr>
+              <td>Cert. reg. no.</td>
+              <th>xxx</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>Cert. reg. year</td>
+              <th>xxx</th>
+            </tr>
+            <tr>
+              <td>Source of wealth</td>
+              <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </p-tabPanel>
+
+  <p-tabPanel header="Next of kin" *ngIf="nokList?.length > 0">
+    <!--    <p-tabPanel header="Next of kin" >-->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Identity type</th>
+          <th>Identifier no</th>
+          <th>Full names</th>
+          <th>Relation</th>
+          <th>Date of birth</th>
+          <th>Mobile no.</th>
+          <th>Email address</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let nok of nokList">
+          <td>{{ nok?.modeOfIdentity?.name }}</td>
+          <td>{{ nok?.identityNumber }}</td>
+          <td>{{ nok?.fullName | titlecase }}</td>
+          <td>{{ nok?.relationship | titlecase }}</td>
+          <td>[Not provided]</td>
+          <td>{{ nok?.smsNumber }}</td>
+          <td>{{ nok?.emailAddress | lowercase }}</td>
+          <td>
+            <button
+              class="btn btn-light btn-sm ms-4"
+              style="border-radius: 100%"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal"
+              (click)="prepareNokForEdit(nok)"
+            >
+              <i
+                class="fa fa-pencil"
+                style="color: #00529b; font-size: 0.8em"
+              ></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </p-tabPanel>
 </p-tabView>
 
 <div class="row">
-    <h5>
-      Documents Attached
-      <button class="btn btn-light btn-sm ms-4"> Upload file</button>
-      <button class="btn btn-primary btn-sm ms-4"> Choose file</button>
-    </h5>
-    <ul>
-        <li>ID Card</li>
-        <li>Birth Certificate</li>
-        <li>Passport</li>
-    </ul>
+  <h5>
+    Documents Attached
+    <button class="btn btn-light btn-sm ms-4">Upload file</button>
+    <button class="btn btn-primary btn-sm ms-4">Choose file</button>
+  </h5>
+  <ul>
+    <li>ID Card</li>
+    <li>Birth Certificate</li>
+    <li>Passport</li>
+  </ul>
 </div>
 
-
 <!--Edit Modal-->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  aria-labelledby="editModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
     <div class="modal-content" id="editModalContent">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="editModalLabel">
           Edit {{ activeTab }} details
-          <span class="spinner-border ms-3" style="font-size: 0.5rem" role="status" *ngIf="!isFormDetailsReady">
+          <span
+            class="spinner-border ms-3"
+            style="font-size: 0.5rem"
+            role="status"
+            *ngIf="!isFormDetailsReady"
+          >
             <span class="visually-hidden">Loading...</span>
           </span>
         </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeModalButton></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          #closeModalButton
+        ></button>
       </div>
       <div class="modal-body">
-        <ng-container *ngIf="activeTab==='contact'">
+        <ng-container *ngIf="activeTab === 'contact'">
           contact details
         </ng-container>
 
-        <ng-container *ngIf="activeTab==='bank'">
+        <ng-container *ngIf="activeTab === 'bank'">
           <app-edit-bank-form
             (closeEditModal)="closeEditModal()"
             (isFormDetailsReady)="confirmFormReadyStatus($event)"
           ></app-edit-bank-form>
         </ng-container>
 
-        <ng-container *ngIf="activeTab==='wealth'">
+        <ng-container *ngIf="activeTab === 'wealth'">
           <app-edit-wealth-form
             (closeEditModal)="closeEditModal()"
             (isFormDetailsReady)="confirmFormReadyStatus($event)"
           ></app-edit-wealth-form>
         </ng-container>
 
-        <ng-container *ngIf="activeTab==='aml'">
+        <ng-container *ngIf="activeTab === 'aml'">
           <app-edit-aml-form
             (closeEditModal)="closeEditModal()"
             (isFormDetailsReady)="confirmFormReadyStatus($event)"
           ></app-edit-aml-form>
         </ng-container>
 
-        <ng-container *ngIf="activeTab==='nok'">
+        <ng-container *ngIf="activeTab === 'nok'">
           <app-edit-nok-form
             (closeEditModal)="closeEditModal()"
             (isFormDetailsReady)="confirmFormReadyStatus($event)"

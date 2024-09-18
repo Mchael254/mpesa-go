@@ -70,9 +70,7 @@
             <ng-template pTemplate="body" let-quot>
               <tr>
                 <td>{{ quot?.no }}</td>
-                <td style="width: 30%">
-                  <!--{{ quot?.clientCode }}-->{{ clientName }}
-                </td>
+                <td><!--{{ quot?.clientCode }}-->{{ clientName }}</td>
                 <td>{{ quot?.sumInsured | currency : " " }}</td>
                 <td>{{ quot?.premium | currency : " " }}</td>
                 <td>{{ quot?.agentCode }}</td>
@@ -174,7 +172,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.policy_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -225,7 +223,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.policy_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -276,7 +274,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.policy_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -395,7 +393,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.claim_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -448,7 +446,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.claim_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
@@ -501,7 +499,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>{{ "entities.claim_no" | translate }}</th>
-                  <th style="width: 30%">
+                  <th>
                     {{ "entities.client_name" | translate }}
                   </th>
                   <th>
