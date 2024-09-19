@@ -152,6 +152,7 @@ export class PolicySummaryOtherDetailsComponent {
   selectedClause: any;
   passedSubclassCode: any;
   requiredDocumentsForm: FormGroup;
+  editRequiredDocumentsForm: FormGroup;
   user: any;
   userDetails: any;
   selectedTransactionType: any
@@ -256,6 +257,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.fetchBodyTypes();
     this.fetchMotorColours();
     this.fetchSecurityDevices();
+    this.createEditRequiredDocumentsForm();
   }
   ngOnDestroy(): void { }
 
@@ -359,9 +361,9 @@ export class PolicySummaryOtherDetailsComponent {
           this.getPolicyTaxes();
 
         }
-        if(this.policyDetailsData.product.code){
-          this.getProductClauses()
-        }
+        // if(this.policyDetailsData.product.code){
+        //   this.getProductClauses()
+        // }
 
 
         this.cdr.detectChanges();
@@ -1636,7 +1638,7 @@ export class PolicySummaryOtherDetailsComponent {
   openCommissionTranscDeleteModal() {
     log.debug("Selected Commission Transaction", this.selectedTransaction)
     if (!this.selectedTransaction) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Transaction to continue');
     } else {
       document.getElementById("openCommissionModalButtonDelete").click();
 
@@ -2288,10 +2290,11 @@ export class PolicySummaryOtherDetailsComponent {
     
     });
   }
-  addCommission(){
+  addCommission(transaction:any){
+    log.debug("Commission Transaction Selected:",transaction)
     this.commissionTransactionDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode)
-    this.commissionTransactionDetailsForm.get('transactionCode').setValue(this.selectedTransaction.transactionCode)
-    this.commissionTransactionDetailsForm.get('transactionTypeCode').setValue(this.selectedTransaction.transactionTypeCode)
+    this.commissionTransactionDetailsForm.get('transactionCode').setValue(transaction.transactionCode)
+    this.commissionTransactionDetailsForm.get('transactionTypeCode').setValue(transaction.transactionTypeCode)
 
     const commissionTransactionDetailsForm = this.commissionTransactionDetailsForm.value;
     log.debug("Commissions Transaction Form:", commissionTransactionDetailsForm)
@@ -2302,11 +2305,13 @@ export class PolicySummaryOtherDetailsComponent {
       next: (response: any) => {
         this.commissionTransaction =response._embedded
         console.log(' Comission Transaction:', this.commissionTransaction);
+        this.closebutton.nativeElement.click();
+
 
       },
       error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  commission transaction .Try again later');
       }
     })
   }
@@ -2337,7 +2342,7 @@ export class PolicySummaryOtherDetailsComponent {
       },
       error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  product clauses details.Try again later');
       }
     })
   }
@@ -2558,14 +2563,15 @@ onEditRequiredDoc(document: any) {
   log.debug('SELECTED Document: ',document)
  
   this.selectedDocument = document;
-  this.requiredDocumentsForm.patchValue({
+  this.editRequiredDocumentsForm.patchValue({
     
         description: document.description,
-        shortDescription: document.shortDescription,
-        submissionDate:document.dateSubmitted,
+        code: document.code,
+        dateSubmitted:document.dateSubmitted,
         remarks:document.remark,
         referenceNumber:document.referenceNumber,
-        isSubmitted:document.isSubmitted
+        isSubmitted:document.isSubmitted,
+        dateCreated:document.dateCreated
 
        
 
@@ -2573,14 +2579,16 @@ onEditRequiredDoc(document: any) {
 
 }
 editRequiredDocuments() {
-  this.requiredDocumentsForm.get('riskUniqueCode').setValue(this.SelectedRiskCode);
-  this.requiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
-  this.requiredDocumentsForm.get('isMandatory').setValue("N");
+  this.editRequiredDocumentsForm.get('action').setValue("E");
+  this.editRequiredDocumentsForm.get('riskCode').setValue(this.SelectedRiskCode);
+  this.editRequiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
+  this.editRequiredDocumentsForm.get('isMandatory').setValue("N");
+  this.editRequiredDocumentsForm.get('userReceived').setValue(this.user);
 
-  const requiredDocForm = this.requiredDocumentsForm.value;
-  log.debug('Required Documents Form:', requiredDocForm);
+  const EditrequiredDocForm = this.editRequiredDocumentsForm.value;
+  log.debug('Edit Required Documents Form:', EditrequiredDocForm);
   this.policyService
-    .editRequiredDocuments(requiredDocForm)
+    .editRequiredDocuments(EditrequiredDocForm)
     .pipe(untilDestroyed(this))
     .subscribe({
       next: (response:any) => {
@@ -2650,6 +2658,22 @@ fetchSecurityDevices(){
   editRiskClause(event){
     console.log(event,'edit')
     console.log(this.selectedRiskClause,'edit var')
+  }
+  createEditRequiredDocumentsForm() {
+    this.editRequiredDocumentsForm = this.fb.group({
+      action: [''],
+      code: [''],
+      dateCreated: [''],
+      dateSubmitted: [''],
+      isMandatory: [''],
+      isSubmitted: [''],
+      referenceNumber: [''],
+      remark: [''],
+      riskCode: [''],
+      subClassCode: [''],
+      userReceived: ['']
+    });
+    
   }
 }
 
