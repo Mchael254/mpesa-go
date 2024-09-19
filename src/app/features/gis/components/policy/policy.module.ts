@@ -24,6 +24,7 @@ import { PolicySummaryDetailsComponent } from './components/policy-summary-detai
 import { PolicySummaryOtherDetailsComponent } from './components/policy-summary-other-details/policy-summary-other-details.component';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ClientDdDetailsComponent } from './components/client-dd-details/client-dd-details.component';
+import { PolicyClausesDetailsComponent } from './components/policy-clauses-details/policy-clauses-details.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -36,6 +37,7 @@ import { ClientDdDetailsComponent } from './components/client-dd-details/client-
     PolicySummaryDetailsComponent,
     PolicySummaryOtherDetailsComponent,
     ClientDdDetailsComponent,
+    PolicyClausesDetailsComponent,
   ],
   imports: [
     CommonModule,

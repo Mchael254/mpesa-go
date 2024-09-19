@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -315,7 +315,7 @@ export class PolicyService {
     return this.api.GET(`v2/submitted-required-documents/code/${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  editRequiredDocuments(data:RequiredDocuments){
+  editRequiredDocuments(data:EditRequiredDocuments){
     return this.api.PUT(`v1/submitted-required-documents`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
@@ -334,6 +334,14 @@ export class PolicyService {
 
   editRiskClause(data){
     return this.api.PUT(`v1/edit-risk-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  addPolicyClause(data:PolicyClauses){
+    return this.api.POST(`v1/policy-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  editPolicyClause(data:EditPolicyClause){
+    return this.api.PUT(`v1/policy-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
   }
 }
 

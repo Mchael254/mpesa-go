@@ -462,6 +462,20 @@ export interface RequiredDocuments{
   subClassCode: number;
   submissionDate: string;
 }
+export interface EditRequiredDocuments {
+  action: string; // added new field
+  code: number;
+  dateCreated: string;
+  dateSubmitted: string; // renamed 'submissionDate' to 'dateSubmitted'
+  isMandatory: string;
+  isSubmitted: string;
+  referenceNumber: string;
+  remark: string;
+  riskCode: number; // renamed 'riskUniqueCode' to 'riskCode'
+  subClassCode: number;
+  userReceived: string; // added new field
+}
+
 export interface commission{
   ipuCode:number;
   transactionCode:string;
@@ -570,6 +584,24 @@ export interface AddCertificates {
   withEffectFrom: string;
   withEffectTo: string;
 }
+export interface PolicyClauses{
+  batchNo: number;
+  clauseCode: string;
+  endorsementNo: string;
+  policyNo: string;
+  productCode: number;
+}
+export interface EditPolicyClause {
+  clause: string;
+  clauseHeading: string;
+  clauseItemNo: number;
+  policyClauseCode: number;
+  policyCode: number;
+}
+
+
+
+
 
 
 
