@@ -1019,18 +1019,20 @@ export class PolicyProductComponent {
     if (this.policyProductForm.invalid) {
       this.policyProductForm.markAllAsTouched();  // This will trigger validation for all fields
     }
-    if(this.policyType = "D"){
+    log.debug("POLICY TYPE:",this.policyType)
+    if (this.policyType === "D") {
       this.policyProductForm.get('agentShortDescription').setValue("DIRECT");
       this.policyProductForm.get('agentCode').setValue(0);
-
-    }else{
+  
+  } else if (this.policyType === "N") {
       this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
-
-    }
+      this.policyProductForm.get('agentCode').setValue(this.selectedAgentCode);
+  }
+  
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
     this.policyProductForm.get('clientCode').setValue(this.clientCode);
-    this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+    // this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
     this.policyProductForm.get('branchCode').setValue(this.selectedBranchCode);
     this.policyProductForm.get('branchShortDescription').setValue(this.selectedBranchDescription);
     this.policyProductForm.get('currencyCode').setValue(this.selectedCurrencyCode);
