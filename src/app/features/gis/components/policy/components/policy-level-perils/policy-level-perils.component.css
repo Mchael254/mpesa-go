@@ -34,3 +34,33 @@
     color: #00529B;
 
 }
+
+#perilLabel {
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+
+}
+
+#perilInput {
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+}
+#editPolicyPerilLabel {
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 30px;
+    /* margin-left: 26px; */
+
+}
