@@ -1,34 +1,38 @@
 <div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
     <div class="container">
-        <div class="title">Produt details</div>
+        <div class="title">{{ "lms.grp.admin_portal.product_details" | translate }}</div>
         <form [formGroup]="normalQuoteForm">
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="product" style="color: black;">Product</label>
+                        <label for="product" style="color: black;">{{ "lms.grp.admin_portal.product" | translate }}</label>
                         <select class="form-select" [id]="'product'" formControlName="product">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let prod of " [value]="">{{ prod }}</option>
+                            <option *ngFor="let product of productList$ | async" [value]="product.code">{{ product.description | titlecase }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="durationType" style="color: black;">Duration type</label>
+                        <label for="durationType" style="color: black;">{{ "lms.grp.admin_portal.duration_type" | translate }}</label>
                         <select class="form-select" [id]="'durationType'" formControlName="durationType">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let duration of " [value]="">{{ duration }}</option>
+                            <option *ngFor="let duration of durationType$ | async" [value]="duration.name">{{ duration.value | titlecase }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="facultativeType" style="color: black;">Facultative type</label>
+                        <label for="facultativeType" style="color: black;">{{ "lms.grp.admin_portal.facultative_type" | translate }}</label>
                         <select class="form-select" [id]="'facultativeType'" formControlName="facultativeType">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let facultative of " [value]="">{{ facultative }}</option>
+                            <option *ngFor="let facultative of facultativeType$ | async" [value]="facultative.name">{{ facultative.value | titlecase }}</option>
                         </select>
                     </div>
                 </div>
@@ -37,30 +41,30 @@
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="quotationCovers" style="color: black;">Quotation covers</label>
+                        <label for="quotationCovers" style="color: black;">{{ "lms.grp.admin_portal.quotation_covers" | translate }}</label>
                         <select class="form-select" [id]="'quotationCovers'" formControlName="quotationCovers">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let qCovers of " [value]="">{{ qCovers }}</option>
+                            <option *ngFor="let qCovers of quotationCovers$ | async" [value]="qCovers.name">{{ qCovers.value | titlecase}}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="freqOfPayment" style="color: black;">Frequency of payment</label>
+                        <label for="freqOfPayment" style="color: black;">{{ "lms.grp.admin_portal.frequency_of_payment" | translate }}</label>
                         <select class="form-select" [id]="'freqOfPayment'" formControlName="freqOfPayment">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let freq of " [value]="">{{ freq }}</option>
+                            <option *ngFor="let freq of payFrequencies$ | async" [value]="freq.code">{{ freq.desc | titlecase }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="unitRateOption" style="color: black;">Unit rate option</label>
+                        <label for="unitRateOption" style="color: black;">{{ "lms.grp.admin_portal.unit_rate_option" | translate }}</label>
                         <select class="form-select" [id]="'unitRateOption'" formControlName="unitRateOption">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let unit of " [value]="">{{ unit }}</option>
+                            <option *ngFor="let unit of unitRate$ | async" [value]="unit.value">{{ unit.name| titlecase }}</option>
                         </select>
                     </div>
                 </div>
@@ -69,10 +73,10 @@
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="currency" style="color: black;">Currency</label>
+                        <label for="currency" style="color: black;">{{ "lms.grp.admin_portal.currency" | translate }}</label>
                         <select class="form-select" [id]="'currency'" formControlName="currency">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let currency of " [value]="">{{ currency }}</option>
+                            <option *ngFor="let currency of currencyList$ | async" [value]="currency.id">{{ currency.name | titlecase }} ({{ currency.symbol }})</option>
                         </select>
                     </div>
                 </div>
@@ -80,7 +84,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="effectiveDate" style="color: black;">Effective date</label>
+                            <label for="effectiveDate" style="color: black;">{{ "lms.grp.admin_portal.effective_date" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -96,6 +100,6 @@
         </form>
     </div>
     <div class="button-container">
-        <button class="get-quote" (click)="submitnormalQuoteFormData()">Continue</button>
+        <button class="get-quote" (click)="submitnormalQuoteFormData()">{{ "lms.grp.admin_portal.continue" | translate }}</button>
     </div>
 </div>
