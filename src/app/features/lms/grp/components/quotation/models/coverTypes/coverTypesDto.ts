@@ -150,6 +150,7 @@ export class CoverTypesDto {
     lnty_code: string | null;
     percentage_payable: number | null;
     cover_term: string | null;
+    cvt_code: number | null;
   }
 
   export interface PremiumMaskDTO {
