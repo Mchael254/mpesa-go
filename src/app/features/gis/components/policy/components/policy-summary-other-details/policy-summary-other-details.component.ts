@@ -184,10 +184,13 @@ export class PolicySummaryOtherDetailsComponent {
   bodytypesList:any;
   motorColorsList:any;
   securityDevicesList:any;
+  motorAccessoriesList:any;
+  applicableTaxesList: any;
 
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
+  @ViewChild('dt3') dt3: Table | undefined;
 
 
   @ViewChild('clientModal') clientModal: any;
@@ -258,6 +261,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.fetchMotorColours();
     this.fetchSecurityDevices();
     this.createEditRequiredDocumentsForm();
+    this.fetchMotorAccessories();
   }
   ngOnDestroy(): void { }
 
@@ -934,6 +938,8 @@ export class PolicySummaryOtherDetailsComponent {
   // }
   togglePremiumDetails() {
     console.log("selected risk", this.selectedRisk);
+    const passedPolicyRiskString = JSON.stringify(this.selectedRisk);
+    sessionStorage.setItem('passedRiskPolicyDetails', passedPolicyRiskString);
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -2655,6 +2661,22 @@ fetchSecurityDevices(){
     }
   })
 }
+fetchMotorAccessories(){
+  this.policyService
+  .getMotorAccessories()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorAccessoriesList= response._embedded
+      log.debug("Motor Accessories:",this.motorAccessoriesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor accessories details.Try again later');
+    }
+  })
+}
   editRiskClause(event){
     console.log(event,'edit')
     console.log(this.selectedRiskClause,'edit var')
@@ -2674,6 +2696,26 @@ fetchSecurityDevices(){
       userReceived: ['']
     });
     
+  }
+  fetchApplicableTaxes(){
+    const transactionCategory = "CL"
+    this.policyService
+    .getApplicableTaxes(this.selectedSubclassCode,transactionCategory)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.applicableTaxesList= response._embedded
+        log.debug("Applicable Taxes:",this.applicableTaxesList)
+  
+      },
+      error: (error) => {
+  
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  applicable taxes details.Try again later');
+      }
+    })
+  }
+  applyFilterGlobalTaxes($event, stringVal) {
+    this.dt3.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
 }
 

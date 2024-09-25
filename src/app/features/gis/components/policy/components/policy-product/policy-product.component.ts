@@ -451,7 +451,7 @@ export class PolicyProductComponent {
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
-      // this.updateJointAccountData();
+      this.updateJointAccountData();
     })
   }
   /**
