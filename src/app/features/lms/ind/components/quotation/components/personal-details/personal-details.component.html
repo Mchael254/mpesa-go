@@ -63,38 +63,34 @@
 
             <div class="row" >
 
-              <div class="col-md-4" *ngIf="getFormData('LAST_NAME')">
-                <label class="quote-label" 
-                    [for]="getFormData('LAST_NAME')['data']['label']"
-                    [ngClass]="{'is-invalid': highlightInvalid('lastName')}"
-                    [class]="getFormData('LAST_NAME')['data']['required'] ? 'required' : '' ">
-                  {{ getFormData("LAST_NAME")["data"]["label"] | titlecase }}
-                </label>
-                <input type="text" id="lastName" class="form-control form-control mb-1"
-                    [id]="getFormData('LAST_NAME')['data']['label']" formControlName="lastName"/>
-                <div *ngIf="highlightInvalid('lastName')" class="invalid-feedback">Last Name is required</div> 
-              </div>
-
-              <div class="col-md-4" *ngIf="getFormData('FIRST_NAME')">
-                <label class="quote-label"
-                  [for]="getFormData('FIRST_NAME')['data']['label']"
-                  [class.required]="getFormData('FIRST_NAME')['data']['required']">
-                    {{ getFormData("FIRST_NAME")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                  Last Name<span style="color: red;">*</span>
                 </label>
                 <input type="text" class="form-control form-control mb-1"
-                  [id]="getFormData('FIRST_NAME')['data']['label']" formControlName="firstName"/>
+                    formControlName="lastName"
+                    [ngClass]="{'is-invalid': highlightInvalid('lastName')}"/>
+                <div *ngIf="highlightInvalid('lastName')" class="invalid-feedback">Last Name is required</div>
               </div>
 
-              <div class="col-md-4" *ngIf="getFormData('DATE_OF_BIRTH')">
-                <label class="quote-label"
-                    [for]="getFormData('DATE_OF_BIRTH')['data']['label']" 
-                    [class.required]="getFormData('DATE_OF_BIRTH')['data']['required']">
-                  {{ getFormData("DATE_OF_BIRTH")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                  First Name<span style="color: red;">*</span>
+                </label>
+                <input type="text" class="form-control form-control mb-1"
+                    formControlName="firstName"
+                    [ngClass]="{'is-invalid': highlightInvalid('firstName')}"/>
+                <div *ngIf="highlightInvalid('firstName')" class="invalid-feedback">First Name is required</div>
+              </div>
+
+              <div class="col-md-4">
+                <label class="quote-label">
+                  Date of Birth<span style="color: red;">*</span>
                 </label>
                 <p-calendar 
                     [maxDate]="minDate" 
                     [defaultDate]="minDate" 
-                    [id]="getFormData('DATE_OF_BIRTH')['data']['label']" ngDefaultControl 
+                    ngDefaultControl 
                     formControlName="dateOfBirth" dateFormat="dd/mm/yy" 
                     [showIcon]="true" 
                     [showButtonBar]="true"
@@ -107,19 +103,16 @@
 
             <div class="row mb-4">
 
-              <div class="col-md-4" *ngIf="getFormData('COUNTRY_ID')">
-                <label class="quote-label" 
-                    [for]="getFormData('COUNTRY_ID')['data']['label']"
-                    [class.required]="getFormData('COUNTRY_ID')['data']['required']">
-                  {{ getFormData("COUNTRY_ID")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                  Nationality<span style="color: red;">*</span>
                 </label>
                 <select id="citizenship" class="form-select form-select mb-1"
                     [ngClass]="{'is-invalid': highlightInvalid('countryId')}"
-                    [id]="getFormData('COUNTRY_ID')['data']['label']" 
                     placement="right" 
                     formControlName="countryId">
-                  <option selected="true" disabled="disabled">Select 
-                    {{ getFormData("COUNTRY_ID")["data"]["label"] | lowercase }}
+                  <option selected="true" disabled="disabled">
+                    Select Nationality
                   </option>
                   <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
                       {{ data?.nationality | titlecase }}
@@ -128,20 +121,17 @@
                 <div *ngIf="highlightInvalid('countryId')" class="invalid-feedback">Nationality is required</div>
               </div>
 
-              <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY')">
-                <label class="quote-label" 
-                    [for]="getFormData('MODE_OF_IDENTITY')['data']['label']"
-                    [class.required]="getFormData('MODE_OF_IDENTITY')['data']['required']">
-                  {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                  Mode of Identity<span style="color: red;">*</span>
                 </label>
                 <select id="modeOfIdentity" class="form-select form-select mb-1"
                     [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentity')}"
-                    [id]="getFormData('MODE_OF_IDENTITY')['data']['label']"
                     placement="right" 
                     formControlName="modeOfIdentity"
                     (change)="checkIdentityType($event)">
                   <option selected="true" disabled="disabled">
-                    Select {{ getFormData("MODE_OF_IDENTITY")["data"]["label"] | titlecase }}
+                    Select Mode of Identity
                   </option>
                   <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
                       {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
@@ -149,16 +139,16 @@
                 <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">Mode of Identity is required</div>
               </div>
 
-              <div class="col-md-4" *ngIf="getFormData('MODE_OF_IDENTITY_NO')">
-                <label class="quote-label" [for]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']">
-                  {{ getFormData("MODE_OF_IDENTITY_NO")["data"]["label"] | titlecase }}
-                  <span [class.required]=" getFormData('MODE_OF_IDENTITY_NO')['data']['required'] ">
+              <div class="col-md-4">
+                <label class="quote-label">
+                  Mode of Identity Number<span style="color: red;">*</span>
+                  <span>
                     {{ identityFormatDesc?.exampleFormat ? "- " + identityFormatDesc?.exampleFormat : "" }}
                   </span>
                 </label>
-                <input type="text" [id]="getFormData('MODE_OF_IDENTITY_NO')['data']['label']"
-                  class="form-control form-control mb-1" formControlName="modeOfIdentityNumber"
-                  [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentityNumber')}"/>
+                <input type="text"
+                    class="form-control form-control mb-1" formControlName="modeOfIdentityNumber"
+                    [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentityNumber')}"/>
                 <div *ngIf="checkErrorThatsTouchedAndDirty() || checkError()" class="text-danger">
                   Incorrect ID No Format
                 </div>
@@ -168,37 +158,32 @@
 
             <div class="row mb-4">
 
-              <div class="col-md-4" *ngIf="getFormData('PIN_NO')">
-                <label class="quote-label" 
-                    [for]="getFormData('PIN_NO')['data']['label']"
-                    [class.required]="getFormData('PIN_NO')['data']['required']">
-                  {{ getFormData("PIN_NO")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                  PIN Number<span style="color: red;">*</span>
                 </label>
                 <input type="text" class="form-control form-control mb-1"
-                    [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}"
-                    [id]="getFormData('PIN_NO')['data']['label']" 
-                    formControlName="pinNumber"/>
+                    formControlName="pinNumber"
+                    [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}"/>
                 <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">PIN is required</div>
               </div>
 
-              <div class="col-md-4" *ngIf="getFormData('GENDER')">
-                <label class="quote-label" [for]="getFormData('GENDER')['data']['label']"
-                  [class.required]="getFormData('GENDER')['data']['required']">
-                    {{ getFormData("GENDER")["data"]["label"] | titlecase }}
+              <div class="col-md-4">
+                <label class="quote-label">
+                    Gender<span style="color: red;">*</span>
                 </label>
                 <br />
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="F"
-                    formControlName="gender" [id]="getFormData('GENDER')['data']['label'] + '_female'"
+                    formControlName="gender" 
                     [ngClass]="{'is-invalid': highlightInvalid('gender')}"/>
-                  <label class="form-check-label"
-                    [for]="getFormData('GENDER')['data']['label'] + '_female'">Female</label>
+                  <label class="form-check-label">Female</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="M"
-                    formControlName="gender" [id]="getFormData('GENDER')['data']['label'] + '_male'"
+                    formControlName="gender"
                     [ngClass]="{'is-invalid': highlightInvalid('gender')}"/>
-                  <label class="form-check-label" [for]="getFormData('GENDER')['data']['label'] + '_male'">Male</label>
+                  <label class="form-check-label">Male</label>
                 </div>
               </div>
 
@@ -230,75 +215,75 @@
 
               <div class="row mb-4">
 
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_BRANCH_ID')">
-                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['required']"
-                          [for]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']">
-                          {{ getFormData("CONTACT_DETAILS_BRANCH_ID")["data"]["label"] | titlecase }}
+                <div class="col-md-4">
+                  <label class="quote-label">
+                      Branch<span style="color: red;">*</span>
                   </label>
-                  <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']"
-                          formControlName="branchId" placement="right">
-                          <option [value]="" selected="true" disabled="disabled">Select Branch</option>
-                          <option *ngFor="let data of branchList | sort : 'asc' : 'name'" [value]="data.id">
-                                  {{ data.name | titlecase }}
-                          </option>
+                  <select class="form-select form-select mb-1"
+                      [ngClass]="{'is-invalid': highlightInvalid('branchId')}"
+                      formControlName="branchId" placement="right">
+                    <option [value]="" selected="true" disabled="disabled">
+                      Select Branch
+                    </option>
+                    <option *ngFor="let data of branchList | sort : 'asc' : 'name'" [value]="data.id">
+                        {{ data.name | titlecase }}
+                    </option>
+                  </select>
+                  <div *ngIf="highlightInvalid('branchId')" class="invalid-feedback">Branch is required</div>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="quote-label">
+                    Title
+                  </label>
+                  <select class="form-select form-select mb-1"
+                      formControlName="titleShortDescription" placement="right">
+                    <option [value]="" selected="true" disabled="disabled">
+                        Select Title
+                    </option>
+                    <option *ngFor="let data of clientTitles | sort : 'asc' : 'description'" [value]="data.id">
+                        {{ data.description | titlecase }}
+                    </option> 
                   </select>
                 </div>
 
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')">
-                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['required']" 
-                          [for]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']">
-                          {{ getFormData("CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION")["data"]["label"] | titlecase }}
+                <div class="col-md-4">
+                  <label class="quote-label">
+                    SMS Number
                   </label>
-                  <select class="form-select form-select mb-1" [id]="getFormData('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION')['data']['label']"
-                          formControlName="titleShortDescription" placement="right">
-                          <option [value]="" selected="true" disabled="disabled">Select {{ getFormData ("CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION") ["data"] ["label"] | titlecase }}</option>
-                          <option *ngFor="let data of clientTitles | sort : 'asc' : 'description'" [value]="data.id">
-                                  {{ data.description | titlecase }}
-                          </option> 
-                  </select>
-                </div>
-
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_SMS_NO')">
-                  <label class="quote-label" [class.required]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['required']"
-                          [for]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']">
-                          {{ getFormData("CONTACT_DETAILS_SMS_NO")["data"]["label"]  | titlecase }}
-                  </label>
-                  <input type="text" [id]="getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']"
-                          formControlName="smsNumber" class="form-control form-control mb-1"/>
+                  <input type="text" class="form-control form-control mb-1"
+                      formControlName="smsNumber" />
                 </div>
 
               </div>
 
               <div class="row mb-4">
 
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_PHONE_NO')">
-                  <label class="quote-label"
-                          [for]="getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']">
-                          {{ getFormData("CONTACT_DETAILS_PHONE_NO")["data"]["label"] | titlecase }}
+                <div class="col-md-4">
+                  <label class="quote-label">
+                    Phone Number
                   </label>
-                  <input type="text" [id]="getFormData('CONTACT_DETAILS_PHONE_NO')['data']['label']"
-                          formControlName="phoneNumber" class="form-control form-control mb-1"/>
+                  <input type="text" class="form-control form-control mb-1"
+                    formControlName="phoneNumber"/>
                 </div>
 
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')">
-                  <label class="quote-label"
-                          [for]="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data']['label']">
-                          {{  getFormData("CONTACT_DETAILS_EMAIL_ADDRESS")["data"]["label"] | titlecase }}
+                <div class="col-md-4">
+                  <label class="quote-label">
+                    E-Mail Address
                   </label>
-                  <input type="email" [id]="getFormData('CONTACT_DETAILS_EMAIL_ADDRESS')['data']['label']"
-                          formControlName="emailAddress" class="form-control form-control mb-1"/>
+                  <input type="email"  class="form-control form-control mb-1"
+                    formControlName="emailAddress"/>
                 </div>
 
-                <div class="col-md-4" *ngIf="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')">
-                  <label class="quote-label"
-                          [for]="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data']['label']">
-                          {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | titlecase }}
+                
+                <div class="col-md-4">
+                  <label class="quote-label">
+                    Preferred Channel
                   </label>
                   <select id="preferredChannel" class="form-select form-select mb-1"
-                          [id]="getFormData('CONTACT_DETAILS_PREFERRED_CHANNEL')['data']['label']"
                           placement="right" formControlName="preferredChannel">
                     <option selected="true" disabled="disabled">
-                      Select {{ getFormData("CONTACT_DETAILS_PREFERRED_CHANNEL")["data"]["label"] | titlecase }}
+                      Select Preferred Channel
                     </option>
                     <option *ngFor="let channel of preferredChannels" [value]="channel.value">
                       {{ channel.label }}
