@@ -1047,6 +1047,33 @@
       "yes": "Oui"
     },
     "grp": {
+      "admin_portal": {
+        "product_details": "Détails du produit",
+        "product": "Produit",
+        "duration_type": "Type de durée",
+        "facultative_type": "Type facultatif",
+        "quotation_covers": "Couverture de la soumission",
+        "frequency_of_payment": "Fréquence de paiement",
+        "unit_rate_option": "Option de taux unitaire",
+        "currency": "Devise",
+        "effective_date": "Date d'entrée en vigueur",
+        "continue": "Continuer",
+        "cover_type": "Type de couverture",
+        "coverage_type": "Type de couverture",
+        "multiple_of_earnings": "Multiple des gains",
+        "number_of_members": "Nombre de membres",
+        "members_average_age": "Âge moyen des membres",
+        "members_annual_earning": "Revenus annuels des membres",
+        "cover_from": "Couverture à partir de",
+        "cover_to": "Couverture jusqu'à",
+        "get_quote": "Obtenir une soumission",
+        "quote_summary": "Résumé de la soumission",
+        "group_life_assurance": "Assurance-vie collective",
+        "premium": "Prime",
+        "coverage_period": "Période de couverture",
+        "download": "Télécharger",
+        "purchase": "Acheter"
+      },
       "member_portal": {
         "name": "Nom",
         "national_id": "ID national",
