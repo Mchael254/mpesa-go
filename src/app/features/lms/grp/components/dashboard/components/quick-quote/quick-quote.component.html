@@ -8,30 +8,30 @@
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="product" style="color: black;">Product</label>
+                        <label for="product" style="color: black;">{{ "lms.grp.admin_portal.product" | translate }}</label>
                         <select class="form-select" [id]="'product'" formControlName="product">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let prod of " [value]="">{{ prod }}</option>
+                            <option *ngFor="let product of productList$ | async" [value]="product.code">{{ product.description | titlecase }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="coverType" style="color: black;">Cover type</label>
-                        <select class="form-select" [id]="'coverType'" formControlName="coverType">
+                        <label for="coverType" style="color: black;">{{ "lms.grp.admin_portal.cover_type" | translate }}</label>
+                        <select class="form-select" [id]="'coverType'" formControlName="coverType" (focus)="checkProductSelection()">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let cover of " [value]="">{{ cover }}</option>
+                            <option *ngFor="let cover of coverTypesPerProduct$ | async" [value]="cover.cvt_code">{{ cover.cvt_desc | titlecase }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="coverageType" style="color: black;">Coverage type</label>
+                        <label for="coverageType" style="color: black;">{{ "lms.grp.admin_portal.coverage_type" | translate }}</label>
                         <select class="form-select" [id]="'coverageType'" formControlName="coverageType">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let coverage of " [value]="">{{ coverage }}</option>
+                            <option *ngFor="let coverage of quotationCovers$ | async" [value]="coverage.name">{{ coverage.value | titlecase}}</option>
                         </select>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="multipleOfEarnings" style="color: black;">Multiple of earnnings</label>
+                            <label for="multipleOfEarnings" style="color: black;">{{ "lms.grp.admin_portal.multiple_of_earnings" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -55,7 +55,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="NoOfMembers" style="color: black;">Number of members</label>
+                            <label for="NoOfMembers" style="color: black;">{{ "lms.grp.admin_portal.number_of_members" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -69,7 +69,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="averageAge" style="color: black;">Members average age</label>
+                            <label for="averageAge" style="color: black;">{{ "lms.grp.admin_portal.members_average_age" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -85,7 +85,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="annualEarnings" style="color: black;">Members annual earning</label>
+                            <label for="annualEarnings" style="color: black;">{{ "lms.grp.admin_portal.members_annual_earning" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -99,7 +99,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="coverFrom" style="color: black;">Cover from</label>
+                            <label for="coverFrom" style="color: black;">{{ "lms.grp.admin_portal.cover_from" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -114,7 +114,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="coverTo" style="color: black;">Cover to</label>
+                            <label for="coverTo" style="color: black;">{{ "lms.grp.admin_portal.cover_to" | translate }}</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -127,36 +127,36 @@
                 </div>
             </div>
             <div class="button-container">
-                <button class="get-quote" (click)="submitQuickFormData()">Get quote</button>
+                <button class="get-quote" (click)="submitQuickFormData()">{{ "lms.grp.admin_portal.get_quote" | translate }}</button>
             </div>
         </form>
     </div>
 
     <div class="container" style="margin-top: 20px;">
-        <div class="title" style="margin-bottom: 8px;">Quote summary</div>
+        <div class="title" style="margin-bottom: 8px;">{{ "lms.grp.admin_portal.quote_summary" | translate }}</div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="container">
             <div class="col-lg-6 col-md-6 col-sm-12">
                 <img src="assets/images/prod catalog 1.png" alt="Camera">
             </div>
 
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 prod-description">
-                <div class="title" style="color: black;">Group life assurance</div>
+                <div class="title" style="color: black;">{{ "lms.grp.admin_portal.group_life_assurance" | translate }}</div>
 
                 <div class="labels-desc">
                     <div>
                         <div style="font-size: 24px; color: #00529B;">$100,000</div>
-                        <div style="color: grey;">Premium</div>
+                        <div style="color: grey;">{{ "lms.grp.admin_portal.premium" | translate }}</div>
                     </div>
 
                     <div>
                         <div style="font-size: 24px; color: #00529B;">365 days</div>
-                        <div style="color: grey;">Coverage period</div>
+                        <div style="color: grey;">{{ "lms.grp.admin_portal.coverage_period" | translate }}</div>
                     </div>
                 </div>
 
                 <div class="btns-container">
-                    <button class="download-btn">Download</button>
-                    <button class="purchase-btn" >Purchase</button>
+                    <button class="download-btn">{{ "lms.grp.admin_portal.download" | translate }}</button>
+                    <button class="purchase-btn" >{{ "lms.grp.admin_portal.purchase" | translate }}</button>
                 </div>
             </div>
         </div>

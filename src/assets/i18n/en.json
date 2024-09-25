@@ -1090,6 +1090,33 @@
       "outside_system": "Outside System"
     },
     "grp": {
+        "admin_portal": {
+          "product_details": "Produt details",
+          "product": "Product",
+          "duration_type": "Duration type",
+          "facultative_type": "Facultative type",
+          "quotation_covers": "Quotation covers",
+          "frequency_of_payment": "Frequency of payment",
+          "unit_rate_option": "Unit rate option",
+          "currency": "Currency",
+          "effective_date": "Effective date",
+          "continue": "Continue",
+          "cover_type": "Cover type",
+          "coverage_type": "Coverage type",
+          "multiple_of_earnings": "Multiple of earnnings",
+          "number_of_members": "Number of members",
+          "members_average_age": "Members average age",
+          "members_annual_earning": "Members annual earning",
+          "cover_from": "Cover from",
+          "cover_to": "Cover to",
+          "get_quote": "Get quote",
+          "quote_summary": "Quote summary",
+          "group_life_assurance": "Group life assurance",
+          "premium": "Premium",
+          "coverage_period": "Coverage period",
+          "download": "Download",
+          "purchase": "Purchase"
+        },
       "member_portal": {
         "name": "Name",
         "national_id": "National ID",

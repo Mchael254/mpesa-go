@@ -1047,6 +1047,33 @@
       "yes": "Sí"
     },
     "grp": {
+      "admin_portal": {
+        "product_details": "Detalles del producto",
+        "product": "Producto",
+        "duration_type": "Tipo de duración",
+        "facultative_type": "Tipo facultativo",
+        "quotation_covers": "Coberturas de la cotización",
+        "frequency_of_payment": "Frecuencia de pago",
+        "unit_rate_option": "Opción de tarifa unitaria",
+        "currency": "Moneda",
+        "effective_date": "Fecha de entrada en vigor",
+        "continue": "Continuar",
+        "cover_type": "Tipo de cobertura",
+        "coverage_type": "Tipo de cobertura",
+        "multiple_of_earnings": "Múltiplo de ganancias",
+        "number_of_members": "Número de miembros",
+        "members_average_age": "Edad promedio de los miembros",
+        "members_annual_earning": "Ganancias anuales de los miembros",
+        "cover_from": "Cubrir desde",
+        "cover_to": "Cubrir hasta",
+        "get_quote": "Obtener cotización",
+        "quote_summary": "Resumen de la cotización",
+        "group_life_assurance": "Seguro de vida grupal",
+        "premium": "Prima",
+        "coverage_period": "Período de cobertura",
+        "download": "Descargar",
+        "purchase": "Comprar"
+      },
       "member_portal": {
         "name": "Nombre",
         "national_id": "ID nacional",
