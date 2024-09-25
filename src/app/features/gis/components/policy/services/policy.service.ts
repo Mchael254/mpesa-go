@@ -343,5 +343,17 @@ export class PolicyService {
     return this.api.PUT(`v1/policy-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getMotorAccessories(){
+    return this.api.GET(`v2/schedules/motor-accessories`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getApplicableTaxes(subclassCode:any,transactionCategory:any){
+    return this.api.GET(`v1/policy-taxes/applicable-taxes?subclassCode=${subclassCode}&transactionCategory=${transactionCategory}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  editPolicyTaxes(data:PolicyTaxes){
+    return this.api.PUT(`v1/policy-taxes`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
 
