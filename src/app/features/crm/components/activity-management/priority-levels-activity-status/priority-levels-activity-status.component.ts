@@ -14,11 +14,11 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
   pageSize: 5;
   priorityLevelsData: PriorityLevel[];
   selectedPriorityLevel: PriorityLevel;
-  activityStatusData: any[];
+  activityStatusData: ActivityStatus[];
   selectedActivityStatus: ActivityStatus;
 
-  createNewPriorityLevelForm: FormGroup;
-  createNewActivityStatusForm: FormGroup;
+  priorityLevelForm: FormGroup;
+  activityStatusForm: FormGroup;
   visibleStatus: any = {
     shortDescription: 'Y',
     description: 'Y',
@@ -41,25 +41,25 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
   }
 
   priorityLevelCreateForm() {
-    this.createNewPriorityLevelForm = this.fb.group({
+    this.priorityLevelForm = this.fb.group({
       shtDesc: [''],
       desc: [''],
     });
   }
 
   activityStatusCreateForm() {
-    this.createNewActivityStatusForm = this.fb.group({
-      shortDescription: [''],
-      description: [''],
+    this.activityStatusForm = this.fb.group({
+      shtDesc: [''],
+      desc: [''],
     });
   }
 
   get f() {
-    return this.createNewPriorityLevelForm.controls;
+    return this.priorityLevelForm.controls;
   }
 
   get g() {
-    return this.createNewActivityStatusForm.controls;
+    return this.activityStatusForm.controls;
   }
 
   openDefinePriorityLevelModal() {
@@ -97,15 +97,19 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
 
   editPriorityLevel() {
     this.editMode = !this.editMode;
-    this.openDefinePriorityLevelModal();
-    this.createNewPriorityLevelForm.patchValue({
-      shtDesc: this.selectedPriorityLevel.shortDesc,
-      desc: this.selectedPriorityLevel.desc,
+    this.priorityLevelForm.patchValue({
+      shtDesc: this.selectedPriorityLevel?.shortDesc,
+      desc: this.selectedPriorityLevel?.desc,
     });
+    this.openDefinePriorityLevelModal();
   }
 
   editActivityStatus() {
     this.editMode = !this.editMode;
+    this.activityStatusForm.patchValue({
+      desc: this.selectedActivityStatus?.desc,
+      code: this.selectedActivityStatus?.code,
+    });
     this.openActivityStatusModal();
   }
 
@@ -122,7 +126,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
   }
 
   createPriorityLevel(): void {
-    const formValues = this.createNewPriorityLevelForm.getRawValue();
+    const formValues = this.priorityLevelForm.getRawValue();
     const priorityLevel: PriorityLevel = {
       id: this.selectedPriorityLevel?.id || null,
       desc: formValues.desc,
@@ -146,6 +150,10 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
         this.getPriorityLevels();
         this.closeDefinePriorityLevelModal();
       },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
     });
   }
 
@@ -158,6 +166,10 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
         );
         this.getPriorityLevels();
         this.closeDefinePriorityLevelModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       },
     });
   }
@@ -195,7 +207,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
   }
 
   createActivityStatus(): void {
-    const formValues = this.createNewActivityStatusForm.getRawValue();
+    const formValues = this.activityStatusForm.getRawValue();
     const activityStatus: ActivityStatus = {
       id: this.selectedPriorityLevel?.id || null,
       desc: formValues.desc,
@@ -217,7 +229,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
           'Priority Level created successfully!'
         );
         this.getActivityStatuses();
-        // this.closeDefineActivityStatusModal();
+        this.closeActivityStatusModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -234,7 +246,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
           'Priority Level updated successfully!'
         );
         this.getActivityStatuses();
-        // this.closeDefineActivityStatusModal();
+        this.closeActivityStatusModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;

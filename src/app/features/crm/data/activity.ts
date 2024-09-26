@@ -59,6 +59,11 @@ export interface ActivityNote {
 
 export interface ActivityParticipant {
   id: number;
-  name: string;
-  emailAddress: string;
+  aacCode: number;
+  actCode: number;
+  participant: {
+    id: number;
+    name: string;
+    emailAddress: string;
+  };
 }
