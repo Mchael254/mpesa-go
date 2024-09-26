@@ -5,10 +5,10 @@ import { GlobalMessagingService } from '../../../../../shared/services/messaging
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { ActivityService } from '../../../services/activity.service';
 import { ActivityType } from '../../../data/activity';
-import { Logger } from 'src/app/shared/services';
-import { SystemsDto } from 'src/app/shared/data/common/systemsDto';
-import { SystemsService } from 'src/app/shared/services/setups/systems/systems.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import {Logger} from "../../../../../shared/services";
+import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
 
 const log = new Logger('ActivityTypesComponent');
 
@@ -23,7 +23,7 @@ export class ActivityTypesComponent implements OnInit {
   selectedActivityType: ActivityType;
   editMode: boolean = false;
 
-  createNewActivityTypeForm: FormGroup;
+  activityTypeForm: FormGroup;
 
   visibleStatus: any = {
     description: 'Y',
@@ -91,7 +91,7 @@ export class ActivityTypesComponent implements OnInit {
   }
 
   activityTypeCreateForm() {
-    this.createNewActivityTypeForm = this.fb.group({
+    this.activityTypeForm = this.fb.group({
       description: [''],
     });
     this.mandatoryFieldsService
@@ -100,15 +100,15 @@ export class ActivityTypesComponent implements OnInit {
       .subscribe((response) => {
         response.forEach((field) => {
           for (const key of Object.keys(
-            this.createNewActivityTypeForm.controls
+            this.activityTypeForm.controls
           )) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
-                this.createNewActivityTypeForm.controls[key].addValidators(
+                this.activityTypeForm.controls[key].addValidators(
                   Validators.required
                 );
-                this.createNewActivityTypeForm.controls[
+                this.activityTypeForm.controls[
                   key
                 ].updateValueAndValidity();
                 const label = document.querySelector(
@@ -129,7 +129,7 @@ export class ActivityTypesComponent implements OnInit {
   }
 
   get f() {
-    return this.createNewActivityTypeForm.controls;
+    return this.activityTypeForm.controls;
   }
 
   openDefineActivityTypeModal() {
@@ -140,7 +140,7 @@ export class ActivityTypesComponent implements OnInit {
     }
 
     if (this.editMode) {
-      this.createNewActivityTypeForm.patchValue({
+      this.activityTypeForm.patchValue({
         description: this.selectedActivityType.desc,
       });
     }
@@ -156,18 +156,19 @@ export class ActivityTypesComponent implements OnInit {
   }
 
   editActivityType() {
-    if (this.selectedActivityType.id) {
+    if (this.selectedActivityType?.id) {
       this.editMode = !this.editMode;
       this.openDefineActivityTypeModal();
     }
   }
 
-  saveActivivty(): void {
-    const formValues = this.createNewActivityTypeForm.getRawValue();
+  saveActivityType(): void {
+    const formValues = this.activityTypeForm.getRawValue();
     const activityType: ActivityType = {
       id: this.selectedActivityType?.id || null,
       desc: formValues.description,
-      systemCode: this.selectedSystem.id || this.selectedActivityType?.id,
+      systemCode:
+        this.selectedSystem?.id || this.selectedActivityType?.systemCode,
     };
 
     if (!this.editMode) {
@@ -214,7 +215,6 @@ export class ActivityTypesComponent implements OnInit {
   getActivityTypes(): void {
     this.activityService.getActivityTypes().subscribe({
       next: (data) => {
-        log.info(`activity types >>> `, data);
         this.activityTypeData = data;
         this.cdr.detectChanges();
       },

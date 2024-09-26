@@ -5,14 +5,17 @@ import { GlobalMessagingService } from '../../../../../shared/services/messaging
 import { Logger } from '../../../../../shared/services';
 import { StaffDto } from '../../../../entities/data/StaffDto';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
-import { CampaignsService } from '../../../services/campaigns..service';
 import {
   Activity,
   ActivityNote,
   ActivityParticipant,
   ActivityTask,
+  ActivityType,
 } from '../../../data/activity';
 import { ActivityService } from '../../../services/activity.service';
+import { MessageService } from 'primeng/api';
+import { MessagingService } from '../../../services/messaging.service';
+import { MessageTemplate } from '../../../data/messaging-template';
 
 const log = new Logger('ActivitiesComponent');
 @Component({
@@ -25,16 +28,16 @@ export class ActivitiesComponent implements OnInit {
   activityData: Activity[];
   selectedActivity: Activity;
   notesAndAttachmentsData: ActivityNote[];
-  selectedNotes: ActivityNote;
+  selectedNote: ActivityNote;
   tasksData: ActivityTask[];
   selectedTask: ActivityTask;
-  partipantsData: ActivityParticipant[];
+  participantsData: ActivityParticipant[];
   selectedParticipant: ActivityParticipant;
 
   editMode: boolean = false;
-  createActivityForm: FormGroup;
-  createNoteForm: FormGroup;
-  createTaskForm: FormGroup;
+  activityForm: FormGroup;
+  noteForm: FormGroup;
+  taskForm: FormGroup;
 
   visibleStatus: any = {
     subject: 'Y',
@@ -75,12 +78,33 @@ export class ActivitiesComponent implements OnInit {
   groupIdNote: string = 'activityMngtNoteTab';
   groupIdTask: string = 'activityMngtTaskTab';
 
+  activityTypes: ActivityType[];
+
+  userField: string;
+  userFormFields = {
+    assignedTo: null,
+    relatedAccount: null,
+    team: null,
+    relateTo: null,
+    taskRelatedTo: null,
+  };
+
+  isDataReady = {
+    activities: false,
+    notes: false,
+    tasks: false,
+    participants: false,
+  };
+
+  messageTemplates: MessageTemplate[];
+
   constructor(
     private fb: FormBuilder,
     private mandatoryFieldsService: MandatoryFieldsService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private messagingService: MessagingService
   ) {}
 
   ngOnInit(): void {
@@ -88,11 +112,40 @@ export class ActivitiesComponent implements OnInit {
     this.noteCreateForm();
     this.taskCreateForm();
     this.getActivities();
+    this.getActivityTypes();
+    this.getActivityNotes();
+    this.getActivityTasks();
+    this.getActivityParticipants();
+    this.getEmailTemplates();
+  }
+
+  getEmailTemplates(): void {
+    this.messagingService.getMessageTemplates(0, 50, 37).subscribe({
+      next: (res) => {
+        this.messageTemplates = res.content;
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityTypes(): void {
+    this.activityService.getActivityTypes().subscribe({
+      next: (res) => {
+        this.activityTypes = res;
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   /* The `activityCreateForm()` function is responsible for setting up the form controls */
   activityCreateForm() {
-    this.createActivityForm = this.fb.group({
+    this.activityForm = this.fb.group({
       subject: [''],
       activityType: [''],
       description: [''],
@@ -113,14 +166,14 @@ export class ActivitiesComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
         response.forEach((field) => {
-          for (const key of Object.keys(this.createActivityForm.controls)) {
+          for (const key of Object.keys(this.activityForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
-                this.createActivityForm.controls[key].addValidators(
+                this.activityForm.controls[key].addValidators(
                   Validators.required
                 );
-                this.createActivityForm.controls[key].updateValueAndValidity();
+                this.activityForm.controls[key].updateValueAndValidity();
                 const label = document.querySelector(
                   `label[for=${field.frontedId}]`
                 );
@@ -141,7 +194,7 @@ export class ActivitiesComponent implements OnInit {
   /* The `noteCreateForm()` function is responsible for setting up the form controls for creating a
   note. */
   noteCreateForm() {
-    this.createNoteForm = this.fb.group({
+    this.noteForm = this.fb.group({
       noteSubject: [''],
       relateTo: [''],
       noteDescription: [''],
@@ -152,14 +205,12 @@ export class ActivitiesComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
         response.forEach((field) => {
-          for (const key of Object.keys(this.createNoteForm.controls)) {
+          for (const key of Object.keys(this.noteForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
-                this.createNoteForm.controls[key].addValidators(
-                  Validators.required
-                );
-                this.createNoteForm.controls[key].updateValueAndValidity();
+                this.noteForm.controls[key].addValidators(Validators.required);
+                this.noteForm.controls[key].updateValueAndValidity();
                 const label = document.querySelector(
                   `label[for=${field.frontedId}]`
                 );
@@ -180,7 +231,7 @@ export class ActivitiesComponent implements OnInit {
   /* The `taskCreateForm()` function in the provided TypeScript code is responsible for setting up the
   form controls for creating a task. */
   taskCreateForm() {
-    this.createTaskForm = this.fb.group({
+    this.taskForm = this.fb.group({
       taskSubject: [''],
       taskStartDate: [''],
       taskEndDate: [''],
@@ -192,14 +243,12 @@ export class ActivitiesComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
         response.forEach((field) => {
-          for (const key of Object.keys(this.createTaskForm.controls)) {
+          for (const key of Object.keys(this.taskForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
-                this.createTaskForm.controls[key].addValidators(
-                  Validators.required
-                );
-                this.createTaskForm.controls[key].updateValueAndValidity();
+                this.taskForm.controls[key].addValidators(Validators.required);
+                this.taskForm.controls[key].updateValueAndValidity();
                 const label = document.querySelector(
                   `label[for=${field.frontedId}]`
                 );
@@ -221,21 +270,21 @@ export class ActivitiesComponent implements OnInit {
    * The function returns the controls of a form named createActivityForm.
    */
   get g() {
-    return this.createActivityForm.controls;
+    return this.activityForm.controls;
   }
 
   /**
    * The function returns the controls of a form named createNoteForm.
    */
   get f() {
-    return this.createNoteForm.controls;
+    return this.noteForm.controls;
   }
 
   /**
    * The function returns the controls of a createTaskForm in TypeScript.
    */
   get h() {
-    return this.createTaskForm.controls;
+    return this.taskForm.controls;
   }
 
   /**
@@ -318,6 +367,22 @@ export class ActivitiesComponent implements OnInit {
    */
   editActivity() {
     this.editMode = !this.editMode;
+    this.activityForm.patchValue({
+      subject: this.selectedActivity.subject,
+      activityType: this.selectedActivity.activityTypeCode,
+      description: this.selectedActivity.desc,
+      location: this.selectedActivity.location,
+      assignedTo: this.selectedActivity.assignedTo,
+      relatedAccount: this.selectedActivity.relatedTo,
+      startDate: this.selectedActivity.wet,
+      endDate: this.selectedActivity.wef,
+      duration: this.selectedActivity.duration,
+      status: this.selectedActivity.statusId,
+      team: this.selectedActivity.team,
+      emailTemplate: this.selectedActivity.messageCode,
+      sendReminder: this.selectedActivity.reminder,
+      reminderTime: this.selectedActivity.reminderTime,
+    });
     this.openDefineActivityModal();
   }
 
@@ -334,6 +399,13 @@ export class ActivitiesComponent implements OnInit {
    */
   editTask() {
     this.editMode = !this.editMode;
+    this.taskForm.patchValue({
+      taskSubject: this.selectedTask.subject,
+      taskStartDate: this.selectedTask.dateFrom,
+      taskEndDate: this.selectedTask.dateTo,
+      taskRelatedTo: this.selectedTask.accCode,
+      priority: this.selectedTask.priorityCode,
+    });
     this.openDefineTaskModal();
   }
 
@@ -361,7 +433,8 @@ export class ActivitiesComponent implements OnInit {
    * The function `openAllUsersModal` sets the `zIndex` to -1 and toggles the visibility of the all
    * users modal.
    */
-  openAllUsersModal() {
+  openAllUsersModal(userField?: string) {
+    this.userField = userField;
     this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
@@ -388,25 +461,64 @@ export class ActivitiesComponent implements OnInit {
     /*this.debtOwnerForm.patchValue({
       modalUserAssignTo: event?.username
     });*/
-    log.info('user>', event);
+    this.patchUserToFormField(event);
+  }
+
+  patchUserToFormField(user): void {
+    switch (this.userField) {
+      case 'assignedTo':
+        this.userFormFields.assignedTo = this.selectedMainUser;
+        this.activityForm.patchValue({
+          assignedTo: this.userFormFields.assignedTo?.name,
+        });
+        break;
+      case 'relatedAccount':
+        this.userFormFields.relatedAccount = this.selectedMainUser;
+        this.activityForm.patchValue({
+          relatedAccount: this.userFormFields.relatedAccount?.name,
+        });
+        break;
+      case 'team':
+        this.userFormFields.team = this.selectedMainUser;
+        this.activityForm.patchValue({
+          team: this.userFormFields.team?.name,
+        });
+        break;
+      case 'relateTo':
+        this.userFormFields.relateTo = this.selectedMainUser;
+        this.noteForm.patchValue({
+          relateTo: this.userFormFields.relateTo?.name,
+        });
+        break;
+      case 'taskRelatedTo':
+        this.userFormFields.relateTo = this.selectedMainUser;
+        this.taskForm.patchValue({
+          taskRelatedTo: this.userFormFields.taskRelatedTo?.name,
+        });
+        break;
+      default:
+      // code block
+    }
   }
 
   getActivities(): void {
+    this.isDataReady.activities = false;
     this.activityService.getActivities().subscribe({
       next: (data) => {
         this.activityData = data;
-        log.info(`Activity data >>> `, data);
+        this.isDataReady.activities = true;
         this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataReady.activities = true;
       },
     });
   }
 
   createUpdateActivity(): void {
-    const formValues = this.createActivityForm.getRawValue();
+    const formValues = this.activityForm.getRawValue();
     const activity: Activity = {
       id: this.selectedActivity?.id || null,
       activityTypeCode: formValues.activityType,
@@ -415,14 +527,14 @@ export class ActivitiesComponent implements OnInit {
       duration: formValues.duration,
       subject: formValues.subject,
       location: formValues.location,
-      assignedTo: formValues.assignedTo,
-      relatedTo: formValues.relatedAccount,
+      assignedTo: this.userFormFields?.assignedTo?.id,
+      relatedTo: this.userFormFields?.relatedAccount?.id,
       statusId: formValues.status,
       desc: formValues.description,
       reminder: formValues.reminder,
-      team: formValues.team,
+      team: this.userFormFields?.team?.id,
       reminderTime: formValues.reminderTime,
-      messageCode: formValues.emailTemplate,
+      messageCode: formValues.emailTemplate.id,
     };
 
     if (!this.editMode) {
@@ -486,21 +598,23 @@ export class ActivitiesComponent implements OnInit {
   }
 
   getActivityTasks(): void {
+    this.isDataReady.tasks = false;
     this.activityService.getActivityTasks().subscribe({
       next: (data) => {
         this.tasksData = data;
-        log.info(`Activity Task data >>> `, data);
+        this.isDataReady.tasks = true;
         this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataReady.tasks = true;
       },
     });
   }
 
   createUpdateActivityTask(): void {
-    const formValues = this.createTaskForm.getRawValue();
+    const formValues = this.taskForm.getRawValue();
     const activityTask: ActivityTask = {
       id: this.selectedTask?.id || null,
       actCode: formValues.actCode,
@@ -526,8 +640,8 @@ export class ActivitiesComponent implements OnInit {
           'Success',
           'Activity Task created successfully!'
         );
-        this.getActivities();
-        this.closeDefineActivityModal();
+        this.getActivityTasks();
+        this.closeDefineTaskModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -543,8 +657,8 @@ export class ActivitiesComponent implements OnInit {
           'Success',
           'Activity Task updated successfully!'
         );
-        this.getActivities();
-        this.closeDefineActivityModal();
+        this.getActivityTasks();
+        this.closeDefineTaskModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -554,7 +668,7 @@ export class ActivitiesComponent implements OnInit {
   }
 
   confirmDeleteActivityTask(): void {
-    const id = this.selectedTask.id;
+    const id = this.selectedTask?.id;
 
     this.activityService.deleteActivityTask(id).subscribe({
       next: (res) => {
@@ -563,7 +677,7 @@ export class ActivitiesComponent implements OnInit {
           'Activity Task deleted successfully!'
         );
         this.getActivityTasks();
-        // close modal after delete
+        this.closeDefineTaskModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -573,27 +687,29 @@ export class ActivitiesComponent implements OnInit {
   }
 
   getActivityNotes(): void {
+    this.isDataReady.notes = false;
     this.activityService.getActivityNotes().subscribe({
       next: (data) => {
-        // this.note = data;
-        log.info(`Activity notes data >>> `, data);
+        this.notesAndAttachmentsData = data;
+        this.isDataReady.notes = true;
         this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataReady.notes = true;
       },
     });
   }
 
   createUpdateActivityNote(): void {
-    const formValues = this.createNoteForm.getRawValue();
+    const formValues = this.noteForm.getRawValue();
     const activityNote: ActivityNote = {
-      id: this.selectedNotes.id || null,
+      id: this.selectedNote?.id || null,
       accCode: 0,
       contactCode: 0,
       subject: formValues.noteSubject,
-      notes: '',
+      notes: formValues.noteDescription,
       attachment: undefined,
       actCode: 0,
       attachmentType: formValues.attachment,
@@ -615,7 +731,7 @@ export class ActivitiesComponent implements OnInit {
           'Activity Note created successfully!'
         );
         this.getActivityNotes();
-        // this.closeDefineActivityNoteModal();
+        this.closeDefineNoteModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -632,7 +748,7 @@ export class ActivitiesComponent implements OnInit {
           'Activity Note updated successfully!'
         );
         this.getActivityNotes();
-        // this.closeDefineActivityNoteModal();
+        this.closeDefineNoteModal();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -642,7 +758,7 @@ export class ActivitiesComponent implements OnInit {
   }
 
   confirmDeleteActivityNote(): void {
-    const id = this.selectedNotes.id;
+    const id = this.selectedNote?.id;
 
     this.activityService.deleteActivityNote(id).subscribe({
       next: (res) => {
@@ -661,15 +777,17 @@ export class ActivitiesComponent implements OnInit {
   }
 
   getActivityParticipants(): void {
+    this.isDataReady.participants = false;
     this.activityService.getActivityParticipants().subscribe({
       next: (data) => {
-        this.partipantsData = data;
-        log.info(`Activity participants data >>> `, data);
+        this.participantsData = data;
+        this.isDataReady.participants = true;
         this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataReady.participants = true;
       },
     });
   }

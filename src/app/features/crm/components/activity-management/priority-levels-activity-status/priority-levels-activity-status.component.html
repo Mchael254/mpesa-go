@@ -36,12 +36,12 @@
             <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
               <div class="float-end">
                 <span
-                  class="icon-circle"
+                  class="icon-circle open-priority-level"
                   (click)="openDefinePriorityLevelModal()"
                 >
                   <i class="fa-solid fa-plus"></i>
                 </span>
-                <span class="icon-circle" (click)="editPriorityLevel()">
+                <span class="icon-circle edit-priority-level" (click)="editPriorityLevel()">
                   <i class="pi pi-pencil"></i>
                 </span>
                 <span
@@ -105,16 +105,17 @@
 
             <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
               <div class="float-end">
-                <span class="icon-circle">
-                  <i
-                    class="fa-solid fa-plus"
-                    (click)="openActivityStatusModal()"
-                  ></i>
+                <span class="icon-circle open-activity-status-modal" (click)="openActivityStatusModal()">
+                  <i class="fa-solid fa-plus"></i>
                 </span>
-                <span class="icon-circle">
-                  <i class="pi pi-pencil" (click)="editActivityStatus()"></i>
+                <span class="icon-circle edit-activity-status" (click)="editActivityStatus()">
+                  <i class="pi pi-pencil"></i>
                 </span>
-                <span class="icon-circle">
+                <span
+                  class="icon-circle"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteActivityStatusModal"
+                >
                   <i class="fa-regular fa-trash-can"></i>
                 </span>
               </div>
@@ -134,7 +135,7 @@
             [scrollable]="true"
             [(selection)]="selectedActivityStatus"
             selectionMode="single"
-            dataKey="code"
+            dataKey="id"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
             [globalFilterFields]="['description', 'code']"
@@ -148,7 +149,7 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-activityStatus>
-              <tr>
+              <tr [pSelectableRow]="activityStatus">
                 <td>{{ activityStatus.desc }}</td>
               </tr>
             </ng-template>
@@ -181,13 +182,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-priority-level-modal"
           (click)="closeDefinePriorityLevelModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createNewPriorityLevelForm">
+        <form [formGroup]="priorityLevelForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
               <div class="col-md-12">
@@ -196,7 +197,7 @@
                 >
                 <textarea
                   class="form-control"
-                  id="shortDescription"
+                  id="shortDesc"
                   formControlName="shtDesc"
                   rows="2"
                   [ngClass]="{
@@ -227,7 +228,7 @@
                 >
                 <textarea
                   class="form-control"
-                  id="description"
+                  id="desc"
                   formControlName="desc"
                   rows="3"
                   [ngClass]="{
@@ -255,7 +256,7 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary create-priority-level"
           (click)="createPriorityLevel()"
         >
           Save details
@@ -282,13 +283,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-activity-status-modal"
           (click)="closeActivityStatusModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createNewActivityStatusForm">
+        <form [formGroup]="activityStatusForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
               <div class="col-md-12">
@@ -298,7 +299,7 @@
                 <textarea
                   class="form-control"
                   id="shortDescription"
-                  formControlName="shortDescription"
+                  formControlName="shtDesc"
                   rows="2"
                   [ngClass]="{
                     'is-invalid':
@@ -329,7 +330,7 @@
                 <textarea
                   class="form-control"
                   id="description"
-                  formControlName="description"
+                  formControlName="desc"
                   rows="3"
                   [ngClass]="{
                     'is-invalid':
@@ -354,7 +355,13 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button
+          type="button"
+          class="btn btn-primary create-activity-status"
+          (click)="createActivityStatus()"
+        >
+          Save details
+        </button>
       </div>
     </div>
   </div>
@@ -371,7 +378,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header" style="border: none">
-        <h1 class="modal-title fs-5 text-danger" id="deleteActivityModalLabel">
+        <h1 class="modal-title fs-5 text-danger" id="deleteActivityStatusModalLabel">
           Confirm delete!
         </h1>
         <button
@@ -392,8 +399,50 @@
         </button>
         <button
           type="button"
-          class="btn btn-danger"
+          class="btn btn-danger delete-priority-level"
           (click)="confirmDeletePriorityLevel()"
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Delete Activity Status Modal -->
+<div
+  class="modal fade"
+  id="deleteActivityStatusModal"
+  tabindex="-1"
+  aria-labelledby="deleteActivityStatusModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none">
+        <h1 class="modal-title fs-5 text-danger" id="deleteActivityModalLabel">
+          Confirm delete!
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 text-muted">
+          Are you sure you want to delete the activity status?
+        </p>
+      </div>
+      <div class="modal-footer" style="border: none">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger delete-activity-status"
+          (click)="confirmDeleteActivityStatus()"
         >
           Confirm Delete
         </button>

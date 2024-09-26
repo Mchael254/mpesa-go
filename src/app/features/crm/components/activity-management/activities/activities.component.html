@@ -24,6 +24,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
+
   <div class="card">
     <div class="card-body">
       <div class="row mb-2">
@@ -33,86 +34,93 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-            <span class="icon-circle">
-              <i
-                class="fa-solid fa-plus"
-                (click)="openDefineActivityModal()"
-              ></i>
+            <span
+              class="icon-circle open-activity-modal"
+              (click)="openDefineActivityModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle">
-              <i class="pi pi-pencil" (click)="editActivity()"></i>
+            <span class="icon-circle edit-activity" (click)="editActivity()">
+              <i class="pi pi-pencil"></i>
             </span>
-            <span class="icon-circle">
+            <span
+              class="icon-circle"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteActivityModal"
+            >
               <i class="fa-regular fa-trash-can"></i>
             </span>
           </div>
         </div>
       </div>
-      <p-table
-        #activitiesTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="activityData?.length"
-        [value]="activityData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedActivity"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="gis_exception_code">
-              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
-            </th>
-            <th pSortableColumn="objective">
-              Start Date <p-sortIcon field="objective"></p-sortIcon>
-            </th>
-            <th pSortableColumn="description">
-              End Date <p-sortIcon field="description"></p-sortIcon>
-            </th>
-            <th>Duration</th>
-            <th>Location</th>
-            <th>Assigned To</th>
-            <th>Related To</th>
-            <th pSortableColumn="authorised">
-              Status <p-sortIcon field="authorised"></p-sortIcon>
-            </th>
-            <th pSortableColumn="transactions_date">
-              Type <p-sortIcon field="transactions_date"></p-sortIcon>
-            </th>
-            <th pSortableColumn="authorised_by">
-              Description <p-sortIcon field="authorised_by"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-activity>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="10">No Activity Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <ng-container *ngIf="isDataReady.activities; else activitiesLoading">
+        <p-table
+          #activitiesTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="activityData?.length"
+          [value]="activityData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedActivity"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">
+                Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              </th>
+              <th pSortableColumn="objective">
+                Start Date <p-sortIcon field="objective"></p-sortIcon>
+              </th>
+              <th pSortableColumn="description">
+                End Date <p-sortIcon field="description"></p-sortIcon>
+              </th>
+              <th>Duration</th>
+              <th>Location</th>
+              <th>Assigned To</th>
+              <th>Related To</th>
+              <th pSortableColumn="authorised">
+                Status <p-sortIcon field="authorised"></p-sortIcon>
+              </th>
+              <th pSortableColumn="transactions_date">
+                Type <p-sortIcon field="transactions_date"></p-sortIcon>
+              </th>
+              <th pSortableColumn="authorised_by">
+                Description <p-sortIcon field="authorised_by"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-activity>
+            <tr [pSelectableRow]="activity">
+              <td>{{ activity.subject }}</td>
+              <td>{{ activity.wef }}</td>
+              <td>{{ activity.wet }}</td>
+              <td>{{ activity.duration }}</td>
+              <td>{{ activity.location }}</td>
+              <td>{{ activity.assignedTo }}</td>
+              <td>{{ activity.relatedTo }}</td>
+              <td>{{ activity.statusId }}</td>
+              <td>{{ activity.activityTypeCode }}</td>
+              <td>{{ activity.desc }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10">No Activity Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #activitiesLoading> Loading... </ng-template>
     </div>
   </div>
 
@@ -125,10 +133,13 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus" (click)="openDefineNoteModal()"></i>
+            <span
+              class="icon-circle open-note-modal"
+              (click)="openDefineNoteModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle" (click)="editNote()">
+            <span class="icon-circle edit-note" (click)="editNote()">
               <i class="pi pi-pencil"></i>
             </span>
             <span class="icon-circle">
@@ -137,55 +148,58 @@
           </div>
         </div>
       </div>
-      <p-table
-        #notesAndAttachmentsTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="notesAndAttachmentsData?.length"
-        [value]="notesAndAttachmentsData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedNotes"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="gis_exception_code">
-              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
-            </th>
-            <th pSortableColumn="objective">
-              Related To <p-sortIcon field="objective"></p-sortIcon>
-            </th>
-            <th pSortableColumn="description">
-              Description <p-sortIcon field="description"></p-sortIcon>
-            </th>
-            <th pSortableColumn="authorised">
-              Attachment <p-sortIcon field="authorised"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-note>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4">No Notes and Attachments Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <ng-container *ngIf="isDataReady.notes; else notesLoading">
+        <p-table
+          #notesAndAttachmentsTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="notesAndAttachmentsData?.length"
+          [value]="notesAndAttachmentsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedNote"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">
+                Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              </th>
+              <th pSortableColumn="objective">
+                Related To <p-sortIcon field="objective"></p-sortIcon>
+              </th>
+              <th pSortableColumn="description">
+                Description <p-sortIcon field="description"></p-sortIcon>
+              </th>
+              <th pSortableColumn="authorised">
+                Attachment <p-sortIcon field="authorised"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-note>
+            <tr [pSelectableRow]="note">
+              <td>{{ note.subject }}</td>
+              <td>{{ note.relatedTo }}</td>
+              <td>{{ note.desc }}</td>
+              <td>{{ note.attachment }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">No Notes and Attachments Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #notesLoading> Loading... </ng-template>
     </div>
   </div>
 
@@ -198,71 +212,81 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus" (click)="openDefineTaskModal()"></i>
+            <span
+              class="icon-circle open-task-modal"
+              (click)="openDefineTaskModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle" (click)="editTask()">
+            <span class="icon-circle edit-task" (click)="editTask()">
               <i class="pi pi-pencil"></i>
             </span>
-            <span class="icon-circle">
+            <span
+              class="icon-circle"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteActivityTaskModal"
+            >
               <i class="fa-regular fa-trash-can"></i>
             </span>
           </div>
         </div>
       </div>
-      <p-table
-        #tasksTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="tasksData?.length"
-        [value]="tasksData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedTask"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="gis_exception_code">
-              Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
-            </th>
-            <th pSortableColumn="objective">
-              Start Date <p-sortIcon field="objective"></p-sortIcon>
-            </th>
-            <th pSortableColumn="description">
-              End Date <p-sortIcon field="description"></p-sortIcon>
-            </th>
-            <th pSortableColumn="authorised">
-              Status <p-sortIcon field="authorised"></p-sortIcon>
-            </th>
-            <th>Priority</th>
-            <th>Related To</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-task>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="6">No Tasks Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <ng-container *ngIf="isDataReady.tasks; else tasksLoading">
+        <p-table
+          #tasksTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="tasksData?.length"
+          [value]="tasksData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedTask"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">
+                Subject <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              </th>
+              <th pSortableColumn="objective">
+                Start Date <p-sortIcon field="objective"></p-sortIcon>
+              </th>
+              <th pSortableColumn="description">
+                End Date <p-sortIcon field="description"></p-sortIcon>
+              </th>
+              <th pSortableColumn="authorised">
+                Status <p-sortIcon field="authorised"></p-sortIcon>
+              </th>
+              <th>Priority</th>
+              <th>Related To</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-task>
+            <tr [pSelectableRow]="task">
+              <td>{{ task.subject }}</td>
+              <td>{{ task.dateFrom | date }}</td>
+              <td>{{ task.dateTo | date }}</td>
+              <td>{{ task.statusId }}</td>
+              <td>{{ task.priorityCode }}</td>
+              <td>{{ task.relateTo }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6">No Tasks Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #tasksLoading> Loading... </ng-template>
     </div>
   </div>
 
@@ -276,8 +300,8 @@
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
             <button class="btn btn-primary">Send invite</button>
-            <span class="icon-circle">
-              <i class="fa-solid fa-plus" (click)="openAllUsersModal()"></i>
+            <span class="icon-circle" (click)="openAllUsersModal()">
+              <i class="fa-solid fa-plus open-all-users-modal"></i>
             </span>
             <span class="icon-circle">
               <i class="fa-regular fa-trash-can"></i>
@@ -285,51 +309,53 @@
           </div>
         </div>
       </div>
-      <p-table
-        #participantsTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="partipantsData?.length"
-        [value]="partipantsData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedParticipant"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th></th>
-            <th pSortableColumn="gis_exception_code">
-              Name <p-sortIcon field="gis_exception_code"></p-sortIcon>
-            </th>
-            <th pSortableColumn="objective">
-              Email <p-sortIcon field="objective"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-participant>
-          <tr>
-            <td>
-              <p-tableCheckbox></p-tableCheckbox>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="3">No Participants Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <ng-container *ngIf="isDataReady.participants; else participantsLoading">
+        <p-table
+          #participantsTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="participantsData?.length"
+          [value]="participantsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedParticipant"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">
+                Name <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              </th>
+              <th pSortableColumn="objective">
+                Email <p-sortIcon field="objective"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-participant>
+            <tr [pSelectableRow]="participant">
+              <td>
+                <span class="me-3"><p-tableCheckbox></p-tableCheckbox></span>
+                {{ participant.participant.name }}
+              </td>
+              <td>{{ participant.participant.emailAddress }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Participants Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #participantsLoading> Loading... </ng-template>
     </div>
   </div>
 </div>
@@ -351,13 +377,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-activity-modal"
           (click)="closeDefineActivityModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createActivityForm">
+        <form *ngIf="activityForm" [formGroup]="activityForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.subject === 'Y'">
               <div class="col-md-6">
@@ -401,8 +427,9 @@
                       (g['activityType']?.dirty || g['activityType']?.touched)
                   }"
                 >
-                  <option value=""></option>
-                  <option value=""></option>
+                  <ng-container *ngFor="let aType of activityTypes">
+                    <option value="{{ aType.id }}">{{ aType.desc }}</option>
+                  </ng-container>
                 </select>
                 <div
                   *ngIf="
@@ -478,17 +505,28 @@
                 <label class="form-label w-100" for="assignedTo"
                   >Assigned To</label
                 >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="assignedTo"
-                  formControlName="assignedTo"
-                  [ngClass]="{
-                    'is-invalid':
-                      g['assignedTo']?.invalid &&
-                      (g['assignedTo']?.dirty || g['assignedTo']?.touched)
-                  }"
-                />
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="assignedTo"
+                    aria-label="user"
+                    aria-describedby="button-addon2"
+                    [ngClass]="{
+                      'is-invalid':
+                        g['assignedTo']?.invalid &&
+                        (g['assignedTo']?.dirty || g['assignedTo']?.touched)
+                    }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon2"
+                    (click)="openAllUsersModal('assignedTo')"
+                  >
+                    <i class="fa-solid fa-plus open-all-users-modal"></i>
+                  </button>
+                </div>
                 <div
                   *ngIf="
                     g['assignedTo']?.invalid &&
@@ -507,20 +545,29 @@
                 <label class="form-label w-100" for="relatedAccount"
                   >Related Account</label
                 >
-                <select
-                  id="relatedAccount"
-                  class="form-select"
-                  formControlName="relatedAccount"
-                  [ngClass]="{
-                    'is-invalid':
-                      g['relatedAccount']?.invalid &&
-                      (g['relatedAccount']?.dirty ||
-                        g['relatedAccount']?.touched)
-                  }"
-                >
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="relatedAccount"
+                    aria-label="user"
+                    aria-describedby="button-addon2"
+                    [ngClass]="{
+                      'is-invalid':
+                        g['relatedAccount']?.invalid &&
+                        (g['relatedAccount']?.dirty ||
+                          g['relatedAccount']?.touched)
+                    }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('relatedAccount')"
+                  >
+                    <i class="fa-solid fa-plus open-all-users-modal"></i>
+                  </button>
+                </div>
                 <div
                   *ngIf="
                     g['relatedAccount']?.invalid &&
@@ -647,19 +694,28 @@
             <ng-container *ngIf="visibleStatus.team === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="team">Team</label>
-                <select
-                  id="team"
-                  class="form-select"
-                  formControlName="team"
-                  [ngClass]="{
-                    'is-invalid':
-                      g['team']?.invalid &&
-                      (g['team']?.dirty || g['team']?.touched)
-                  }"
-                >
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="team"
+                    aria-label="user"
+                    aria-describedby="button-addon2"
+                    [ngClass]="{
+                      'is-invalid':
+                        g['team']?.invalid &&
+                        (g['team']?.dirty || g['team']?.touched)
+                    }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('team')"
+                  >
+                    <i class="fa-solid fa-plus open-all-users-modal"></i>
+                  </button>
+                </div>
                 <div
                   *ngIf="
                     g['team']?.invalid &&
@@ -688,8 +744,9 @@
                       (g['emailTemplate']?.dirty || g['emailTemplate']?.touched)
                   }"
                 >
-                  <option value=""></option>
-                  <option value=""></option>
+                  <ng-container *ngFor="let message of messageTemplates">
+                    <option value="{{ message }}">{{ message.name }}</option>
+                  </ng-container>
                 </select>
                 <div
                   *ngIf="
@@ -706,27 +763,21 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.sendReminder === 'Y'">
               <div class="col-md-6">
-                <label class="form-label w-100" for="sendReminder"
-                  >Send reminder?</label
-                >
+                <label class="form-label w-100" for="">Send reminder?</label>
                 <div class="form-check form-check-inline">
                   <input
                     class="form-check-input"
                     type="radio"
                     formControlName="sendReminder"
-                    id="sendReminder"
                     value="Y"
                   />
-                  <label class="form-check-label text-black" for="sendReminder"
-                    >Yes</label
-                  >
+                  <label class="form-check-label text-black" for="">Yes</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input
                     class="form-check-input"
                     type="radio"
                     formControlName="sendReminder"
-                    id="sendReminder"
                     value="N"
                   />
                   <label class="form-check-label text-black" for="sendReminder"
@@ -747,7 +798,7 @@
               </div>
             </ng-container>
             <ng-container
-              *ngIf="createActivityForm.get('sendReminder').value === 'Y'"
+              *ngIf="activityForm.get('sendReminder').value === 'Y'"
             >
               <div class="col-md-6">
                 <label class="form-label w-100" for="reminderTime"
@@ -767,7 +818,7 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary create-update-activity"
           (click)="createUpdateActivity()"
         >
           Save details
@@ -794,13 +845,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-note-modal"
           (click)="closeDefineNoteModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createNoteForm">
+        <form *ngIf="noteForm" [formGroup]="noteForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.noteSubject === 'Y'">
               <div class="col-md-12">
@@ -836,19 +887,28 @@
                 <label class="form-label w-100" for="relateTo"
                   >Related To</label
                 >
-                <select
-                  id="relateTo"
-                  class="form-select"
-                  formControlName="relateTo"
-                  [ngClass]="{
-                    'is-invalid':
-                      f['relateTo']?.invalid &&
-                      (f['relateTo']?.dirty || f['relateTo']?.touched)
-                  }"
-                >
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="relateTo"
+                    aria-label="user"
+                    aria-describedby="button-addon2"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['relateTo']?.invalid &&
+                        (f['relateTo']?.dirty || f['relateTo']?.touched)
+                    }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('relateTo')"
+                  >
+                    <i class="fa-solid fa-plus open-all-users-modal"></i>
+                  </button>
+                </div>
                 <div
                   *ngIf="
                     f['relateTo']?.invalid &&
@@ -896,7 +956,7 @@
             <ng-container *ngIf="visibleStatus.attachment === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100">Attachment</label>
-                <div class="mt-2" (change)="onFileChange($event)">
+                <div class="mt-2 select-file" (change)="onFileChange($event)">
                   <img
                     *ngIf="url !== '' && url"
                     [src]="url"
@@ -934,7 +994,13 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createUpdateActivityNote()"
+        >
+          Save details
+        </button>
       </div>
     </div>
   </div>
@@ -957,13 +1023,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-task-modal"
           (click)="closeDefineTaskModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createTaskForm">
+        <form *ngIf="taskForm" [formGroup]="taskForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.taskSubject === 'Y'">
               <div class="col-md-12">
@@ -1057,19 +1123,29 @@
                 <label class="form-label w-100" for="taskRelatedTo"
                   >Related To</label
                 >
-                <select
-                  id="taskRelatedTo"
-                  class="form-select"
-                  formControlName="taskRelatedTo"
-                  [ngClass]="{
-                    'is-invalid':
-                      h['taskRelatedTo']?.invalid &&
-                      (h['taskRelatedTo']?.dirty || h['taskRelatedTo']?.touched)
-                  }"
-                >
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="relateTo"
+                    aria-label="user"
+                    aria-describedby="button-addon2"
+                    [ngClass]="{
+                      'is-invalid':
+                        h['taskRelatedTo']?.invalid &&
+                        (h['taskRelatedTo']?.dirty ||
+                          h['taskRelatedTo']?.touched)
+                    }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('taskRelatedTo')"
+                  >
+                    <i class="fa-solid fa-plus open-all-users-modal"></i>
+                  </button>
+                </div>
                 <div
                   *ngIf="
                     h['taskRelatedTo']?.invalid &&
@@ -1096,8 +1172,9 @@
                       (h['priority']?.dirty || h['priority']?.touched)
                   }"
                 >
-                  <option value=""></option>
-                  <option value=""></option>
+                  <ng-container *ngFor="let aType of activityTypes">
+                    <option value="{{ aType.id }}">{{ aType.desc }}</option>
+                  </ng-container>
                 </select>
                 <div
                   *ngIf="
@@ -1118,7 +1195,7 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary create-update-activity-task"
           (click)="createUpdateActivityTask()"
         >
           Save details
@@ -1136,10 +1213,14 @@
   [useDynamicContent]="true"
   [zIndex]="firstModalZIndex"
   (actionEmitter)="processSelectedUser($event)"
+  id="process-selected-user"
 >
   <!---Use content projection !-->
   <div modal-body-content>
-    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    <app-staff-modal
+      (userSelected)="getSelectedUser($event)"
+      id="get-selected-user"
+    >
     </app-staff-modal>
   </div>
   <!---Use content projection !-->
@@ -1150,3 +1231,135 @@
   *ngIf="allUsersModalVisible"
   [style.z-index]="firstModalZIndex"
 ></div>
+
+<!--Delete Activity Modal -->
+<div
+  class="modal fade"
+  id="deleteActivityModal"
+  tabindex="-1"
+  aria-labelledby="deleteActivityModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none">
+        <h1 class="modal-title fs-5 text-danger" id="deleteActivityModalLabel">
+          Confirm delete!
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 text-muted">
+          Are you sure you want to delete the activity?
+        </p>
+      </div>
+      <div class="modal-footer" style="border: none">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger delete-activity"
+          (click)="confirmDeleteActivity()"
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Delete Activity Note Modal -->
+<div
+  class="modal fade"
+  id="deleteActivityNoteModal"
+  tabindex="-1"
+  aria-labelledby="deleteActivityNoteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none">
+        <h1
+          class="modal-title fs-5 text-danger"
+          id="deleteActivityNoteModalLabel"
+        >
+          Confirm delete!
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 text-muted">
+          Are you sure you want to delete the activity note?
+        </p>
+      </div>
+      <div class="modal-footer" style="border: none">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDeleteActivityNote()"
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Delete Activity Task Modal -->
+<div
+  class="modal fade"
+  id="deleteActivityTaskModal"
+  tabindex="-1"
+  aria-labelledby="deleteActivityTaskModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none">
+        <h1
+          class="modal-title fs-5 text-danger"
+          id="deleteActivityTaskModalLabel"
+        >
+          Confirm delete!
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 text-muted">
+          Are you sure you want to delete the activity task?
+        </p>
+      </div>
+      <div class="modal-footer" style="border: none">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger delete-activity-task"
+          (click)="confirmDeleteActivityTask()"
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -30,7 +30,6 @@
         <div class="col-md-12">
           <label
             class="form-label w-100 text-black fs-5 fw-medium"
-            for="sendReminder"
             >System</label
           >
           <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
@@ -84,10 +83,10 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-            <span class="icon-circle" (click)="openDefineActivityTypeModal()">
+            <span class="icon-circle open-activity-type-modal" (click)="openDefineActivityTypeModal()">
               <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle" (click)="editActivityType()">
+            <span class="icon-circle edit-activity-type" (click)="editActivityType()">
               <i class="pi pi-pencil"></i>
             </span>
             <span
@@ -127,7 +126,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-activityType>
-          <tr [pSelectableRow]="activityType" (click)="attachSystem()">
+          <tr [pSelectableRow]="activityType" class="attach-system" (click)="attachSystem()">
             <td>{{ activityType.desc }}</td>
           </tr>
         </ng-template>
@@ -157,13 +156,13 @@
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close close-activity-type-modal"
           (click)="closeDefineActivityTypeModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createNewActivityTypeForm">
+        <form [formGroup]="activityTypeForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.description === 'Y'">
               <div class="col-md-12">
@@ -198,7 +197,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveActivivty()">
+        <button type="button" class="btn btn-primary save-activity-type" (click)="saveActivityType()">
           Save details
         </button>
       </div>
@@ -238,7 +237,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-danger"
+          class="btn btn-danger delete-activity-type"
           (click)="confirmDeleteActivityType()"
         >
           Confirm Delete
