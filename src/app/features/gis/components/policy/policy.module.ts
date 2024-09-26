@@ -26,6 +26,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ClientDdDetailsComponent } from './components/client-dd-details/client-dd-details.component';
 import { PolicyClausesDetailsComponent } from './components/policy-clauses-details/policy-clauses-details.component';
 import { PolicyLevelPerilsComponent } from './components/policy-level-perils/policy-level-perils.component';
+import { PolicyTaxesComponent } from './components/policy-taxes/policy-taxes.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -40,6 +41,7 @@ import { PolicyLevelPerilsComponent } from './components/policy-level-perils/pol
     ClientDdDetailsComponent,
     PolicyClausesDetailsComponent,
     PolicyLevelPerilsComponent,
+    PolicyTaxesComponent,
   ],
   imports: [
     CommonModule,
