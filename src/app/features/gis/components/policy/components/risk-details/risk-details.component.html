@@ -64,7 +64,8 @@
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="propertyDescription" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="propertyDescription" [(ngModel)]="vehiclemakeModel" data-bs-toggle="tooltip"
-                                data-bs-placement="right" title="Tooltip on right" readonly>
+                                data-bs-placement="right" title="Tooltip on right"  pTooltip="Select vehicle make and model" 
+                                tooltipPosition="left" readonly>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
@@ -111,7 +112,7 @@
                             </select> -->
                             <p-dropdown [options]="binderListDetails" optionValue="code"
                                 optionLabel="binder_short_description" formControlName="binderCode"
-                                [placeholder]="binder" [filterBy]="'binder_short_description'" [filter]="true"
+                                [placeholder]="binder" [filterBy]="'binder_short_description'"  (onChange)="onBinderSelected($event.value)"[filter]="true"
                                 [ngModel]="binder"></p-dropdown>
 
                             <!-- Display error message under the field -->
@@ -294,7 +295,7 @@
                             <div class="mb-1 col-sm-4 col-12">
 
                                 <label class=" risk-label">{{'gis.policy.override_but_charge' | translate}}</label>
-                                <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="ncdApplicable">
                             </div>
 
@@ -625,6 +626,9 @@
 
 
                     </div>
+                    
+                      
+                      
                     <div class="collapse" id="collapseRiskOtherDetails">
                         <!-- ROW 5 -->
                         <div class="row mb-4">

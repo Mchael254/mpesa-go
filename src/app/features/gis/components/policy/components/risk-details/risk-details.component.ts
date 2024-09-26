@@ -168,6 +168,8 @@ export class RiskDetailsComponent {
   passedBinder: any;
   relationGroups:any;
   riskClassList:any;
+  // newRisk: string = 'True';  // Default value is 'True'
+
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
@@ -1298,10 +1300,12 @@ export class RiskDetailsComponent {
   //   });
   // }
   getPremium(passedSections: any[]) {
-    const selectedBinder = this.policyRiskForm.get('binderCode').value;
-    this.selectedBinder = parseInt(selectedBinder);
+    // const selectedBinder = this.policyRiskForm.get('binderCode').value;
+    // this.selectedBinder = parseInt(selectedBinder);
 
     log.debug("Selected Binder:", this.selectedBinder);
+    // log.debug("Selected Binder:", selectedBinder);
+
 
     const selectedSubclassCode = this.selectedSubclassCode;
     const sections = passedSections;
@@ -1906,5 +1910,12 @@ getRiskClasses(){
       this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
     }
   })
+}
+onBinderSelected(selectedValue: any) {
+
+  this.selectedBinder = parseInt(selectedValue);
+  log.debug("SELECTED BINDER", this.selectedBinder)
+
+ 
 }
 }
