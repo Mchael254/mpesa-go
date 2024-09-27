@@ -39,6 +39,7 @@ export class EntityBasicInfoComponent {
   }
 
   selectPartyTypeRole(role: PartyTypeDto) {
+    // this.entityAccountIdDetails = [];
     this.partyTypeRole.emit(role);
   }
 }

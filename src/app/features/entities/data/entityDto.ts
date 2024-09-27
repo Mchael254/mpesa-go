@@ -1,6 +1,6 @@
-import { AccountStatus } from "./AccountStatus";
-import { kycInfoDTO } from "./accountDTO";
-import { PartyTypeDto } from "./partyTypeDto";
+import { AccountStatus } from './AccountStatus';
+import { kycInfoDTO } from './accountDTO';
+import { PartyTypeDto } from './partyTypeDto';
 
 export interface EntityDto {
   categoryName: string;
@@ -9,8 +9,8 @@ export interface EntityDto {
   effectiveDateFrom: string;
   effectiveDateTo: string;
   id: number;
-  modeOfIdentity: IdentityModeDTO,
-  modeOfIdentityName?: string
+  modeOfIdentity: IdentityModeDTO;
+  modeOfIdentityName?: string;
   identityNumber: number;
   name: string;
   organizationId: number;
@@ -19,7 +19,6 @@ export interface EntityDto {
   profileImage: string;
   partyTypeId?: number;
 }
-
 
 export interface IdentityModeDTO {
   id?: number;
@@ -52,15 +51,15 @@ export interface AccountReqPartyId {
   effectiveDateTo: string;
   id: number;
   partyId: number;
-  partyType: PartyTypeDto,
-  kycInfo?: kycInfoDTO,
-  organizationId: number
-  organizationGroupId: number
+  partyType: PartyTypeDto;
+  kycInfo?: kycInfoDTO;
+  organizationId: number;
+  organizationGroupId: number;
 }
 
-export interface EntityRelatedAccount extends AccountReqPartyId{
+export interface EntityRelatedAccount extends AccountReqPartyId {
   currentStatus?: string;
-  statusList?: AccountStatus[]
+  statusList?: AccountStatus[];
 }
 
 export interface ReqPartyById {
@@ -70,7 +69,7 @@ export interface ReqPartyById {
   effectiveDateFrom?: string;
   effectiveDateTo?: string;
   id?: number;
-  modeOfIdentity?: IdentityModeDTO,
+  modeOfIdentity?: IdentityModeDTO;
   modeOfIdentityNumber?: string;
   name?: string;
   organizationId?: number;
@@ -87,28 +86,28 @@ export interface Roles {
 }
 
 export interface PoliciesDTO {
-  policyNumber: string,
-  type: string,
-  insured: string,
-  status: string,
-  premium: string,
-  renewalDate: string
+  policyNumber: string;
+  type: string;
+  insured: string;
+  status: string;
+  premium: string;
+  renewalDate: string;
 }
 
 export interface QuotesDTO {
-  quotesNumber: string,
-  type: string,
-  insured: string,
-  status: string,
-  premium: string,
-  expiryDate: string
+  quotesNumber: string;
+  type: string;
+  insured: string;
+  status: string;
+  premium: string;
+  expiryDate: string;
 }
 
 export interface ClaimTrackingDTO {
-  claimNumber: string,
-  classOfBusiness: string,
-  policyNumber: string,
-  status: string,
-  dateOfLoss: string,
-  incurredAmount: string
+  claimNumber: string;
+  classOfBusiness: string;
+  policyNumber: string;
+  status: string;
+  dateOfLoss: string;
+  incurredAmount: string;
 }
