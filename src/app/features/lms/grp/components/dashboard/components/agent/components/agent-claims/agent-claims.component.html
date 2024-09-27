@@ -1,0 +1,73 @@
+<div class="main">
+    <div style="display: flex; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="title">Claims</div>
+        <div class="quote-btn mt-3">
+            <div class="filter-section">
+                <label class="filter-label">Filter by</label>
+
+                <div class="filter-options">
+                    <div class="dropdown first-filter">
+                        <select>
+                            <option value="quoteNumber">Quote number</option>
+                            <option value="product">Product</option>
+                            <option value="status">Status</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown second-filter">
+                        <select>
+                            <option value="equals">Equals</option>
+                            <option value="greaterThan">Greater than</option>
+                            <option value="lessThan">Less than</option>
+                        </select>
+                    </div>
+
+                    <input type="text" class="input-field" placeholder="Enter value" />
+                </div>
+            </div>
+
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false"></p-multiSelect>
+        </div>
+
+        <div>
+            <p-table [value]="claimDetails" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+                styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[10, 25, 50]"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('claim_no')">Claim no.</th>
+                        <th *ngIf="selectedColumns.includes('policy_no')">Policy no.</th>
+                        <th *ngIf="selectedColumns.includes('status')">Status</th>
+                        <th *ngIf="selectedColumns.includes('product_desc')">Product</th>
+                        <th *ngIf="selectedColumns.includes('cover_type')">Cover type</th>
+                        <th *ngIf="selectedColumns.includes('wet_date')">Claim on</th>
+                        <th *ngIf="selectedColumns.includes('sum_assured')">Sum assured</th>
+                        <th *ngIf="selectedColumns.includes('premium')">Payable amount</th>
+                        <th *ngIf="selectedColumns.includes('amount_to_be_paid')">Amount to be paid</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-clmDets>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('claim_no')">{{ clmDets.claim_no }}</td>
+                        <td *ngIf="selectedColumns.includes('policy_no')">{{ clmDets.policy_no }}</td>
+                        <td *ngIf="selectedColumns.includes('status')">{{ clmDets.status }}</td>
+                        <td *ngIf="selectedColumns.includes('product_desc')">{{ clmDets.product_desc }}</td>
+                        <td *ngIf="selectedColumns.includes('cover_type')">{{ clmDets.cover_type }}</td>
+                        <td *ngIf="selectedColumns.includes('wet_date')">{{ clmDets.wet_date }}</td>
+                        <td *ngIf="selectedColumns.includes('sum_assured')">{{ clmDets.sum_assured | number: '1.2-2' }}
+                        </td>
+                        <td *ngIf="selectedColumns.includes('premium')">{{ clmDets.premium | currency }}</td>
+                        <td *ngIf="selectedColumns.includes('amount_to_be_paid')">{{ clmDets.amount_to_be_paid |
+                            currency }}</td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+    </div>
+</div>

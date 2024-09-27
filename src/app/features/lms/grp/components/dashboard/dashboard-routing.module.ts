@@ -21,6 +21,10 @@ import { ServiceRequestsDashboardComponent } from './components/admin-service-re
 import { ServiceRequestLogsComponent } from './components/admin-service-requests/service-request-logs/service-request-logs.component';
 import { ServiceRequestComponent } from './components/admin-service-requests/service-request/service-request.component';
 import { MemberServiceRequestComponent } from './components/member-service-requests/member-service-request/member-service-request.component';
+import { AgentDashboardComponent } from './components/agent/components/agent-dashboard/agent-dashboard.component';
+import { AgentPoliciesComponent } from './components/agent/components/agent-policies/agent-policies.component';
+import { AgentQuotesComponent } from './components/agent/components/agent-quotes/agent-quotes.component';
+import { AgentClaimsComponent } from './components/agent/components/agent-claims/agent-claims.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: LandingScreenComponent }, //agent
@@ -44,6 +48,10 @@ const routes: Routes = [
   { path: 'service-req-logs', component: ServiceRequestLogsComponent}, //scheme admin service request logs
   { path: 'service-request', component: ServiceRequestComponent}, //scheme admin service requests
   { path: 'member-service-request', component: MemberServiceRequestComponent}, //scheme member service requests screen
+  { path: 'agent', component: AgentDashboardComponent}, //agent landing dashboard
+  { path: 'agent-policies', component: AgentPoliciesComponent}, //agent policies listing
+  { path: 'agent-quotes', component: AgentQuotesComponent}, //agent quotes listing
+  { path: 'agent-claims', component: AgentClaimsComponent}, //agent claims listing
 ];
 
 @NgModule({
