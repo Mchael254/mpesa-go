@@ -729,20 +729,30 @@
 
                         </div>
                         <!-- ROW 7 -->
+                         <div  *ngIf="showNonMotorSubclassFields">
                         <div class="row mb-4">
 
                             <div class="mb-1 col-sm-4 col-12">
                                 <label for="newRisk" class=" risk-label"
                                     id="riskLocation">{{'gis.policy.risk_class'|translate}}</label>
 
-                                <p-dropdown [options]="riskClassList" optionValue="code" optionLabel="description"
-                                    placeholder=" " [filterBy]="'description'" [filter]="true"
-                                    formControlName="riskClass"></p-dropdown>
+                                    <p-dropdown 
+                                    [options]="riskClassList" 
+                                    optionValue="code" 
+                                    optionLabel="description"
+                                    placeholder=" " 
+                                    [filterBy]="'description'" 
+                                    [filter]="true"
+                                    formControlName="riskClass" 
+                                    [disabled]="!motorProduct"> <!-- Disable if not a motor product -->
+                                </p-dropdown>
+                        
 
                             </div>
 
 
                         </div>
+                    </div>
                     </div>
                     <p class="more " (click)="show=!show" data-bs-toggle="collapse"
                         data-bs-target="#collapseRiskOtherDetails" aria-expanded="false"
