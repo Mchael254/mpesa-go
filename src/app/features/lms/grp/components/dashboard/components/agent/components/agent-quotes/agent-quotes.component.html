@@ -1,0 +1,69 @@
+<div class="main">
+    <div style="display: flex; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="title">Quotes</div>
+        <div class="quote-btn mt-3">
+            <div class="filter-section">
+                <label class="filter-label">Filter by</label>
+
+                <div class="filter-options">
+                    <div class="dropdown first-filter">
+                        <select>
+                            <option value="quoteNumber">Quote number</option>
+                            <option value="product">Product</option>
+                            <option value="status">Status</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown second-filter">
+                        <select>
+                            <option value="equals">Equals</option>
+                            <option value="greaterThan">Greater than</option>
+                            <option value="lessThan">Less than</option>
+                        </select>
+                    </div>
+
+                    <input type="text" class="input-field" placeholder="Enter value" />
+                </div>
+            </div>
+
+            <button class="get-quote">New quote</button>
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false"></p-multiSelect>
+        </div>
+
+        <div>
+            <p-table [value]="quoteDetails" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+                styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[10, 25, 50]"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('quote_number')">Quote number</th>
+                        <th *ngIf="selectedColumns.includes('product')">Product</th>
+                        <th *ngIf="selectedColumns.includes('status')">Status</th>
+                        <th *ngIf="selectedColumns.includes('wef_date')">WEF date</th>
+                        <th *ngIf="selectedColumns.includes('wet_date')">WET date</th>
+                        <th *ngIf="selectedColumns.includes('members')">Members</th>
+                        <th *ngIf="selectedColumns.includes('premium')">Premium</th>
+                        <th *ngIf="selectedColumns.includes('sum_assured')">Sum assured</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-quoteDets>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('quote_number')">{{ quoteDets.quote_number }}</td>
+                        <td *ngIf="selectedColumns.includes('product')">{{ quoteDets.product_desc | titlecase }}</td>
+                        <td *ngIf="selectedColumns.includes('status')">{{ quoteDets.status }}</td>
+                        <td *ngIf="selectedColumns.includes('wef_date')">{{ quoteDets.wef_date }}</td>
+                        <td *ngIf="selectedColumns.includes('wet_date')">{{ quoteDets.wet_date }}</td>
+                        <td *ngIf="selectedColumns.includes('members')">{{ quoteDets.members }}</td>
+                        <td *ngIf="selectedColumns.includes('premium')">{{ quoteDets.premium | currency }}</td>
+                        <td *ngIf="selectedColumns.includes('sum_assured')">{{ quoteDets.sum_assured | currency }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
