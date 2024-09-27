@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { DashboardService } from '../../services/dashboard.service';
-import { PensionListingDTO } from '../../models/admin-policies';
+import { DashboardService } from '../../../services/dashboard.service';
+import { PensionListingDTO } from '../../../models/admin-policies';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
 
