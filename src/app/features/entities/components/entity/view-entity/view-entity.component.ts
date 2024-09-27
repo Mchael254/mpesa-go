@@ -478,8 +478,15 @@ export class ViewEntityComponent implements OnInit {
           this.populateDetailsForDisplay(data);
           this.fetchTransactions(data);
           log.info(`party account details >>> `, data);
+          this.cdr.detectChanges();
         },
-        error: (err) => {},
+        error: (err) => {
+          let errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            errorMessage
+          );
+        },
       });
   }
 

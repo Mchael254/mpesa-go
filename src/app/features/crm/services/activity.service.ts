@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {Injectable} from '@angular/core';
 import {
   Activity,
   ActivityNote,
@@ -9,8 +8,9 @@ import {
   ActivityType,
   PriorityLevel,
 } from '../data/activity';
-import { Observable } from 'rxjs';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {Observable} from 'rxjs';
+import {ApiService} from "../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../environments/api_service_config";
 
 @Injectable({
   providedIn: 'root',
@@ -25,18 +25,18 @@ export class ActivityService {
     );
   }
 
-  getActivityById(id: number): Observable<Activity> {
+  /*getActivityById(id: number): Observable<Activity> {
     return this.apiService.GET<Activity>(
       `activities/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createActivity(activity: Activity): Observable<Activity> {
     return this.apiService.POST<Activity>(
       `activities`,
       JSON.stringify(activity),
-      API_CONFIG.CHART_SERVICE_BASE_URL
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
 
@@ -44,14 +44,14 @@ export class ActivityService {
     return this.apiService.PUT<Activity>(
       `activities/${activity.id}`,
       JSON.stringify(activity),
-      API_CONFIG.CHART_SERVICE_BASE_URL
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
 
   deleteActivity(id: number): Observable<string> {
     return this.apiService.DELETE<string>(
       `activities/${id}`,
-      API_CONFIG.CHART_SERVICE_BASE_URL
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
 
@@ -62,12 +62,12 @@ export class ActivityService {
     );
   }
 
-  getActivityTypeById(id: number): Observable<ActivityType> {
+  /*getActivityTypeById(id: number): Observable<ActivityType> {
     return this.apiService.GET<ActivityType>(
       `activity-types/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createActivityType(activityType: ActivityType): Observable<ActivityType> {
     return this.apiService.POST<ActivityType>(
@@ -86,12 +86,10 @@ export class ActivityService {
   }
 
   deleteActivityType(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
+    return this.apiService.DELETE<string>(
       `activity-types/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    console.log(typeof response, response);
-    return response;
   }
 
   // priority-level
@@ -102,12 +100,12 @@ export class ActivityService {
     );
   }
 
-  getPriorityLevelById(id: number): Observable<PriorityLevel> {
+  /*getPriorityLevelById(id: number): Observable<PriorityLevel> {
     return this.apiService.GET<PriorityLevel>(
       `priority-level/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createPriorityLevel(priorityLevel: PriorityLevel): Observable<PriorityLevel> {
     return this.apiService.POST<PriorityLevel>(
@@ -126,12 +124,10 @@ export class ActivityService {
   }
 
   deletePriorityLevel(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
+    return this.apiService.DELETE<string>(
       `priority-level/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    console.log(typeof response, response);
-    return response;
   }
 
   //status
@@ -142,12 +138,12 @@ export class ActivityService {
     );
   }
 
-  getActivityStatusById(id: number): Observable<ActivityStatus> {
+  /*getActivityStatusById(id: number): Observable<ActivityStatus> {
     return this.apiService.GET<ActivityStatus>(
       `status/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createActivityStatus(
     activityStatus: ActivityStatus
@@ -170,11 +166,10 @@ export class ActivityService {
   }
 
   deleteActivityStatus(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
+    return this.apiService.DELETE<string>(
       `status/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    return response;
   }
 
   //tasks
@@ -185,12 +180,12 @@ export class ActivityService {
     );
   }
 
-  getActivityTaskById(id: number): Observable<ActivityTask> {
+  /*getActivityTaskById(id: number): Observable<ActivityTask> {
     return this.apiService.GET<ActivityTask>(
       `activity-tasks/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createActivityTask(activityTask: ActivityTask): Observable<ActivityTask> {
     return this.apiService.POST<ActivityTask>(
@@ -209,11 +204,10 @@ export class ActivityService {
   }
 
   deleteActivityTask(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
+    return this.apiService.DELETE<string>(
       `activity-tasks/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    return response;
   }
 
   // Activity Note
@@ -224,12 +218,12 @@ export class ActivityService {
     );
   }
 
-  getActivityNoteById(id: number): Observable<ActivityNote> {
+  /*getActivityNoteById(id: number): Observable<ActivityNote> {
     return this.apiService.GET<ActivityNote>(
       `activity-notes/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createActivityNote(activityNote: ActivityNote): Observable<ActivityNote> {
     return this.apiService.POST<ActivityNote>(
@@ -248,33 +242,32 @@ export class ActivityService {
   }
 
   deleteActivityNote(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
+    return this.apiService.DELETE<string>(
       `activity-notes/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    return response;
   }
 
   // Participant
   getActivityParticipants(): Observable<ActivityParticipant[]> {
     return this.apiService.GET<ActivityParticipant[]>(
-      `activity-participants`,
+      `participants`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
 
-  getParticipantById(id: number): Observable<ActivityParticipant> {
+  /*getParticipantById(id: number): Observable<ActivityParticipant> {
     return this.apiService.GET<ActivityParticipant>(
       `activity-participants/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }
+  }*/
 
   createParticipant(
     participant: ActivityParticipant
   ): Observable<ActivityParticipant> {
     return this.apiService.POST<ActivityParticipant>(
-      `activity-participants`,
+      `participants`,
       JSON.stringify(participant),
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
@@ -284,17 +277,16 @@ export class ActivityService {
     participant: ActivityParticipant
   ): Observable<ActivityParticipant> {
     return this.apiService.PUT<ActivityParticipant>(
-      `activity-participants/${participant.id}`,
+      `participants/${participant.id}`,
       JSON.stringify(participant),
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
 
   deleteParticipant(id: number): Observable<string> {
-    const response = this.apiService.DELETE<string>(
-      `activity-participants/${id}`,
+    return this.apiService.DELETE<string>(
+      `participants/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-    return response;
   }
 }

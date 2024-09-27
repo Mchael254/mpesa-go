@@ -13,21 +13,26 @@
       </div>
       <div class="col-sm-9">
         <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>
-        <ng-container *ngFor="let role of entityAccountIdDetails">
-          <button
-            id="select-party-type-role"
-            class="btn btn-sm"
-            [ngClass]="{
-              'btn-primary':
-                partyAccountDetails?.partyType?.id === role?.partyType?.id,
-              'btn-outline-primary':
-                partyAccountDetails?.partyType?.id !== role?.partyType?.id
-            }"
-            (click)="selectPartyTypeRole(role)"
-          >
-            {{ role?.partyType.partyTypeName }}
-          </button>
+        <ng-container
+          *ngIf="entityAccountIdDetails.length > 0; else noEntityTypes"
+        >
+          <ng-container *ngFor="let role of entityAccountIdDetails">
+            <button
+              id="select-party-type-role"
+              class="btn btn-sm"
+              [ngClass]="{
+                'btn-primary':
+                  partyAccountDetails?.partyType?.id === role?.partyType?.id,
+                'btn-outline-primary':
+                  partyAccountDetails?.partyType?.id !== role?.partyType?.id
+              }"
+              (click)="selectPartyTypeRole(role)"
+            >
+              {{ role?.partyType.partyTypeName }}
+            </button>
+          </ng-container>
         </ng-container>
+        <ng-template #noEntityTypes> Loading... </ng-template>
       </div>
     </div>
   </div>
