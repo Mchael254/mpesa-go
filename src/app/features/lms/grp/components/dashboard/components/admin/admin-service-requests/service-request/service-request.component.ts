@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Logger } from 'src/app/shared/services';
-import { DashboardService } from '../../../services/dashboard.service';
+import { DashboardService } from '../../../../services/dashboard.service';
 import { untilDestroyed } from 'src/app/shared/shared.module';
-import { ServiceRequestService } from '../../../services/service-request.service';
+import { ServiceRequestService } from '../../../../services/service-request.service';
 import { Observable } from 'rxjs';
-import { ContactMethodDTO, ServiceReqCategoriesDTO, ServiceReqCatTypesDTO, ServiceReqPoliciesDTO } from '../../../models/admin-policies';
-import { PolicyMemberDTO } from '../../../../claims/models/claim-models';
-import { ClaimsService } from '../../../../claims/service/claims.service';
+import { ContactMethodDTO, ServiceReqCategoriesDTO, ServiceReqCatTypesDTO, ServiceReqPoliciesDTO } from '../../../../models/admin-policies';
+import { PolicyMemberDTO } from '../../../../../claims/models/claim-models';
+import { ClaimsService } from '../../../../../claims/service/claims.service';
 import { MessageService } from 'primeng/api';
 
 const log = new Logger("ServiceRequestComponent")

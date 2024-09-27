@@ -5,11 +5,11 @@ import { Observable } from 'rxjs';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { QuickService } from '../../../quotation/service/quick/quick.service';
-import { DurationTypes, FacultativeType, QuotationCovers, UnitRate } from '../../../quotation/models/quotationCovers';
-import { PayFrequencyService } from '../../../quotation/service/pay-frequency/pay-frequency.service';
-import { PayFrequency } from '../../../quotation/models/payFrequency';
-import { Currency } from '../../../quotation/models/currency';
+import { QuickService } from '../../../../quotation/service/quick/quick.service';
+import { DurationTypes, FacultativeType, QuotationCovers, UnitRate } from '../../../../quotation/models/quotationCovers';
+import { PayFrequencyService } from '../../../../quotation/service/pay-frequency/pay-frequency.service';
+import { PayFrequency } from '../../../../quotation/models/payFrequency';
+import { Currency } from '../../../../quotation/models/currency';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 

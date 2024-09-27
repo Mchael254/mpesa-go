@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { DashboardService } from '../../services/dashboard.service';
+import { DashboardService } from '../../../services/dashboard.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
-import { AdminPolicyDetailsDTO, CategorySummaryDTO, CoverTypesDTO, DependentLimitDTO, EndorsementDetailsDTO, MemberDetailsDTO, MemberDetailsSummaryDTO, MemberListDTO } from '../../models/admin-policies';
+import { AdminPolicyDetailsDTO, CategorySummaryDTO, CoverTypesDTO, DependentLimitDTO, EndorsementDetailsDTO, MemberDetailsDTO, MemberDetailsSummaryDTO, MemberListDTO } from '../../../models/admin-policies';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 const log = new Logger("AdminPolicyDetailsComponent");

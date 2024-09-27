@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
-import { DashboardService } from '../../services/dashboard.service';
-import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, MemberWithdrawalsDTO, memberBalancesDTO } from '../../models/member-policies';
+import { DashboardService } from '../../../services/dashboard.service';
+import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, MemberWithdrawalsDTO, memberBalancesDTO } from '../../../models/member-policies';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
