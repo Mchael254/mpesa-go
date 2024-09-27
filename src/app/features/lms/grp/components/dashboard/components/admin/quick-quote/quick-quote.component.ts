@@ -8,10 +8,10 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { untilDestroyed } from 'src/app/shared/shared.module';
-import { CoverageService } from '../../../quotation/service/coverage/coverage.service';
-import { CoverTypePerProdDTO } from '../../../quotation/models/coverTypes/coverTypesDto';
-import { QuotationCovers } from '../../../quotation/models/quotationCovers';
-import { QuickService } from '../../../quotation/service/quick/quick.service';
+import { CoverageService } from '../../../../quotation/service/coverage/coverage.service';
+import { CoverTypePerProdDTO } from '../../../../quotation/models/coverTypes/coverTypesDto';
+import { QuotationCovers } from '../../../../quotation/models/quotationCovers';
+import { QuickService } from '../../../../quotation/service/quick/quick.service';
 
 const log = new Logger("QuickQuoteComponent");
 @AutoUnsubscribe

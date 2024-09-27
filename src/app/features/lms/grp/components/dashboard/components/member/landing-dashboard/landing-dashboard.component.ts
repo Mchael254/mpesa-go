@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DashboardService } from '../../services/dashboard.service';
-import { MemberPolicies, UserProfileDTO } from '../../models/member-policies';
-import {Logger} from "../../../../../../../shared/services";
-import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
-import {SESSION_KEY} from "../../../../../util/session_storage_enum";
-import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import { DashboardService } from '../../../services/dashboard.service';
+import { MemberPolicies, UserProfileDTO } from '../../../models/member-policies';
+import {Logger} from "../../../../../../../../shared/services";
+import {SessionStorageService} from "../../../../../../../../shared/services/session-storage/session-storage.service";
+import {SESSION_KEY} from "../../../../../../util/session_storage_enum";
+import {AutoUnsubscribe} from "../../../../../../../../shared/services/AutoUnsubscribe";
 
 const log = new Logger('LandingDashboardComponent');
 @AutoUnsubscribe

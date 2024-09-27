@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DashboardService } from '../../services/dashboard.service';
+import { DashboardService } from '../../../services/dashboard.service';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { ClaimSummaryDTO, PensionResponse, PoliciesResponse } from '../../models/admin-policies';
+import { ClaimSummaryDTO, PensionResponse, PoliciesResponse } from '../../../models/admin-policies';
 
 const log = new Logger("AdminDashboardComponent")
 @AutoUnsubscribe
