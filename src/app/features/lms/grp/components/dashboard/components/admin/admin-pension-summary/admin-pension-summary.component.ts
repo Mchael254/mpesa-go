@@ -4,9 +4,9 @@ import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { memberBalancesDTO, MemberCoversDTO, MemberPensionDepReceiptsDTO, MemberDetailsDTO, DetailedMemContrReceiptsDTO } from '../../models/member-policies';
-import { DashboardService } from '../../services/dashboard.service';
-import { MemberListDTO, PartialWithdrawalsDTO, ReceiptsDTO, ValuationsDTO } from '../../models/admin-policies';
+import { memberBalancesDTO, MemberCoversDTO, MemberPensionDepReceiptsDTO, MemberDetailsDTO, DetailedMemContrReceiptsDTO } from '../../../models/member-policies';
+import { DashboardService } from '../../../services/dashboard.service';
+import { MemberListDTO, PartialWithdrawalsDTO, ReceiptsDTO, ValuationsDTO } from '../../../models/admin-policies';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
