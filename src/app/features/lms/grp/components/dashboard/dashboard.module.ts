@@ -28,6 +28,10 @@ import { ServiceRequestsDashboardComponent } from './components/admin-service-re
 import { ServiceRequestLogsComponent } from './components/admin-service-requests/service-request-logs/service-request-logs.component';
 import { ServiceRequestComponent } from './components/admin-service-requests/service-request/service-request.component';
 import { MemberServiceRequestComponent } from './components/member-service-requests/member-service-request/member-service-request.component';
+import { AgentDashboardComponent } from './components/agent/components/agent-dashboard/agent-dashboard.component';
+import { AgentPoliciesComponent } from './components/agent/components/agent-policies/agent-policies.component';
+import { AgentQuotesComponent } from './components/agent/components/agent-quotes/agent-quotes.component';
+import { AgentClaimsComponent } from './components/agent/components/agent-claims/agent-claims.component';
 
 
 @NgModule({
@@ -53,6 +57,10 @@ import { MemberServiceRequestComponent } from './components/member-service-reque
     ServiceRequestLogsComponent,
     ServiceRequestComponent,
     MemberServiceRequestComponent,
+    AgentDashboardComponent,
+    AgentPoliciesComponent,
+    AgentQuotesComponent,
+    AgentClaimsComponent,
   ],
   imports: [
     CommonModule,
