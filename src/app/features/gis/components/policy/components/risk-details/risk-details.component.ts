@@ -89,6 +89,7 @@ export class RiskDetailsComponent {
   clientList: any;
 
   showMotorSubclassFields: boolean = false;
+  showNonMotorSubclassFields: boolean =false;
   motorClassAllowed: any;
 
   vehicleMakeList: vehicleMake[];
@@ -882,6 +883,9 @@ export class RiskDetailsComponent {
     if (this.motorClassAllowed === 'Y') {
       this.showMotorSubclassFields = true;
       this.motorProduct = true;
+    }else if(this.motorClassAllowed=="N"){
+      this.showNonMotorSubclassFields = true;
+      this.motorProduct = false;
     }
   }
   getVehicleMake() {
