@@ -27,4 +27,6 @@ export enum  SESSION_KEY {
 
   // Claims
   CLAIM_NO ='CLAIM_NO',
+  CLAIMS_DETAILS = 'CLAIMS_DETAILS'
+
 }

@@ -394,7 +394,7 @@
                           </ng-container>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12">
-                          {{ document["description"]?.replaceAll("_", " ") | titlecase }}
+                          {{ document["desc"]?.replaceAll("_", " ") | titlecase }}
                         </div>
                         <div style="cursor: pointer;font-size: 12px;" (click)=" downloadBase64File(document['backend_file_url'])" class="text-success col-lg-2  col-md-6 col-sm-12 fw-medium" *ngIf="document?.is_uploaded; else nothing">
                           Document Uploaded
@@ -409,7 +409,7 @@
                               (onSelect)="uploadFile($event, document['description'] )"
                               [auto]="true"
                               chooseLabel="choose file"
-                              [showUploadButton]=true                            
+                              [showUploadButton]=true
                               [showCancelButton]=true
                               [mode]="'basic'"
                               (onError)="onError()"
@@ -417,7 +417,7 @@
                             ></p-fileUpload>
                           </div>
                         </ng-template>
-                        
+
                         <div  *ngIf="document?.is_uploaded" style="cursor: pointer;" class="mt-1 col-lg-1 col-md-12 col-sm-12"
                           (click)="deleteDocumentFileById(document, i)"
                         >
