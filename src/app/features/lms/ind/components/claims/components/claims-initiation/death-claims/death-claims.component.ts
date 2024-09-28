@@ -44,7 +44,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
   causationCauses$: Observable<CausationCausesDTO[]> = of([]);
   claimOnLive$: Observable<ClaimClientsDTO[]> = of([]);
-  claimResponse: ClaimDTO | null = null;
+  claimResponse: ClaimDTO | null = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIMS_DETAILS));
   claimNo: string
   claimType: string;
   private readonly destroy$ = new Subject<void>();
@@ -62,19 +62,15 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
 
   ngOnInit(): void {
-    this.claimNo = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
+    this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo') ||
+      StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
     this.createForm()
     this.setupCausationTypeListener()
     this.setupCausationCauseListener()
     if(this.claimNo) {
-      console.log('claimmmm', this.claimNo)
       this.getClaimDetails(this.claimNo)
     }
-
-    // StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.QUOTE_DETAILS) )
   }
-
-
   createForm() {
     this.claimInitForm = this.fb.group({
       claimOnLive: ['', [Validators.required]],
@@ -183,6 +179,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
   patchFormWithClaimDetails(data: ClaimDTO): void {
     this.claimResponse = data;
+    console.log('claimResponse', data)
     this.claimInitForm.patchValue({
       claimOnLive: data?.claim_life,
       causationType: data?.clm_caus_type,
@@ -217,6 +214,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
       .subscribe((data: ClaimDTO) => {
         // if (data) {
           this.claimResponse = data
+          this.session_storage.set(SESSION_KEY.CLAIMS_DETAILS, data)
           this.claimNo = data?.clm_no
           this.patchFormWithClaimDetails(data);
           this.cdr.detectChanges()
