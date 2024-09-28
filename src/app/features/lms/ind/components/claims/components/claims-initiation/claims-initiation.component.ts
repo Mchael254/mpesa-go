@@ -182,11 +182,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     // }
 
     // Navigate to the desired route with the constructed queryParams
-    // this.router.navigate(['/home/lms/ind/claims'], { queryParams }).then(() => {
-    //   this.claimType = claimType?.toLowerCase();
-    // });
-
-
+    this.router.navigate(['/home/lms/ind/claims'], { queryParams }).then(() => {
+      this.claimType = claimType?.toLowerCase();
+    });
 }
 
 // use to handle policy search filtered value from claims option coponent event
