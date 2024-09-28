@@ -44,7 +44,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
   causationCauses$: Observable<CausationCausesDTO[]> = of([]);
   claimOnLive$: Observable<ClaimClientsDTO[]> = of([]);
-  claimResponse: ClaimDTO | null = null;
+  claimResponse: ClaimDTO | null = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIMS_DETAILS));
   claimNo: string
   claimType: string;
   private readonly destroy$ = new Subject<void>();
@@ -63,12 +63,11 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
     this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo') ||
-      StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );;
+      StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
     this.createForm()
     this.setupCausationTypeListener()
     this.setupCausationCauseListener()
     if(this.claimNo) {
-      console.log('claimmmm', this.claimNo)
       this.getClaimDetails(this.claimNo)
     }
   }
@@ -137,7 +136,6 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
     ).subscribe({
       next: (response: ClaimDTO) => {
         this.claimResponse = response;
-        console.log('this.claimResponse ', this.claimResponse )
         this.getClaimDetails(response?.clm_no)
         this.storeTempClaimNo(response?.clm_no)
         this.claimNo = response?.clm_no
@@ -217,7 +215,6 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
         // if (data) {
           this.claimResponse = data
           this.session_storage.set(SESSION_KEY.CLAIMS_DETAILS, data)
-          console.log('this.claimResponse ', this.claimResponse )
           this.claimNo = data?.clm_no
           this.patchFormWithClaimDetails(data);
           this.cdr.detectChanges()
