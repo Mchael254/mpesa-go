@@ -49,7 +49,7 @@ label {
 }
 
 .fixed-width-label {
-  width: 150px;
+  width: 180px;
   margin-right: 40px;
 }
 
@@ -59,7 +59,12 @@ label {
   padding: 2px 7px;
 }
 
+.custom-items-center {
+  display: flex;
+  align-items: center !important;
+  justify-items: center;
 
+}
 @media (max-width: 1000px) {
   .label {
     overflow-x: auto;

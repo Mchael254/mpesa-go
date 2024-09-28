@@ -17,8 +17,9 @@ export class DmsService {
     return this.api.GET(`${this.DMS_BASE_URL}?page=0&size=5&owner_type=CLIENT&owner_code=${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
-  saveClientDocument(code: any, file_name, formData: FormData){
-    return this.api.FILEUPLOAD(`${this.DMS_BASE_URL}/upload?type=${file_name}&owner_type=${'CLIENT'}&owner_code=${code}&module_upload_type=${'QUOTATION'}`,formData,  API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+  saveClientDocument(code: any, file_name: string, formData: any, uploadType: string = 'QUOTATION', ownerType='CLIENT') {
+    const url = `${this.DMS_BASE_URL}/upload?type=${file_name}&owner_type=${ownerType}&owner_code=${code}&module_upload_type=${uploadType}`;
+    return this.api.FILEUPLOAD(url, formData as FormData, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
   downloadFileById(url: string) {

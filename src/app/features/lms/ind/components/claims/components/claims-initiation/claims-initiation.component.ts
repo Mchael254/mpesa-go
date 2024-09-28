@@ -73,11 +73,12 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.createForm();
     this.claimType = this.activatedRoute.snapshot.queryParamMap.get('claimType');
-    // this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo');
-    this.claimNo = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
-    console.log('textClaimNo', this.claimNo)
+    this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo') ||
+      StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
+
     // this.getClaimModules();
     this.getCausationTypes();
+
     this.claimInitForm.get('claimType').valueChanges
       .pipe(
         untilDestroyed(this)
@@ -86,9 +87,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
     this.navigateToClaimsIntiation(this.claimType);
-    // if(this.claimNo) {
-    //   this.getClaimDetails(this.claimNo)
-    // }
+    if(this.claimNo) {
+      this.getClaimDetails(this.claimNo)
+    }
     this.patchFormWithQueryParam();
   }
 
@@ -181,9 +182,9 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     // }
 
     // Navigate to the desired route with the constructed queryParams
-    this.router.navigate(['/home/lms/ind/claims'], { queryParams }).then(() => {
-      this.claimType = claimType?.toLowerCase();
-    });
+    // this.router.navigate(['/home/lms/ind/claims'], { queryParams }).then(() => {
+    //   this.claimType = claimType?.toLowerCase();
+    // });
 
 
 }

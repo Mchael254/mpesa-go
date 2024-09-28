@@ -24,8 +24,8 @@
         <p-dropdown
           [style]="{width: '100%', padding: '0px'}"
           formControlName="causationCause"
-          [options]="(causationCauses$ | async) | sort : 'asc' : 'caus_desc'"
-          optionLabel="caus_desc"
+          [options]="(causationCauses$ | async) | sort : 'asc' : 'ddc_desc'"
+          optionLabel="ddc_desc"
           placeholder="{{ 'lms.ind.select_an_option' | translate }}">
         </p-dropdown>
       </div>
@@ -41,7 +41,11 @@
           [options]="(claimOnLive$ | async) | sort : 'asc' : 'co_desc'"
           optionLabel="co_desc"
           placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+            <ng-template let-item pTemplate="item">
+              <div>{{ item.pod_surname }} {{ item.pod_other_names }}</div>
+            </ng-template>
         </p-dropdown>
+
       </div>
     </div>
 
