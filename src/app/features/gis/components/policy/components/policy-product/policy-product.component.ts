@@ -130,6 +130,9 @@ export class PolicyProductComponent {
   @ViewChild('closebuttonJointAccount') closebuttonJointAccount;
   page: any;
   policyDetailsData: any;
+  currencyFixedRate: string;
+  showExchangeRateField: boolean = false;
+
 
 
   constructor(
@@ -1028,6 +1031,11 @@ export class PolicyProductComponent {
       this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
       this.policyProductForm.get('agentCode').setValue(this.selectedAgentCode);
   }
+  log.debug("Currency fixed rate select",this.currencyFixedRate)
+  // if(this.currencyFixedRate === "Y"){
+  //   this.policyProductForm.get('currencyRate').setValue(this.selectedAgentCode);
+
+  // }
   
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
@@ -1438,6 +1446,17 @@ export class PolicyProductComponent {
     })
   
   }
-  
+  onCurrencyFixedRateChange(value: string): void {
+    log.info('SELECTED VALUE:', value)
+    this.currencyFixedRate = value;
+    log.debug("Currency Fixed Rate Select", this.currencyFixedRate)
+    this.showExchangeRateField = value === 'Y';
+
+    if (this.showExchangeRateField) {
+      this.policyProductForm.get('currencyRate').reset();
+      
+    }
+
+  }
   }
 

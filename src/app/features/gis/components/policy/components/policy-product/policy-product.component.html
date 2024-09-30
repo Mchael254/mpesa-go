@@ -605,12 +605,30 @@
                             <label for="branch" class=" product-label" id="branch">{{'gis.policy.currency_fixed_rate' |
                                 translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="isExchangeRateFixed">
+                                formControlName="isExchangeRateFixed" #currencyFixedRateType
+                                (change)="onCurrencyFixedRateChange(currencyFixedRateType.value)">
                                 <option value="Y">{{'gis.policy.yes' | translate}}</option>
                                 <option value="N">{{'gis.policy.no' | translate}}</option>
 
                             </select>
                         </div>
+                    </div>
+                      <!-- Additional fields for Currency Fixed Rate  -->
+                      <div *ngIf="showExchangeRateField">
+                        <div class="row mb-1">
+                            
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label class="product-label" for="exchange_rate">
+                                    {{'gis.policy.exchange_rate' | translate}}
+                                </label>
+                                <input class="form-control form-control-sm mb-1" type="text" value=""
+                                    id="exchange_rate" formControlName="currencyRate">
+
+                            </div>
+                           
+
+                        </div>
+                       
                     </div>
                     <div class="row mb-4">
                         <div class=" mb-1 col-sm-4 col-12">
