@@ -1136,7 +1136,8 @@
       "check_off_installments": "Check-off installments",
       "transaction_type": "Transaction Type",
       "client_information": "Client information",
-      "commission": "Commission"
+      "commission": "Commission",
+      "exchange_rate": "Exchange rate"
 
     },
     "claims": {
