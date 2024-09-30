@@ -1,0 +1,130 @@
+<div class="container">
+  
+    <div class="form-group mt-4">
+      <label for="applicationLevel">Application Level</label>
+      <select class="form-select" formControlName="applicationLevel" required>
+        <option *ngFor="let level of applicationLevels" [value]="level">{{ level }}</option>
+      </select>
+      <div *ngIf="memoForm.get('applicationLevel')?.touched && memoForm.get('applicationLevel')?.hasError('required')">
+        <small class="text-danger">Application Level is required.</small>
+      </div>
+    </div>
+  
+    <div class="form-group mb-4">
+      <label for="claimNumber">Claim Number</label>
+      <input type="text" class="form-control" formControlName="claimNumber" [placeholder]="'Enter Claim Number'" required>
+      <div *ngIf="memoForm.get('claimNumber')?.touched && memoForm.get('claimNumber')?.hasError('required')">
+        <small class="text-danger">Claim Number is required.</small>
+      </div>
+    </div>
+  
+    <button class="btn btn-primary mb-2" (click)="createMemo()">Create New Letter/Memo</button>
+  
+    <!-- Bootstrap Modal for Memo Creation -->
+    <div class="modal fade" id="memoModal" tabindex="-1" aria-labelledby="memoModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="memoModalLabel">{{ memo ? 'Edit Memo' : 'Create Memo' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="memoForm">
+              <div class="form-group">
+                <label for="memoType">Memo Type</label>
+                <select class="form-select" formControlName="memoType" required>
+                  <option *ngFor="let memoType of memoTypes" [value]="memoType.name">{{ memoType.name }}</option>
+                </select>
+                <div *ngIf="memoForm.get('memoType')?.touched && memoForm.get('memoType')?.hasError('required')">
+                  <small class="text-danger">Memo Type is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="addressee">Addressee</label>
+                <div class="form-check" *ngFor="let addressee of addressees; let i = index">
+                  <input class="form-check-input" type="radio" [value]="addressee.name" formControlName="addressee"
+                         [checked]="i === 0">
+                  <label class="form-check-label" for="addressee{{ i }}">{{ addressee.name }}</label>
+                </div>
+                <div *ngIf="memoForm.get('addressee')?.touched && memoForm.get('addressee')?.hasError('required')">
+                  <small class="text-danger">Addressee is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="branch">Branch</label>
+                <select class="form-select" formControlName="branch" required>
+                  <option *ngFor="let branch of branches" [value]="branch">{{ branch }}</option>
+                </select>
+                <div *ngIf="memoForm.get('branch')?.touched && memoForm.get('branch')?.hasError('required')">
+                  <small class="text-danger">Branch is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="salutation">Salutation</label>
+                <input type="text" class="form-control" formControlName="salutation" [placeholder]="'Enter Salutation'">
+              </div>
+  
+              <div class="form-group">
+                <label for="attentionText">Attention Text</label>
+                <input type="text" class="form-control" formControlName="attentionText" [placeholder]="'Enter Attention Text'">
+              </div>
+  
+              <div class="form-group">
+                <label for="memoHeader">Memorandum Header</label>
+                <textarea class="form-control" formControlName="memoHeader" [placeholder]="'Enter Memo Header'"></textarea>
+                <button class="btn btn-secondary mt-2" (click)="validateMemoHeader()">Process</button>
+                <div *ngIf="errors.length > 0">
+                  <ul class="list-group mt-2">
+                    <li class="list-group-item list-group-item-danger" *ngFor="let error of errors">{{ error }}</li>
+                  </ul>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="memoDetails">Memorandum Details</label>
+                <textarea class="form-control" formControlName="memoDetails" [placeholder]="'Enter Memo Details'"></textarea>
+                <button class="btn btn-secondary mt-2" (click)="validateMemoDetails()">Process</button>
+                <div *ngIf="errors.length > 0">
+                  <ul class="list-group mt-2">
+                    <li class="list-group-item list-group-item-danger" *ngFor="let error of errors">{{ error }}</li>
+                  </ul>
+                </div>
+              </div>
+  
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveMemo()"  data-bs-dismiss="modal">Save Memo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Bootstrap Modal for Merge Fields -->
+    <div class="modal fade" id="mergeFieldModal" tabindex="-1" aria-labelledby="mergeFieldModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="mergeFieldModalLabel">Merge Fields</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group" *ngFor="let mergeField of mergeFieldKeys">
+              <label for="{{ mergeField }}">{{ mergeField }}</label>
+              <input type="text" class="form-control" [formControlName]="mergeField"
+                     [placeholder]="'Enter value for ' + mergeField">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveMergeFieldValues()">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
