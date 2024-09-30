@@ -1,0 +1,27 @@
+<div class="container mt-4">
+    <h2 class="mb-4">Claim Opening Screen</h2>
+    <div class="card">
+        <div class="card-body">
+            <form [formGroup]="claimForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                  <label for="product" class="form-label">Product</label>
+                  <select formControlName="product" id="product" class="form-select">
+                    <option value="">Select a product</option>
+                    <option value="product1">Product 1</option>
+                    <option value="product2">Product 2</option>
+                  </select>
+                </div>
+                <!-- Add other form fields here -->
+                <button
+                  type="submit"
+                  [disabled]="claimForm.invalid"
+                  class="btn btn-primary w-100"
+                >
+                  Capture Claim
+                </button>
+              </form>
+        </div>
+      
+    </div>
+
+  </div>

@@ -1,0 +1,58 @@
+/* Style for the dropdown panel */
+::ng-deep .p-dropdown-panel {
+    border: 0px solid #ced4da;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ::ng-deep .p-dropdown-item {
+    padding: 8px 12px;
+  
+  }
+  ::ng-deep .p-dropdown-items{
+    padding-left: 0px;
+  }
+  
+  ::ng-deep .p-dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+  ::ng-deep .p-dropdown-filter{
+    height: 34px;
+  }
+  /* Style the p-dropdown to match Bootstrap input size */
+  ::ng-deep .p-dropdown {
+    width: 100%;
+    height: 38px; /* Match Bootstrap input height */
+    padding-bottom: 2px;
+    border: 1px solid #ced4da; /* Match Bootstrap input border */
+    border-radius: 4px; /* Match Bootstrap input border-radius */
+    font-size: 1rem; /* Match Bootstrap input font size */
+    color: #495057; /* Match Bootstrap input color */
+  }
+  #icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
+.subheading {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    color: #00529B;
+
+}
+.deleteMessage {
+    color: #000;
+    font-size: 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
+}

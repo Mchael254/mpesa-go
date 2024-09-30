@@ -1,0 +1,203 @@
+<div class="container mb-4">
+
+  
+    <!-- <button class="btn btn-primary mb-2" (click)="addClaimant()">Add Claimant</button> -->
+    <div class="row mb-3">
+      <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <div>
+          <p class="subheading">{{'gis.claims.opening.add_peril' | translate }}</p>
+        </div>
+        <div>
+          <button class="btn btn-primary mr-2" id="icon" type="button" (click)="addClaimant()" data-bs-toggle="modal" data-bs-target="#addPerilModal"><i class="fa-solid fa-plus"></i></button>
+          <button class="btn btn-primary mr-2" id="icon" type="button"  data-bs-toggle="modal" data-bs-target="#editPerilModal"><i class="fa-solid fa-pencil"></i> </button>
+          <button class="btn btn-primary mr-2" id="icon" type="button"  data-bs-toggle="modal" data-bs-target="#deletePerilModal"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap Modal for Claimant Details -->
+    <div class="modal fade" id="claimantModal" tabindex="-1" aria-labelledby="claimantModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="claimantModalLabel">{{ selectedClaimant ? 'Edit Claimant' : 'Add Claimant' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="claimantForm">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" formControlName="name" [placeholder]="'Enter Name'" required>
+                <div *ngIf="claimantForm.get('name')?.touched && claimantForm.get('name')?.hasError('required')">
+                  <small class="text-danger">Name is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="idNumber">ID Number</label>
+                <input type="text" class="form-control" formControlName="idNumber" [placeholder]="'Enter ID Number'" required>
+                <div *ngIf="claimantForm.get('idNumber')?.touched && claimantForm.get('idNumber')?.hasError('required')">
+                  <small class="text-danger">ID Number is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" formControlName="address" [placeholder]="'Enter Address'" required>
+                <div *ngIf="claimantForm.get('address')?.touched && claimantForm.get('address')?.hasError('required')">
+                  <small class="text-danger">Address is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" class="form-control" formControlName="phone" [placeholder]="'Enter Phone Number'" required>
+                <div *ngIf="claimantForm.get('phone')?.touched && claimantForm.get('phone')?.hasError('required')">
+                  <small class="text-danger">Phone is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" formControlName="email" [placeholder]="'Enter Email'" required>
+                <div *ngIf="claimantForm.get('email')?.touched && claimantForm.get('email')?.hasError('required')">
+                  <small class="text-danger">Email is required.</small>
+                </div>
+                <div *ngIf="claimantForm.get('email')?.touched && claimantForm.get('email')?.hasError('email')">
+                  <small class="text-danger">Invalid email format.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="communicationChannels">Communication Channels</label>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.phone" [placeholder]="'Phone'">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.email" [placeholder]="'Email'">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.sms" [placeholder]="'SMS'">
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
+                <label class="form-check-label" for="liabilityAdmission">Liability Admission</label>
+              </div>
+  
+              <div class="form-group" *ngIf="claimantForm.get('liabilityAdmission')?.value">
+                <label for="liabilityAdmissionDate">Liability Admission Date</label>
+                <input type="date" class="form-control" formControlName="liabilityAdmissionDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="conditional">Conditional</label>
+                <select class="form-select" formControlName="conditional">
+                  <option value="">Select an Option</option>
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                </select>
+              </div>
+  
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveClaimant()" data-bs-dismiss="modal">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Bootstrap Modal for Communication Details -->
+    <div class="modal fade" id="communicationModal" tabindex="-1" aria-labelledby="communicationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="communicationModalLabel">Edit Communication</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="claimantForm">
+              <div class="form-group">
+                <label for="communicationChannels">Communication Channels</label>
+                <div class="row">
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.phone" [placeholder]="'Phone'">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.email" [placeholder]="'Email'">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" formControlName="communicationChannels.sms" [placeholder]="'SMS'">
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
+                <label class="form-check-label" for="liabilityAdmission">Liability Admission</label>
+              </div>
+  
+              <div class="form-group" *ngIf="claimantForm.get('liabilityAdmission')?.value">
+                <label for="liabilityAdmissionDate">Liability Admission Date</label>
+                <input type="date" class="form-control" formControlName="liabilityAdmissionDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="conditional">Conditional</label>
+                <select class="form-select" formControlName="conditional">
+                  <option value="">Select an Option</option>
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                </select>
+              </div>
+  
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveCommunicationDetails(selectedClaimant!)" data-bs-dismiss="modal">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <p-table [value]="claimants" [rows]="5" [resizableColumns]="true" class="mb-4">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>ID Number</th>
+          <th>Address</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Communication</th>
+          <th>Liability Admission</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-claimant>
+        <tr>
+          <td>{{ claimant.name }}</td>
+          <td>{{ claimant.idNumber }}</td>
+          <td>{{ claimant.address }}</td>
+          <td>{{ claimant.phone }}</td>
+          <td>{{ claimant.email }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#communicationModal"
+                    (click)="showCommunicationModal(claimant)">Edit Communication</button>
+          </td>
+          <td>
+            <span *ngIf="claimant.liabilityAdmission">Yes</span>
+            <span *ngIf="!claimant.liabilityAdmission">No</span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-secondary" (click)="editClaimant(claimant)">Edit</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteClaimant(claimant)">Delete</button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>

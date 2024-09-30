@@ -1,0 +1,440 @@
+<div class="card mx-4 mt-4 mb-4">
+  <div class="card-body">
+    <div class="container">
+      <h5>{{'gis.claims.opening.claim_opening' | translate }}</h5>
+      <form [formGroup]="claimsOpeningForm" class="mt-3">
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="product">{{'gis.claims.opening.product' | translate }}</label>
+              <br>
+              <p-dropdown
+              [options]="productList" 
+              formControlName="product" 
+              optionLabel="description"
+              [filter]="true"
+              (onChange)="onProductSelected($event.value)"
+              filterBy="description"
+             >
+              </p-dropdown>    
+          </div>
+          <div class="col-md-4">          
+              <label for="policy">{{'gis.claims.opening.policy' | translate }}</label>
+              <br>
+              <p-dropdown 
+              [options]="availablePolicies" 
+              formControlName="policy" 
+              optionLabel="policyNo"
+              [filter]="true"
+              filterBy="policyNo"
+              (click)="checkAvailablePolicies()"
+              (onChange)="onPolicySelected($event.value)"
+             >
+              </p-dropdown>    
+          </div>
+          <div class="col-md-4">
+              <label for="risk">{{'gis.claims.opening.risk' | translate }}</label>
+              <br>
+              <p-dropdown 
+              [options]="risks" 
+              formControlName="risk" 
+              optionLabel="propertyDescription"
+            >
+              </p-dropdown>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="lossDate">{{'gis.claims.opening.loss_date' | translate }}</label>
+              <br>
+              <input type="date" class="form-control" formControlName="lossDate">
+          </div>
+          <div class="col-md-4">
+              <label for="lossTime">{{'gis.claims.opening.loss_time' | translate }}</label>
+              <br>
+              <input type="time" class="form-control" formControlName="lossTime">
+          </div>
+          <div class="col-md-4">
+              <label for="notificationDate">{{'gis.claims.opening.notification_date' | translate }}</label>
+              <br>
+              <input type="date" class="form-control" formControlName="notificationDate" (change)="validateNotificationDate()"> 
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="causation">{{'gis.claims.opening.causation' | translate }}</label>
+              <br>
+              <p-dropdown [options]="causations" formControlName="causation" optionLabel="label">
+              </p-dropdown>  
+          </div>
+          <div class="col-md-4">
+              <label for="catastropheEvent">{{'gis.claims.opening.catastrophe_event' | translate }}</label>
+              <br>
+              <p-dropdown [options]="catastropheEvents" formControlName="catastropheEvent" optionLabel="label">
+              </p-dropdown>
+          </div>
+          <div class="col-md-4">
+            <label for="accidentLocation">{{'gis.claims.opening.accident_location' | translate }}</label>
+            <input type="text" class="form-control" formControlName="accidentLocation">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="partyToBlame">{{'gis.claims.opening.party_to_blame' | translate }}</label>
+              <br>
+              <p-dropdown [options]="partyToBlame" formControlName="partyToBlame" optionLabel="label">
+              </p-dropdown>
+          </div>
+          <div class="col-md-4">
+              <label for="averageBasicSalary">{{'gis.claims.opening.average_basic_salary' | translate }}</label>
+              <input type="number" class="form-control" formControlName="averageBasicSalary">
+          </div>
+          <div class="col-md-4">
+              <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
+              <input type="number" class="form-control" formControlName="averageEarnings">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
+              <input type="number" class="form-control" formControlName="averageEarnings">
+          </div>
+          <div class="col-md-4">
+              <label for="offDutyDateFrom">{{'gis.claims.opening.off_duty_date_from' | translate }}</label>
+              <p-calendar formControlName="offDutyDateFrom"></p-calendar>
+          </div>
+          <div class="col-md-4">
+              <label for="offDutyDateTo">{{'gis.claims.opening.off_duty_date_to' | translate }}</label>
+              <br>
+              <p-calendar formControlName="offDutyDateTo"></p-calendar>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="referenceNumber">{{'gis.claims.opening.reference_number' | translate }}</label>
+            <input type="text" class="form-control" formControlName="referenceNumber">
+          </div>
+          <div class="col-md-4">
+              <label for="nextReviewDate">{{'gis.claims.opening.next_review_date' | translate }}</label>
+              <br>
+              <p-calendar formControlName="nextReviewDate"></p-calendar>
+          </div>
+          <div class="col-md-4">
+              <label for="nextReviewUser">{{'gis.claims.opening.next_review_user' | translate }}</label>
+              <br>
+              <p-dropdown [options]="nextReviewUsers" formControlName="nextReviewUser" optionLabel="label">
+              </p-dropdown>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+              <label for="priorityLevel">{{'gis.claims.opening.priority_level' | translate }}</label>
+              <br>
+              <p-dropdown [options]="priorityLevels" formControlName="priorityLevel" optionLabel="label">
+              </p-dropdown>
+          </div>
+          <div class="col-md-4">
+              <label for="priorityLevel">{{'gis.claims.opening.priority_level' | translate }}</label>
+              <br>
+              <p-dropdown [options]="priorityLevels" formControlName="priorityLevel" optionLabel="label">
+              </p-dropdown>
+          </div>
+          <div class="col-md-4">
+            <label class="form-check-label" for="liabilityAdmission">{{'gis.claims.opening.liability_admission' | translate }}</label>
+            <br>
+            <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
+
+          
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="claimDescription">{{'gis.claims.opening.claim_description' | translate }}</label>
+            <textarea class="form-control" formControlName="claimDescription" rows="3"></textarea>
+
+             
+          </div>
+        </div>
+      </form>    
+      
+    </div>
+  </div>
+</div>
+
+
+<div class="card mx-4 mb-4">
+  <div class="card-body">
+
+        <!-- <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <button class="btn btn-primary mr-2" type="button" (click)="addPeril()" data-bs-toggle="modal" data-bs-target="#addPerilModal"><i class="pi pi-plus"></i> {{'gis.claims.opening.add_peril' | translate }}</button>
+            </div>
+          </div>
+        </div>
+         -->
+         <div class="row mb-3">
+          <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <div>
+              <p class="subheading">{{'gis.claims.opening.add_peril' | translate }}</p>
+            </div>
+            <div>
+              <button class="btn btn-primary mr-2" id="icon" type="button" (click)="addPeril()" data-bs-toggle="modal" data-bs-target="#addPerilModal"><i class="fa-solid fa-plus"></i></button>
+              <button class="btn btn-primary mr-2" id="icon" type="button" (click)="openEditPeril()" data-bs-toggle="modal" data-bs-target="#editPerilModal"><i class="fa-solid fa-pencil"></i> </button>
+              <button class="btn btn-primary mr-2" id="icon" type="button"  data-bs-toggle="modal" data-bs-target="#deletePerilModal"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </div>
+        </div>
+        <!-- Add peril modal -->
+
+ <!-- Add Peril Modal -->
+ <div class="modal fade" id="addPerilModal" tabindex="-1" aria-labelledby="addPerilModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container">
+          <h3>Add Peril</h3>
+        
+          <form [formGroup]="addPerilForm" (ngSubmit)="onSubmit()">
+            <div class="form-group mb-4">
+              <label for="selfAsClaimant" class="me-3">Self as Claimant</label>
+              <input type="checkbox" class="form-check-input" formControlName="selfAsClaimant">
+            </div>
+        
+            <div class="row mb-4">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="claimant">Claimant</label>
+                  <p-dropdown [options]="claimants" [(ngModel)]="addPerilForm.value.claimant" formControlName="claimant" [placeholder]="'Select Claimant'" [filter]="true"></p-dropdown>
+                  <div *ngIf="addPerilForm.get('claimant')?.touched && addPerilForm.get('claimant')?.hasError('required')">
+                    <small class="text-danger">Claimant is required.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="peril">Peril</label>
+                  <p-dropdown [options]="perils" [(ngModel)]="addPerilForm.value.peril" formControlName="peril"  [filter]="true"></p-dropdown>
+                  <div *ngIf="addPerilForm.get('peril')?.touched && addPerilForm.get('peril')?.hasError('required')">
+                    <small class="text-danger">Peril is required.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <div class="row mb-4">
+              
+             <div class="col-6">
+              <div class="form-group">
+                <label for="claimEstimate">Claim Estimate</label>
+                <input type="number" class="form-control" formControlName="claimEstimate" required>
+                <div *ngIf="addPerilForm.get('claimEstimate')?.touched && addPerilForm.get('claimEstimate')?.hasError('required')">
+                  <small class="text-danger">Claim Estimate is required.</small>
+                </div>
+              </div>
+             </div>
+              <div class="col-6">
+               
+                  <label for="liabilityAdmission" class="mb-2">Liability Admission</label>
+                  <br>
+                  <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
+                  <!-- <p-checkbox formControlName="liabilityAdmission"></p-checkbox> -->
+             
+              
+              </div>
+            </div>
+                   
+            <div class="row mb-4">
+              <p>Preferred communication</p>
+              <div class="col-4">
+                <div class="form-group">
+                  <label for="telNo">Tel No</label>
+                  <input type="text" class="form-control" formControlName="telNo">
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" formControlName="email"  required>
+                  <div *ngIf="addPerilForm.get('email')?.touched && addPerilForm.get('email')?.hasError('required')">
+                    <small class="text-danger">Email is required.</small>
+                  </div>
+                  <div *ngIf="addPerilForm.get('email')?.touched && addPerilForm.get('email')?.hasError('email')">
+                    <small class="text-danger">Invalid email format.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                  <label for="sms">SMS</label>
+                  <input type="text" class="form-control" formControlName="sms" >
+                </div> 
+              </div>
+            </div>
+        
+            <div class="row mb-4">
+              <p>Preferred Payment mode</p>
+              <div class="col-4">
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="mPay" formControlName="mPay">
+                    <label class="form-check-label" for="mPay">M Pay</label>
+                  </div>
+                  <input type="text" class="form-control mt-2" formControlName="mPayDetails" *ngIf="addPerilForm.get('mPay')?.value">
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="emt" formControlName="emt">
+                    <label class="form-check-label" for="emt">EMT</label>
+                  </div>
+                  <input type="text" class="form-control mt-2" formControlName="emtDetails" *ngIf="addPerilForm.get('emt')?.value">
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cheque" formControlName="cheque">
+                    <label class="form-check-label" for="cheque">Cheque</label>
+                  </div>
+                  <input type="text" class="form-control mt-2" formControlName="chequeDetails" *ngIf="addPerilForm.get('cheque')?.value">
+                </div>
+              </div>
+             
+              
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary">Cancel</button>
+          </form>
+        </div>
+      </div>
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" id="addPerilModalLabel">{{'gis.claims.opening.peril_details' | translate}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="perilForm">
+          <div class="form-group mb-4">
+            <label for="peril">{{'gis.claims.opening.peril' | translate}}</label>
+            <p-dropdown 
+            [options]="perilsList" 
+            [(ngModel)]="selectedPeril" 
+            formControlName="peril" 
+            (onChange)="onSelectPeril($event.value)"
+            optionLabel="label" 
+            placeholder="{{'gis.claims.opening.select_peril' | translate}}"></p-dropdown>
+          </div>
+          <div class="form-group">
+            <label for="claimEstimate">{{'gis.claims.opening.claim_estimate' | translate}}</label>
+            <input type="number" class="form-control" formControlName="claimEstimate" placeholder="{{'gis.claims.opening.enter_claim_estimate' | translate}}">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{'gis.claims.opening.cancel' | translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="savePeril()" data-bs-dismiss="modal">{{'gis.claims.opening.save' | translate}}</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+  <!-- Edit peril modal -->
+  <div class="modal fade" id="editPerilModal" tabindex="-1" aria-labelledby="editPerilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPerilModalLabel">{{'gis.claims.opening.peril_details' | translate}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="perilForm">
+            <div class="form-group mb-4">
+              <label for="peril">{{'gis.claims.opening.peril' | translate}}</label>
+              <p-dropdown [options]="perilsList" [(ngModel)]="selectedPeril" formControlName="peril" optionLabel="label" [placeholder]="perilDescription" ></p-dropdown>
+            </div>
+            <div class="form-group">
+              <label for="claimEstimate">{{'gis.claims.opening.claim_estimate' | translate}}</label>
+              <input type="number" class="form-control" formControlName="claimEstimate" placeholder="{{'gis.claims.opening.enter_claim_estimate' | translate}}">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{'gis.claims.opening.cancel' | translate}}</button>
+          <button type="button" class="btn btn-primary" (click)="savePeril()" data-bs-dismiss="">{{'gis.claims.opening.save' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+           <!-- Delete Peril  Modal -->
+           <div class="modal fade" id="deletePerilModal" tabindex="-1" role="dialog"
+           aria-labelledby="deletePeril" aria-hidden="true">
+           <div class="modal-dialog modal-dialog-centered" role="document">
+               <div class="modal-content" id="deletePeril">
+                   <div class="modal-body ">
+                       <p class="deleteMessage mt-4 mb-4">
+                           {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+                       <div class="d-flex justify-content-center mb-3">
+                           <button type="button" class="btn btn-primary px-5" id="delete"
+                               data-bs-dismiss="modal"
+                               (click)="deleteSelectedPeril()">{{'gis.policy.yes_delete' |
+                               translate}} </button>
+                       </div>
+                       <div class="d-flex justify-content-center mb-2">
+                           <button type="button" class="btn btn-outline-primary px-5"
+                               data-bs-dismiss="modal">{{'gis.policy.no_im_not' |
+                               translate}}</button>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+
+ 
+        <div class="mt-3">
+          <p-table 
+          [value]="perilArray" 
+          [(selection)]="selectedPeril"
+          [rows]="5" 
+          [resizableColumns]="true"
+          selectionMode="single"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'gis.claims.opening.peril' | translate }}</th>
+                <th>{{'gis.claims.opening.claim_estimate' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-peril >
+              <tr [pSelectableRow]="peril">
+                <td>{{ peril.label}}</td>
+                <td>{{ peril.claimEstimate }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+       
+   
+  </div>
+</div>
+<div class="row me-3 mb-4">
+  <div class="col-md-12 d-flex justify-content-end"> 
+    <button class="btn btn-primary" type="button"  data-bs-toggle="modal" data-bs-target="#confirmationModal" >{{'gis.claims.opening.capture_claim' | translate }}</button>
+  </div>
+
+    <!-- Bootstrap Modal for Confirmation -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          
+          <div class="modal-body">
+            <p>Are you sure you want to continue?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            <button type="button" class="btn btn-primary" (click)="continueClaimOpening()">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
