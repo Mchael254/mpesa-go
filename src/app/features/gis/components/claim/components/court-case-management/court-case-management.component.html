@@ -1,0 +1,107 @@
+<div class="container">  
+    <button class="btn btn-primary mb-2" (click)="addCourtCase()">
+      <i class="pi pi-plus"></i> Add Court Case
+    </button>
+  
+    <!-- Bootstrap Modal for Court Case Details -->
+    <div class="modal fade" id="courtCaseModal" tabindex="-1" aria-labelledby="courtCaseModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="courtCaseModalLabel">{{ selectedCourtCase ? 'Edit Court Case' : 'Add Court Case' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="courtCaseForm">
+              <div class="form-group">
+                <label for="caseNumber">Case Number</label>
+                <input type="text" class="form-control" formControlName="caseNumber" [placeholder]="'Enter Case Number'" required>
+                <div *ngIf="courtCaseForm.get('caseNumber')?.touched && courtCaseForm.get('caseNumber')?.hasError('required')">
+                  <small class="text-danger">Case Number is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="courtName">Court Name</label>
+                <input type="text" class="form-control" formControlName="courtName" [placeholder]="'Enter Court Name'" required>
+                <div *ngIf="courtCaseForm.get('courtName')?.touched && courtCaseForm.get('courtName')?.hasError('required')">
+                  <small class="text-danger">Court Name is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="caseType">Case Type</label>
+                <input type="text" class="form-control" formControlName="caseType" [placeholder]="'Enter Case Type'" required>
+                <div *ngIf="courtCaseForm.get('caseType')?.touched && courtCaseForm.get('caseType')?.hasError('required')">
+                  <small class="text-danger">Case Type is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="caseStatus">Case Status</label>
+                <select class="form-select" formControlName="caseStatus" required>
+                  <option value="Pending">Pending</option>
+                  <option value="Active">Active</option>
+                  <option value="Closed">Closed</option>
+                </select>
+                <div *ngIf="courtCaseForm.get('caseStatus')?.touched && courtCaseForm.get('caseStatus')?.hasError('required')">
+                  <small class="text-danger">Case Status is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="caseDate">Case Date</label>
+                <input type="date" class="form-control" formControlName="caseDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="caseDescription">Case Description</label>
+                <textarea class="form-control" formControlName="caseDescription" [placeholder]="'Enter Case Description'" required>
+                </textarea>
+                <div *ngIf="courtCaseForm.get('caseDescription')?.touched && courtCaseForm.get('caseDescription')?.hasError('required')">
+                  <small class="text-danger">Case Description is required.</small>
+                </div>
+              </div>
+  
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveCourtCase()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <p-table [value]="courtCases" [rows]="5" [resizableColumns]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Case Number</th>
+          <th>Court Name</th>
+          <th>Case Type</th>
+          <th>Case Status</th>
+          <th>Case Date</th>
+          <th>Case Description</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-courtCase>
+        <tr>
+          <td>{{ courtCase.caseNumber }}</td>
+          <td>{{ courtCase.courtName }}</td>
+          <td>{{ courtCase.caseType }}</td>
+          <td>{{ courtCase.caseStatus }}</td>
+          <td>{{ courtCase.caseDate | date }}</td>
+          <td>{{ courtCase.caseDescription }}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" (click)="editCourtCase(courtCase)">
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteCourtCase(courtCase)">
+              <i class="pi pi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>

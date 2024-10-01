@@ -1,0 +1,114 @@
+<div class="container overflow-auto">
+    <div class="card mx-4 mt-4">
+        <div class="card-body">
+            <div class="container overflow-auto">
+              
+              
+                <ul class="nav nav-tabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="claimManagement-tab" data-bs-toggle="tab" data-bs-target="#claimManagement" type="button" role="tab" aria-controls="claimManagement" aria-selected="true">Claim Management</a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="documentManagement-tab" data-bs-toggle="tab" data-bs-target="#documentManagement" type="button" role="tab" aria-controls="documentManagement" aria-selected="false">Document Management</a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="transactionManagement-tab" data-bs-toggle="tab" data-bs-target="#transactionManagement" type="button" role="tab" aria-controls="transactionManagement" aria-selected="false">Transaction Management</a>
+                  </li>
+                </ul>
+              
+                <div class="tab-content mt-4 mb-4">
+                  <!-- Claim Management -->
+                  <div class="tab-pane fade show active" id="claimManagement" role="tabpanel" aria-labelledby="claimManagement-tab">
+                    <app-claimant-management class="mb-4"></app-claimant-management>
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="claimEnquiry-tab" data-bs-toggle="tab" data-bs-target="#claimEnquiry" type="button" role="tab" aria-controls="claimEnquiry" aria-selected="true">
+                            Claim Enquiry
+                        </a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="lettersAndMemos-tab" data-bs-toggle="tab" data-bs-target="#lettersAndMemos" type="button" role="tab" aria-controls="lettersAndMemos" aria-selected="false">Letters and Memos</a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="claimBookingDetails-tab" data-bs-toggle="tab" data-bs-target="#claimBookingDetails" type="button" role="tab" aria-controls="claimBookingDetails" aria-selected="false">Claim Booking Details</a>
+                      </li>
+                      <!-- <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="claimantDetails-tab" data-bs-toggle="tab" data-bs-target="#claimantDetails" type="button" role="tab" aria-controls="claimantDetails" aria-selected="false">Claimant Details</a>
+                      </li> -->
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="claimRevisions-tab" data-bs-toggle="tab" data-bs-target="#claimRevisions" type="button" role="tab" aria-controls="claimRevisions" aria-selected="false">Claim Revisions</a>
+                      </li>
+                    </ul>
+              
+                    <div class="tab-content">
+                      <div class="tab-pane fade show active" id="claimEnquiry" role="tabpanel" aria-labelledby="claimEnquiry-tab">
+                        <app-claim-enquiry></app-claim-enquiry>
+                      </div>
+                      <div class="tab-pane fade" id="lettersAndMemos" role="tabpanel" aria-labelledby="lettersAndMemos-tab">
+                       <app-letters-and-memos></app-letters-and-memos>
+                      </div>
+                      <div class="tab-pane fade" id="claimBookingDetails" role="tabpanel" aria-labelledby="claimBookingDetails-tab">
+                      <app-claim-booking></app-claim-booking>
+                      </div>
+                      <!-- <div class="tab-pane fade" id="claimantDetails" role="tabpanel" aria-labelledby="claimantDetails-tab">
+                       <app-claimant-details></app-claimant-details>
+                      </div> -->
+                      <div class="tab-pane fade" id="claimRevisions" role="tabpanel" aria-labelledby="claimRevisions-tab">
+                        <app-claim-revisions></app-claim-revisions>
+                      </div>
+                    </div>
+                  </div>
+              
+                  <!-- Document Management -->
+                  <div class="tab-pane fade" id="documentManagement" role="tabpanel" aria-labelledby="documentManagement-tab">
+                    <app-document-management></app-document-management>
+                    <ul class="nav nav-tabs" role="tablist">
+                      <!-- <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="requiredDocuments-tab" data-bs-toggle="tab" data-bs-target="#requiredDocuments" type="button" role="tab" aria-controls="requiredDocuments" aria-selected="true">Required Documents</a>
+                      </li> -->
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="courtDetails-tab" data-bs-toggle="tab" data-bs-target="#courtDetails" type="button" role="tab" aria-controls="courtDetails" aria-selected="false">Court Details</a>
+                      </li>
+                      <!-- ... more Document Management tabs -->
+                    </ul>
+              
+                    <div class="tab-content">
+                      <!-- <div class="tab-pane fade show active" id="requiredDocuments" role="tabpanel" aria-labelledby="requiredDocuments-tab">
+                        <app-required-documents></app-required-documents>
+                      </div> -->
+                      <div class="tab-pane fade" id="courtDetails" role="tabpanel" aria-labelledby="courtDetails-tab">
+                       <app-court-case-management></app-court-case-management>
+                      </div>
+                      <!-- ... more Document Management tab content -->
+                    </div>
+                  </div>
+              
+                  <!-- Transaction Management -->
+                  <div class="tab-pane fade" id="transactionManagement" role="tabpanel" aria-labelledby="transactionManagement-tab">
+                    <h3>Transaction Management</h3>
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="lossOpeningTransactionCompletion-tab" data-bs-toggle="tab" data-bs-target="#lossOpeningTransactionCompletion" type="button" role="tab" aria-controls="lossOpeningTransactionCompletion" aria-selected="true">Loss Opening Transaction Completion</a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="claimPayments-tab" data-bs-toggle="tab" data-bs-target="#claimPayments" type="button" role="tab" aria-controls="claimPayments" aria-selected="false">Claim Payments</a>
+                      </li>
+                      <!-- ... more Transaction Management tabs -->
+                    </ul>
+              
+                    <div class="tab-content">
+                      <div class="tab-pane fade show active" id="lossOpeningTransactionCompletion" role="tabpanel" aria-labelledby="lossOpeningTransactionCompletion-tab">
+                        <h3>Loss Opening Transaction Completion</h3>
+                      </div>
+                      <div class="tab-pane fade" id="claimPayments" role="tabpanel" aria-labelledby="claimPayments-tab">
+                        <h3>Claim Payments</h3>
+                      </div>
+                      <!-- ... more Transaction Management tab content -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+

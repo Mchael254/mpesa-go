@@ -1,0 +1,131 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{'gis.claims.claimant_details' | translate}}</h3>
+          <button type="button" class="btn btn-primary" (click)="toggleAddClaimantDialog()"><i class="pi pi-plus"></i> {{'gis.claims.add_claimant' | translate}}</button>
+        </div>
+        <div class="card-body">
+          <p-table [value]="claimants" [columns]="cols" dataKey="id" editMode="row" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[5,10,25]">
+            <ng-template pTemplate="body" let-claimant>
+              <tr [pEditableRow]="claimant">
+                <td [pEditableColumn]="claimant" field="name">{{claimant.name}}</td>
+                <td [pEditableColumn]="claimant" field="idNumber">{{claimant.idNumber}}</td>
+                <td [pEditableColumn]="claimant" field="address">{{claimant.address}}</td>
+                <td [pEditableColumn]="claimant" field="phone">{{claimant.phone}}</td>
+                <td [pEditableColumn]="claimant" field="email">{{claimant.email}}</td>
+                <td [pEditableColumn]="claimant" field="isInsured">{{claimant.isInsured ? 'Yes' : 'No'}}</td>
+                <td [pEditableColumn]="claimant" field="actions">
+                  <button *ngIf="!claimant.editing" pButton type="button" icon="pi pi-pencil" (click)="claimant.editing = true" class="p-button-rounded p-button-success"></button>
+                  <button *ngIf="claimant.editing" pButton type="button" icon="pi pi-check" (click)="onRowEditSave(claimant)" class="p-button-rounded p-button-success"></button>
+                  <button *ngIf="claimant.editing" pButton type="button" icon="pi pi-times" (click)="onRowEditCancel(claimant, claimants.indexOf(claimant))" class="p-button-rounded p-button-warning"></button>
+                  <button *ngIf="!claimant.editing" pButton type="button" icon="pi pi-trash" (click)="onRowDelete(claimant)" class="p-button-rounded p-button-danger"></button>
+                  <button *ngIf="!claimant.editing" pButton type="button" icon="pi pi-envelope" (click)="toggleCommunicationDialog()" class="p-button-rounded p-button-secondary"></button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7">{{'gis.claims.no_claimants' | translate}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Claimant Dialog -->
+  <div *ngIf="showAddClaimantDialog" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{'gis.claims.add_claimant' | translate}}</h5>
+          <button type="button" class="btn-close" (click)="toggleAddClaimantDialog()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="claimantForm" (ngSubmit)="saveClaimant()">
+            <div class="form-group">
+              <label for="name">{{'gis.claims.name' | translate}}</label>
+              <input type="text" class="form-control" id="name" formControlName="name">
+            </div>
+            <div class="form-group">
+              <label for="idNumber">{{'gis.claims.id_number' | translate}}</label>
+              <input type="text" class="form-control" id="idNumber" formControlName="idNumber">
+            </div>
+            <div class="form-group">
+              <label for="address">{{'gis.claims.address' | translate}}</label>
+              <input type="text" class="form-control" id="address" formControlName="address">
+            </div>
+            <div class="form-group">
+              <label for="phone">{{'gis.claims.phone' | translate}}</label>
+              <input type="text" class="form-control" id="phone" formControlName="phone">
+            </div>
+            <div class="form-group">
+              <label for="email">{{'gis.claims.email' | translate}}</label>
+              <input type="email" class="form-control" id="email" formControlName="email">
+            </div>
+            <div class="form-group">
+              <label for="sms">{{'gis.claims.sms' | translate}}</label>
+              <input type="text" class="form-control" id="sms" formControlName="sms">
+            </div>
+            <div class="form-group">
+              <label for="isInsured">{{'gis.claims.insured_as_claimant' | translate}}</label>
+              <input type="checkbox" class="form-check-input" id="isInsured" formControlName="isInsured">
+            </div>
+            <button type="submit" class="btn btn-primary">{{'gis.claims.save' | translate}}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Dialog -->
+  <div *ngIf="showConfirmDeleteDialog" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{'gis.claims.delete_confirmation' | translate}}</h5>
+          <button type="button" class="btn-close" (click)="toggleConfirmDeleteDialog()"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{'gis.claims.confirm_delete' | translate}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelDelete()">{{'gis.claims.no' | translate}}</button>
+          <button type="button" class="btn btn-danger" (click)="deleteClaimant()">{{'gis.claims.yes' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Communication Dialog -->
+  <div *ngIf="showCommunicationDialog" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{'gis.claims.communication_channels' | translate}}</h5>
+          <button type="button" class="btn-close" (click)="toggleCommunicationDialog()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="phone">{{'gis.claims.phone' | translate}}</label>
+            <input type="text" class="form-control" id="phone" [(ngModel)]="selectedClaimant.phone">
+          </div>
+          <div class="form-group">
+            <label for="email">{{'gis.claims.email' | translate}}</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="selectedClaimant.email">
+          </div>
+          <div class="form-group">
+            <label for="sms">{{'gis.claims.sms' | translate}}</label>
+            <input type="text" class="form-control" id="sms" [(ngModel)]="selectedClaimant.sms">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="saveCommunicationDetails()">{{'gis.claims.save_communication' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

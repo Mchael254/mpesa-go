@@ -1258,7 +1258,7 @@ export class PolicySummaryOtherDetailsComponent {
         this.SubclauseList = res;
         this.SubclauseList = this.SubclauseList._embedded[0]
         console.log(this.SubclauseList, 'Risk Clauses')
-        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225946227);
+        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225947911);
         console.log(this.SubclauseList, 'Unfiltered List')
 
 
@@ -2680,6 +2680,17 @@ fetchMotorAccessories(){
   editRiskClause(event){
     console.log(event,'edit')
     console.log(this.selectedRiskClause,'edit var')
+    this.policyService.editRiskClause(this.selectedRiskClause).subscribe(
+      {
+        next:(res=>{
+          console.log(res)
+          this.globalMessagingService.displaySuccessMessage(
+            'sucess',
+            'Risk Clause updated'
+          )
+        })
+      }
+    )
   }
   createEditRequiredDocumentsForm() {
     this.editRequiredDocumentsForm = this.fb.group({
