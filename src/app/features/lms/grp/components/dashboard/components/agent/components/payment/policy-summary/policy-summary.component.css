@@ -1,0 +1,258 @@
+.main {
+    padding: 40px 20px 20px 20px;
+    height: 100%;
+}
+
+.container {
+    background: #FFF;
+    align-items: center;
+    border-radius: 4px;
+    width: 100%;
+    padding: 40px;
+}
+
+.title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 33px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+}
+
+.sub-title {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    color: #000000;
+    margin-bottom: 15px;
+}
+
+.proposal-item {
+    display: flex;
+    align-items: center;
+}
+
+.proposal-label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.5);
+    width: 200px;
+    margin-right: 20px;
+    white-space: nowrap;
+
+}
+
+.proposal-value {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    color: #000000;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+/* .row {
+    display: flex;
+} */
+
+.vertical-line {
+    width: 0;
+    height: auto;
+    border-left: 1px solid #000000;
+    margin: 0 15px;
+}
+
+.col-6 {
+    flex: 1;
+}
+
+.payment-options {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 10px;
+}
+
+.option {
+    flex: 1;
+    text-align: left;
+    margin: 0;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.option.selected {
+    background: rgba(0, 82, 155, 0.28);
+    transform: scale(1.05);
+}
+
+#pay-button {
+    border: 0.1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    text-align: center;
+}
+
+#pay-button:hover {
+    background: rgba(206, 229, 249, 0.28);
+}
+
+.pay-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    color: #000000;
+}
+
+.ok-button {
+    display: flex;
+    background: #00529B;
+    border-radius: 4px;
+    width: 52px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.ok-button:hover {
+    background-color: #65b2f5;
+}
+
+.ok-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    color: #FFFFFF;
+}
+
+.label-text {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #000000;
+    white-space: nowrap;
+}
+
+.label-text-ref {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+button.proceed {
+    background-color: #00529B;
+    color: #FFFFFF;
+    border-color: #00529B;
+}
+
+button.proceed:hover {
+    background-color: #65b2f5;
+}
+
+.pay-icon {
+    width: 87px;
+    height: 57px;
+    padding-right: 3px;
+    background: #FFFFFF;
+    /* border: 0.1px solid rgba(0, 0, 0, 0.5); */
+    box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.pay-icon:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.label-caption {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    justify-content: center;
+}
+
+.custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+}
+
+.custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+
+}
+
+.modal-header,
+.modal-footer {
+    border: none;
+    /* Removes the border between header/footer and body of modal */
+}
+
+.modal-content {
+    padding: 0 20px;
+}
+
+.custom-footer {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 1230px) {
+    .vertical-line {
+        border-left: 1px solid #FFF;
+    }
+
+    .container {
+        width: 100%;
+        overflow: auto;
+    }
+
+    img {
+        margin-right: 10px;
+    }
+
+}

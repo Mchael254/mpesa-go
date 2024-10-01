@@ -1,1 +1,192 @@
-<p>policy-summary works!</p>
+<div class="main">
+    <div class="container">
+        <div class="title text-center" style="margin-top: 40px; justify-content: center;">{{ "lms.grp.agent_portal.policy" | translate }}</div>
+        <div class="row mt-4 align-items-stretch">
+            <div class="col-6">
+                <div class="sub-title">{{ "lms.grp.agent_portal.policySummary" | translate }}</div>
+                <div class="row align-items-center mt-3">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.policyNumber" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.policyNumber }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.clientName" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.clientName }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.product" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.product }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.coverageDuration" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.coverageDuration }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.covers" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.covers }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.frequencyOfPayment" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.frequencyOfPayment }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.coverFrom" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.coverFrom }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.coverTo" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.coverTo }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.sumAssured" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.sumAssured }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.premium" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.premium }}</div>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="proposal-item">
+                        <div class="proposal-label">{{ "lms.grp.agent_portal.commission" | translate }}</div>
+                        <div class="proposal-value">{{ policySummary.commission }}</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Vertical Line -->
+            <div class="vertical-line"></div>
+            <div class="col-6">
+                <div class="sub-title">{{ "lms.grp.agent_portal.paymentOptions" | translate }}</div>
+                <div class="row mt-2 payment-options">
+                    <div class="option" id="pay-button" [ngClass]="{'selected': selectedOption === 'mobile'}"
+                        (click)="selectPaymentOption('mobile')"><span class="pay-text"
+                            style="margin-right: 8px;">{{ "lms.grp.agent_portal.mobile" | translate }}</span>
+                        <i class="pi pi-mobile" style="color: black;"></i>
+                    </div>
+                    <div class="option" id="pay-button" [ngClass]="{'selected': selectedOption === 'card'}"
+                        (click)="selectPaymentOption('card')"><span class="pay-text"
+                            style="margin-right: 8px;">{{ "lms.grp.agent_portal.card" | translate }}</span>
+                        <i class="pi pi-credit-card" style="color: black;"></i>
+                    </div>
+                    <div class="option" id="pay-button" [ngClass]="{'selected': selectedOption === 'bank'}"
+                        (click)="selectPaymentOption('bank')"><span class="pay-text"
+                            style="margin-right: 8px;">{{ "lms.grp.agent_portal.bank" | translate }}</span>
+                        <i class="pi pi-home" style="color: black;"></i>
+                    </div>
+                </div>
+                <ng-container *ngIf="selectedOption === 'mobile'">
+                    <div class="col-md-6" style="padding-top: 40px;">
+                        <div>
+                            <label for="invoiceNumber" style="color: black;"><span class="label-text">{{ "lms.grp.agent_portal.enterMobileNumber" | translate }}</span></label>
+                            <input type="text" pInputText class="form-control" id="invoiceNumber"
+                                [style]="{ width: '100%' }">
+                        </div>
+                        <div class="ok-button mt-2">
+                            <span class="ok-text" (click)="showPushPopUpModal()">{{ "lms.grp.agent_portal.ok" | translate }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedOption === 'card'">
+                    <div style="padding-top: 60px;">
+                        <label><span class="label-text">{{ "lms.grp.agent_portal.selectProvider" | translate }}</span></label>
+                        <label><span class="label-text-ref">{{ "lms.grp.agent_portal.redirectedToCompletePayment" | translate }}</span></label>
+                        <div style="display: flex; justify-content: space-between; padding-top: 20px;">
+                            <figure>
+                                <img src="assets/images/visa.png" class="pay-icon">
+                                <figcaption class="label-caption" style="margin-top: 8px;">{{ "lms.grp.agent_portal.visa" | translate }}</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="assets/images/mastercard.png" class="pay-icon">
+                                <figcaption class="label-caption" style="margin-top: 8px;">{{ "lms.grp.agent_portal.mastercard" | translate }}</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="assets/images/paypal.png" class="pay-icon">
+                                <figcaption class="label-caption" style="margin-top: 8px;">{{ "lms.grp.agent_portal.paypal" | translate }}</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="assets/images/stripe.png" class="pay-icon">
+                                <figcaption class="label-caption" style="margin-top: 8px;">{{ "lms.grp.agent_portal.stripe" | translate }}</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="assets/images/google-pay.png" class="pay-icon">
+                                <figcaption class="label-caption" style="margin-top: 8px;">{{ "lms.grp.agent_portal.googlePay" | translate }}</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedOption === 'bank'">
+                    <div class="col-md-6" style="padding-top: 40px;">
+                        <div>
+                            <label for="investigator" style="color: black;">{{ "lms.grp.agent_portal.selectBank" | translate }}</label>
+                            <select class="form-select" id="investigator" formControlName="investigator">
+                                <option selected="true" disabled="disabled"></option>
+                                <option *ngFor="let bank of " [value]="bank">{{ bank | titlecase }}</option>
+                            </select>
+                        </div>
+                        <div style="padding-top: 40px;">
+                            <label for="invoiceNumber" style="color: black;"><span class="label-text">{{ "lms.grp.agent_portal.referenceNumber" | translate }}</span></label>
+                            <label for="invoiceNumber" style="color: black;"><span class="label-text-ref">{{ "lms.grp.agent_portal.useReferenceNumber" | translate }}</span></label>
+                            <input type="text" pInputText class="form-control" id="invoiceNumber"
+                                [style]="{ width: '100%' }">
+                        </div>
+                        <div style="padding-top: 40px;">
+                            <label for="invoiceNumber" style="color: black;"><span class="label-text">{{ "lms.grp.agent_portal.enterBankReferenceNumber" | translate }}</span></label>
+                            <input type="text" pInputText class="form-control" id="invoiceNumber"
+                                [style]="{ width: '100%' }">
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="button-container">
+        <button class="proceed"><span class="ok-text">{{ "lms.grp.agent_portal.proceed" | translate }}</span></button>
+    </div>
+</div>
+<!-- modals begin -->
+<!-- push popup modal -->
+<div class="modal fade" tabindex="-1" #memberSummaryModal id="pushPopUpModal" aria-labelledby="pushPopUpModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-m">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closePushPopUpModal()"></button>
+            </div>
+            <div class="modal-body proposal-label" style="color: black;">
+                <div>
+                    {{ "lms.grp.agent_portal.pushNotification" | translate }}
+                </div>
+                <div><i class="pi pi-mobile" style="margin-top: 40px; display: flex; justify-content: center;"></i>
+                </div>
+                <div style="margin-top: 40px;">
+                    {{ "lms.grp.agent_portal.enterMpesaPin" | translate }}
+                </div>
+            </div>
+            <div class="modal-footer custom-footer">
+                <button type="button" class="btn btn-primary text-center" data-bs-dismiss="modal"
+                    (click)="closePushPopUpModal()">{{ "lms.grp.agent_portal.cancel" | translate }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- push push popup modal end -->
+<!-- modals End -->
