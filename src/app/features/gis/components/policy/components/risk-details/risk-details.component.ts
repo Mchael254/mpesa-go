@@ -89,6 +89,7 @@ export class RiskDetailsComponent {
   clientList: any;
 
   showMotorSubclassFields: boolean = false;
+  showNonMotorSubclassFields: boolean =false;
   motorClassAllowed: any;
 
   vehicleMakeList: vehicleMake[];
@@ -168,11 +169,16 @@ export class RiskDetailsComponent {
   passedBinder: any;
   relationGroups:any;
   riskClassList:any;
+  bodytypesList:any;
+  motorColorsList:any;
+  securityDevicesList:any;
+  motorAccessoriesList:any;
   // newRisk: string = 'True';  // Default value is 'True'
 
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
+  selectedModelYear: string;
 
 
 
@@ -248,6 +254,10 @@ export class RiskDetailsComponent {
     this.createSectionDetailsForm();
     this.getPolicy();
     this.currentYear = new Date().getFullYear();
+    this.fetchBodyTypes();
+    this.fetchMotorColours();
+    this.fetchSecurityDevices();
+    this.fetchMotorAccessories();
   }
   ngOnDestroy(): void { }
   getUserDetails() {
@@ -873,6 +883,9 @@ export class RiskDetailsComponent {
     if (this.motorClassAllowed === 'Y') {
       this.showMotorSubclassFields = true;
       this.motorProduct = true;
+    }else if(this.motorClassAllowed=="N"){
+      this.showNonMotorSubclassFields = true;
+      this.motorProduct = false;
     }
   }
   getVehicleMake() {
@@ -1160,7 +1173,7 @@ export class RiskDetailsComponent {
     this.policyRiskForm.get('logbookUnderInsuredName');
     this.policyRiskForm.get('maintenanceCover');
     this.policyRiskForm.get('maxExposureAmount');
-    this.policyRiskForm.get('modelYear');
+    this.policyRiskForm.get('modelYear').setValue(this.selectedModelYear);
     this.policyRiskForm.get('ncdApplicable');
     this.policyRiskForm.get('ncdLevel');
     this.policyRiskForm.get('newRisk');
@@ -1689,35 +1702,77 @@ export class RiskDetailsComponent {
 
   }
 
+  // updateSchedule() {
+  //   const schedule = this.scheduleDetailsForm.value;
+  //   schedule.riskCode = this.riskCode;
+  //   schedule.transactionType = "Q";
+  //   schedule.version = 0;
+  //   this.quotationService.updateSchedule(schedule).subscribe(data => {
+  //     this.updatedScheduleData = data;
+  //     console.log('Updated Schedule Data:', this.updatedScheduleData);
+  //     this.updatedSchedule = this.updatedScheduleData._embedded;
+  //     console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+  //     const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+  //     if (index !== -1) {
+  //       this.scheduleList[index] = this.updatedSchedule;
+  //       this.cdr.detectChanges();
+  //     }
+
+  //     try {
+
+  //       this.scheduleDetailsForm.reset()
+  //       this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+  //     } catch (error) {
+  //       // this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+  //       this.scheduleDetailsForm.reset()
+  //     }
+  //   })
+  //   this.cdr.detectChanges();
+
+  // }
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
     schedule.riskCode = this.riskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
-    this.quotationService.updateSchedule(schedule).subscribe(data => {
-      this.updatedScheduleData = data;
-      console.log('Updated Schedule Data:', this.updatedScheduleData);
-      this.updatedSchedule = this.updatedScheduleData._embedded;
-      console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
-      const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
-      if (index !== -1) {
-        this.scheduleList[index] = this.updatedSchedule;
+
+    this.policyService.updateSchedules(schedule).subscribe(data => {
+        this.updatedScheduleData = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
+
+        console.log('Updated Schedule Data:', this.updatedScheduleData);
+        this.updatedSchedule = this.updatedScheduleData._embedded;
+
+        // Access the level1 details
+        const level1Details = this.updatedSchedule[0]?.details?.level1;
+
+        // If level1 is an object, convert it to an array
+        if (level1Details && typeof level1Details === 'object' && !Array.isArray(level1Details)) {
+            this.scheduleArray = [level1Details]; // Wrap the object in an array
+        } else if (Array.isArray(level1Details)) {
+            this.scheduleArray = level1Details;  // Use directly if it's already an array
+        } else {
+            this.scheduleArray = [];  // Fallback for unexpected structures
+            console.error('Unexpected structure for level1:', level1Details);
+        }
+
+        console.log('Updated Schedule Array:', this.scheduleArray);
+        log.debug("Schedule array", this.scheduleArray);
+
+        try {
+            this.scheduleDetailsForm.reset();
+        } catch (error) {
+            this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+            this.scheduleDetailsForm.reset();
+        }
+
         this.cdr.detectChanges();
-      }
+    }, error => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update schedule');
+    });
+}
 
-      try {
-
-        this.scheduleDetailsForm.reset()
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-      } catch (error) {
-        // this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-        this.scheduleDetailsForm.reset()
-      }
-    })
-    this.cdr.detectChanges();
-
-  }
   createScheduleDetailsForm() {
     this.scheduleDetailsForm = this.fb.group({
       details: this.fb.group({
@@ -1826,7 +1881,7 @@ export class RiskDetailsComponent {
 
     // Set specific default values for some fields
     schedule.details.level1.bodyType = null;
-    schedule.details.level1.yearOfManufacture = null;
+    schedule.details.level1.yearOfManufacture = this.selectedModelYear;
     schedule.details.level1.color = "red";
     schedule.details.level1.engineNumber = null;
     schedule.details.level1.cubicCapacity = null;
@@ -1918,4 +1973,96 @@ onBinderSelected(selectedValue: any) {
 
  
 }
+onEditSchedule(schedule: any) {
+  log.debug('SELECTED SCHEDULE: ',schedule)
+  if(this.selectedSchedule){
+    this.getVehicleMake()
+
+  }
+  this.selectedSchedule = schedule;
+  this.scheduleDetailsForm.patchValue({
+    details: {
+      level1: {
+        registrationNumber: schedule.registrationNumber,
+        Make: schedule.Make,
+        cubicCapacity: schedule.cubicCapacity,
+        yearOfManufacture: schedule.yearOfManufacture,
+        value: schedule.value,
+        bodyType: schedule.bodyType,
+        coverType:schedule.coverType
+      }
+    },
+  
+  });
+}
+fetchBodyTypes(){
+  this.policyService
+  .getBodyTypes()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.bodytypesList= response._embedded
+      log.debug("Body Types:",this.bodytypesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+    }
+  })
+}
+fetchMotorColours(){
+  this.policyService
+  .getMotorColors()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorColorsList= response._embedded
+      log.debug("Motor Colours:",this.motorColorsList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
+    }
+  })
+}
+fetchSecurityDevices(){
+  this.policyService
+  .getSecurityDevices()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.securityDevicesList= response._embedded
+      log.debug("Motor Colours:",this.securityDevicesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
+    }
+  })
+}
+fetchMotorAccessories(){
+  this.policyService
+  .getMotorAccessories()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorAccessoriesList= response._embedded
+      log.debug("Motor Accessories:",this.motorAccessoriesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor accessories details.Try again later');
+    }
+  })
+}
+  // This method is triggered when a year is selected
+  onModelYearChange(event: Event): void {
+    const selectedYear = (event.target as HTMLSelectElement).value;
+    log.debug('Selected model year:', selectedYear);
+    this.selectedModelYear = selectedYear
+  }
 }
