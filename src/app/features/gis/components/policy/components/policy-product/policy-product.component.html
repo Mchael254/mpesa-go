@@ -2,7 +2,7 @@
     <div class="spinner" style="position: relative">
         <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
       </div>
-    <p class="titleMain mt-3">{{'gis.policy.underwriting_product_details' | translate}}</p>
+    <p class="titleMain mt-3 ms-4">{{'gis.policy.underwriting_product_details' | translate}}</p>
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
     <div class="container mx-2 mt-n1">
@@ -22,7 +22,8 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('clientCode').hasError('required') && policyProductForm.get('clientCode').touched"
                                 class="form-text text-danger">
-                                Client is required.
+                                {{'gis.policy.client_is_required' |
+                                translate}}
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
@@ -56,7 +57,8 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('productCode').hasError('required') && policyProductForm.get('productCode').touched"
                                 class="form-text text-danger">
-                                Product is required.
+                                {{'gis.quotation.product_is_required' |
+                                translate}}
                             </div>
 
                         </div>
@@ -76,7 +78,8 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('proInterfaceType').hasError('required') && policyProductForm.get('proInterfaceType').touched"
                                 class="form-text text-danger">
-                                Policy Interface is required.
+                                {{'gis.policy.policy_interface_is_required' |
+                                translate}}
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
@@ -100,7 +103,8 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('branchCode').hasError('required') && policyProductForm.get('branchCode').touched"
                                 class="form-text text-danger">
-                                Branch is required.
+                                {{'gis.quotation.branch_is_required' |
+                                translate}}
                             </div>
                         </div>
                     </div>
@@ -553,7 +557,7 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('withEffectiveFromDate').hasError('required') && policyProductForm.get('withEffectiveFromDate').touched"
                                 class="form-text text-danger">
-                                {{'gis.policy.cover_from' | translate}} is required.
+                                {{'gis.quotation.cover_from_is_required' | translate}} 
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
@@ -564,7 +568,7 @@
                                 <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('withEffectiveToDate').hasError('required') && policyProductForm.get('withEffectiveToDate').touched"
                             class="form-text text-danger">
-                            {{'gis.policy.cover_to' | translate}} is required.
+                            {{'gis.quotation.cover_to_is_required' | translate}} 
                         </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
@@ -587,7 +591,7 @@
                                  <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('currencyCode').hasError('required') && policyProductForm.get('currencyCode').touched"
                             class="form-text text-danger">
-                            Currency is required.
+                             {{'gis.policy.currency_is_required' | translate}} 
                         </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
@@ -631,7 +635,7 @@
                              <!-- Display error message under the field -->
                              <div *ngIf="policyProductForm.get('paymentMode').hasError('required') && policyProductForm.get('paymentMode').touched"
                              class="form-text text-danger">
-                             Payment mode is required.
+                              {{'gis.policy.payment_mode_is_required' | translate}} 
                          </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
