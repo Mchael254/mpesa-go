@@ -1053,7 +1053,67 @@
       "select_risk_peril": "Select Risk Peril",
       "risk_service_list": "Risk Service List",
       "reassign": "Reassign"
-    }
+    },
+      "claims": {
+        "opening": {
+          "claim_opening": "Claim Opening",
+          "product": "Product",
+          "select_product": "Select Product",
+          "policy": "Policy",
+          "select_policy": "Select Policy",
+          "loss_date": "Loss Date",
+          "select_date": "Select Date",
+          "loss_time": "Loss Time",
+          "select_time": "Select Time",
+          "risk": "Risk",
+          "select_risk": "Select Risk",
+          "notification_date": "Notification Date",
+          "causation": "Causation",
+          "select_causation": "Select Causation",
+          "catastrophe_event": "Catastrophe/Event",
+          "select_catastrophe_event": "Select Catastrophe/Event",
+          "claim_description": "Claim Description",
+          "enter_claim_description": "Enter Claim Description",
+          "party_to_blame": "Party to Blame",
+          "select_party_to_blame": "Select Party to Blame",
+          "average_basic_salary": "Average Basic Salary",
+          "enter_average_basic_salary": "Enter Average Basic Salary",
+          "average_earnings": "Average Earnings",
+          "enter_average_earnings": "Enter Average Earnings",
+          "off_duty_date_from": "Off Duty Date From",
+          "off_duty_date_to": "Off Duty Date To",
+          "liability_admission": "Liability Admission",
+          "next_review_date": "Next Review Date",
+          "next_review_user": "Next Review User",
+          "select_next_review_user": "Select Next Review User",
+          "priority_level": "Priority Level",
+          "select_priority_level": "Select Priority Level",
+          "reference_number": "Reference Number",
+          "enter_reference_number": "Enter Reference Number",
+          "accident_location": "Accident Location",
+          "enter_accident_location": "Enter Accident Location",
+          "add_peril": "Add Peril",
+          "peril": "Peril",
+          "claim_estimate": "Claim Estimate",
+          "actions": "Actions",
+          "edit": "Edit",
+          "delete": "Delete",
+          "capture_claim": "Capture Claim",
+          "insured_as_claimant": "Insured as Claimant",
+          "claimant": "Claimant",
+          "create_claimant": "Create Claimant",        
+          "peril_details": "Peril Details",          
+          "select_peril": "Select Peril",  
+          "enter_claim_estimate": "Enter Claim Estimate",
+          "cancel": "Cancel", 
+          "save": "Save",
+          "edit_peril": "Edit Peril",
+          "confirm_delete_peril": "Are you sure you want to delete this peril?",
+          "enter_peril": "Enter Peril"
+          
+        }
+      }
+  
   },
   "lms": {
     "common": {},
@@ -1761,5 +1821,6 @@
     "signSelect": "Sign selected",
     "correction": "Send for correction",
     "reject": "Reject"
+   
   }
 }

@@ -1,0 +1,30 @@
+<div class="modal fade" id="addPerilModal" tabindex="-1" aria-labelledby="addPerilModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPerilModalLabel">Add Peril</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseModal()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Peril Details -->
+          <div class="form-group">
+            <label for="peril">Peril</label>
+            <select class="form-control" [(ngModel)]="peril">
+              <option *ngFor="let peril of perils" [value]="peril.value">{{ peril.label }}</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label for="claimEstimate">Claim Estimate</label>
+            <input type="number" class="form-control" [(ngModel)]="claimEstimate" [placeholder]="'Enter Claim Estimate'">
+          </div>
+  
+          <!-- Add other peril details here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCloseModal()">Close</button>
+          <button type="button" class="btn btn-primary" (click)="onSavePeril()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
