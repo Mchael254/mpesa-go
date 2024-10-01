@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../../shared/services/api/api.service';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../environments/api_service_config';
-import { LeadSourceDto, LeadStatusDto } from '../data/leads';
+import {Leads, LeadSourceDto, LeadStatusDto} from '../data/leads';
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +72,13 @@ export class LeadsService {
   deleteLeadStatuses(leadStatusId: number) {
     return this.api.DELETE<LeadStatusDto>(
       `lead-statuses/${leadStatusId}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getLeads(): Observable<Leads[]> {
+    return this.api.GET<Leads[]>(
+      `leads`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
