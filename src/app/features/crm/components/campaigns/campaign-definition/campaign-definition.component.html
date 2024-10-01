@@ -458,6 +458,7 @@
                     placeholder="Search for campaign target"
                     aria-label="search"
                     aria-describedby="search"
+                    (input)="filterCampaignTargets($event)"
                   />
                 </div>
 
@@ -467,56 +468,61 @@
                       <i class="fa-solid fa-plus"
                          (click)="openTargetModal()"></i>
                     </span>
-                    <span class="icon-circle">
+                    <!--<span class="icon-circle">
                       <i class="pi pi-pencil"
-                      (click)="editTarget()"></i>
-                    </span>
+                      (click)="editCampaignTarget()"></i>
+                    </span>-->
                     <span class="icon-circle">
-                      <i class="fa-regular fa-trash-can"></i>
+                      <i class="fa-regular fa-trash-can" (click)="deleteCampaignTarget()"></i>
                     </span>
                   </div>
                 </div>
               </div>
-              <p-table
-                #campaignsTargetTable
-                [autoLayout]="true"
-                [rowHover]="true"
-                [resizableColumns]="true"
-                [showCurrentPageReport]="true"
-                [rows]="pageSize || 5"
-                [totalRecords]="campaignTargetData?.length"
-                [value]="campaignTargetData"
-                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-                responsiveLayout="stack"
-                [scrollable]="true"
-                [(selection)]="selectedCampaignTarget"
-                selectionMode="single"
-                dataKey="code"
-                scrollHeight="400px"
-                currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                [globalFilterFields]="['description', 'code']"
-              >
+              <div>
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                <p-table
+                  #campaignsTargetTable
+                  [autoLayout]="true"
+                  [rowHover]="true"
+                  [paginator]="true"
+                  [resizableColumns]="true"
+                  [showCurrentPageReport]="true"
+                  [rows]="pageSize || 5"
+                  [totalRecords]="campaignTargetData?.length"
+                  [value]="campaignTargetData"
+                  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                  responsiveLayout="stack"
+                  [scrollable]="true"
+                  [(selection)]="selectedCampaignTarget"
+                  selectionMode="single"
+                  dataKey="code"
+                  scrollHeight="400px"
+                  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  [globalFilterFields]="['accountType', 'emailAddress']"
+                >
 
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th pSortableColumn="target">Target <p-sortIcon field="target"></p-sortIcon></th>
-                    <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-                    <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-campaignTarget>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="3">No Campaign Target Detail(s) Found.</td>
-                  </tr>
-                </ng-template>
-              </p-table>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th pSortableColumn="accountType">Target <p-sortIcon field="accountType"></p-sortIcon></th>
+                      <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                      <th pSortableColumn="targetDate">Date <p-sortIcon field="targetDate"></p-sortIcon></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-campaignTarget>
+                    <tr [pSelectableRow]="campaignTarget">
+                      <td>{{campaignTarget?.accountType}}</td>
+                      <td>{{campaignTarget?.emailAddress}}</td>
+                      <td>{{campaignTarget?.targetDate | date:'mediumDate'}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="3">No Campaign Target Detail(s) Found.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+
             </div>
           </ng-container>
 
@@ -531,6 +537,7 @@
                     placeholder="Search for campaign activities"
                     aria-label="search"
                     aria-describedby="search"
+                    (input)="filterCampaignActivities($event)"
                   />
                 </div>
 
@@ -540,12 +547,12 @@
                       <i class="fa-solid fa-plus"
                          (click)="openCampaignActivityModal()"></i>
                     </span>
-                    <span class="icon-circle">
+                    <!--<span class="icon-circle">
                       <i class="pi pi-pencil"
                          (click)="editCampaignActivity()"></i>
-                    </span>
+                    </span>-->
                     <span class="icon-circle">
-                      <i class="fa-regular fa-trash-can"></i>
+                      <i class="fa-regular fa-trash-can" (click)="deleteCampaignActivity()"></i>
                     </span>
                   </div>
                 </div>
@@ -555,6 +562,7 @@
                 [autoLayout]="true"
                 [rowHover]="true"
                 [resizableColumns]="true"
+                [paginator]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
                 [totalRecords]="campaignActivityData?.length"
@@ -562,28 +570,28 @@
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
-                [(selection)]="selectedCampaignTarget"
+                [(selection)]="selectedCampaignActivity"
                 selectionMode="single"
                 dataKey="code"
                 scrollHeight="400px"
                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                [globalFilterFields]="['description', 'code']"
+                [globalFilterFields]="['desc', 'subject']"
               >
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="target">Subject <p-sortIcon field="target"></p-sortIcon></th>
-                    <th pSortableColumn="email">Description <p-sortIcon field="email"></p-sortIcon></th>
-                    <th pSortableColumn="date">WEF <p-sortIcon field="date"></p-sortIcon></th>
-                    <th pSortableColumn="date">WET <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="subject">Subject <p-sortIcon field="subject"></p-sortIcon></th>
+                    <th pSortableColumn="desc">Description <p-sortIcon field="desc"></p-sortIcon></th>
+                    <th pSortableColumn="wef">WEF <p-sortIcon field="wef"></p-sortIcon></th>
+                    <th pSortableColumn="wet">WET <p-sortIcon field="wet"></p-sortIcon></th>
                   </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-campaignTarget>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                <ng-template pTemplate="body" let-campaignActivity>
+                  <tr [pSelectableRow]="campaignActivity">
+                    <td>{{campaignActivity?.subject}}</td>
+                    <td>{{campaignActivity?.desc}}</td>
+                    <td>{{campaignActivity?.wef}}</td>
+                    <td>{{campaignActivity?.wet}}</td>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
@@ -631,6 +639,7 @@
                 [autoLayout]="true"
                 [rowHover]="true"
                 [resizableColumns]="true"
+                [paginator]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
                 [totalRecords]="campaignMessageData?.length"
@@ -961,13 +970,12 @@
         <form [formGroup]="targetSearchForm">
           <label class="form-label w-100">Select target group</label>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="group" id="clients" value="clients" formControlName="group" checked
-                   (change)="filterClients($event)">
+            <input class="form-check-input" type="radio" name="group" id="clients" value="Client" formControlName="group">
             <label class="form-check-label" for="clients">Clients</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="group" id="leads" value="leads" formControlName="group"
-                   (change)="filterClients($event)">
+            <input class="form-check-input" type="radio" name="group" id="leads" value="Lead" formControlName="group"
+                   (change)="fetchLeads()">
             <label class="form-check-label" for="leads">Leads</label>
           </div>
           <div class="row my-3">
@@ -994,67 +1002,120 @@
               />
             </div>
           </div>
-        </form>
+
 
         <div class="card border-0">
           <div class="card-body p-0">
-            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-            <p-table
-              #campaignsTargetSearchTable
-              (onLazyLoad)="lazyLoadClients($event)"
-              [lazy]="true"
-              [autoLayout]="true"
-              [rowHover]="true"
-              [resizableColumns]="true"
-              [showCurrentPageReport]="true"
-              [rows]="pageSize || 5"
-              [totalRecords]="clientsData?.totalElements"
-              [value]="clientsData.content"
-              [paginator]="true"
-              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-              responsiveLayout="stack"
-              [scrollable]="true"
-              [(selection)]="selectedCampaignTarget"
-              selectionMode="single"
-              dataKey="code"
-              scrollHeight="400px"
-              currentPageReportTemplate="{first} - {last} of {totalRecords}"
-              [globalFilterFields]="['description', 'code']"
-            >
+            <div *ngIf="targetSearchForm.get('group').value === 'Client'">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <p-table
+                #campaignsTargetClientsTable
+                (onLazyLoad)="lazyLoadClients($event)"
+                [lazy]="true"
+                [autoLayout]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="clientsData?.totalElements"
+                [value]="clientsData.content"
+                [paginator]="true"
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                responsiveLayout="stack"
+                [scrollable]="true"
+                [(selection)]="selectedCampaignTargetClient"
+                selectionMode="single"
+                dataKey="id"
+                scrollHeight="400px"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                [globalFilterFields]="['id']"
+              >
 
-              <ng-template pTemplate="header">
-                <tr>
-                  <th></th>
-                  <th pSortableColumn="clientType.clientTypeName">Account type <p-sortIcon field="clientType.clientTypeName"></p-sortIcon></th>
-                  <th pSortableColumn="firstName">Name <p-sortIcon field="firstName"></p-sortIcon></th>
-                  <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
-                  <th pSortableColumn="mobileNumber">Phone number <p-sortIcon field="mobileNumber"></p-sortIcon></th>
-                  <th pSortableColumn="gender">Gender <p-sortIcon field="gender"></p-sortIcon></th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-campaignTarget>
-                <tr>
-                  <td><p-tableCheckbox></p-tableCheckbox></td>
-                  <td>{{campaignTarget?.clientType?.clientTypeName | titlecase}}</td>
-                  <td>{{campaignTarget?.firstName}} {{campaignTarget?.lastName}}</td>
-                  <td>{{campaignTarget?.emailAddress}}</td>
-                  <td>{{campaignTarget?.mobileNumber}}</td>
-                  <td>{{campaignTarget?.gender}}</td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="6">No Campaign Target Search Detail(s) Found.</td>
-                </tr>
-              </ng-template>
-            </p-table>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th></th>
+                    <th pSortableColumn="accountCode">Account type <p-sortIcon field="accountCode"></p-sortIcon></th>
+                    <th pSortableColumn="firstName">Name <p-sortIcon field="firstName"></p-sortIcon></th>
+                    <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                    <th pSortableColumn="mobileNumber">Phone number <p-sortIcon field="mobileNumber"></p-sortIcon></th>
+                    <th pSortableColumn="gender">Gender <p-sortIcon field="gender"></p-sortIcon></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-campaignTargetClient>
+                  <tr>
+                    <td><p-tableCheckbox [value]="campaignTargetClient"></p-tableCheckbox></td>
+                    <td>{{campaignTargetClient?.accountCode | titlecase}}</td>
+                    <td>{{campaignTargetClient?.firstName}} {{campaignTargetClient?.lastName}}</td>
+                    <td>{{campaignTargetClient?.emailAddress}}</td>
+                    <td>{{campaignTargetClient?.mobileNumber}}</td>
+                    <td>{{campaignTargetClient?.gender}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6">No Campaign Target Search Detail(s) Found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <div *ngIf="targetSearchForm.get('group').value === 'Lead'">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <p-table
+                #campaignsTargetLeadsTable
+                [autoLayout]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="leads?.length"
+                [value]="leads"
+                [paginator]="true"
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                responsiveLayout="stack"
+                [scrollable]="true"
+                [(selection)]="selectedCampaignTargetLead"
+                selectionMode="single"
+                dataKey="code"
+                scrollHeight="400px"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                [globalFilterFields]="['description', 'code']"
+              >
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th></th>
+                    <th pSortableColumn="clientType.clientTypeName">Account type <p-sortIcon field="clientType.clientTypeName"></p-sortIcon></th>
+                    <th pSortableColumn="surname">Name <p-sortIcon field="firstName"></p-sortIcon></th>
+                    <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                    <th pSortableColumn="mobileNumber">Phone number <p-sortIcon field="mobileNumber"></p-sortIcon></th>
+                    <th pSortableColumn="gender">Gender <p-sortIcon field="gender"></p-sortIcon></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-campaignTargetLead>
+                  <tr>
+                    <td><p-tableCheckbox [value]="campaignTargetLead"></p-tableCheckbox></td>
+                    <td>{{campaignTargetLead?.clientType?.clientTypeName | titlecase}}</td>
+                    <td>{{campaignTargetLead?.surname}} {{campaignTargetLead?.otherNames}}</td>
+                    <td>{{campaignTargetLead?.emailAddress}}</td>
+                    <td>{{campaignTargetLead?.mobileNumber}}</td>
+                    <td>{{campaignTargetLead?.gender}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6">No Campaign Target Search Detail(s) Found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+
           </div>
         </div>
-
+        </form>
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveCampaignTarget()">Save details</button>
       </div>
     </div>
   </div>
@@ -1088,27 +1149,29 @@
               placeholder="Search for campaign activity"
               aria-label="search"
               aria-describedby="search"
+              (input)="filterActivities($event)"
             />
           </div>
         </div>
         <p-table
-          #campaignsActivityTable
+          #activitiesTable
           [autoLayout]="true"
           [rowHover]="true"
           [resizableColumns]="true"
+          [paginator]="true"
           [showCurrentPageReport]="true"
           [rows]="pageSize || 5"
-          [totalRecords]="campaignActivityData?.length"
-          [value]="campaignActivityData"
+          [totalRecords]="activityData?.length"
+          [value]="activityData"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
-          [(selection)]="selectedCampaignTarget"
+          [(selection)]="selectedActivity"
           selectionMode="single"
-          dataKey="code"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['description', 'code']"
+          [globalFilterFields]="['desc', 'subject', 'location']"
         >
 
           <ng-template pTemplate="header">
@@ -1119,12 +1182,20 @@
               <th>Type</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-campaignTarget>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+          <ng-template pTemplate="body" let-activity>
+            <tr [pSelectableRow]="activity">
+              <td>
+                <span *ngIf = "activity?.subject" title="{{activity?.subject}}">
+                  {{activity?.subject?.substring(0,20) | titlecase}}...
+                </span>
+              </td>
+              <td>{{activity?.location | titlecase }}</td>
+              <td>
+                <span *ngIf = "activity?.desc" title="{{activity?.desc}}">
+                  {{activity?.desc?.substring(0,20) | titlecase}}...
+                </span>
+              </td>
+              <td>{{getActivityTypeDescription(activity?.activityTypeCode)}}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -1137,7 +1208,7 @@
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-outline-primary" (click)="openNewCampaignActivityModal()">Create a new activity</button>
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveCampaignActivity()">Save details</button>
       </div>
     </div>
   </div>
@@ -1249,11 +1320,19 @@
             <ng-container *ngIf="visibleStatus.type === 'Y'">
               <div class="col-md-6">
                 <label for="type" class="form-label">Type</label>
-                <select id="type" class="form-select" formControlName="type"
-                        [ngClass]="{ 'is-invalid': g['type']?.invalid && (g['type']?.dirty || g['type']?.touched) }">
-                  <option value="gis">GIS</option>
-                  <option value="lms">LMS</option>
-                </select>
+                <p-dropdown
+                  formControlName="type"
+                  [options]="activityTypeData"
+                  optionLabel="desc"
+                  optionValue="id"
+                  placeholder="Select option"
+                  id="type"
+                  [filter]="true"
+                  filterBy="desc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  [ngClass]="{ 'is-invalid': g['type']?.invalid && (g['type']?.dirty || g['type']?.touched) }"/>
+
                 <div *ngIf="g['type']?.invalid && (g['type']?.dirty || g['type']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['type']?.errors['required']">Type is required</div>
                 </div>
@@ -1263,7 +1342,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveActivity()">Save details</button>
       </div>
     </div>
   </div>
@@ -1543,5 +1622,13 @@
   [message]="'Are you sure you want to delete this campaign message?'"
   (confirmed)="confirmCampaignMessageDelete()"
   #campaignMessageConfirmationModal
+></app-reusable-input>
+
+<app-reusable-input
+  [modalId]="'campaignActivityConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this campaign activity?'"
+  (confirmed)="confirmCampaignActivityDelete()"
+  #campaignActivityConfirmationModal
 ></app-reusable-input>
 

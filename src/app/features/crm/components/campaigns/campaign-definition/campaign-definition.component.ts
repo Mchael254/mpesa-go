@@ -8,7 +8,7 @@ import {map, take} from "rxjs";
 import {ProductsService} from "../../../../gis/components/setups/services/products/products.service";
 import {ProductService as LmsProductService} from "../../../../lms/service/product/product.service";
 import {
-  AggregatedCampaignsDTO,
+  AggregatedCampaignsDTO, CampaignActivitiesDTO,
   CampaignMessagesDTO,
   CampaignsDTO,
   CampaignTargetsDTO
@@ -24,6 +24,16 @@ import {ClientService} from "../../../../entities/services/client/client.service
 import {ClientDTO} from "../../../../entities/data/ClientDTO";
 import {LazyLoadEvent} from "primeng/api";
 import {tap} from "rxjs/operators";
+import {LeadsService} from "../../../services/leads.service";
+import {Leads} from "../../../data/leads";
+import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
+import {OrganizationService} from "../../../services/organization.service";
+import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
+import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {OrganizationDTO} from "../../../data/organization-dto";
+import {CurrencyDTO} from "../../../../../shared/data/common/currency-dto";
+import {ActivityService} from "../../../services/activity.service";
+import {Activity, ActivityType} from "../../../data/activity";
 
 const log = new Logger('CampaignDefinitionComponent');
 @Component({
@@ -32,15 +42,18 @@ const log = new Logger('CampaignDefinitionComponent');
   styleUrls: ['./campaign-definition.component.css']
 })
 export class CampaignDefinitionComponent implements OnInit {
-  @Input() systems: any;
-  @Input() currencies: any;
-  @Input() organizations: any;
+  systems: SystemsDto[];
+  currencies: CurrencyDTO[];
+  organizations: OrganizationDTO[];
   @Input() selectedCampaign: AggregatedCampaignsDTO;
   selectedSystem: any;
   products: any[];
   pageSize: 5;
   campaignTargetData: CampaignTargetsDTO[];
-  selectedCampaignTarget: any[] = [];
+  selectedCampaignTarget: any;
+  selectedCampaignTargetClient: any[] = [];
+  selectedCampaignTargetLead: any[] = [];
+  selectedCampaignActivity: any;
 
   campaignActivityData: any[];
   trackerUrlData: any[];
@@ -157,10 +170,19 @@ export class CampaignDefinitionComponent implements OnInit {
   @ViewChild('campaignMessageConfirmationModal')
   campaignMessageConfirmationModal!: ReusableInputComponent;
 
+  @ViewChild('campaignActivityConfirmationModal') campaignActivityConfirmationModal: ReusableInputComponent;
+
   @ViewChild('campaignMessagesTable') campaignMessagesTable: Table;
+  @ViewChild('campaignsTargetTable') campaignsTargetTable: Table;
+  @ViewChild('activitiesTable') activitiesTable: Table;
+  @ViewChild('campaignsActivityTable') campaignsActivityTable: Table;
   @Output() editCampaignClick: EventEmitter<any> = new EventEmitter<any>();
   clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   isSearching: boolean = false;
+  leads: Leads[] = [];
+  activityData: Activity[];
+  activityTypeData: ActivityType[];
+  selectedActivity: ActivityType;
 
   constructor(
     private globalMessagingService: GlobalMessagingService,
@@ -172,7 +194,12 @@ export class CampaignDefinitionComponent implements OnInit {
     private campaignsService: CampaignsService,
     private staffService: StaffService,
     private spinner: NgxSpinnerService,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private leadService: LeadsService,
+    private systemsService: SystemsService,
+    private organizationService: OrganizationService,
+    private currencyService: CurrencyService,
+    private activityService: ActivityService
   ) {}
 
   ngOnInit(): void {
@@ -208,8 +235,16 @@ export class CampaignDefinitionComponent implements OnInit {
     // log.info(this.systems, this.currencies, this.organizations)
     log.info("selected campaign>", this.selectedCampaign)
 
-    this.fetchCampaignMessages();
-    this.fetchCampaignTargets();
+    if (this.selectedCampaign) {
+      this.fetchCampaignMessages();
+      this.fetchCampaignTargets();
+    }
+    this.getOrganizations();
+    this.getCurrencies();
+    this.getAllSystems();
+    this.getActivities();
+    this.getActivityTypes();
+    this.getCampaignActivities();
   }
 
   /**
@@ -436,14 +471,9 @@ export class CampaignDefinitionComponent implements OnInit {
    */
   openTargetModal() {
     const modal = document.getElementById('targetSearchModal');
-    if (modal && this.selectedCampaignTarget) {
+    if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No target is selected!'
-      );
     }
   }
 
@@ -687,7 +717,7 @@ export class CampaignDefinitionComponent implements OnInit {
    * The function `goToNext` increments the current tab index and updates the current tab and button
    * text accordingly.
    */
-  goToNext() {
+  /*goToNext() {
     let index = this.currentTab.id;
     if (index === this.navigationLinks.length-1) {
       index = 0;
@@ -701,6 +731,33 @@ export class CampaignDefinitionComponent implements OnInit {
     log.info(this.currentTab)
 
     this.buttonText = this.navigationLinks.length-1 === this.currentTab.id ? 'Back to campaigns' : 'Next';
+  }*/
+
+  async goToNext() {
+    let index = this.currentTab.id;
+
+    if (index === 0) {
+      try {
+        // Call saveCampaign() and wait for it to complete if it's async
+        await this.saveCampaign();
+      } catch (error) {
+        log.error('Failed to save campaign:', error);
+        return; // Stop further execution if the save fails
+      }
+    }
+
+    if (index === this.navigationLinks.length - 1) {
+      index = 0;
+      this.onClickSave.emit(index);
+    } else {
+      index++;
+    }
+
+    this.currentTab = this.navigationLinks[index];
+    log.info(this.currentTab);
+
+    // Update button text
+    this.buttonText = this.navigationLinks.length - 1 === this.currentTab.id ? 'Back to campaigns' : 'Next';
   }
 
   /**
@@ -709,14 +766,6 @@ export class CampaignDefinitionComponent implements OnInit {
   tabNavigation(index:number) {
     this.currentTab = this.navigationLinks[index];
     this.buttonText = this.navigationLinks.length-1 === this.currentTab.id ? 'Back to campaigns' : 'Next';
-  }
-
- /**
-  * The `editTarget` function toggles the edit mode and opens a modal for editing a target.
-  */
-  editTarget() {
-    this.editMode = !this.editMode;
-    this.openTargetModal();
   }
 
   /**
@@ -821,7 +870,7 @@ export class CampaignDefinitionComponent implements OnInit {
    * If the campaign is being edited, the campaign message form is reset and the campaign message modal is closed.
    * The selected campaign is set to null after the campaign is saved.
    */
-  saveCampaign() {
+  /*saveCampaign() {
     this.createCampaignDefinitionForm.markAllAsTouched();
     if (this.createCampaignDefinitionForm.invalid) {
       // this.globalMessagingService.displayErrorMessage('Error', 'Fill required fields');
@@ -854,7 +903,7 @@ export class CampaignDefinitionComponent implements OnInit {
         impressionCount: campaignDefinitionFormValues.pageImpressions,
         objective: campaignDefinitionFormValues.objective,
         organization: campaignDefinitionFormValues.organization,
-        product: campaignDefinitionFormValues.products[0].code, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
+        product: campaignDefinitionFormValues?.products[0]?.code, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
         sponsor: campaignDefinitionFormValues.sponsor,
         status: campaignDefinitionFormValues.status,
         system: campaignDefinitionFormValues.system,
@@ -906,7 +955,7 @@ export class CampaignDefinitionComponent implements OnInit {
         impressionCount: campaignDefinitionFormValues.pageImpressions,
         objective: campaignDefinitionFormValues.objective,
         organization: campaignDefinitionFormValues.organization,
-        product: campaignDefinitionFormValues.products[0].code || null, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
+        product: campaignDefinitionFormValues?.products[0]?.code || null, //the endpoint doesn't support multiple products but on frontend we should be able to display multiple products
         sponsor: campaignDefinitionFormValues.sponsor,
         status: campaignDefinitionFormValues.status,
         system: campaignDefinitionFormValues.system,
@@ -931,6 +980,70 @@ export class CampaignDefinitionComponent implements OnInit {
           })
     }
 
+  }*/
+
+  saveCampaign(): Promise<void> {
+    this.createCampaignDefinitionForm.markAllAsTouched();
+
+    if (this.createCampaignDefinitionForm.invalid) {
+      // this.globalMessagingService.displayErrorMessage('Error', 'Fill required fields');
+      return Promise.reject('Form is invalid');
+    }
+
+    const campaignDefinitionFormValues = this.createCampaignDefinitionForm.getRawValue();
+    const productCode = Array.isArray(campaignDefinitionFormValues?.products) && campaignDefinitionFormValues.products.length > 0
+      ? campaignDefinitionFormValues.products[0].code
+      : null;
+
+    const saveCampaignPayload: CampaignsDTO = {
+      actualResponseCount: null,
+      actualRoi: null,
+      actualSalesCount: null,
+      campaignName: campaignDefinitionFormValues.name,
+      campaignType: campaignDefinitionFormValues.campaignType,
+      cmpActlCost: campaignDefinitionFormValues.actualCost,
+      cmpBgtCost: campaignDefinitionFormValues.budgetedCost,
+      cmpDate: campaignDefinitionFormValues.dateFrom,
+      cmpExptRevenue: campaignDefinitionFormValues.expectedRevenue,
+      cmpNumSent: null,
+      code: this.selectedCampaign?.campaign?.code || null,  // Handle for create or update
+      currencies: campaignDefinitionFormValues.currency,
+      description: campaignDefinitionFormValues.description,
+      eventTime: campaignDefinitionFormValues.executionTime,
+      events: campaignDefinitionFormValues.event,
+      expectCloseDate: campaignDefinitionFormValues.dateTo,
+      expectedCost: campaignDefinitionFormValues.expectedCost,
+      expectedResponseCount: null,
+      expectedRoi: null,
+      expectedSalesCount: null,
+      impressionCount: campaignDefinitionFormValues.pageImpressions,
+      objective: campaignDefinitionFormValues.objective,
+      organization: campaignDefinitionFormValues.organization,
+      product: productCode,
+      sponsor: campaignDefinitionFormValues.sponsor,
+      status: campaignDefinitionFormValues.status,
+      system: campaignDefinitionFormValues.system,
+      targetAudience: null,
+      targetSize: null,
+      teamLeader: campaignDefinitionFormValues.team,
+      user: campaignDefinitionFormValues.assignedTo,
+      venue: campaignDefinitionFormValues.venue
+    };
+
+
+    const campaignServiceCall = this.selectedCampaign
+      ? this.campaignsService.updateCampaign(this.selectedCampaign.campaign.code, saveCampaignPayload)
+      : this.campaignsService.createCampaign(saveCampaignPayload);
+
+    return campaignServiceCall.toPromise()
+      .then(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', this.selectedCampaign ? 'Successfully updated campaign' : 'Successfully created campaign');
+        this.createCampaignDefinitionForm.reset();
+      })
+      .catch(error => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message || 'Error saving campaign');
+        throw error;  // Throw to ensure calling function handles it
+      });
   }
 
   /**
@@ -1024,10 +1137,11 @@ export class CampaignDefinitionComponent implements OnInit {
       const campaignMessageFormValues = this.createCampaignMessageForm.getRawValue();
 
       const saveCampaignMessagePayload: CampaignMessagesDTO = {
-        campaignCode: null, //should be added
+        campaignCode: this.selectedCampaign?.campaign?.code, //should be added
         code: null,
         date: campaignMessageFormValues.scheduleDate, // should be added
-        imageUrl: null, // should be added
+        imageUrl: null,
+        image: this.url,
         messageBody: campaignMessageFormValues.messagesContent,
         messageSubject: campaignMessageFormValues.messagesSubject,
         messageType: campaignMessageFormValues.msgCampaignType,
@@ -1036,27 +1150,30 @@ export class CampaignDefinitionComponent implements OnInit {
       }
       log.info("message>", saveCampaignMessagePayload)
       this.campaignsService.createCampaignMessage(saveCampaignMessagePayload)
-        .subscribe((data) => {
-            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a campaign message');
+        .subscribe({
+          next: (data) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a campaign message');
 
-            this.createCampaignMessageForm.reset();
-            this.closeCampaignMessageModal();
-            this.fetchCampaignMessages();
+          this.createCampaignMessageForm.reset();
+          this.closeCampaignMessageModal();
+          this.fetchCampaignMessages();
           },
-          error => {
-            log.info('>>>>>>>>>', error.error.message)
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          });
+          error: (err) => {
+            log.info('>>>>>>>>>', err.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        });
     }
     else {
       const campaignMessageFormValues = this.createCampaignMessageForm.getRawValue()
       const campaignMessageCode = this.selectedCampaignMessage?.code;
 
       const saveCampaignMessagePayload: CampaignMessagesDTO = {
-        campaignCode: null, //should be added
+        campaignCode: this.selectedCampaign?.campaign?.code, //should be added
         code: campaignMessageCode,
         date: campaignMessageFormValues.scheduleDate, // should be added
-        imageUrl: null, // should be added
+        imageUrl: null,
+        image: this.selectedCampaignMessage.imageUrl ? this.selectedCampaignMessage.imageUrl: this.url,
         messageBody: campaignMessageFormValues.messagesContent,
         messageSubject: campaignMessageFormValues.messagesSubject,
         messageType: campaignMessageFormValues.msgCampaignType,
@@ -1065,7 +1182,8 @@ export class CampaignDefinitionComponent implements OnInit {
       }
       log.info("message>", saveCampaignMessagePayload)
       this.campaignsService.updateCampaignMessage(campaignMessageCode, saveCampaignMessagePayload)
-        .subscribe((data) => {
+        .subscribe({
+          next: (data) => {
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated a campaign message');
 
             this.createCampaignMessageForm.reset();
@@ -1073,10 +1191,11 @@ export class CampaignDefinitionComponent implements OnInit {
             this.fetchCampaignMessages();
             this.selectedCampaignMessage = null;
           },
-          error => {
+          error: (err) => {
             // log.info('>>>>>>>>>', error.error.message)
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          });
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          },
+        });
     }
 
   }
@@ -1129,17 +1248,19 @@ export class CampaignDefinitionComponent implements OnInit {
   confirmCampaignMessageDelete() {
     if (this.selectedCampaignMessage) {
       const campaignMessageId = this.selectedCampaignMessage.code;
-      this.campaignsService.deleteCampaignMessage(campaignMessageId).subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a campaign message'
-          );
-          this.selectedCampaignMessage = null;
-          this.fetchCampaignMessages();
+      this.campaignsService.deleteCampaignMessage(campaignMessageId).subscribe({
+        next: (data) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          'Successfully deleted a campaign message'
+        );
+        this.selectedCampaignMessage = null;
+        this.fetchCampaignMessages();
         },
-        error => {
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        });
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1160,7 +1281,7 @@ export class CampaignDefinitionComponent implements OnInit {
         this.campaignTargetData = data;
         this.spinner.hide();
 
-        log.info("targets>>", data);
+        // log.info("targets>>", data);
       });
   }
 
@@ -1203,16 +1324,16 @@ export class CampaignDefinitionComponent implements OnInit {
           untilDestroyed(this),
           tap((data) => log.info(`Fetching Clients>>>`, data))
         )
-        .subscribe(
-          (data: Pagination<ClientDTO>) => {
+        .subscribe({
+          next: (data: Pagination<ClientDTO>) => {
             this.clientsData = data;
             this.spinner.hide();
             this.cdr.detectChanges();
           },
-          error => {
+          error: err => {
             this.spinner.hide();
-          }
-        );
+          },
+        });
     }
   }
   /**
@@ -1243,18 +1364,42 @@ export class CampaignDefinitionComponent implements OnInit {
           '',
           payload.searchCriteria,
           payload.searchValue)
-        .subscribe((data) => {
+        .subscribe({
+          next: (data) => {
             this.clientsData = data;
             this.spinner.hide();
           },
-          error => {
+          error: (err) => {
             this.spinner.hide();
-          });
+          }
+        });
     }
     else {
       this.globalMessagingService.displayErrorMessage('Error', "Search criteria and value is required")
     }
+  }
 
+  fetchLeads() {
+    this.leadService.getLeads()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.leads = data;
+            log.info('Fetch Leads', this.leads);
+          } else {
+            this.globalMessagingService.displayErrorMessage(
+              'Error', 'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error', err.error.message
+          );
+          log.info(`error >>>`, err);
+        },
+      });
   }
 
   /**
@@ -1264,6 +1409,325 @@ export class CampaignDefinitionComponent implements OnInit {
   filterCampaignMessages(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.campaignMessagesTable.filterGlobal(filterValue, 'contains');
+  }
+
+  filterCampaignTargets(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.campaignsTargetTable.filterGlobal(filterValue, 'contains');
+  }
+
+  filterActivities(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.activitiesTable.filterGlobal(filterValue, 'contains');
+  }
+
+  filterCampaignActivities(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.campaignsActivityTable.filterGlobal(filterValue, 'contains');
+  }
+
+  getAllSystems() {
+    this.systemsService.getSystems()
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe({
+        next: (data) => {
+          this.systems = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getOrganizations() {
+    this.organizationService.getOrganization()
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe({
+        next: (data) => {
+          this.organizations = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getCurrencies() {
+    this.currencyService.getCurrencies()
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe({
+        next: (data) => {
+          this.currencies = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  saveCampaignTarget() {
+
+    const sortValues = this.targetSearchForm.getRawValue();
+
+    log.info('form value', sortValues);
+
+    const selectedTargetGroup = sortValues.group ? sortValues.group : '';
+    log.info('save target', selectedTargetGroup);
+
+    if (selectedTargetGroup === 'Client') {
+      const clientSelect = this.selectedCampaignTargetClient;
+      log.info("selClient", clientSelect);
+      const saveCampaignMessagePayload: CampaignTargetsDTO = {
+        accountCode: clientSelect[0].id,
+        accountType: selectedTargetGroup,
+        campaignCode: this.selectedCampaign?.campaign?.code,
+        code: null,
+        targetDate: ""
+      }
+      log.info("selClientPayload", saveCampaignMessagePayload);
+      this.campaignsService.createCampaignTarget(saveCampaignMessagePayload)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a campaign target');
+
+            this.targetSearchForm.reset();
+            this.closeTargetModal();
+            this.selectedCampaignTargetClient = null;
+            this.fetchCampaignTargets();
+          },
+          error: (err) => {
+            log.info('>>>>>>>>>', err.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          },
+        });
+    } else {
+      const leadSelect = this.selectedCampaignTargetLead;
+      log.info("selLead", leadSelect);
+      const saveCampaignMessagePayload: CampaignTargetsDTO = {
+        accountCode: leadSelect[0].code,
+        accountType: selectedTargetGroup,
+        campaignCode: this.selectedCampaign?.campaign?.code,
+        code: null,
+        targetDate: ""
+      }
+      log.info("selLeadPayload", saveCampaignMessagePayload);
+      this.campaignsService.createCampaignTarget(saveCampaignMessagePayload)
+        .subscribe(  {
+            next: (data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a campaign target');
+
+            this.targetSearchForm.reset();
+            this.closeTargetModal();
+            this.selectedCampaignTargetLead = null;
+            this.fetchCampaignTargets();
+          },
+          error: (err) => {
+            log.info('>>>>>>>>>', err.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          },
+        });
+    }
+  }
+
+  /**
+   * The `editTarget` function toggles the edit mode and opens a modal for editing a target.
+   */
+  editCampaignTarget() {
+    this.editMode = !this.editMode;
+    if (this.selectedCampaign) {
+      this.openTargetModal();
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign target is selected!'
+      );
+    }
+  }
+
+  deleteCampaignTarget() {
+    if (this.selectedCampaignTarget) {
+      const targetId = this.selectedCampaignTarget?.code;
+      this.campaignsService.deleteCampaignTarget(targetId).subscribe( {
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a campaign target'
+          );
+          this.selectedCampaignTarget = null;
+          this.fetchCampaignTargets();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign target is selected.'
+      );
+    }
+  }
+
+  getActivities() {
+    this.activityService.getActivities().subscribe({
+      next: (data) => {
+        this.activityData = data;
+        log.info(`Activity data >>> `, data);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityTypes() {
+    this.activityService.getActivityTypes().subscribe({
+      next: (data) => {
+        log.info(`activity types >>> `, data);
+        this.activityTypeData = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityTypeDescription(activityTypeCode: number) {
+    const activityType = this.activityTypeData?.find(
+      (type) => type.id === activityTypeCode
+    );
+    return activityType ? activityType.desc : activityTypeCode;
+  }
+
+  saveActivity() {
+    const formValues = this.createCampaignActivityForm.getRawValue();
+    log.info(`activity form>> `, formValues);
+    const payload: Activity = {
+      id: null,
+      activityTypeCode: formValues.type,
+      wef: formValues.wef,
+      wet: formValues.wet,
+      duration: null,
+      subject: formValues.subject,
+      location: formValues.location,
+      assignedTo: null,
+      relatedTo: null,
+      statusId: null,
+      desc: formValues.activityDescription,
+      reminder: null,
+      team: null,
+      reminderTime: null,
+      messageCode: null,
+    };
+
+    this.activityService.createActivity(payload).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Activity created successfully!'
+        );
+        this.createCampaignActivityForm.reset();
+        this.getActivities();
+        this.closeNewCampaignActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  saveCampaignActivity() {
+    log.info("Activity>>", this.selectedActivity)
+    const payload: CampaignActivitiesDTO = {
+      code: 0,
+      campaignCode: this.selectedCampaign?.campaign?.code,
+      campaignActCode: this.selectedActivity?.id
+      /*id: null,
+      activityTypeCode: formValues.type,
+      wef: formValues.wef,
+      wet: formValues.wet,
+      duration: null,
+      subject: formValues.subject,
+      location: formValues.location,
+      assignedTo: null,
+      relatedTo: null,
+      statusId: null,
+      desc: formValues.activityDescription,
+      reminder: null,
+      team: null,
+      reminderTime: null,
+      messageCode: null,*/
+    };
+
+    this.campaignsService.createCampaignActivity(payload).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Campaign activity created successfully!'
+        );
+        this.createCampaignActivityForm.reset();
+        this.getCampaignActivities();
+        this.closeCampaignActivityModal();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  deleteCampaignActivity() {
+    this.campaignActivityConfirmationModal.show();
+  }
+
+  confirmCampaignActivityDelete() {
+    if (this.selectedCampaignActivity) {
+      const campaignActivityId = this.selectedCampaignActivity.code;
+      this.campaignsService.deleteCampaignActivity(campaignActivityId).subscribe({
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a campaign activity'
+          );
+          this.selectedCampaignActivity = null;
+          this.getCampaignActivities();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No campaign activity is selected.'
+      );
+    }
+  }
+
+  getCampaignActivities() {
+    this.campaignsService.getCampaignActivities(this.selectedCampaign?.campaign?.code).subscribe({
+      next: (data) => {
+        this.campaignActivityData = data;
+        log.info(`Campaign activity data >>> `, data);
+        // this.loadCampaignSpecificActivities();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   ngOnDestroy(): void {}
