@@ -585,7 +585,7 @@
                                     <ng-template pTemplate="body" let-riskDetails let-ri="rowIndex">
                                         <tr [pSelectableRow]="riskDetails"
                                             [class.p-highlight]="riskDetails === selectedRisk"
-                                            (click)="togglePremiumDetails();getRiskClauses();getRiskPeril();getSubclassPerils();getRelatedRisks();getSchedules();getCommissions();getallCertificates()">
+                                            (click)="getRiskClauses();getRiskPeril();getSubclassPerils();getRelatedRisks();getSchedules();getCommissions();getallCertificates()">
                                             <td class="flexible-header">{{riskDetails.propertyId}}</td>
                                             <td class="flexible-header"></td>
                                             <td class="flexible-header">{{riskDetails.propertyDescription}}</td>
@@ -658,7 +658,7 @@
                                                 <div class="row  mb-2">
 
                                                     <!-- <div class="col-sm-3"></div> -->
-                                                    <div class="col-3" *ngIf="isScheduleDetailOpen">
+                                                    <div class="col-3" *ngIf="isScheduleDetailOpen && !scheduleDetailsExist">
                                                         <button type="button" id="icon" class="btn btn-success"
                                                             title="add">
                                                             <i class="fa-solid fa-plus"></i>
@@ -748,7 +748,7 @@
                                             <ng-template pTemplate="body" let-filteredSchedule let-ri="rowIndex">
                                                 <tr [pSelectableRow]="filteredSchedule"
                                                     [class.p-highlight]="filteredSchedule === selectedSchedule"
-                                                    (click)="onEditSchedule(selectedSchedule)">
+                                                    (click)="onEditSchedule(selectedSchedule);getModelYear()">
 
                                                     <td class="flexible-header">{{
                                                         filteredSchedule.details.level1.registrationNumber}}</td>
@@ -759,7 +759,7 @@
                                                     <td class="flexible-header">
                                                         {{filteredSchedule.details.level1.yearOfManufacture }}</td>
                                                     <td class="flexible-header">
-                                                        {{filteredSchedule.details.level1.seatingCapacity }}</td>
+                                                        {{filteredSchedule.details.level1.carryCapacity }}</td>
                                                     <td class="flexible-header">{{
                                                         filteredSchedule.details.level1.value|number }}</td>
                                                     <td class="flexible-header">
@@ -884,9 +884,10 @@
                                                                                         class="form-select form-control-sm mb-1"
                                                                                         id="scheduleInput"
                                                                                         formControlName="yearOfManufacture">
-                                                                                        <option></option>
-                                                                                        <option></option>
+                                                                                        <option value=""></option>
+                                                                                        <option *ngFor="let year of modelYear" [value]="year">{{ year }}</option>
                                                                                     </select>
+                                                                                   
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -900,13 +901,11 @@
                                                                                     id="scheduleLabel">{{'gis.quotation.seating_capacity'
                                                                                     | translate}}</label>
                                                                                 <div class="col-7">
-                                                                                    <select
-                                                                                        class="form-select form-control-sm mb-1"
+                                                                                    
+                                                                                    <input type="number"
                                                                                         id="scheduleInput"
+                                                                                        class="form-control form-control-sm mb-1"
                                                                                         formControlName="carryCapacity">
-                                                                                        <option></option>
-                                                                                        <option></option>
-                                                                                    </select>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
