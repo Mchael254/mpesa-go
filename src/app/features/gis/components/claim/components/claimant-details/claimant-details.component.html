@@ -1,1 +1,282 @@
-<p>claimant-details works!</p>
+<div class="row">
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="claimNumber">{{ 'gis.claims.claim_transaction.claim_number' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.claimNumber }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="client">{{ 'gis.claims.claim_transaction.client' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.client }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="riskWef">{{ 'gis.claims.claim_transaction.risk_wef' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.riskWef }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="lossDescription">{{ 'gis.claims.claim_transaction.loss_description' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.lossDescription }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="claimStatus">{{ 'gis.claims.claim_transaction.claim_status' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.claimStatus }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="catastrophe">{{ 'gis.claims.claim_transaction.catastrophe' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.catastrophe }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-6">
+                    <p class="label" for="endorsementNumber">{{ 'gis.claims.claim_transaction.endorsement_number' | translate }}</p>
+                </div>
+                <div class="col-6">
+                    <p id="details">{{ claimTransactionDetails.endorsementNumber }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="product">{{ 'gis.claims.claim_transaction.product' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.product }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="risk">{{ 'gis.claims.claim_transaction.risk' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.risk }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="claimLossDate">{{ 'gis.claims.claim_transaction.claim_loss_date' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.claimLossDate }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="bookedDate">{{ 'gis.claims.claim_transaction.booked_date' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.bookedDate }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="agentIntermediary">{{ 'gis.claims.claim_transaction.agent_intermediary' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.agentIntermediary }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="priorityLevel">{{ 'gis.claims.claim_transaction.priority_level' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.priorityLevel }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="policyNumber">{{ 'gis.claims.claim_transaction.policy_number' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.policyNumber }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="insured">{{ 'gis.claims.claim_transaction.insured' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.insured }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="riskWet">{{ 'gis.claims.claim_transaction.risk_wet' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.riskWet }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="bookedBy">{{ 'gis.claims.claim_transaction.booked_by' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.bookedBy }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="nextReviewDate">{{ 'gis.claims.claim_transaction.next_review_date' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.nextReviewDate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="event">{{ 'gis.claims.claim_transaction.event' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.event }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="claimNotificationDate">{{ 'gis.claims.claim_transaction.claim_notification_date' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.claimNotificationDate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="currency">{{ 'gis.claims.claim_transaction.currency' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.currency }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="insuredPolicyNo">{{ 'gis.claims.claim_transaction.insured_policy_no' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.insuredPolicyNo }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="admitLiability">{{ 'gis.claims.claim_transaction.admit_liability' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.admitLiability }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <p class="label" for="riskValue">{{ 'gis.claims.claim_transaction.risk_value' | translate }}</p>
+                </div>
+                <div class="col-8">
+                    <p id="details">{{ claimTransactionDetails.riskValue }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

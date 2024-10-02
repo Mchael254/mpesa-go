@@ -133,8 +133,8 @@ export class QuotationDetailsComponent {
         this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
         this.quotationForm.controls['withEffectiveFromDate'].setValue(this.quickQuotationDetails.coverFrom);
         this.quotationForm.controls['withEffectiveToDate'].setValue(this.quickQuotationDetails.coverTo);
-        this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
-
+        // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
+        console.log(this.quickQuotationDetails.source)
         const productCode = this.quickQuotationDetails.quotationProduct[0].proCode
         this.productService.getProductByCode(productCode).subscribe(res=>{
           this.quotationForm.controls['productCode'].setValue(res);

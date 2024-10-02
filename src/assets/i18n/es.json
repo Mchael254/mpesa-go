@@ -1166,9 +1166,55 @@
         "edit_peril": "Editar Riesgo", 
         "confirm_delete_peril": "¿Está seguro de que desea eliminar este riesgo?",  
         "enter_peril": "Ingrese Riesgo" 
-      }
+      },
+      "claim_transaction": {
+        "claim_transaction_details": "Detalles de la transacción de reclamos",
+        "claim_number": "Número de reclamo",
+        "product": "Producto",
+        "risk_wef": "Riesgo WEF",
+        "loss_description": "Descripción de la pérdida",
+        "claim_status": "Estado del reclamo",
+        "catastrophe": "Catástrofe",
+        "policy_number": "Número de póliza",
+        "insured": "Asegurado",
+        "risk_wet": "Riesgo WET",
+        "booked_by": "Reservado por",
+        "next_review_date": "Fecha de la próxima revisión",
+        "event": "Evento",
+        "endorsement_number": "Número de endoso",
+        "risk": "Riesgo",
+        "claim_loss_date": "Fecha de la pérdida del reclamo",
+        "booked_date": "Fecha de reserva",
+        "agent_intermediary": "Agente/Intermediario",
+        "priority_level": "Nivel de prioridad",
+        "client": "Cliente",
+        "risk_value": "Valor del riesgo",
+        "claim_notification_date": "Fecha de notificación del reclamo",
+        "admit_liability": "Admitir responsabilidad",
+        "insured_policy_no": "Número de póliza asegurado",
+        "currency": "Moneda"
+      },
+      "claim_transaction_report": {
+    "claim_transaction_report": "Informe de transacciones de reclamos",
+    "claim_revisions": "Revisiones de reclamos",
+    "claim_payments": "Pagos de reclamos",
+    "letters_and_memos": "Cartas y memorandos",
+    "policy_enquiry": "Consulta de pólizas",
+    "back_to_claim_enquiry": "Volver a la consulta de reclamos",
+    "trans_type": "Tipo de transacción",
+    "trans_date": "Fecha de la transacción",
+    "gross_liability": "Responsabilidad bruta",
+    "net_liability_payee": "Pagadero de responsabilidad neta",
+    "paid_amount": "Cantidad pagada",
+    "authorised_by": "Autorizado por",
+    "authorise_date": "Fecha de autorización",
+    "cheque_number": "Número de cheque",
+    "cheque_date": "Fecha del cheque",
+    "receipt_number": "Número de recibo",
+    "action": "Acción"
   }
-},
+    }
+  },
   "lms": {
     "common": {},
     "ind": {

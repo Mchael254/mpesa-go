@@ -9,6 +9,7 @@ import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ClaimsService } from '../../services/claims.service';
 import { Router } from '@angular/router';
+import claimSteps from '../../data/claims_steps.json'
 
 const log = new Logger("claimOpeningComponent");
 
@@ -49,6 +50,7 @@ interface PriorityLevel {
   styleUrls: ['./claim-opening.component.css']
 })
 export class ClaimOpeningComponent {
+  steps = claimSteps
   selectedPeril:any;
   chosenPeril:any;
   perilEstimate: number;
@@ -64,6 +66,7 @@ export class ClaimOpeningComponent {
   perilDescription:any
   risks: any[]
   causations:any;
+  Users:any;
   catastropheEvents: CatastropheEvent[] = [
     { value: 'event1', label: 'Event 1' },
     { value: 'event2', label: 'Event 2' },
@@ -157,8 +160,9 @@ export class ClaimOpeningComponent {
   }
 
   ngOnInit(): void {
-    this.getProduct()
-    this.getCausations()
+    this.getProduct();
+    this.getCausations();
+    this.getUsers();
     this.primengConfig.ripple = true;
     this.perilsList = [
       { label: 'Fire Damage', value: 'Fire Damage' },
@@ -218,7 +222,10 @@ export class ClaimOpeningComponent {
       mPayDetails: [''],
       emtDetails: [''],
       chequeDetails: [''],
-      pinDetails: ['']
+      pinDetails: [''],
+      mpay: [''],
+      emt: [''],
+      cheque: ['']
     });
 
     // Disable claimant when selfAsClaimant is checked
@@ -295,7 +302,9 @@ export class ClaimOpeningComponent {
     this.claimService.getCausations().subscribe({
       next:(res=>{
         this.causations = res
-        console.log(res)
+        this.causations = this.causations._embedded
+        this.causations = this.causations.causation_dto_list
+        console.log(this.causations)
       })
     })
   }
@@ -520,5 +529,14 @@ export class ClaimOpeningComponent {
     console.log(this.addPerilForm.value);
   }
 
+  getUsers(){
+    this.claimService.getUsers().subscribe({
+      next:(res=>{
+        this.Users = res
+        this.Users = this.Users.content
+        console.log( this.Users)
+      })
+    })
+  }
 
 }

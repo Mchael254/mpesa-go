@@ -102,5 +102,8 @@ export class ClaimsService {
   getCausations(){
     return this.api.GET(`api/v1/causations`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
+  getUsers(){
+    return this.api.GET(`users`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
+  }
 
 }
