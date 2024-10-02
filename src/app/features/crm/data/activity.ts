@@ -61,7 +61,7 @@ export interface ActivityParticipant {
   id: number;
   aacCode: number;
   actCode: number;
-  participant: {
+  participant?: {
     id: number;
     name: string;
     emailAddress: string;
