@@ -84,17 +84,6 @@
                                 translate}}
                             </div>
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <label for="policy_type" class="required product-label"
-                                id="policy_type">{{'gis.policy.policy_type' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input" #policyTypeSelect
-                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
-                                <option value=""></option>
-                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
-                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
-                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
-                            </select>
-                        </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.branch' |
                                 translate}}</label>
@@ -109,6 +98,18 @@
                                 translate}}
                             </div>
                         </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="policy_type" class="required product-label"
+                                id="policy_type">{{'gis.policy.policy_type' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input" #policyTypeSelect
+                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
+                                <option value=""></option>
+                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
+                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
+                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
+                            </select>
+                        </div>
+                     
                     </div>
                     <!-- Additional fields for Intermediary Business -->
                     <div *ngIf="showIntermediaryFields">
