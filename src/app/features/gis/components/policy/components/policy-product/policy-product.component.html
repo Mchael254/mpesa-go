@@ -1,7 +1,8 @@
 <div class="container ">
     <div class="spinner" style="position: relative">
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-      </div>
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large"
+            bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    </div>
     <p class="titleMain mt-3 ms-4">{{'gis.policy.underwriting_product_details' | translate}}</p>
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
@@ -16,8 +17,8 @@
                             <label for="client" class="required product-label" id="client">{{'gis.policy.client' |
                                 translate}}</label>
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="clientCode" [(ngModel)]="clientName" data-bs-toggle="modal" 
-                                data-bs-target="#clientModal" readonly  >
+                                formControlName="clientCode" [(ngModel)]="clientName" data-bs-toggle="modal"
+                                data-bs-target="#clientModal" readonly>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('clientCode').hasError('required') && policyProductForm.get('clientCode').touched"
@@ -29,13 +30,13 @@
                         <div class=" mb-1 col-sm-4 col-12">
 
                             <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault"
-                                #checkbox (change)="toggleJointAccountSelect(checkbox.checked)"  pTooltip="Select to add a joint account" 
-                                tooltipPosition="left">
+                                #checkbox (change)="toggleJointAccountSelect(checkbox.checked)"
+                                pTooltip="Select to add a joint account" tooltipPosition="left">
 
                             <label class="product-label">{{'gis.policy.joint_account' | translate}}</label>
                             <input type="text" id="jointAccountInput" class="form-control form-control-sm mb-1"
                                 formControlName="source" [value]="jointAccountCode " [(ngModel)]="jointAccountName"
-                                data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly >
+                                data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly>
 
                             <!-- <select class="form-select form-control-sm mb-1 ms-n4 quote-input" id="jointAccountInput"
                                 formControlName="source">
@@ -52,8 +53,9 @@
                                 [filter]="true" [(ngModel)]="selectedProductCode"></p-dropdown>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" *ngIf="page"
                                 optionValue="code" optionLabel="description"
-                                (onChange)="onProductSelected($event.value)" [placeholder]="productDescription" [(ngModel)]="productDescription" [filterBy]="'description'"
-                                [filter]="true" ></p-dropdown>
+                                (onChange)="onProductSelected($event.value)" [placeholder]="productDescription"
+                                [(ngModel)]="productDescription" [filterBy]="'description'"
+                                [filter]="true"></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('productCode').hasError('required') && policyProductForm.get('productCode').touched"
                                 class="form-text text-danger">
@@ -97,8 +99,8 @@
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.branch' |
                                 translate}}</label>
                             <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name"
-                                optionValue="id" (onChange)="onBranchSelected($event.value)"
-                                 [filterBy]="'description'" [filter]="true" [placeholder]="branchDescription"
+                                optionValue="id" (onChange)="onBranchSelected($event.value)" [filterBy]="'description'"
+                                [filter]="true" [placeholder]="branchDescription"
                                 [(ngModel)]="branchDescription"></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('branchCode').hasError('required') && policyProductForm.get('branchCode').touched"
@@ -118,13 +120,14 @@
                                     formControlName="agent_code">
                                     <option value=""></option>
                                 </select> -->
-                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id" *ngIf="!page"
-                                    optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
-                                    [filterBy]="'name'" [filter]="true"></p-dropdown>
+                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"
+                                    *ngIf="!page" optionLabel="name" (onChange)="onAgentSelected($event.value)"
+                                    placeholder=" " [filterBy]="'name'" [filter]="true"></p-dropdown>
 
-                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"  *ngIf="page"
-                                    optionLabel="name" (onChange)="onAgentSelected($event.value)" [placeholder]="agentDescription" [(ngModel)]="agentDescription"
-                                    [filterBy]="'name'" [filter]="true"></p-dropdown>
+                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"
+                                    *ngIf="page" optionLabel="name" (onChange)="onAgentSelected($event.value)"
+                                    [placeholder]="agentDescription" [(ngModel)]="agentDescription" [filterBy]="'name'"
+                                    [filter]="true"></p-dropdown>
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
                                 <div class="form-check pt-4">
@@ -557,7 +560,7 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('withEffectiveFromDate').hasError('required') && policyProductForm.get('withEffectiveFromDate').touched"
                                 class="form-text text-danger">
-                                {{'gis.quotation.cover_from_is_required' | translate}} 
+                                {{'gis.quotation.cover_from_is_required' | translate}}
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
@@ -565,11 +568,11 @@
                                 translate}}</label>
                             <input type="date" id="quote-input" (change)="updateCoverDays()"
                                 class="form-control form-control-sm mb-1" formControlName="withEffectiveToDate">
-                                <!-- Display error message under the field -->
+                            <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('withEffectiveToDate').hasError('required') && policyProductForm.get('withEffectiveToDate').touched"
-                            class="form-text text-danger">
-                            {{'gis.quotation.cover_to_is_required' | translate}} 
-                        </div>
+                                class="form-text text-danger">
+                                {{'gis.quotation.cover_to_is_required' | translate}}
+                            </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="coverDays" class="required product-label" id="product">{{'gis.policy.cover_days'
@@ -582,17 +585,20 @@
                     </div>
                     <div class="row mb-4">
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="currency" class=" product-label required"
-                                id="currency">{{'gis.policy.currency' | translate}}</label>
-                                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" *ngIf="!page" (onChange)="getcurrency($event.value)"
-                                optionValue="id" [filterBy]="'name'"  [filter]="true" ></p-dropdown>
-                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" (onChange)="getcurrency($event.value)"  *ngIf="page"
-                                optionValue="id" [filterBy]="'name'" [placeholder]="currencyDescription" [filter]="true" [ngModel]="currencyDescription"></p-dropdown>
-                                 <!-- Display error message under the field -->
+                            <label for="currency" class=" product-label required" id="currency">{{'gis.policy.currency'
+                                | translate}}</label>
+                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
+                                *ngIf="!page" (onChange)="getcurrency($event.value)" optionValue="id"
+                                [filterBy]="'name'" [filter]="true"></p-dropdown>
+                            <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
+                                (onChange)="getcurrency($event.value)" *ngIf="page" optionValue="id" [filterBy]="'name'"
+                                [placeholder]="currencyDescription" [filter]="true"
+                                [ngModel]="currencyDescription"></p-dropdown>
+                            <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('currencyCode').hasError('required') && policyProductForm.get('currencyCode').touched"
-                            class="form-text text-danger">
-                             {{'gis.policy.currency_is_required' | translate}} 
-                        </div>
+                                class="form-text text-danger">
+                                {{'gis.policy.currency_is_required' | translate}}
+                            </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class=" product-label"
@@ -613,32 +619,34 @@
                             </select>
                         </div>
                     </div>
-                      <!-- Additional fields for Currency Fixed Rate  -->
-                      <div *ngIf="showExchangeRateField">
+                    <!-- Additional fields for Currency Fixed Rate  -->
+                    <div *ngIf="showExchangeRateField">
                         <div class="row mb-1">
-                            
+
                             <div class="mb-1 col-sm-4 col-12">
                                 <label class="product-label" for="exchange_rate">
                                     {{'gis.policy.exchange_rate' | translate}}
                                 </label>
-                                <input class="form-control form-control-sm mb-1" type="text" value=""
-                                    id="exchange_rate" formControlName="currencyRate">
+                                <input class="form-control form-control-sm mb-1" type="text" value="" id="exchange_rate"
+                                    formControlName="currencyRate">
 
                             </div>
-                           
+
 
                         </div>
-                       
+
                     </div>
                     <div class="row mb-4">
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_interface" class=" product-label"
                                 id="policy_interface">{{'gis.policy.policy_document' | translate}}</label>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input" formControlName="transactionType" (ngModel) ="defaultProductDocument?.name">
-                                    <!-- <option value="" disabled selected>Select a product document...</option> -->
-                                    <option *ngFor="let document of productDocumentList" Value ="document">{{ document.name }}</option>
-                                  </select>
-                                  
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="transactionType" (ngModel)="defaultProductDocument?.name">
+                                <!-- <option value="" disabled selected>Select a product document...</option> -->
+                                <option *ngFor="let document of productDocumentList" Value="document">{{ document.name
+                                    }}</option>
+                            </select>
+
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class="required product-label"
@@ -650,11 +658,11 @@
                                     payment.description
                                     | sentenceCase}}</option>
                             </select>
-                             <!-- Display error message under the field -->
-                             <div *ngIf="policyProductForm.get('paymentMode').hasError('required') && policyProductForm.get('paymentMode').touched"
-                             class="form-text text-danger">
-                              {{'gis.policy.payment_mode_is_required' | translate}} 
-                         </div>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyProductForm.get('paymentMode').hasError('required') && policyProductForm.get('paymentMode').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.payment_mode_is_required' | translate}}
+                            </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label"
@@ -708,9 +716,8 @@
                                     id="payment_frequency">{{'gis.policy.other_interested_parties' |
                                     translate}}</label>
 
-                                    <p-dropdown  [options]="premiumFinanciers" optionLabel="partyName"
-                                    optionValue="partyCode" 
-                                    [filterBy]="'partyName'" [filter]="true" ></p-dropdown>
+                                <p-dropdown [options]="premiumFinanciers" optionLabel="partyName"
+                                    optionValue="partyCode" [filterBy]="'partyName'" [filter]="true"></p-dropdown>
                             </div>
 
 
@@ -730,9 +737,8 @@
                                 </label>
                                 <!-- <input class="form-control form-control-sm mb-1" type="text" value=""
                                     id="premium_financier"> -->
-                                    <p-dropdown  [options]="premiumFinanciers" optionLabel="partyName"
-                                optionValue="partyCode" 
-                                [filterBy]="'partyName'" [filter]="true" ></p-dropdown>
+                                <p-dropdown [options]="premiumFinanciers" optionLabel="partyName"
+                                    optionValue="partyCode" [filterBy]="'partyName'" [filter]="true"></p-dropdown>
 
                             </div>
 
@@ -804,7 +810,8 @@
                                     </div>
                                     <div class="col-3">
                                         <div class="form-check">
-                                            <input class="form-check-input"  (change)="importFromCsvChange($event);" type="checkbox" value="" id="from_csv">
+                                            <input class="form-check-input" (change)="importFromCsvChange($event);"
+                                                type="checkbox" value="" id="from_csv">
                                             <label class="form-check-label" for="from_csv">
                                                 {{'gis.policy.from_csv' | translate}}
                                             </label>
@@ -825,17 +832,18 @@
                         </div>
                         <div class="row mb-4">
                             <form [formGroup]="policyForm">
-                                
+
                                 <div class="col-sm-4 col-12" *ngIf="isriskImportedAnotherPolicy">
                                     <label for="policy_interface" class=" product-label"
                                         id="policy_interface">{{'gis.policy.policy_no' | translate}}</label>
-                                    <p-dropdown  [options]="policyList.content" formControlName="importRiskfromPolicy"  optionLabel="policyNo"
-                                        optionValue="policyNo" [filterBy]="'policyNo'" placeholder="Select a policy" (onChange)="getPolicy()" [filter]="true">
+                                    <p-dropdown [options]="policyList.content" formControlName="importRiskfromPolicy"
+                                        optionLabel="policyNo" optionValue="policyNo" [filterBy]="'policyNo'"
+                                        placeholder="Select a policy" (onChange)="getPolicy()" [filter]="true">
                                     </p-dropdown>
-    
+
                                 </div>
                             </form>
-                           
+
                         </div>
                     </div>
                     <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapsePolicy"
@@ -850,13 +858,87 @@
             </div>
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-primary" *ngIf="!page" (click)="createPolicy();selectedPolicyforRisk()">{{'gis.policy.next' |
+            <!-- <button type="button" class="btn btn-primary" *ngIf="!page" (click)="getClientExistingPolicies();createPolicy();selectedPolicyforRisk()">{{'gis.policy.next' |
+                translate}}</button>  -->
+            <button type="button" class="btn btn-primary" *ngIf="!page"
+                (click)="getClientExistingPolicies()">{{'gis.policy.next' |
                 translate}}</button>
-            
-                <button type="button" class="btn btn-primary" *ngIf="page" (click)="editPolicy()">{{'gis.policy.next' |
-                    translate}}</button>
+            <button class="btn btn-primary" #clientPoliciesModal data-bs-toggle="modal"
+                data-bs-target="#clientPoliciesModal" hidden></button>
+
+
+            <button type="button" class="btn btn-primary" *ngIf="page" (click)="editPolicy()">{{'gis.policy.next' |
+                translate}}</button>
         </div>
 
     </div>
 
+</div>
+<div class="modal fade" id="clientPoliciesModal" tabindex="-1" aria-labelledby="clientPoliciesModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="min-width:700px">
+            <div class="modal-body">
+                <p class="existingPoliciesTitle mb-4">Client's already existing policies</p>
+                <p-table [value]="clientsPolicies" [resizableColumns]="true" styleClass="p-datatable-sm"
+                    styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
+                    [scrollable]="true" scrollHeight="400px">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Policy no</th>
+                            <th>Agent name</th>
+                            <th>Cover from</th>
+                            <th>Cover to</th>
+                            <th>UW year</th>
+                            <th>Branch</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-data>
+                        <tr>
+                            <td>{{data.policyNo}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <p class="existingPoliciesTitle mt-4 float-start">Do you wish to continue creating the policy?</p>
+                <div class="mt-3 float-end">
+                    <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
+                    <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
+                        (click)="createPolicy();">Yes, continue</button>
+                        <button class="btn btn-primary" #generatedPolicyNumberModal data-bs-toggle="modal"
+                data-bs-target="#generatedPolicyNumberModal" hidden></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="generatedPolicyNumberModal" tabindex="-1" aria-labelledby="generatedPolicyNumberModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" >
+            <div class="modal-body">
+                <p class="generatedPolicyNumberTitle mb-4">Generated policy number</p>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="generatedPolicyNumberLabel" >Policy number</p>
+
+                    </div>
+                    <div class="col-6">
+                        <p class="generatedPolicyNumber ">{{generatedPolicyNumber}}</p>
+
+                    </div>
+                </div>
+                <div class="mt-3 d-flex justify-content-center">
+                    <button class="btn btn-primary" data-bs-dismiss="modal" (click)="createPolicy();">Continue</button>
+                    <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal">Change</button>
+                    <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
