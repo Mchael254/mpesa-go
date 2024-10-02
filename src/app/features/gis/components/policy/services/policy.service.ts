@@ -355,5 +355,9 @@ export class PolicyService {
     return this.api.PUT(`v1/policy-taxes`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getClientPolicies(clientCode:any,productCode:any){
+    return this.api.GET(`v1/policies/client-policies?clientCode=${clientCode}&proCode=${productCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
 

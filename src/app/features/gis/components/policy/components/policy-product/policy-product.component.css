@@ -37,7 +37,8 @@
 #quote-input {
     height: 33px;
 }
-.quote-input{
+
+.quote-input {
     height: 33px;
 
 }
@@ -66,57 +67,95 @@
 .search-icon {
     margin-top: -12px
 }
-::ng-deep .p-dropdown{
+
+::ng-deep .p-dropdown {
     height: 53%;
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;
-    }
-    ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder{
-    padding:3px;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label.p-placeholder {
+    padding: 3px;
 
 
-    }
+}
 
-    ::ng-deep
-    .p-dropdown .p-dropdown-label {
-        padding: 3px;
-        font-size: 14px;
-        color: #000;
-    }
+::ng-deep .p-dropdown .p-dropdown-label {
+    padding: 3px;
+    font-size: 14px;
+    color: #000;
+}
 
-    ::ng-deep
-    .p-dropdown-filter {
-        width: 100%;
-        height: 30px;
-        border-radius: 4px;
-    }
-    ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item{
-      font-size: 14px;
-      color: #000;
-      padding:3px 20px;
-      font-family: Roboto;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-    .search-input {
-        padding-bottom: 6px;
-        padding-left: 30px; 
-        border: 1px solid #ccc;
-        background: rgba(245, 246, 248, 1);
-        border-radius: 5px;
-        height: 40px;
-        width: 465px; 
-        font-size: 13px;
-      }
-      ::ng-deep .p-datatable .p-datatable-header{
-        background: transparent;
-      }
-      ::ng-deep .p-datatable.p-datatable-sm .p-datatable-header {
-        border-top: none;
-        padding:0;
-        padding-bottom:16px;
-      }
-    
+::ng-deep .p-dropdown-filter {
+    width: 100%;
+    height: 30px;
+    border-radius: 4px;
+}
+
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: 14px;
+    color: #000;
+    padding: 3px 20px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.search-input {
+    padding-bottom: 6px;
+    padding-left: 30px;
+    border: 1px solid #ccc;
+    background: rgba(245, 246, 248, 1);
+    border-radius: 5px;
+    height: 40px;
+    width: 465px;
+    font-size: 13px;
+}
+
+::ng-deep .p-datatable .p-datatable-header {
+    background: transparent;
+}
+
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-header {
+    border-top: none;
+    padding: 0;
+    padding-bottom: 16px;
+}
+
+.existingPoliciesTitle {
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16.41px;
+    text-align: left;
+    color: #000;
+
+
+}
+.generatedPolicyNumberTitle{
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16.41px;
+    text-align: left;
+    color: #000;
+}
+.generatedPolicyNumberLabel{
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16.41px;
+    text-align: left;
+    color: #000;
+}
+.generatedPolicyNumber{
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16.41px;
+    text-align: left;
+    color: #000;
+}
