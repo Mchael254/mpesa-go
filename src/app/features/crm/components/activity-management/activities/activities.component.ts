@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
@@ -16,6 +16,9 @@ import { ActivityService } from '../../../services/activity.service';
 import { MessageService } from 'primeng/api';
 import { MessagingService } from '../../../services/messaging.service';
 import { MessageTemplate } from '../../../data/messaging-template';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { StaffModalComponent } from 'src/app/features/entities/components/staff/staff-modal/staff-modal.component';
 
 const log = new Logger('ActivitiesComponent');
 @Component({
@@ -24,6 +27,9 @@ const log = new Logger('ActivitiesComponent');
   styleUrls: ['./activities.component.css'],
 })
 export class ActivitiesComponent implements OnInit {
+  @ViewChild('closeDeleteButton') closeDeleteButton;
+  @ViewChild('staffModal') staffModal: StaffModalComponent;
+
   pageSize: 5;
   activityData: Activity[];
   selectedActivity: Activity;
@@ -33,6 +39,15 @@ export class ActivitiesComponent implements OnInit {
   selectedTask: ActivityTask;
   participantsData: ActivityParticipant[];
   selectedParticipant: ActivityParticipant;
+
+  accountData;
+  selectedAccount;
+  selectedUserType: string;
+
+  first = 0;
+  rows = 10;
+  pageNumber: number = 0;
+  loading: boolean = false;
 
   editMode: boolean = false;
   activityForm: FormGroup;
@@ -87,6 +102,7 @@ export class ActivitiesComponent implements OnInit {
     team: null,
     relateTo: null,
     taskRelatedTo: null,
+    participant: null,
   };
 
   isDataReady = {
@@ -96,6 +112,8 @@ export class ActivitiesComponent implements OnInit {
     participants: false,
   };
 
+  activityText: string;
+
   messageTemplates: MessageTemplate[];
 
   constructor(
@@ -104,7 +122,8 @@ export class ActivitiesComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
     private activityService: ActivityService,
-    private messagingService: MessagingService
+    private messagingService: MessagingService,
+    private clientService: ClientService
   ) {}
 
   ngOnInit(): void {
@@ -383,6 +402,7 @@ export class ActivitiesComponent implements OnInit {
       sendReminder: this.selectedActivity.reminder,
       reminderTime: this.selectedActivity.reminderTime,
     });
+    console.log('selected activity >>> ', this.selectedActivity);
     this.openDefineActivityModal();
   }
 
@@ -435,6 +455,19 @@ export class ActivitiesComponent implements OnInit {
    */
   openAllUsersModal(userField?: string) {
     this.userField = userField;
+    switch (userField) {
+      case 'assignedTo':
+        this.selectedUserType = UserType.USER;
+        this.staffModal.fetchAccountByAccountType(UserType.USER);
+        break;
+      case 'relatedAccount':
+        this.selectedUserType = UserType.AGENT;
+        this.staffModal.fetchAccountByAccountType(UserType.AGENT);
+        break;
+      default:
+    }
+    this.cdr.detectChanges();
+
     this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
@@ -462,9 +495,10 @@ export class ActivitiesComponent implements OnInit {
       modalUserAssignTo: event?.username
     });*/
     this.patchUserToFormField(event);
+    log.info(`selected user >>. `, this.selectedMainUser);
   }
 
-  patchUserToFormField(user): void {
+  patchUserToFormField(user: StaffDto): void {
     switch (this.userField) {
       case 'assignedTo':
         this.userFormFields.assignedTo = this.selectedMainUser;
@@ -475,7 +509,7 @@ export class ActivitiesComponent implements OnInit {
       case 'relatedAccount':
         this.userFormFields.relatedAccount = this.selectedMainUser;
         this.activityForm.patchValue({
-          relatedAccount: this.userFormFields.relatedAccount?.name,
+          relatedAccount: this.userFormFields.relatedAccount?.firstName,
         });
         break;
       case 'team':
@@ -487,7 +521,7 @@ export class ActivitiesComponent implements OnInit {
       case 'relateTo':
         this.userFormFields.relateTo = this.selectedMainUser;
         this.noteForm.patchValue({
-          relateTo: this.userFormFields.relateTo?.name,
+          relateTo: this.userFormFields.relateTo?.firstName,
         });
         break;
       case 'taskRelatedTo':
@@ -495,6 +529,10 @@ export class ActivitiesComponent implements OnInit {
         this.taskForm.patchValue({
           taskRelatedTo: this.userFormFields.taskRelatedTo?.name,
         });
+        break;
+      case 'participant':
+        this.userFormFields.participant = this.selectedMainUser;
+        this.createUpdateActivityParticipant();
         break;
       default:
       // code block
@@ -534,7 +572,7 @@ export class ActivitiesComponent implements OnInit {
       reminder: formValues.reminder,
       team: this.userFormFields?.team?.id,
       reminderTime: formValues.reminderTime,
-      messageCode: formValues.emailTemplate.id,
+      messageCode: formValues.emailTemplate,
     };
 
     if (!this.editMode) {
@@ -588,11 +626,12 @@ export class ActivitiesComponent implements OnInit {
           'Activity deleted successfully!'
         );
         this.getActivities();
-        // close modal after delete
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
   }
@@ -677,11 +716,12 @@ export class ActivitiesComponent implements OnInit {
           'Activity Task deleted successfully!'
         );
         this.getActivityTasks();
-        this.closeDefineTaskModal();
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
   }
@@ -767,11 +807,12 @@ export class ActivitiesComponent implements OnInit {
           'Activity Note deleted successfully!'
         );
         this.getActivityNotes();
-        // close modal after delete
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
   }
@@ -793,17 +834,17 @@ export class ActivitiesComponent implements OnInit {
   }
 
   createUpdateActivityParticipant(): void {
-    // const formValues = this..getRawValue();
-    // const activityParticipant: ActivityParticipant = {
-    //   id: this.selectedParticipant.id || null,
-    //   name: '',
-    //   emailAddress: ''
-    // };
-    // if (!this.editMode) {
-    //   this.createActivityParticipant(activityParticipant);
-    // } else {
-    //   this.updateActivityParticipant(activityParticipant);
-    // }
+    const participant: ActivityParticipant = {
+      id: null,
+      aacCode: this.selectedMainUser.id,
+      actCode: 0, //todo: confirm actual value
+      // participant: {
+      //   id: this.selectedMainUser.id,
+      //   name: this.selectedMainUser.name,
+      //   emailAddress: this.selectedMainUser.emailAddress,
+      // },
+    };
+    this.createActivityParticipant(participant);
   }
 
   createActivityParticipant(participant: ActivityParticipant): void {
@@ -850,14 +891,82 @@ export class ActivitiesComponent implements OnInit {
           'Activity Participant deleted successfully!'
         );
         this.getActivityParticipants();
-        // close modal after delete
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
   }
 
+  prepareItemForDelete(activityType: string): void {
+    this.activityText = activityType;
+  }
+
+  confirmDelete(activityType: string) {
+    switch (activityType) {
+      case ActivityText.ACTIVITY:
+        this.confirmDeleteActivity();
+        break;
+      case ActivityText.NOTE:
+        this.confirmDeleteActivityNote();
+        break;
+      case ActivityText.TASK:
+        this.confirmDeleteActivityTask();
+        break;
+      case ActivityText.PARTICIPANT:
+        this.confirmDeleteActivityParticipant();
+        break;
+      default:
+        this.activityText = '';
+    }
+  }
+
+  fetchAccountByAccountType(accountType: string, $event?: TableLazyLoadEvent) {
+    log.info(`account type >>>`, $event);
+    this.selectedUserType = accountType;
+    // switch (accountType) {
+    //   case UserType.AGENT:
+    //     this.accountData = null;
+    //     break;
+    //   case UserType.CLIENT:
+    //     this.fetchClients($event);
+    //     break;
+    //   case UserType.SERVICE_PROVIDER:
+    //     this.accountData = null; // this.fetchClients();
+    //     break;
+    //   default:
+    //     this.activityText = '';
+    // }
+    this.cdr.detectChanges();
+  }
+
+  // fetchClients($event: TableLazyLoadEvent): void {
+  //   this.clientService.getClients(this.pageNumber).subscribe({
+  //     next: (res) => {
+  //       this.accountData = res;
+  //       this.loading = false;
+  //       log.info(`clients >>> `, res);
+  //     },
+  //     error: (err) => {},
+  //   });
+  // }
+
   ngOnDestroy(): void {}
+}
+
+enum ActivityText {
+  ACTIVITY = 'activity',
+  NOTE = 'note',
+  TASK = 'task',
+  PARTICIPANT = 'participant',
+}
+
+enum UserType {
+  AGENT = 'AGENT',
+  CLIENT = 'CLIENT',
+  SERVICE_PROVIDER = 'SERVICE_PROVIDER',
+  USER = 'USER',
 }
