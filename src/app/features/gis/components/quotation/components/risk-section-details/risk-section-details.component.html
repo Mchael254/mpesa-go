@@ -164,309 +164,486 @@
 
               <div class="modal-body">
                 <h5 class="modal-title mt-2" id="editScheduleLabel">{{'gis.quotation.edit_motor_private_details' | translate}}</h5>                      
-                <form [formGroup]="scheduleDetailsForm" >
+                <form [formGroup]="scheduleDetailsForm">
                   <div formGroupName="details">
-                    <div formGroupName="level1">
-                  <!-- **ROW 1** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label required" id="scheduleLabel">{{'gis.quotation.chasis_number' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="chasisNumber">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.age' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="age">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 2** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.registration_number' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="registrationNumber">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.vehicle_make' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="Make">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 3** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.cubic_capacity' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="cubicCapacity">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.year_of_manufacture' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="yearOfManufacture">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 4** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.seating_capacity' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="carryCapacity">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.value' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="value">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 5** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.body_type' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="bodyType">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.cover_type' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="coverType">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                   <!-- **ROW 6** -->
-<div class="row" id="scheduleRows">
-  <div class="col-xl-6">
-      <div class="mb-3 row">
-          <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.item_no' | translate}}:</label>
-          <div class="col-7">
-              <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="itemNo">
-          </div>
-      </div>
-  </div>
-  <div class="col-xl-6">
-      <div class="mb-3 row">
-          <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.colour' | translate}}:</label>
-          <div class="col-7">
-              <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="color">
-                  <option></option>
-                  <option></option>
-              </select>
-          </div>
-      </div>
-  </div>
-</div>
-                   <!-- **ROW 7** -->
-                   <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.engine_no' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="engineNumber">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.terrorism_applicable' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="terrorismApplicable">
-                                    <option>{{'gis.policy.yes' | translate}}</option>
-                                    <option>{{'gis.policy.no' | translate}}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                   <!-- **ROW 8** -->
-                   <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.logbook_no' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="logBook">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.security_device_1' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="securityDevice1">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 9** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.motor_accessories' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="motorAccessories">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.model' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="model">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                   <!-- **ROW 10** -->
-                   <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.security_device' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="securityDevice">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.regular_driver_name' | translate}}:</label>
-                            <div class="col-7">
-                                <select class="form-control form-control-sm mb-1" id="scheduleInput" formControlName="regularDriverName">
-                                    <option></option>
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                  <!-- **ROW 11** -->
-                  <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.sch_active' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="schActive">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.licence_no' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="licenceNo">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                   <!-- **ROW 12** -->
-                   <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.driver_licence_date' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="datetime" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="driverLicenceDate">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.driver_sms_no' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="driverSmsNo">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                   <!-- **ROW 13** -->
-                   <div class="row" id="scheduleRows">
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.driver_relation_insured' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="driverRelationInsured">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="mb-3 row">
-                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.driver_email_address' | translate}}:</label>
-                            <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="driverEmailAddress">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                         
-                  </div>
-                </div>       
-         
-          <div class="row mt-3 mb-2 mx-3">
-            <div class="col-6 ">
-              <button type="button" class="btn btn-primary" (click)="clearForm()">{{'gis.quotation.clear' | translate}}</button>
+                      <div formGroupName="level1">
+                          <!-- **ROW 1** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label required"
+                                          id="scheduleLabel">{{'gis.quotation.chasis_number'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="chasisNumber">
 
-            </div>
-            <div class="col-6 d-flex justify-content-end">
-              <button type="button" class="btn btn-outline-primary " id="
-              " (click)="updateSchedule()" data-bs-dismiss="modal"> {{'gis.quotation.save_details' | translate}}</button>
-            </div>
-          </div>
-        </form>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.age'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <select
+                                              class="form-select form-control-sm mb-1"
+                                              id="scheduleInput"
+                                              formControlName="yearOfManufacture">
+                                              <option></option>
+                                              <option></option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 2** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.reg_no'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="registrationNumber">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.vehicle_make'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="Make">
+                                      </div>
+                                  </div>
+                              </div>
+
+                          </div>
+
+
+                          <!-- **ROW 3** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.cubic_capacity'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="cubicCapacity">
+
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.year_of_manufacture'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <select
+                                              class="form-select form-control-sm mb-1"
+                                              id="scheduleInput"
+                                              formControlName="yearOfManufacture">
+                                              <option value=""></option>
+                                              <option *ngFor="let year of modelYear" [value]="year">{{ year }}</option>
+                                          </select>
+                                         
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 4** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.seating_capacity'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="carryCapacity">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.value'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="value">
+                                              <!-- <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="value"
+                                              (input)="formatCurrency($event)"> -->
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 5** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.body_type'
+                                          | translate}}</label>
+                                      <div class="col-7">
+
+                                          <p-dropdown
+                                              [options]="bodytypesList"
+                                              optionValue="description"
+                                              optionLabel="description"
+                                              formControlName="bodyType"
+                                              [filterBy]="'description'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.cover_type'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="coverType">
+
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 6** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.item_no'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="coverType">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.colour'
+                                          | translate}}</label>
+                                      <div class="col-7">
+
+                                          <p-dropdown
+                                              [options]="motorColorsList"
+                                              optionValue="code"
+                                              optionLabel="description"
+                                              formControlName="color"
+                                              [filterBy]="'description'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 7** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.engine_no'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="engineNumber">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.terrorism_applicable'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <select
+                                              class="form-select form-control-sm mb-1"
+                                              id="scheduleInput"
+                                              formControlName="color">
+                                              <option>{{'gis.policy.yes' |
+                                                  translate}}</option>
+                                              <option>{{'gis.policy.no' |
+                                                  translate}}</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 8** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.logbook_no'
+                                          | translate}}.</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="logBook">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.security_device_1'
+                                          | translate}}</label>
+                                      <div class="col-7">
+
+
+                                          <p-dropdown
+                                              [options]="securityDevicesList"
+                                              optionValue="type"
+                                              optionLabel="desc"
+                                              formControlName="color"
+                                              [filterBy]="'desc'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 9** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.motor_accessories'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <p-dropdown
+                                              [options]="motorAccessoriesList"
+                                              optionValue="type"
+                                              optionLabel="desc"
+                                              formControlName="color"
+                                              [filterBy]="'desc'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.model'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <p-dropdown
+                                              [options]="filteredVehicleModel"
+                                              optionValue="code"
+                                              optionLabel="name"
+                                              formControlName="Make"
+                                              [filterBy]="'name'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 10** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.security_device'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <p-dropdown
+                                              [options]="securityDevicesList"
+                                              optionValue="type"
+                                              optionLabel="desc"
+                                              formControlName="color"
+                                              [filterBy]="'desc'"
+                                              [filter]="true"></p-dropdown>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.regular_driver_name'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <select
+                                              class="form-control form-control-sm mb-1"
+                                              id="scheduleInput"
+                                              formControlName="color">
+                                              <option></option>
+                                              <option></option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 11** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.sch_active'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.licence_no'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 12** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.driver_licence_date'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="datetime"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.driver_sms_no'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="number"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- **ROW 13** -->
+                          <div class="row" id="scheduleRows">
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label "
+                                          id="scheduleLabel">{{'gis.quotation.driver_relation_insured'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-xl-6">
+                                  <div class="mb-3 row">
+                                      <label for="minmax-buttons"
+                                          class="col-5 col-form-label"
+                                          id="scheduleLabel">{{'gis.quotation.driver_email_address'
+                                          | translate}}</label>
+                                      <div class="col-7">
+                                          <input type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              formControlName="color">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                      </div>
+                  </div>
+
+                  <div class="row mt-3 mb-2 mx-3">
+                      <div class="col-6 ">
+                          <button type="button" class="btn btn-primary"
+                              (click)="clearForm()">{{'gis.quotation.clear' |
+                              translate}}</button>
+
+                      </div>
+                      <div class="col-6 d-flex justify-content-end">
+                          <button type="button"
+                              class="btn btn-outline-primary " id="
+ " (click)="updateSchedule()" data-bs-dismiss="modal">{{'gis.quotation.save_details'
+                              | translate}}</button>
+                      </div>
+                  </div>
+              </form>
               </div>
             </div>
           </div>
         </div>
+
+       
         <!-- Delete Schedule Modal -->
         <div class="modal fade" id="deleteSchedule" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered ">
@@ -502,12 +679,14 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-schedule>
-            <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule">
+            <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
+            [class.p-highlight]="schedule === selectedSchedule"
+            >
               <td>{{ schedule.details.level1.registrationNumber}}</td>
               <td>{{ schedule.details.level1.Make }}</td>
               <td>{{ schedule.details.level1.cubicCapacity }}</td>
               <td>{{ schedule.details.level1.yearOfManufacture }}</td>
-              <td>{{ schedule.details.level1.seatingCapacity }}</td>
+              <td>{{ schedule.details.level1.carryCapacity }}</td>
               <td>{{ schedule.details.level1.value |number }}</td>
               <td>{{ schedule.details.level1.bodyType }}</td>
               <td>{{ schedule.details.level1.coverType }}</td>

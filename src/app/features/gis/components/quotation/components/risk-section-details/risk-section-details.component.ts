@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Renderer2, ViewChild } from '
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { Router } from '@angular/router';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, riskClauses, subclassClauses, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductService } from '../../../../../gis/services/product/product.service';
@@ -21,9 +21,10 @@ import { ProductsService } from '../../../setups/services/products/products.serv
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import {ClientDTO} from "../../../../../entities/data/ClientDTO";
-import {ClientService} from "../../../../../entities/services/client/client.service";
+import { ClientDTO } from "../../../../../entities/data/ClientDTO";
+import { ClientService } from "../../../../../entities/services/client/client.service";
 import { forkJoin } from 'rxjs';
+import { PolicyService } from '../../../policy/services/policy.service';
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -38,220 +39,236 @@ export class RiskSectionDetailsComponent {
 
   steps = quoteStepsData;
 
-  quotationCode:any
-  quotationRiskCode:any;
-  quotationRiskData:any;
+  quotationCode: any
+  quotationRiskCode: any;
+  quotationRiskData: any;
 
-  riskCode:any;
+  riskCode: any;
 
-  town:any;
-  insuredCode:any;
-  clientList:ClientDTO[];
-  client:ClientDTO[];
-  clientName:any;
-  selectedClientList:ClientDTO[];
+  town: any;
+  insuredCode: any;
+  clientList: ClientDTO[];
+  client: ClientDTO[];
+  clientName: any;
+  selectedClientList: ClientDTO[];
 
-  subClassList:Subclass[];
-  allSubclassList:Subclasses[]
+  subClassList: Subclass[];
+  allSubclassList: Subclasses[]
   // filteredSubclass:Subclass[];
   // selectedSubclassCode:any;
-  allMatchingSubclasses=[];
+  allMatchingSubclasses = [];
 
-  subclassCoverType:any;
-  coverTypeCode:any;
-  selectedCoverType:any;
-  filteredSubclass:Subclass[];
+  subclassCoverType: any;
+  coverTypeCode: any;
+  selectedCoverType: any;
+  filteredSubclass: Subclass[];
   selectedSubclass: any;
-  selectedSubclassCode:any
+  selectedSubclassCode: any
 
   formData: any;
-  clientFormData:any;
-  riskDetailsForm:FormGroup;
+  clientFormData: any;
+  riskDetailsForm: FormGroup;
 
-  selectProductCode:any;
-  productList:Products;
-  description:any;
+  selectProductCode: any;
+  productList: Products;
+  description: any;
 
-  binderList:any;
-  binderListDetails:any;
-  selectedBinderList:any;
-  selectedBinderCode:any;
+  binderList: any;
+  binderListDetails: any;
+  selectedBinderList: any;
+  selectedBinderCode: any;
 
   // selectedDates: Date[]=[];
   // rangeDates: Date[]=[];
   coverFromDate: string;
   coverToDate: string;
 
-  clauseList:Clause[];
-  selectedClauseList:Clause[];
-  SubclauseList:subclassClauses[];
-  selectedSubClauseList:subclassClauses[];
-  selectedClauseCode:any;
+  clauseList: Clause[];
+  selectedClauseList: Clause[];
+  SubclauseList: subclassClauses[];
+  selectedSubClauseList: subclassClauses[];
+  selectedClauseCode: any;
   // clauseDetail:any;
-  selectedClauses:any
+  selectedClauses: any
 
-  riskSectionList:riskSection[];
-  sectionList:any;
-  selectedSectionList:subclassSection[];
-  sectionDetailsForm:FormGroup;
-  subclassSectionCoverList:any;
-  mandatorySections:any;
-  filteredMandatorySections :any;
+  riskSectionList: riskSection[];
+  sectionList: any;
+  selectedSectionList: subclassSection[];
+  sectionDetailsForm: FormGroup;
+  subclassSectionCoverList: any;
+  mandatorySections: any;
+  filteredMandatorySections: any;
   searchText: string = '';
 
 
 
-  quotationDetails:any
+  quotationDetails: any
 
-  checkedSectionCode:any;
-  checkedSectionDesc:any;
-  checkedSectionType:any;
-  sectionArray:any;
-  selectedSection:any;
+  checkedSectionCode: any;
+  checkedSectionDesc: any;
+  checkedSectionType: any;
+  sectionArray: any;
+  selectedSection: any;
 
-  scheduleDetailsForm:FormGroup;
-  scheduleData:any;
-  scheduleList:any;
-  selectedSchedule:any;
-  updatedSchedule:any;
-  updatedScheduleData:any;
-  passedlevel:any;
+  scheduleDetailsForm: FormGroup;
+  scheduleData: any;
+  scheduleList: any;
+  selectedSchedule: any;
+  updatedSchedule: any;
+  updatedScheduleData: any;
+  passedlevel: any;
 
-  vehicleMakeList:vehicleMake[];
-  vehicleModelList:any;
-  vehicleModelDetails:vehicleModel[];
-  filteredVehicleModel:any;
-  selectedVehicleMakeCode:any;
-  vehiclemakeModel:any;
-  selectedVehicleMakeName:any;
-  selectedVehicleModelName:any;
+  vehicleMakeList: vehicleMake[];
+  vehicleModelList: any;
+  vehicleModelDetails: vehicleModel[];
+  filteredVehicleModel: any;
+  selectedVehicleMakeCode: any;
+  vehiclemakeModel: any;
+  selectedVehicleMakeName: any;
+  selectedVehicleModelName: any;
 
-  premiumList:any;
+  premiumList: any;
 
   isFromDateSelected = false;
   isToDateSelected = false;
-  passedRiskId:any;
+  passedRiskId: any;
 
   editing = false; // Add other properties as needed
   modalHeight: number = 200; // Initial height
   products: Products[];
-  coverFrom:any;
-  coverTo:any;
+  coverFrom: any;
+  coverTo: any;
 
-  riskClausesList:riskClauses[];
-  selectedRiskClause:Clause;
-  selectedRiskClauseCode:any;
+  riskClausesList: riskClauses[];
+  selectedRiskClause: Clause;
+  selectedRiskClauseCode: any;
 
   selectedSections: any[] = [];
   premiumListIndex = 0;
   sections: any[] = [];
 
+  bodytypesList:any;
+  motorColorsList:any;
+  securityDevicesList:any;
+  motorAccessoriesList:any;
+  modelYear: any;
+
+
   constructor(
     private router: Router,
-    private messageService:MessageService,
-    public subclassService:SubclassesService,
+    private messageService: MessageService,
+    public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
     private gisService: ProductService,
-    public sharedService:SharedQuotationsService,
-    public binderService:BinderService,
-    public clientService:ClientService,
-    public quotationService:QuotationsService,
-    public sectionService:SectionsService,
-    public subclassSectionCovertypeService:SubClassCoverTypesSectionsService,
-    public vehicleMakeService:VehicleMakeService,
-    public vehicleModelService:VehicleModelService,
+    public sharedService: SharedQuotationsService,
+    public binderService: BinderService,
+    public clientService: ClientService,
+    public quotationService: QuotationsService,
+    public sectionService: SectionsService,
+    public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
+    public vehicleMakeService: VehicleMakeService,
+    public vehicleModelService: VehicleModelService,
     public producSetupService: ProductsService,
     public premiumRateService: PremiumRateService,
-    public riskClauseService:RiskClausesService,
+    public riskClauseService: RiskClausesService,
     public globalMessagingService: GlobalMessagingService,
+    private policyService: PolicyService,
+    public productService: ProductsService,
 
 
-    public fb:FormBuilder,
-    public cdr:ChangeDetectorRef,
+
+
+    public fb: FormBuilder,
+    public cdr: ChangeDetectorRef,
     private renderer: Renderer2
 
-  ){}
-    public isCollapsibleOpen = false;
-    public isOtherDetailsOpen = false;
-    public isSectionDetailsOpen = false;
-    public isThirdDetailsOpen = false;
+  ) { }
+  public isCollapsibleOpen = false;
+  public isOtherDetailsOpen = false;
+  public isSectionDetailsOpen = false;
+  public isThirdDetailsOpen = false;
 
-    ngOnInit(): void {
+  ngOnInit(): void {
 
-      const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
-      this.formData = JSON.parse(quotationFormDetails) ;
-      this.clientFormData=this.sharedService.getFormData();
-      this.quotationCode=sessionStorage.getItem('quotationCode');
-      this.createRiskDetailsForm();
-      this.coverFrom = sessionStorage.getItem('coverFrom');
-      this.coverTo = sessionStorage.getItem('coverTo');
-      this.riskDetailsForm.controls['dateWithEffectFrom'].patchValue(this.coverFrom);
-      this.riskDetailsForm.controls['dateWithEffectTo'].patchValue(this.coverTo);
-      log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
-      log.debug(this.formData ,"Form Data");
-      log.debug(this.clientFormData ,"CLIENT Form Data");
-
-
-      log.debug(this.formData ,"Form Data");
-      this.loadAllSubclass();
-      this.getVehicleMake();
-      // this.getVehicleModel();
-
-      // this.loadFormData();
-
-      this.createSectionDetailsForm();
-      this.createScheduleDetailsForm();
-
-      const riskFormDetails = sessionStorage.getItem('riskFormData');
-      console.log('Risk form details session storage',riskFormDetails,)
-
-      const sections=sessionStorage.getItem('sections')
-      console.log("Sections",sections)
-      if (sections){
-
-        this.sectionArray = JSON.parse(sections)
-        console.log("parsed sections", this.sectionArray)
-      }
-      const schedules =sessionStorage.getItem('schedules')
-      console.log("Schedules",schedules)
-      if (schedules){
-        this.scheduleList = JSON.parse(schedules)
-        console.log("parsed Schedules", this.scheduleList)
-      }
-      // if (riskFormDetails) {
-      //   const parsedData = JSON.parse(riskFormDetails);
-      //   console.log(parsedData)
-      //   this.riskDetailsForm.setValue(parsedData);
-
-      // }
+    const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
+    this.formData = JSON.parse(quotationFormDetails);
+    this.clientFormData = this.sharedService.getFormData();
+    this.quotationCode = sessionStorage.getItem('quotationCode');
+    this.createRiskDetailsForm();
+    this.coverFrom = sessionStorage.getItem('coverFrom');
+    this.coverTo = sessionStorage.getItem('coverTo');
+    this.riskDetailsForm.controls['dateWithEffectFrom'].patchValue(this.coverFrom);
+    this.riskDetailsForm.controls['dateWithEffectTo'].patchValue(this.coverTo);
+    log.debug(this.quotationCode, "RISK DETAILS Screen Quotation No:");
+    log.debug(this.formData, "Form Data");
+    log.debug(this.clientFormData, "CLIENT Form Data");
 
 
-      this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
-        this.riskIdPassed(value);
-      });
-      this.riskDetailsForm.get('coverTypeShortDescription').valueChanges.subscribe((selectedValue) => {
-        console.log('Selected CoverType:', selectedValue);
-        this.selectedCoverType=selectedValue
-        console.log('Selected CoverType:', this.selectedCoverType);
-      });
-      this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
-        this.updateCoverToDate();
-      });
+    log.debug(this.formData, "Form Data");
+    this.loadAllSubclass();
+    this.getVehicleMake();
+    // this.getVehicleModel();
+
+    // this.loadFormData();
+
+    this.createSectionDetailsForm();
+    this.createScheduleDetailsForm();
+
+    const riskFormDetails = sessionStorage.getItem('riskFormData');
+    console.log('Risk form details session storage', riskFormDetails,)
+
+    const sections = sessionStorage.getItem('sections')
+    console.log("Sections", sections)
+    if (sections) {
+
+      this.sectionArray = JSON.parse(sections)
+      console.log("parsed sections", this.sectionArray)
+    }
+    const schedules = sessionStorage.getItem('schedules')
+    console.log("Schedules", schedules)
+    if (schedules) {
+      this.scheduleList = JSON.parse(schedules)
+      console.log("parsed Schedules", this.scheduleList)
+    }
+    // if (riskFormDetails) {
+    //   const parsedData = JSON.parse(riskFormDetails);
+    //   console.log(parsedData)
+    //   this.riskDetailsForm.setValue(parsedData);
+
+    // }
+
+
+    this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
+      this.riskIdPassed(value);
+    });
+    this.riskDetailsForm.get('coverTypeShortDescription').valueChanges.subscribe((selectedValue) => {
+      console.log('Selected CoverType:', selectedValue);
+      this.selectedCoverType = selectedValue
+      console.log('Selected CoverType:', this.selectedCoverType);
+    });
+    this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
+      this.updateCoverToDate();
+    });
+    this.fetchBodyTypes();
+    this.fetchMotorColours();
+    this.fetchSecurityDevices();
+    this.fetchMotorAccessories();
+    this.getModelYear()
 
 
 
 
 
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
-}
-onResize(event: any) {
-  this.modalHeight = event.height;
-}
+  }
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
   /**
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
  * state of a Schedule section.
@@ -259,24 +276,24 @@ onResize(event: any) {
   toggleSchedule() {
     this.isCollapsibleOpen = !this.isCollapsibleOpen;
   }
-   /**
- * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Other Details section.
- */
+  /**
+* This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+* state of a Other Details section.
+*/
   toggleOtherDetails() {
     this.isOtherDetailsOpen = !this.isOtherDetailsOpen;
   }
-   /**
- * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Section.
- */
+  /**
+* This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+* state of a Section.
+*/
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
   }
-   /**
- * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Third section.
- */
+  /**
+* This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+* state of a Third section.
+*/
   toggleThirdDetails() {
     this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
   }
@@ -285,7 +302,7 @@ onResize(event: any) {
     if (!this.isFromDateSelected) {
       this.globalMessagingService.displayInfoMessage('Information', 'Select the "Cover From" date')
 
-      
+
     }
   }
 
@@ -303,28 +320,28 @@ onResize(event: any) {
   // This method updates the "Cover To" date when "Cover From" changes
 
 
-updateCoverToDate() {
-  this.coverFromDate = this.riskDetailsForm.get('dateWithEffectFrom').value;
+  updateCoverToDate() {
+    this.coverFromDate = this.riskDetailsForm.get('dateWithEffectFrom').value;
 
-  if (this.coverFromDate) {
-    const selectedDate = new Date(this.coverFromDate);
-    selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-    this.riskDetailsForm.patchValue({
-      dateWithEffectTo: selectedDate.toISOString().split('T')[0]
-    });
-  } else {
-    this.riskDetailsForm.patchValue({
-      dateWithEffectTo: ''
-    });
+    if (this.coverFromDate) {
+      const selectedDate = new Date(this.coverFromDate);
+      selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+      this.riskDetailsForm.patchValue({
+        dateWithEffectTo: selectedDate.toISOString().split('T')[0]
+      });
+    } else {
+      this.riskDetailsForm.patchValue({
+        dateWithEffectTo: ''
+      });
+    }
   }
-}
-   /**
- * Fetches all subclass data from the subclass service,
- */
-   loadAllSubclass(){
-    return this.subclassService.getAllSubclasses().subscribe(data=>{
-      this.allSubclassList=data;
-      log.debug(this.allSubclassList," from the service All Subclass List");
+  /**
+* Fetches all subclass data from the subclass service,
+*/
+  loadAllSubclass() {
+    return this.subclassService.getAllSubclasses().subscribe(data => {
+      this.allSubclassList = data;
+      log.debug(this.allSubclassList, " from the service All Subclass List");
       this.cdr.detectChanges();
       this.loadFormData()
     })
@@ -333,13 +350,13 @@ updateCoverToDate() {
  * Loads form data from a shared quotation service.
  * Retrieves and assigns various form-related details and initiates related data requests.
  */
-  loadFormData(){
+  loadFormData() {
 
-    log.debug(this.sharedService.getQuotationFormDetails(),"Form List")
-    this.selectProductCode=this.formData.productCode;
-    this.insuredCode=this.formData.clientCode;
-    this.town=this.formData.clientCode
-    log.debug( this.selectProductCode,"Selected Product Code")
+    log.debug(this.sharedService.getQuotationFormDetails(), "Form List")
+    this.selectProductCode = this.formData.productCode;
+    this.insuredCode = this.formData.clientCode;
+    this.town = this.formData.clientCode
+    log.debug(this.selectProductCode, "Selected Product Code")
     this.getProductByCode();
     this.getProductSubclass(this.selectProductCode);
     // this.getSubclasses();
@@ -350,15 +367,15 @@ updateCoverToDate() {
 
 
 
-   /**
- * Retrieves product subclasses for a specific product.
- *
- * This method makes an HTTP request to the GIS service to fetch product subclasses and filters the results
- * to obtain subclasses associated with a particular product.
- *
- * @param productCode - The code of the product for which subclasses are to be retrieved. *
- * @returns void
- */
+  /**
+* Retrieves product subclasses for a specific product.
+*
+* This method makes an HTTP request to the GIS service to fetch product subclasses and filters the results
+* to obtain subclasses associated with a particular product.
+*
+* @param productCode - The code of the product for which subclasses are to be retrieved. *
+* @returns void
+*/
   //  getSubclasses() {
   //   this.gisService.getASubclasses().subscribe(data => {
   //     this.subClassList = data._embedded.product_subclass_dto_list
@@ -386,55 +403,55 @@ updateCoverToDate() {
     });
   }
 
- /**
- * Handles subclass selection.
- * Updates the selected subclass code, logs the selection, and loads related data.
- * It loads cover types, binders, and subclass clauses based on the selected value.
- */
+  /**
+  * Handles subclass selection.
+  * Updates the selected subclass code, logs the selection, and loads related data.
+  * It loads cover types, binders, and subclass clauses based on the selected value.
+  */
   onSubclassSelected(event: any) {
 
     const selectedValue = event.target.value; // Get the selected value
-    this.selectedSubclassCode=selectedValue;
+    this.selectedSubclassCode = selectedValue;
     // Perform your action based on the selected value
     console.log(`Selected value: ${selectedValue}`);
-    log.debug(this.selectedSubclassCode,'Sekected Subclass Code')
+    log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
 
     this.loadCovertypeBySubclassCode(selectedValue);
     this.loadAllBinders();
     this.loadSubclassClauses(this.selectedSubclassCode);
   }
 
-    /**
-   * Load cover types by subclass code
-   * @param code {number} subclass code
-   */
-    loadCovertypeBySubclassCode(code: number) {
-      this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
-        this.subclassCoverType = data;
-        this.coverTypeCode=this.subclassCoverType[0].coverTypeCode;
-        log.debug(this.subclassCoverType,'filtered covertype');
-        log.debug(this.coverTypeCode,'filtered covertype code');
+  /**
+ * Load cover types by subclass code
+ * @param code {number} subclass code
+ */
+  loadCovertypeBySubclassCode(code: number) {
+    this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
+      this.subclassCoverType = data;
+      this.coverTypeCode = this.subclassCoverType[0].coverTypeCode;
+      log.debug(this.subclassCoverType, 'filtered covertype');
+      log.debug(this.coverTypeCode, 'filtered covertype code');
 
-        this.cdr.detectChanges();
-      })
-      // this.loadSubclassSectionCovertype();
+      this.cdr.detectChanges();
+    })
+    // this.loadSubclassSectionCovertype();
 
-    }
+  }
 
   /**
  * Fetches client data and updates properties.
  * Retrieves client details via an HTTP request and updates properties
  * such as 'clientList' and 'clientName' for quotation generation.
  */
-  getClient(){
-    this.clientService.getClients().subscribe(data=>{
+  getClient() {
+    this.clientService.getClients().subscribe(data => {
       this.clientList = data.content
       // this.clientList = this.client.content
-      this.selectedClientList=this.clientList.filter(client=>client.id == this.insuredCode);
+      this.selectedClientList = this.clientList.filter(client => client.id == this.insuredCode);
       this.clientName = this.selectedClientList[0].firstName + ' ' + this.selectedClientList[0].lastName;
 
-      log.debug( this.selectedClientList,"Client HP Details")
-      log.debug( this.clientName,"Client NAME")
+      log.debug(this.selectedClientList, "Client HP Details")
+      log.debug(this.clientName, "Client NAME")
 
     })
   }
@@ -444,11 +461,11 @@ updateCoverToDate() {
  * Retrieves product details by sending an HTTP request with 'selectProductCode'.
  * Updates properties, including 'productList' and 'description'.
  */
-  getProductByCode(){
-    this.gisService.getProductDetailsByCode(this.selectProductCode).subscribe(res=>{
+  getProductByCode() {
+    this.gisService.getProductDetailsByCode(this.selectProductCode).subscribe(res => {
       this.productList = res;
-      this.description=this.productList.description;
-      log.debug(this.description,'Description');
+      this.description = this.productList.description;
+      log.debug(this.description, 'Description');
     })
   }
 
@@ -457,8 +474,8 @@ updateCoverToDate() {
  * It defines form controls for various risk-related fields,
  *  setting initial values and validation rules.
  */
-  createRiskDetailsForm(){
-    this.riskDetailsForm=this.fb.group({
+  createRiskDetailsForm() {
+    this.riskDetailsForm = this.fb.group({
       binderCode: ['', Validators.required],
       coverTypeCode: ['', Validators.required],
       coverTypeShortDescription: [''],
@@ -466,27 +483,27 @@ updateCoverToDate() {
       dateWithEffectTo: [''],
       // dateRange:[''],
       insuredCode: [''],
-      isNoClaimDiscountApplicable:[''],
+      isNoClaimDiscountApplicable: [''],
       itemDescription: ['', Validators.required],
       location: [''],
       noClaimDiscountLevel: [''],
       productCode: [''],
-      propertyId:[''],
+      propertyId: [''],
       riskPremAmount: [''],
       subClassCode: ['', Validators.required],
       town: [''],
-  });
+    });
   }
   get f() {
     return this.riskDetailsForm.controls;
   }
-   /**
- * Loads and updates the list of binders for a specific subclass.
- * Retrieves binder data via an HTTP request, updates 'binderList' and 'binderListDetails,'
- * and filters 'selectedBinderList' to include only binders matching the provided subclass code.
- *
- * @param code - The subclass code for which binders are loaded.
- */
+  /**
+* Loads and updates the list of binders for a specific subclass.
+* Retrieves binder data via an HTTP request, updates 'binderList' and 'binderListDetails,'
+* and filters 'selectedBinderList' to include only binders matching the provided subclass code.
+*
+* @param code - The subclass code for which binders are loaded.
+*/
   //  loadAllBinders(code:any){
   //   this.binderService.getAllBindersQuotation().subscribe(data=>{
   //     this.binderList=data._embedded.binder_dto_list;
@@ -501,12 +518,12 @@ updateCoverToDate() {
   // }
   loadAllBinders() {
     this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
-       this.binderList=data;
-        this.binderListDetails = this.binderList._embedded.binder_dto_list;
-        console.log("All Binders Details:", this.binderListDetails); // Debugging
-        this.selectedBinderCode=this.binderListDetails[0].code;
+      this.binderList = data;
+      this.binderListDetails = this.binderList._embedded.binder_dto_list;
+      console.log("All Binders Details:", this.binderListDetails); // Debugging
+      this.selectedBinderCode = this.binderListDetails[0].code;
 
-        this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
   }
 
@@ -516,13 +533,13 @@ updateCoverToDate() {
  * and updates properties like 'selectedSubClauseList' and 'selectedClauseCode'.
  * Also initiates the 'loadAllClauses()' method.
  */
-  loadSubclassClauses(code:any){
-    this.subclassService.getSubclassClauses(code).subscribe(data =>{
-      this.SubclauseList=data;
+  loadSubclassClauses(code: any) {
+    this.subclassService.getSubclassClauses(code).subscribe(data => {
+      this.SubclauseList = data;
       // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
       // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-      log.debug('subclass ClauseList#####',this.SubclauseList)
+      log.debug('subclass ClauseList#####', this.SubclauseList)
 
       // log.debug('ClauseList',this.selectedSubClauseList)
       // log.debug('ClauseCode********',this.selectedClauseCode)
@@ -554,7 +571,7 @@ updateCoverToDate() {
   loadAllClauses() {
     // Extract clause codes from selectedSubClauseList
     const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
-    log.debug('Retrived Clause Codes',subClauseCodes)
+    log.debug('Retrived Clause Codes', subClauseCodes)
 
     // Check if there are any subClauseCodes before making the request
     if (subClauseCodes.length === 0) {
@@ -568,7 +585,7 @@ updateCoverToDate() {
 
       // Filter clauseList based on subClauseCodes
       this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
-      sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
+      sessionStorage.setItem("riskClauses", JSON.stringify(this.selectedClauseList))
       log.debug('All ClauseList', this.clauseList);
       log.debug('ClauseSelectdList', this.selectedClauseList);
     });
@@ -579,7 +596,7 @@ updateCoverToDate() {
  * Uses the Angular Router to navigate to the 'quotation-details' page within the 'gis' module
  * when called, effectively returning to the previous page.
  */
-  backLink(){
+  backLink() {
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
 
@@ -592,10 +609,10 @@ updateCoverToDate() {
 
  */
 
-  getVehicleMake(){
-    this.vehicleMakeService.getAllVehicleMake().subscribe(data =>{
-      this.vehicleMakeList=data;
-      log.debug("VehicleMake",this.vehicleMakeList)
+  getVehicleMake() {
+    this.vehicleMakeService.getAllVehicleMake().subscribe(data => {
+      this.vehicleMakeList = data;
+      log.debug("VehicleMake", this.vehicleMakeList)
     })
   }
 
@@ -610,9 +627,9 @@ updateCoverToDate() {
   // }
   onVehicleMakeSelected(event: any) {
     const selectedValue = event.target.value;
-    log.debug("SELECTED CODE:",selectedValue)
+    log.debug("SELECTED CODE:", selectedValue)
 
-    this.selectedVehicleMakeCode=selectedValue;
+    this.selectedVehicleMakeCode = selectedValue;
 
 
     // Convert selectedValue to the appropriate type (e.g., number)
@@ -629,7 +646,7 @@ updateCoverToDate() {
       console.error('Selected Vehicle Object not found');
     }
     this.getVehicleModel();
-    this.selectedVehicleMakeName=selectedObject.name
+    this.selectedVehicleMakeName = selectedObject.name
   }
 
   convertToCorrectType(value: any): any {
@@ -640,14 +657,14 @@ updateCoverToDate() {
   }
 
 
-  getVehicleModel(){
-    this.vehicleModelService.getAllVehicleModel().subscribe(data =>{
-      this.vehicleModelList=data;
-      log.debug("VehicleModel",this.vehicleModelList);
-      this.vehicleModelDetails=this.vehicleModelList._embedded.vehicle_model_dto_list;
-      log.debug("Vehicle Model Details",this.vehicleModelDetails);
-      this.filteredVehicleModel=this.vehicleModelDetails.filter(model=>model.vehicle_make_code == this.selectedVehicleMakeCode);
-      log.debug("Filtered Vehicle Model Details",this.filteredVehicleModel);
+  getVehicleModel() {
+    this.vehicleModelService.getAllVehicleModel().subscribe(data => {
+      this.vehicleModelList = data;
+      log.debug("VehicleModel", this.vehicleModelList);
+      this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
+      log.debug("Vehicle Model Details", this.vehicleModelDetails);
+      this.filteredVehicleModel = this.vehicleModelDetails.filter(model => model.vehicle_make_code == this.selectedVehicleMakeCode);
+      log.debug("Filtered Vehicle Model Details", this.filteredVehicleModel);
 
     })
   }
@@ -667,9 +684,9 @@ updateCoverToDate() {
     } else {
       console.error('Selected Vehicle Model not found');
     }
-    this.selectedVehicleModelName=selectedObject.name;
-    this.vehiclemakeModel= this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
-    console.log('Selected Vehicle make model',this.vehiclemakeModel);
+    this.selectedVehicleModelName = selectedObject.name;
+    this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+    console.log('Selected Vehicle make model', this.vehiclemakeModel);
 
   }
 
@@ -680,22 +697,22 @@ updateCoverToDate() {
     return parseInt(value, 10); // Adjust based on your actual data type
   }
 
-  createRiskDetail(){
+  createRiskDetail() {
     const risk = this.riskDetailsForm.value;
     // const dateWithEffectFromC=risk.dateRange[0];
     // const dateWithEffectToC=risk.dateRange[1];
 
-    risk.binderCode=this.selectedBinderCode;
-    risk.coverTypeCode=this.coverTypeCode;
-    risk.insuredCode=this.insuredCode;
-    risk.productCode=this.selectProductCode;
-    risk.itemDescription=this.vehiclemakeModel;
+    risk.binderCode = this.selectedBinderCode;
+    risk.coverTypeCode = this.coverTypeCode;
+    risk.insuredCode = this.insuredCode;
+    risk.productCode = this.selectProductCode;
+    risk.itemDescription = this.vehiclemakeModel;
     delete risk.dateRange;
     const riskArray = [risk];
     // const propertyIdValue = this.riskDetailsForm.get('propertyId').value;
     console.log(riskArray)
-    this.quotationService.createQuotationRisk(this.quotationCode,riskArray).subscribe(data =>{
-      this.quotationRiskData=data;
+    this.quotationService.createQuotationRisk(this.quotationCode, riskArray).subscribe(data => {
+      this.quotationRiskData = data;
 
       // this.quotationRiskCode = this.quotationRiskData._embedded[0];
       // this.quotationRiskCode.forEach(([key, value]) => {
@@ -707,15 +724,15 @@ updateCoverToDate() {
           if (quotationRiskCode.hasOwnProperty(key)) {
             const value = quotationRiskCode[key];
             console.log(`${value}`);
-            this.riskCode=value;
-              }
+            this.riskCode = value;
+          }
         }
       } else {
         console.log("The quotationRiskCode object is not defined.");
       }
 
-      log.debug( this.quotationRiskData,"Quotation Risk Code Data");
-      log.debug( this.quotationRiskCode,"Quotation Risk Code ");
+      log.debug(this.quotationRiskData, "Quotation Risk Code Data");
+      log.debug(this.quotationRiskCode, "Quotation Risk Code ");
       try {
         this.globalMessagingService.displaySuccessMessage('Success', 'Risk Created')
 
@@ -741,33 +758,33 @@ updateCoverToDate() {
  * Retrieves risk sections by sending an HTTP request with the 'riskCode' and updates
  * the 'riskSectionList' property, which likely represents sections associated with the risk.
  */
-  loadRiskSections(){
-    this.quotationService.getRiskSection(this.riskCode,).subscribe(data =>{
-      this.riskSectionList=data;
+  loadRiskSections() {
+    this.quotationService.getRiskSection(this.riskCode,).subscribe(data => {
+      this.riskSectionList = data;
       log.debug("Section List", this.riskSectionList)
     })
   }
-  loadRiskSubclassSection(){
-    this.sectionService.getSubclassSections(this.selectedSubclassCode).subscribe(data =>{
-      this.sectionList=data;
-      this.selectedSectionList=this.sectionList.filter(section=>section.subclassCode == this.selectedSubclassCode);
+  loadRiskSubclassSection() {
+    this.sectionService.getSubclassSections(this.selectedSubclassCode).subscribe(data => {
+      this.sectionList = data;
+      this.selectedSectionList = this.sectionList.filter(section => section.subclassCode == this.selectedSubclassCode);
 
       log.debug("Filtered Section List", this.selectedSectionList)
 
     })
   }
-  loadSubclassSectionCovertype(){
-    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data =>{
-      this.subclassSectionCoverList=data;
-      log.debug("Subclass Section Covertype:",this.subclassSectionCoverList);
-      this.mandatorySections=this.subclassSectionCoverList.filter(section=>section.subClassCode == this.selectedSubclassCode && section.isMandatory =="Y");
-      log.debug("Mandatory Section Covertype:",this.mandatorySections);
+  loadSubclassSectionCovertype() {
+    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+      this.subclassSectionCoverList = data;
+      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+      this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
+      log.debug("Mandatory Section Covertype:", this.mandatorySections);
 
-      if(this.mandatorySections.length > 0){
+      if (this.mandatorySections.length > 0) {
         this.selectedSectionList = this.mandatorySections[0];
         log.debug("Selected Section ", this.selectedSectionList)
 
-      }else {
+      } else {
 
       }
       // this.sharedService.setQuickSectionDetails(this.mandatorySections);
@@ -775,45 +792,45 @@ updateCoverToDate() {
     })
   }
 
-  filterMandatorySections(){
-    log.debug("selectedCover should be coverdesc",this.selectedCoverType)
-        if (this.selectedCoverType) {
-          this.filteredMandatorySections = this.mandatorySections.filter(section =>
-            section.coverTypeShortDescription == (this.selectedCoverType == "COMP" ? "COMPREHENSIVE" : this.selectedCoverType));
-              log.debug("Filtered Section", this.filteredMandatorySections);
-        } else {
-          this.filteredMandatorySections = this.mandatorySections;
-        }
-      }
+  filterMandatorySections() {
+    log.debug("selectedCover should be coverdesc", this.selectedCoverType)
+    if (this.selectedCoverType) {
+      this.filteredMandatorySections = this.mandatorySections.filter(section =>
+        section.coverTypeShortDescription == (this.selectedCoverType == "COMP" ? "COMPREHENSIVE" : this.selectedCoverType));
+      log.debug("Filtered Section", this.filteredMandatorySections);
+    } else {
+      this.filteredMandatorySections = this.mandatorySections;
+    }
+  }
 
-      riskIdPassed(event: any): void {
-
-
-        if (event instanceof Event) {
-          this.passedRiskId = (event.target as HTMLInputElement).value;
-        } else {
-          this.passedRiskId = event;
-        }
-
-        if ( this.passedRiskId !== undefined) {
-          console.log('Passed Risk Id',  this.passedRiskId);
-        } else {
-          console.error('Unable to retrieve value from the event object.');
-        }
-      }
+  riskIdPassed(event: any): void {
 
 
+    if (event instanceof Event) {
+      this.passedRiskId = (event.target as HTMLInputElement).value;
+    } else {
+      this.passedRiskId = event;
+    }
 
-      matchesSearch(description: string): boolean {
-        return description.toLowerCase().includes(this.searchText.toLowerCase());
-      }
+    if (this.passedRiskId !== undefined) {
+      console.log('Passed Risk Id', this.passedRiskId);
+    } else {
+      console.error('Unable to retrieve value from the event object.');
+    }
+  }
+
+
+
+  matchesSearch(description: string): boolean {
+    return description.toLowerCase().includes(this.searchText.toLowerCase());
+  }
   /**
  * Creates and initializes a section details form.
  * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
  * Defines form controls for various section-related fields, setting initial values as needed.
  */
-  createSectionDetailsForm(){
-    this.sectionDetailsForm=this.fb.group({
+  createSectionDetailsForm() {
+    this.sectionDetailsForm = this.fb.group({
       calcGroup: [''],
       code: [''],
       compute: [''],
@@ -833,7 +850,7 @@ updateCoverToDate() {
       sectionType: [''],
       sumInsuredLimitType: [''],
       sumInsuredRate: ['']
-  });
+    });
   }
 
   // onCheckboxChange(section: subclassSection) {
@@ -845,7 +862,7 @@ updateCoverToDate() {
   //   this.getPremiumRates()
   //   this.getSectionbyCode()
   // }
- 
+
   onCheckboxChange(section: any): void {
     const index = this.selectedSections.findIndex(s => s.code === section.code);
     if (index === -1) {
@@ -853,7 +870,7 @@ updateCoverToDate() {
     } else {
       this.selectedSections.splice(index, 1);
     }
-    log.debug("Selected Sections",this.selectedSections);
+    log.debug("Selected Sections", this.selectedSections);
     this.getPremium(this.selectedSections);
 
   }
@@ -870,16 +887,16 @@ updateCoverToDate() {
 
   //   if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
   //     console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
-  
+
   //     // Log the current premiumListIndex before incrementing
   //     console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
-  
+
   //     // Increment the premiumListIndex and wrap around using modulo
   //     this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
-  
+
   //     // Log the updated premiumListIndex after incrementing
   //     console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
-  
+
   //     section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
   //     section.sectionShortDescription = this.premiumList[this.premiumListIndex].sectionShortDescription;
   //     section.sectionType = this.premiumList[this.premiumListIndex].sectionType;
@@ -931,64 +948,64 @@ updateCoverToDate() {
     const sectionTemplate = this.sectionDetailsForm.value;
 
     if (this.premiumList.length > 0) {
-        const sections = this.premiumList.map((premiumItem, index) => {
-            // Create a new section object from the template
-            const section = { ...sectionTemplate };
+      const sections = this.premiumList.map((premiumItem, index) => {
+        // Create a new section object from the template
+        const section = { ...sectionTemplate };
 
-            // Assign values from the premium item to the section
-            section.sectionCode = premiumItem.sectionCode;
-            section.sectionShortDescription = premiumItem.sectionShortDescription;
-            section.sectionType = premiumItem.sectionType;
-            section.calcGroup = 1;
-            section.code = null;
-            section.compute = "Y";
-            section.description = null;
-            section.freeLimit = 0;
-            section.limitAmount = 0;
-            section.multiplierDivisionFactor = premiumItem.multiplierDivisionFactor;
-            section.multiplierRate = 0;
-            section.premiumAmount = 0;
-            section.premiumRate = premiumItem.rate;
-            section.rateDivisionFactor = premiumItem.divisionFactor;
-            section.rateType = premiumItem.rateType;
-            section.rowNumber = 0;
-            section.sumInsuredLimitType = null;
-            section.sumInsuredRate = 0;
+        // Assign values from the premium item to the section
+        section.sectionCode = premiumItem.sectionCode;
+        section.sectionShortDescription = premiumItem.sectionShortDescription;
+        section.sectionType = premiumItem.sectionType;
+        section.calcGroup = 1;
+        section.code = null;
+        section.compute = "Y";
+        section.description = null;
+        section.freeLimit = 0;
+        section.limitAmount = 0;
+        section.multiplierDivisionFactor = premiumItem.multiplierDivisionFactor;
+        section.multiplierRate = 0;
+        section.premiumAmount = 0;
+        section.premiumRate = premiumItem.rate;
+        section.rateDivisionFactor = premiumItem.divisionFactor;
+        section.rateType = premiumItem.rateType;
+        section.rowNumber = 0;
+        section.sumInsuredLimitType = null;
+        section.sumInsuredRate = 0;
 
-            return section;
-        });
+        return section;
+      });
 
-        // Log the sections array
-        console.log("Sections to be created:", sections);
-        this.sections=sections;
-        console.log("Sections to be created:", this.sections);
+      // Log the sections array
+      console.log("Sections to be created:", sections);
+      this.sections = sections;
+      console.log("Sections to be created:", this.sections);
 
-        // Send the array of sections to the service
-        this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
-            try {
-                this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
+      // Send the array of sections to the service
+      this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
+        try {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
 
-                this.sectionDetailsForm.reset();
-            } catch (error) {
-              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+          this.sectionDetailsForm.reset();
+        } catch (error) {
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
 
-                this.sectionDetailsForm.reset();
-            }
-        });
+          this.sectionDetailsForm.reset();
+        }
+      });
     } else {
-        // Handle scenario when premiumList is empty
-        console.error('Premium list is empty.');
-        this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty')
+      // Handle scenario when premiumList is empty
+      console.error('Premium list is empty.');
+      this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty')
 
-        return;
+      return;
     }
-}
+  }
 
 
-  onSelectSection(event: any){
-    this.selectedSection=event;
-    log.info("Patched section",this.selectedSection)
-    this.sectionDetailsForm.patchValue( this.selectedSection)
+  onSelectSection(event: any) {
+    this.selectedSection = event;
+    log.info("Patched section", this.selectedSection)
+    this.sectionDetailsForm.patchValue(this.selectedSection)
   }
   onSaveDetailsClick() {
     this.updateRiskSection();
@@ -1001,12 +1018,12 @@ updateCoverToDate() {
     }
 
   }
-  updateRiskSection(){
+  updateRiskSection() {
     const section = this.sectionDetailsForm.value;
     this.sectionArray = [section];
 
-    this.quotationService.updateRiskSection(this.riskCode,this.sectionArray).subscribe((data)=>{
-      try{
+    this.quotationService.updateRiskSection(this.riskCode, this.sectionArray).subscribe((data) => {
+      try {
         sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
 
         this.sectionDetailsForm.reset()
@@ -1014,7 +1031,7 @@ updateCoverToDate() {
 
         this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated')
 
-      }catch(error){
+      } catch (error) {
         log.info(section)
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
 
@@ -1023,7 +1040,7 @@ updateCoverToDate() {
     })
   }
 
-   onEditButtonClick(selectedSection: any) {
+  onEditButtonClick(selectedSection: any) {
     this.selectedSection = selectedSection;
 
     // Open the modal
@@ -1099,8 +1116,8 @@ updateCoverToDate() {
 
   createSchedule() {
     const schedule = this.scheduleDetailsForm.value;
-  log.debug("passedriskid",this.passedRiskId);
-  log.debug("passedcovertype",this.selectedCoverType)
+    log.debug("passedriskid", this.passedRiskId);
+    log.debug("passedcovertype", this.selectedCoverType)
 
     // Set specific default values for some fields
     schedule.details.level1.bodyType = null;
@@ -1108,7 +1125,7 @@ updateCoverToDate() {
     schedule.details.level1.color = "red";
     schedule.details.level1.engineNumber = null;
     schedule.details.level1.cubicCapacity = null;
-    schedule.details.level1.Make =this.selectedVehicleMakeName;
+    schedule.details.level1.Make = this.selectedVehicleMakeName;
     schedule.details.level1.coverType = this.selectedCoverType;
     schedule.details.level1.registrationNumber = this.passedRiskId;
     schedule.details.level1.chasisNumber = null;
@@ -1120,11 +1137,25 @@ updateCoverToDate() {
     schedule.transactionType = "Q";
     schedule.version = 0;
 
+    // Remove specific fields from the payload
+    delete schedule.details.level1.terrorismApplicable;
+    delete schedule.details.level1.securityDevice1;
+    delete schedule.details.level1.motorAccessories;
+    delete schedule.details.level1.model;
+    delete schedule.details.level1.securityDevice;
+    delete schedule.details.level1.regularDriverName;
+    delete schedule.details.level1.schActive;
+    delete schedule.details.level1.licenceNo;
+    delete schedule.details.level1.driverLicenceDate;
+    delete schedule.details.level1.driverSmsNo;
+    delete schedule.details.level1.driverRelationInsured;
+    delete schedule.details.level1.driverEmailAddress;
+
     this.quotationService.createSchedule(schedule).subscribe(
       (data) => {
         try {
           this.scheduleData = data;
-          this.scheduleList=this.scheduleData._embedded
+          this.scheduleList = this.scheduleData._embedded
           console.log("Schedule Data:", this.scheduleData);
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
 
@@ -1140,51 +1171,68 @@ updateCoverToDate() {
       }
     );
   }
-   // This method Clears the Schedule Detail form by resetting the form model
-   clearForm() {
+  // This method Clears the Schedule Detail form by resetting the form model
+  clearForm() {
     this.scheduleDetailsForm.reset();
 
   }
-  onSelectSchedule(event: any){
-    this.selectedSchedule=event;
-    log.info("Patched Schedule",this.selectedSchedule)
-    this.scheduleDetailsForm.patchValue( this.selectedSchedule)
-    let level=this.selectedSchedule.details;
-    log.info("Patched level",level)
+  onSelectSchedule(event: any) {
+    this.selectedSchedule = event;
+    log.info("Patched Schedule", this.selectedSchedule)
+    this.scheduleDetailsForm.patchValue(this.selectedSchedule)
+    let level = this.selectedSchedule.details;
+    log.info("Patched level", level)
     this.deleteScheduleForLevel();
   }
-  openEditScheduleModal(){
-    if(!this.selectedSchedule){
+  openEditScheduleModal() {
+    if (!this.selectedSchedule) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
-    }else{
+    } else {
       document.getElementById("openModalButtonEdit").click();
-  
+
     }
   }
-  updateSchedule(){
+  updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
     schedule.riskCode = this.riskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
-    this.quotationService.updateSchedule(schedule).subscribe(data=>{
-      this.updatedScheduleData=data;
+
+    
+
+    // Remove specific fields from the payload
+    delete schedule.details.level1.terrorismApplicable;
+    delete schedule.details.level1.securityDevice1;
+    delete schedule.details.level1.motorAccessories;
+    delete schedule.details.level1.model;
+    delete schedule.details.level1.securityDevice;
+    delete schedule.details.level1.regularDriverName;
+    delete schedule.details.level1.schActive;
+    delete schedule.details.level1.licenceNo;
+    delete schedule.details.level1.driverLicenceDate;
+    delete schedule.details.level1.driverSmsNo;
+    delete schedule.details.level1.driverRelationInsured;
+    delete schedule.details.level1.driverEmailAddress;
+
+    this.quotationService.updateSchedule(schedule).subscribe(data => {
+      this.updatedScheduleData = data;
       console.log('Updated Schedule Data:', this.updatedScheduleData);
-      this.updatedSchedule=this.updatedScheduleData._embedded;
+      this.updatedSchedule = this.updatedScheduleData._embedded;
       console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
       this.scheduleList = this.updatedSchedule;
-      log.debug("UPDATED SCHEDULE LIST:",this.scheduleList)
+      log.debug("UPDATED SCHEDULE LIST:", this.scheduleList)
       const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
       if (index !== -1) {
         this.scheduleList[index] = this.updatedSchedule;
         this.cdr.detectChanges();
       }
 
-      try{
+      try {
 
         this.scheduleDetailsForm.reset()
         this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated')
 
-      }catch(error){
+      } catch (error) {
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
 
         this.scheduleDetailsForm.reset()
@@ -1196,8 +1244,8 @@ updateCoverToDate() {
   deleteScheduleForLevel() {
     const levelNumber = this.extractLevelNumber(this.selectedSchedule.details);
     if (levelNumber !== null) {
-      this.passedlevel =levelNumber;
-      console.log("the level passsed",this.passedlevel)
+      this.passedlevel = levelNumber;
+      console.log("the level passsed", this.passedlevel)
     } else {
       console.log("No 'level' property found in the object.");
     }
@@ -1242,18 +1290,18 @@ updateCoverToDate() {
 
 
 
-  finish(){
-    console.log('sections',this.sectionArray)
-    console.log('Schedules',this.scheduleList)
+  finish() {
+    console.log('sections', this.sectionArray)
+    console.log('Schedules', this.scheduleList)
 
     sessionStorage.setItem('sections', JSON.stringify(this.sectionArray))
     sessionStorage.setItem('schedules', JSON.stringify(this.scheduleList))
 
     this.router.navigate(['/home/gis/quotation/quotation-summary'])
   }
-  getSectionbyCode(){
-    this.sectionService.getSectionByCode(this.checkedSectionCode).subscribe(data =>{
-      this.sectionList=data;
+  getSectionbyCode() {
+    this.sectionService.getSectionByCode(this.checkedSectionCode).subscribe(data => {
+      this.sectionList = data;
       sessionStorage.setItem('sectionType', this.sectionList.type)
       console.log(this.sectionList.type, "SECTION LIST WITH TYPE")
     })
@@ -1272,7 +1320,7 @@ updateCoverToDate() {
     });
   }
   // getPremium(passedSections: any[]) {
-    
+
   //   const sections = passedSections;
   //   log.debug("Sections passed to premium service:", sections);
 
@@ -1300,50 +1348,50 @@ updateCoverToDate() {
   getPremium(passedSections: any[]) {
     const sections = passedSections;
     log.debug("Sections passed to premium service:", sections);
-  
+
     // Create an array to store observables returned by each service call
     const observables = sections?.map(section => {
       return this.premiumRateService.getAllPremiums(section.sectionCode, this.selectedBinderCode, this.selectedSubclassCode);
     });
-  
+
     // Use forkJoin to wait for all observables to complete
     forkJoin(observables).subscribe((data: any[]) => {
       // Flatten the array if needed
       const newPremiumList = data.flat();
       log.debug("New Premium List", newPremiumList);
-  
+
       // Check if premiumList is an array (safeguard against initialization issues)
       if (!Array.isArray(this.premiumList)) {
         this.premiumList = [];
       }
-  
+
       // Create a Set to track existing premium codes
       const premiumCodeSet = new Set(this.premiumList.map(premium => premium.code));
-  
+
       // Filter out any new premiums that already exist in the premiumList
       const uniqueNewPremiumList = newPremiumList.filter(premium => !premiumCodeSet.has(premium.code));
-  
+
       // Append uniqueNewPremiumList to existing premiumList
       this.premiumList = [...this.premiumList, ...uniqueNewPremiumList];
       log.debug("Updated Premium List", this.premiumList);
     });
   }
-  
-  loadRiskClauses(){
-    this.quotationService.getRiskClauses(this.riskCode).subscribe(data =>{
-      this.riskClausesList=data;
-      log.debug("Risk Clauses List:",this.riskClausesList)
+
+  loadRiskClauses() {
+    this.quotationService.getRiskClauses(this.riskCode).subscribe(data => {
+      this.riskClausesList = data;
+      log.debug("Risk Clauses List:", this.riskClausesList)
     })
   }
 
-  onSelectRiskClauses(event: any){
-    this.selectedRiskClause=event;
-    log.info("Patched Risk Section",this.selectedRiskClause);
-    this.selectedRiskClauseCode=this.selectedRiskClause.code;
-    log.debug("SELECTED RISK CLAUSE CODE:",this.selectedRiskClauseCode);
-    log.debug("SELECTED PRODUCT CODE:",this.selectProductCode);
-    log.debug("SELECTED RISK CODE:",this.riskCode);
-    log.debug("SELECTED Quote CODE:",this.quotationCode);
+  onSelectRiskClauses(event: any) {
+    this.selectedRiskClause = event;
+    log.info("Patched Risk Section", this.selectedRiskClause);
+    this.selectedRiskClauseCode = this.selectedRiskClause.code;
+    log.debug("SELECTED RISK CLAUSE CODE:", this.selectedRiskClauseCode);
+    log.debug("SELECTED PRODUCT CODE:", this.selectProductCode);
+    log.debug("SELECTED RISK CODE:", this.riskCode);
+    log.debug("SELECTED Quote CODE:", this.quotationCode);
 
     this.captureRiskClause();
   }
@@ -1356,7 +1404,7 @@ updateCoverToDate() {
   // }
   captureRiskClause() {
     this.quotationService
-      .captureRiskClauses(this.selectedRiskClauseCode,this.selectProductCode,this.quotationCode, this.riskCode)
+      .captureRiskClauses(this.selectedRiskClauseCode, this.selectProductCode, this.quotationCode, this.riskCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
@@ -1379,5 +1427,88 @@ updateCoverToDate() {
         // },
       });
   }
+fetchBodyTypes(){
+  this.policyService
+  .getBodyTypes()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.bodytypesList= response._embedded
+      log.debug("Body Types:",this.bodytypesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+    }
+  })
+}
+fetchMotorColours(){
+  this.policyService
+  .getMotorColors()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorColorsList= response._embedded
+      log.debug("Motor Colours:",this.motorColorsList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
+    }
+  })
+}
+fetchSecurityDevices(){
+  this.policyService
+  .getSecurityDevices()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.securityDevicesList= response._embedded
+      log.debug("Motor Colours:",this.securityDevicesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
+    }
+  })
+}
+fetchMotorAccessories(){
+  this.policyService
+  .getMotorAccessories()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.motorAccessoriesList= response._embedded
+      log.debug("Motor Accessories:",this.motorAccessoriesList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor accessories details.Try again later');
+    }
+  })
+}
+getModelYear() {
+  this.productService.getYearOfManufacture().subscribe({
+    next: (data) => {
+      const model = data._embedded
+      this.modelYear = model[0]["List of cover years"]
+      console.log("model year", this.modelYear)
+    }, error: (err) => {
+      this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
+      console.error(err);
+    }
+  })
+}
+// formatCurrency(event: any): void {
+//   let input = event.target.value.replace(/,/g, ''); // Remove existing commas
+//   if (input) {
+//       input = parseFloat(input).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+//       event.target.value = input;
+//   }
+// }
 
 }
