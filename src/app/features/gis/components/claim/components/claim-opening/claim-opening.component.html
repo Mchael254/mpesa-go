@@ -1,3 +1,4 @@
+<!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
 <div class="card mx-4 mt-4 mb-4">
   <div class="card-body">
     <div class="container">
@@ -63,7 +64,7 @@
           <div class="col-md-4">
               <label for="causation">{{'gis.claims.opening.causation' | translate }}</label>
               <br>
-              <p-dropdown [options]="causations" formControlName="causation" optionLabel="label">
+              <p-dropdown [options]="causations" formControlName="causation" optionLabel="description">
               </p-dropdown>  
           </div>
           <div class="col-md-4">
@@ -121,7 +122,7 @@
           <div class="col-md-4">
               <label for="nextReviewUser">{{'gis.claims.opening.next_review_user' | translate }}</label>
               <br>
-              <p-dropdown [options]="nextReviewUsers" formControlName="nextReviewUser" optionLabel="label">
+              <p-dropdown [options]="Users" formControlName="nextReviewUser" optionLabel="name">
               </p-dropdown>
           </div>
         </div>
