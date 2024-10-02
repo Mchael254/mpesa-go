@@ -32,54 +32,6 @@
                             </div>
 
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <label class="required risk-label">{{'gis.policy.risk_id' | translate}}</label>
-                            <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
-                                [(ngModel)]="riskId" formControlName="propertyId">
-
-                            <!-- <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
-                                [(ngModel)]="passedCoverFrom" formControlName="dateCoverFrom"> -->
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('propertyId').hasError('required') && policyRiskForm.get('propertyId').touched"
-                                class="form-text text-danger">
-                                {{'gis.policy.risk_id_is_required' |
-                                translate}}
-                            </div>
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12" *ngIf="!motorProduct">
-                            <label for="riskDescription" class="required risk-label"
-                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
-                            <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="propertyDescription" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Tooltip on right" readonly pTooltip="This is not an editable field"
-                                tooltipPosition="left">
-
-                            <!-- Display error message under the field -->
-                            <!-- <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
-                                class="form-text text-danger">
-                                Risk Description is required.
-                            </div> -->
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12" *ngIf="motorProduct">
-                            <label for="riskDescription" class="required risk-label"
-                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
-                            <input type="text" id="propertyDescription"
-                                class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="propertyDescription" [(ngModel)]="vehiclemakeModel"
-                                data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right"
-                                pTooltip="Select vehicle make and model" tooltipPosition="left" readonly>
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
-                                class="form-text text-danger">
-                                {{'gis.policy.risk_description_is_required' |
-                                translate}}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ROW 2 -->
-                    <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
                             <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.subclass' |
                                 translate}}</label>
@@ -97,9 +49,6 @@
                                 {{'gis.policy.subclass_is_required' |translate}}
                             </div>
                         </div>
-
-
-
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="binder" class="required risk-label" id="binder">{{'gis.policy.binder' |
                                 translate}}</label>
@@ -127,33 +76,10 @@
                             </div>
 
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type'
-                                | translate}}</label>
-
-                            <!-- <select class="form-select form-control-sm selectInput" id="coverType"
-                                formControlName="coverTypeCode" (change)="onCoverTypeSelected($event)"
-                                [(ngModel)]="coverType">
-                                <option value=""></option>
-                                <option *ngFor="let coverType of subclassCoverType" [value]="coverType.code">
-                                    {{coverType.description | sentenceCase}}</option>
-                            </select> -->
-
-
-                            <p-dropdown [options]="subclassCoverType" optionValue="code" optionLabel="description"
-                                formControlName="coverTypeCode" (onChange)="onCoverTypeSelected($event.value)"
-                                [placeholder]="coverType" [filterBy]="'description'" [filter]="true"
-                                [ngModel]="coverType"></p-dropdown>
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('coverTypeCode').hasError('required') && policyRiskForm.get('coverTypeCode').touched"
-                                class="form-text text-danger">
-                                {{'gis.policy.cover_type_is_required' |translate}}
-                            </div>
-                        </div>
+                        
                     </div>
-                    <!-- MOTOR SUBCLASS FIELDS -->
-                    <div *ngIf="showMotorSubclassFields">
+                     <!-- MOTOR SUBCLASS FIELDS 1-->
+                     <div *ngIf="showMotorSubclassFields">
                         <div class="row mb-4">
                             <div class="mb-1 col-sm-4 col-12">
                                 <label for="vehiclemake" class="required risk-label"
@@ -213,6 +139,83 @@
                                 </div>
                             </div>
                         </div>
+                      
+                    </div>
+                    <!-- ROW 2 -->
+                    <div class="row mb-4">
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class="required risk-label">{{'gis.policy.risk_id' | translate}}</label>
+                            <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                [(ngModel)]="riskId" formControlName="propertyId">
+
+                            <!-- <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                                [(ngModel)]="passedCoverFrom" formControlName="dateCoverFrom"> -->
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('propertyId').hasError('required') && policyRiskForm.get('propertyId').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.risk_id_is_required' |
+                                translate}}
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" *ngIf="!motorProduct">
+                            <label for="riskDescription" class="required risk-label"
+                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
+                            <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="propertyDescription" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Tooltip on right" readonly pTooltip="This is not an editable field"
+                                tooltipPosition="left">
+
+                            <!-- Display error message under the field -->
+                            <!-- <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
+                                class="form-text text-danger">
+                                Risk Description is required.
+                            </div> -->
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" *ngIf="motorProduct">
+                            <label for="riskDescription" class="required risk-label"
+                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
+                            <input type="text" id="propertyDescription"
+                                class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="propertyDescription" [(ngModel)]="vehiclemakeModel"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right"
+                                pTooltip="Select vehicle make and model" tooltipPosition="left" readonly>
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.risk_description_is_required' |
+                                translate}}
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type'
+                                | translate}}</label>
+
+                            <!-- <select class="form-select form-control-sm selectInput" id="coverType"
+                                formControlName="coverTypeCode" (change)="onCoverTypeSelected($event)"
+                                [(ngModel)]="coverType">
+                                <option value=""></option>
+                                <option *ngFor="let coverType of subclassCoverType" [value]="coverType.code">
+                                    {{coverType.description | sentenceCase}}</option>
+                            </select> -->
+
+
+                            <p-dropdown [options]="subclassCoverType" optionValue="code" optionLabel="description"
+                                formControlName="coverTypeCode" (onChange)="onCoverTypeSelected($event.value)"
+                                [placeholder]="coverType" [filterBy]="'description'" [filter]="true"
+                                [ngModel]="coverType"></p-dropdown>
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('coverTypeCode').hasError('required') && policyRiskForm.get('coverTypeCode').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.cover_type_is_required' |translate}}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- MOTOR SUBCLASS FIELDS 2-->
+                    <div *ngIf="showMotorSubclassFields">
+                        
                         <div class="row mb-4">
                             <div class="mb-1 col-sm-4 col-12">
 
