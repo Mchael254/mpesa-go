@@ -24,11 +24,11 @@
 
           <div class="card-body mx-2 mt-2">
             
-            <h6 class="text-primary font-weight-bold" [ngStyle]="{ 'font-size': '16px' }">Basic Details</h6>
+            <h6 class="text-primary font-weight-bold">{{ "lms.ind.quotations.basic_details" | translate }}</h6>
 
             <!-- Error Message Display -->
             <div class="row" *ngIf="getFormControlsNameWithErrors.length > 0">
-              <div class="col-12 text-danger required" [ngStyle]="{ 'font-size': '11px', 'font-weight': '500' }" 
+              <div class="col-12 text-danger required"
                   *ngFor="let item of getFormControlsNameWithErrors">{{ item | uppercase }}
               </div>
             </div>
@@ -39,12 +39,12 @@
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="NEW_CLIENT" formControlName="clientTypeId" 
                         id="inlineRadio1" (click)="resetForm()"/>
-                  <label class="form-check-label" for="inlineRadio1">New Client</label>
+                  <label class="form-check-label" for="inlineRadio1">{{ "lms.ind.quotations.new_client" | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="EXISTING_CLIENT" formControlName="clientTypeId" 
                         id="inlineRadio2"/>
-                  <label class="form-check-label" for="inlineRadio2">Existing Client</label>
+                  <label class="form-check-label" for="inlineRadio2">{{ "lms.ind.quotations.existing_client" | translate }}</label>
                 </div>
               </div>
             </div>
@@ -52,9 +52,9 @@
             <!-- Client Dropdown Selection -->
             <div class="row" >
               <div class="col-md-4" *ngIf="this.clientForm.get('clientTypeId').value === 'EXISTING_CLIENT'">
-                <label for="value" class="quote-label">Client</label>
+                <label for="value" class="quote-label">{{ "lms.ind.quotations.client" | translate }}</label>
                   <p-dropdown id="value" [options]="clientList" [optionLabel]="'details'" [dataKey]="'value'" 
-                              [editable]="true" [ngStyle]="{ width: '100%', height: '37px', 'line-height': '10px' }"
+                              [editable]="true"
                               placeholder="Select or Type Client name" (onChange)="searchClient()"
                               formControlName="client" class="select">
                   </p-dropdown>
@@ -64,29 +64,27 @@
             <div class="row" >
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  Last Name<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.last_name" | translate }}<span>*</span></label>
                 <input type="text" class="form-control form-control mb-1"
                     formControlName="lastName"
                     [ngClass]="{'is-invalid': highlightInvalid('lastName')}"/>
-                <div *ngIf="highlightInvalid('lastName')" class="invalid-feedback">Last Name is required</div>
+                <div *ngIf="highlightInvalid('lastName')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.last_name_required" | translate }}
+                </div>
               </div>
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  First Name<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.first_name" | translate }}<span>*</span></label>
                 <input type="text" class="form-control form-control mb-1"
                     formControlName="firstName"
                     [ngClass]="{'is-invalid': highlightInvalid('firstName')}"/>
-                <div *ngIf="highlightInvalid('firstName')" class="invalid-feedback">First Name is required</div>
+                <div *ngIf="highlightInvalid('firstName')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.first_name_required" | translate }}
+                </div>
               </div>
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  Date of Birth<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.dob" | translate }}<span>*</span></label>
                 <p-calendar 
                     [maxDate]="minDate" 
                     [defaultDate]="minDate" 
@@ -96,7 +94,9 @@
                     [showButtonBar]="true"
                     [ngClass]="{'is-invalid': highlightInvalid('dateOfBirth')}">
                 </p-calendar>
-                <div *ngIf="highlightInvalid('dateOfBirth')" class="invalid-feedback">Date of Birth is required</div>
+                <div *ngIf="highlightInvalid('dateOfBirth')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.dob_required" | translate }}
+                </div>
               </div>
             
             </div>
@@ -104,44 +104,44 @@
             <div class="row mb-4">
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  Nationality<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.nationality" | translate }}<span>*</span></label>
                 <select id="citizenship" class="form-select form-select mb-1"
                     [ngClass]="{'is-invalid': highlightInvalid('countryId')}"
                     placement="right" 
                     formControlName="countryId">
                   <option selected="true" disabled="disabled">
-                    Select Nationality
+                    {{ "lms.ind.quotations.select_nationality" | translate }}
                   </option>
                   <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
                       {{ data?.nationality | titlecase }}
                   </option>
                 </select>
-                <div *ngIf="highlightInvalid('countryId')" class="invalid-feedback">Nationality is required</div>
+                <div *ngIf="highlightInvalid('countryId')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.nationality_required" | translate }}
+                </div>
               </div>
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  Mode of Identity<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.mode_of_identity" | translate }}<span>*</span></label>
                 <select id="modeOfIdentity" class="form-select form-select mb-1"
                     [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentity')}"
                     placement="right" 
                     formControlName="modeOfIdentity"
                     (change)="checkIdentityType($event)">
                   <option selected="true" disabled="disabled">
-                    Select Mode of Identity
+                    {{ "lms.ind.quotations.select_mode_of_identity" | translate }}
                   </option>
                   <option *ngFor="let data of identifierTypeList | sort : 'asc' : 'name'" [value]="data.id">
                       {{ data.name?.replaceAll("_", " ") | titlecase }}</option>
                 </select>
-                <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">Mode of Identity is required</div>
+                <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.mode_of_identity_required" | translate }}
+                </div>
               </div>
 
               <div class="col-md-4">
                 <label class="quote-label">
-                  Mode of Identity Number<span style="color: red;">*</span>
+                  {{ "lms.ind.quotations.mode_of_identity_number" | translate }}<span>*</span>
                   <span>
                     {{ identityFormatDesc?.exampleFormat ? "- " + identityFormatDesc?.exampleFormat : "" }}
                   </span>
@@ -150,7 +150,7 @@
                     class="form-control form-control mb-1" formControlName="modeOfIdentityNumber"
                     [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentityNumber')}"/>
                 <div *ngIf="checkErrorThatsTouchedAndDirty() || checkError()" class="text-danger">
-                  Incorrect ID No Format
+                  {{ "lms.ind.quotations.incorrect_id_no_format" | translate }}
                 </div>
               </div>
 
@@ -159,31 +159,29 @@
             <div class="row mb-4">
 
               <div class="col-md-4">
-                <label class="quote-label">
-                  PIN Number<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label">{{ "lms.ind.quotations.pin_number" | translate }}<span>*</span></label>
                 <input type="text" class="form-control form-control mb-1"
                     formControlName="pinNumber"
                     [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}"/>
-                <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">PIN is required</div>
+                <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">
+                  {{ "lms.ind.quotations.pin_number_required" | translate }}
+                </div>
               </div>
 
               <div class="col-md-4">
-                <label class="quote-label">
-                    Gender<span style="color: red;">*</span>
-                </label>
+                <label class="quote-label"> {{ "lms.ind.quotations.gender" | translate }}<span>*</span></label>
                 <br />
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="F"
                     formControlName="gender" 
                     [ngClass]="{'is-invalid': highlightInvalid('gender')}"/>
-                  <label class="form-check-label">Female</label>
+                  <label class="form-check-label">{{ "lms.ind.quotations.female" | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="M"
                     formControlName="gender"
                     [ngClass]="{'is-invalid': highlightInvalid('gender')}"/>
-                  <label class="form-check-label">Male</label>
+                  <label class="form-check-label">{{ "lms.ind.quotations.male" | translate }}</label>
                 </div>
               </div>
 
@@ -201,7 +199,7 @@
             <div class="row">
 
               <div class="col-8">
-                <h6 class="text-start mb-3">Contact Details</h6>
+                <h6 class="text-start mb-3">{{ "lms.ind.quotations.contact_details" | translate }}</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
                 <button type="button" id="icon" class="btn btn-card-icon" (click)="toggleCollapse('card1')">
@@ -211,35 +209,34 @@
 
             </div>
 
-            <div *ngIf="openCardId === 'card1'" id="contactDetails">
-
+            <div *ngIf="openCardId === 'card1'" id="contactDetails"> 
+            
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                      Branch<span style="color: red;">*</span>
+                  <label class="quote-label">{{ "lms.ind.quotations.branch" | translate }}<span>*</span>
                   </label>
                   <select class="form-select form-select mb-1"
                       [ngClass]="{'is-invalid': highlightInvalid('branchId')}"
                       formControlName="branchId" placement="right">
                     <option [value]="" selected="true" disabled="disabled">
-                      Select Branch
+                      {{ "lms.ind.quotations.select_branch" | translate }}
                     </option>
                     <option *ngFor="let data of branchList | sort : 'asc' : 'name'" [value]="data.id">
                         {{ data.name | titlecase }}
                     </option>
                   </select>
-                  <div *ngIf="highlightInvalid('branchId')" class="invalid-feedback">Branch is required</div>
+                  <div *ngIf="highlightInvalid('branchId')" class="invalid-feedback">
+                    {{ "lms.ind.quotations.branch_required" | translate }}
+                  </div>
                 </div>
 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                    Title
-                  </label>
+                  <label class="quote-label">{{ "lms.ind.quotations.title" | translate }}</label>
                   <select class="form-select form-select mb-1"
                       formControlName="titleShortDescription" placement="right">
                     <option [value]="" selected="true" disabled="disabled">
-                        Select Title
+                        {{ "lms.ind.quotations.select_title" | translate }}
                     </option>
                     <option *ngFor="let data of clientTitles | sort : 'asc' : 'description'" [value]="data.id">
                         {{ data.description | titlecase }}
@@ -248,9 +245,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                    SMS Number
-                  </label>
+                  <label class="quote-label">{{ "lms.ind.quotations.sms_number" | translate }}</label>
                   <input type="text" class="form-control form-control mb-1"
                       formControlName="smsNumber" />
                 </div>
@@ -260,30 +255,24 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                    Phone Number
-                  </label>
+                  <label class="quote-label">{{ "lms.ind.quotations.phone_number" | translate }}</label>
                   <input type="text" class="form-control form-control mb-1"
                     formControlName="phoneNumber"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                    E-Mail Address
-                  </label>
+                  <label class="quote-label">{{ "lms.ind.quotations.email_address" | translate }}</label>
                   <input type="email"  class="form-control form-control mb-1"
                     formControlName="emailAddress"/>
                 </div>
 
                 
                 <div class="col-md-4">
-                  <label class="quote-label">
-                    Preferred Channel
-                  </label>
+                  <label class="quote-label">{{ "lms.ind.quotations.preferred_channel" | translate }}</label>
                   <select id="preferredChannel" class="form-select form-select mb-1"
                           placement="right" formControlName="preferredChannel">
                     <option selected="true" disabled="disabled">
-                      Select Preferred Channel
+                      {{ "lms.ind.quotations.select_preferred_channel" | translate }}
                     </option>
                     <option *ngFor="let channel of preferredChannels" [value]="channel.value">
                       {{ channel.label }}
@@ -307,7 +296,7 @@
             <div class="row">
 
               <div class="col-8">
-                <h6 class="text-start mb-3">Postal Address Details</h6>
+                <h6 class="text-start mb-3">{{ "lms.ind.quotations.postal_address_details" | translate }}</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
                 <button type="button" id="icon" class="btn btn-card-icon" (click)="toggleCollapse('card2')">
@@ -317,21 +306,23 @@
 
             </div>
 
-            <div *ngIf="openCardId === 'card2'" id="postalAddress">
+            <div *ngIf="openCardId === 'card2'" id="postalAddress"> 
 
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="box_number" class="quote-label">P.O Box No.</label>
+                  <label for="box_number" class="quote-label">{{ "lms.ind.quotations.po_box_number" | translate }}</label>
                   <input type="number" id="box_number"
                         formControlName="box_number" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="country_id" class="quote-label">Country</label>
+                  <label for="country_id" class="quote-label">{{ "lms.ind.quotations.country" | translate }}</label>
                   <select (change)="selectCountry($event)" class="form-select form-select mb-1"
                           id="country_id" formControlName="country_id" placement="right">
-                    <option [value]="" selected="true" disabled="disabled">Select Country</option>
+                    <option [value]="" selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_country" | translate }}
+                    </option>
                     <option *ngFor="let data of countryList | sort : 'asc' : 'name'"[value]="data?.id">
                             {{ data?.name | titlecase }}
                     </option>
@@ -339,10 +330,12 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="state_id" class="quote-label">County</label>
+                  <label for="state_id" class="quote-label">{{ "lms.ind.quotations.county" | translate }}</label>
                   <select (change)="selectState($event)" formControlName="state_id"
                           class="form-select form-select mb-1" id="quote-input" placement="right">
-                    <option selected="true" disabled="disabled">Select County</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_county" | translate }}
+                    </option>
                     <option *ngFor="let data of stateList | sort : 'asc' : 'name'" [value]="data?.id">
                           {{ data?.name | titlecase }}
                     </option>
@@ -354,10 +347,12 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="town_id" class="quote-label">Town</label>
+                  <label for="town_id" class="quote-label">{{ "lms.ind.quotations.town" | translate }}</label>
                   <select formControlName="town_id" class="form-select form-select mb-1"
                           id="town_id" placement="right">
-                    <option selected="true" disabled="disabled">Select Town</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_town" | translate }}
+                    </option>
                     <option *ngFor="let data of townList | sort : 'asc' : 'name'" [value]="data.id">
                             {{ data?.name | titlecase }}
                     </option>
@@ -365,7 +360,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="physical_address" class="quote-label">Physical Address</label>
+                  <label for="physical_address" class="quote-label">{{ "lms.ind.quotations.physical_address" | translate }}</label>
                   <input type="text" id="physical_address" formControlName="residential_address"
                           class="form-control form-control mb-1" formControlName="physical_address"/>
                 </div>
@@ -387,7 +382,7 @@
             <div class="row">
 
               <div class="col-8">
-                <h6 class="text-start mb-3">Banking Details</h6>
+                <h6 class="text-start mb-3">{{ "lms.ind.quotations.banking_details" | translate }}</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
                 <button type="button" id="icon" class="btn btn-card-icon" (click)="toggleCollapse('card3')">
@@ -397,15 +392,17 @@
 
             </div>
 
-            <div *ngIf="openCardId === 'card3'" id="bankingDetails">
+            <div *ngIf="openCardId === 'card3'" id="bankingDetails"> 
 
               <div class="row mb-4">
                 
                 <div class="col-md-4">
-                  <label for="bank_branch_id" class="quote-label">Bank</label>
+                  <label for="bank_branch_id" class="quote-label">{{ "lms.ind.quotations.bank" | translate }}</label>
                   <select (change)="selectBank($event)" class="form-select form-select mb-1"
                           id="quote-input" placement="right" formControlName="bank_branch_id">
-                    <option selected="true" disabled="disabled">Select Bank</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_bank" | translate }}
+                    </option>
                     <option *ngFor="let data of bankList | sort : 'asc' : 'name'" [value]="data.id">
                             {{ data.name | titlecase }}
                     </option>
@@ -413,11 +410,11 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="bank_branch_id" class="quote-label">Branch</label>
+                  <label for="bank_branch_id" class="quote-label">{{ "lms.ind.quotations.bank_branch" | translate }}</label>
                   <select class="form-select form-select mb-1" id="quote-input"
                           formControlName="bank_branch_id" placement="right">
                     <option selected="true" disabled="disabled">
-                      Select Bank Branch
+                      {{ "lms.ind.quotations.select_bank_branch" | translate }}
                     </option>
                     <option *ngFor="let data of bankBranchList | sort : 'asc' : 'name'" [value]="data.id">
                             {{ data.name | titlecase }}
@@ -426,7 +423,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="account_number" class="quote-label">Account No.</label>
+                  <label for="account_number" class="quote-label">{{ "lms.ind.quotations.account_number" | translate }}</label>
                   <input type="number" id="account_number" class="form-control form-control mb-1"
                         formControlName="account_number"/>
                 </div>
@@ -436,10 +433,12 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="currency_id" class="quote-label">Currency</label>
+                  <label for="currency_id" class="quote-label">{{ "lms.ind.quotations.currency" | translate }}</label>
                   <select class="form-select form-select mb-1" id="currency_id"
                           placement="right" formControlName="currency_id">
-                    <option selected="true" disabled="disabled">Select Currency</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_currency" | translate }}
+                    </option>
                     <option *ngFor="let currency of currencyList | sort : 'asc' : 'name'" value="{{ currency.id }}">
                       <ng-container>
                         {{ currency.name | titlecase }}
@@ -450,25 +449,27 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="effective_from_date" class="quote-label">With Effect From</label>
+                  <label for="effective_from_date" class="quote-label">{{ "lms.ind.quotations.with_effect_from" | translate }}</label>
                   <!-- <input type="date" id="effective_from_date"
                     class="form-control form-control mb-1"
                     formControlName="effective_from_date" /> -->
                   <p-calendar [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE')?.data?.label" ngDefaultControl 
-                              formControlName="effective_from_date" dateFormat="dd/mm/yy" 
-                              [showIcon]="true" [showButtonBar]="true">
+                    formControlName="effective_from_date" dateFormat="dd/mm/yy" 
+                    [showIcon]="true" 
+                    [showButtonBar]="true">
                   </p-calendar>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="effective_to_date" class="quote-label">With Effect To</label>
+                  <label for="effective_to_date" class="quote-label">{{ "lms.ind.quotations.with_effect_to" | translate }}</label>
                   <!-- <input type="date" id="effective_to_date"
                     formControlName="effective_to_date"
                     class="form-control form-control mb-1"
                   /> -->
                   <p-calendar [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_TO_DATE')?.data?.label" ngDefaultControl 
-                              formControlName="effective_to_date" dateFormat="dd/mm/yy" 
-                              [showIcon]="true" [showButtonBar]="true">
+                    formControlName="effective_to_date" dateFormat="dd/mm/yy" 
+                    [showIcon]="true" 
+                    [showButtonBar]="true">
                   </p-calendar>
                 </div>
               </div>
@@ -476,17 +477,17 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="mpayno" class="quote-label">Mpay No</label>
+                  <label for="mpayno" class="quote-label">{{ "lms.ind.quotations.mpay_no" | translate }}</label>
                   <input type="number" id="mpayno" formControlName="mpayno" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="iban" class="quote-label">IBAN</label>
+                  <label for="iban" class="quote-label">{{ "lms.ind.quotations.iban" | translate }}</label>
                   <input type="number" id="iban" formControlName="iban" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="preferedChannel" class="quote-label">Preferred Channel</label>
+                  <label for="preferedChannel" class="quote-label">{{ "lms.ind.quotations.preferred_channel" | translate }}</label>
                   <input type="text" id="preferedChannel" class="form-control form-control mb-1" formControlName="preferedChannel"/>
                 </div>
 
@@ -507,7 +508,7 @@
             <div class="row">
 
               <div class="col-8">
-                <h6 class="text-start mb-3">Wealth AML Details</h6>
+                <h6 class="text-start mb-3">{{ "lms.ind.quotations.wealth_aml_details" | translate }}</h6>
               </div>
               <div class="col-4 d-flex justify-content-end">
                 <button type="button" id="icon" class="btn btn-card-icon" (click)="toggleCollapse('card4')">
@@ -522,11 +523,11 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="" class="quote-label">Citizenship</label>
+                  <label for="" class="quote-label">{{ "lms.ind.quotations.citizenship" | translate }}</label>
                   <select class="form-select form-select mb-1" id="citizenship"
                           formControlName="citizenship_country_id" placement="right">
                     <option selected="true" disabled="disabled">
-                      Select Citizenship
+                      {{ "lms.ind.quotations.select_citizenship" | translate }}
                     </option>
                     <option *ngFor="let data of countryList | sort : 'asc' : 'nationality'" [value]="data.id">
                             {{ data?.nationality | titlecase }}
@@ -535,10 +536,10 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="marital_status" class="quote-label">Marital Status</label>
+                  <label for="marital_status" class="quote-label">{{ "lms.ind.quotations.marital_status" | translate }}</label>
                   <select id="marital_status" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="marital_status">
-                    <option selected="true" disabled="disabled">Select Marital Status</option>
+                    <option selected="true" disabled="disabled">{{ "lms.ind.quotations.select_marital_status" | translate }}</option>
                     <option value="SINGLE">Single</option>
                     <option value="MARRIED">Married</option>
                     <option value="SEPARATED">Separated</option>
@@ -547,10 +548,10 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="funds_source" class="quote-label">Source of Funds</label>
+                  <label for="funds_source" class="quote-label">{{ "lms.ind.quotations.source_of_funds" | translate }}</label>
                   <select id="funds_source" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="funds_source">
-                    <option selected="true" disabled="disabled">Select Source</option>
+                    <option selected="true" disabled="disabled">{{ "lms.ind.quotations.select_source" | translate }}</option>
                     <option *ngFor="let data of fundSource | sort: 'asc' : 'name'" [value]="data.code">
                             {{ data.name | titlecase }}
                     </option>
@@ -562,16 +563,18 @@
               <div class="row mb-4">
 
                 <div class="col-md-4">
-                  <label for="employed" class="quote-label">Type of Employment</label>
+                  <label for="employed" class="quote-label">{{ "lms.ind.quotations.type_of_employment" | translate }}</label>
                   <input type="text" id="employed" formControlName="employed" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="sector_id" class="quote-label">Economic Sector</label>
+                  <label for="sector_id" class="quote-label">{{ "lms.ind.quotations.economic_sector" | translate }}</label>
                   <select id="sector_id" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="sector_id"
                           (change)="selectSector($event)">
-                    <option selected="true" disabled="disabled">Select Sector</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_economic_sector" | translate }}
+                    </option>
                      <option *ngFor="let sector of sectorData | sort : 'asc' : 'name'"  value="{{ sector.id }}">
                               {{ sector.name | titlecase}}
                      </option>
@@ -579,10 +582,12 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label for="occupation_id" class="quote-label">Occupation</label>
+                  <label for="occupation_id" class="quote-label">{{ "lms.ind.quotations.occupation" | translate }}</label>
                   <select id="occupation_id" class="form-select form-select mb-1" id="quote-input"
                           placement="right" formControlName="occupation_id">
-                    <option selected="true" disabled="disabled">Select Occupation</option>
+                    <option selected="true" disabled="disabled">
+                      {{ "lms.ind.quotations.select_occupation_status" | translate }}
+                    </option>
                     <ng-container *ngFor="let occupation of occupationData">
                       <option value="{{ occupation.occupationId }}"> {{ occupation.name | titlecase }}</option>
                     </ng-container>
@@ -594,17 +599,17 @@
               <div class="row mb-4">
                 
                 <div class="col-md-4">
-                  <label for="insurancePurpose" class="quote-label">Purpose In Insurance</label>
+                  <label for="insurancePurpose" class="quote-label">{{ "lms.ind.quotations.purpose_of_insurance" | translate }}</label>
                   <input type="text" id="insurancePurpose" formControlName="insurancePurpose" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="premiumFrequency" class="quote-label">Premium frequency</label>
+                  <label for="premiumFrequency" class="quote-label">{{ "lms.ind.quotations.premium_frequency" | translate }}</label>
                   <input type="text" id="premiumFrequency" formControlName="premiumFrequency" class="form-control form-control mb-1"/>
                 </div>
 
                 <div class="col-md-4">
-                  <label for="distributeChannel" class="quote-label">Distribution Channel</label>
+                  <label for="distributeChannel" class="quote-label">{{ "lms.ind.quotations.distribution_channel" | translate }}</label>
                   <input type="text" id="distributeChannel" formControlName="distributeChannel" class="form-control form-control mb-1"/>
                 </div>
 
@@ -630,7 +635,7 @@
             [ngClass]="{ 'btn-danger': clientForm.invalid, 
                          'btn-primary': !clientForm.invalid
                        }"
-            class="btn btn-sm">Continue
+            class="btn btn-sm">{{ "lms.ind.quotations.continue" | translate }}
     </button>
   </div>
 </div>
@@ -648,7 +653,7 @@
                   data-bs-dismiss="modal" aria-label="Close">
           </button>
 
-          <h5 class="text-center fs-6 mt-2 mb-4">Select Client</h5>
+          <h5 class="text-center fs-6 mt-2 mb-4">{{ "lms.ind.quotations.select_client" | translate }}</h5>
           <div class="input-group mb-4" id="search-input">
             <span class="input-group-append" style="background-color: #f5f6f8">
               <button class="btn border-end-0" type="button">
