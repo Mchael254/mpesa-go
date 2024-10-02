@@ -6,9 +6,9 @@ import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { ActivityService } from '../../../services/activity.service';
 import { ActivityType } from '../../../data/activity';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {Logger} from "../../../../../shared/services";
-import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
-import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
+import { Logger } from '../../../../../shared/services';
+import { SystemsDto } from '../../../../../shared/data/common/systemsDto';
+import { SystemsService } from '../../../../../shared/services/setups/systems/systems.service';
 
 const log = new Logger('ActivityTypesComponent');
 
@@ -38,6 +38,7 @@ export class ActivityTypesComponent implements OnInit {
     systemName: undefined,
   };
   shouldShowSystems: boolean = false;
+  isDataReady: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -99,18 +100,14 @@ export class ActivityTypesComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
         response.forEach((field) => {
-          for (const key of Object.keys(
-            this.activityTypeForm.controls
-          )) {
+          for (const key of Object.keys(this.activityTypeForm.controls)) {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
                 this.activityTypeForm.controls[key].addValidators(
                   Validators.required
                 );
-                this.activityTypeForm.controls[
-                  key
-                ].updateValueAndValidity();
+                this.activityTypeForm.controls[key].updateValueAndValidity();
                 const label = document.querySelector(
                   `label[for=${field.frontedId}]`
                 );
@@ -213,14 +210,17 @@ export class ActivityTypesComponent implements OnInit {
   }
 
   getActivityTypes(): void {
+    this.isDataReady = false;
     this.activityService.getActivityTypes().subscribe({
       next: (data) => {
         this.activityTypeData = data;
+        this.isDataReady = true;
         this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataReady = true;
       },
     });
   }
