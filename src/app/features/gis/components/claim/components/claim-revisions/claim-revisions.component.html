@@ -1,7 +1,11 @@
-<div class="container">
-    <h2>Claim Revisions</h2>
-  
-    <button class="btn btn-primary mb-2" (click)="addPerilRevision()" data-bs-toggle="modal" data-bs-target="#perilRevisionModal">Add Peril Revision</button>
+<div class="row mb-3">
+  <div class="col-md-12 d-flex justify-content-end align-items-center">  
+      <button class="btn btn-primary mr-2" id="icon" type="button" (click)="addPerilRevision()"  data-bs-toggle="modal" data-bs-target="#perilRevisionModal"><i class="fa-solid fa-plus"></i></button> 
+  </div>
+</div>
+
+ 
+    <!-- <button class="btn btn-primary mb-2" (click)="addPerilRevision()" data-bs-toggle="modal" data-bs-target="#perilRevisionModal">Add Peril Revision</button> -->
   
     <!-- Bootstrap Modal for Peril Revision -->
     <div class="modal fade" id="perilRevisionModal" tabindex="-1" aria-labelledby="perilRevisionModalLabel" aria-hidden="true">
@@ -130,4 +134,4 @@
         </tr>
       </ng-template>
     </p-table>
-  </div>
+ 

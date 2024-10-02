@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import claimSteps from '../../data/claims_steps.json'
 @Component({
   selector: 'app-claim-transaction',
   templateUrl: './claim-transaction.component.html',
@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 })
 export class ClaimTransactionComponent {
   activeTab = 'claimEnquiry'; // Default tab
-
+  steps = claimSteps
 
   constructor() { }
 
