@@ -8,7 +8,7 @@ import { TableModule } from 'primeng/table';
 import { ClaimDetailsComponent } from './components/claim-details/claim-details.component';
 import { PerilManagementComponent } from './components/peril-management/peril-management.component';
 import { ClaimOpeningComponent } from './components/claim-opening/claim-opening.component';
-;
+import { StepsModule } from 'primeng/steps';
 import {ButtonModule} from 'primeng/button'; 
 import {DropdownModule} from 'primeng/dropdown';
 import {CalendarModule} from 'primeng/calendar';
@@ -28,7 +28,8 @@ import { ClaimRevisionsComponent } from './components/claim-revisions/claim-revi
 import { DocumentManagementComponent } from './components/document-management/document-management.component';
 import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
 import { CourtCaseManagementComponent } from './components/court-case-management/court-case-management.component';
-import { TranslateModule } from '@ngx-translate/core'; 
+import { TranslateModule } from '@ngx-translate/core';
+import { TransactionsComponent } from './components/transactions/transactions.component'; 
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { TranslateModule } from '@ngx-translate/core';
     ClaimRevisionsComponent,
     DocumentManagementComponent,
     RequiredDocumentsComponent,
-    CourtCaseManagementComponent
+    CourtCaseManagementComponent,
+    TransactionsComponent
   ],
   imports: [
     CommonModule,
@@ -65,7 +67,8 @@ import { TranslateModule } from '@ngx-translate/core';
     DialogModule,
     RippleModule,
     ConfirmDialogModule,
-    TranslateModule
+    TranslateModule,
+    StepsModule
   ]
 })
 export class ClaimModule { }
