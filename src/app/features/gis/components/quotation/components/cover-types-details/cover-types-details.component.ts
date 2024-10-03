@@ -34,6 +34,7 @@ export class CoverTypesDetailsComponent {
   isCollapsibleOpen = false;
   isModalOpen = false;
   selectedOption: string = 'email';
+  // checked: boolean = false;
   clientName: string = '';
   contactValue: string = '';
   steps = stepData;
