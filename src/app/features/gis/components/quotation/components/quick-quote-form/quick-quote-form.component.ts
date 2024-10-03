@@ -92,10 +92,10 @@ export class QuickQuoteFormComponent {
   clientName: any;
   clientEmail: any;
   clientPhone: any;
-  clientZipCode:any;
+  clientZipCode: any;
   newClientData = {
     inputClientName: '',
-    inputClientZipCode:'',
+    inputClientZipCode: '',
     inputClientPhone: '',
     inputClientEmail: ''
   };
@@ -103,7 +103,7 @@ export class QuickQuoteFormComponent {
   selectedCountry: any;
   filteredCountry: any;
   mobilePrefix: any;
-  selectedZipCode:any;
+  selectedZipCode: any;
 
 
   subclassCoverType: subclassCoverTypes[] = [];
@@ -129,7 +129,7 @@ export class QuickQuoteFormComponent {
   user: any;
   userDetails: any
   userBranchId: any;
-  userBranchName:any;
+  userBranchName: any;
   branchList: OrganizationBranchDto[];
   selectedBranchCode: any;
   selectedBranchDescription: any;
@@ -149,7 +149,7 @@ export class QuickQuoteFormComponent {
   passedQuotationNo: any;
   passedQuotationCode: string
   PassedClientDetails: any;
-  passedNewClientDetails:any;
+  passedNewClientDetails: any;
 
   // isAddRisk:boolean=false;
   isAddRisk: boolean;
@@ -168,7 +168,8 @@ export class QuickQuoteFormComponent {
 
 
   passedSections: any[] = [];
-  isNewClient: boolean = true; 
+  isNewClient: boolean = true;
+  existingPropertyIds: any;
 
 
   constructor(
@@ -218,55 +219,57 @@ export class QuickQuoteFormComponent {
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
     const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
-    if (passedClientDetailsString == undefined){
+    if (passedClientDetailsString == undefined) {
       log.debug("New Client has been passed")
 
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
-    this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-    console.log("Client Details:", this.passedNewClientDetails);
+      this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
+      console.log("Client Details:", this.passedNewClientDetails);
 
-    }else{
+    } else {
       log.debug("Existing Client has been passed")
       this.PassedClientDetails = JSON.parse(passedClientDetailsString);
-     
+
 
     }
 
-    
+
 
     console.log("Quotation Details:", this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
-    log.debug("passed QUOYTATION number",this.passedQuotationNo)
+    log.debug("passed QUOYTATION number", this.passedQuotationNo)
+    this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
+    log.debug("existing property id",this.existingPropertyIds);
 
     this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
-    log.debug("passed QUOYTATION CODE",this.passedQuotationCode)
+    log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
     // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
 
     console.log("Client Details:", this.PassedClientDetails);
     if (this.passedQuotation) {
-      if(this.PassedClientDetails){
+      if (this.PassedClientDetails) {
         this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
-      this.clientEmail = this.PassedClientDetails.emailAddress;
-      this.clientPhone = this.PassedClientDetails.phoneNumber;
-      this.personalDetailsForm.patchValue(this.passedQuotation)
-      this.isNewClient=false;
-      this.toggleButton();
-      }else{
+        this.clientEmail = this.PassedClientDetails.emailAddress;
+        this.clientPhone = this.PassedClientDetails.phoneNumber;
+        this.personalDetailsForm.patchValue(this.passedQuotation)
+        this.isNewClient = false;
+        this.toggleButton();
+      } else {
         log.debug("NEW CLIENT ADD ANOTHER RISK")
         this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
         this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
-        this.selectedZipCode= this.passedNewClientDetails?.inputClientZipCode;
-        this.isNewClient=true;
+        this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
+        this.isNewClient = true;
       }
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
       this.isAddRisk = JSON.parse(passedIsAddRiskString);
       console.log("isAddRiskk Details:", this.isAddRisk);
-     
+
       this.selectedCountry = this.PassedClientDetails.country;
-      log.info("Paased selected country:",this.selectedCountry)
+      log.info("Paased selected country:", this.selectedCountry)
       this.getCountries()
     }
 
@@ -283,7 +286,7 @@ export class QuickQuoteFormComponent {
     this.premiumComputationRequest;
 
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
   /**
   * Loads all products by making an HTTP GET request to the ProductService.
   * Retrieves a list of products and updates the component's productList property.
@@ -368,16 +371,16 @@ export class QuickQuoteFormComponent {
     this.fetchBranches();
 
   }
-  onZipCodeSelected(event: any){
+  onZipCodeSelected(event: any) {
     this.selectedZipCode = event.target.value;
     console.log("Selected Zip Code:", this.selectedZipCode);
   }
   onInputChange() {
     console.log("Method called")
-    this.newClientData.inputClientZipCode=this.selectedZipCode;
-   log.debug("New User Data",this.newClientData); 
-   const newClientDetailsString = JSON.stringify(this.newClientData);
-   sessionStorage.setItem('newClientDetails', newClientDetailsString);
+    this.newClientData.inputClientZipCode = this.selectedZipCode;
+    log.debug("New User Data", this.newClientData);
+    const newClientDetailsString = JSON.stringify(this.newClientData);
+    sessionStorage.setItem('newClientDetails', newClientDetailsString);
   }
   /**
    * Retrieves branch information by making an HTTP GET request to the BranchService.
@@ -405,7 +408,7 @@ export class QuickQuoteFormComponent {
         log.info('Fetched Branches', this.branchList);
         const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
         log.debug("branch", branch);
-        this.userBranchName= branch[0]?.name;
+        this.userBranchName = branch[0]?.name;
         this.branchList.forEach(branch => {
           // Access each product inside the callback function
           let capitalizedDescription = branch.name.charAt(0).toUpperCase() + branch.name.slice(1).toLowerCase();
@@ -414,14 +417,14 @@ export class QuickQuoteFormComponent {
             description: capitalizedDescription
           });
         });
-  
+
         // Combine the characters back into words
         const combinedWords = branchDescription.join(',');
         this.branchDescriptionArray.push(...branchDescription)
-  
+
         // Now 'combinedWords' contains the result with words instead of individual characters
         log.info("modified Branch description", this.branchDescriptionArray);
-  
+
       });
   }
   onBranchSelected(selectedValue: any) {
@@ -441,7 +444,7 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   loadAllClients() {
-    this.clientService.getClients(0, 100 ).subscribe(data => {
+    this.clientService.getClients(0, 100).subscribe(data => {
       this.clientList = data;
       log.debug("CLIENT DATA:", this.clientList)
       this.clientData = this.clientList.content
@@ -539,7 +542,7 @@ export class QuickQuoteFormComponent {
       comments: [''],
       internalComments: [''],
       introducerCode: [''],
-      subclassCode:['', Validators.required]
+      subclassCode: ['', Validators.required]
       // dateRange:['']
     });
   }
@@ -638,20 +641,20 @@ export class QuickQuoteFormComponent {
   // }
 
   getProductExpiryPeriod() {
-  if (!this.selectedProductCode || !this.productList) {
-    this.expiryPeriod = "N";
-    return;
+    if (!this.selectedProductCode || !this.productList) {
+      this.expiryPeriod = "N";
+      return;
+    }
+
+    this.selectedProduct = this.productList.filter(product => product.code === this.selectedProductCode);
+
+    if (this.selectedProduct.length > 0) {
+      this.expiryPeriod = this.selectedProduct[0].expires;
+    } else {
+      this.expiryPeriod = "N";
+    }
   }
 
-  this.selectedProduct = this.productList.filter(product => product.code === this.selectedProductCode);
-
-  if (this.selectedProduct.length > 0) {
-    this.expiryPeriod = this.selectedProduct[0].expires;
-  } else {
-    this.expiryPeriod = "N";
-  }
-}
-  
   /**
    * Retrieves and matches product subclasses for a given product code.
    * - Makes an HTTP GET request to GISService for product subclasses.
@@ -703,7 +706,7 @@ export class QuickQuoteFormComponent {
   //     })
   //   );
   // }
-  
+
   /**
    * Handles the selection of a subclass.
    * - Retrieves the selected subclass code from the event.
@@ -878,6 +881,11 @@ export class QuickQuoteFormComponent {
       });
     }
   }
+  updateCarRegNoValue(event: Event) {
+    const input = event.target as HTMLInputElement; // Type assertion to HTMLInputElement
+    this.carRegNoValue = input.value; // Set the value directly
+  }
+  
   /**
    * Validates a car registration number using a dynamic regex pattern.
    * - Logs the entered value and dynamic regex pattern.
@@ -888,10 +896,19 @@ export class QuickQuoteFormComponent {
    */
   validateCarRegNo() {
     console.log('Entered value:', this.carRegNoValue);
+    
+    // Validate against the regex pattern
     const regex = new RegExp(this.dynamicRegexPattern);
     console.log('Regex pattern:', regex);
     this.carRegNoHasError = !regex.test(this.carRegNoValue);
     console.log('Has error:', this.carRegNoHasError);
+
+     // Check for duplicate property IDs
+     const isDuplicate = this.existingPropertyIds.includes(this.carRegNoValue);
+     if (isDuplicate) {
+       this.carRegNoHasError = true; // Set error to true if a duplicate is found
+       console.log('Duplicate property ID found.',isDuplicate);
+     }
   }
 
   /**
@@ -1137,28 +1154,28 @@ export class QuickQuoteFormComponent {
     this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
     this.personalDetailsForm.get('branchCode').setValue(this.selectedBranchCode);
 
-   // Mark all fields as touched and validate the form
-   this.personalDetailsForm.markAllAsTouched();
-   this.personalDetailsForm.updateValueAndValidity();
+    // Mark all fields as touched and validate the form
+    this.personalDetailsForm.markAllAsTouched();
+    this.personalDetailsForm.updateValueAndValidity();
 
-   // Log form validity for debugging
-   console.log('Form Valid:', this.personalDetailsForm.valid);
-   console.log('Form Values:', this.personalDetailsForm.value);
+    // Log form validity for debugging
+    console.log('Form Valid:', this.personalDetailsForm.valid);
+    console.log('Form Values:', this.personalDetailsForm.value);
 
-   if (this.personalDetailsForm.invalid) {
-       console.log('Form is invalid, will not proceed');
-       this.ngxSpinner.hide();
-       return;
-   }
-   Object.keys(this.personalDetailsForm.controls).forEach(control => {
-    if (this.personalDetailsForm.get(control).invalid) {
-      console.log(`${control} is invalid`, this.personalDetailsForm.get(control).errors);
+    if (this.personalDetailsForm.invalid) {
+      console.log('Form is invalid, will not proceed');
+      this.ngxSpinner.hide();
+      return;
     }
-  });
-  
+    Object.keys(this.personalDetailsForm.controls).forEach(control => {
+      if (this.personalDetailsForm.get(control).invalid) {
+        console.log(`${control} is invalid`, this.personalDetailsForm.get(control).errors);
+      }
+    });
 
-   // If form is valid, proceed with the premium computation logic
-   console.log('Form is valid, proceeding with premium computation...');
+
+    // If form is valid, proceed with the premium computation logic
+    console.log('Form is valid, proceeding with premium computation...');
     sessionStorage.setItem('product', this.selectedProductCode);
 
     this.premiumComputationRequest = {
@@ -1261,7 +1278,7 @@ export class QuickQuoteFormComponent {
 
       }
       // this.computeQuotePremium();
-     
+
     });
   }
 
