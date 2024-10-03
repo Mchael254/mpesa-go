@@ -41,7 +41,7 @@ export class CoverTypesDetailsComponent {
   coverTypes: any[];
 
   quickQuotationNumbers: any;
-  quotationDetails: QuotationDetails[];
+  quotationDetails:any;
 
   quickQuoteSectionList: any;
   selectedSections: any[] = [];
@@ -605,7 +605,21 @@ isCardExpanded(index: number): boolean {
       console.log("Quotation results:", this.quotationData)
       log.debug("Quotation Number", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
+      if(this.quotationNo){
+        // this.loadClientQuotation()
+      }
       this.createQuotationRisk()
+
+    })
+  }
+  loadClientQuotation(){
+    this.quotationService.getClientQuotations(this.quotationNo).subscribe(data =>{
+      this.quotationDetails=data;
+      log.debug("Quotation Details:",this.quotationDetails)
+      this.quotationNo=this.quotationDetails.no;
+      log.debug("Quotation Number:",this.quotationNo)
+      this.taxInformation = this.quotationDetails.taxInformation
+     log.debug("Tax information",this.taxInformation)
 
     })
   }
@@ -858,7 +872,10 @@ isCardExpanded(index: number): boolean {
           }
           console.log(JSON.stringify(this.premiumPayload, null, 2));
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
+          this.loadClientQuotation()
 
+          log.debug("just CKECING IF IT EXISTS",this.quotationDetails)
+          log.debug("just CKECING IF IT EXISTS",this.taxInformation)
 
         },
         error: (error: HttpErrorResponse) => {

@@ -2,6 +2,9 @@
     <p class="titleMain mt-3"> {{'gis.quotation.quotation_covertypes' | translate}}</p>
     <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     <div class="container mx-2 mt-n1">
+        
+        
+          
         <div *ngFor="let risk of riskLevelPremiums; let i = index; " class="card mb-3" style=" position: relative;">
 
             <ngx-spinner name="coverComparisonScreen" type="ball-clip-rotate-multiple" [fullScreen]="false"
@@ -34,16 +37,16 @@
                     <div class="col-lg-1 col-12"></div>
                     <div class="col-lg-4 col-12 ">
                         <p class="title2"> {{'gis.quotation.levies_and_taxes' | translate}}</p>
-                        <div *ngFor="let taxInformation ">
+                        <div *ngFor="let taxInformation of taxInformation">
                             <div class="row">
-                                <div class="col-6">
-                                    <p class="details-label">{{ taxInformation.description }}</p>
-                                </div>
-                                <div class="col-6">
-                                    <p class="details-label">{{ taxInformation.amount }}</p>
-                                </div>
+                              <div class="col-6">
+                                <p class="details-label">{{ taxInformation.description }}</p>
+                              </div>
+                              <div class="col-6">
+                                <p class="details-label">{{ taxInformation.amount }}</p>
+                              </div>
                             </div>
-                        </div>
+                          </div>
                     </div>
                     <div class="col-lg-3 col-12">
                         <p class="title2" id="totalPayablePremium"> {{'gis.quotation.total_payable_premium' |
@@ -261,25 +264,18 @@
                 <div *ngIf="isCollapsibleOpen && currentExpandedIndex === i" class="mt-3 MB-2">
                     <div class="row ms-3">
                         <div class="col-lg-4 col-12">
-                            <p class="title2"> {{'gis.quotation.additional_benefits' | translate}}</p>
-                            <div class="row">
+                            <p class="title2"> {{ 'gis.quotation.additional_benefits' | translate }}</p>
+                            <div class="row" *ngFor="let limit of premiumPayload.risks[i].limits">
                                 <div class="col-6">
-                                    <p class="details-label"> {{premiumPayload.risks[i].limits[0].description}}</p>
+                                    <p class="details-label"> {{ limit.description }}</p>
                                 </div>
                                 <div class="col-6">
-                                    <!-- <p class="details-label">{{  sumInsuredValue | number }}</p> -->
+                                    <p class="details-label fw-semibold"> {{ limit.limitAmount | number  }}</p>
                                 </div>
                             </div>
-                            <!-- <div class="row">
-                            <div class="col-6">
-                            <p class="details-label">Premium</p>
-                            </div>
-                            <div class="col-6">
-                            <p class="details-label"></p>
-                            </div>
-                        </div> -->
                         </div>
                     </div>
+                    
                     <div>
                         <div class="row ms-3">
                             <p class="title2"> {{'gis.quotation.excess_applicable_under_the_cover' | translate}}</p>
