@@ -144,7 +144,7 @@
 
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="product" class="quote-label" id="product">{{'gis.quotation.product' |
+                            <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
                                 translate}}</label><br>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
                                 optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
@@ -161,19 +161,24 @@
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="col-sm-4 col-6">
-                            <label for="use-of-property" class="quote-label" id="use-of-property">
+                            <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
-                            <select class="form-select form-control-sm" id="quote-input"
-                                (change)="onSubclassSelected($event)">
+                            <select class="form-select form-control-sm " id="quote-input"
+                                (change)="onSubclassSelected($event)" formControlName="subclassCode">
                                 <option value=""></option>
                                 <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
                                     {{subclass.description | sentenceCase}}</option>
                             </select>
+                              <!-- Display error message under the field -->
+                              <div *ngIf="personalDetailsForm.get('subclassCode').hasError('required') && personalDetailsForm.get('subclassCode').touched"
+                              class="form-text text-danger">
+                              {{'gis.policy.subclass_is_required' | translate}}
+                          </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="binder" class="quote-label" id="binder">{{'gis.quotation.binder' |
+                            <label for="binder" class="quote-label required" id="binder">{{'gis.quotation.binder' |
                                 translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                            <select class="form-select form-control-sm mb-1 ms-n4 " id="quote-input"
                                 formControlName="bindCode" (change)="onSelectBinder($event)">
                                 <option></option>
                                 <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
@@ -186,10 +191,10 @@
                             </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="cover-From" class="quote-label" id="cover-From">{{'gis.quotation.cover_from' |
+                            <label for="cover-From" class="quote-label required" id="cover-From">{{'gis.quotation.cover_from' |
                                 translate}}</label>
                             <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-                            <input type="date" id="cover-from" class="form-control form-control-sm mb-1"
+                            <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveFromDate" [(ngModel)]="coverFromDate"
                                 (ngModelChange)="getCoverToDate()">
                             <!-- Display error message under the field -->
@@ -204,9 +209,9 @@
                     <!-- ROW 4 -->
                     <div class="row mb-4">
                         <div class="col-sm-4 col-6">
-                            <label for="cover-To" class="quote-label" id="cover-To"> {{'gis.quotation.cover_to' |
+                            <label for="cover-To" class="quote-label required" id="cover-To"> {{'gis.quotation.cover_to' |
                                 translate}}</label>
-                            <input type="date" id="cover-to" class="form-control form-control-sm mb-1"
+                            <input type="date" id="cover-to" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveToDate" [(ngModel)]="passedCoverToDate">
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('withEffectiveToDate').hasError('required') && personalDetailsForm.get('withEffectiveToDate').touched"
@@ -242,20 +247,21 @@
                                                 class="form-control form-control-sm mb-1 col-md-8">
                                         </div>
                                         <div *ngIf="field.name == 'yearOfManufacture'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label required" [for]="field.name">{{ field.label }}</label>
                                             <select id="yearOfManufacture" id="quote-input"
                                                 class="form-select form-control-sm mb-1">
+                                                <option></option>
                                                 <option *ngFor="let year of years" [value]="year">{{ year }}</option>
                                             </select>
                                         </div>
                                         <div *ngIf="field.name == 'selfDeclaredValue'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label required" [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
                                                 appCommaFormat>
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label " [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
                                                 [formControlName]="field.name" [(ngModel)]="carRegNoValue"
                                                 (blur)="validateCarRegNo()" placeholder="e.g KCA 345R">
@@ -345,7 +351,7 @@
                             </div>
                         </div>
                     </div>
-
+                   
                 </form>
 
             </div>

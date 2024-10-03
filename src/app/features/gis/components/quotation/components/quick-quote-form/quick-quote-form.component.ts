@@ -430,6 +430,7 @@ export class QuickQuoteFormComponent {
     this.selectedBranchDescription = selectedValue.description;
     log.debug("Branch Description:", this.selectedBranchDescription)
 
+
   }
 
   /**
@@ -538,6 +539,7 @@ export class QuickQuoteFormComponent {
       comments: [''],
       internalComments: [''],
       introducerCode: [''],
+      subclassCode:['', Validators.required]
       // dateRange:['']
     });
   }
@@ -781,6 +783,7 @@ export class QuickQuoteFormComponent {
       log.debug("Selected Currency:", this.selectedCurrency);
       this.selectedCurrencyCode = curr[0].id;
       log.debug("Selected Currency code:", this.selectedCurrencyCode);
+      this.personalDetailsForm.get('currencyCode').setValue(this.selectedCurrencyCode);
 
       this.cdr.detectChanges()
 
@@ -1024,7 +1027,7 @@ export class QuickQuoteFormComponent {
           code: this.selectedBinderCode,
           currencyCode: this.currencyCode,
           maxExposure: this.selectedBinder.maximum_exposure,
-          currencyRate: 415.25 /**TODO: Fetch from API */
+          currencyRate: 1.25 /**TODO: Fetch from API */
         },
         limits: this.setLimitPremiumDto(item.coverTypeCode),
       }
@@ -1130,14 +1133,38 @@ export class QuickQuoteFormComponent {
     return response;
   }
   computePremiumV2() {
-    this.ngxSpinner.show()
+    this.ngxSpinner.show();
+    this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
+    this.personalDetailsForm.get('branchCode').setValue(this.selectedBranchCode);
 
+   // Mark all fields as touched and validate the form
+   this.personalDetailsForm.markAllAsTouched();
+   this.personalDetailsForm.updateValueAndValidity();
+
+   // Log form validity for debugging
+   console.log('Form Valid:', this.personalDetailsForm.valid);
+   console.log('Form Values:', this.personalDetailsForm.value);
+
+   if (this.personalDetailsForm.invalid) {
+       console.log('Form is invalid, will not proceed');
+       this.ngxSpinner.hide();
+       return;
+   }
+   Object.keys(this.personalDetailsForm.controls).forEach(control => {
+    if (this.personalDetailsForm.get(control).invalid) {
+      console.log(`${control} is invalid`, this.personalDetailsForm.get(control).errors);
+    }
+  });
+  
+
+   // If form is valid, proceed with the premium computation logic
+   console.log('Form is valid, proceeding with premium computation...');
     sessionStorage.setItem('product', this.selectedProductCode);
 
     this.premiumComputationRequest = {
       dateWithEffectFrom: this.coverFromDate,
       dateWithEffectTo: this.passedCoverToDate,
-      underwritingYear: 2024,
+      underwritingYear: new Date().getFullYear(),
       age: null,
       coinsuranceLeader: null,
       coinsurancePercentage: null,
@@ -1151,7 +1178,7 @@ export class QuickQuoteFormComponent {
         expiryPeriod: this.expiryPeriod,
       },
       currency: {
-        rate: 415.25 /**TODO: Fetch from API */,
+        rate: 1.25 /**TODO: Fetch from API */,
       },
       risks: this.setRiskPremiumDto(),
 

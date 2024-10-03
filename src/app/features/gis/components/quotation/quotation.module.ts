@@ -25,6 +25,7 @@ import { CoverTypesDetailsComponent } from './components/cover-types-details/cov
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 
 @NgModule({
@@ -56,7 +57,8 @@ import { BadgeModule } from 'primeng/badge';
     PanelMenuModule,
     TreeModule,
     FileUploadModule,
-    BadgeModule
+    BadgeModule,
+    RadioButtonModule
   ],
   
 })
