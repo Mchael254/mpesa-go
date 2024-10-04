@@ -11,11 +11,11 @@ export class ApiSpinnerInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Show the spinner when the request starts
-    this.spinner.show('download');
+    this.spinner.show('download_view');
 
     return next.handle(req).pipe(
       // Hide the spinner when the request completes
-      finalize(() => this.spinner.hide('download'))
+      finalize(() => this.spinner.hide('download_view'))
     );
   }
 }

@@ -21,7 +21,6 @@ import { CommonModule } from '@angular/common';
 import { NgxAwesomePopupModule, ToastNotificationConfigModule, ToastPositionEnum, ToastProgressBarEnum, ToastUserViewTypeEnum } from '@costlydeveloper/ngx-awesome-popup';
 import {NgbModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgxSpinnerModule} from "ngx-spinner";
-import {ApiSpinnerInterceptor} from "./api-spinner.interceptor";
 
 export function loadConfig(
   config: AppConfigService,
@@ -114,11 +113,6 @@ export function loadConfig(
       provide: APP_CONFIG,
       useFactory: (config: AppConfigService) => config.config,
       deps: [AppConfigService],
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ApiSpinnerInterceptor,
-      multi: true
     }
   ],
   bootstrap: [AppComponent]
