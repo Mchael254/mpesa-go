@@ -14,7 +14,7 @@ import {untilDestroyed} from "../../../../../../../../shared/services/until-dest
 import {ClaimDTO} from "../../../models/claims";
 import {ClaimsService} from "../../../../../../service/claims/claims.service";
 import {finalize, Observable} from "rxjs";
-import {ClaimDocument} from "../../../models/claim-document";
+import {ClaimDocument, UploadedDocumentContent, UploadedDocumentResponse} from "../../../models/claim-document";
 import {NgxSpinnerService} from "ngx-spinner";
 import {StringManipulation} from "../../../../../../util/string_manipulation";
 import {SessionStorageService} from "../../../../../../../../shared/services/session-storage/session-storage.service";
@@ -37,6 +37,8 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
   @Input() claimInitForm: FormGroup;
   @Input() claimResponse: ClaimDTO;
   claimDocuments: ClaimDocument[];
+  uploadedContent: UploadedDocumentContent
+  claims_details: any
 
   constructor(
     private messageService: MessageService,
@@ -49,6 +51,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
   ) { }
 
   ngOnInit() {
+    this.claims_details = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIMS_DETAILS) );
     if (this.claimResponse) {
       this.getClaimDocuments(this.claimResponse);
     }
@@ -65,20 +68,19 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
     this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded with Auto Mode' });
   }
 
-  getClaimDocuments(claims: ClaimDTO): void{
+  getClaimDocuments(claims: ClaimDTO): void {
     this.claimsService.getClaimsDocument(claims?.cnot_code)
       .pipe(untilDestroyed(this))
       .subscribe((data: ClaimDocument[]) => {
-        this.claimDocuments = data
-        this.cdr.detectChanges()
+        this.claimDocuments = data;
+        this.getUploadedDocuments(this.claims_details['prp_code']);  // Fetch uploaded documents and merge
+        this.cdr.detectChanges();
       });
   }
 
   uploadFile(event: any, doc_name: string) {
     this.spinner_service.show('download_view');
-    let claims_details = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIMS_DETAILS) );
-
-    console.log('claims_details>>>', claims_details)
+    console.log('claims_details>>>', this.claims_details)
     let fileName: string = doc_name.replaceAll('.pdf', '').toLowerCase();
     const fileList: FileList = event.files;
     if (fileList.length > 0) {
@@ -86,7 +88,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
       const formData = new FormData();
       formData.append('file', file, file.name);
       this.dms_service
-        .saveClientDocument(claims_details['prp_code'], fileName, formData, 'CLAIMS')
+        .saveClientDocument(this.claims_details['prp_code'], fileName, formData, 'CLAIMS')
         .pipe(
           finalize(() => {
             this.spinner_service.hide('download_view');
@@ -101,20 +103,11 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
             if (fileInput) {
               fileInput.value = ''; // Reset the input
             }
-
-            // this.documentList = this.documentList?.map((loop_data) => {
-            //   let temp = loop_data['description'].toLowerCase();
-            //   if (temp === data['type']) {
-            //     loop_data = { ...loop_data, ...data };
-            //     loop_data['is_uploaded'] = true;
-            //   }
-            //   loop_data['file_extension'] = 'pdf';
-            //   return loop_data;
-            // });
             this.toast_service.success(
               `successfully upload ${data['type']?.toLowerCase()}'s document `,
               'Document Upload Page'
             );
+            this.updateDocumentStatus(doc_name);
             this.spinner_service.hide('download_view');
           },
           (err) => {
@@ -127,6 +120,57 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
         );
     }
   }
+
+  getUploadedDocuments(prpCode: string): void {
+    this.claimsService.getUploadedDocuments(prpCode)
+      .pipe(untilDestroyed(this))
+      .subscribe((uploadedDocs: UploadedDocumentResponse) => {
+
+        // Merge uploaded docs with required docs
+        this.claimDocuments = this.claimDocuments.map(doc => {
+          // "medical cause of death"
+          const uploadedDoc = uploadedDocs.content.find(upDoc => upDoc.type.toLowerCase() === doc.desc.toLowerCase());
+          return uploadedDoc ? { ...doc, submitted: 'Y', uploadedDocId: uploadedDoc.id } : doc;
+        });
+
+        console.log('uploadedContent<<<', this.uploadedContent )
+        this.cdr.detectChanges();
+      });
+  }
+
+  updateDocumentStatus(doc_name: string): void {
+    // Update the status of the uploaded document
+    this.claimDocuments = this.claimDocuments.map(doc => {
+      if (doc.desc === doc_name) {
+        return { ...doc, submitted: 'Y' };  // Mark document as uploaded
+      }
+      return doc;
+    });
+    this.cdr.detectChanges();
+  }
+
+  deleteDocument(uploadedDocId: string): void {
+    this.dms_service.deleteDocumentById(uploadedDocId)
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        () => {
+          // Remove the document from the claimDocuments list
+          this.claimDocuments = this.claimDocuments.map(doc => {
+            if (doc.uploadedDocId === uploadedDocId) {
+              return { ...doc, submitted: 'N', uploadedDocId: null };  // Reset the status
+            }
+            return doc;
+          });
+          this.toast_service.success('Document deleted successfully', 'Delete Document');
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          this.toast_service.danger('Unable to delete the document', 'Delete Document');
+        }
+      );
+  }
+
+
 
   onProgress(event: any): number {
     console.log(event);
