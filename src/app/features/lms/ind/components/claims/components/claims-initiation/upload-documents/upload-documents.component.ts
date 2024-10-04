@@ -107,6 +107,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
               'Document Upload Page'
             );
             this.updateDocumentStatus(doc_name);
+            this.getUploadedDocuments(this.claims_details['prp_code']);
             this.spinner_service.hide('download_view');
           },
           (err) => {
@@ -129,6 +130,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
         this.claimDocuments = this.claimDocuments.map(doc => {
           // "medical cause of death"
           const uploadedDoc = uploadedDocs.content.find(upDoc => upDoc.type.toLowerCase() === doc.desc.toLowerCase());
+          console.log('uploadedDoc???', uploadedDoc )
           return uploadedDoc ? { ...doc, submitted: 'Y', uploadedDocId: uploadedDoc.id } : doc;
         });
         this.cdr.detectChanges();
@@ -147,6 +149,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
   }
 
   deleteDocument(uploadedDocId: string): void {
+    console.log('uploadedDocId>>>', uploadedDocId)
     this.dms_service.deleteDocumentById(uploadedDocId)
       .pipe(untilDestroyed(this))
       .subscribe(
@@ -158,6 +161,7 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
             }
             return doc;
           });
+          // this.getUploadedDocuments(this.claims_details['prp_code']);
           this.toast_service.success('Document deleted successfully', 'Delete Document');
           this.cdr.detectChanges();
         },
