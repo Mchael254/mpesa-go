@@ -1,5 +1,8 @@
 <script src="death-claims.component.ts"></script>
 <form [formGroup]="claimInitForm">
+<!--  <ngx-spinner name="claims_initiation" type="ball-clip-rotate-multiple"-->
+<!--               [fullScreen]="false" color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)">-->
+<!--  </ngx-spinner>-->
   <div class="container mt-2">
   <!-- Claim Details -->
   <div class="row">
@@ -127,9 +130,19 @@
 
   <!-- Proceed Button -->
   <div class="button-container">
-    <button class="proceed-btn" (click)="submitClaimRequest()">
-      {{ "lms.ind.proceed" | translate }}
-    </button>
+    <ng-container *ngIf="!claimNo; else noClaimButton">
+      <!-- If claimNo is not empty -->
+      <button class="proceed-btn" (click)="submitClaimRequest()">
+        {{ "lms.ind.book_claim" | translate }}
+      </button>
+    </ng-container>
+
+    <ng-template #noClaimButton>
+      <!-- If claimNo is empty -->
+      <button class="proceed-btn" (click)="navigateToNextScreen()">
+        {{ "lms.ind.proceed" | translate }}
+      </button>
+    </ng-template>
   </div>
   <!-- End of Proceed Button -->
 </form>

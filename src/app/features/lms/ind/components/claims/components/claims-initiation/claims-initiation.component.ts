@@ -76,7 +76,7 @@ export class ClaimsInitiationComponent implements OnInit, OnDestroy {
     this.claimNo = this.activatedRoute.snapshot.queryParamMap.get('claimNo') ||
       StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.CLAIM_NO) );
 
-    // this.getClaimModules();
+    // this.ClaimModules();
     this.getCausationTypes();
 
     this.claimInitForm.get('claimType').valueChanges
