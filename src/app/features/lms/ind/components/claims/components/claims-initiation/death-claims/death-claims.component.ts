@@ -129,7 +129,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
   }
   submitClaimRequest(): void {
     const claimInitiationPayload = this.claimsRequestPayload();
-    this.spinner_service.show('claims_initiation');
+    // this.spinner_service.show('claims_initiation');
 
     this.claimsService.initiateClaims(claimInitiationPayload).pipe(
       untilDestroyed(this)
@@ -140,7 +140,7 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
         this.storeTempClaimNo(response?.clm_no)
         this.claimNo = response?.clm_no
         // this.eachStep += 1
-        this.valueChanged.emit(this.eachStep);
+        // this.valueChanged.emit(this.eachStep);
         this.cdr.detectChanges()
         this.toast.success('Claims Initiated Successfully', 'Claims Initiation');
       },
@@ -220,6 +220,11 @@ export class DeathClaimsComponent implements OnInit, OnDestroy{
           this.cdr.detectChanges()
         // }
       });
+  }
+
+  navigateToNextScreen() {
+    this.eachStep += 1
+    this.valueChanged.emit(this.eachStep);
   }
   ngOnDestroy(): void {
   }
