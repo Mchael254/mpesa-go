@@ -1,0 +1,192 @@
+<div class="container ">
+   
+  
+    <button class="btn btn-primary mb-2 mt-4" data-bs-toggle="modal" data-bs-target="#claimEnquiryModal">Search Claim</button>
+  
+    <!-- Bootstrap Modal for Claim Enquiry -->
+    <div class="modal fade" id="claimEnquiryModal" tabindex="-1" aria-labelledby="claimEnquiryModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="claimEnquiryModalLabel">Claim Enquiry</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="claimEnquiryForm">
+              <div class="form-group">
+                <label for="claimNumber">Claim Number</label>
+                <input type="text" class="form-control" formControlName="claimNumber" [placeholder]="'Enter Claim Number'" required>
+                <div *ngIf="claimEnquiryForm.get('claimNumber')?.touched && claimEnquiryForm.get('claimNumber')?.hasError('required')">
+                  <small class="text-danger">Claim Number is required.</small>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="findClaim()">Search</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="selectedClaim">
+      <div class="card mb-3 ">
+        <div class="card-header">
+          Claim Details
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <dl class="row">
+                <dt class="col-sm-4">Claim Number:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.claimNumber }}</dd>
+  
+                <dt class="col-sm-4">Product:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.product }}</dd>
+  
+                <dt class="col-sm-4">Policy:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.policy }}</dd>
+  
+                <dt class="col-sm-4">Loss Date:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.lossDate | date }}</dd>
+  
+                <dt class="col-sm-4">Loss Time:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.lossTime | date:'shortTime' }}</dd>
+  
+                <dt class="col-sm-4">Risk:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.risk }}</dd>
+  
+                <dt class="col-sm-4">Notification Date:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.notificationDate | date }}</dd>
+  
+                <dt class="col-sm-4">Causation:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.causation }}</dd>
+              </dl>
+            </div>
+            <div class="col-md-4">
+              <dl class="row">
+                <dt class="col-sm-4">Catastrophe/Event:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.catastropheEvent }}</dd>
+  
+                <dt class="col-sm-4">Claim Description:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.claimDescription }}</dd>
+  
+                <dt class="col-sm-4">Party to Blame:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.partyToBlame }}</dd>
+  
+                <dt class="col-sm-4">Average Basic Salary:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.averageBasicSalary }}</dd>
+  
+                <dt class="col-sm-4">Average Earnings:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.averageEarnings }}</dd>
+  
+                <dt class="col-sm-4">Off Duty Date From:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.offDutyDateFrom | date }}</dd>
+  
+                <dt class="col-sm-4">Off Duty Date To:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.offDutyDateTo | date }}</dd>
+  
+                <dt class="col-sm-4">Liability Admission:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.liabilityAdmission ? 'Yes' : 'No' }}</dd>
+              </dl>
+            </div>
+            <div class="col-md-4">
+              <dl class="row">
+                <dt class="col-sm-4">Next Review Date:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.nextReviewDate | date }}</dd>
+  
+                <dt class="col-sm-4">Next Review User:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.nextReviewUser }}</dd>
+  
+                <dt class="col-sm-4">Priority Level:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.priorityLevel }}</dd>
+  
+                <dt class="col-sm-4">Reference Number:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.referenceNumber }}</dd>
+  
+                <dt class="col-sm-4">Accident Location:</dt>
+                <dd class="col-sm-8">{{ selectedClaim.accidentLocation }}</dd>
+              </dl>
+            </div>
+          </div>
+  
+          <h4>Perils</h4>
+          <p-table [value]="selectedClaim.perils" [rows]="5" [resizableColumns]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Peril</th>
+                <th>Estimate</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-peril>
+              <tr>
+                <td>{{ peril.label }}</td>
+                <td>{{ peril.value }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+  
+          <h4>Transactions</h4>
+          <p-table [value]="selectedClaim.transactions" [rows]="5" [resizableColumns]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-transaction>
+              <tr>
+                <td>{{ transaction.type }}</td>
+                <td>{{ transaction.description }}</td>
+                <td>{{ transaction.status }}</td>
+                <td>{{ transaction.date | date }}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#transactionModal"
+                          (click)="showTransactionModal(transaction)">View Transaction</button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+  
+          <button class="btn btn-primary mt-4" (click)="printClaimDetails()">Print Claim Details</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Bootstrap Modal for Transaction Details -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="transactionModalLabel">Transaction Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="selectedTransaction">
+              <dl class="row">
+                <dt class="col-sm-3">Type:</dt>
+                <dd class="col-sm-9">{{ selectedTransaction.type }}</dd>
+  
+                <dt class="col-sm-3">Description:</dt>
+                <dd class="col-sm-9">{{ selectedTransaction.description }}</dd>
+  
+                <dt class="col-sm-3">Status:</dt>
+                <dd class="col-sm-9">{{ selectedTransaction.status }}</dd>
+  
+                <dt class="col-sm-3">Date:</dt>
+                <dd class="col-sm-9">{{ selectedTransaction.date | date }}</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back to Claim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

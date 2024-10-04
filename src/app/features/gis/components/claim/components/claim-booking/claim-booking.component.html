@@ -1,0 +1,511 @@
+<div class="container">
+    <div class="card mb-3 mt-4">
+      <div class="card-header">
+        Claim Details
+        <button class="btn btn-primary float-end" *ngIf="!isEditing" (click)="editClaimDetails()">Edit</button>
+      </div>
+      <div class="card-body">
+        <div class="row" *ngIf="!isEditing">
+          <div class="col-md-6">
+            <dl class="row">
+              <dt class="col-sm-4">Claim Number:</dt>
+              <dd class="col-sm-8">{{ claim.claimNumber }}</dd>
+  
+              <dt class="col-sm-4">Product:</dt>
+              <dd class="col-sm-8">{{ claim.product }}</dd>
+  
+              <dt class="col-sm-4">Policy:</dt>
+              <dd class="col-sm-8">{{ claim.policy }}</dd>
+  
+              <dt class="col-sm-4">Loss Date:</dt>
+              <dd class="col-sm-8">{{ claim.lossDate | date }}</dd>
+  
+              <dt class="col-sm-4">Loss Time:</dt>
+              <dd class="col-sm-8">{{ claim.lossTime | date:'shortTime' }}</dd>
+  
+              <dt class="col-sm-4">Risk:</dt>
+              <dd class="col-sm-8">{{ claim.risk }}</dd>
+  
+              <dt class="col-sm-4">Notification Date:</dt>
+              <dd class="col-sm-8">{{ claim.notificationDate | date }}</dd>
+  
+              <dt class="col-sm-4">Causation:</dt>
+              <dd class="col-sm-8">{{ claim.causation }}</dd>
+  
+              <dt class="col-sm-4">Catastrophe/Event:</dt>
+              <dd class="col-sm-8">{{ claim.catastropheEvent }}</dd>
+  
+              <dt class="col-sm-4">Claim Description:</dt>
+              <dd class="col-sm-8">{{ claim.claimDescription }}</dd>
+  
+              <dt class="col-sm-4">Party to Blame:</dt>
+              <dd class="col-sm-8">{{ claim.partyToBlame }}</dd>
+            </dl>
+          </div>
+          <div class="col-md-6">
+            <dl class="row">
+              <dt class="col-sm-4">Average Basic Salary:</dt>
+              <dd class="col-sm-8">{{ claim.averageBasicSalary }}</dd>
+  
+              <dt class="col-sm-4">Average Earnings:</dt>
+              <dd class="col-sm-8">{{ claim.averageEarnings }}</dd>
+  
+              <dt class="col-sm-4">Off Duty Date From:</dt>
+              <dd class="col-sm-8">{{ claim.offDutyDateFrom | date }}</dd>
+  
+              <dt class="col-sm-4">Off Duty Date To:</dt>
+              <dd class="col-sm-8">{{ claim.offDutyDateTo | date }}</dd>
+  
+              <dt class="col-sm-4">Liability Admission:</dt>
+              <dd class="col-sm-8">{{ claim.liabilityAdmission ? 'Yes' : 'No' }}</dd>
+  
+              <dt class="col-sm-4">Next Review Date:</dt>
+              <dd class="col-sm-8">{{ claim.nextReviewDate | date }}</dd>
+  
+              <dt class="col-sm-4">Next Review User:</dt>
+              <dd class="col-sm-8">{{ claim.nextReviewUser }}</dd>
+  
+              <dt class="col-sm-4">Priority Level:</dt>
+              <dd class="col-sm-8">{{ claim.priorityLevel }}</dd>
+  
+              <dt class="col-sm-4">Reference Number:</dt>
+              <dd class="col-sm-8">{{ claim.referenceNumber }}</dd>
+  
+              <dt class="col-sm-4">Insurer Liability Admission:</dt>
+              <dd class="col-sm-8">{{ claim.insurerLiabilityAdmission ? 'Yes' : 'No' }}</dd>
+            </dl>
+          </div>
+        </div>
+  
+        <form [formGroup]="claimBookingForm" *ngIf="isEditing">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="lossDate">Loss Date</label>
+                <input type="date" class="form-control" formControlName="lossDate" required>
+                <div *ngIf="claimBookingForm.get('lossDate')?.touched && claimBookingForm.get('lossDate')?.hasError('required')">
+                  <small class="text-danger">Loss Date is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="causation">Cause of Loss</label>
+                <select class="form-select" formControlName="causation" required>
+                  <option *ngFor="let cause of causeOfLossOptions" [value]="cause">{{ cause }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('causation')?.touched && claimBookingForm.get('causation')?.hasError('required')">
+                  <small class="text-danger">Cause of Loss is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="claimRepudiated">Claim Repudiated</label>
+                <select class="form-select" formControlName="claimRepudiated">
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+  
+              <div class="form-group" *ngIf="claimBookingForm.get('claimRepudiated')?.value === 'true'">
+                <label for="reasonRepudiated">Reason Repudiated</label>
+                <textarea class="form-control" formControlName="reasonRepudiated"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="accidentLocation">Accident Location</label>
+                <input type="text" class="form-control" formControlName="accidentLocation" required>
+                <div *ngIf="claimBookingForm.get('accidentLocation')?.touched && claimBookingForm.get('accidentLocation')?.hasError('required')">
+                  <small class="text-danger">Accident Location is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="lossDescription">Loss Description</label>
+                <textarea class="form-control" formControlName="lossDescription" required></textarea>
+                <div *ngIf="claimBookingForm.get('lossDescription')?.touched && claimBookingForm.get('lossDescription')?.hasError('required')">
+                  <small class="text-danger">Loss Description is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="reasonForPending">Reason for Pending</label>
+                <textarea class="form-control" formControlName="reasonForPending"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="receivedSteps">Received Steps</label>
+                <textarea class="form-control" formControlName="receivedSteps"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="typeOfLoss">Type of Loss</label>
+                <select class="form-select" formControlName="typeOfLoss" required>
+                  <option *ngFor="let type of typeOfLossOptions" [value]="type">{{ type }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('typeOfLoss')?.touched && claimBookingForm.get('typeOfLoss')?.hasError('required')">
+                  <small class="text-danger">Type of Loss is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="salvageRetained">Salvage Retained</label>
+                <select class="form-select" formControlName="salvageRetained" required>
+                  <option *ngFor="let option of salvageRetainedOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('salvageRetained')?.touched && claimBookingForm.get('salvageRetained')?.hasError('required')">
+                  <small class="text-danger">Salvage Retained is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="preventionMeasures">Prevention Measures</label>
+                <textarea class="form-control" formControlName="preventionMeasures"></textarea>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="anySuspects">Any Suspects</label>
+                <textarea class="form-control" formControlName="anySuspects"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="guards">Guards</label>
+                <textarea class="form-control" formControlName="guards"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="amountOwedToDebtor">Amount Owed to Debtor</label>
+                <input type="number" class="form-control" formControlName="amountOwedToDebtor">
+              </div>
+  
+              <div class="form-group">
+                <label for="totalClaimAmount">Total Claim Amount</label>
+                <input type="number" class="form-control" formControlName="totalClaimAmount">
+              </div>
+  
+              <div class="form-group">
+                <label for="visibility">Visibility</label>
+                <textarea class="form-control" formControlName="visibility"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="roadSurface">Road Surface</label>
+                <textarea class="form-control" formControlName="roadSurface"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="raining">Raining</label>
+                <select class="form-select" formControlName="raining" required>
+                  <option *ngFor="let option of rainingOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('raining')?.touched && claimBookingForm.get('raining')?.hasError('required')">
+                  <small class="text-danger">Raining is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="policeInformed">Police Informed</label>
+                <select class="form-select" formControlName="policeInformed" required>
+                  <option *ngFor="let option of policeInformedOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('policeInformed')?.touched && claimBookingForm.get('policeInformed')?.hasError('required')">
+                  <small class="text-danger">Police Informed is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group" *ngIf="claimBookingForm.get('policeInformed')?.value === 'true'">
+                <label for="policeDate">Police Date</label>
+                <input type="date" class="form-control" formControlName="policeDate">
+              </div>
+  
+              <div class="form-group" *ngIf="claimBookingForm.get('policeInformed')?.value === 'true'">
+                <label for="policeStation">Police Station</label>
+                <input type="text" class="form-control" formControlName="policeStation">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="reporter">Reporter</label>
+                <input type="text" class="form-control" formControlName="reporter">
+              </div>
+  
+              <div class="form-group">
+                <label for="policeOBNumber">Police OB Number</label>
+                <input type="text" class="form-control" formControlName="policeOBNumber">
+              </div>
+  
+              <div class="form-group">
+                <label for="intendedProcedure">Intended Procedure</label>
+                <select class="form-select" formControlName="intendedProcedure" required>
+                  <option *ngFor="let option of intendedProcedureOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('intendedProcedure')?.touched && claimBookingForm.get('intendedProcedure')?.hasError('required')">
+                  <small class="text-danger">Intended Procedure is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="exGratia">Ex Gratia</label>
+                <select class="form-select" formControlName="exGratia">
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+  
+              <div class="form-group" *ngIf="claimBookingForm.get('exGratia')?.value === 'true'">
+                <label for="reasonForExGratia">Reason for Ex Gratia</label>
+                <textarea class="form-control" formControlName="reasonForExGratia"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="reasonForRevision">Reason for Revision</label>
+                <textarea class="form-control" formControlName="reasonForRevision"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="disabilityScale">Disability Scale</label>
+                <select class="form-select" formControlName="disabilityScale" required>
+                  <option *ngFor="let option of disabilityScaleOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('disabilityScale')?.touched && claimBookingForm.get('disabilityScale')?.hasError('required')">
+                  <small class="text-danger">Disability Scale is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="disabilityScaleShortDescription">Disability Scale Short Description</label>
+                <input type="text" class="form-control" formControlName="disabilityScaleShortDescription">
+              </div>
+  
+              <div class="form-group">
+                <label for="incapacityPeriod">Incapacity Period</label>
+                <input type="number" class="form-control" formControlName="incapacityPeriod">
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="payFull">
+                <label class="form-check-label" for="payFull">Pay Full</label>
+              </div>
+  
+              <div class="form-group">
+                <label for="claimNotificationDate">Claim Notification Date</label>
+                <input type="date" class="form-control" formControlName="claimNotificationDate" required>
+                <div *ngIf="claimBookingForm.get('claimNotificationDate')?.touched && claimBookingForm.get('claimNotificationDate')?.hasError('required')">
+                  <small class="text-danger">Claim Notification Date is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="eventCode">Event Code</label>
+                <input type="text" class="form-control" formControlName="eventCode" required>
+                <div *ngIf="claimBookingForm.get('eventCode')?.touched && claimBookingForm.get('eventCode')?.hasError('required')">
+                  <small class="text-danger">Event Code is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="catastropheCode">Catastrophe Code</label>
+                <input type="text" class="form-control" formControlName="catastropheCode" required>
+                <div *ngIf="claimBookingForm.get('catastropheCode')?.touched && claimBookingForm.get('catastropheCode')?.hasError('required')">
+                  <small class="text-danger">Catastrophe Code is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="division">Division</label>
+                <select class="form-select" formControlName="division" required>
+                  <option value="Division A">Division A</option>
+                  <option value="Division B">Division B</option>
+                  <option value="Division C">Division C</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('division')?.touched && claimBookingForm.get('division')?.hasError('required')">
+                  <small class="text-danger">Division is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="referenceNumber">Reference Number</label>
+                <input type="text" class="form-control" formControlName="referenceNumber" required>
+                <div *ngIf="claimBookingForm.get('referenceNumber')?.touched && claimBookingForm.get('referenceNumber')?.hasError('required')">
+                  <small class="text-danger">Reference Number is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="averageBasicSalary">Average Basic Salary</label>
+                <input type="number" class="form-control" formControlName="averageBasicSalary" required>
+                <div *ngIf="claimBookingForm.get('averageBasicSalary')?.touched && claimBookingForm.get('averageBasicSalary')?.hasError('required')">
+                  <small class="text-danger">Average Basic Salary is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="averageEarnings">Average Earnings</label>
+                <input type="number" class="form-control" formControlName="averageEarnings" required>
+                <div *ngIf="claimBookingForm.get('averageEarnings')?.touched && claimBookingForm.get('averageEarnings')?.hasError('required')">
+                  <small class="text-danger">Average Earnings is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="offDutyDateFrom">Off Duty Date From</label>
+                <input type="date" class="form-control" formControlName="offDutyDateFrom" required>
+                <div *ngIf="claimBookingForm.get('offDutyDateFrom')?.touched && claimBookingForm.get('offDutyDateFrom')?.hasError('required')">
+                  <small class="text-danger">Off Duty Date From is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="offDutyDateTo">Off Duty Date To</label>
+                <input type="date" class="form-control" formControlName="offDutyDateTo" required>
+                <div *ngIf="claimBookingForm.get('offDutyDateTo')?.touched && claimBookingForm.get('offDutyDateTo')?.hasError('required')">
+                  <small class="text-danger">Off Duty Date To is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="priorityLevel">Priority Level</label>
+                <select class="form-select" formControlName="priorityLevel" required>
+                  <option *ngFor="let option of priorityLevelOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('priorityLevel')?.touched && claimBookingForm.get('priorityLevel')?.hasError('required')">
+                  <small class="text-danger">Priority Level is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="notificationDate">Notification Date</label>
+                <input type="date" class="form-control" formControlName="notificationDate" required>
+                <div *ngIf="claimBookingForm.get('notificationDate')?.touched && claimBookingForm.get('notificationDate')?.hasError('required')">
+                  <small class="text-danger">Notification Date is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="nextReviewDate">Next Review Date</label>
+                <input type="date" class="form-control" formControlName="nextReviewDate" required>
+                <div *ngIf="claimBookingForm.get('nextReviewDate')?.touched && claimBookingForm.get('nextReviewDate')?.hasError('required')">
+                  <small class="text-danger">Next Review Date is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
+                <label class="form-check-label" for="liabilityAdmission">Liability Admission</label>
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="insurerLiabilityAdmission">
+                <label class="form-check-label" for="insurerLiabilityAdmission">Insurer Liability Admission</label>
+              </div>
+  
+              <div class="form-group">
+                <label for="documentReceived">Document Received</label>
+                <select class="form-select" formControlName="documentReceived" required>
+                  <option *ngFor="let option of documentReceivedOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('documentReceived')?.touched && claimBookingForm.get('documentReceived')?.hasError('required')">
+                  <small class="text-danger">Document Received is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="liabilityAdmissionDate">Liability Admission Date</label>
+                <input type="date" class="form-control" formControlName="liabilityAdmissionDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="repudiationDate">Repudiation Date</label>
+                <input type="date" class="form-control" formControlName="repudiationDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="liabilityReason">Liability Reason</label>
+                <textarea class="form-control" formControlName="liabilityReason"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="nextReviewUser">Next Review User</label>
+                <select class="form-select" formControlName="nextReviewUser" required>
+                  <option value="User A">User A</option>
+                  <option value="User B">User B</option>
+                  <option value="User C">User C</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('nextReviewUser')?.touched && claimBookingForm.get('nextReviewUser')?.hasError('required')">
+                  <small class="text-danger">Next Review User is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="leadClaimNumber">Lead Claim Number</label>
+                <input type="text" class="form-control" formControlName="leadClaimNumber">
+              </div>
+  
+              <div class="form-group">
+                <label for="riskRecovered">Risk Recovered</label>
+                <select class="form-select" formControlName="riskRecovered" required>
+                  <option *ngFor="let option of riskRecoveredOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('riskRecovered')?.touched && claimBookingForm.get('riskRecovered')?.hasError('required')">
+                  <small class="text-danger">Risk Recovered is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="vehicleInMotion">Vehicle In Motion</label>
+                <select class="form-select" formControlName="vehicleInMotion" required>
+                  <option *ngFor="let option of vehicleInMotionOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('vehicleInMotion')?.touched && claimBookingForm.get('vehicleInMotion')?.hasError('required')">
+                  <small class="text-danger">Vehicle In Motion is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="recoveryMode">Recovery Mode</label>
+                <select class="form-select" formControlName="recoveryMode" required>
+                  <option *ngFor="let option of recoveryModeOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('recoveryMode')?.touched && claimBookingForm.get('recoveryMode')?.hasError('required')">
+                  <small class="text-danger">Recovery Mode is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="riskRecoveryDate">Risk Recovery Date</label>
+                <input type="date" class="form-control" formControlName="riskRecoveryDate">
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="vehicleRecovered">
+                <label class="form-check-label" for="vehicleRecovered">Vehicle Recovered</label>
+              </div>
+  
+              <div class="form-group">
+                <label for="vehicleRecoveredDate">Vehicle Recovered Date</label>
+                <input type="date" class="form-control" formControlName="vehicleRecoveredDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="vehicleRecoveredCondition">Vehicle Recovered Condition</label>
+                <select class="form-select" formControlName="vehicleRecoveredCondition" required>
+                  <option *ngFor="let option of vehicleRecoveredConditionOptions" [value]="option">{{ option }}</option>
+                </select>
+                <div *ngIf="claimBookingForm.get('vehicleRecoveredCondition')?.touched && claimBookingForm.get('vehicleRecoveredCondition')?.hasError('required')">
+                  <small class="text-danger">Vehicle Recovered Condition is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <input type="checkbox" class="form-check-input" formControlName="tentativeLossDate">
+                <label class="form-check-label" for="tentativeLossDate">Tentative Loss Date</label>
+              </div>
+            </div>
+          </div>
+  
+          <button type="button" class="btn btn-secondary" *ngIf="isEditing" (click)="isEditing = false">Cancel</button>
+          <button type="button" class="btn btn-primary" *ngIf="isEditing" (click)="saveClaimBookingDetails()">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>

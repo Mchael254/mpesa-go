@@ -25,6 +25,7 @@ import { PerilsService } from '../../../setups/services/perils-territories/peril
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
 
 const log = new Logger("PolicySummaryOtherDetails");
 
@@ -186,6 +187,8 @@ export class PolicySummaryOtherDetailsComponent {
   securityDevicesList:any;
   motorAccessoriesList:any;
   applicableTaxesList: any;
+  scheduleDetailsExist: boolean = false;
+
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -195,6 +198,7 @@ export class PolicySummaryOtherDetailsComponent {
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
+  modelYear: any;
 
 
 
@@ -206,6 +210,8 @@ export class PolicySummaryOtherDetailsComponent {
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
     public productService: ProductService,
+    public productsService: ProductsService,
+
     private router: Router,
     public fb: FormBuilder,
     public quotationService: QuotationsService,
@@ -687,36 +693,76 @@ export class PolicySummaryOtherDetailsComponent {
 
   }
 
+  // updateSchedule() {
+  //   const schedule = this.scheduleDetailsForm.value;
+  //   schedule.riskCode = this.SelectedRiskCode;
+  //   schedule.transactionType = "Q";
+  //   schedule.version = 0;
+  //   this.policyService.updateSchedules(schedule).subscribe(data => {
+  //     this.updatedScheduleData = data;
+  //     this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
+
+  //     console.log('Updated Schedule Data:', this.updatedScheduleData);
+  //     this.updatedSchedule = this.updatedScheduleData._embedded;
+  //     console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+  //     const index = this.filteredSchedule.findIndex(item => item.code === this.updatedSchedule.code);
+  //     if (index !== -1) {
+  //       this.filteredSchedule[index] = this.updatedSchedule;
+  //       log.debug("NEW SCHEDULE DATA:",this.filteredSchedule)
+  //       this.cdr.detectChanges();
+  //     }
+
+  //     try {
+
+  //       this.scheduleDetailsForm.reset()
+  //     } catch (error) {
+  //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+  //       this.scheduleDetailsForm.reset()
+  //     }
+  //   })
+  //   this.cdr.detectChanges();
+
+  // }
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
     schedule.riskCode = this.SelectedRiskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
+  
+    // Call the service to update the schedule
     this.policyService.updateSchedules(schedule).subscribe(data => {
       this.updatedScheduleData = data;
-      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
-
-      console.log('Updated Schedule Data:', this.updatedScheduleData);
+  
+      // Assuming data._embedded is the updated schedule object
       this.updatedSchedule = this.updatedScheduleData._embedded;
-      console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
-      const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
-      if (index !== -1) {
-        this.scheduleList[index] = this.updatedSchedule;
-        this.cdr.detectChanges();
-      }
-
-      try {
-
-        this.scheduleDetailsForm.reset()
-      } catch (error) {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-        this.scheduleDetailsForm.reset()
-      }
-    })
+  
+      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
+    this.getSchedules();
+      // // Find the index of the updated schedule in filteredSchedule array
+      // const index = this.filteredSchedule.findIndex(item => item.code === this.updatedSchedule.code);
+      
+      // // If the schedule is found, replace it with the updated schedule
+      // if (index !== -1) {
+      //   this.filteredSchedule[index] = this.updatedSchedule;
+      //   console.log("NEW SCHEDULE DATA:", this.filteredSchedule);
+      // }
+  
+      // Trigger change detection to update the table UI
+      this.cdr.detectChanges();
+  
+      // Reset the form
+      this.scheduleDetailsForm.reset();
+    }, error => {
+      // Handle error scenario
+      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+      this.scheduleDetailsForm.reset();
+    });
+  
+    // Detect changes after the entire process
     this.cdr.detectChanges();
-
   }
+  
   createScheduleDetailsForm() {
     this.scheduleDetailsForm = this.fb.group({
       details: this.fb.group({
@@ -1258,7 +1304,7 @@ export class PolicySummaryOtherDetailsComponent {
         this.SubclauseList = res;
         this.SubclauseList = this.SubclauseList._embedded[0]
         console.log(this.SubclauseList, 'Risk Clauses')
-        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225946227);
+        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225947911);
         console.log(this.SubclauseList, 'Unfiltered List')
 
 
@@ -2169,6 +2215,8 @@ export class PolicySummaryOtherDetailsComponent {
         console.log('Schedule List Details:', this.scheduleListDetails);
         this.filteredSchedule = this.scheduleListDetails.filter(schedule => schedule.riskCode == this.SelectedRiskCode);
         log.debug("Filtered Schedule:",this.filteredSchedule)
+        if(this.filteredSchedule)
+        this.scheduleDetailsExist = true
 
       },
       error: (error) => {
@@ -2193,6 +2241,8 @@ export class PolicySummaryOtherDetailsComponent {
           yearOfManufacture: schedule.details.level1.yearOfManufacture,
           value: schedule.details.level1.value,
           bodyType: schedule.details.level1.bodyType,
+          coverType:schedule.details.level1.coverType,
+
         }
       },
     
@@ -2680,6 +2730,17 @@ fetchMotorAccessories(){
   editRiskClause(event){
     console.log(event,'edit')
     console.log(this.selectedRiskClause,'edit var')
+    this.policyService.editRiskClause(this.selectedRiskClause).subscribe(
+      {
+        next:(res=>{
+          console.log(res)
+          this.globalMessagingService.displaySuccessMessage(
+            'sucess',
+            'Risk Clause updated'
+          )
+        })
+      }
+    )
   }
   createEditRequiredDocumentsForm() {
     this.editRequiredDocumentsForm = this.fb.group({
@@ -2716,6 +2777,18 @@ fetchMotorAccessories(){
   }
   applyFilterGlobalTaxes($event, stringVal) {
     this.dt3.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  getModelYear() {
+    this.productsService.getYearOfManufacture().subscribe({
+      next: (data) => {
+        const model = data._embedded
+        this.modelYear = model[0]["List of cover years"]
+        console.log("model year", this.modelYear)
+      }, error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
+        console.error(err);
+      }
+    })
   }
 }
 

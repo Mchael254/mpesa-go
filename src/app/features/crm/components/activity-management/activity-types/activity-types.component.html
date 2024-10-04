@@ -28,8 +28,7 @@
     <div class="card-body">
       <div class="row mb-2">
         <div class="col-md-12">
-          <label
-            class="form-label w-100 text-black fs-5 fw-medium"
+          <label class="form-label w-100 text-black fs-5 fw-medium"
             >System</label
           >
           <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
@@ -83,10 +82,16 @@
 
         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
           <div class="float-end">
-            <span class="icon-circle open-activity-type-modal" (click)="openDefineActivityTypeModal()">
+            <span
+              class="icon-circle open-activity-type-modal"
+              (click)="openDefineActivityTypeModal()"
+            >
               <i class="fa-solid fa-plus"></i>
             </span>
-            <span class="icon-circle edit-activity-type" (click)="editActivityType()">
+            <span
+              class="icon-circle edit-activity-type"
+              (click)="editActivityType()"
+            >
               <i class="pi pi-pencil"></i>
             </span>
             <span
@@ -99,43 +104,56 @@
           </div>
         </div>
       </div>
-      <p-table
-        #activityTypeTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="activityTypeData?.length"
-        [value]="activityTypeData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedActivityType"
-        selectionMode="single"
-        dataKey="id"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="gis_exception_code">
-              Description <p-sortIcon field="gis_exception_code"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-activityType>
-          <tr [pSelectableRow]="activityType" class="attach-system" (click)="attachSystem()">
-            <td>{{ activityType.desc }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="1">No Activity Type Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <ng-container *ngIf="isDataReady; else activityTypeLoading">
+        <p-table
+          #activityTypeTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="activityTypeData?.length"
+          [value]="activityTypeData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedActivityType"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'code']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="gis_exception_code">
+                Description <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-activityType>
+            <tr
+              [pSelectableRow]="activityType"
+              class="attach-system"
+              (click)="attachSystem()"
+            >
+              <td>{{ activityType.desc }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="1">No Activity Type Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
+      <ng-template #activityTypeLoading>
+        <div class="text-center">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
@@ -197,7 +215,11 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary save-activity-type" (click)="saveActivityType()">
+        <button
+          type="button"
+          class="btn btn-primary save-activity-type"
+          (click)="saveActivityType()"
+        >
           Save details
         </button>
       </div>

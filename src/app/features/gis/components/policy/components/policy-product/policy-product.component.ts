@@ -128,8 +128,18 @@ export class PolicyProductComponent {
   @ViewChild('closebutton') closebutton;
   @ViewChild('closebuttonIntroducers') closebuttonIntroducers;
   @ViewChild('closebuttonJointAccount') closebuttonJointAccount;
+  @ViewChild('clientPoliciesModal') clientPoliciesModal;
+  @ViewChild('generatedPolicyNumberModal') generatedPolicyNumberModal;
+  
+
   page: any;
   policyDetailsData: any;
+  currencyFixedRate: string;
+  showExchangeRateField: boolean = false;
+  clientsPolicies:any;
+  generatedPolicyNumber: any;
+  generatedPolicyNumberList: any;
+
 
 
   constructor(
@@ -1028,6 +1038,11 @@ export class PolicyProductComponent {
       this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
       this.policyProductForm.get('agentCode').setValue(this.selectedAgentCode);
   }
+  log.debug("Currency fixed rate select",this.currencyFixedRate)
+  // if(this.currencyFixedRate === "Y"){
+  //   this.policyProductForm.get('currencyRate').setValue(this.selectedAgentCode);
+
+  // }
   
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
@@ -1438,6 +1453,165 @@ export class PolicyProductComponent {
     })
   
   }
+  onCurrencyFixedRateChange(value: string): void {
+    log.info('SELECTED VALUE:', value)
+    this.currencyFixedRate = value;
+    log.debug("Currency Fixed Rate Select", this.currencyFixedRate)
+    this.showExchangeRateField = value === 'Y';
+
+    if (this.showExchangeRateField) {
+      this.policyProductForm.get('currencyRate').reset();
+      
+    }
+
+  }
+  getClientExistingPolicies(){
+
+    log.debug("Client Code:",this.clientCode)
+    log.debug("Product Code:",this.selectedProductCode)
+    this.policyService
+      .getClientPolicies( this.clientCode, this.selectedProductCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data:any) => {
+
+          if (data) {
+
+            this.clientsPolicies = data._embedded[0]
+            log.debug("Client existing Policies list:", this.clientsPolicies)
+            if(this.clientsPolicies.length > 0){
+              this.clientPoliciesModal.nativeElement.click();
+      
+             
+            }else{
+      
+              // this.generatePolicyNumber()
+              this.createPolicy()
+            }
+      
+            
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to get Clients existing policies details.Try again later');
+
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  generatePolicyNumber(){
+    this.spinner.show()
+
+    if (this.policyProductForm.invalid) {
+      this.policyProductForm.markAllAsTouched();  // This will trigger validation for all fields
+    }
+    log.debug("POLICY TYPE:",this.policyType)
+    if (this.policyType === "D") {
+      this.policyProductForm.get('agentShortDescription').setValue("DIRECT");
+      this.policyProductForm.get('agentCode').setValue(0);
   
+  } else if (this.policyType === "N") {
+      this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+      this.policyProductForm.get('agentCode').setValue(this.selectedAgentCode);
+  }
+  log.debug("Currency fixed rate select",this.currencyFixedRate)
+  // if(this.currencyFixedRate === "Y"){
+  //   this.policyProductForm.get('currencyRate').setValue(this.selectedAgentCode);
+
+  // }
+  
+    this.policyProductForm.get('actionType').setValue("A");
+    this.policyProductForm.get('addEdit').setValue("A");
+    this.policyProductForm.get('clientCode').setValue(this.clientCode);
+    // this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+    this.policyProductForm.get('branchCode').setValue(this.selectedBranchCode);
+    this.policyProductForm.get('branchShortDescription').setValue(this.selectedBranchDescription);
+    this.policyProductForm.get('currencyCode').setValue(this.selectedCurrencyCode);
+
+    // Transform the checkbox value to 'Y' or 'N' based on whether it's checked
+    const isCoinsuranceChecked = this.policyProductForm.get('isCoinsurance').value ? 'Y' : 'N';
+    this.policyProductForm.get('isCoinsurance').setValue(isCoinsuranceChecked);
+
+    const isAdminFeeAllowedChecked = this.policyProductForm.get('isAdminFeeAllowed').value ? 'Y' : 'N';
+    this.policyProductForm.get('isAdminFeeAllowed').setValue(isAdminFeeAllowedChecked);
+    const isCashApplicableChecked = this.policyProductForm.get('isCashbackApplicable').value ? 'Y' : 'N';
+    this.policyProductForm.get('isCashbackApplicable').setValue(isCashApplicableChecked);
+    log.debug("Is coinsuaranace Checked:", isCoinsuranceChecked)
+    log.debug("IsAdmin Fee Checked:", isAdminFeeAllowedChecked)
+    log.debug("Is Cash Applicable Checked:", isCashApplicableChecked)
+    // Transform the transaction type based on the selected value
+    let transactionTypeValue = '';
+    switch (this.selectedTransactionType) {
+      case 'new-business':
+        transactionTypeValue = 'NB';
+        break;
+      case 'endorsement':
+        transactionTypeValue = 'ED';
+        break;
+      case 'contra-transaction':
+        transactionTypeValue = 'CT';
+        break;
+      // Add more cases for other transaction types as needed
+      default:
+        // Handle any other case or set a default value if necessary
+        break;
+    }
+    this.policyProductForm.get('transactionType').setValue(transactionTypeValue);
+
+
+    log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
+    const policyForm = this.policyProductForm.value;
+    sessionStorage.setItem('policyProductForm',JSON.stringify(this.policyProductForm.value))
+    
+    log.debug("coinsurance outputAst", this.policyProductForm.get('isCoinsurance').value)
+    this.policyService
+    .generatePolicyNumber( policyForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data:any) => {
+
+        if (data) {
+          this.spinner.hide()
+
+          this.generatedPolicyNumberList = data._embedded
+          this.generatedPolicyNumber= this.generatedPolicyNumberList[0].policyNumber
+          log.debug("Generated Policy Number", this.generatedPolicyNumber)
+          log.debug("GeneratedPolicy List",this.generatedPolicyNumberList)
+         
+    
+          this.generatedPolicyNumberModal.nativeElement.click();
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
+  }
   }
 
