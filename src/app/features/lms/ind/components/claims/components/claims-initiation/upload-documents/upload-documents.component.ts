@@ -80,7 +80,6 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
 
   uploadFile(event: any, doc_name: string) {
     this.spinner_service.show('download_view');
-    console.log('claims_details>>>', this.claims_details)
     let fileName: string = doc_name.replaceAll('.pdf', '').toLowerCase();
     const fileList: FileList = event.files;
     if (fileList.length > 0) {
@@ -132,8 +131,6 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
           const uploadedDoc = uploadedDocs.content.find(upDoc => upDoc.type.toLowerCase() === doc.desc.toLowerCase());
           return uploadedDoc ? { ...doc, submitted: 'Y', uploadedDocId: uploadedDoc.id } : doc;
         });
-
-        console.log('uploadedContent<<<', this.uploadedContent )
         this.cdr.detectChanges();
       });
   }
