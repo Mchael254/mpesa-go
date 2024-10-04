@@ -1,20 +1,20 @@
 {
   "/crm": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/oauth": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/user": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -27,51 +27,51 @@
     "logLevel": "debug"
   },
   "/lms": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/gis": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/turnquest": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/notification": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/json": {
-    "target": "http://192.0.0.169:1020/",
+    "target": "http://10.176.18.211:1020/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/premium": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/reinsurance": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/quotation": {
-    "target": "http://192.0.0.169:4002/api/v2/",
+    "target": "http://10.176.18.211:4002/api/v2/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -83,13 +83,13 @@
     "logLevel": "debug"
   },
   "/fms": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.215:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/etims": {
-    "target": "http://192.0.0.169:1025/",
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

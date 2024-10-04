@@ -14,3 +14,26 @@
   margin-right: 10px;
   cursor: pointer;
 }
+
+#flexCheckChecked {
+  background-color: gray;
+  width: 22px;
+  height: 21px;
+}
+.carousel-control-next, .carousel-control-prev {
+  top: 50%;
+  height: 20%;
+}
+.doc-name {
+  display: inline-block;
+  width: 172px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+}
