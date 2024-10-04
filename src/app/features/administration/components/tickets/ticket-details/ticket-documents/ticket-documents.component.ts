@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {DmsDocument, SingleDmsDocument} from "../../../../../../shared/data/common/dmsDocument";
 import {DmsService} from "../../../../../../shared/services/dms/dms.service";
 import {TicketsDTO} from "../../../../data/ticketsDTO";
@@ -23,7 +23,8 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
 
   selectedDocument: DmsDocument;
   selectedDocumentData: SingleDmsDocument;
-
+  docsList: any[] = [];
+  accDocsList: DmsDocument[] = [];
   tableDetails: TableDetail;
   tableClaimantDocs: TableDetail;
   tableClientDocs: TableDetail;
@@ -80,7 +81,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   ];
 
   constructor(private dmsService: DmsService,
-              private localStorageService: LocalStorageService,
+              private localStorageService: LocalStorageService, private cdr: ChangeDetectorRef
   ) {
   }
 
@@ -182,6 +183,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
         });
         this.viewDocs = docs;
         this.tableDetails.rows = this.viewDocs;
+        this.showAllDocuments();
       }
       );
   }
@@ -208,6 +210,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
         });
         this.viewDocs = policyDocs;
         this.tableDetails.rows = this.viewDocs;
+        this.showAllDocuments();
       });
   }
 
@@ -232,6 +235,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
         });
         this.viewDocs = claimDocuments;
         this.tableDetails.rows = this.viewDocs;
+        this.showAllDocuments();
       }
     );
   }
@@ -248,6 +252,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       .subscribe( clientDocuments => {
           this.viewDocs = clientDocuments;
           this.tableClientDocs.rows = this.viewDocs;
+          this.showAllDocuments();
         }
       );
   }
@@ -264,6 +269,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       .subscribe( clientDocuments => {
           this.viewDocs = clientDocuments;
           this.tableClaimantDocs.rows = this.viewDocs;
+          this.showAllDocuments();
         }
       );
   }
@@ -280,6 +286,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       .subscribe( clientDocuments => {
           this.viewDocs = clientDocuments;
           this.tableServiceProviderDocs.rows = this.viewDocs;
+          this.showAllDocuments();
         }
       );
   }
@@ -296,6 +303,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       {
         this.viewDocs = policyDocs;
         this.tableDispatchedDocs.rows = this.viewDocs;
+        this.showAllDocuments();
       });
   }
 
@@ -315,22 +323,35 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
    * @param event - Event  emitted
    */
   showModal(event: DynamicTableModalData<DmsDocument>) {
-    this.selectedDocument = event.value;
-    this.previewDocument();
-    this.toggleDocumentModal(true);
+    // this.selectedDocument = event.value;
+    // this.previewDocument();
+    // this.toggleDocumentModal(true);
+    this.fetchSelectedDoc()
+    this.openDocViewerModal();
+    console.log('event>>', event);
   }
 
   /**
    * Fetch document data for preview
    */
-  previewDocument(){
-    return this.dmsService.getDocumentById(this.selectedDocument?.id)
+  previewDocument(docId){
+    console.log('doc id', docId);
+    this.dmsService.getDocumentById(docId)
       .pipe(
         untilDestroyed(this),
         take(1)
       )
       .subscribe((documentData: SingleDmsDocument) => {
-        this.selectedDocumentData = documentData;
+        // this.selectedDocumentData = documentData;
+        this.docsList.push({
+          isBase64: documentData.byteData,
+          base64String: documentData.byteData,
+          fileName: documentData.docName,
+          srcUrl: documentData.url,
+          mimeType: documentData.docMimetype,
+        })
+        this.cdr.detectChanges();
+        console.log('doc list', this.docsList);
       });
   }
 
@@ -342,4 +363,61 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     this.toggleDocumentModal(false);
     this.selectedDocumentData = null;
   }
+
+  /**
+   * Shows the document viewer modal.
+   *
+   * The function adds the 'show' class to the modal and its backdrop, and sets their
+   * display styles to 'block'. This makes the modal visible.
+   */
+  openDocViewerModal() {
+    const modal = document.getElementById('docViewerToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
+  }
+
+  /**
+   * Hides the document viewer modal and resets the lists of documents.
+   * The function removes the 'show' class from the modal and its backdrop, and sets
+   * their display styles to 'none'. It also empties the `viewDocs` and `docsList` arrays.
+   */
+  closeDocViewerModal() {
+    const modal = document.getElementById('docViewerToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+    this.viewDocs= [];
+    this.docsList= [];
+  }
+
+  /**
+   * Fetches documents for each document in the `accDocsList` array. The array is iterated and
+   * `previewDocument` is called for each document.
+   */
+  fetchSelectedDoc() {
+    this.accDocsList.forEach(doc => {
+
+      this.previewDocument(doc.id);
+    })
+
+  }
+  /**
+   * Shows all the documents that have been fetched.
+   */
+  showAllDocuments() {
+    this.accDocsList = this.accDocsList.concat(this.viewDocs ?? []);
+    console.log("all>", this.accDocsList)
+  }
 }
+
