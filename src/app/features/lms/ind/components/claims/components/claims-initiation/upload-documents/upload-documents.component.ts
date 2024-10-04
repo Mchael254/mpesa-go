@@ -149,7 +149,6 @@ export class UploadDocumentsComponent implements OnInit, OnChanges, OnDestroy{
   }
 
   deleteDocument(uploadedDocId: string): void {
-    console.log('uploadedDocId>>>', uploadedDocId)
     this.dms_service.deleteDocumentById(uploadedDocId)
       .pipe(untilDestroyed(this))
       .subscribe(
