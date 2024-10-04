@@ -19,12 +19,12 @@
                  role="tabpanel" aria-labelledby="ex1-tab-1">
 
               <form [formGroup]="createCampaignDefinitionForm">
-                <h5>Campaign definition</h5>
-                <h6>Basic information</h6>
+                <h5>{{'campaignMngmt.campaignDefinition'| translate }}</h5>
+                <h6>{{'campaignMngmt.basicInformation'| translate }}</h6>
                 <div class="row">
                   <ng-container *ngIf="visibleStatus.name === 'Y'">
                     <div class="col-md-4">
-                      <label for="name" class="form-label">Name</label>
+                      <label for="name" class="form-label">{{'campaignMngmt.name'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -39,7 +39,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.system === 'Y'">
                     <div class="col-md-4">
-                      <label for="system" class="form-label">System type</label>
+                      <label for="system" class="form-label">{{'campaignMngmt.systemType'| translate }}</label>
                       <p-dropdown
                         [options]="systems"
                         optionLabel="shortDesc"
@@ -64,7 +64,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.description === 'Y'">
                     <div class="col-md-4">
-                      <label for="description" class="form-label">Description</label>
+                      <label for="description" class="form-label">{{'campaignMngmt.description'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -79,7 +79,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.objective === 'Y'">
                     <div class="col-md-4">
-                      <label for="objective" class="form-label">Objective</label>
+                      <label for="objective" class="form-label">{{'campaignMngmt.objective'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -94,7 +94,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.dateFrom === 'Y'">
                     <div class="col-md-4">
-                      <label for="dateFrom" class="form-label">From</label>
+                      <label for="dateFrom" class="form-label">{{'campaignMngmt.from'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -112,7 +112,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.dateTo === 'Y'">
                     <div class="col-md-4">
-                      <label for="dateTo" class="form-label">To</label>
+                      <label for="dateTo" class="form-label">{{'campaignMngmt.to'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -130,7 +130,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.executionTime === 'Y'">
                     <div class="col-md-4">
-                      <label for="executionTime" class="form-label">Execution time</label>
+                      <label for="executionTime" class="form-label">{{'campaignMngmt.executionTime'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -147,11 +147,11 @@
                   </ng-container>
                 </div>
 
-                <h6>Assignment</h6>
+                <h6>{{'campaignMngmt.assignment'| translate }}</h6>
                 <div class="row">
                   <ng-container *ngIf="visibleStatus.assignedTo === 'Y'">
                     <div class="col-md-4">
-                      <label for="assignedTo" class="form-label">Assigned to</label>
+                      <label for="assignedTo" class="form-label">{{'campaignMngmt.assignedTo'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -169,7 +169,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.organization === 'Y'">
                     <div class="col-md-4">
-                      <label for="organization" class="form-label">Organization</label>
+                      <label for="organization" class="form-label">{{'campaignMngmt.organization'| translate }}</label>
                       <p-dropdown
                         [options]="organizations"
                         optionLabel="name"
@@ -197,7 +197,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.team === 'Y'">
                     <div class="col-md-4">
-                      <label for="team" class="form-label">Team</label>
+                      <label for="team" class="form-label">{{'campaignMngmt.team'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -214,11 +214,11 @@
                     </div>
                   </ng-container>
                 </div>
-                <h6>Financial information</h6>
+                <h6>{{'campaignMngmt.financialInformation'| translate }}</h6>
                 <div class="row">
                   <ng-container *ngIf="visibleStatus.currency === 'Y'">
                     <div class="col-md-4">
-                      <label for="currency" class="form-label">Currency</label>
+                      <label for="currency" class="form-label">{{'campaignMngmt.currency'| translate }}</label>
                       <p-dropdown
                         [options]="currencies"
                         optionLabel="name"
@@ -246,7 +246,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.budgetedCost === 'Y'">
                     <div class="col-md-4">
-                      <label for="budgetedCost" class="form-label">Budgeted cost</label>
+                      <label for="budgetedCost" class="form-label">{{'campaignMngmt.budgetedCost'| translate }}</label>
                       <input
                         type="number"
                         class="form-control"
@@ -261,7 +261,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.actualCost === 'Y'">
                     <div class="col-md-4">
-                      <label for="actualCost" class="form-label">Actual cost</label>
+                      <label for="actualCost" class="form-label">{{'campaignMngmt.actualCost'| translate }}</label>
                       <input
                         type="number"
                         class="form-control"
@@ -276,7 +276,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.expectedCost === 'Y'">
                     <div class="col-md-4">
-                      <label for="expectedCost" class="form-label">Expected cost</label>
+                      <label for="expectedCost" class="form-label">{{'campaignMngmt.expectedCost'| translate }}</label>
                       <input
                         type="number"
                         class="form-control"
@@ -291,7 +291,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.expectedRevenue === 'Y'">
                     <div class="col-md-4">
-                      <label for="expectedRevenue" class="form-label">Expected revenue</label>
+                      <label for="expectedRevenue" class="form-label">{{'campaignMngmt.expectedRevenue'| translate }}e</label>
                       <input
                         type="number"
                         class="form-control"
@@ -306,11 +306,11 @@
                   </ng-container>
                 </div>
 
-                <h6>Campaign details</h6>
+                <h6>{{'campaignMngmt.campaignDetails'| translate }}</h6>
                 <div class="row">
                   <ng-container *ngIf="visibleStatus.sponsor === 'Y'">
                     <div class="col-md-4">
-                      <label for="sponsor" class="form-label">Sponsor/partner</label>
+                      <label for="sponsor" class="form-label">{{'campaignMngmt.sponsorPartner'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -325,7 +325,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.campaignType === 'Y'">
                     <div class="col-md-4">
-                      <label for="campaignType" class="form-label">Campaign type</label>
+                      <label for="campaignType" class="form-label">{{'campaignMngmt.campaignType'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -340,7 +340,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.status === 'Y'">
                     <div class="col-md-4">
-                      <label for="status" class="form-label">Status</label>
+                      <label for="status" class="form-label">{{'campaignMngmt.status'| translate }}</label>
                       <select id="status" class="form-select" formControlName="status"
                               [ngClass]="{ 'is-invalid': f['status']?.invalid && (f['status']?.dirty || f['status']?.touched) }">
                         <option value="A">Active</option>
@@ -353,7 +353,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.pageImpressions === 'Y'">
                     <div class="col-md-4">
-                      <label for="pageImpressions" class="form-label">Page impressions</label>
+                      <label for="pageImpressions" class="form-label">{{'campaignMngmt.pageImpressions'| translate }}</label>
                       <input
                         type="number"
                         class="form-control"
@@ -368,7 +368,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.event === 'Y'">
                     <div class="col-md-4">
-                      <label for="event" class="form-label">Event</label>
+                      <label for="event" class="form-label">{{'campaignMngmt.event'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -383,7 +383,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus.venue === 'Y'">
                     <div class="col-md-4">
-                      <label for="venue" class="form-label">Venue</label>
+                      <label for="venue" class="form-label">{{'campaignMngmt.venue'| translate }}</label>
                       <input
                         type="text"
                         class="form-control"
@@ -398,11 +398,11 @@
                   </ng-container>
                 </div>
 
-                <h6>Campaign products</h6>
+                <h6>{{'campaignMngmt.campaignProducts'| translate }}</h6>
                 <div class="row">
                   <ng-container *ngIf="visibleStatus.products === 'Y'">
                     <div class="col-md-4">
-                      <label for="products" class="form-label">Products</label>
+                      <label for="products" class="form-label">{{'campaignMngmt.products'| translate }}</label>
                       <p-multiSelect
                         [options]="productList"
                         formControlName="products"
@@ -449,7 +449,7 @@
             <div class="tab-pane fade" id="targets" [ngClass]="{'show active': currentTab.url === 'targets'}"
                  role="tabpanel" aria-labelledby="ex1-tab-2">
 
-              <h6 class="text-dark">Campaign targets</h6>
+              <h6 class="text-dark">{{'campaignMngmt.campaignTargets'| translate }}</h6>
               <div class="row mb-2">
                 <div class="col-sm-12 col-md-6">
                   <input
@@ -503,9 +503,9 @@
 
                   <ng-template pTemplate="header">
                     <tr>
-                      <th pSortableColumn="accountType">Target <p-sortIcon field="accountType"></p-sortIcon></th>
-                      <th pSortableColumn="emailAddress">Email <p-sortIcon field="emailAddress"></p-sortIcon></th>
-                      <th pSortableColumn="targetDate">Date <p-sortIcon field="targetDate"></p-sortIcon></th>
+                      <th pSortableColumn="accountType">{{'campaignMngmt.target'| translate }} <p-sortIcon field="accountType"></p-sortIcon></th>
+                      <th pSortableColumn="emailAddress">{{'campaignMngmt.email'| translate }} <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                      <th pSortableColumn="targetDate">{{'campaignMngmt.date'| translate }} <p-sortIcon field="targetDate"></p-sortIcon></th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-campaignTarget>
@@ -528,7 +528,7 @@
 
           <ng-container *ngIf="currentTab.url === 'activities'">
             <div class="tab-pane fade" id="activities" [ngClass]="{'show active': currentTab.url === 'activities'}" role="tabpanel" aria-labelledby="ex1-tab-3">
-              <h6 class="text-dark">Campaign activities</h6>
+              <h6 class="text-dark">{{'campaignMngmt.campaignActivities'| translate }}</h6>
               <div class="row mb-2">
                 <div class="col-sm-12 col-md-6">
                   <input
@@ -580,10 +580,10 @@
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="subject">Subject <p-sortIcon field="subject"></p-sortIcon></th>
-                    <th pSortableColumn="desc">Description <p-sortIcon field="desc"></p-sortIcon></th>
-                    <th pSortableColumn="wef">WEF <p-sortIcon field="wef"></p-sortIcon></th>
-                    <th pSortableColumn="wet">WET <p-sortIcon field="wet"></p-sortIcon></th>
+                    <th pSortableColumn="subject">{{'campaignMngmt.subject'| translate }} <p-sortIcon field="subject"></p-sortIcon></th>
+                    <th pSortableColumn="desc">{{'campaignMngmt.description'| translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+                    <th pSortableColumn="wef">{{'campaignMngmt.wef'| translate }} <p-sortIcon field="wef"></p-sortIcon></th>
+                    <th pSortableColumn="wet">{{'campaignMngmt.wet'| translate }} <p-sortIcon field="wet"></p-sortIcon></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-campaignActivity>
@@ -604,7 +604,7 @@
           </ng-container>
           <ng-container *ngIf="currentTab.url === 'messages'">
             <div class="tab-pane fade" id="messages" [ngClass]="{'show active': currentTab.url === 'messages'}" role="tabpanel" aria-labelledby="ex1-tab-4">
-              <h6 class="text-dark">Campaign messages</h6>
+              <h6 class="text-dark">{{'campaignMngmt.campaignMessages'| translate }} </h6>
               <div class="row mb-2">
                 <div class="col-sm-12 col-md-6">
                   <input
@@ -655,12 +655,12 @@
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="messageSubject">Subject <p-sortIcon field="messageSubject"></p-sortIcon></th>
-                    <th pSortableColumn="messageBody">Body <p-sortIcon field="messageBody"></p-sortIcon></th>
-                    <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
-                    <th pSortableColumn="sendAll">Send to all? <p-sortIcon field="date"></p-sortIcon></th>
-                    <th pSortableColumn="status">Message status <p-sortIcon field="status"></p-sortIcon></th>
-                    <th pSortableColumn="imageUrl">Has image? <p-sortIcon field="imageUrl"></p-sortIcon></th>
+                    <th pSortableColumn="messageSubject">{{'campaignMngmt.subject'| translate }} <p-sortIcon field="messageSubject"></p-sortIcon></th>
+                    <th pSortableColumn="messageBody">{{'campaignMngmt.body'| translate }} <p-sortIcon field="messageBody"></p-sortIcon></th>
+                    <th pSortableColumn="date">{{'campaignMngmt.date'| translate }} <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="sendAll">{{'campaignMngmt.sendToAll'| translate }}? <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="status">{{'campaignMngmt.messageStatus'| translate }} <p-sortIcon field="status"></p-sortIcon></th>
+                    <th pSortableColumn="imageUrl">{{'campaignMngmt.hasImage'| translate }}? <p-sortIcon field="imageUrl"></p-sortIcon></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-campaignMessage>
@@ -691,7 +691,7 @@
                 </ng-template>
               </p-table>
 
-              <h6 class="text-dark">Tracker URLS</h6>
+              <h6 class="text-dark">{{'campaignMngmt.trackerURLS'| translate }}</h6>
               <div class="row mb-2">
                 <div class="col-sm-12 col-md-6">
                   <input
@@ -741,10 +741,10 @@
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="target">Name <p-sortIcon field="target"></p-sortIcon></th>
-                    <th pSortableColumn="email">URL <p-sortIcon field="email"></p-sortIcon></th>
-                    <th pSortableColumn="date">Description <p-sortIcon field="date"></p-sortIcon></th>
-                    <th pSortableColumn="date">Action <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="target">{{'campaignMngmt.name'| translate }}  <p-sortIcon field="target"></p-sortIcon></th>
+                    <th pSortableColumn="email">{{'campaignMngmt.url'| translate }}  <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="date">{{'campaignMngmt.description'| translate }} <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="date">{{'campaignMngmt.action'| translate }} <p-sortIcon field="date"></p-sortIcon></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-campaignTarget>
@@ -765,15 +765,15 @@
           </ng-container>
           <ng-container *ngIf="currentTab.url === 'performance'">
             <div class="tab-pane fade" id="performance" [ngClass]="{'show active': currentTab.url === 'performance'}" role="tabpanel" aria-labelledby="ex1-tab-5">
-              <h5 class="text-dark">Campaign performance</h5>
+              <h5 class="text-dark">{{'campaignMngmt.campaignPerformance'| translate }}</h5>
               <div class="row">
                 <div class="col-lg-4">
-                  <h6 class="text-dark">Campaign name: Campaign AA</h6>
+                  <h6 class="text-dark">{{'campaignMngmt.campaignName'| translate }}: Campaign AA</h6>
                 </div>
                 <div class="col-lg-2">
-                  <label class="text-dark" style="margin-top: .6rem;">Status: <span class="text-green">Active</span></label>
+                  <label class="text-dark" style="margin-top: .6rem;">{{'campaignMngmt.status'| translate }}: <span class="text-green">Active</span></label>
                 </div>
-                <label class="text-dark w-auto" style="margin-top: .6rem;">Date range:</label>
+                <label class="text-dark w-auto" style="margin-top: .6rem;">{{'campaignMngmt.dateRange'| translate }}:</label>
                 <div class="col-lg-2">
 
                   <input
@@ -792,7 +792,7 @@
               <div class="container py-2 border border-primary rounded">
                 <div class="row col-sm-4 col-md-12 col-lg-12">
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Messages sent</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.messagesSent'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>10,000</h6>
                     </div>
@@ -803,7 +803,7 @@
                     </div>
                   </div>
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Messages queue</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.messagesQueue'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>6,000</h6>
                     </div>
@@ -814,7 +814,7 @@
                     </div>
                   </div>
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Viewed messages</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.viewedMessages'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>4,000</h6>
                     </div>
@@ -825,7 +825,7 @@
                     </div>
                   </div>
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Click-thru links</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.clickThruLink'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>3,000</h6>
                     </div>
@@ -836,7 +836,7 @@
                     </div>
                   </div>
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Opted out</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.optedOut'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>500</h6>
                     </div>
@@ -847,7 +847,7 @@
                     </div>
                   </div>
                   <div class="row col">
-                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Suppressed</label>
+                    <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.suppressed'| translate }}</label>
                     <div class="col-5 pe-0">
                       <h6>120</h6>
                     </div>
@@ -860,9 +860,9 @@
                 </div>
               </div>
 
-              <h5 class="text-dark">Performance over time</h5>
+              <h5 class="text-dark">{{'campaignMngmt.performanceOverTime'| translate }}</h5>
               <div class="row col-sm-12 col-lg-6 mb-2">
-                <label class="w-auto" style="margin-top: .6rem;">Metric</label>
+                <label class="w-auto" style="margin-top: .6rem;">{{'campaignMngmt.metric'| translate }}</label>
                 <select class="form-select w-50">
                   <option value="">Messages sent</option>
                   <option value="">Messages queue</option>
@@ -881,9 +881,9 @@
                 ></app-dynamic-chart>
               </div>
 
-              <h5 class="text-dark">Top performing products</h5>
+              <h5 class="text-dark">{{'campaignMngmt.topPerformingProducts'| translate }}</h5>
               <div class="row col-sm-12 col-lg-6 mb-2">
-                <label class="w-auto" style="margin-top: .6rem;">Metric</label>
+                <label class="w-auto" style="margin-top: .6rem;">{{'campaignMngmt.metric'| translate }}</label>
                 <select class="form-select w-50">
                   <option value="">Messages sent</option>
                   <option value="">Messages queue</option>
@@ -915,9 +915,9 @@
 
                 <ng-template pTemplate="header">
                   <tr>
-                    <th pSortableColumn="target">Product <p-sortIcon field="target"></p-sortIcon></th>
-                    <th pSortableColumn="email">Total(Metric selected above) <p-sortIcon field="email"></p-sortIcon></th>
-                    <th pSortableColumn="date">% of category audience <p-sortIcon field="date"></p-sortIcon></th>
+                    <th pSortableColumn="target">{{'campaignMngmt.product'| translate }} <p-sortIcon field="target"></p-sortIcon></th>
+                    <th pSortableColumn="email">{{'campaignMngmt.total'| translate }}(Metric selected above) <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="date">{{'campaignMngmt.categoryAudience'| translate }} <p-sortIcon field="date"></p-sortIcon></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-campaignTarget>
