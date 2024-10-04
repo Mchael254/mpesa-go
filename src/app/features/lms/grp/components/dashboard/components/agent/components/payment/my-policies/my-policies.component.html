@@ -1,1 +1,68 @@
-<p>my-policies works!</p>
+<div class="main">
+    <div style="display: flex; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="title" style="justify-content: center;">{{ "lms.grp.agent_portal.myPolicies" | translate }}</div>
+        <div class="quote-btn mt-3">
+            <div class="filter-section">
+                <label class="filter-label">{{ "lms.grp.agent_portal.filterBy" | translate }}</label>
+
+                <div class="filter-options">
+                    <div class="dropdown first-filter">
+                        <select>
+                            <option value="quoteNumber">{{ "lms.grp.agent_portal.quoteNumber" | translate }}</option>
+                            <option value="product">{{ "lms.grp.agent_portal.product" | translate }}</option>
+                            <option value="status">{{ "lms.grp.agent_portal.status" | translate }}</option>
+                        </select>
+                    </div>
+
+                    <div class="dropdown second-filter">
+                        <select>
+                            <option value="equals">{{ "lms.grp.agent_portal.equals" | translate }}</option>
+                            <option value="greaterThan">{{ "lms.grp.agent_portal.greaterThan" | translate }}</option>
+                            <option value="lessThan">{{ "lms.grp.agent_portal.lessThan" | translate }}</option>
+                        </select>
+                    </div>
+
+                    <input type="text" class="input-field" 
+                           [placeholder]="('lms.grp.agent_portal.enterValue' | translate)" />
+                </div>
+            </div>
+
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false"></p-multiSelect>
+        </div>
+
+        <div>
+            <p-table [value]="myPolicyDetails" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+                styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[10, 25, 50]"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('policy_no')">{{ "lms.grp.agent_portal.quoteNo" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('product')">{{ "lms.grp.agent_portal.client" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('status')">{{ "lms.grp.agent_portal.product" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('wet_date')">{{ "lms.grp.agent_portal.status" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('sum_assured')">{{ "lms.grp.agent_portal.effectiveDate" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('premium')">{{ "lms.grp.agent_portal.premium" | translate }}</th>
+                        <th *ngIf="selectedColumns.includes('members')">{{ "lms.grp.agent_portal.sumAssured" | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-polDets>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('policy_no')">{{ polDets.policy_no }}</td>
+                        <td *ngIf="selectedColumns.includes('product')">{{ polDets.client }}</td>
+                        <td *ngIf="selectedColumns.includes('status')">{{ polDets.product }}</td>
+                        <td *ngIf="selectedColumns.includes('wet_date')">{{ polDets.status }}</td>
+                        <td *ngIf="selectedColumns.includes('sum_assured')">{{ polDets.effective_date }}</td>
+                        <td *ngIf="selectedColumns.includes('premium')">{{ polDets.premium | currency }}</td>
+                        <td *ngIf="selectedColumns.includes('members')">{{ polDets.sum_assured | number:'1.2-2' }}</td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+    </div>
+</div>
