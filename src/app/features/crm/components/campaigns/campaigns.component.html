@@ -26,7 +26,7 @@
     <p-tabPanel header="Campaigns">
 
       <ng-container *ngIf="showCampaignTable; else otherTemplates">
-        <h5 class="text-dark">Campaigns</h5>
+        <h5 class="text-dark">{{'campaignMngmt.campaigns'| translate }}</h5>
         <div class="row mb-2">
           <div class="col-sm-12 col-md-6">
             <input
@@ -41,7 +41,7 @@
 
           <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
             <div class="float-end">
-              <button class="btn btn-primary" (click)="showAnalytics()">View analytics</button>
+              <button class="btn btn-primary" id="showAnalytics" (click)="showAnalytics()">{{'campaignMngmt.viewAnalytics'| translate }}</button>
             <span class="icon-circle">
               <i class="fa-solid fa-plus"
               (click)="showDefinition()"></i>
@@ -82,27 +82,27 @@
 
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="campaign.campaignName">Campaign name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.objective">Objective <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.description">Description <p-sortIcon field="campaign.description"></p-sortIcon></th>
-                  <th pSortableColumn="system.shortDesc">System <p-sortIcon field="system.shortDesc"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.user">User <p-sortIcon field="campaign.user"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.teamLeader">Group <p-sortIcon field="campaign.teamLeader"></p-sortIcon></th>
-                  <th pSortableColumn="organization.name">Organisation <p-sortIcon field="organization.name"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.cmpDate">Starting date <p-sortIcon field="campaign.cmpDate"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.expectCloseDate">Closing date <p-sortIcon field="campaign.expectCloseDate"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.expectedCost">Expected cost <p-sortIcon field="campaign.expectedCost"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.cmpBgtCost">Budgeted cost <p-sortIcon field="campaign.cmpBgtCost"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.cmpActlCost">Actual cost <p-sortIcon field="campaign.cmpActlCost"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.cmpExptRevenue">Expected revenue <p-sortIcon field="campaign?.cmpExptRevenue"></p-sortIcon></th>
-                  <th pSortableColumn="currency.name">Currency <p-sortIcon field="currency.name"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.sponsor">Sponsor <p-sortIcon field="campaign.sponsor"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.campaignType">Campaign type <p-sortIcon field="campaign.campaignType"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.status">Campaign status <p-sortIcon field="campaign.status"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.impressionCount">Impressions <p-sortIcon field="campaign.impressionCount"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.events">Event <p-sortIcon field="campaign.events"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.venue">Venue <p-sortIcon field="campaign.venue"></p-sortIcon></th>
-                  <th pSortableColumn="campaign.eventTime">Event time <p-sortIcon field="campaign.eventTime"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.campaignName">{{'campaignMngmt.campaignName'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.objective">{{'campaignMngmt.objective'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.description">{{'campaignMngmt.description'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                  <th pSortableColumn="system.shortDesc">{{'campaignMngmt.system'| translate }} <p-sortIcon field="system.shortDesc"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.user">{{'campaignMngmt.user'| translate }} <p-sortIcon field="campaign.user"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.teamLeader">{{'campaignMngmt.group'| translate }} <p-sortIcon field="campaign.teamLeader"></p-sortIcon></th>
+                  <th pSortableColumn="organization.name">{{'campaignMngmt.organisation'| translate }} <p-sortIcon field="organization.name"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpDate">{{'campaignMngmt.startingDate'| translate }} <p-sortIcon field="campaign.cmpDate"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.expectCloseDate">{{'campaignMngmt.closingDate'| translate }} <p-sortIcon field="campaign.expectCloseDate"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.expectedCost">{{'campaignMngmt.expectedCost'| translate }} <p-sortIcon field="campaign.expectedCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpBgtCost">{{'campaignMngmt.budgetedCost'| translate }} <p-sortIcon field="campaign.cmpBgtCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpActlCost">{{'campaignMngmt.actualCost'| translate }} <p-sortIcon field="campaign.cmpActlCost"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.cmpExptRevenue">{{'campaignMngmt.expectedRevenue'| translate }} <p-sortIcon field="campaign?.cmpExptRevenue"></p-sortIcon></th>
+                  <th pSortableColumn="currency.name">{{'campaignMngmt.currency'| translate }} <p-sortIcon field="currency.name"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.sponsor">{{'campaignMngmt.sponsor'| translate }} <p-sortIcon field="campaign.sponsor"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.campaignType">{{'campaignMngmt.campaignType'| translate }} <p-sortIcon field="campaign.campaignType"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.status">{{'campaignMngmt.campaignStatus'| translate }} <p-sortIcon field="campaign.status"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.impressionCount">{{'campaignMngmt.impressions'| translate }} <p-sortIcon field="campaign.impressionCount"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.events">{{'campaignMngmt.event'| translate }} <p-sortIcon field="campaign.events"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.venue">{{'campaignMngmt.venue'| translate }} <p-sortIcon field="campaign.venue"></p-sortIcon></th>
+                  <th pSortableColumn="campaign.eventTime">{{'campaignMngmt.eventTime'| translate }} <p-sortIcon field="campaign.eventTime"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-aggregatedCampaign>
@@ -187,7 +187,7 @@
 
     </p-tabPanel>
     <p-tabPanel header="Client/Products">
-      <h5 class="text-black mt-4">Products</h5>
+      <h5 class="text-black mt-4">{{'campaignMngmt.products'| translate }}</h5>
       <div class="col-6 mb-2">
         <input
           type="text"
@@ -218,9 +218,9 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="product">Product <p-sortIcon field="target"></p-sortIcon></th>
-            <th pSortableColumn="system">System <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Narration <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="product">{{'campaignMngmt.product'| translate }} <p-sortIcon field="target"></p-sortIcon></th>
+            <th pSortableColumn="system">{{'campaignMngmt.system'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.narration'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-campaignTarget>
@@ -237,7 +237,7 @@
         </ng-template>
       </p-table>
 
-      <h5 class="text-black mt-4">Clients</h5>
+      <h5 class="text-black mt-4">{{'campaignMngmt.clients'| translate }}</h5>
       <div class="col-6 mb-2">
         <input
           type="text"
@@ -268,14 +268,14 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="product">Full name <p-sortIcon field="target"></p-sortIcon></th>
-            <th pSortableColumn="system">Surname <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Other names <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Town <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Postal code <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Postal address <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Country <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="narration">Telephone no. <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="product">{{'campaignMngmt.fullName'| translate }} <p-sortIcon field="target"></p-sortIcon></th>
+            <th pSortableColumn="system">{{'campaignMngmt.surname'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.otherNames'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.town'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.postalCode'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.postalAddress'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.country'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.telephoneNo'| translate }}. <p-sortIcon field="email"></p-sortIcon></th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-campaignTarget>

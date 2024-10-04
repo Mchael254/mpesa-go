@@ -115,7 +115,7 @@ export class CampaignsComponent implements OnInit {
   showAnalytics() {
     this.showCampaignTable = false;
     this.showDefinitionMode = false;
-    console.log('Showing campaign analytics');
+    log.info('Showing campaign analytics');
   }
 
   /**
@@ -231,18 +231,22 @@ export class CampaignsComponent implements OnInit {
    */
   confirmCampaignDelete() {
     if (this.selectedCampaign) {
-      const campaignId = this.selectedCampaign.campaign.code;
-      this.campaignsService.deleteCampaign(campaignId).subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a campaign'
-          );
-          this.selectedCampaign = null;
-          this.getGrpCampaignsData();
+      const campaignId = this.selectedCampaign?.campaign?.code;
+      this.campaignsService.deleteCampaign(campaignId).subscribe({
+        next: (data) => {
+          {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a campaign'
+            );
+            this.selectedCampaign = null;
+            this.getGrpCampaignsData();
+          }
         },
-        error => {
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        });
+        error:(err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
       log.info('delete>', campaignId)
     } else {
       this.globalMessagingService.displayErrorMessage(
