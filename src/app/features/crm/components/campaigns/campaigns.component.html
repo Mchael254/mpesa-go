@@ -176,8 +176,7 @@
       </ng-container>
       <ng-template #otherTemplates>
         <ng-container *ngIf="showDefinitionMode; else showCampaignAnalytics">
-          <app-campaign-definition (onClickSave)="toggleCampaign()"
-          [systems]="systemsData" [organizations]="organizationData" [currencies]="currencyData" [selectedCampaign]="selectedCampaign"
+          <app-campaign-definition (onClickSave)="toggleCampaign()" [selectedCampaign]="selectedCampaign"
           ></app-campaign-definition>
         </ng-container>
 

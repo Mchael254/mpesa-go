@@ -11,6 +11,33 @@ label {
   font-size: 12px !important;
 }
 
+.text-primary.font-weight-bold {
+  font-size: 16px;
+}
+
+.col-12.text-danger.required {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.p-dropdown {
+  width: 100%;
+  height: 37px;
+  line-height: 10px;
+}
+
+.quote-label span {
+  color: red;
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+.text-danger {
+  color: red;
+}
+
 .modal-content {
   border-radius: 0px;
 }
@@ -112,7 +139,6 @@ tr.ng-star-inserted {
 .draft:hover{
   color: var(--primary-color);
   background-color: white;
-
   border: solid 3px #9ea9d8;
   font-size: 11px;
   font-weight: 600;
@@ -132,4 +158,31 @@ div > label {
     width: 33%;
   }
 
+}
+
+.text-primary.font-weight-bold {
+  font-size: 16px;
+}
+
+.col-12.text-danger.required {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.p-dropdown {
+  width: 100%;
+  height: 37px;
+  line-height: 10px;
+}
+
+.quote-label span {
+  color: red;
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+.text-danger {
+  color: red;
 }

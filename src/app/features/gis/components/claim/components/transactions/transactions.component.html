@@ -1,0 +1,93 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('revisions')">{{'gis.claims.claim_transaction_report.claim_revisions' | translate }}</button>
+                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('payments')">{{'gis.claims.claim_transaction_report.claim_payments' | translate }}</button>
+                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('letters')">{{'gis.claims.claim_transaction_report.letters_and_memos' | translate }}</button>
+                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('policyEnquiry')">{{'gis.claims.claim_transaction_report.policy_enquiry' | translate }}</button>
+                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('backToClaimEnquiry')">{{'gis.claims.claim_transaction_report.back_to_claim_enquiry' | translate }}</button>
+                </div>
+             
+                <div *ngIf="activeView !== 'transactionDetails'">
+                    <!-- <button type="button" class="btn btn-link mr-2" (click)="setActiveView('transactionDetails')" data-bs-toggle="tooltip"  title="Back to Transaction Details">
+                        <i class="fa-solid fa-arrow-circle-left me-1"></i> 
+                    </button> -->
+                    <div class="row mb-3">
+                        <div class="col-md-12 d-flex justify-content-end align-items-center">  
+                            <button class="btn btn-primary mr-2" id="icon" type="button" (click)="setActiveView('transactionDetails')" data-bs-toggle="tooltip"  title="Back to Transaction Details" ><i class="fa-solid fa-angle-double-left"></i></button> 
+                        </div>
+                      </div>
+                    <!-- <button type="button" class="btn btn-secondary" (click)="setActiveView('transactionDetails')">Back to Transaction Details</button> -->
+                </div>
+            </div>
+
+            <div *ngIf="activeView === 'transactionDetails'">
+                <p-table 
+                [value]="transactionData" 
+                responsiveLayout="scroll" 
+                [tableStyle]="{ 'min-width': '100rem' }"
+                dataKey="transType">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>{{'gis.claims.claim_transaction_report.trans_type' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.trans_date' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.gross_liability' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.net_liability_payee' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.paid_amount' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.authorised_by' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.authorise_date' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.cheque_number' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.cheque_date' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.receipt_number' | translate }}</th>
+                            <th>{{'gis.claims.claim_transaction_report.action' | translate }}</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-transaction>
+                        <tr>
+                            <td>{{transaction.transType}}</td>
+                            <td>{{transaction.transDate}}</td>
+                            <td>{{transaction.grossLiability}}</td>
+                            <td>{{transaction.netLiabilityPayee}}</td>
+                            <td>{{transaction.paidAmount}}</td>
+                            <td>{{transaction.authorisedBy}}</td>
+                            <td>{{transaction.authoriseDate}}</td>
+                            <td>{{transaction.chequeNumber}}</td>
+                            <td>{{transaction.chequeDate}}</td>
+                            <td>{{transaction.receiptNumber}}</td>
+                            <td>
+                                <button type="button" class="btn btn-link" (click)="viewTransaction(transaction)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div *ngIf="activeView === 'revisions'">
+                <!-- <app-claim-revisions></app-claim-revisions> -->
+            </div>
+
+            <div *ngIf="activeView === 'payments'">
+                <!-- Content for Claim Payments -->
+                <p>Claim Payments content goes here.</p>
+            </div>
+
+            <div *ngIf="activeView === 'letters'">
+                <app-letters-and-memos></app-letters-and-memos>
+            </div>
+
+            <div *ngIf="activeView === 'policyEnquiry'">
+                <!-- Content for Policy Enquiry -->
+                <p>Policy Enquiry content goes here.</p>
+            </div>
+
+            <div *ngIf="activeView === 'backToClaimEnquiry'">
+                <!-- Content for Back to Claim Enquiry -->
+                <p>Back to Claim Enquiry content goes here.</p>
+            </div>
+        </div>
+    </div>
+</div>

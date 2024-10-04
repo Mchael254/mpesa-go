@@ -1,0 +1,147 @@
+<div class="container">
+    <h2>Required Documents</h2>
+  
+    <button class="btn btn-primary mb-2" (click)="addDocument()">Add Document</button>
+  
+    <!-- Bootstrap Modal for Document Details -->
+    <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="documentModalLabel">{{ selectedDocument ? 'Edit Document' : 'Add Document' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="documentForm">
+              <div class="form-group">
+                <label for="name">Document Name</label>
+                <input type="text" class="form-control" formControlName="name" [placeholder]="'Enter Document Name'" required>
+                <div *ngIf="documentForm.get('name')?.touched && documentForm.get('name')?.hasError('required')">
+                  <small class="text-danger">Document Name is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-select" formControlName="status" required>
+                  <option value="Submitted">Submitted</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Not Received">Not Received</option>
+                </select>
+                <div *ngIf="documentForm.get('status')?.touched && documentForm.get('status')?.hasError('required')">
+                  <small class="text-danger">Status is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="submissionDate">Submission Date</label>
+                <input type="date" class="form-control" formControlName="submissionDate">
+              </div>
+  
+              <div class="form-group">
+                <label for="referenceNumber">Reference Number</label>
+                <input type="text" class="form-control" formControlName="referenceNumber" [placeholder]="'Enter Reference Number'">
+              </div>
+  
+              <div class="form-group">
+                <label for="remarks">Remarks</label>
+                <textarea class="form-control" formControlName="remarks" [placeholder]="'Add any remarks'"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="documentType">Document Type</label>
+                <select class="form-select" formControlName="documentType" required>
+                  <option *ngFor="let type of documentTypes" [value]="type">{{ type }}</option>
+                </select>
+                <div *ngIf="documentForm.get('documentType')?.touched && documentForm.get('documentType')?.hasError('required')">
+                  <small class="text-danger">Document Type is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="documentUser">Document User</label>
+                <select class="form-select" formControlName="documentUser">
+                  <option value="User A">User A</option>
+                  <option value="User B">User B</option>
+                  <option value="User C">User C</option>
+                </select>
+              </div>
+  
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="saveDocument()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Bootstrap Modal for Document Upload -->
+    <div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="uploadDocumentModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadDocumentModalLabel">Upload Document</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="documentFile">Document</label>
+                <input type="file" class="form-control-file" id="documentFile">
+              </div>
+  
+              <div class="form-group">
+                <label for="documentType">Document Type</label>
+                <select class="form-select" id="documentType">
+                  <option *ngFor="let type of documentTypes" [value]="type">{{ type }}</option>
+                </select>
+              </div>
+  
+              <div class="form-group">
+                <label for="documentDescription">Document Description</label>
+                <textarea class="form-control" id="documentDescription"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="uploadDocument()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <p-table [value]="claim.requiredDocuments" [rows]="5" [resizableColumns]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Document Name</th>
+          <th>Status</th>
+          <th>Submission Date</th>
+          <th>Reference Number</th>
+          <th>Document Type</th>
+          <th>Document User</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-document>
+        <tr>
+          <td>
+            <a href="#" (click)="viewDocument(document)">{{ document.name }}</a>
+          </td>
+          <td>{{ document.status }}</td>
+          <td>{{ document.submissionDate | date }}</td>
+          <td>{{ document.referenceNumber }}</td>
+          <td>{{ document.documentType }}</td>
+          <td>{{ document.documentUser }}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" (click)="editDocument(document)">Edit</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteDocument(document)">Delete</button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  
+    <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">Upload Document</button>
+  </div>

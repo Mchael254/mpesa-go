@@ -1,9 +1,14 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import { ActivityService } from '../../../services/activity.service';
 import { ActivityStatus, PriorityLevel } from '../../../data/activity';
+
+enum ActivityText {
+  PRIORITY = 'priority',
+  STATUS = 'status',
+}
 
 @Component({
   selector: 'app-priority-levels-activity-status',
@@ -11,6 +16,8 @@ import { ActivityStatus, PriorityLevel } from '../../../data/activity';
   styleUrls: ['./priority-levels-activity-status.component.css'],
 })
 export class PriorityLevelsActivityStatusComponent implements OnInit {
+  @ViewChild('closeDeleteButton') closeDeleteButton;
+
   pageSize: 5;
   priorityLevelsData: PriorityLevel[];
   selectedPriorityLevel: PriorityLevel;
@@ -24,6 +31,13 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
     description: 'Y',
   };
   editMode: boolean = false;
+
+  isDataLoading = {
+    priority: false,
+    status: false,
+  };
+
+  activityText: string;
 
   constructor(
     private fb: FormBuilder,
@@ -109,18 +123,22 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
     this.activityStatusForm.patchValue({
       desc: this.selectedActivityStatus?.desc,
       code: this.selectedActivityStatus?.code,
+      shtDesc: this.selectedActivityStatus?.code, // todo: remove
     });
     this.openActivityStatusModal();
   }
 
   getPriorityLevels(): void {
+    this.isDataLoading.priority = false;
     this.activityService.getPriorityLevels().subscribe({
       next: (res) => {
         this.priorityLevelsData = res;
+        this.isDataLoading.priority = true;
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataLoading.priority = true;
       },
     });
   }
@@ -184,24 +202,28 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
           'Priority level deleted successfully!'
         );
         this.getPriorityLevels();
-        // close modal after delete
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
   }
 
   // Activity Status
   getActivityStatuses(): void {
+    this.isDataLoading.status = false;
     this.activityService.getActivityStatuses().subscribe({
       next: (res) => {
         this.activityStatusData = res;
+        this.isDataLoading.status = true;
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.isDataLoading.status = true;
       },
     });
   }
@@ -209,7 +231,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
   createActivityStatus(): void {
     const formValues = this.activityStatusForm.getRawValue();
     const activityStatus: ActivityStatus = {
-      id: this.selectedPriorityLevel?.id || null,
+      id: this.selectedActivityStatus?.id || null,
       desc: formValues.desc,
       code: formValues.shtDesc,
     };
@@ -226,7 +248,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage(
           'Success',
-          'Priority Level created successfully!'
+          'Activity Status created successfully!'
         );
         this.getActivityStatuses();
         this.closeActivityStatusModal();
@@ -243,7 +265,7 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage(
           'Success',
-          'Priority Level updated successfully!'
+          'Activity Status updated successfully!'
         );
         this.getActivityStatuses();
         this.closeActivityStatusModal();
@@ -265,12 +287,31 @@ export class PriorityLevelsActivityStatusComponent implements OnInit {
           'Activity status deleted successfully!'
         );
         this.getActivityStatuses();
-        // close modal after delete
+        this.closeDeleteButton.nativeElement.click();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeDeleteButton.nativeElement.click();
       },
     });
+  }
+
+  prepareItemForDelete(activityType: string): void {
+    this.activityText = activityType;
+  }
+
+  confirmDelete(activityType: string) {
+    console.log(`confirm delete called >>>`, activityType);
+    switch (activityType) {
+      case ActivityText.PRIORITY:
+        this.confirmDeletePriorityLevel();
+        break;
+      case ActivityText.STATUS:
+        this.confirmDeleteActivityStatus();
+        break;
+      default:
+        this.activityText = '';
+    }
   }
 }

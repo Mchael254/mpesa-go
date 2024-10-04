@@ -52,6 +52,7 @@ export interface CampaignMessagesDTO {
   messageBody: string,
   date: string,
   imageUrl: string,
+  image: string,
   sendAll: string,
   status: string,
   messageSubject: string,
@@ -64,4 +65,10 @@ export interface CampaignTargetsDTO {
   accountType: string,
   campaignCode: number,
   targetDate: string
+}
+
+export interface CampaignActivitiesDTO {
+  code: number,
+  campaignCode: number,
+  campaignActCode: number
 }

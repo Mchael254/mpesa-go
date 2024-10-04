@@ -1,0 +1,137 @@
+<div class="row mb-3">
+  <div class="col-md-12 d-flex justify-content-end align-items-center">  
+      <button class="btn btn-primary mr-2" id="icon" type="button" (click)="addPerilRevision()"  data-bs-toggle="modal" data-bs-target="#perilRevisionModal"><i class="fa-solid fa-plus"></i></button> 
+  </div>
+</div>
+
+ 
+    <!-- <button class="btn btn-primary mb-2" (click)="addPerilRevision()" data-bs-toggle="modal" data-bs-target="#perilRevisionModal">Add Peril Revision</button> -->
+  
+    <!-- Bootstrap Modal for Peril Revision -->
+    <div class="modal fade" id="perilRevisionModal" tabindex="-1" aria-labelledby="perilRevisionModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="perilRevisionModalLabel">{{ selectedPerilRevision ? 'Edit Peril Revision' : 'Add Peril Revision' }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="perilRevisionForm">
+              <div class="form-group">
+                <label for="revisionOn">Revision On</label>
+                <select class="form-select" formControlName="revisionOn" required (change)="onRevisionTargetChange($event)">
+                  <option value="Claimant">Claimant</option>
+                  <option value="Service Provider">Service Provider</option>
+                </select>
+                <div *ngIf="perilRevisionForm.get('revisionOn')?.touched && perilRevisionForm.get('revisionOn')?.hasError('required')">
+                  <small class="text-danger">Revision On is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group" *ngIf="showClaimantOrServiceProviderDropdown">
+                <label for="claimantOrServiceProviderId">Claimant/Service Provider</label>
+                <select class="form-select" formControlName="claimantOrServiceProviderId" required (change)="findClaimantOrServiceProvider($event)">
+                  <ng-template ngIf="perilRevisionForm.get('revisionOn')?.value === 'Claimant'">
+                    <option *ngFor="let claimant of claimants" [value]="claimant.id">{{ claimant.name }}</option>
+                  </ng-template>
+                  <ng-template ngIf="perilRevisionForm.get('revisionOn')?.value === 'Service Provider'">
+                    <option *ngFor="let serviceProvider of serviceProviders" [value]="serviceProvider.id">{{ serviceProvider.name }}</option>
+                  </ng-template>
+                </select>
+                <div *ngIf="perilRevisionForm.get('claimantOrServiceProviderId')?.touched && perilRevisionForm.get('claimantOrServiceProviderId')?.hasError('required')">
+                  <small class="text-danger">Claimant/Service Provider is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="peril">Peril</label>
+                <select class="form-select" formControlName="peril" required (change)="findPerils($event)">
+                  <option *ngFor="let peril of perils" [value]="peril.value">{{ peril.label }}</option>
+                </select>
+                <div *ngIf="perilRevisionForm.get('peril')?.touched && perilRevisionForm.get('peril')?.hasError('required')">
+                  <small class="text-danger">Peril is required.</small>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="perilExcessAmount">Peril Excess Amount</label>
+                <input type="number" class="form-control" formControlName="perilExcessAmount">
+              </div>
+  
+              <div class="form-group">
+                <label for="depreciationRate">Depreciation Rate</label>
+                <input type="number" class="form-control" formControlName="depreciationRate">
+              </div>
+  
+              <div class="form-group">
+                <label for="retainedSalvage">Retained Salvage/Multiplier</label>
+                <input type="number" class="form-control" formControlName="retainedSalvage">
+              </div>
+  
+              <div class="form-group">
+                <label for="initialReserveAmount">Initial Reserve Amount</label>
+                <input type="number" class="form-control" formControlName="initialReserveAmount">
+              </div>
+  
+              <div class="form-group">
+                <label for="perilRemarks">Peril Remarks</label>
+                <textarea class="form-control" formControlName="perilRemarks"></textarea>
+              </div>
+  
+              <div class="form-group">
+                <label for="perilOutstandingAmount">Peril Outstanding Amount</label>
+                <input type="number" class="form-control" formControlName="perilOutstandingAmount">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="selectedPerilRevision ? savePerilRevisionDetails() : savePerilRevision()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <p-table [value]="perilRevisions" [rows]="5" [resizableColumns]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Revision On</th>
+          <th>Claimant/Service Provider</th>
+          <th>Peril</th>
+          <th>Peril Excess Amount</th>
+          <th>Depreciation Rate</th>
+          <th>Retained Salvage</th>
+          <th>Initial Reserve Amount</th>
+          <th>Peril Remarks</th>
+          <th>Peril Outstanding Amount</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-perilRevision>
+        <tr>
+          <td>{{ perilRevision.revisionOn }}</td>
+          <td>
+            <span *ngIf="perilRevision.revisionOn === 'Claimant' && claim.claimantDetails?.length > 0">
+                <td>{{ perilRevision.peril ? perilRevision.peril : '' }}</td>
+
+            </span>
+            <span *ngIf="perilRevision.revisionOn === 'Service Provider' && serviceProviders.length > 0">
+                <td>{{ perilRevision.perilExcessAmount ? perilRevision.perilExcessAmount : '' }}</td>
+            </span>
+          </td>
+          <td>{{ perilRevision.peril ?  perilRevision.peril : ""}}</td>
+          <td>{{ perilRevision.perilExcessAmount ?  perilRevision.perilExcessAmount : "N/A"}}</td>
+          <td>{{ perilRevision.depreciationRate ?  perilRevision.depreciationRate : "N/A"}}</td>
+          <td>{{ perilRevision.retainedSalvage ?  perilRevision.retainedSalvage : "N/A"}}</td>
+          <td>{{ perilRevision.initialReserveAmount ?  perilRevision.initialReserveAmount : "N/A"}}</td>
+          <td>{{ perilRevision.perilRemarks ?  perilRevision.perilRemarks : "N/A"}}</td>
+          <td>{{ perilRevision.perilOutstandingAmount ?  perilRevision.perilOutstandingAmount : "N/A"}}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" (click)="editPerilRevision(perilRevision)">Edit</button>
+            <button class="btn btn-sm btn-danger" *ngIf="perilRevision.status !== 'Authorized'" (click)="deletePerilRevision(perilRevision)">Delete</button>
+            <button class="btn btn-sm btn-info" *ngIf="perilRevision.status !== 'Completed'" (click)="viewTransaction(perilRevision)">View Transaction</button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+ 
