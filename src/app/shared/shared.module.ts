@@ -100,6 +100,7 @@ import { PolicyModule } from '../features/lms/grp/components/policy/policy.modul
 import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pipe';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
+import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
 
 
 
@@ -166,6 +167,11 @@ const SERVICES = [
     useFactory: getBaseHref,
     deps: [PlatformLocation],
   },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: ApiSpinnerInterceptor,
+    multi: true
+  }
 ];
 
 @NgModule({
