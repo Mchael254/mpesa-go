@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -20,6 +20,7 @@ import { HttpLoaderFactory } from './shared/utils/httpLoaderFactory';
 import { CommonModule } from '@angular/common';
 import { NgxAwesomePopupModule, ToastNotificationConfigModule, ToastPositionEnum, ToastProgressBarEnum, ToastUserViewTypeEnum } from '@costlydeveloper/ngx-awesome-popup';
 import {NgbModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgxSpinnerModule} from "ngx-spinner";
 
 export function loadConfig(
   config: AppConfigService,
@@ -37,8 +38,8 @@ export function loadConfig(
   declarations: [
     AppComponent,
     HomeComponent,
-    
-  
+
+
   ],
   imports: [
     CommonModule,
@@ -98,7 +99,8 @@ export function loadConfig(
       }
   }),
     NgbModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    NgxSpinnerModule.forRoot()
   ],
   providers: [
     {

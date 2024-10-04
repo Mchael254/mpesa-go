@@ -11,7 +11,10 @@ import {HttpHeaders, HttpParams} from '@angular/common/http';
 import {ClaimOnLiveDTO} from "../../ind/components/claims/models/claim-on-live";
 import {ClaimDTO} from "../../ind/components/claims/models/claims";
 import {PolicyClaimIntiation} from "../../ind/components/claims/models/policy-claim-intiation";
-import {ClaimDocument} from "../../ind/components/claims/models/claim-document";
+import {
+  ClaimDocument,
+  UploadedDocumentResponse
+} from "../../ind/components/claims/models/claim-document";
 
 const log = new Logger('ClaimsService');
 
@@ -137,6 +140,27 @@ export class ClaimsService {
     return this.api.GET<ClaimDocument[]>(
       url,
       API_CONFIG.CLAIMS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  /**
+   * Get Uploaded Claim Documents
+   * @param ownerCode
+   * @param ownerType
+   * @param moduleUploadType
+   * @returns {Observable<UploadedDocument[]>}
+   */
+  getUploadedDocuments(ownerCode: string, ownerType: string = 'CLIENT', moduleUploadType: string = 'CLAIMS'): Observable<UploadedDocumentResponse> {
+    const params = new HttpParams()
+      .set('owner_type', ownerType)
+      .set('owner_code', ownerCode)
+      .set('module_upload_type', moduleUploadType);
+
+    const url = `documents`;  // LMS Marketing Service base URL should be configured in API_CONFIG.
+    return this.api.GET<UploadedDocumentResponse>(
+      url,
+      API_CONFIG.IND_MARKETING_SERVICE_BASE_URL,  // Ensure this is the base URL for the marketing service
       params
     );
   }

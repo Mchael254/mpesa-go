@@ -1351,7 +1351,8 @@
       "surrender_type": "Surrender Type",
       "offset_premium": "Offset Premium",
       "within_system": "Within System",
-      "outside_system": "Outside System"
+      "outside_system": "Outside System",
+      "book_claim": "Book Claim"
     },
     "grp": {
       "agent_portal": {
