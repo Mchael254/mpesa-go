@@ -1,9 +1,9 @@
-<h5>Campaign performance</h5>
+<h5>{{'campaignMngmt.campaignPerformance'| translate }}</h5>
 <div class="row mb-2">
   <div class="col-lg-4">
-    <h6 style="margin-top: .6rem;">Campaigns analytics</h6>
+    <h6 style="margin-top: .6rem;">{{'campaignMngmt.campaignsAnalytics'| translate }}</h6>
   </div>
-  <label class="text-black w-auto offset-lg-2" style="margin-top: .6rem;">Date range:</label>
+  <label class="text-black w-auto offset-lg-2" style="margin-top: .6rem;">{{'campaignMngmt.dateRange'| translate }}:</label>
   <div class="col-lg-2">
 
     <input
@@ -22,7 +22,7 @@
   <h5 class="mt-0">Overall performance</h5>
   <div class="row">
     <div class="row col-sm-12 col-lg-4">
-      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Engagement rate</label>
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.engagementRate'| translate }}</label>
       <div class="col-2 pe-0">
         <h6>36%</h6>
       </div>
@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="row col-sm-12 col-lg-4">
-      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Conversion rate</label>
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.conversionRate'| translate }}</label>
       <div class="col-2 pe-0">
         <h6>36%</h6>
       </div>
@@ -44,7 +44,7 @@
       </div>
     </div>
     <div class="row col-sm-12 col-lg-4">
-      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">Link clicks</label>
+      <label class="text-black" style="margin-top: .6rem;font-size: 14px;">{{'campaignMngmt.linkClicks'| translate }}</label>
       <div class="col-2 pe-0">
         <h6>36%</h6>
       </div>
@@ -58,11 +58,11 @@
 </div>
 
 <div class="row">
-  <h5 class="w-auto">Performance over time</h5>
+  <h5 class="w-auto">{{'campaignMngmt.performanceOverTime'| translate }}</h5>
 </div>
 
 <div class="row col-sm-12 col-lg-6 mb-2">
-  <label class="text-black w-auto" style="margin-top: .4rem;">Metric</label>
+  <label class="text-black w-auto" style="margin-top: .4rem;">{{'campaignMngmt.metric'| translate }}</label>
   <select class="form-select w-50">
     <option value="">Messages sent</option>
     <option value="">Messages queue</option>
@@ -78,12 +78,12 @@
     [basicData]="basicData"
     [chartTitle]="'Performance over time'"
   ></app-dynamic-chart>
-  <label class="text-black mt-2">Total (metric selected): <span class="fw-medium">10,000 Engagements</span> </label>
+  <label class="text-black mt-2">Total: <span class="fw-medium">10,000 Engagements</span> </label>
 </div>
 
-<h5 class="mt-4">Top performing campaigns</h5>
+<h5 class="mt-4">{{'campaignMngmt.topPerformingCampaigns'| translate }}</h5>
 <div class="row col-sm-12 col-lg-6 mb-2">
-  <label class="text-black w-auto" style="margin-top: .4rem;">Metric</label>
+  <label class="text-black w-auto" style="margin-top: .4rem;">{{'campaignMngmt.metric'| translate }}</label>
   <select class="form-select w-50">
     <option value="">Messages sent</option>
     <option value="">Messages queue</option>
@@ -141,7 +141,7 @@
   </ng-template>
 </p-table>
 <div class="row">
-  <h5 class="w-auto">Audience segmentation performance</h5>
+  <h5 class="w-auto">{{'campaignMngmt.audienceSegmentationPerformance'| translate }}</h5>
   <div>
     <app-dynamic-chart
       [chartType]="'bar'"
@@ -150,9 +150,9 @@
     ></app-dynamic-chart>
   </div>
 </div>
-<h5 class="mt-4">Campaign products performance</h5>
+<h5 class="mt-4">{{'campaignMngmt.campaignProductsPerformance'| translate }}</h5>
 <div class="row col-sm-12 col-lg-6 mb-2">
-  <label class="w-auto" style="margin-top: .4rem;">Metric</label>
+  <label class="w-auto" style="margin-top: .4rem;">{{'campaignMngmt.metric'| translate }}</label>
   <select class="form-select w-50">
     <option value="">Messages sent</option>
     <option value="">Messages queue</option>
@@ -183,8 +183,8 @@
 
   <ng-template pTemplate="header">
     <tr>
-      <th pSortableColumn="target">Product name <p-sortIcon field="target"></p-sortIcon></th>
-      <th pSortableColumn="email">Engagements <p-sortIcon field="email"></p-sortIcon></th>
+      <th pSortableColumn="target">{{'campaignMngmt.productName'| translate }} <p-sortIcon field="target"></p-sortIcon></th>
+      <th pSortableColumn="email">{{'campaignMngmt.engagements'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-campaignTarget>

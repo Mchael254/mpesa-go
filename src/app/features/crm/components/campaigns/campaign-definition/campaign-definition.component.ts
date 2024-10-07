@@ -238,13 +238,13 @@ export class CampaignDefinitionComponent implements OnInit {
     if (this.selectedCampaign) {
       this.fetchCampaignMessages();
       this.fetchCampaignTargets();
+      this.getCampaignActivities();
     }
     this.getOrganizations();
     this.getCurrencies();
     this.getAllSystems();
     this.getActivities();
     this.getActivityTypes();
-    this.getCampaignActivities();
   }
 
   /**
