@@ -129,6 +129,9 @@ export class CoverTypesDetailsComponent {
   emailForm: FormGroup;
   smsForm: FormGroup;
   currentExpandedIndex: number = -1;
+  isTempPremiumListUpdated:boolean = false;
+  lastUpdatedCoverTypeCode = null; // Initially set to null
+
 
 
   constructor(
@@ -356,24 +359,56 @@ isCardExpanded(index: number): boolean {
     })
     
   }
-  findTemporaryPremium(){
+  // findTemporaryPremium(){
+  //   const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
+  //   const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
+  //   const sections = this.passedMandatorySections;
+
+  //   // Create an array to store observables returned by each service call
+  //   const observables = sections?.map(section => {
+  //     return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+  //   });
+
+  //   // Use forkJoin to wait for all observables to complete
+  //   forkJoin(observables).subscribe(data => {
+  //     // data is an array containing the results of each service call
+  //     this.temporaryPremiumList = data.flat(); // Flatten the array if needed
+  //     this.cdr.detectChanges();
+  //     log.debug("Premium List", this.temporaryPremiumList)
+  //   });
+  // }
+  findTemporaryPremium() {
+  // Check if the temporary premium list has been updated for the same coverTypeCode
+  log.debug("Last updated Covertype:",this.lastUpdatedCoverTypeCode)
+  log.debug("New updated Covertype:",this.passedCovertypeCode)
+  if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
+    console.log("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
+    // If the codes match, use the existing temporaryPremiumList
+    this.cdr.detectChanges();
+    log.debug("Premium List", this.temporaryPremiumList);
+    return; // Exit the method, no need to call the service
+}
+
     const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
     const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
     const sections = this.passedMandatorySections;
 
     // Create an array to store observables returned by each service call
     const observables = sections?.map(section => {
-      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+        return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
     });
 
     // Use forkJoin to wait for all observables to complete
     forkJoin(observables).subscribe(data => {
-      // data is an array containing the results of each service call
-      this.temporaryPremiumList = data.flat(); // Flatten the array if needed
-      this.cdr.detectChanges();
-      log.debug("Premium List", this.temporaryPremiumList)
+        // data is an array containing the results of each service call
+        this.temporaryPremiumList = data.flat(); // Flatten the array if needed
+        this.cdr.detectChanges();
+        log.debug("Premium List", this.temporaryPremiumList);
+        // Reset the boolean since we've fetched new data
+        this.isTempPremiumListUpdated = false; 
     });
-  }
+}
+
 
   onKeyUp(event: KeyboardEvent, section: any): void {
     const inputElement = event.target as HTMLInputElement;
@@ -468,6 +503,15 @@ isCardExpanded(index: number): boolean {
 
     this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
       try {
+         // Remove added sections from temporaryPremiumList
+    this.temporaryPremiumList = this.temporaryPremiumList.filter(
+      (premium) => !this.passedSections.some((section) => section.code === premium.code)
+     
+  );
+  log.debug("THE UPDATED TEMP PREMIUM LIST:",this.temporaryPremiumList)
+  this.isTempPremiumListUpdated=true
+  this.lastUpdatedCoverTypeCode = this.passedCovertypeCode; // Store the current coverTypeCode
+
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset();
       } catch (error) {
