@@ -36,7 +36,7 @@
           <div class="float-end">
             <span
               class="icon-circle open-activity-modal"
-              (click)="openDefineActivityModal()"
+              (click)="openDefineActivityModal('add')"
             >
               <i class="fa-solid fa-plus"></i>
             </span>
@@ -44,7 +44,7 @@
               <i class="pi pi-pencil"></i>
             </span>
             <span
-              class="icon-circle"
+              class="icon-circle prepare-item-for-delete"
               data-bs-toggle="modal"
               data-bs-target="#deleteModal"
               (click)="prepareItemForDelete('activity')"
@@ -107,10 +107,10 @@
               <td>{{ activity.wet }}</td>
               <td>{{ activity.duration }}</td>
               <td>{{ activity.location }}</td>
-              <td>{{ activity.assignedTo }}</td>
-              <td>{{ activity.relatedTo }}</td>
-              <td>{{ activity.statusId }}</td>
-              <td>{{ activity.activityTypeCode }}</td>
+              <td>{{ activity.user.name }}</td>
+              <td>{{ activity.participant.name }}</td>
+              <td>{{ activity?.activityStatus.desc }}</td>
+              <td>{{ activity.activityType.desc }}</td>
               <td>{{ activity.desc }}</td>
             </tr>
           </ng-template>
@@ -199,8 +199,8 @@
           <ng-template pTemplate="body" let-note>
             <tr [pSelectableRow]="note">
               <td>{{ note.subject }}</td>
-              <td>{{ note.relatedTo }}</td>
-              <td>{{ note.desc }}</td>
+              <td>{{ note.participant.name }}</td>
+              <td>{{ note.notes }}</td>
               <td>{{ note.attachment }}</td>
             </tr>
           </ng-template>
@@ -281,9 +281,9 @@
               <th pSortableColumn="description">
                 End Date <p-sortIcon field="description"></p-sortIcon>
               </th>
-              <th pSortableColumn="authorised">
+              <!-- <th pSortableColumn="authorised">
                 Status <p-sortIcon field="authorised"></p-sortIcon>
-              </th>
+              </th> -->
               <th>Priority</th>
               <th>Related To</th>
             </tr>
@@ -293,9 +293,9 @@
               <td>{{ task.subject }}</td>
               <td>{{ task.dateFrom | date }}</td>
               <td>{{ task.dateTo | date }}</td>
-              <td>{{ task.statusId }}</td>
-              <td>{{ task.priorityCode }}</td>
-              <td>{{ task.relateTo }}</td>
+              <!-- <td>{{ task.activityStatus.desc }}</td> -->
+              <td>{{ task.priorityLevel.desc }}</td>
+              <td>{{ task.participant.name }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -467,7 +467,7 @@
                   }"
                 >
                   <ng-container *ngFor="let aType of activityTypes">
-                    <option value="{{ aType.id }}">{{ aType.desc }}</option>
+                    <option value="{{ aType.id }}">{{ aType?.desc }}</option>
                   </ng-container>
                 </select>
                 <div
@@ -706,17 +706,25 @@
             <ng-container *ngIf="visibleStatus.status === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="status">Status</label>
-                <input
-                  type="text"
-                  class="form-control"
+                <select
                   id="status"
+                  class="form-select"
                   formControlName="status"
                   [ngClass]="{
                     'is-invalid':
                       g['status']?.invalid &&
                       (g['status']?.dirty || g['status']?.touched)
                   }"
-                />
+                >
+                  <ng-container *ngFor="let status of activityStatuses">
+                    <option
+                      value="{{ status.id }}"
+                      selected="selectedActivity.statusCode"
+                    >
+                      {{ status.desc }}
+                    </option>
+                  </ng-container>
+                </select>
                 <div
                   *ngIf="
                     g['status']?.invalid &&
@@ -1040,7 +1048,7 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary create-update-activity-note"
           (click)="createUpdateActivityNote()"
         >
           Save details
@@ -1056,7 +1064,7 @@
   #newTask
   id="newTask"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel"
+  aria-labelledby="taskModalLabel"
 >
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1171,7 +1179,7 @@
                   <input
                     type="text"
                     class="form-control"
-                    formControlName="relateTo"
+                    formControlName="taskRelatedTo"
                     aria-label="user"
                     aria-describedby="button-addon2"
                     [ngClass]="{
@@ -1216,8 +1224,10 @@
                       (h['priority']?.dirty || h['priority']?.touched)
                   }"
                 >
-                  <ng-container *ngFor="let aType of activityTypes">
-                    <option value="{{ aType.id }}">{{ aType.desc }}</option>
+                  <ng-container *ngFor="let priorityLevel of priorityLevels">
+                    <option value="{{ priorityLevel.id }}">
+                      {{ priorityLevel.desc }}
+                    </option>
                   </ng-container>
                 </select>
                 <div
@@ -1311,7 +1321,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-danger delete-activity-task"
+          class="btn btn-danger delete-activity delete-activity-item"
           (click)="confirmDelete(activityText)"
         >
           Confirm Delete
@@ -1320,112 +1330,3 @@
     </div>
   </div>
 </div>
-
-<!-- Related Account modal -->
-<!-- <button
-  type="button"
-  class="btn btn-primary"
-  data-bs-toggle="modal"
-  data-bs-target="#relatedToModal"
->
-  Related To
-</button> -->
-
-<!-- Modal -->
-<!-- <div
-  class="modal fade"
-  id="relatedToModal"
-  tabindex="-1"
-  aria-labelledby="relatedToModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h1 class="modal-title fs-5 text-dark" id="relatedToModalLabel">
-          Select related user
-        </h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div class="filter-row">
-          <div class="row my-3">
-            <div class="col-sm-5">
-              <select
-                #userType
-                (click)="fetchAccountByAccountType(userType.value)"
-                class="form-select"
-                aria-label="Default select example"
-              >
-                <option selected>Account type</option>
-                <option value="AGENT">Agent</option>
-                <option value="CLIENT">Client</option>
-                <option value="SERVICE_PROVIDER">Service provider</option>
-              </select>
-            </div>
-            <div class="col-sm-5">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search by name, email"
-                aria-label="Last name"
-              />
-            </div>
-          </div>
-          <ng-container>
-            <p-table
-              [autoLayout]="true"
-              [rowHover]="true"
-              [resizableColumns]="true"
-              [showCurrentPageReport]="true"
-              [rows]="pageSize || 5"
-              [totalRecords]="accountData?.totalElements"
-              [value]="accountData?.content"
-              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-              [paginator]="true"
-              responsiveLayout="stack"
-              [scrollable]="true"
-              [lazy]="true"
-              [loading]="loading"
-              (onLazyLoad)="fetchAccountByAccountType('', $event)"
-              [(selection)]="selectedAccount"
-              selectionMode="single"
-              dataKey="id"
-              scrollHeight="400px"
-              currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            >
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-user>
-                <tr [pSelectableRow]="user">
-                  <td class="p-2">{{ user.firstName }} {{ user.lastName }}</td>
-                  <td>{{ user.emailAddress }}</td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="3">No User Detail(s) Found.</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </ng-container>
-        </div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Close
-        </button>
-        <button type="button" class="btn btn-primary">OK</button>
-      </div>
-    </div>
-  </div>
-</div> -->

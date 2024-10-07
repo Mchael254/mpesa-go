@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -73,11 +74,23 @@ export class StaffModalComponent implements OnInit, OnDestroy {
     this.searchUsers(value);
   }
 
+  userTypes = [
+    { code: 1, name: 'USER' },
+    { code: 2, name: 'AGENT' },
+    { code: 3, name: 'CLIENT' },
+    { code: 4, name: 'SERVICE_PROVIDER' },
+    { code: 5, name: 'GROUP' },
+  ];
+
+  selectedAccountType: string;
+  shouldShowwUsers: boolean = false;
+
   constructor(
     private staffService: StaffService,
     private globalMessagingService: GlobalMessagingService,
     private clientService: ClientService,
-    private serviceProviderService: ServiceProviderService
+    private serviceProviderService: ServiceProviderService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -93,10 +106,23 @@ export class StaffModalComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe((data: Pagination<StaffDto>) => {
         this.lazyLoadedUsers = data;
+        this.shouldShowwUsers = true;
       });
   }
 
-  fetchAccountByAccountType(accountType: string, $event?: TableLazyLoadEvent) {
+  fetchAccounts($event): void {
+    const accountType = $event?.target?.value;
+    this.fetchAccountByAccountType(accountType);
+  }
+
+  fetchAccountByAccountType(
+    accountType: string,
+    $event?: TableLazyLoadEvent
+  ): void {
+    this.selectedAccountType = accountType;
+    this.shouldShowwUsers = false;
+    this.lazyLoadedUsers = null;
+
     let first: number,
       rows: number,
       pageNumber: number,
@@ -115,7 +141,7 @@ export class StaffModalComponent implements OnInit, OnDestroy {
     }
     switch (accountType) {
       case UserType.USER:
-        this.fetchUsers(pageNumber, sortField, sortOrder);
+        this.fetchUsers(pageNumber, sortField, null, sortOrder);
         break;
       case UserType.AGENT:
         this.fetchAgents(pageNumber);
@@ -127,10 +153,10 @@ export class StaffModalComponent implements OnInit, OnDestroy {
         this.fetchServiceProviders(pageNumber, sortField, sortOrder);
         break;
       case UserType.GROUP:
-        // fetch group user
+        this.fetchUsers(pageNumber, sortField, 'G', sortOrder);
         break;
       default:
-      // this.activityText = '';
+        log.info(`${accountType} does not match any userType`);
     }
   }
 
@@ -138,8 +164,13 @@ export class StaffModalComponent implements OnInit, OnDestroy {
     this.clientService.getAgents(pageNumber).subscribe({
       next: (res: Pagination<ClientDTO>) => {
         this.lazyLoadedUsers = res;
+        this.shouldShowwUsers = true;
       },
-      error: (err) => {},
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.shouldShowwUsers = true;
+      },
     });
   }
 
@@ -147,8 +178,13 @@ export class StaffModalComponent implements OnInit, OnDestroy {
     this.clientService.getClients(pageNumber).subscribe({
       next: (res: Pagination<ClientDTO>) => {
         this.lazyLoadedUsers = res;
+        this.shouldShowwUsers = true;
       },
-      error: (err) => {},
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.shouldShowwUsers = true;
+      },
     });
   }
 
@@ -160,21 +196,37 @@ export class StaffModalComponent implements OnInit, OnDestroy {
     this.serviceProviderService.getServiceProviders(pageNumber).subscribe({
       next: (res) => {
         this.lazyLoadedUsers = res;
+        this.shouldShowwUsers = true;
       },
-      error: (err) => {},
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.shouldShowwUsers = true;
+      },
     });
   }
 
   fetchUsers(
     pageNumber: number,
     sortField: string | string[],
+    userType: string,
     sortOrder: string
   ): void {
-    this.getIndividualUsers(pageNumber, sortField, sortOrder).subscribe({
+    this.getIndividualUsers(
+      pageNumber,
+      sortField,
+      userType,
+      sortOrder
+    ).subscribe({
       next: (res) => {
         this.lazyLoadedUsers = res;
+        this.shouldShowwUsers = true;
       },
-      error: (err) => {},
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.shouldShowwUsers = true;
+      },
     });
   }
 
@@ -187,10 +239,11 @@ export class StaffModalComponent implements OnInit, OnDestroy {
   getIndividualUsers(
     pageIndex: number,
     sortList: any = 'dateCreated',
+    accountType: string = null,
     order: string = 'desc'
   ) {
     return this.staffService
-      .getStaff(pageIndex, this.staffSize, null, sortList, order, null)
+      .getStaff(pageIndex, this.staffSize, accountType, sortList, order, null)
       .pipe(untilDestroyed(this));
   }
 
