@@ -97,6 +97,7 @@ export class QuoteSummaryComponent {
   }
 
   loadClientQuotation(){
+    log.debug("Load CLient quotation has been called")
     this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data =>{
       this.quotationDetails=data;
       log.debug("Quotation Details:",this.quotationDetails)

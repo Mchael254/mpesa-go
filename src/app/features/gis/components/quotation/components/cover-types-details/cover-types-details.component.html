@@ -71,7 +71,7 @@
                         data-bs-target="#shareQuote" id="btnCoverTypes"> {{'gis.quotation.share_quote' |
                         translate}}</button>
                     <button class="btn btn-primary" type="submit" id="btnCoverTypes"
-                        (click)="passCovertypeDesc(passedCovertypes[i].coverTypeShortDescription ,passedCovertypes[i].coverTypeCode); selectedRiskLevelPremium(risk.premium);SelectCover();">
+                        (click)="passCovertypeDesc(passedCovertypes[i].coverTypeShortDescription ,passedCovertypes[i].coverTypeCode); selectedRiskLevelPremium(risk.premium);selectCover();">
                         {{'gis.quotation.select_cover' | translate}}</button>
                 </div>
 
@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <button class="btn btn-primary" type="submit" id="btnCoverTypes"
-                                        data-bs-dismiss="modal" (click)="createQuotation();">
+                                        data-bs-dismiss="modal" (click)="updateQuote();">
                                         {{'gis.quotation.update_quote' | translate}}</button>
                                 </div>
 
