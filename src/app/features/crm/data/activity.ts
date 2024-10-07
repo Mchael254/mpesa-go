@@ -14,6 +14,10 @@ export interface Activity {
   team: number;
   reminderTime: Date;
   messageCode: number;
+  participant?: Participant;
+  user?: User;
+  activityType?: ActivityType;
+  activityStatus?: ActivityStatus;
 }
 
 export interface ActivityType {
@@ -43,6 +47,9 @@ export interface ActivityTask {
   statusId: number;
   priorityCode: number;
   accCode: number;
+  participant?: Participant;
+  status?: ActivityStatus;
+  priorityLevel?: PriorityLevel;
 }
 
 export interface ActivityNote {
@@ -55,15 +62,25 @@ export interface ActivityNote {
   actCode: number;
   attachmentType: string;
   fileName: string;
+  participant?: Participant;
 }
 
 export interface ActivityParticipant {
   id: number;
   aacCode: number;
   actCode: number;
-  participant?: {
-    id: number;
-    name: string;
-    emailAddress: string;
-  };
+  participant?: Participant;
+}
+
+export interface Participant {
+  id: number;
+  name: string;
+  emailAddress: string;
+}
+
+interface User {
+  id: number;
+  name: string;
+  username: string;
+  emailAddress: string;
 }
