@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import stepData from '../../data/steps.json';
 import {Logger} from '../../../../../../shared/shared.module';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import { ProductService } from '../../../../services/product/product.service';
@@ -15,6 +15,8 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -57,6 +59,15 @@ export class QuoteSummaryComponent {
 
   isAddRisk:boolean=true;
   passedPremium:any;
+  selectedEmail: any;
+  selectedPhoneNo: any;
+  passedClientDetails: any;
+  emailForm: FormGroup;
+  smsForm: FormGroup;
+  passedClientCode: any;
+  user: any;
+  userDetails: any
+  userBranchId: any;
   
   constructor(
     public fb:FormBuilder,
@@ -71,7 +82,8 @@ export class QuoteSummaryComponent {
     private clientService:ClientService,
     public sharedService:SharedQuotationsService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public globalMessagingService: GlobalMessagingService,
 
    
 
@@ -90,9 +102,33 @@ export class QuoteSummaryComponent {
     log.debug("Passed Premium :",this.passedPremium );
 
     this.loadClientQuotation();
+
+    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
+    this.passedClientDetails = JSON.parse(storedClientDetailsString);
+    log.debug("Client details", this.passedClientDetails);
+    this.passedClientCode = this.passedClientDetails?.id;
+
     const newClientDetailsString = sessionStorage.getItem('newClientDetails');
     this.passedNewClientDetails = JSON.parse(newClientDetailsString);
     log.debug("New Client Details", this.passedNewClientDetails);
+
+    if (this.passedClientDetails) {
+      log.info("EXISTING CLIENT")
+      this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
+      this.selectedEmail = this.passedClientDetails?.emailAddress;
+      this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
+    } else {
+      log.info("NEW CLIENT")
+      this.selectedClientName = this.passedNewClientDetails?.inputClientName;
+      log.info("Selected Name:", this.selectedClientName)
+
+      this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
+      log.info("Selected Email:", this.selectedEmail)
+
+      this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
+      log.info("Selected Phone:", this.selectedPhoneNo)
+
+    }
 
   }
 
@@ -220,5 +256,107 @@ export class QuoteSummaryComponent {
   cancelQuote(){
     this.router.navigate(['/home/gis/quotation/quick-quote']);
 
+  }
+  getuser() {
+    this.user = this.authService.getCurrentUserName()
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.userBranchId = this.userDetails?.branchId;
+    log.debug("Branch Id", this.userBranchId);
+  }
+  createEmailForm() {
+
+    this.emailForm = this.fb.group({
+      from: ['', [Validators.required, Validators.email]],
+      clientCode: ['', Validators.required],
+      emailAggregator: ['N', Validators.required],
+      fromName: ['', Validators.required],
+      message: ['', Validators.required],
+      sendOn: ['', Validators.required],
+      status: ['D', Validators.required],
+      subject: ['', Validators.required],
+      systemCode: ['0', Validators.required],
+      systemModule: ['NB', Validators.required],
+      address: ['', Validators.required],
+      // cc: ['', Validators.required],
+      // bcc: ['', Validators.required],
+    });
+  }
+  emaildetails() {
+    const currentDate = new Date();
+    const current = currentDate.toISOString();
+    const emailForm = this.emailForm.value;
+
+    console.log(this.clientDetails)
+    // console.log(this.emailForm.value)
+
+    emailForm.address = [
+      this.selectedEmail
+    ],
+      emailForm.clientCode = this.passedClientCode;
+    emailForm.emailAggregator = "N";
+    emailForm.from = this.userDetails?.emailAddress;
+    emailForm.fromName = "Turnkey Africa";
+    emailForm.message = "Attached is your Quotation Details";
+    emailForm.sendOn = current;
+    emailForm.status = "D";
+    emailForm.subject = "Quotation Details";
+    emailForm.systemCode = "0";
+    emailForm.systemModule = "NB";
+    // emailForm.cc = this.selectedEmail;
+    // emailForm.bcc = this.selectedEmail;
+
+    this.quotationService.sendEmail(emailForm).subscribe(
+      {
+        next: (res) => {
+          const response = res
+          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+          console.log(res)
+        }, error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        }
+      })
+    console.log('Submitted payload:', JSON.stringify(emailForm));
+  }
+
+  createSmsForm() {
+
+    this.smsForm = this.fb.group({
+      message: ['', Validators.required],
+      recipients: ['', Validators.required],
+      sender: ['', Validators.required],
+    });
+  }
+  sendSms() {
+    const payload = {
+      recipients: [
+        this.selectedPhoneNo
+      ],
+      message: "Turnkey Africa",
+      sender: this.userDetails?.emailAddress,
+
+
+    };
+    this.quotationService.sendSms(payload).subscribe(
+      {
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+        }, error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        }
+
+      }
+    )
+  }
+  handleShare() {
+    if (this.selectedOption === 'email') {
+      this.emaildetails();
+    } else if (this.selectedOption === 'sms') {
+      this.sendSms();
+    }
   }
 }

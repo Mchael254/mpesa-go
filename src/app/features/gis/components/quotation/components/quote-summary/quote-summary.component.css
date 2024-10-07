@@ -173,3 +173,18 @@ border: 1px solid #00529B;
   
     background-color: #00529B;
 }
+#shareQuoteLabel{
+  color: #000;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+#shareInput{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  color:  #000;
+  font-family: Roboto;
+  font-size: 14px;
+}

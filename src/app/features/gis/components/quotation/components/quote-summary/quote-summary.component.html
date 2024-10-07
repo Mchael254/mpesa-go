@@ -189,48 +189,68 @@
                 </div>
             </div>
         </div>
-        <!-- Share Quote Modal -->
-        <div class="modal fade" id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
+         <!-- Share Quote Modal -->
+         <div class="modal fade" id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content  ps-4 pt-4 pe-4">
-
                     <div class="row">
                         <div class="col-3">
-                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
-                                value="email" />
-                            <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">{{'gis.quotation.email' | translate}}</span>
+                            <p-radioButton 
+                                name="flexRadioDefault" 
+                                [(ngModel)]="selectedOption" 
+                                value="email" 
+                                inputId="flexRadioDefault2"
+                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">
+                            </p-radioButton>
+                            <label class="ps-2" id="shareQuoteLabel" for="flexRadioDefault2"
+                            [ngClass]="{ 'bold-label': selectedOption === 'email' }">{{ 'gis.quotation.email' | translate }}</label>
                         </div>
+                        
                         <div class="col-3">
-                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
-                                value="sms" />
-                            <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">{{'gis.quotation.sms' | translate}}</span>
+                            <p-radioButton 
+                                name="flexRadioDefault" 
+                                [(ngModel)]="selectedOption" 
+                                value="sms" 
+                                inputId="shareRadioSms"
+                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">
+                            </p-radioButton>
+                            <label class="ps-2" id="shareQuoteLabel" for="shareRadioSms"
+                            [ngClass]="{ 'bold-label': selectedOption === 'sms' }">{{ 'gis.quotation.sms' | translate }}</label>
                         </div>
+                        
                         <div class="col-4">
-                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
-                                value="whatsapp" />
-                            <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">{{'gis.quotation.whatsapp' | translate}}</span>
-
+                            <p-radioButton 
+                                name="flexRadioDefault" 
+                                [(ngModel)]="selectedOption" 
+                                value="whatsapp" 
+                                inputId="shareRadioWhatsApp"
+                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">
+                            </p-radioButton>
+                            <label class="ps-2" id="shareQuoteLabel" for="shareRadioWhatsApp"
+                            [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">{{ 'gis.quotation.whatsapp' | translate }}</label>
                         </div>
                     </div>
-
+                    
                     <div class="form-group mt-3">
-                        <label class="mb-3" for="clientName" id="shareLabel">{{'gis.quotation.client_name' | translate}}</label>
-                        <input type="text" [(ngModel)]="clientName" id="clientName" class="form-control" />
+                        <label class="mb-1" for="clientName" id="shareLabel"> {{'gis.quotation.client_name' |
+                            translate}}</label>
+                        <input type="text" [(ngModel)]="selectedClientName" id="clientName"
+                            class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label class="mb-3 mt-3" id="shareLabel"
+                        <label class="mb-1 mt-3" id="shareLabel"
                             [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
+                        <!-- <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" /> -->
                         <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'"
-                            [(ngModel)]="contactValue" class="form-control" />
+                            [(ngModel)]="selectedOption === 'email' ? selectedEmail : selectedPhoneNo"
+                            class="form-control" />
+
                     </div>
                     <div class="row mt-4 mb-4">
                         <div class="col-6"></div>
                         <div class="col-6 d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" id="sendQoute"
-                                data-bs-dismiss="modal">{{'gis.quotation.send' | translate}}</button>
+                            <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal"
+                                (click)="handleShare()"> {{'gis.quotation.send' | translate}}</button>
                         </div>
                     </div>
                 </div>
