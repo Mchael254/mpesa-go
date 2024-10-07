@@ -9,16 +9,18 @@ import {
   Activity,
   ActivityNote,
   ActivityParticipant,
+  ActivityStatus,
   ActivityTask,
   ActivityType,
+  PriorityLevel,
 } from '../../../data/activity';
 import { ActivityService } from '../../../services/activity.service';
-import { MessageService } from 'primeng/api';
 import { MessagingService } from '../../../services/messaging.service';
 import { MessageTemplate } from '../../../data/messaging-template';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { StaffModalComponent } from 'src/app/features/entities/components/staff/staff-modal/staff-modal.component';
+import { StaffModalComponent } from '../../../../entities/components/staff/staff-modal/staff-modal.component';
+import { ClientDTO } from '../../../../entities/data/ClientDTO';
+import { ServiceProviderDTO } from '../../../../entities/data/ServiceProviderDTO';
+import { ClientService } from '../../../../entities/services/client/client.service';
 
 const log = new Logger('ActivitiesComponent');
 @Component({
@@ -85,7 +87,7 @@ export class ActivitiesComponent implements OnInit {
   selectedFile: File;
   allUsersModalVisible: boolean = false;
   showDefaultUser: boolean = false;
-  selectedMainUser: StaffDto;
+  selectedMainUser: StaffDto | ClientDTO | ServiceProviderDTO;
   zIndex = 1;
   firstModalZIndex = 2;
 
@@ -94,6 +96,8 @@ export class ActivitiesComponent implements OnInit {
   groupIdTask: string = 'activityMngtTaskTab';
 
   activityTypes: ActivityType[];
+  activityStatuses: ActivityStatus[];
+  priorityLevels: PriorityLevel[];
 
   userField: string;
   userFormFields = {
@@ -127,15 +131,17 @@ export class ActivitiesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.activityCreateForm();
-    this.noteCreateForm();
-    this.taskCreateForm();
-    this.getActivities();
+    this.getActivityStatuses();
+    this.getEmailTemplates();
+    this.getActivityParticipants();
     this.getActivityTypes();
     this.getActivityNotes();
     this.getActivityTasks();
-    this.getActivityParticipants();
-    this.getEmailTemplates();
+    this.getActivities();
+    this.getPriorityLevels();
+    this.activityCreateForm();
+    this.noteCreateForm();
+    this.taskCreateForm();
   }
 
   getEmailTemplates(): void {
@@ -154,6 +160,30 @@ export class ActivitiesComponent implements OnInit {
     this.activityService.getActivityTypes().subscribe({
       next: (res) => {
         this.activityTypes = res;
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getActivityStatuses(): void {
+    this.activityService.getActivityStatuses().subscribe({
+      next: (res) => {
+        this.activityStatuses = res;
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+  }
+
+  getPriorityLevels(): void {
+    this.activityService.getPriorityLevels().subscribe({
+      next: (res) => {
+        this.priorityLevels = res;
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -310,12 +340,14 @@ export class ActivitiesComponent implements OnInit {
    * The function `openDefineActivityModal` displays a modal with the id 'newActivity' by adding a
    * 'show' class and setting its display style to 'block'.
    */
-  openDefineActivityModal() {
+  openDefineActivityModal(action?: string) {
     const modal = document.getElementById('newActivity');
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+
+    action === 'add' ? this.activityForm.reset() : '';
   }
 
   /**
@@ -387,23 +419,22 @@ export class ActivitiesComponent implements OnInit {
   editActivity() {
     this.editMode = !this.editMode;
     this.activityForm.patchValue({
-      subject: this.selectedActivity.subject,
-      activityType: this.selectedActivity.activityTypeCode,
-      description: this.selectedActivity.desc,
-      location: this.selectedActivity.location,
-      assignedTo: this.selectedActivity.assignedTo,
-      relatedAccount: this.selectedActivity.relatedTo,
-      startDate: this.selectedActivity.wet,
-      endDate: this.selectedActivity.wef,
-      duration: this.selectedActivity.duration,
-      status: this.selectedActivity.statusId,
-      team: this.selectedActivity.team,
-      emailTemplate: this.selectedActivity.messageCode,
-      sendReminder: this.selectedActivity.reminder,
-      reminderTime: this.selectedActivity.reminderTime,
+      subject: this.selectedActivity?.subject,
+      activityType: this.selectedActivity?.activityTypeCode,
+      description: this.selectedActivity?.desc,
+      location: this.selectedActivity?.location,
+      assignedTo: this.selectedActivity?.user?.name,
+      relatedAccount: this.selectedActivity?.participant?.name,
+      startDate: this.selectedActivity?.wet,
+      endDate: this.selectedActivity?.wef,
+      duration: this.selectedActivity?.duration,
+      status: this.selectedActivity?.statusId,
+      team: this.selectedActivity?.team,
+      emailTemplate: this.selectedActivity?.messageCode,
+      sendReminder: this.selectedActivity?.reminder,
+      reminderTime: this.selectedActivity?.reminderTime,
     });
-    console.log('selected activity >>> ', this.selectedActivity);
-    this.openDefineActivityModal();
+    this.openDefineActivityModal('edit');
   }
 
   /**
@@ -411,6 +442,12 @@ export class ActivitiesComponent implements OnInit {
    */
   editNote() {
     this.editMode = !this.editMode;
+    this.noteForm.patchValue({
+      noteSubject: this.selectedNote.subject,
+      relateTo: this.selectedNote.participant?.name,
+      noteDescription: this.selectedNote.notes,
+      attachment: this.selectedNote.attachment,
+    });
     this.openDefineNoteModal();
   }
 
@@ -423,7 +460,7 @@ export class ActivitiesComponent implements OnInit {
       taskSubject: this.selectedTask.subject,
       taskStartDate: this.selectedTask.dateFrom,
       taskEndDate: this.selectedTask.dateTo,
-      taskRelatedTo: this.selectedTask.accCode,
+      taskRelatedTo: this.selectedTask.participant?.name,
       priority: this.selectedTask.priorityCode,
     });
     this.openDefineTaskModal();
@@ -461,8 +498,14 @@ export class ActivitiesComponent implements OnInit {
         this.staffModal.fetchAccountByAccountType(UserType.USER);
         break;
       case 'relatedAccount':
+      case 'relateTo':
+      case 'taskRelatedTo':
         this.selectedUserType = UserType.AGENT;
         this.staffModal.fetchAccountByAccountType(UserType.AGENT);
+        break;
+      case 'team':
+        this.selectedUserType = UserType.GROUP;
+        this.staffModal.fetchAccountByAccountType(UserType.GROUP);
         break;
       default:
     }
@@ -488,9 +531,9 @@ export class ActivitiesComponent implements OnInit {
     this.zIndex = 1;
   }
 
-  getSelectedUser(event: StaffDto) {
+  getSelectedUser(event: StaffDto | ClientDTO | ServiceProviderDTO) {
     this.selectedMainUser = event;
-    this.showDefaultUser = this.selectedMainUser?.userType === 'G';
+    // this.showDefaultUser = this.selectedMainUser?.userType === 'G';
     /*this.debtOwnerForm.patchValue({
       modalUserAssignTo: event?.username
     });*/
@@ -498,7 +541,8 @@ export class ActivitiesComponent implements OnInit {
     log.info(`selected user >>. `, this.selectedMainUser);
   }
 
-  patchUserToFormField(user: StaffDto): void {
+  patchUserToFormField(user: StaffDto | ClientDTO | ServiceProviderDTO): void {
+    let username: string;
     switch (this.userField) {
       case 'assignedTo':
         this.userFormFields.assignedTo = this.selectedMainUser;
@@ -508,8 +552,22 @@ export class ActivitiesComponent implements OnInit {
         break;
       case 'relatedAccount':
         this.userFormFields.relatedAccount = this.selectedMainUser;
+        username =
+          this.userFormFields.relatedAccount.name ||
+          this.userFormFields.relatedAccount.username ||
+          this.userFormFields.relatedAccount.firstName;
         this.activityForm.patchValue({
-          relatedAccount: this.userFormFields.relatedAccount?.firstName,
+          relatedAccount: username,
+        });
+        break;
+      case 'taskRelatedTo':
+        this.userFormFields.taskRelatedTo = this.selectedMainUser;
+        username =
+          this.userFormFields.taskRelatedTo.name ||
+          this.userFormFields.taskRelatedTo.username ||
+          this.userFormFields.taskRelatedTo.firstName;
+        this.taskForm.patchValue({
+          taskRelatedTo: username,
         });
         break;
       case 'team':
@@ -520,14 +578,12 @@ export class ActivitiesComponent implements OnInit {
         break;
       case 'relateTo':
         this.userFormFields.relateTo = this.selectedMainUser;
+        username =
+          this.userFormFields.relateTo.name ||
+          this.userFormFields.relateTo.username ||
+          this.userFormFields.relateTo.firstName;
         this.noteForm.patchValue({
-          relateTo: this.userFormFields.relateTo?.firstName,
-        });
-        break;
-      case 'taskRelatedTo':
-        this.userFormFields.relateTo = this.selectedMainUser;
-        this.taskForm.patchValue({
-          taskRelatedTo: this.userFormFields.taskRelatedTo?.name,
+          relateTo: username,
         });
         break;
       case 'participant':
@@ -557,6 +613,17 @@ export class ActivitiesComponent implements OnInit {
 
   createUpdateActivity(): void {
     const formValues = this.activityForm.getRawValue();
+
+    const assignedTo =
+      this.userFormFields?.assignedTo?.id !== undefined
+        ? this.userFormFields?.assignedTo?.id
+        : this.selectedActivity?.user?.id;
+
+    const relatedTo =
+      this.userFormFields?.relatedAccount?.id !== undefined
+        ? this.userFormFields?.relatedAccount?.id
+        : this.selectedActivity?.participant?.id;
+
     const activity: Activity = {
       id: this.selectedActivity?.id || null,
       activityTypeCode: formValues.activityType,
@@ -565,8 +632,8 @@ export class ActivitiesComponent implements OnInit {
       duration: formValues.duration,
       subject: formValues.subject,
       location: formValues.location,
-      assignedTo: this.userFormFields?.assignedTo?.id,
-      relatedTo: this.userFormFields?.relatedAccount?.id,
+      assignedTo,
+      relatedTo,
       statusId: formValues.status,
       desc: formValues.description,
       reminder: formValues.reminder,
@@ -654,6 +721,11 @@ export class ActivitiesComponent implements OnInit {
 
   createUpdateActivityTask(): void {
     const formValues = this.taskForm.getRawValue();
+
+    const accCode = this.selectedMainUser?.id
+      ? this.selectedMainUser?.id
+      : this.selectedNote?.accCode;
+
     const activityTask: ActivityTask = {
       id: this.selectedTask?.id || null,
       actCode: formValues.actCode,
@@ -662,7 +734,7 @@ export class ActivitiesComponent implements OnInit {
       subject: formValues.taskSubject,
       statusId: formValues.statusId,
       priorityCode: formValues.priority,
-      accCode: formValues.accCode,
+      accCode,
     };
 
     if (!this.editMode) {
@@ -744,13 +816,17 @@ export class ActivitiesComponent implements OnInit {
 
   createUpdateActivityNote(): void {
     const formValues = this.noteForm.getRawValue();
+    const accCode = this.selectedMainUser?.id
+      ? this.selectedMainUser?.id
+      : this.selectedNote?.accCode;
+
     const activityNote: ActivityNote = {
       id: this.selectedNote?.id || null,
-      accCode: 0,
+      accCode,
       contactCode: 0,
       subject: formValues.noteSubject,
       notes: formValues.noteDescription,
-      attachment: undefined,
+      attachment: formValues.attachment,
       actCode: 0,
       attachmentType: formValues.attachment,
       fileName: '',
@@ -864,22 +940,22 @@ export class ActivitiesComponent implements OnInit {
     });
   }
 
-  updateActivityParticipant(participant: ActivityParticipant): void {
-    this.activityService.updateParticipant(participant).subscribe({
-      next: (res) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Activity Participant updated successfully!'
-        );
-        this.getActivityNotes();
-        // this.closeDefineActivityNoteModal();
-      },
-      error: (err) => {
-        let errorMessage = err?.error?.message ?? err.message;
-        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-      },
-    });
-  }
+  // updateActivityParticipant(participant: ActivityParticipant): void {
+  //   this.activityService.updateParticipant(participant).subscribe({
+  //     next: (res) => {
+  //       this.globalMessagingService.displaySuccessMessage(
+  //         'Success',
+  //         'Activity Participant updated successfully!'
+  //       );
+  //       this.getActivityNotes();
+  //       // this.closeDefineActivityNoteModal();
+  //     },
+  //     error: (err) => {
+  //       let errorMessage = err?.error?.message ?? err.message;
+  //       this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+  //     },
+  //   });
+  // }
 
   confirmDeleteActivityParticipant(): void {
     const id = this.selectedParticipant?.id;
@@ -920,39 +996,9 @@ export class ActivitiesComponent implements OnInit {
         this.confirmDeleteActivityParticipant();
         break;
       default:
-        this.activityText = '';
+      // this.activityText = '';
     }
   }
-
-  fetchAccountByAccountType(accountType: string, $event?: TableLazyLoadEvent) {
-    log.info(`account type >>>`, $event);
-    this.selectedUserType = accountType;
-    // switch (accountType) {
-    //   case UserType.AGENT:
-    //     this.accountData = null;
-    //     break;
-    //   case UserType.CLIENT:
-    //     this.fetchClients($event);
-    //     break;
-    //   case UserType.SERVICE_PROVIDER:
-    //     this.accountData = null; // this.fetchClients();
-    //     break;
-    //   default:
-    //     this.activityText = '';
-    // }
-    this.cdr.detectChanges();
-  }
-
-  // fetchClients($event: TableLazyLoadEvent): void {
-  //   this.clientService.getClients(this.pageNumber).subscribe({
-  //     next: (res) => {
-  //       this.accountData = res;
-  //       this.loading = false;
-  //       log.info(`clients >>> `, res);
-  //     },
-  //     error: (err) => {},
-  //   });
-  // }
 
   ngOnDestroy(): void {}
 }
@@ -969,4 +1015,5 @@ enum UserType {
   CLIENT = 'CLIENT',
   SERVICE_PROVIDER = 'SERVICE_PROVIDER',
   USER = 'USER',
+  GROUP = 'GROUP',
 }

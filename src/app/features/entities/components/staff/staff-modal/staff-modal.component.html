@@ -22,18 +22,52 @@
   <div class="col-sm-5">
     <select
       #userType
-      (click)="fetchAccountByAccountType(userType.value)"
+      (change)="fetchAccounts($event)"
       class="form-select"
       aria-label="Default select example"
     >
-      <option selected>Account type</option>
-      <option *ngIf="accountType === 'USER'" value="USER">User</option>
-      <ng-container *ngIf="accountType !== 'USER'">
-        <option value="AGENT">Agent</option>
-        <option value="CLIENT">Client</option>
-        <option value="SERVICE_PROVIDER">Service provider</option>
+      <ng-container *ngFor="let user of userTypes">
+        <option
+          *ngIf="
+            accountType === 'USER' &&
+            selectedAccountType === user.name &&
+            user.name !== 'AGENT' &&
+            user.name !== 'CLIENT' &&
+            user.name !== 'SERVICE_PROVIDER'
+          "
+          [selected]="selectedAccountType === user.name"
+          [value]="user.name"
+        >
+          {{ user.name }}
+        </option>
+        <option
+          *ngIf="
+            user.name !== 'USER' &&
+            user.name !== 'GROUP' &&
+            accountType !== 'USER' &&
+            selectedAccountType !== 'GROUP' &&
+            selectedAccountType !== 'USER'
+          "
+          [selected]="selectedAccountType === user.name"
+          [value]="user.name"
+        >
+          {{ user.name }}
+        </option>
+        <option
+          *ngIf="
+            user.name !== 'USER' &&
+            user.name !== 'CLIENT' &&
+            user.name !== 'AGENT' &&
+            user.name !== 'SERVICE_PROVIDER' &&
+            accountType === 'GROUP' &&
+            selectedAccountType === 'GROUP'
+          "
+          [selected]="selectedAccountType === user.name"
+          [value]="user.name"
+        >
+          {{ user.name }}
+        </option>
       </ng-container>
-      <!-- <option value="TEAM">Group User</option> -->
     </select>
   </div>
   <div class="col-sm-5">
@@ -82,6 +116,7 @@
           {{ viewUsers?.firstName | titlecase }}
           {{ viewUsers?.lastName | titlecase }}
           {{ viewUsers?.username | titlecase }}
+          {{ viewUsers?.name | titlecase }}
         </td>
         <!-- <td class="body" style="width: 50%">
           {{ viewUsers?.username | titlecase }}
