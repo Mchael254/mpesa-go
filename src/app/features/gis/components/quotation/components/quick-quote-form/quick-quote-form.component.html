@@ -29,7 +29,7 @@
                     <div class="col-sm-4 col-6" *ngIf="!new">
                         <label for="name" class="required quote-label" id="name">{{'gis.quotation.name' |
                             translate}}</label>
-                      
+
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="newClientData.inputClientName" (blur)="onInputChange()">
 
@@ -37,7 +37,7 @@
                     <div class=" col-sm-4 col-6" *ngIf="new">
                         <label for="Client" class="required quote-label" id="Client"> {{'gis.quotation.client' |
                             translate}}</label>
-                     
+
 
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                             [(ngModel)]="clientName" data-bs-toggle="modal" data-bs-target="#clientModal" readonly>
@@ -46,7 +46,7 @@
                     <div class=" col-sm-4 col-6 " *ngIf="!new">
                         <label for="Email" class="quote-label" id="Email"> {{'gis.quotation.email_address' |
                             translate}}</label>
-                       
+
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()">
                     </div>
@@ -66,7 +66,7 @@
                                 <option *ngFor="let country of countryList" [value]="country.zipCodeString">{{
                                     country.zipCodeString }}</option>
                             </select>
-                          
+
                             <input type="tel" id="quote-input" class="form-control form-control-sm mb-1"
                                 [(ngModel)]="newClientData.inputClientPhone" (blur)="onInputChange()">
                         </div>
@@ -79,7 +79,7 @@
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
                         <div class="input-group">
-                           
+
                             <input type="text" id="zip-quote-input"
                                 class="form-control form-control-sm mb-1 custom-width-20" [(ngModel)]="mobilePrefix"
                                 disabled>
@@ -120,7 +120,7 @@
                         <div class="col-sm-4 col-6" *ngIf="!new">
                             <label for="Branch" class="quote-label" id="Branch">{{'gis.quotation.branch' |
                                 translate}}</label>
-                          
+
                             <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
                                 optionLabel="description" (onChange)="onBranchSelected($event.value)"
                                 [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
@@ -135,7 +135,7 @@
                         <div class="col-sm-4 col-6" *ngIf="new">
                             <label for="Branch" class="quote-label" id="Branch">{{'gis.quotation.branch' |
                                 translate}}</label>
-                           
+
                             <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
                                 optionLabel="description" (onChange)="onBranchSelected($event.value)"
                                 [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
@@ -144,7 +144,7 @@
 
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="product" class="quote-label" id="product">{{'gis.quotation.product' |
+                            <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
                                 translate}}</label><br>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
                                 optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
@@ -161,19 +161,24 @@
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="col-sm-4 col-6">
-                            <label for="use-of-property" class="quote-label" id="use-of-property">
+                            <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
-                            <select class="form-select form-control-sm" id="quote-input"
-                                (change)="onSubclassSelected($event)">
+                            <select class="form-select form-control-sm " id="quote-input"
+                                (change)="onSubclassSelected($event)" formControlName="subclassCode">
                                 <option value=""></option>
                                 <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
                                     {{subclass.description | sentenceCase}}</option>
                             </select>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="personalDetailsForm.get('subclassCode').hasError('required') && personalDetailsForm.get('subclassCode').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.subclass_is_required' | translate}}
+                            </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="binder" class="quote-label" id="binder">{{'gis.quotation.binder' |
+                            <label for="binder" class="quote-label required" id="binder">{{'gis.quotation.binder' |
                                 translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                            <select class="form-select form-control-sm mb-1 ms-n4 " id="quote-input"
                                 formControlName="bindCode" (change)="onSelectBinder($event)">
                                 <option></option>
                                 <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
@@ -186,10 +191,11 @@
                             </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="cover-From" class="quote-label" id="cover-From">{{'gis.quotation.cover_from' |
+                            <label for="cover-From" class="quote-label required"
+                                id="cover-From">{{'gis.quotation.cover_from' |
                                 translate}}</label>
                             <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-                            <input type="date" id="cover-from" class="form-control form-control-sm mb-1"
+                            <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveFromDate" [(ngModel)]="coverFromDate"
                                 (ngModelChange)="getCoverToDate()">
                             <!-- Display error message under the field -->
@@ -204,9 +210,10 @@
                     <!-- ROW 4 -->
                     <div class="row mb-4">
                         <div class="col-sm-4 col-6">
-                            <label for="cover-To" class="quote-label" id="cover-To"> {{'gis.quotation.cover_to' |
+                            <label for="cover-To" class="quote-label required" id="cover-To"> {{'gis.quotation.cover_to'
+                                |
                                 translate}}</label>
-                            <input type="date" id="cover-to" class="form-control form-control-sm mb-1"
+                            <input type="date" id="cover-to" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveToDate" [(ngModel)]="passedCoverToDate">
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('withEffectiveToDate').hasError('required') && personalDetailsForm.get('withEffectiveToDate').touched"
@@ -215,8 +222,8 @@
                             </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="currency" class="required quote-label"
-                                id="currency">{{'gis.quotation.currency' | translate}}</label>
+                            <label for="currency" class="required quote-label" id="currency">{{'gis.quotation.currency'
+                                | translate}}</label>
 
                             <input class="form-control form-control-sm mb-1 ms-n4" id="quote-input"
                                 formControlName="currencyCode" [value]="selectedCurrency | sentenceCase" readonly>
@@ -242,28 +249,40 @@
                                                 class="form-control form-control-sm mb-1 col-md-8">
                                         </div>
                                         <div *ngIf="field.name == 'yearOfManufacture'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label required" [for]="field.name">{{ field.label
+                                                }}</label>
                                             <select id="yearOfManufacture" id="quote-input"
                                                 class="form-select form-control-sm mb-1">
+                                                <option></option>
                                                 <option *ngFor="let year of years" [value]="year">{{ year }}</option>
                                             </select>
                                         </div>
                                         <div *ngIf="field.name == 'selfDeclaredValue'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label required" [for]="field.name">{{ field.label
+                                                }}</label>
                                             <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
                                                 appCommaFormat>
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
+                                            <label class="quote-label " [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
-                                                [formControlName]="field.name" [(ngModel)]="carRegNoValue"
-                                                (blur)="validateCarRegNo()" placeholder="e.g KCA 345R">
+                                                [formControlName]="field.name"
+                                                (input)="updateCarRegNoValue($event); validateCarRegNo()"
+                                                placeholder="e.g KCA 345R">
 
-                                            <div *ngIf="carRegNoHasError" class="form-text text-danger">
+                                            <!-- <div *ngIf="carRegNoHasError" class="form-text text-danger">
                                                 {{'gis.quotation.please_enter_valid_reg_no' | translate}}
                                             </div>
-                                           
+                                            -->
+                                            <div *ngIf="carRegNoHasError" class="form-text text-danger">
+                                                <div *ngIf="!carRegNoValue.match(dynamicRegexPattern)">
+                                                    {{'gis.quotation.please_enter_valid_reg_no' | translate}}
+                                                </div>
+                                                <div *ngIf="existingPropertyIds.includes(carRegNoValue)">
+                                                    THIS PROPERTY ID IS DUPLICATED
+                                                </div>
+                                            </div>
 
 
 
@@ -288,7 +307,8 @@
                                 <div class="modal-body">
                                     <button type="button" #closebutton class="float-end btn-close"
                                         data-bs-dismiss="modal" aria-label="Close"></button>
-                                    <p class="text-start" id="selectClient"> {{'gis.quotation.select_a_client' | translate}}</p>
+                                    <p class="text-start" id="selectClient"> {{'gis.quotation.select_a_client' |
+                                        translate}}</p>
 
                                     <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
                                         selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
@@ -335,7 +355,7 @@
                                                 </td>
                                             </tr>
                                         </ng-template>
-                                       
+
                                     </p-table>
                                     <br>
                                 </div>
@@ -353,8 +373,8 @@
         <div class="row ">
             <div class="col-6"></div>
             <div class="col-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
-                    (click)="computePremiumV2();">  {{'gis.quotation.compute' | translate}}</button>
+                <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="computePremiumV2();">
+                    {{'gis.quotation.compute' | translate}}</button>
             </div>
         </div>
     </div>

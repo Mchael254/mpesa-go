@@ -88,14 +88,10 @@ font-size: 14px;
     font-weight: 400;
     line-height: normal;
 }
-/* #shareRadio{
-    color: red;
-    font-family: Roboto;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-} */
+
+
+
+
 .cellEditorInput{
     border: 1px solid #D9D9D9;
     height: 30px;
@@ -137,5 +133,17 @@ font-size: 14px;
   #totalPayablePremium{
     margin-left:-15px;
   }
+  .custom-radio-button .p-radiobutton .p-radiobutton-box {
+    width: 16px; /* Set your desired width */
+    height: 16px; /* Set your desired height */
+}
+
+.custom-radio-button .p-radiobutton .p-radiobutton-icon {
+    line-height: 16px; /* Center the icon within the smaller circle */
+}
+
+ 
+
+
 
   
