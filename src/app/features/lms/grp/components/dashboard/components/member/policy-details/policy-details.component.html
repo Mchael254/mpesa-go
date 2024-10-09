@@ -98,7 +98,7 @@
             </div>
 
             <ng-container *ngIf="!investment && !investmentWithRider">
-            <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div>
+            <!-- <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div> -->
             <div class="pension-table-container col-12">
                 <div class="col-6">
                     <div class="emp-contr">Employee contribution</div>
@@ -106,23 +106,23 @@
                     <table class="pension-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">Ksh. 100,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_contributions | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer value:</td>
-                            <td class="table-label-desc">Ksh. 80,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_transfer_value | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_avc | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Interest:</td>
-                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_interest | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total fund value:</td>
-                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_total | number }}</td>
                         </tr>
                     </table>
                 </div>
@@ -133,29 +133,29 @@
                     <table class="pension-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">Ksh. 100,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_contributions | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer value:</td>
-                            <td class="table-label-desc">Ksh. 80,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_transfer_value | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_avc | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Interest:</td>
-                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_interest | number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total fund value:</td>
-                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_total | number }}</td>
                         </tr>
                     </table>
                 </div>
             </div>
 
-            <div class="account-totals">Pension account totals <b>Ksh. 20,000,000</b></div>
+            <div class="account-totals">Pension account totals <b>{{ pensionAccountSummary?.total_pension_account | number }}</b></div>
         </ng-container>
             <div class="download-link mt-2" *ngIf="blobUrl">
                 <a href="#" (click)="downloadReport($event)">
@@ -168,66 +168,56 @@
 
             <div class="title-desc mt-3">{{ "lms.grp.member_portal.valuations" | translate }}</div>
             <div class="filter-options">
-                <label for="filterBy" style="color: black;">{{ "lms.grp.member_portal.filter_by" | translate }}</label>
-                <select class="form-select">
-                    <ng-container *ngFor="let option ">
-                        <option [value]="">{{ option['category_category'] | titlecase }}</option>
-                    </ng-container>
+                <label for="filterBy" style="color: black;">
+                    {{ "lms.grp.member_portal.filter_by" | translate }}
+                </label>
+            
+                <select class="form-select" [(ngModel)]="selectedColumn" (ngModelChange)="applyValuationsFilter()">
+                    <option *ngFor="let column of valuationsColumns" [value]="column.field">{{ column.label | titlecase }}</option>
                 </select>
-                <select class="form-select">
-                    <ng-container *ngFor="let option ">
-                        <option [value]="">{{ option['category_category'] | titlecase }}</option>
-                    </ng-container>
+            
+                <select class="form-select" [(ngModel)]="selectedCondition" (ngModelChange)="applyValuationsFilter()">
+                    <option [value]="'greater'">{{ 'Greater Than' | translate }}</option>
+                    <option [value]="'less'">{{ 'Less Than' | translate }}</option>
+                    <option [value]="'equals'">{{ 'Equals' | translate }}</option>
                 </select>
-                <input type="text" pInputText class="form-control" id='otherNames'>
+            
+                <input type="text" pInputText class="form-control" [(ngModel)]="filterValue"
+                    (ngModelChange)="applyValuationsFilter()" id="otherNames">
             </div>
-            <p-table [value]="memberBalances" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+              
+              <p-table [value]="filteredMemberBalances" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                 <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.year" | translate }}</th>
-                        <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.period" | translate }}</th>
-                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_brought_forward" | translate }}</th>
-                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.contribution" | translate }}</th>
-                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.rate" | translate }}</th>
-                        <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.interest" | translate }}</th>
-                        <th id="table-align"  style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_carried_forward" | translate }}</th>
-                        <th class="action-column" style="width: 10px;"></th>
-                    </tr>
+                  <tr>
+                    <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.year" | translate }}</th>
+                    <th style="width: calc(100% / 7);">{{ "lms.grp.member_portal.period" | translate }}</th>
+                    <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_brought_forward" | translate }}</th>
+                    <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.contribution" | translate }}</th>
+                    <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.rate" | translate }}</th>
+                    <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.interest" | translate }}</th>
+                    <th id="table-align" style="width: calc(100% / 7);">{{ "lms.grp.member_portal.balance_carried_forward" | translate }}</th>
+                  </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
-                    <tr>
-                        <td>{{ item.year }}</td>
-                        <td>{{ item.period }}</td>
-                        <td id="table-align">{{ item.balance_bf | number  }}</td>
-                        <td id="table-align">{{ item.employer_amount | number  }}</td>
-                        <td id="table-align">{{ item.rate }}</td>
-                        <td id="table-align">{{ item.total_interest | number }}</td>
-                        <td id="table-align">{{ item.balance_cf | number  }}</td>
-                        <td class="action-column">
-                            <div class="flex justify-content-center">
-                                <p-overlayPanel #op>
-                                    <div>
-                                        <!-- Download button -->
-                                        <p-button label="" icon="pi pi-download" styleClass="p-button-rounded p-button-text"
-                                            severity="primary">{{ "lms.grp.member_portal.download" | translate }}</p-button>
-                                    </div>
-                                </p-overlayPanel>
-                                <!-- Ellipsis container -->
-                                <div (click)="op.toggle($event)">
-                                    <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
-                                </div>
-                            </div>
-                        </td>
-                        </tr>
+                  <tr>
+                    <td>{{ item.year }}</td>
+                    <td>{{ item.period }}</td>
+                    <td id="table-align">{{ item.balance_bf | number }}</td>
+                    <td id="table-align">{{ item.employer_amount | number }}</td>
+                    <td id="table-align">{{ item.rate }}</td>
+                    <td id="table-align">{{ item.total_interest | number }}</td>
+                    <td id="table-align">{{ item.balance_cf | number }}</td>
+                  </tr>
                 </ng-template>
-            </p-table>
+              </p-table>
+              
 
-            <div class=" mt-3">
+            <!-- <div class=" mt-3">
                 <a href="#">
                     <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
                     <span class="download-link">{{ "lms.grp.member_portal.valuations_report" | translate }}</span>
                 </a>
-            </div>
+            </div> -->
 
 
         </div>
@@ -260,68 +250,72 @@
             <div class="title-desc">{{ "lms.grp.member_portal.receipts" | translate }}</div>
             <div>
                 <div class="filter-options">
-                    <select class="form-select">
+                    <select class="form-select" [(ngModel)]="selectedYear" (ngModelChange)="filterReceiptsByYearMonth()">
                         <option value="" disabled selected>{{ "lms.grp.member_portal.select_year" | translate }}</option>
                         <ng-container *ngFor="let year of years">
                             <option [value]="year">{{ year }}</option>
                         </ng-container>
                     </select>
-
-                    <select class="form-select">
+                
+                    <select class="form-select" [(ngModel)]="selectedMonth" (ngModelChange)="filterReceiptsByYearMonth()">
                         <option value="" disabled selected>{{ "lms.grp.member_portal.select_month" | translate }}</option>
                         <ng-container *ngFor="let month of months">
-                            <option [value]="month">{{ month }}</option>
+                            <option [value]="month.value">{{ month.label }}</option>
                         </ng-container>
                     </select>
                 </div>
-
-                <p-table [value]="memberPensionDepReceipts" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
-                [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.receipt_number" | translate }}</th>
-                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.date" | translate }}</th>
-                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.contribution" | translate }}</th>
-                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.voluntary_contribution" | translate }}</th>
-                            <th style="width: calc(100% / 8);">{{ "lms.grp.member_portal.transfer_value" | translate }}</th>
-                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.severance" | translate }}</th>
-                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.account_total" | translate }}</th>
-                            <th id="table-align" style="width: calc(100% / 8);">{{ "lms.grp.member_portal.total_pension_account" | translate }}</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
-                        <tr (click)="onReceiptsTableRowClick(item, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
-                            <td>{{ item.pension_member_dep_code }}</td>
-                            <td>{{ item.pnmdp_date }}</td>
-                            <td id="table-align">{{ item.employee_amount | number }}</td>
-                            <td id="table-align">{{ item.voluntary_contribution_amount | number }}</td>
-                            <td id="table-align">{{ item.total_transfer_amount }}</td>
-                            <td id="table-align">{{ item.cost_of_past_benefits }}</td>
-                            <td id="table-align">{{ item.total_amount | number }}</td>
-                            <td id="table-align">{{ item.pnmdp_amount | number }}</td>
-                        </tr>
-                    </ng-template>
+              
+                <p-table [value]="filteredMemberPensionDepReceipts" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+                         [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>{{ "lms.grp.member_portal.receipt_number" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.date" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.contribution" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.voluntary_contribution" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.transfer_value" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.severance" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.account_total" | translate }}</th>
+                      <th>{{ "lms.grp.member_portal.total_pension_account" | translate }}</th>
+                    </tr>
+                  </ng-template>
+              
+                  <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+                    <tr (click)="onReceiptsTableRowClick(item, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+                      <td>{{ item.pension_member_dep_code }}</td>
+                      <td>{{ item.pnmdp_date }}</td>
+                      <td>{{ item.employee_amount | number }}</td>
+                      <td>{{ item.voluntary_contribution_amount | number }}</td>
+                      <td>{{ item.total_transfer_amount }}</td>
+                      <td>{{ item.cost_of_past_benefits }}</td>
+                      <td>{{ item.total_amount | number }}</td>
+                      <td>{{ item.pnmdp_amount | number }}</td>
+                    </tr>
+                  </ng-template>
                 </p-table>
-            </div>
+              </div>
+              
             <div style="margin-top: 40px;">
                 <div class="title-desc">{{ "lms.grp.member_portal.withdrawals" | translate }}</div>
                 <div class="filter-options">
-                    <select class="form-select">
-                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_year" | translate }}</option>
-                        <ng-container *ngFor="let year of years">
-                            <option [value]="year">{{ year }}</option>
-                        </ng-container>
+                    <!-- Year Selection for Withdrawals -->
+                    <select class="form-select" [(ngModel)]="selectedWithdrawalsYear" (ngModelChange)="filterWithdrawalsByYearMonth()">
+                      <option value="" disabled selected>{{ "lms.grp.member_portal.select_year" | translate }}</option>
+                      <ng-container *ngFor="let year of years">
+                        <option [value]="year">{{ year }}</option>
+                      </ng-container>
                     </select>
-
-                    <select class="form-select">
-                        <option value="" disabled selected>{{ "lms.grp.member_portal.select_month" | translate }}</option>
-                        <ng-container *ngFor="let month of months">
-                            <option [value]="month">{{ month }}</option>
-                        </ng-container>
+                  
+                    <!-- Month Selection for Withdrawals -->
+                    <select class="form-select" [(ngModel)]="selectedWithdrawalsMonth" (ngModelChange)="filterWithdrawalsByYearMonth()">
+                      <option value="" disabled selected>{{ "lms.grp.member_portal.select_month" | translate }}</option>
+                      <ng-container *ngFor="let month of months">
+                        <option [value]="month.value">{{ month.label }}</option>
+                      </ng-container>
                     </select>
-                </div>
+                  </div>
 
-                <p-table [value]="withdrawals" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <p-table [value]="filteredWithdrawals" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th style="width: calc(100% / 6);">{{ "lms.grp.member_portal.date" | translate }}</th>
