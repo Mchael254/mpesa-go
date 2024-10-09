@@ -65,7 +65,8 @@
                 }}</label>
                 <p-dropdown
                   [options]="roleType"
-                  [(ngModel)]="selectedItem"
+                  [(ngModel)]="selectedRole"
+                  (onChange)="onRoleSelect($event)"
                   optionLabel="partyTypeName"
                   optionValue="id"
                   formControlName="assign_role"

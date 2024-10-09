@@ -128,12 +128,13 @@ export class ClientService {
   //   );
   // }
 
-  getClientType(organizationId: number | null = null): Observable<any[]> {
-    let params = new HttpParams();
-    console.log("OrgIdPassed", organizationId)
-    if (organizationId !== null) {
-      params = params.set('organizationId', organizationId.toString());
+  getClientType(organizationId?: number): Observable<ClientTypeDTO[]> {
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
     }
+
+    const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET<ClientTypeDTO[]>(
       `client-types`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
@@ -198,8 +199,8 @@ export class ClientService {
     );
   }
 
-  getClientTitles(organizationId?:number):Observable<ClientTitlesDto[]>{
-    const paramObj: { [param: string] : string } = {};
+  getClientTitles(organizationId?: number): Observable<ClientTitlesDto[]> {
+    const paramObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
       paramObj['organizationId'] = organizationId.toString();
     }
