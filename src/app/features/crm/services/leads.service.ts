@@ -2,13 +2,85 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../../shared/services/api/api.service';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../environments/api_service_config';
-import {Leads, LeadSourceDto, LeadStatusDto} from '../data/leads';
+import { LeadSourceDto, LeadStatusDto, Leads } from '../data/leads';
+import { HttpParams } from '@angular/common/http';
+import { UtilService } from '../../../shared/services/util/util.service';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LeadsService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private utilService: UtilService) {}
+
+  getAllLeads(
+    page: number,
+    size: number = 10,
+    sortField: string = 'leadDate',
+    order: string = 'desc'
+  ): Observable<Pagination<Leads>> {
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('sortListFields', `${sortField}`)
+      .set('order', `${order}`);
+
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<Pagination<Leads>>(
+      `leads`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  searchLeads(
+    page: number,
+    size: number = 5,
+    name: string,
+    modeOfIdentity: string = null,
+    idNumber: string = null,
+    clientTypeName: string = null
+  ): Observable<Leads> {
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('modeOfIdentity', `${modeOfIdentity}`)
+      .set('idNumber', `${idNumber}`)
+      .set('clientTypeName', `${clientTypeName}`);
+
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<Leads>(
+      ``,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  createLead(data: Leads): Observable<Leads> {
+    return this.api.POST<Leads>(
+      `leads`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateLead(data: Leads, leadId: number): Observable<Leads> {
+    return this.api.POST<Leads>(
+      `leads/${leadId}`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteLead(leadId: number) {
+    return this.api.POST<Leads>(
+      `leads/${leadId}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
 
   getLeadSources(): Observable<LeadSourceDto[]> {
     return this.api.GET<LeadSourceDto[]>(

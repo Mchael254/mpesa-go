@@ -579,7 +579,59 @@
     "create_quick_quote": "创建快速报价",
     "create_normal_quote": "创建普通报价",
     "create_new_policy": "创建新保单",
-    "report_a_claim": "报告索赔"
+    "report_a_claim": "报告索赔",
+    "lead": "潜在客户",
+    "new_lead": "新潜在客户",
+    "import_lead": "导入潜在客户",
+    "client_type_required": "客户类型为必填项",
+    "primary_details": "主要详情",
+    "campaign_name": "活动名称",
+    "campaign_name_required": "活动名称为必填项",
+    "date": "日期",
+    "date_required": "日期为必填项",
+    "occupation_required": "职业为必填项",
+    "lead_status": "潜在客户状态",
+    "lead_status_required": "潜在客户状态为必填项",
+    "lead_source": "潜在客户来源",
+    "lead_source_required": "潜在客户来源为必填项",
+    "lead_activity": "潜在客户活动",
+    "lead_activity_required": "潜在客户活动为必填项",
+    "website": "网站",
+    "website_required": "网站为必填项",
+    "state": "州",
+    "state_required": "州为必填项",
+    "postal_address": "邮政地址",
+    "postal_address_required": "邮政地址为必填项",
+    "postal_code": "邮政编码",
+    "postal_code_required": "邮政编码为必填项",
+    "organization_details": "组织详情",
+    "assigned_to": "分配给",
+    "assigned_to_required": "分配对象为必填项",
+    "organization": "组织",
+    "organization_required": "组织为必填项",
+    "organization_division": "组织部门",
+    "organization_division_required": "组织部门为必填项",
+    "team": "团队",
+    "team_required": "团队为必填项",
+    "system_required": "系统为必填项",
+    "product_required": "产品为必填项",
+    "account_name": "账户名称",
+    "account_name_required": "账户名称为必填项",
+    "sector_required": "部门为必填项",
+    "annual_revenue": "年度收入",
+    "annual_revenue_required": "年度收入为必填项",
+    "potential_amount": "潜在金额",
+    "potential_amount_required": "潜在金额为必填项",
+    "potential_name": "潜在名称",
+    "potential_name_required": "潜在名称为必填项",
+    "potential_sale_stage": "潜在销售阶段",
+    "potential_sale_stage_required": "潜在销售阶段为必填项",
+    "potential_contr": "潜在合同",
+    "potential_contr_required": "潜在合同为必填项",
+    "converted": "已转换",
+    "converted_required": "转换为必填项",
+    "potential_close_date": "潜在结束日期",
+    "potential_close_date_required": "潜在结束日期为必填项"
   },
   "gis": {
     "quotation": {
@@ -1106,9 +1158,9 @@
       "debiting_type": "扣款类型",
       "ipf_installments": "IPF分期付款",
       "check_off_installments": "检查分期付款",
-       "transaction_type": "交易类型",
-     "client_information": "客户信息",
-   "commission": "佣金"
+      "transaction_type": "交易类型",
+      "client_information": "客户信息",
+      "commission": "佣金"
     },
     "claims": {
       "opening": {
@@ -1213,8 +1265,8 @@
         "receipt_number": "收据号码",
         "action": "操作"
       }
-  }
-},
+    }
+  },
   "lms": {
     "common": {},
     "ind": {

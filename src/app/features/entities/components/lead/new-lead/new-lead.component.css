@@ -1,0 +1,33 @@
+::ng-deep .p-dropdown .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+::ng-deep .p-dropdown .p-dropdown-filter {
+  height: 35px;
+}
+
+::ng-deep .p-dropdown-invalid .p-dropdown {
+  border: solid 1px red !important;
+}
+
+.local-card-header {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: left;
+  color: #00529b;
+  margin: 10px 10px;
+}
+
+#icon {
+  background-color: #e4e7eb;
+  border-radius: 100px;
+  border: none;
+}
+
+#icon i {
+  color: #00529b;
+}

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 import { EntitiesRoutingModule } from './entities-routing.module';
 import { NewClientComponent } from './components/client/new-client/new-client.component';
@@ -14,16 +14,15 @@ import { NewStaffComponent } from './components/staff/new-staff/new-staff.compon
 import { ListStaffComponent } from './components/staff/list-staff/list-staff.component';
 import { EditComponent } from './components/edit/edit.component';
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
-import {TabViewModule} from "primeng/tabview";
-import {InputTextModule} from "primeng/inputtext";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {SharedModule} from "../../shared/shared.module";
-import {DropdownModule} from "primeng/dropdown";
+import { TabViewModule } from 'primeng/tabview';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
+import { DropdownModule } from 'primeng/dropdown';
 import { StaffProfileComponent } from './components/staff/staff-profile/staff-profile.component';
 import { AssignAppsComponent } from './components/staff/assign-apps/assign-apps.component';
-import {StepsModule} from "primeng/steps";
-import {TableModule} from "primeng/table";
-
+import { StepsModule } from 'primeng/steps';
+import { TableModule } from 'primeng/table';
 
 import { DatePipe } from '@angular/common';
 import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
@@ -36,48 +35,52 @@ import { EditBankFormComponent } from './components/entity/view-entity/entity-ot
 import { EditWealthFormComponent } from './components/entity/view-entity/entity-other-details/edit-wealth-form/edit-wealth-form.component';
 import { EditAmlFormComponent } from './components/entity/view-entity/entity-other-details/edit-aml-form/edit-aml-form.component';
 import { EditNokFormComponent } from './components/entity/view-entity/entity-other-details/edit-nok-form/edit-nok-form.component';
+import { ListLeadComponent } from './components/lead/list-lead/list-lead.component';
+import { NewLeadComponent } from './components/lead/new-lead/new-lead.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 @NgModule({
-    declarations: [
-        NewClientComponent,
-        ListClientComponent,
-        NewEntityComponent,
-        ListEntityComponent,
-        NewIntermediaryComponent,
-        ListIntermediaryComponent,
-        NewServiceProviderComponent,
-        ListServiceProviderComponent,
-        NewStaffComponent,
-        ListStaffComponent,
-        EditComponent,
-        ViewEntityComponent,
-        StaffProfileComponent,
-        AssignAppsComponent,
-        RelatedAccountsComponent,
-        SelectStatusComponent,
-        StaffModalComponent,
-        EntityBasicInfoComponent,
-        EntityOtherDetailsComponent,
-        EntityTransactionsComponent,
-        EditBankFormComponent,
-        EditWealthFormComponent,
-        EditAmlFormComponent,
-        EditNokFormComponent,
-    ],
-    imports: [
-        CommonModule,
-        EntitiesRoutingModule,
-        TabViewModule,
-        InputTextModule,
-        ReactiveFormsModule,
-        SharedModule,
-        DropdownModule,
-        StepsModule,
-        TableModule,
-        FormsModule
-    ],
-    exports: [
-        StaffModalComponent
-    ],
-    providers: [DatePipe]
+  declarations: [
+    NewClientComponent,
+    ListClientComponent,
+    NewEntityComponent,
+    ListEntityComponent,
+    NewIntermediaryComponent,
+    ListIntermediaryComponent,
+    NewServiceProviderComponent,
+    ListServiceProviderComponent,
+    NewStaffComponent,
+    ListStaffComponent,
+    EditComponent,
+    ViewEntityComponent,
+    StaffProfileComponent,
+    AssignAppsComponent,
+    RelatedAccountsComponent,
+    SelectStatusComponent,
+    StaffModalComponent,
+    EntityBasicInfoComponent,
+    EntityOtherDetailsComponent,
+    EntityTransactionsComponent,
+    EditBankFormComponent,
+    EditWealthFormComponent,
+    EditAmlFormComponent,
+    EditNokFormComponent,
+    ListLeadComponent,
+    NewLeadComponent,
+  ],
+  imports: [
+    CommonModule,
+    EntitiesRoutingModule,
+    TabViewModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SharedModule,
+    DropdownModule,
+    MultiSelectModule,
+    StepsModule,
+    TableModule,
+    FormsModule,
+  ],
+  exports: [StaffModalComponent],
+  providers: [DatePipe],
 })
-export class EntitiesModule { }
+export class EntitiesModule {}
