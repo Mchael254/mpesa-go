@@ -146,9 +146,26 @@ export class DetailedMemContrReceiptsDTO {
 export class MemberWithdrawalsDTO {
   payee: string;
   accountName: string | null;
-  clntAccNo: string;
-  bankBranchName: string;
-  voucherDate: Date;
-  voucherAmount: number;
-  paymentMode: string;
+  clnt_acc_no: string;
+  bank_branch_name: string;
+  voucher_date: string;
+  voucher_amount: number;
+  payment_mode: string;
 }
+
+export interface PensionAccountSummaryDTO {
+  employee_avc: number;
+  employee_contributions: number;
+  employee_interest: number;
+  employee_severance: number;
+  employee_total: number;
+  employee_transfer_value: number;
+  employer_avc: number;
+  employer_contributions: number;
+  employer_interest: number;
+  employer_severance: number;
+  employer_total: number;
+  employer_transfer_value: number;
+  total_pension_account: number;
+}
+
