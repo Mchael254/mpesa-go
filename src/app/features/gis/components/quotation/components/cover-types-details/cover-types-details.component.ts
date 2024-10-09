@@ -13,7 +13,7 @@ import { QuotationsService } from '../../../../services/quotations/quotations.se
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger } from '../../../../../../shared/shared.module'
 import { forkJoin } from 'rxjs';
-import { PremiumComputationRequest, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -41,7 +41,7 @@ export class CoverTypesDetailsComponent {
   coverTypes: any[];
 
   quickQuotationNumbers: any;
-  quotationDetails:any;
+  quotationDetails: any;
 
   quickQuoteSectionList: any;
   selectedSections: any[] = [];
@@ -91,7 +91,7 @@ export class CoverTypesDetailsComponent {
   userDetails: any
   userBranchId: any;
 
-  quotationCode:string;
+  quotationCode: string;
   quotationData: any;
   quotationNo: any;
   passedQuotationSource: any;
@@ -125,13 +125,13 @@ export class CoverTypesDetailsComponent {
 
   passedNumber: string;
   passedQuotationCode: string;
-  passedQuotationDetails:any;
+  passedQuotationDetails: any;
   emailForm: FormGroup;
   smsForm: FormGroup;
   currentExpandedIndex: number = -1;
-  isTempPremiumListUpdated:boolean = false;
+  isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null; // Initially set to null
-
+  isUpdateQuoteCalled: boolean = false;
 
 
   constructor(
@@ -161,7 +161,7 @@ export class CoverTypesDetailsComponent {
     log.debug("Passed Quotation Number:", this.passedNumber);
     this.passedQuotationCode = sessionStorage.getItem('passedQuotationCode');
     log.debug("Passed Quotation code:", this.passedQuotationCode);
-  
+
 
     const premiumComputationRequestString = sessionStorage.getItem('premiumComputationRequest');
     this.premiumPayload = JSON.parse(premiumComputationRequestString);
@@ -180,9 +180,11 @@ export class CoverTypesDetailsComponent {
 
     log.debug("PREMIUM RESPONSE", this.premiumResponse);
     this.riskLevelPremiums = this.premiumResponse?.riskLevelPremiums;
-    this.sumInsuredValue = this.premiumPayload?.risks[0].limits[0].limitAmount;
-    log.debug("Quick Quote Quotation SI:", this.sumInsuredValue);
-    this.selectedSectionCode = this.premiumPayload?.risks[0].limits[0].section.code
+    // this.sumInsuredValue = this.premiumPayload?.risks[0].limits[0].limitAmount;
+    this.sumInsuredValue = sessionStorage.getItem('sumInsuredValue');
+
+    log.debug("Quick Quote Quotation SUM INSURED VALUE:", this.sumInsuredValue);
+    // this.selectedSectionCode = this.premiumPayload?.risks[0].limits[0].section.code
     this.selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code
 
     const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
@@ -209,21 +211,21 @@ export class CoverTypesDetailsComponent {
     this.passedNewClientDetails = JSON.parse(newClientDetailsString);
     log.debug("New Client Details", this.passedNewClientDetails);
 
-    if(this.passedClientDetails){
+    if (this.passedClientDetails) {
       log.info("EXISTING CLIENT")
       this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
       this.selectedEmail = this.passedClientDetails?.emailAddress;
       this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
-    }else{
+    } else {
       log.info("NEW CLIENT")
-      this.selectedClientName= this.passedNewClientDetails?.inputClientName;
-      log.info("Selected Name:",this.selectedClientName)
+      this.selectedClientName = this.passedNewClientDetails?.inputClientName;
+      log.info("Selected Name:", this.selectedClientName)
 
       this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
-      log.info("Selected Email:",this.selectedEmail)
+      log.info("Selected Email:", this.selectedEmail)
 
       this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
-      log.info("Selected Phone:",this.selectedPhoneNo)
+      log.info("Selected Phone:", this.selectedPhoneNo)
 
     }
 
@@ -236,8 +238,14 @@ export class CoverTypesDetailsComponent {
 
 
 
+
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
-    log.debug("MY TRIAL", JSON.parse(this.formData))
+
+    if (this.formData) {
+      log.debug("MY TRIAL", JSON.parse(this.formData));
+    } else {
+      log.debug("MY TRIAL", "No data found");
+    }
 
 
 
@@ -247,21 +255,21 @@ export class CoverTypesDetailsComponent {
 
   toggleCollapsible(index: number) {
     if (this.currentExpandedIndex === index) {
-        // If the clicked card is already expanded, collapse it
-        this.currentExpandedIndex = -1;
-        this.isCollapsibleOpen = false; // Close the collapsible section
+      // If the clicked card is already expanded, collapse it
+      this.currentExpandedIndex = -1;
+      this.isCollapsibleOpen = false; // Close the collapsible section
     } else {
-        // Expand the clicked card and collapse any other expanded card
-        this.currentExpandedIndex = index;
-        this.isCollapsibleOpen = true; // Open the collapsible section
+      // Expand the clicked card and collapse any other expanded card
+      this.currentExpandedIndex = index;
+      this.isCollapsibleOpen = true; // Open the collapsible section
     }
-}
+  }
 
 
-// Function to check if a card is expanded
-isCardExpanded(index: number): boolean {
+  // Function to check if a card is expanded
+  isCardExpanded(index: number): boolean {
     return this.currentExpandedIndex === index;
-}
+  }
   openModal() {
     this.isModalOpen = true;
   }
@@ -337,7 +345,7 @@ isCardExpanded(index: number): boolean {
       sumInsuredRate: ['']
     });
   }
- loadSubclassSectionCovertype() {
+  loadSubclassSectionCovertype() {
     this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
       this.subclassSectionCoverList = data;
       log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
@@ -352,12 +360,12 @@ isCardExpanded(index: number): boolean {
       this.passedMandatorySections = this.covertypeSpecificSection;
 
 
-    console.log('Selected Sections loadSubclass Section:', this.passedMandatorySections);
-    sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+      console.log('Selected Sections loadSubclass Section:', this.passedMandatorySections);
+      sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
 
-    this.findTemporaryPremium();
+      this.findTemporaryPremium();
     })
-    
+
   }
   // findTemporaryPremium(){
   //   const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
@@ -378,16 +386,16 @@ isCardExpanded(index: number): boolean {
   //   });
   // }
   findTemporaryPremium() {
-  // Check if the temporary premium list has been updated for the same coverTypeCode
-  log.debug("Last updated Covertype:",this.lastUpdatedCoverTypeCode)
-  log.debug("New updated Covertype:",this.passedCovertypeCode)
-  if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
-    console.log("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
-    // If the codes match, use the existing temporaryPremiumList
-    this.cdr.detectChanges();
-    log.debug("Premium List", this.temporaryPremiumList);
-    return; // Exit the method, no need to call the service
-}
+    // Check if the temporary premium list has been updated for the same coverTypeCode
+    log.debug("Last updated Covertype:", this.lastUpdatedCoverTypeCode)
+    log.debug("New updated Covertype:", this.passedCovertypeCode)
+    if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
+      console.log("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
+      // If the codes match, use the existing temporaryPremiumList
+      this.cdr.detectChanges();
+      log.debug("Premium List", this.temporaryPremiumList);
+      return; // Exit the method, no need to call the service
+    }
 
     const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
     const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
@@ -395,19 +403,19 @@ isCardExpanded(index: number): boolean {
 
     // Create an array to store observables returned by each service call
     const observables = sections?.map(section => {
-        return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
     });
 
     // Use forkJoin to wait for all observables to complete
     forkJoin(observables).subscribe(data => {
-        // data is an array containing the results of each service call
-        this.temporaryPremiumList = data.flat(); // Flatten the array if needed
-        this.cdr.detectChanges();
-        log.debug("Premium List", this.temporaryPremiumList);
-        // Reset the boolean since we've fetched new data
-        this.isTempPremiumListUpdated = false; 
+      // data is an array containing the results of each service call
+      this.temporaryPremiumList = data.flat(); // Flatten the array if needed
+      this.cdr.detectChanges();
+      log.debug("Premium List", this.temporaryPremiumList);
+      // Reset the boolean since we've fetched new data
+      this.isTempPremiumListUpdated = false;
     });
-}
+  }
 
 
   onKeyUp(event: KeyboardEvent, section: any): void {
@@ -465,62 +473,75 @@ isCardExpanded(index: number): boolean {
 
   onCreateRiskSection() {
     console.log('Selected Sections:', this.passedSections);
+    console.log('Premium Rates:', this.premiumList);
 
-    // Assuming this.premiumList is an array of premium rates retrieved from the service
-    const premiumRates = this.premiumList;
+    const premiumRates: PremiumRate[] = this.premiumList;
 
     if (premiumRates.length !== this.passedSections.length) {
-      // Handle the case where the number of premium rates doesn't match the number of sections
       console.error("Number of premium rates doesn't match the number of sections");
       return;
     }
 
-    const payload = this.passedSections.map((section, index) => {
-      const premiumRate = premiumRates[index]; // Get the corresponding premium rate for the current section
+    const payload = this.passedSections.map((section) => {
+      // Provide a default structure for premiumRate
+      const defaultPremiumRate: PremiumRate = {
+        sectionCode:null,
+        sectionShortDescription: null,
+        multiplierDivisionFactor: null,
+        multiplierRate: null,
+        rate: null,
+        divisionFactor: 1, // Default value if not provided
+        rateType: "FXD",   // Default value if not provided
+        sumInsuredLimitType: null,
+        sumInsuredRate: null,
+        limitAmount: null,
+      };
+
+      // Find corresponding premium rate for the section or use default values
+      const premiumRate = premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate; 
 
       return {
         calcGroup: 1,
         code: section.code,
         compute: "Y",
-        description: premiumRate.sectionShortDescription,
+        description: premiumRate.sectionShortDescription || section.sectionShortDescription,
         freeLimit: 0,
-        multiplierDivisionFactor: premiumRate.multiplierDivisionFactor,
-        multiplierRate: premiumRate.multiplierRate,
+        multiplierDivisionFactor: premiumRate?.multiplierDivisionFactor, 
+        multiplierRate: premiumRate?.multiplierRate,
         premiumAmount: 0,
-        premiumRate: premiumRate.rate,
-        rateDivisionFactor: premiumRate.divisionFactor,
-        rateType: premiumRate.rateType,
+        premiumRate: premiumRate?.rate || 0,
+        rateDivisionFactor: premiumRate?.divisionFactor || 1,
+        rateType: premiumRate?.rateType || "FXD",
         rowNumber: 1,
-        sumInsuredLimitType: null,
-        sumInsuredRate: 0,
+        sumInsuredLimitType: premiumRate?.sumInsuredLimitType || null,
+        sumInsuredRate: premiumRate?.sumInsuredRate || 0,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
-        limitAmount: this.sumInsuredValue,
+        limitAmount: premiumRate?.limitAmount != null ? premiumRate.limitAmount : section.limitAmount ? section.limitAmount : this.sumInsuredValue,
       };
     });
 
     this.sectionArray = payload;
+    log.debug("THE SECTION ARRAY PASSED TO SERVICE", this.sectionArray);
 
     this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
       try {
-         // Remove added sections from temporaryPremiumList
-    this.temporaryPremiumList = this.temporaryPremiumList.filter(
-      (premium) => !this.passedSections.some((section) => section.code === premium.code)
-     
-  );
-  log.debug("THE UPDATED TEMP PREMIUM LIST:",this.temporaryPremiumList)
-  this.isTempPremiumListUpdated=true
-  this.lastUpdatedCoverTypeCode = this.passedCovertypeCode; // Store the current coverTypeCode
+        this.temporaryPremiumList = this.temporaryPremiumList.filter(
+          (premium) => !this.passedSections.some((section) => section.code === premium.code)
+        );
+        log.debug("THE UPDATED TEMP PREMIUM LIST:", this.temporaryPremiumList);
+        this.isTempPremiumListUpdated = true;
+        this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
 
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset();
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
       }
       this.computeQuotePremium();
-
     });
-  }
+}
+
 
 
 
@@ -539,7 +560,7 @@ isCardExpanded(index: number): boolean {
 
   /******************NEW PREMIUM COMPUTATION ENGINE **************/
 
- 
+
 
   createQuotationForm() {
     this.quotationForm = this.fb.group({
@@ -649,21 +670,33 @@ isCardExpanded(index: number): boolean {
       console.log("Quotation results:", this.quotationData)
       log.debug("Quotation Number", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
-      if(this.quotationNo){
+      if (this.quotationNo) {
         // this.loadClientQuotation()
       }
       this.createQuotationRisk()
 
     })
   }
-  loadClientQuotation(){
-    this.quotationService.getClientQuotations(this.quotationNo).subscribe(data =>{
-      this.quotationDetails=data;
-      log.debug("Quotation Details:",this.quotationDetails)
-      this.quotationNo=this.quotationDetails.no;
-      log.debug("Quotation Number:",this.quotationNo)
+  loadClientQuotation() {
+    log.debug("quotation Number generated after adding a benefit:", this.quotationNo)
+    log.debug("passed quotation Number:", this.passedNumber)
+    let defaultCode
+    if (this.quotationNo) {
+      defaultCode = this.quotationNo;
+      log.debug("QUOTE Number", defaultCode)
+    } else {
+      defaultCode = this.passedNumber
+      log.debug(" PASSED QUOTE Number", defaultCode)
+
+    }
+
+    this.quotationService.getClientQuotations(defaultCode).subscribe(data => {
+      this.quotationDetails = data;
+      log.debug("Quotation Details:", this.quotationDetails)
+      this.quotationNo = this.quotationDetails.no;
+      log.debug("Quotation Number:", this.quotationNo)
       this.taxInformation = this.quotationDetails.taxInformation
-     log.debug("Tax information",this.taxInformation)
+      log.debug("Tax information", this.taxInformation)
 
     })
   }
@@ -683,22 +716,22 @@ isCardExpanded(index: number): boolean {
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
     console.log('Quick Form Risk', risk);
     const riskArray = [risk];
-    log.debug("quotation code:",this.quotationCode)
-    log.debug("passed quotation code:",this.passedQuotationCode)
-    let defaultCode 
-    if(this.quotationCode ){
-      defaultCode=this.quotationCode;
-      log.debug("IF STATEMENT QUOTE CODE",defaultCode)
-    }else{
-      defaultCode=this.passedQuotationCode
-      log.debug("IF STATEMENT PASSED QUOTE CODE",defaultCode)
+    log.debug("quotation code:", this.quotationCode)
+    log.debug("passed quotation code:", this.passedQuotationCode)
+    let defaultCode
+    if (this.quotationCode) {
+      defaultCode = this.quotationCode;
+      log.debug("IF STATEMENT QUOTE CODE", defaultCode)
+    } else {
+      defaultCode = this.passedQuotationCode
+      log.debug("IF STATEMENT PASSED QUOTE CODE", defaultCode)
 
     }
-    log.debug("default code:",defaultCode)
+    log.debug("default code:", defaultCode)
 
     return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
-      log.debug("This is the quotation risk data",data)
+      log.debug("This is the quotation risk data", data)
       const quotationRiskCode = this.quotationRiskData._embedded[0];
       if (quotationRiskCode) {
         for (const key in quotationRiskCode) {
@@ -728,48 +761,85 @@ isCardExpanded(index: number): boolean {
     this.selectedQuotationNo = this.quotationNo;
   }
 
-  SelectCover() {
-    log.debug("PASSED QUOTATION NUMBER:",this.passedNumber)
-      // Log the type of this.passedNumber
-      log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
+  selectCover() {
+    log.debug("PASSED QUOTATION NUMBER:", this.passedNumber);
+    log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
+    log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
+    log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
+    log.debug("PASSED QUOTATION DATA:", this.quotationData);
 
-      // Log the truthiness of this.passedNumber
-      log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
-  
-      // Check for the string literal "null" specifically
-      log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
-    log.debug("PASSED QUOTATION DATA:",this.quotationData)
-    if ( this.passedNumber === null || this.passedNumber.trim() === '' || this.passedNumber.toLowerCase() === 'null') {
+    // Check if passedNumber exists (not null, empty, or 'null')
+    if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
+
+      // Check if quotation data exists
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
-        // Quotation data is not empty
-        console.log("QUOTATION DATA IS NOT EMPTY")
-        // this.sharedService.setSelectedCover(this.quotationNo);
-        const quotationNumberString = JSON.stringify(this.quotationNo);
+        // Both passedNumber and quotationData exist, execute desired action here
+        log.debug("BOTH PASSED QUOTATION NUMBER AND QUOTATION DATA EXIST");
+
+        // Check if updateQuote() has been called
+        if (this.isUpdateQuoteCalled) {
+          // If updateQuote() was called, navigate to policy summary
+          log.debug("updateQuote() WAS CALLED, NAVIGATING TO POLICY SUMMARY");
+          this.router.navigate(['/home/gis/quotation/policy-summary']);
+        } else {
+          // If updateQuote() was NOT called, call createQuotationRisk and then navigate
+          log.debug("updateQuote() WAS NOT CALLED, CREATING QUOTATION RISK");
+          this.createQuotationRisk();
+
+          const quotationNumberString = JSON.stringify(this.passedNumber);
+          sessionStorage.setItem('quotationNumber', quotationNumberString);
+
+          // Navigate to policy summary after creating the quotation risk
+          this.router.navigate(['/home/gis/quotation/policy-summary']);
+        }
+
+      }
+      log.debug("PASSED QUOTATION NUMBER EXISTS, BUT QUOTATION DATA IS EMPTY");
+      if (this.isUpdateQuoteCalled) {
+        // If updateQuote() was called, navigate to policy summary
+        log.debug("updateQuote() WAS CALLED, NAVIGATING TO POLICY SUMMARY");
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      } else {
+        // If updateQuote() was NOT called, call createQuotationRisk and then navigate
+        log.debug("updateQuote() WAS NOT CALLED, CREATING QUOTATION RISK");
+        this.createQuotationRisk();
+
+        const quotationNumberString = JSON.stringify(this.passedNumber);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
 
+        // Navigate to policy summary after creating the quotation risk
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }
+      // // Create a new quotation risk
+      // this.createQuotationRisk();
+
+      // const quotationNumberString = JSON.stringify(this.passedNumber);
+      // sessionStorage.setItem('quotationNumber', quotationNumberString);
+
+      // // Navigate to quotation summary
+      // this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+    } else {
+      // If passedNumber doesn't exist, check the quotation data and handle accordingly
+      if (this.quotationData != null && this.quotationData._embedded.length > 0) {
+        // Quotation data is not empty
+        console.log("QUOTATION DATA IS NOT EMPTY");
+
+        const quotationNumberString = JSON.stringify(this.quotationNo);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
         sessionStorage.setItem('quickQuotationNum', this.quotationNo);
         sessionStorage.setItem('quickQuotationCode', this.quotationCode);
 
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       } else {
-        console.log("QUOTATION DATA IS  EMPTY")
-
-        // Quotation data is empty, call createQuotation method
+        // Quotation data is empty, create a new quotation
+        console.log("QUOTATION DATA IS EMPTY");
         this.createQuotation();
         this.getQuotationNumber();
+      }
     }
-
-    } else {
-      this.createQuotationRisk();
-      // this.sharedService.setSelectedCover(this.passedQuotationNumber);
-      const quotationNumberString = JSON.stringify(this.passedNumber);
-      sessionStorage.setItem('quotationNumber', quotationNumberString);
-
-      this.router.navigate(['/home/gis/quotation/quote-summary']);
-
-    }
-
   }
+
 
   // selectQuote(){
   //   if(this.passedQuotationNumber == null){
@@ -790,12 +860,12 @@ isCardExpanded(index: number): boolean {
         if (this.quotationNo !== undefined) {
           resolve(this.quotationNo);
           log.debug("Quotation Number has been generated", this.quotationNo);
-  
+
           // Check if this.quotationNo is not undefined before stringifying
           if (this.quotationNo !== undefined) {
             const quotationNumberString = JSON.stringify(this.quotationNo);
             sessionStorage.setItem('quotationNumber', quotationNumberString);
-  
+
             sessionStorage.setItem('quickQuotationNum', this.quotationNo);
             sessionStorage.setItem('quickQuotationCode', this.quotationCode);
             this.router.navigate(['/home/gis/quotation/quote-summary']);
@@ -808,18 +878,18 @@ isCardExpanded(index: number): boolean {
       }, 2000);
     });
   }
-  
+
   callQuotationUtilsService() {
-    let defaultCode 
-    if(this.quotationCode ){
-      defaultCode=this.quotationCode;
-      log.debug("IF STATEMENT QUOTE CODE",defaultCode)
-    }else{
-      defaultCode=this.passedQuotationCode
-      log.debug("IF STATEMENT PASSED QUOTE CODE",defaultCode)
+    let defaultCode
+    if (this.quotationCode) {
+      defaultCode = this.quotationCode;
+      log.debug("IF STATEMENT QUOTE CODE", defaultCode)
+    } else {
+      defaultCode = this.passedQuotationCode
+      log.debug("IF STATEMENT PASSED QUOTE CODE", defaultCode)
 
     }
-    log.debug("default code:",defaultCode)
+    log.debug("default code:", defaultCode)
     this.quotationService.quotationUtils(defaultCode).subscribe({
       next: (res) => {
         this.computationDetails = res;
@@ -832,6 +902,7 @@ isCardExpanded(index: number): boolean {
           risk.prorata = 'F';
           risk.limits.forEach((limit: any) => {
             limit.multiplierDivisionFactor = 1
+            // limitAmount: premiumRate.LimitAmount ? premiumRate.LimitAmount : this.sumInsuredValue,
           });
         });
         this.computePremiumQuickQuote();
@@ -918,8 +989,8 @@ isCardExpanded(index: number): boolean {
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
           this.loadClientQuotation()
 
-          log.debug("just CKECING IF IT EXISTS",this.quotationDetails)
-          log.debug("just CKECING IF IT EXISTS",this.taxInformation)
+          log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
+          log.debug("just CKECING IF IT EXISTS", this.taxInformation)
 
         },
         error: (error: HttpErrorResponse) => {
@@ -1024,7 +1095,33 @@ isCardExpanded(index: number): boolean {
       this.emaildetails();
     } else if (this.selectedOption === 'sms') {
       this.sendSms();
-    } 
+    }
   }
+
+  updateQuote() { 
+    log.debug("Passed quotation Number (raw value):", this.passedNumber);
+    log.debug("Quotation Number (raw value):", this.quotationNo);
+  
+    // Convert string 'null' or 'undefined' to actual null
+    if (this.passedNumber === 'null') {
+      this.passedNumber = null;
+    }
+  
+    if (this.quotationNo === 'null') {
+      this.quotationNo = null;
+    }
+  
+    // Check if either passedNumber or quotationNumber is present
+    if ((this.passedNumber !== null && this.passedNumber !== undefined && this.passedNumber !== '') || 
+        (this.quotationNo !== null && this.quotationNo !== undefined && this.quotationNo !== '')) {
+      log.debug("CREATE RISK BECAUSE THERE IS A QUOTATION");
+      this.createQuotationRisk();
+    } else {
+      log.debug("CREATE QUOTATION BECAUSE THERE IS NONE");
+      this.createQuotation();
+    }
+  }
+  
+  
 
 }

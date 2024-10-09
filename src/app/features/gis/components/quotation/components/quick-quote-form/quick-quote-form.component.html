@@ -279,9 +279,13 @@
                                                 <div *ngIf="!carRegNoValue.match(dynamicRegexPattern)">
                                                     {{'gis.quotation.please_enter_valid_reg_no' | translate}}
                                                 </div>
-                                                <div *ngIf="existingPropertyIds.includes(carRegNoValue)">
+                                                <!-- <div *ngIf="existingPropertyIds.includes(carRegNoValue)">
                                                     THIS PROPERTY ID IS DUPLICATED
+                                                </div> -->
+                                                <div *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
+                                                   This property Id is duplicated
                                                 </div>
+                                                
                                             </div>
 
 

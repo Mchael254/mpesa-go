@@ -169,7 +169,7 @@ export class QuickQuoteFormComponent {
 
   passedSections: any[] = [];
   isNewClient: boolean = true;
-  existingPropertyIds: any;
+  existingPropertyIds: string[] = [];
 
 
   constructor(
@@ -238,8 +238,11 @@ export class QuickQuoteFormComponent {
     console.log("Quotation Details:", this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
-    this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
-    log.debug("existing property id",this.existingPropertyIds);
+    if(this.passedQuotation){
+      this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
+      log.debug("existing property id",this.existingPropertyIds);
+    }
+   
 
     this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
     log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
@@ -270,7 +273,10 @@ export class QuickQuoteFormComponent {
 
       this.selectedCountry = this.PassedClientDetails.country;
       log.info("Paased selected country:", this.selectedCountry)
-      this.getCountries()
+      if(this.selectedCountry){
+        this.getCountries()
+
+      }
     }
 
 
@@ -466,11 +472,18 @@ export class QuickQuoteFormComponent {
       log.debug("Country List", this.countryList);
       const testCountry = "KENYA"
       // const clientCountry= this.clientDetails.
-      this.filteredCountry = this.countryList.filter(prefix => prefix.id == this.selectedCountry)
-      log.debug("Filtered Country", this.filteredCountry);
+      if(this.selectedCountry){
+        this.filteredCountry = this.countryList.filter(prefix => prefix.id == this.selectedCountry)
+        log.debug("Filtered Country", this.filteredCountry);
 
-      this.mobilePrefix = this.filteredCountry[0].zipCodeString;
-      log.debug("Filtered mobilePrefix", this.mobilePrefix);
+        if(this.filteredCountry){
+          this.mobilePrefix = this.filteredCountry[0].zipCodeString;
+          log.debug("Filtered mobilePrefix", this.mobilePrefix);
+        }
+      }
+      
+ 
+ 
 
     })
   }
@@ -902,13 +915,16 @@ export class QuickQuoteFormComponent {
     console.log('Regex pattern:', regex);
     this.carRegNoHasError = !regex.test(this.carRegNoValue);
     console.log('Has error:', this.carRegNoHasError);
-
-     // Check for duplicate property IDs
+    if(this.existingPropertyIds){
+           // Check for duplicate property IDs
      const isDuplicate = this.existingPropertyIds.includes(this.carRegNoValue);
      if (isDuplicate) {
-       this.carRegNoHasError = true; // Set error to true if a duplicate is found
-       console.log('Duplicate property ID found.',isDuplicate);
-     }
+      this.carRegNoHasError = true; // Set error to true if a duplicate is found
+      console.log('Duplicate property ID found.',isDuplicate);
+    }
+    }
+
+    
   }
 
   /**
@@ -1058,6 +1074,9 @@ export class QuickQuoteFormComponent {
 
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
     const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
+    log.debug("SUM INSURED",sumInsured)
+    sessionStorage.setItem('sumInsuredValue', sumInsured);
+
 
     let limitItems = [];
     let sectionCodes = [];
