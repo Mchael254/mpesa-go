@@ -71,7 +71,7 @@
                             <th style="width: 100px;">{{'gis.quotation.product' | translate}}</th>
                             <th class="text-end" style="width: 100px;"> {{'gis.quotation.sum_insured' | translate}}</th>
                             <!-- Loop through taxInformation and display each tax type in the header -->
-                            <th *ngFor="let tax of quotationDetails.taxInformation" class="text-end"
+                            <th *ngFor="let tax of quotationDetails?.taxInformation" class="text-end"
                                 style="width: 100px;">{{ tax.description }}</th>
                             <th class="text-end" style="width: 100px;">{{'gis.quotation.premium' | translate}}</th>
                             <th class="text-end" style="width: 100px;">{{'gis.quotation.total_premium' | translate}}</th>

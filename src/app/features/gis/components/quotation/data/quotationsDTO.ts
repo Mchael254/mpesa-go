@@ -277,4 +277,17 @@ export interface QuotationDetails {
     coverTypeShortDescription:string
 
   }
+  export interface PremiumRate {
+    sectionCode:number
+    sectionShortDescription: string | null;
+    multiplierDivisionFactor: number | null;
+    multiplierRate: number | null;
+    rate: number | null;
+    divisionFactor: number | null;
+    rateType: string | null;
+    sumInsuredLimitType: string | null;
+    sumInsuredRate: string | null; // Change to string since it's coming as a string
+    limitAmount: number | string | null; // Allow limitAmount to be string or number
+  }
+  
   
