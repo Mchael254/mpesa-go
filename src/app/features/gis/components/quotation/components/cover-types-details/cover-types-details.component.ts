@@ -13,7 +13,7 @@ import { QuotationsService } from '../../../../services/quotations/quotations.se
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger } from '../../../../../../shared/shared.module'
 import { forkJoin } from 'rxjs';
-import { PremiumComputationRequest, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -473,62 +473,75 @@ export class CoverTypesDetailsComponent {
 
   onCreateRiskSection() {
     console.log('Selected Sections:', this.passedSections);
+    console.log('Premium Rates:', this.premiumList);
 
-    // Assuming this.premiumList is an array of premium rates retrieved from the service
-    const premiumRates = this.premiumList;
+    const premiumRates: PremiumRate[] = this.premiumList;
 
     if (premiumRates.length !== this.passedSections.length) {
-      // Handle the case where the number of premium rates doesn't match the number of sections
       console.error("Number of premium rates doesn't match the number of sections");
       return;
     }
 
-    const payload = this.passedSections.map((section, index) => {
-      const premiumRate = premiumRates[index]; // Get the corresponding premium rate for the current section
+    const payload = this.passedSections.map((section) => {
+      // Provide a default structure for premiumRate
+      const defaultPremiumRate: PremiumRate = {
+        sectionCode:null,
+        sectionShortDescription: null,
+        multiplierDivisionFactor: null,
+        multiplierRate: null,
+        rate: null,
+        divisionFactor: 1, // Default value if not provided
+        rateType: "FXD",   // Default value if not provided
+        sumInsuredLimitType: null,
+        sumInsuredRate: null,
+        limitAmount: null,
+      };
+
+      // Find corresponding premium rate for the section or use default values
+      const premiumRate = premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate; 
 
       return {
         calcGroup: 1,
         code: section.code,
         compute: "Y",
-        description: premiumRate.sectionShortDescription,
+        description: premiumRate.sectionShortDescription || section.sectionShortDescription,
         freeLimit: 0,
-        multiplierDivisionFactor: premiumRate.multiplierDivisionFactor,
-        multiplierRate: premiumRate.multiplierRate,
+        multiplierDivisionFactor: premiumRate?.multiplierDivisionFactor, 
+        multiplierRate: premiumRate?.multiplierRate,
         premiumAmount: 0,
-        premiumRate: premiumRate.rate,
-        rateDivisionFactor: premiumRate.divisionFactor,
-        rateType: premiumRate.rateType,
+        premiumRate: premiumRate?.rate || 0,
+        rateDivisionFactor: premiumRate?.divisionFactor || 1,
+        rateType: premiumRate?.rateType || "FXD",
         rowNumber: 1,
-        sumInsuredLimitType: null,
-        sumInsuredRate: 0,
+        sumInsuredLimitType: premiumRate?.sumInsuredLimitType || null,
+        sumInsuredRate: premiumRate?.sumInsuredRate || 0,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
-        limitAmount: this.sumInsuredValue,
+        limitAmount: premiumRate?.limitAmount != null ? premiumRate.limitAmount : section.limitAmount ? section.limitAmount : this.sumInsuredValue,
       };
     });
 
     this.sectionArray = payload;
+    log.debug("THE SECTION ARRAY PASSED TO SERVICE", this.sectionArray);
 
     this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
       try {
-        // Remove added sections from temporaryPremiumList
         this.temporaryPremiumList = this.temporaryPremiumList.filter(
           (premium) => !this.passedSections.some((section) => section.code === premium.code)
-
         );
-        log.debug("THE UPDATED TEMP PREMIUM LIST:", this.temporaryPremiumList)
-        this.isTempPremiumListUpdated = true
-        this.lastUpdatedCoverTypeCode = this.passedCovertypeCode; // Store the current coverTypeCode
+        log.debug("THE UPDATED TEMP PREMIUM LIST:", this.temporaryPremiumList);
+        this.isTempPremiumListUpdated = true;
+        this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
 
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset();
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
       }
       this.computeQuotePremium();
-
     });
-  }
+}
+
 
 
 
@@ -889,6 +902,7 @@ export class CoverTypesDetailsComponent {
           risk.prorata = 'F';
           risk.limits.forEach((limit: any) => {
             limit.multiplierDivisionFactor = 1
+            // limitAmount: premiumRate.LimitAmount ? premiumRate.LimitAmount : this.sumInsuredValue,
           });
         });
         this.computePremiumQuickQuote();
