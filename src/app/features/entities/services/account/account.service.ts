@@ -16,6 +16,7 @@ import {
 import { IdentityModeDTO } from '../../data/entityDto';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import { AccountTypeDTO } from '../../data/AgentDTO';
 
 const log = new Logger('AccountService');
 
@@ -473,14 +474,28 @@ export class AccountService {
     );
   }
 
-  getClientTitles(organizationId: number): Observable<ClientTitleDTO[]> {
-    log.info('Fetching Client Title');
-    const params = new HttpParams();
-
+  getAccountType(organizationId?: number): Observable<AccountTypeDTO[]> {
+    const paramsObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
-      params['organizationId'] = organizationId.toString();
+      paramsObj['organizationId'] = organizationId.toString();
     }
 
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET<AccountTypeDTO[]>(
+      `account-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  getClientTitles(organizationId?: number): Observable<ClientTitleDTO[]> {
+    log.info('Fetching Client Title');
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET<ClientTitleDTO[]>(
       `client-titles`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
@@ -488,9 +503,14 @@ export class AccountService {
     );
   }
 
-  getIdentityMode(organizationId: number): Observable<IdentityModeDTO[]> {
+  getIdentityMode(organizationId?: number): Observable<IdentityModeDTO[]> {
     log.info('Fetching Mode of Identity');
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<IdentityModeDTO[]>(
       `identity-modes`,

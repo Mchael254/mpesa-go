@@ -33,6 +33,7 @@ export class MenuService {
           { name: 'Staff', link: '/home/entity/staff/list' },
           { name: 'Clients', link: '/home/entity/client/list' },
           { name: 'Agents', link: '/home/entity/intermediary/list' },
+          { name: 'Leads', link: '/home/entity/lead/list' },
           {
             name: 'Service Providers',
             link: '/home/entity/service-provider/list',
