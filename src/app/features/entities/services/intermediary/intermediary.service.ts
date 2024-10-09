@@ -20,6 +20,13 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 export class IntermediaryService {
   constructor(private utilService: UtilService, private api: ApiService) {}
 
+  getAllAgents(): Observable<AgentDTO[]> {
+    return this.api.GET<AgentDTO[]>(
+      `agents`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   getAgents(
     page: number | null = 0,
     size: number | null = 5,

@@ -250,6 +250,28 @@ export class NewEntityComponent implements OnInit {
       });
   }
 
+  onRoleSelect(event: any) {
+    const selectedRoleId = event.value;
+    const selectedRole = this.roleType.find(
+      (role) => role.id === selectedRoleId
+    );
+
+    if (selectedRole) {
+      this.selectedRole = selectedRole;
+      log.info(
+        'This is the selected role on dropdown',
+        this.selectedRole,
+        selectedRole
+      );
+      this.entityRegistrationForm.controls['assign_role'].setValue(
+        selectedRole.id
+      );
+      if (!this.roleName) {
+        this.roleName = selectedRole.partyTypeName;
+      }
+    }
+  }
+
   /**
    * The function "onAssignRole" assigns a role to a user and updates the form control value.
    * @param role - The `role` parameter is the role that is being assigned to the user.
@@ -271,16 +293,37 @@ export class NewEntityComponent implements OnInit {
    * @param {PartyTypeDto[]} roleType - An array of objects of type PartyTypeDto, which contains
    * information about different party types.
    */
+  // setRolesType(roleType: PartyTypeDto[]) {
+  //   const selectedItem = roleType?.filter(
+  //     (x) => x.partyTypeName?.toLowerCase() === this.roleName?.toLowerCase()
+  //   );
+  //   this.selectedItem = selectedItem[0];
+  //   this.entityRegistrationForm.controls['assign_role'].setValue(
+  //     this.selectedItem?.id
+  //   );
+  //   if (this.entityRegistrationForm.get('assign_role').value)
+  //     this.disableRole = true;
+  // }
+
   setRolesType(roleType: PartyTypeDto[]) {
-    const selectedItem = roleType?.filter(
-      (x) => x.partyTypeName?.toLowerCase() === this.roleName?.toLowerCase()
-    );
-    this.selectedItem = selectedItem[0];
-    this.entityRegistrationForm.controls['assign_role'].setValue(
-      this.selectedItem?.id
-    );
-    if (this.entityRegistrationForm.get('assign_role').value)
-      this.disableRole = true;
+    if (this.roleName) {
+      const selectedItem = roleType?.find(
+        (x) => x.partyTypeName?.toLowerCase() === this.roleName?.toLowerCase()
+      );
+
+      if (selectedItem) {
+        this.selectedRole = selectedItem;
+        log.info(
+          'This is the selected role on route',
+          this.selectedRole,
+          selectedItem
+        );
+        this.entityRegistrationForm.controls['assign_role'].setValue(
+          selectedItem.id
+        );
+        this.disableRole = true; // Optionally disable the dropdown if a role is preselected
+      }
+    }
   }
 
   /**
@@ -354,9 +397,9 @@ export class NewEntityComponent implements OnInit {
     }
     sessionStorage.removeItem('entityDetails');
     const entityFormValues = this.entityRegistrationForm.getRawValue();
-    const partyTypeId = this.selectedItem
-      ? this.selectedItem.id
-      : this.selectedRole.id;
+    // const partyTypeId = this.selectedItem
+    //   ? this.selectedItem.id
+    //   : this.selectedRole.id;
     const saveEntity: EntityResDTO = {
       category: entityFormValues.category,
       effectiveDateFrom: null,
@@ -365,12 +408,14 @@ export class NewEntityComponent implements OnInit {
       identityNumber: entityFormValues.identity_number,
       name: entityFormValues.entity_name,
       organizationId: null,
-      partyTypeId: partyTypeId,
+      partyTypeId: entityFormValues.assign_role,
       pinNumber: entityFormValues.pin_number,
       profileImage: entityFormValues.profileImage,
       dateOfBirth: entityFormValues.date_of_birth,
     };
     this.progressBarWidth = 50;
+
+    log.info('Entity to be created', saveEntity);
 
     this.entityService
       .saveEntityDetails(saveEntity)
@@ -483,7 +528,10 @@ export class NewEntityComponent implements OnInit {
         url = '/home/entity/intermediary/new';
         break;
       case 'service provider':
-        url = 'home/entity/service-provider/new';
+        url = '/home/entity/service-provider/new';
+        break;
+      case 'lead':
+        url = '/home/entity/lead/new';
         break;
       default:
         url = '/home/entity';
