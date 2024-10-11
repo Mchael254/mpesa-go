@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SystemsDto } from '../../../../shared/data/common/systemsDto';
 import { Logger } from '../../../../shared/services';
 import { SystemsService } from '../../../../shared/services/setups/systems/systems.service';
@@ -19,8 +19,8 @@ const log = new Logger('SystemRolesComponent');
   styleUrls: ['./system-roles.component.css'],
 })
 export class SystemRolesComponent implements OnInit {
-  @ViewChild('closebutton') closebutton;
-  @ViewChild('closeDeleteButton') closeDeleteButton;
+  @ViewChild('closebutton') closebutton: ElementRef;
+  @ViewChild('closeDeleteButton') closeDeleteButton: ElementRef;
 
   messagingTemplateBreadCrumbItems: BreadCrumbItem[] = [
     { label: 'Administration', url: '/home/dashboard' },
