@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   Output,
@@ -22,6 +23,8 @@ const log = new Logger('EntityBasicInfoComponent');
   styleUrls: ['./entity-basic-info.component.css'],
 })
 export class EntityBasicInfoComponent {
+  @ViewChild('closebutton') closebutton: ElementRef;
+
   // @Output('fetchTransactions') fetchTransactions: EventEmitter<any> = new EventEmitter();
   @Output('assignRole') assignRole: EventEmitter<any> = new EventEmitter();
   @Output('partyTypeRole') partyTypeRole: EventEmitter<any> =
@@ -35,6 +38,7 @@ export class EntityBasicInfoComponent {
   constructor() {}
 
   onAssignRole(role: PartyTypeDto) {
+    this.closebutton.nativeElement.click();
     this.assignRole.emit(role);
   }
 
