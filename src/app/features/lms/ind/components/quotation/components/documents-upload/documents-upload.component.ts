@@ -172,7 +172,9 @@ export class DocumentsUploadComponent implements OnInit {
 
   // Validates if all required documents are uploaded
   validateDocument(): boolean {
-    return this.documentList.filter(doc => doc?.is_uploaded).length === this.requiredDocuments?.length;
+    return this.documentList.filter(doc => 
+      doc?.is_uploaded || doc?.is_exempt || doc?.upload_later // Check if uploaded, exempt, or marked for later
+      ).length === this.requiredDocuments?.length;
   }
 
   // Handles upload progress
@@ -189,9 +191,9 @@ export class DocumentsUploadComponent implements OnInit {
   // Navigates to the next page when all required documents are uploaded
   nextPage() {
     if (!this.validateDocument()) {
-      this.toast_service.danger('All required documents must be uploaded', 'Document Upload');
+      this.toast_service.danger('All required documents must be uploaded, exempted, or marked for later upload', 'Document Upload');
     } else {
-      this.toast_service.success('Successfully uploaded all required documents', 'Document Upload');
+      this.toast_service.success('Successfully completed the document process', 'Document Upload');
       this.router.navigate(['/home/lms/ind/quotation/product']);
     }
   }
