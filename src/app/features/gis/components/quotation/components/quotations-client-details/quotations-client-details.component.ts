@@ -153,7 +153,7 @@ export class QuotationsClientDetailsComponent {
         .subscribe(
           (data) => {
             this.occupationData = data;
-            console.log(this.occupationData)
+            console.log("occuption data",this.occupationData)
           },
         );
     }
@@ -165,6 +165,7 @@ export class QuotationsClientDetailsComponent {
    */
   getCounty(event){
     this.selected = event.target.value
+    log.debug("SELECTED COUNTRY CODE",this.selected)
     this.countryService.getMainCityStatesByCountry(this.selected).subscribe(data=>{
       this.county = data;
     })
@@ -222,7 +223,7 @@ export class QuotationsClientDetailsComponent {
    */
 
   getClient(){
-    this.clientService.getClients().subscribe(data=>{
+    this.clientService.getClients(0, 1000).subscribe(data=>{
       this.client = data
       this.clientList = this.client.content
       console.log(this.clientList)
