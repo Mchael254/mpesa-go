@@ -444,8 +444,11 @@ export class RiskSectionDetailsComponent {
  * such as 'clientList' and 'clientName' for quotation generation.
  */
   getClient() {
-    this.clientService.getClients().subscribe(data => {
+    this.clientService.getClients(0, 1000).subscribe(data => {
       this.clientList = data.content
+      log.debug("Client  Details",this.clientList )
+      log.debug("Client  Insured code ",this.insuredCode )
+
       // this.clientList = this.client.content
       this.selectedClientList = this.clientList.filter(client => client.id == this.insuredCode);
       this.clientName = this.selectedClientList[0].firstName + ' ' + this.selectedClientList[0].lastName;
@@ -1026,6 +1029,14 @@ export class RiskSectionDetailsComponent {
       try {
         sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
 
+         // Find the index of the section to be updated in the 'sections' array
+      const index = this.sections.findIndex(s => s.code === section.code);
+      
+      if (index !== -1) {
+        // Update the section in the array with the new values
+        this.sections[index] = { ...this.sections[index], ...section };
+        this.sections = [...this.sections]; // Trigger change detection
+      }
         this.sectionDetailsForm.reset()
         log.info(section)
 

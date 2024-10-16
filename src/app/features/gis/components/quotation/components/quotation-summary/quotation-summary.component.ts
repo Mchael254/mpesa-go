@@ -230,6 +230,7 @@ internal(){
 
     })
     console.log(this.schedules,"schedules Details")
+    log.debug(this.sections,"section Details")
 
   }
   /**
@@ -561,6 +562,7 @@ sendSms(){
       next:(res)=>{
         this.excesses = res
             this.excessesList = this.excesses._embedded
+            log.debug("EXCESS LIST",this.excessesList)
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
       }
     })
@@ -604,6 +606,7 @@ sendSms(){
     this.quotationService.getRiskClauses(riskCode).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next:(res)=>{
         this.riskClauses = res
+        log.debug("RISK CLAUSES",this.riskClauses)
       }
     })
   }

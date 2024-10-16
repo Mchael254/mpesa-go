@@ -33,10 +33,10 @@
                        <div class="row">
                         <div class="col-md-4">
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-5">
                                     <p class="label">Quotation Number</p>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-7">
                                     <p class="content">{{quotationNumber}}</p>
                                 </div>
                             </div>
@@ -44,20 +44,20 @@
                         </div>
                         <div class="col-md-4">
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <p class="label">Client</p>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-8">
                                     <p class="content" >{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-sm-4">
                                     <p class="label">Agent</p>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-8">
                                     <p class="content">{{agents?.name}}</p>
                                 </div>
                             </div>
@@ -67,10 +67,10 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-5">
                                         <p class="label">Branch</p>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-7">
                                         <p class="content">{{branch?.name}}</p>
                                     </div>
                                 </div>
@@ -78,20 +78,20 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <p class="label">Cover From</p>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-8">
                                         <p class="content">{{quotationDetails.withEffectiveFromDate}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <p class="label">Cover To</p>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-8">
                                         <p class="content">{{quotationDetails.withEffectiveToDate}}</p>
                                     </div>
                                 </div>
@@ -102,10 +102,10 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-5">
                                             <p class="label">Currency</p>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-7">
                                             <p class="content">{{quotationView?.currency}}</p>
                                         </div>
                                     </div>
@@ -113,20 +113,20 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-4">
                                             <p class="label">Prosper</p>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-8">
                                             <p class="content"> {{quotationDetails.proInterfaceType}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-4">
                                             <p class="label">Introducer</p>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-8">
                                             <p class="content">{{quotationDetails.introducerCode}}</p>
                                         </div>
                                     </div>
@@ -136,10 +136,10 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-5">
                                                 <p class="label">Expiry Date</p>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-7">
                                                 <p class="content">{{quotationDetails.expiryDate}}</p>
                                             </div>
                                         </div>
@@ -147,20 +147,20 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <p class="label">Status</p>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-8">
                                                 <p class="content">{{quotationView?.status}}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <p class="label">Source</p>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-8">
                                                 <p class="content">{{quotationView?.source.description}}</p>
                                             </div>
                                         </div>
@@ -169,10 +169,10 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-5">
                                                     <p class="label">Premium</p>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-7">
                                                     <p class="content" *ngIf="premium"  >{{premium.premiumAmount| number:'1.2-2'}}</p>
                                                     <p class="content" *ngIf="!premium"  >0.00</p>
                                                 </div>
@@ -181,10 +181,10 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-4">
                                                     <p class="label">Sum Insured</p>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-8">
                                                     <p class="content">{{sumInsured| number:'1.2-2' }}</p>
                                                 </div>
                                             </div>
@@ -205,26 +205,26 @@
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-5">
                                                     <p class="label">Internal Comments</p>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-7">
                                                     <p class="content">{{quotationDetails.internalComments}}</p>
                                                 </div>
                                             </div>
                                           
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-4">
                                                     <p class="label">External Comments</p>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-8">
                                                     <p class="content">{{quotationDetails.comments}}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-2">
                                            
                                         </div>
                                         </div>
@@ -533,12 +533,12 @@
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td>{{data.description}}</td>
+                                                <td>{{data.rowNumber}}</td>
+                                                <td>{{data.calculationGroup}}</td>
+                                                <td>{{data.sectionShortDescription}}</td>
                                                 <td>{{data.limitAmount}}</td>
                                                 <td>{{data.premium}}</td>
-                                                <td></td>
+                                                <td>{{data.rateType}}</td>
                                                 <td>{{data.rate}}</td>
                                                 <td>{{data.freeLimit}}</td>
                                             </tr>

@@ -147,8 +147,8 @@
                             <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
                                 translate}}</label><br>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
-                                optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+                                optionLabel="description"  dataKey="code"  (onChange)="onProductSelected($event.value)" placeholder=" "
+                                [filterBy]="'description'"  [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
@@ -164,7 +164,8 @@
                             <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
                             <select class="form-select form-control-sm " id="quote-input"
-                                (change)="onSubclassSelected($event)" formControlName="subclassCode">
+                                (change)="onSubclassSelected($event)" formControlName="subclassCode"
+                                placeholder ="parsedSubclassDesc">
                                 <option value=""></option>
                                 <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
                                     {{subclass.description | sentenceCase}}</option>
@@ -179,7 +180,8 @@
                             <label for="binder" class="quote-label required" id="binder">{{'gis.quotation.binder' |
                                 translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4 " id="quote-input"
-                                formControlName="bindCode" (change)="onSelectBinder($event)">
+                                formControlName="bindCode" (change)="onSelectBinder($event)"
+                                placeholder ="parsedBinderDesc">
                                 <option></option>
                                 <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
                                     binder.binder_short_description | sentenceCase }}</option>
@@ -246,13 +248,15 @@
                                             *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
                                             <input [type]="field.type" [formControlName]="field.name" id="quote-input"
-                                                class="form-control form-control-sm mb-1 col-md-8">
+                                                class="form-control form-control-sm mb-1 col-md-8" >
                                         </div>
                                         <div *ngIf="field.name == 'yearOfManufacture'">
                                             <label class="quote-label required" [for]="field.name">{{ field.label
                                                 }}</label>
                                             <select id="yearOfManufacture" id="quote-input"
-                                                class="form-select form-control-sm mb-1">
+                                                class="form-select form-control-sm mb-1"
+                                                [formControlName]="field.name"
+                                                [ngModel]="parsedYearOfManufacture">
                                                 <option></option>
                                                 <option *ngFor="let year of years" [value]="year">{{ year }}</option>
                                             </select>
@@ -262,14 +266,16 @@
                                                 }}</label>
                                             <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                appCommaFormat>
+                                                appCommaFormat
+                                                [ngModel]="parsedSumInsured">
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
                                                 [formControlName]="field.name"
                                                 (input)="updateCarRegNoValue($event); validateCarRegNo()"
-                                                placeholder="e.g KCA 345R">
+                                                placeholder="e.g KCA 345R"
+                                                [ngModel]="parsedCarRegNo">
 
                                             <!-- <div *ngIf="carRegNoHasError" class="form-text text-danger">
                                                 {{'gis.quotation.please_enter_valid_reg_no' | translate}}
@@ -282,10 +288,11 @@
                                                 <!-- <div *ngIf="existingPropertyIds.includes(carRegNoValue)">
                                                     THIS PROPERTY ID IS DUPLICATED
                                                 </div> -->
-                                                <div *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
-                                                   This property Id is duplicated
+                                                <div
+                                                    *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
+                                                    This property Id is duplicated
                                                 </div>
-                                                
+
                                             </div>
 
 
@@ -377,7 +384,8 @@
         <div class="row ">
             <div class="col-6"></div>
             <div class="col-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="computePremiumV2();">
+                <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
+                    (click)="computePremiumV2();saveFormState()">
                     {{'gis.quotation.compute' | translate}}</button>
             </div>
         </div>
