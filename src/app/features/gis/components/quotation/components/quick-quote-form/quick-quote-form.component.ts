@@ -32,7 +32,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import { Observable, tap } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -170,6 +170,15 @@ export class QuickQuoteFormComponent {
   passedSections: any[] = [];
   isNewClient: boolean = true;
   existingPropertyIds: string[] = [];
+  passedExistingClientDetails: any;
+  parsedProductDesc: any;
+  parsedSubclassDesc: any;
+  parsedBinderDesc: any;
+  parsedBranchDesc: any;
+  parsedCarRegNo: string;
+  parsedYearOfManufacture: string;
+  parsedSumInsured: string;
+  filteredBranchCodeNumber: number;
 
 
   constructor(
@@ -238,11 +247,11 @@ export class QuickQuoteFormComponent {
     console.log("Quotation Details:", this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
-    if(this.passedQuotation){
+    if (this.passedQuotation) {
       this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
-      log.debug("existing property id",this.existingPropertyIds);
+      log.debug("existing property id", this.existingPropertyIds);
     }
-   
+
 
     this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
     log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
@@ -273,7 +282,7 @@ export class QuickQuoteFormComponent {
 
       this.selectedCountry = this.PassedClientDetails.country;
       log.info("Paased selected country:", this.selectedCountry)
-      if(this.selectedCountry){
+      if (this.selectedCountry) {
         this.getCountries()
 
       }
@@ -290,9 +299,160 @@ export class QuickQuoteFormComponent {
 
     }
     this.premiumComputationRequest;
+    // this.loadFormData()
 
   }
   ngOnDestroy(): void { }
+
+  loadFormData() {
+    log.debug("LOAD FORM DATA IS BEING CALLED TO POPULATE THE FORM")
+    // Load data from session storage on initialization
+    const savedData = sessionStorage.getItem('personalDetails');
+    log.debug("TESTING IF THE DATA HAS BEEN SAVED", savedData)
+    const savedCarRegNo = JSON.parse(sessionStorage.getItem('carRegNo'));
+
+    log.debug("TESTING IF THE CAR REG DATA HAS BEEN  SAVED", savedCarRegNo)
+    this.parsedCarRegNo = savedCarRegNo
+
+
+    // const savedYearOfManufacture = sessionStorage.getItem('yearOfManufacture')
+    const savedYearOfManufacture = JSON.parse(sessionStorage.getItem('yearOfManufacture'));
+
+    log.debug("TESTING IF THE Year of manufacture DATA HAS BEEN  SAVED", savedYearOfManufacture)
+    this.parsedYearOfManufacture = savedYearOfManufacture
+
+    // const savedSumInsured = sessionStorage.getItem('selfDeclaredValue')
+    const savedSumInsured = JSON.parse(sessionStorage.getItem('sumInsured'));
+    log.debug("TESTING IF THE SumInsured DATA HAS BEEN  SAVED", savedSumInsured)
+    this.parsedSumInsured = savedSumInsured
+
+    if (savedData) {
+      const parsedPersonalDetailsData = JSON.parse(savedData);
+
+      this.personalDetailsForm.patchValue(JSON.parse(savedData));
+      /**BRANCH */
+      const filteredBranchCode = parsedPersonalDetailsData.branchCode
+      this.filteredBranchCodeNumber = parseInt(filteredBranchCode)
+      log.debug('Branch code', parsedPersonalDetailsData.branchCode)
+      log.debug('Branch code number', this.filteredBranchCodeNumber)
+      setTimeout(() => {
+        log.debug("Branch listsssss:", this.branchDescriptionArray);
+        const filteredbranch = this.branchDescriptionArray.find(branch => branch.code === this.filteredBranchCodeNumber);
+        log.debug("Filtered Branch", filteredbranch)
+        this.parsedBranchDesc = filteredbranch.description
+        log.debug("Filtered Branch description", this.parsedBranchDesc)
+        this.userBranchName = this.parsedBranchDesc
+      }, 1000);
+      /**PRODUCT */
+      log.debug('product code', parsedPersonalDetailsData.productCode)
+      log.debug('parsedPersonalDetailsData', parsedPersonalDetailsData)
+      log.debug("PRODUCT ARRAY", this.ProductDescriptionArray)
+      if (this.ProductDescriptionArray) {
+        const filteredProductCode = parsedPersonalDetailsData.productCode
+        const filteredProduct = this.ProductDescriptionArray.find(product => product.code === filteredProductCode);
+        log.debug("Filtered Product", filteredProduct)
+        this.parsedProductDesc = filteredProduct.description
+        log.debug("Filtered Product description", this.parsedProductDesc)
+        this.selectedProductCode = filteredProductCode
+        // if(this.selectedProductCode){
+        //   this.getCoverToDate()
+        // }
+        this.getProductSubclass(this.selectedProductCode);
+        // this.loadAllSubclass()
+
+        // Load the dynamic form fields based on the selected product
+        this.LoadAllFormFields(this.selectedProductCode);
+        this.getProductExpiryPeriod();
+        /**SUBCLASS */
+        const filteredsubclassCode = parsedPersonalDetailsData.subclassCode
+        const filteredSubclassCodeNumber = parseInt(filteredsubclassCode)
+        log.debug("Filtere subclass code:", filteredsubclassCode)
+        log.debug("Filtere subclass code Number:", filteredSubclassCodeNumber)
+        log.debug("Type of filteredSubclassCodeNumber:", typeof filteredSubclassCodeNumber);
+        log.debug("subclasses", this.allMatchingSubclasses)
+        setTimeout(() => {
+          log.debug("Subclasses after delay:", this.allMatchingSubclasses);
+          const filteredSubclass = this.allMatchingSubclasses.find(subclass => subclass.code === filteredSubclassCodeNumber);
+          log.debug("Filtered Subclass", filteredSubclass)
+          this.parsedSubclassDesc = filteredSubclass.description
+          log.debug("Filtered Subclass description", this.parsedSubclassDesc)
+          this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
+          // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
+          this.selectedSubclassCode = filteredsubclassCode
+
+        }, 1000);
+
+        /** BINDER */
+        this.loadAllBinders(filteredSubclassCodeNumber)
+        const filteredBinderCode = parsedPersonalDetailsData.bindCode
+        const filteredBinderCodeNumber = parseInt(filteredBinderCode)
+        log.debug("Filtered Binder Code", filteredBinderCode)
+        setTimeout(() => {
+          log.debug("Binder List", this.binderListDetails)
+          const filteredBinder = this.binderListDetails.find(binder => binder.code === filteredBinderCodeNumber);
+          log.debug("Filtered Binder", filteredBinder)
+          this.parsedBinderDesc = filteredBinder.binder_name
+          log.debug("Filtered Binder description", this.parsedBinderDesc)
+          const currencyCode = filteredBinder.currency_code
+          this.loadAllCurrencies(currencyCode)
+
+          this.selectedBinderCode = filteredBinderCode
+          this.selectedBinder = filteredBinder
+        }, 1000);
+        setTimeout(() => {
+          log.info(this.currencyList, "this is a currency list");
+
+          log.debug("Selected Currency:", this.selectedCurrency);
+        }, 1000);
+        // setTimeout(() => {
+        //   log.debug("Selected Product Code:", this.selectedProductCode);
+        //   log.debug("Selected Subclass:", this.selectedSubclassCode);
+        //   log.debug("Selected Binder:", this.selectedBinderCode);
+
+        //   if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
+        //     this.getCoverToDate()
+        //   }
+        // }, 1000);
+        this.loadSubclassSectionCovertype(filteredSubclassCodeNumber).then(() => {
+          // Now execute this code after loadSubclassSectionCovertype finishes
+          setTimeout(() => {
+            log.debug("Selected Product Code:", this.selectedProductCode);
+            log.debug("Selected Subclass:", this.selectedSubclassCode);
+            log.debug("Selected Binder:", this.selectedBinderCode);
+        
+            if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
+              this.getCoverToDate();
+            }
+          }, 1000);
+        }).catch(error => {
+          log.error("Error in loading subclass section cover type:", error);
+        });
+        
+        
+      }
+
+    }
+
+    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
+    this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
+    log.debug("Client details", this.passedExistingClientDetails);
+
+    if (this.passedExistingClientDetails) {
+      this.toggleButton();
+
+      this.clientName = this.passedExistingClientDetails.firstName + ' ' + this.passedExistingClientDetails.lastName;
+      this.clientEmail = this.passedExistingClientDetails.emailAddress;
+      this.clientPhone = this.passedExistingClientDetails.phoneNumber;
+      this.isNewClient = false;
+    } else {
+      log.debug("NEW CLIENT ADD ANOTHER RISK")
+      this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
+      this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
+      this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+      this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
+      this.isNewClient = true;
+    }
+  }
   /**
   * Loads all products by making an HTTP GET request to the ProductService.
   * Retrieves a list of products and updates the component's productList property.
@@ -323,7 +483,7 @@ export class QuickQuoteFormComponent {
 
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info("modified product description", this.ProductDescriptionArray);
-
+      this.loadFormData()
       this.cdr.detectChanges();
     });
   }
@@ -472,18 +632,18 @@ export class QuickQuoteFormComponent {
       log.debug("Country List", this.countryList);
       const testCountry = "KENYA"
       // const clientCountry= this.clientDetails.
-      if(this.selectedCountry){
+      if (this.selectedCountry) {
         this.filteredCountry = this.countryList.filter(prefix => prefix.id == this.selectedCountry)
         log.debug("Filtered Country", this.filteredCountry);
 
-        if(this.filteredCountry){
+        if (this.filteredCountry) {
           this.mobilePrefix = this.filteredCountry[0].zipCodeString;
           log.debug("Filtered mobilePrefix", this.mobilePrefix);
         }
       }
-      
- 
- 
+
+
+
 
     })
   }
@@ -627,6 +787,8 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   getCoverToDate() {
+    log.debug("Selected Product Code-coverdate method", this.selectedProductCode)
+    log.debug("Selected Covercoverdate method", this.coverFromDate)
     if (this.coverFromDate) {
       this.productService.getCoverToDate(this.coverFromDate, this.selectedProductCode).subscribe(data => {
         log.debug("DATA FROM COVERFROM:", data)
@@ -654,6 +816,7 @@ export class QuickQuoteFormComponent {
   // }
 
   getProductExpiryPeriod() {
+    log.debug("SELECTED PRODUCTC CODE", this.selectedProductCode)
     if (!this.selectedProductCode || !this.productList) {
       this.expiryPeriod = "N";
       return;
@@ -737,8 +900,8 @@ export class QuickQuoteFormComponent {
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-    this.loadAllBinders();
-    this.loadSubclassSectionCovertype();
+    this.loadAllBinders(this.selectedSubclassCode);
+    this.loadSubclassSectionCovertype(this.selectedSubclassCode);
 
   }
   /**
@@ -748,8 +911,8 @@ export class QuickQuoteFormComponent {
    * @method loadAllBinders
    * @return {void}
    */
-  loadAllBinders() {
-    this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
+  loadAllBinders(code: number) {
+    this.binderService.getAllBindersQuick(code).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
       console.log("All Binders Details:", this.binderListDetails); // Debugging
@@ -778,7 +941,7 @@ export class QuickQuoteFormComponent {
 
     console.log("Selected Binder:", this.selectedBinder);
     console.log("Selected Currency Code:", this.currencyCode);
-    this.loadAllCurrencies();
+    this.loadAllCurrencies(this.currencyCode);
 
   }
   /**
@@ -790,11 +953,11 @@ export class QuickQuoteFormComponent {
    * @method loadAllCurrencies
    * @return {void}
    */
-  loadAllCurrencies() {
+  loadAllCurrencies(code: number) {
     this.currencyService.getAllCurrencies().subscribe(data => {
       this.currencyList = data;
       log.info(this.currencyList, "this is a currency list");
-      const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
+      const curr = this.currencyList.filter(currency => currency.id == code);
       this.selectedCurrency = curr[0].name
       log.debug("Selected Currency:", this.selectedCurrency);
       this.selectedCurrencyCode = curr[0].id;
@@ -898,7 +1061,7 @@ export class QuickQuoteFormComponent {
     const input = event.target as HTMLInputElement; // Type assertion to HTMLInputElement
     this.carRegNoValue = input.value; // Set the value directly
   }
-  
+
   /**
    * Validates a car registration number using a dynamic regex pattern.
    * - Logs the entered value and dynamic regex pattern.
@@ -909,22 +1072,22 @@ export class QuickQuoteFormComponent {
    */
   validateCarRegNo() {
     console.log('Entered value:', this.carRegNoValue);
-    
+
     // Validate against the regex pattern
     const regex = new RegExp(this.dynamicRegexPattern);
     console.log('Regex pattern:', regex);
     this.carRegNoHasError = !regex.test(this.carRegNoValue);
     console.log('Has error:', this.carRegNoHasError);
-    if(this.existingPropertyIds){
-           // Check for duplicate property IDs
-     const isDuplicate = this.existingPropertyIds.includes(this.carRegNoValue);
-     if (isDuplicate) {
-      this.carRegNoHasError = true; // Set error to true if a duplicate is found
-      console.log('Duplicate property ID found.',isDuplicate);
-    }
+    if (this.existingPropertyIds) {
+      // Check for duplicate property IDs
+      const isDuplicate = this.existingPropertyIds.includes(this.carRegNoValue);
+      if (isDuplicate) {
+        this.carRegNoHasError = true; // Set error to true if a duplicate is found
+        console.log('Duplicate property ID found.', isDuplicate);
+      }
     }
 
-    
+
   }
 
   /**
@@ -950,31 +1113,55 @@ export class QuickQuoteFormComponent {
    * @method loadSubclassSectionCovertype
    * @return {void}
    */
-  loadSubclassSectionCovertype() {
-    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
-      this.subclassSectionCoverList = data;
-      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-      this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
-      log.debug("Mandatory Section Covertype:", this.mandatorySections);
-      const notMandatorySections = this.subclassSectionCoverList.filter(section =>
-        section.subClassCode == this.selectedSubclassCode &&
-        section.isMandatory == null
-      );
-      log.debug("NOT MANDATORY", notMandatorySections)
-      if (this.mandatorySections.length > 0) {
+  // loadSubclassSectionCovertype(code: number) {
+  //   this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+  //     this.subclassSectionCoverList = data;
+  //     log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+  //     this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == code && section.isMandatory == "Y");
+  //     log.debug("Mandatory Section Covertype:", this.mandatorySections);
+  //     const notMandatorySections = this.subclassSectionCoverList.filter(section =>
+  //       section.subClassCode == code &&
+  //       section.isMandatory == null
+  //     );
+  //     log.debug("NOT MANDATORY", notMandatorySections)
+  //     if (this.mandatorySections.length > 0) {
 
-        this.selectedSectionList = this.mandatorySections[0];
+  //       this.selectedSectionList = this.mandatorySections[0];
 
-        log.debug("Selected Section ", this.selectedSectionList)
+  //       log.debug("Selected Section ", this.selectedSectionList)
 
-      } else {
+  //     } else {
 
-      }
+  //     }
 
-      const mandatorySectionsString = JSON.stringify(this.mandatorySections);
-      sessionStorage.setItem('mandatorySections', mandatorySectionsString);
-      this.getSectionByCode();
-    })
+  //     const mandatorySectionsString = JSON.stringify(this.mandatorySections);
+  //     sessionStorage.setItem('mandatorySections', mandatorySectionsString);
+  //     this.getSectionByCode();
+  //   })
+  // }
+  loadSubclassSectionCovertype(code: number): Promise<void> {
+    return firstValueFrom(this.subclassSectionCovertypeService.getSubclassCovertypeSections())
+      .then(data => {
+        this.subclassSectionCoverList = data;
+        log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+        this.mandatorySections = this.subclassSectionCoverList.filter(
+          section => section.subClassCode == code && section.isMandatory == "Y"
+        );
+        log.debug("Mandatory Section Covertype:", this.mandatorySections);
+        const notMandatorySections = this.subclassSectionCoverList.filter(
+          section => section.subClassCode == code && section.isMandatory == null
+        );
+        log.debug("NOT MANDATORY", notMandatorySections);
+        
+        if (this.mandatorySections.length > 0) {
+          this.selectedSectionList = this.mandatorySections[0];
+          log.debug("Selected Section", this.selectedSectionList);
+        }
+  
+        const mandatorySectionsString = JSON.stringify(this.mandatorySections);
+        sessionStorage.setItem('mandatorySections', mandatorySectionsString);
+        this.getSectionByCode();
+      });
   }
   getSectionByCode() {
     this.sectionService.getSectionByCode(this.selectedSectionList.sectionCode).subscribe(data => {
@@ -1014,7 +1201,7 @@ export class QuickQuoteFormComponent {
   }
   /***********************NEW PREMIUM COMPUTATION*******************************/
   getPremiumRates() {
-
+    log.debug("MANDA SEC", this.mandatorySections)
     for (let i = 0; i < this.mandatorySections.length; i++) {
       this.selectedSectionList = this.mandatorySections[i];
       const selectedSectionCode = this.selectedSectionList.sectionCode;
@@ -1074,8 +1261,9 @@ export class QuickQuoteFormComponent {
 
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
     const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
-    log.debug("SUM INSURED",sumInsured)
+    log.debug("SUM INSURED", sumInsured)
     sessionStorage.setItem('sumInsuredValue', sumInsured);
+    log.debug("Mandatory Sections", this.mandatorySections)
 
 
     let limitItems = [];
@@ -1122,6 +1310,7 @@ export class QuickQuoteFormComponent {
         })
 
     ).flatMap(item => item)
+    log.debug("Added Limit", this.additionalLimit)
 
     if (this.additionalLimit.length > 0) {
       log.debug("Added Limit", this.additionalLimit)
@@ -1171,7 +1360,13 @@ export class QuickQuoteFormComponent {
   computePremiumV2() {
     this.ngxSpinner.show();
     this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
-    this.personalDetailsForm.get('branchCode').setValue(this.selectedBranchCode);
+    if (this.selectedBranchCode) {
+      this.personalDetailsForm.get('branchCode').setValue(this.selectedBranchCode);
+    }
+    else {
+      this.personalDetailsForm.get('branchCode').setValue(this.filteredBranchCodeNumber);
+
+    }
 
     // Mark all fields as touched and validate the form
     this.personalDetailsForm.markAllAsTouched();
@@ -1299,6 +1494,31 @@ export class QuickQuoteFormComponent {
       // this.computeQuotePremium();
 
     });
+  }
+  saveFormState() {
+    log.debug("SAVE FORM STATE METHOD HAS BEEN CALLED")
+    sessionStorage.setItem('personalDetails', JSON.stringify(this.personalDetailsForm.value));
+
+    // sessionStorage.setItem('sumInsured', JSON.stringify(this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '')));
+    // sessionStorage.setItem('yearOfManufacture', JSON.stringify(this.dynamicForm.get('yearOfManufacture').value));
+    // sessionStorage.setItem('carRegNo', JSON.stringify(this.dynamicForm.get('carRegNo').value));
+
+    const selfDeclaredValue = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
+    const yearOfManufacture = this.dynamicForm.get('yearOfManufacture').value;
+    const carRegNo = this.dynamicForm.get('carRegNo').value;
+
+    // Store values in session storage
+    sessionStorage.setItem('sumInsured', JSON.stringify(selfDeclaredValue));
+    console.log('sumInsured:', selfDeclaredValue);
+
+    sessionStorage.setItem('yearOfManufacture', JSON.stringify(yearOfManufacture));
+    console.log('yearOfManufacture:', yearOfManufacture);
+
+    sessionStorage.setItem('carRegNo', JSON.stringify(carRegNo));
+    console.log('carRegNo:', carRegNo);
+
+    // const formData = this.personalDetailsForm.value;
+    // sessionStorage.setItem('formState', JSON.stringify(formData));
   }
 
 }
