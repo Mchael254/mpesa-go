@@ -25,7 +25,7 @@
 
   <div class="card">
     <div class="card-body">
-      <h5 class="text-dark">Client attributes</h5>
+      <h5 class="text-dark">{{'campaignMngmt.clientAttributes'| translate }}</h5>
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <input
@@ -34,7 +34,7 @@
             placeholder="Search"
             aria-label="search"
             aria-describedby="search"
-
+            (input)="filterClientAttributes($event)"
           />
         </div>
 
@@ -49,54 +49,58 @@
               (click)="editClientAttribute()"></i>
             </span>
             <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can" id="deleteClientAttr" (click)="deleteClientAttribute()"></i>
             </span>
           </div>
         </div>
       </div>
-      <p-table
-        #clientAttributesTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="clientAttributesData?.length"
-        [value]="clientAttributesData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedClientAttributes"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
+      <div>
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #clientAttributesTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [paginator]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="clientAttributesData?.length"
+          [value]="clientAttributesData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedClientAttribute"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['description', 'name', 'prompt']"
+        >
 
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-            <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-            <th pSortableColumn="prompt">Prompt <p-sortIcon field="prompt"></p-sortIcon></th>
-            <th pSortableColumn="range">Range <p-sortIcon field="range"></p-sortIcon></th>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name">{{'campaignMngmt.name'| translate }}<p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="description">{{'campaignMngmt.description'| translate }}<p-sortIcon field="description"></p-sortIcon></th>
+              <th pSortableColumn="prompt">{{'campaignMngmt.prompt'| translate }}<p-sortIcon field="prompt"></p-sortIcon></th>
+              <th pSortableColumn="range">{{'campaignMngmt.range'| translate }}<p-sortIcon field="range"></p-sortIcon></th>
 
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-clientAttribute>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4">No Client Attributes Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-clientAttribute>
+            <tr [pSelectableRow]="clientAttribute">
+              <td>{{clientAttribute?.name | titlecase}}</td>
+              <td>{{clientAttribute?.description | titlecase}}</td>
+              <td>{{clientAttribute?.prompt | titlecase}}</td>
+              <td>{{clientAttribute?.range | titlecase}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">No Client Attributes Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 
@@ -173,8 +177,8 @@
                 <label class="form-label w-100" for="clientAttributeRange">Range</label>
                 <select class="form-select" id="clientAttributeRange" formControlName="clientAttributeRange"
                   [ngClass]="{ 'is-invalid': f['clientAttributeRange']?.invalid && (f['clientAttributeRange']?.dirty || f['clientAttributeRange']?.touched) }">
-                  <option value=""></option>
-                  <option value=""></option>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
                 </select>
                 <div *ngIf="f['clientAttributeRange']?.invalid && (f['clientAttributeRange']?.dirty || f['clientAttributeRange']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['clientAttributeRange']?.errors['required']">Range is required</div>
@@ -184,11 +188,25 @@
             <ng-container *ngIf="visibleStatus.clientAttribute === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="clientAttribute">Client attribute</label>
-                <select class="form-select" id="clientAttribute" formControlName="clientAttribute"
-                [ngClass]="{ 'is-invalid': f['clientAttribute']?.invalid && (f['clientAttribute']?.dirty || f['clientAttribute']?.touched) }">
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <p-dropdown
+                  [options]="clientSearchAttributesData"
+                  optionLabel="shtDesc"
+                  optionValue="columnName"
+                  formControlName="clientAttribute"
+                  id="clientAttribute"
+                  [filter]="true"
+                  filterBy="shtDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  [ngClass]="{ 'is-invalid': f['clientAttribute']?.invalid && (f['clientAttribute']?.dirty || f['clientAttribute']?.touched) }"
+                >
+                  <ng-template let-columns pTemplate="item">
+                    <div title="{{columns?.shtDesc}}">
+                      {{ columns?.shtDesc.length > 10 ? columns?.shtDesc.substring(0, 20) + '...' : columns?.shtDesc }}
+                    </div>
+                  </ng-template>
+                </p-dropdown>
                 <div *ngIf="f['clientAttribute']?.invalid && (f['clientAttribute']?.dirty || f['clientAttribute']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['clientAttribute']?.errors['required']">Client attribute is required</div>
                 </div>
@@ -198,7 +216,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary" id="saveClientAttr" (click)="saveClientAttribute()">Save details</button>
       </div>
     </div>
   </div>
