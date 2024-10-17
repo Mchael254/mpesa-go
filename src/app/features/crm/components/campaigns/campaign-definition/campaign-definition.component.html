@@ -1589,7 +1589,7 @@
   [zIndex]="1"
   (actionEmitter)="processSelectedUser($event)">
   <div modal-body-content>
-    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    <app-staff-modal (userSelected)="getSelectedUser($event)" [accountType]="'USER'">
     </app-staff-modal>
   </div>
 </app-dynamic-simple-modal>

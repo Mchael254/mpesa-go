@@ -6,7 +6,7 @@ import {
   CampaignActivitiesDTO,
   CampaignMessagesDTO,
   CampaignsDTO,
-  CampaignTargetsDTO,
+  CampaignTargetsDTO, ClientAttributesDTO, ClientSearchAttributesDTO, ProductAttributesDTO, ProductClientAttributesDTO,
 } from '../data/campaignsDTO';
 import { HttpParams } from '@angular/common/http';
 import { UtilService } from '../../../shared/services';
@@ -156,6 +156,121 @@ export class CampaignsService {
   deleteCampaignActivity(campaignActivityId: number) {
     return this.apiService.DELETE<CampaignActivitiesDTO>(
       `campaign-activities/${campaignActivityId}`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  getClientAttributes( ): Observable<ClientAttributesDTO[]> {
+    return this.apiService.GET<ClientAttributesDTO[]>(
+      `client-attribute`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  createClientAttribute(
+    data: ClientAttributesDTO
+  ): Observable<ClientAttributesDTO> {
+    return this.apiService.POST<ClientAttributesDTO>(
+      `client-attribute`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  updateClientAttribute(
+    clientAttributeId: number,
+    data: ClientAttributesDTO
+  ): Observable<ClientAttributesDTO> {
+    return this.apiService.PUT<ClientAttributesDTO>(
+      `client-attribute/${clientAttributeId}`,
+      data,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteClientAttribute(clientAttributeId: number) {
+    return this.apiService.DELETE<ClientAttributesDTO>(
+      `client-attribute/${clientAttributeId}`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  getClientSearchAttributes( ): Observable<ClientSearchAttributesDTO[]> {
+    return this.apiService.GET<ClientSearchAttributesDTO[]>(
+      `client-attribute/client-search-attributes`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  getProductAttributes( ): Observable<ProductAttributesDTO[]> {
+    return this.apiService.GET<ProductAttributesDTO[]>(
+      `product-attribute`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  createProductAttribute(
+    data: ProductAttributesDTO
+  ): Observable<ProductAttributesDTO> {
+    return this.apiService.POST<ProductAttributesDTO>(
+      `product-attribute`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  updateProductAttribute(
+    productAttributeId: number,
+    data: ProductAttributesDTO
+  ): Observable<ProductAttributesDTO> {
+    return this.apiService.PUT<ProductAttributesDTO>(
+      `product-attribute/${productAttributeId}`,
+      data,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteProductAttribute(productAttributeId: number) {
+    return this.apiService.DELETE<ProductAttributesDTO>(
+      `product-attribute/${productAttributeId}`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  getProductClientAttributes(productAttributeId: number ): Observable<ProductClientAttributesDTO[]> {
+    const params = new HttpParams().set('productAttributeId', `${productAttributeId}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.apiService.GET<ProductClientAttributesDTO[]>(
+      `product-client-attribute`,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  createProductClientAttribute(
+    data: ProductClientAttributesDTO
+  ): Observable<ProductClientAttributesDTO> {
+    return this.apiService.POST<ProductClientAttributesDTO>(
+      `product-client-attribute`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  updateProductClientAttribute(
+    productClientAttributeId: number,
+    data: ProductClientAttributesDTO
+  ): Observable<ProductClientAttributesDTO> {
+    return this.apiService.PUT<ProductClientAttributesDTO>(
+      `product-client-attribute/${productClientAttributeId}`,
+      data,
+      API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteProductClientAttribute(productClientAttributeId: number) {
+    return this.apiService.DELETE<ProductClientAttributesDTO>(
+      `product-client-attribute/${productClientAttributeId}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
   }
