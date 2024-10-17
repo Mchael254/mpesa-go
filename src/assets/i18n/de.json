@@ -631,7 +631,15 @@
     "converted": "geconverteerd",
     "converted_required": "Conversie is vereist",
     "potential_close_date": "Potentiële Sluitdatum",
-    "potential_close_date_required": "Potentiële Sluitdatum is vereist"
+    "potential_close_date_required": "Potentiële Sluitdatum is vereist",
+    "comment_details": "Kommentar-Details",
+    "comment": "Kommentar",
+    "user_name": "Benutzername",
+    "disposition": "Disposition",
+    "lead_comment": "Lead-Kommentare",
+    "comment_is_required": "Kommentar ist erforderlich",
+    "date_is_required": "Datum ist erforderlich",
+    "disposition_is_required": "Disposition ist erforderlich"
   },
   "gis": {
     "quotation": {
