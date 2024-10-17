@@ -137,9 +137,11 @@ export class QuotationSummaryComponent {
     this.spinner.show()
 
     this.getPremiumComputationDetails()
-    console.log(this.quotationDetails , "MORE DETAILS TEST")
+    console.log("MORE DETAILS TEST",this.quotationDetails )
     this.getAgent();
-    this.sumInsured = sessionStorage.getItem('limitAmount')
+    this.sumInsured =Number( sessionStorage.getItem('limitAmount'))
+    log.debug('SUM INSURED NGONIT',this.sumInsured)
+
     this.createEmailForm()
     this.loadAllSubclass();
     this.createSmsForm();
@@ -189,7 +191,7 @@ internal(){
   getQuotationDetails(code){
     this.quotationService.getQuotationDetails(code).subscribe(res=>{
       this.quotationView = res
-      console.log(this.quotationView , "DETAILS TEST")
+      console.log("DETAILS TEST quotation data",this.quotationView )
       console.log(code,"code")
        // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
@@ -202,6 +204,38 @@ internal(){
       //   this.agents = res
       //   console.log(res)
       // })
+       // Extract risk information
+    this.riskDetails = this.quotationView.riskInformation;
+    this.taxDetails = this.quotationView.taxInformation;
+    log.debug(this.taxDetails);
+
+    // Set items in session storage from riskInformation
+    if (this.riskDetails && this.riskDetails.length > 0) {
+      const firstRisk = this.riskDetails[0];
+      const sectionDetails = firstRisk.sectionsDetails && firstRisk.sectionsDetails.length > 0
+        ? firstRisk.sectionsDetails[0]
+        : null;
+
+      if (sectionDetails) {
+        sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
+        sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
+        sessionStorage.setItem('sectionType', sectionDetails.rateType || '');
+        // sessionStorage.setItem('multiplierDivisionFactor', sectionDetails.rate.toString());
+        sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+        // sessionStorage.setItem('divisionFactor', sectionDetails.freeLimit?.toString() || '');
+        // sessionStorage.setItem('limitAmount', sectionDetails.limitAmount?.toString() || '');
+      }
+    }
+log.debug('SUM INSURED',this.sumInsured)
+    console.log('Session storage values set for LIMITS:', {
+      premiumRate: sessionStorage.getItem('premiumRate'),
+      sectionType: sessionStorage.getItem('sectionType'),
+      sectionDescription: sessionStorage.getItem('sectionDescription'),
+      // multiplierDivisionFactor: sessionStorage.getItem('multiplierDivisionFactor'),
+      rateType: sessionStorage.getItem('rateType'),
+      // divisionFactor: sessionStorage.getItem('divisionFactor'),
+      limitAmount: this.sumInsured
+    });
     })
   }
   getAgent(){
@@ -396,16 +430,36 @@ internal(){
     this.computationDetails.risks.forEach((risk: any) => {
       risk.prorata = 'F';
       risk.limits.forEach((limit: any) => {
+         // Retrieve and log session storage values
+         const premiumRate = Number(sessionStorage.getItem('premiumRate'));
+         const sectionDescription = sessionStorage.getItem('sectionDescription');
+         const sectionType = sessionStorage.getItem('sectionType');
+         const multiplierDivisionFactor = 1
+         const rateType = "FXD"
+        //  const divisionFactor = sessionStorage.getItem('divisionFactor');
+         const limitAmount = this.sumInsured
+
+
+         console.log('Retrieved values from session storage:', {
+           premiumRate,
+           sectionType,
+           multiplierDivisionFactor,
+           rateType,
+           sectionDescription,
+          //  divisionFactor,
+           limitAmount
+         });
         // Update the fields you want to modify
-        limit.premiumRate = sessionStorage.getItem('premiumRate');
+        limit.premiumRate = Number(sessionStorage.getItem('premiumRate'));
+        limit.description = sessionStorage.getItem('sectionDescription');
         limit.sectionType = sessionStorage.getItem('sectionType');
-        limit.multiplierDivisionFactor = sessionStorage.getItem('multiplierDivisionFactor');
-        limit.rateType = sessionStorage.getItem('rateType');
-        limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
-        limit.limitAmount = sessionStorage.getItem('limitAmount')
+        limit.multiplierDivisionFactor = 1
+        limit.rateType = "FXD"
+        // limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
+        limit.limitAmount = this.sumInsured
       });
     });
-      console.log(this.computationDetails.risks)
+     log.debug("Latest COMPUTATION Details",this.computationDetails.risks)
     },
     error: (error: HttpErrorResponse) => {
       log.info(error);

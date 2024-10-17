@@ -1028,6 +1028,8 @@ export class RiskSectionDetailsComponent {
     this.quotationService.updateRiskSection(this.riskCode, this.sectionArray).subscribe((data) => {
       try {
         sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
+const sumInsured = this.sectionDetailsForm.value.limitAmount
+log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
          // Find the index of the section to be updated in the 'sections' array
       const index = this.sections.findIndex(s => s.code === section.code);
