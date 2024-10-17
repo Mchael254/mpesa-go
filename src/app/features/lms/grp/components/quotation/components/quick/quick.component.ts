@@ -325,7 +325,7 @@ highlightInvalid(field: string): boolean {
             //   },
             // });
             this.spinner_Service.hide('download_view');
-            this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation generated successfully'});
+            this.messageService.add({severity: 'success', summary: 'Success', detail: 'Quotation generated successfully'});
             this.router.navigate(['/home/lms/grp/quotation/coverage']);
 
           },
@@ -344,7 +344,7 @@ highlightInvalid(field: string): boolean {
             this.session_storage.set('quotation_code', JSON.stringify(quoteData));
 
             this.spinner_Service.hide('download_view');
-            this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation updated successfully'});
+            this.messageService.add({severity: 'success', summary: 'Success', detail: 'Quotation updated successfully'});
             this.router.navigate(['/home/lms/grp/quotation/coverage']);
 
           },

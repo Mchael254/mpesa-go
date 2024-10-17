@@ -19,7 +19,7 @@ import {SessionStorageService} from "../../../../../../../shared/services/sessio
   selector: 'app-coverage-details',
   templateUrl: './coverage-details.component.html',
   styleUrls: ['./coverage-details.component.css'],
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverageDetailsComponent implements OnInit, OnDestroy {
 
@@ -533,20 +533,20 @@ handleFileChange(event) {
   getCategoryDets() {
       this.coverageService.getCategoryDetails(this.quotationCode).subscribe((categoryDets: CategoryDetailsDto[]) =>{
       this.categoryDetails = categoryDets;
-      console.log("categoryDetails", categoryDets)
+      this.cdr.detectChanges();
     });
   }
 
   getCoverTypes() {
     this.coverageService.getCoverTypes(this.quotationCode).subscribe((coverTypes: CoverTypesDto[]) => {
       this.coverTypes = coverTypes
-      console.log("coverTypes", this.coverTypes)
+      this.cdr.detectChanges();
     });
   }
 
   getCoverTypesPerProduct() {
     this.coverageService.getCoverTypesPerProduct(this.productCode).subscribe((coversPerProd: CoverTypePerProdDTO[]) => {
-      console.log("coversPerProd", coversPerProd);
+      this.cdr.detectChanges();
 
       const formatCvtDesc = (desc) => {
         return desc.charAt(0).toLowerCase() + desc.slice(1).toLowerCase();
@@ -591,8 +591,8 @@ handleFileChange(event) {
 
   getSelectRateTypes() {
     this.coverageService.getSelectRateType().subscribe((SelectRateTypes: SelectRateTypeDTO[]) => {
-      console.log("SelectRateTypes", SelectRateTypes)
-      this.SelectRateType = SelectRateTypes
+      this.SelectRateType = SelectRateTypes;
+      this.cdr.detectChanges();
     });
   }
 
@@ -632,6 +632,7 @@ handleFileChange(event) {
       this.categoryDetailForm.reset();
       this.coverageService.postCategoryDetails(mappedCatDetails).subscribe(
         (catDets: CategoryDetailsDto) => {
+          this.cdr.detectChanges();
           this.getCategoryDets();
           // this.categoryDetails.push(catDets);
 
@@ -690,6 +691,8 @@ handleFileChange(event) {
       .updateCategoryDetails(this.categoryCode, mappedCatDetails)
       .subscribe(
         (updatedCategory: CategoryDetailsDto) => {
+          this.closeCategoryDetstModal();
+          this.cdr.detectChanges();
           this.getCategoryDets();
           this.spinner_Service.hide('download_view');
           this.messageService.add({severity: 'success', summary: 'summary', detail: 'Edited'});
@@ -813,8 +816,8 @@ handleFileChange(event) {
     const coverToPostArray = [coverToPost];
 
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
-      this.getCoverTypes();
       this.cdr.detectChanges();
+      this.getCoverTypes();
       this.detailedCovDetsForm.reset();
       this.spinner_Service.hide('download_view');
       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover saved'});
@@ -861,8 +864,8 @@ handleFileChange(event) {
     const coverToPostArray = [coverToPost];
 
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
-      this.getCoverTypes();
       this.cdr.detectChanges();
+      this.getCoverTypes();
       this.aggregateForm.reset();
       this.spinner_Service.hide('download_view');
       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover saved'});
@@ -906,9 +909,10 @@ handleFileChange(event) {
     console.log("coverToPost edit", coverToPost)
 
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
+      this.closeDetailedModal();
+      this.cdr.detectChanges();
       this.getCoverTypes();
       this.getCategoryDets();
-      this.cdr.detectChanges();
       this.detailedCovDetsForm.reset();
       this.spinner_Service.hide('download_view');
       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Updated'});
@@ -961,11 +965,12 @@ handleFileChange(event) {
     const coverToPostArray = [coverToPost];
 
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
+      this.closeAggregateCoverDetailsModal();
+      this.cdr.detectChanges();
       this.getCoverTypes();
       this.getCategoryDets();
       this.cdr.detectChanges();
       this.aggregateForm.reset();
-      this.closeAggregateCoverDetailsModal();
       this.spinner_Service.hide('download_view');
       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover Updated'});
     },
@@ -1041,8 +1046,8 @@ handleFileChange(event) {
 
   getMembers() {
     this.coverageService.getMembers(this.quotationCode).subscribe((members: MembersDTO[]) => {
-      console.log("members", members)
       this.membersDetails = members;
+      this.cdr.detectChanges();
     },
     (error) => {
       console.log(error);
@@ -1119,16 +1124,15 @@ handleFileChange(event) {
 
   getPremiumMask() {
     this.coverageService.getPremiumMask(this.productCode).subscribe((mask: PremiumMaskDTO[]) => {
-      console.log("mask", mask);
       this.premiumMask = mask
+      this.cdr.detectChanges();
     });
   }
 
   getOccupations() {
     this.coverageService.getOccupation().subscribe((occupation: OccupationDTO[]) => {
-      console.log("occupation", occupation);
       this.occupation = occupation;
-      console.log("this.occupation", this.occupation);
+      this.cdr.detectChanges();
     })
   }
 
