@@ -100,13 +100,95 @@
     </div>
   </p-tabPanel>
   <p-tabPanel header="Group Life">
-    <div>      
-      <div class="row">            
-          <div class="d-flex justify-content-end">
-            <button style="font-size: 12px; padding: 0.5em 1em;" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/lms/grp/quotation/client'">New quote</button>
-                          
+    <div>
+      <div class="row grp-quote-filter-row">
+        <div class="d-flex justify-content-end grp-quote-filter-button-wrapper">
+          <button style="font-size: 12px; padding: 0.5em 1em;" type="button"
+            class="btn btn-sm btn-primary grp-quote-filter-new-quote-btn"
+            [routerLink]="'/home/lms/grp/quotation/client'">New quote</button>
+        </div>
+      </div>
+      <div class="grp-quote-filter-options d-flex justify-content-between align-items-center">
+        <div class="grp-quote-filter-controls">
+          <label for="filterBy" class="grp-quote-filter-label">Filter by</label>
+          <select class="form-select grp-quote-filter-select" (change)="onColumnChange($event)">
+            <option value="" disabled selected>Select option</option>
+            <option *ngFor="let column of grpQuotationsColumns" [value]="column.field">
+              {{ column.label | titlecase }}
+            </option>
+          </select>
+          <ng-container *ngIf="isNumericField(selectedColumn)">
+            <select class="form-select grp-quote-filter-select" (change)="onConditionChange($event)">
+              <option value="" disabled selected>Select condition</option>
+              <option [value]="'greater'">{{ 'Greater Than' | translate }}</option>
+              <option [value]="'less'">{{ 'Less Than' | translate }}</option>
+              <option [value]="'equals'">{{ 'Equals' | translate }}</option>
+            </select>
+          </ng-container>
+          <ng-container *ngIf="selectedColumn === 'cover_from_date' || selectedColumn === 'cover_to_date' || selectedColumn === 'quotation_date'">
+            <p-calendar class="grp-quote-filter-input" [showIcon]="true" [dateFormat]="'dd-MM-yy'"
+              placeholder="Range from" (onSelect)="handleDateSelection($event, 'from')" (onChange)="applyFilter()">
+            </p-calendar>
+            <p-calendar class="grp-quote-filter-input" [showIcon]="true" [dateFormat]="'dd-MM-yy'" [minDate]="minToDate"
+              placeholder="Range to" (onSelect)="handleDateSelection($event, 'to')" (onChange)="applyFilter()">
+            </p-calendar>
+          </ng-container>
+          <ng-container
+            *ngIf="selectedColumn !== 'cover_from_date' && selectedColumn !== 'cover_to_date' && selectedColumn !== 'quotation_date'">
+            <input type="text" pInputText class="form-control grp-quote-filter-input" id="otherNames"
+              (input)="onFilterInput($event)" placeholder="Enter value">
+          </ng-container>
+        </div>
+        <div class="d-flex justify-content-end grp-quote-filter-search-wrapper">
+          <div class="position-relative grp-quote-filter-search-container">
+            <input type="text" class="form-control grp-quote-filter-search-input" placeholder="{{ 'Search' | translate }}"
+              (input)="onSearch($event)">
+            <i class="pi pi-search grp-quote-filter-search-icon"></i>
           </div>
-      </div>           
+        </div>
+      </div>
+      <div class="table-responsive">
+        <p-table [value]="filteredLMS_GRP" [paginator]="filteredLMS_GRP?.length > 0" [rows]="5"
+          [rowsPerPageOptions]="[10, 20, 50]" [showCurrentPageReport]="filteredLMS_GRP?.length > 0"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} quotes" styleClass="p-datatable-striped">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="quotation_number">Quotation No.<p-sortIcon field="quotation_number"></p-sortIcon></th>
+              <th pSortableColumn="product">Product.<p-sortIcon field="product"></p-sortIcon></th>
+              <th pSortableColumn="client_name">Client<p-sortIcon field="client_name"></p-sortIcon></th>
+              <th pSortableColumn="agency_name">Intermediary<p-sortIcon field="agency_name"></p-sortIcon></th>
+              <th pSortableColumn="sum_assured">Sum assured<p-sortIcon field="sum_assured"></p-sortIcon></th>
+              <th pSortableColumn="total_premium">Premium<p-sortIcon field="total_premium"></p-sortIcon></th>
+              <th pSortableColumn="cover_from_date">Cover from<p-sortIcon field="cover_from_date"></p-sortIcon></th>
+              <th pSortableColumn="cover_to_date">Cover to<p-sortIcon field="cover_to_date"></p-sortIcon></th>
+              <th pSortableColumn="quotation_date">Date created<p-sortIcon field="quotation_date"></p-sortIcon></th>
+              <th pSortableColumn="quotation_status">Status<p-sortIcon field="quotation_status"></p-sortIcon></th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-quoteData>
+            <tr>
+              <td>{{ quoteData?.quotation_number || "-" }}</td>
+              <td>{{ quoteData?.product || "-" | titlecase }}</td>
+              <td>{{ quoteData?.client_name || "-" | titlecase }}</td>
+              <td>{{ quoteData?.agency_name || "-" | titlecase }}</td>
+              <td class="align-currency">{{ quoteData?.sum_assured !== null ? (quoteData?.sum_assured | number) : "-" }}
+              </td>
+              <td class="align-currency">{{ quoteData?.total_premium !== null ? (quoteData?.total_premium | number) : "-"
+                }}</td>
+              <td>{{ quoteData?.cover_from_date | date: 'dd-MM-yyyy' || "-" }}</td>
+              <td>{{ quoteData?.cover_to_date | date: 'dd-MM-yyyy'|| "-" }}</td>
+              <td>{{ quoteData?.quotation_date | date: 'dd-MM-yyyy' || "-" }}</td>
+              <td>{{ quoteData?.quotation_status || "-" | titlecase }}</td>
+              <td>{{ "Process" }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+  
+        <div *ngIf="filteredLMS_GRP?.length === 0" class="text-danger d-flex justify-content-center mt-3">
+          No Available List of Group Quotations
+        </div>
+      </div>
     </div>
   </p-tabPanel>
   <p-tabPanel header="General">
