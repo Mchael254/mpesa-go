@@ -631,7 +631,15 @@
     "converted": "imebadilishwa",
     "converted_required": "Mabadiliko Yanahitajika",
     "potential_close_date": "Tarehe ya Kuuza Inayowezekana",
-    "potential_close_date_required": "Tarehe ya Kuuza Inayowezekana Inahitajika"
+    "potential_close_date_required": "Tarehe ya Kuuza Inayowezekana Inahitajika",
+    "comment_details": "Maelezo ya Maoni",
+    "comment": "Maoni",
+    "user_name": "Jina la Mtumiaji",
+    "disposition": "Maamuzi",
+    "lead_comment": "Maoni ya Kiongozi",
+    "comment_is_required": "Maoni yanahitajika",
+    "date_is_required": "Tarehe inahitajika",
+    "disposition_is_required": "Maamuzi yanahitajika"
   },
   "gis": {
     "quotation": {

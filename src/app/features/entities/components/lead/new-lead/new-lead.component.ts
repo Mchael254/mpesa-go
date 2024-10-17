@@ -26,6 +26,7 @@ import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { SetupsParametersService } from '../../../../../shared/services/setups-parameters.service';
 import { LeadsService } from '../../../../../features/crm/services/leads.service';
 import {
+  LeadCommentDto,
   LeadSourceDto,
   LeadStatusDto,
   Leads,
@@ -71,6 +72,7 @@ interface AllProduct {
 })
 export class NewLeadComponent implements OnInit {
   public createLeadForm: FormGroup;
+  public createCommentForm: FormGroup;
 
   public countryData: CountryDto[] = [];
   public statesData: StateDto[] = [];
@@ -93,6 +95,7 @@ export class NewLeadComponent implements OnInit {
   public sectorsData: SectorDTO[] = [];
   public currenciesData: CurrencyDTO[] = [];
   public entityDetails: EntityDto;
+  public commentsData: LeadCommentDto[] = [];
 
   public selectedOrg: OrganizationDTO;
   public selectedCountry: number;
@@ -202,6 +205,7 @@ export class NewLeadComponent implements OnInit {
 
   ngOnInit(): void {
     this.createLeadRegistrationForm();
+    this.CreateCommentRegistrationForm();
     this.fetchClientType();
     this.fetchCountries();
     this.fetchModeOfIdentity();
@@ -535,6 +539,14 @@ export class NewLeadComponent implements OnInit {
 
   get f() {
     return this.createLeadForm.controls;
+  }
+
+  CreateCommentRegistrationForm() {
+    this.createCommentForm = this.fb.group({
+      comment: ['', Validators.required],
+      date: ['', Validators.required],
+      disposition: ['', Validators.required],
+    });
   }
 
   getEntityDetails(): void {
@@ -1120,6 +1132,22 @@ export class NewLeadComponent implements OnInit {
       });
   }
 
+  openCommentModal() {
+    const modal = document.getElementById('commentModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  closeCommentModal() {
+    const modal = document.getElementById('commentModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
   saveLead() {
     this.submitted = true;
     this.createLeadForm.markAllAsTouched();
@@ -1165,7 +1193,17 @@ export class NewLeadComponent implements OnInit {
 
     const leadFormValues = this.createLeadForm.getRawValue();
 
-    log.info(`Collected Lead Form Data`, leadFormValues);
+    log.info(`Collected Form Values`, leadFormValues);
+
+    const selectedIdentityType = this.modeIdentityType.find(
+      (type) => type.id.toString() === leadFormValues.identityType.toString()
+    );
+
+    log.info(`selected mode of id`, selectedIdentityType);
+
+    const modeOfIdentity = selectedIdentityType
+      ? selectedIdentityType.name
+      : null;
 
     const saveLead: Leads = {
       accountCode: leadFormValues.organizationDetails.accountName,
@@ -1173,26 +1211,37 @@ export class NewLeadComponent implements OnInit {
       annualRevenue: leadFormValues.otherDetails.annualRevenue,
       campCode: leadFormValues.primaryDetails.campaingName,
       campTel: leadFormValues.contactDetails.telNumber,
+      clientType: leadFormValues.clientType,
       code: null,
       companyName: leadFormValues.primaryDetails.companyName,
       converted: leadFormValues.otherDetails.converted,
       countryCode: leadFormValues.addressDetails.country,
       currencyCode: leadFormValues.otherDetails.currency,
+      dateOfBirth: leadFormValues.dateOfBirth,
       description: null,
       divisionCode: leadFormValues.organizationDetails.division,
       emailAddress: leadFormValues.contactDetails.emailAddress,
-      clientType: leadFormValues.clientType,
+      gender: leadFormValues.gender,
+      idNumber: leadFormValues.idNumber,
       industry: leadFormValues.otherDetails.sector,
+      leadComments: this.commentsData,
       leadDate: leadFormValues.primaryDetails.date,
       leadSourceCode: leadFormValues.primaryDetails.leadSource,
       leadStatusCode: leadFormValues.primaryDetails.leadStatus,
       mobileNumber: leadFormValues.contactDetails.mobileNumber,
+      // modeOfIdentity: leadFormValues.identityType,
+      modeOfIdentity: modeOfIdentity,
       occupation: leadFormValues.primaryDetails.occupation,
       organizationCode: leadFormValues.organizationDetails.organization,
       otherNames: leadFormValues.otherName,
       physicalAddress: leadFormValues.addressDetails.physicalAddress,
       postalAddress: leadFormValues.addressDetails.postalAddress,
       postalCode: leadFormValues.addressDetails.postalCode,
+      potentialAmount: leadFormValues.otherDetails.potentialAmount,
+      potentialCloseDate: leadFormValues.otherDetails.potentialCloseDate,
+      potentialContributor: leadFormValues.otherDetails.potentialContr,
+      potentialName: leadFormValues.otherDetails.potentialName,
+      potentialSaleStage: leadFormValues.otherDetails.potentialSaleStage,
       productCode: leadFormValues.organizationDetails.product,
       stateCode: leadFormValues.addressDetails.state,
       surname: leadFormValues.surname,
@@ -1215,5 +1264,63 @@ export class NewLeadComponent implements OnInit {
       );
       this.router.navigate(['/home/entity/lead/list']);
     });
+  }
+
+  saveComment() {
+    this.submitted = true;
+    this.createCommentForm.markAllAsTouched();
+
+    if (this.createCommentForm.invalid) {
+      const invalidControls = Array.from(
+        document.querySelectorAll('.is-invalid')
+      ) as Array<HTMLInputElement | HTMLSelectElement>;
+
+      let firstInvalidUnfilledControl:
+        | HTMLInputElement
+        | HTMLSelectElement
+        | null = null;
+
+      for (const control of invalidControls) {
+        if (!control.value) {
+          firstInvalidUnfilledControl = control;
+          break;
+        }
+      }
+
+      if (firstInvalidUnfilledControl) {
+        firstInvalidUnfilledControl.focus();
+        const scrollContainer = this.utilService.findScrollContainer(
+          firstInvalidUnfilledControl
+        );
+        if (scrollContainer) {
+          scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+        }
+      } else {
+        const firstInvalidControl = invalidControls[0];
+        if (firstInvalidControl) {
+          firstInvalidControl.focus();
+          const scrollContainer =
+            this.utilService.findScrollContainer(firstInvalidControl);
+          if (scrollContainer) {
+            scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+          }
+        }
+      }
+      return;
+    }
+
+    const commentFormValues = this.createCommentForm.getRawValue();
+
+    const commentData: LeadCommentDto = {
+      code: null,
+      comment: commentFormValues.comment,
+      date: commentFormValues.date,
+      disposition: commentFormValues.disposition,
+      leadCode: null,
+      userCode: null,
+    };
+    this.commentsData.push(commentData);
+    this.createCommentForm.reset();
+    this.closeCommentModal();
   }
 }
