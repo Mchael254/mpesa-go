@@ -36,3 +36,214 @@ table tr th {
 .p-highlight {
     border: black 2px solid
 } 
+/* primeng table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+td {
+    padding: 2px;
+}
+
+tr {
+    border-bottom: none !important;
+    white-space: nowrap;
+}
+
+/* primeng table end */
+
+.align-currency {
+    text-align: right;
+}
+
+/* Row and Button Styling */
+.grp-quote-filter-row {
+    display: flex;
+}
+
+.grp-quote-filter-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.grp-quote-filter-new-quote-btn {
+    font-size: 12px;
+    padding: 0.5em 1em;
+}
+
+/* Filter by Options Styling */
+.grp-quote-filter-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.grp-quote-filter-label {
+    color: black;
+    margin-right: 8px;
+    white-space: nowrap;
+    width: 60px;
+}
+
+.grp-quote-filter-select {
+    margin-right: 8px;
+    min-width: 150px;
+    width: 180px;
+    height: 35px;
+}
+
+.grp-quote-filter-input {
+    margin-right: 8px;
+    min-width: 250px;
+    height: 35px;
+}
+
+/* Search Field and Icon Styling */
+.grp-quote-filter-search-wrapper {
+    max-width: 280px;
+    width: 100%;
+}
+
+.grp-quote-filter-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.grp-quote-filter-search-input {
+    padding-left: 35px;
+    width: 100%;
+}
+
+.grp-quote-filter-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #666;
+}
+
+.grp-quote-filter-position-relative {
+    position: relative;
+}
+
+.grp-quote-filter-select {
+    width: 180px;
+    height: 35px;
+}
+
+.grp-quote-filter-input {
+    width: 150px;
+    height: 35px;
+}
+
+.grp-quote-filter-label,
+.grp-quote-filter-select,
+.grp-quote-filter-input {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+/* Media Query for Medium Screens (901px to 1357px) */
+@media (min-width: 901px) and (max-width: 1357px) {
+    .grp-quote-filter-controls {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .grp-quote-filter-label {
+        margin-bottom: 5px;
+    }
+
+    .grp-quote-filter-select,
+    .grp-quote-filter-input {
+        margin-bottom: 10px;
+        width: 100%;
+        height: 35px;
+    }
+
+    .grp-quote-filter-search-wrapper {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: auto;
+        width: 100%;
+        padding-left: 20px;
+    }
+
+    .grp-quote-filter-search-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .grp-quote-filter-search-input {
+        padding-left: 35px;
+        width: 100%;
+    }
+
+    .grp-quote-filter-search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #666;
+    }
+}
+
+/* Media Query for Smaller Devices */
+@media (max-width: 900px) {
+    .grp-quote-filter-row {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .grp-quote-filter-button-wrapper {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .grp-quote-filter-new-quote-btn {
+        width: 100%;
+    }
+
+    .grp-quote-filter-options {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 10px;
+    }
+
+    .grp-quote-filter-label {
+        margin-right: 0;
+        margin-bottom: 5px;
+        width: auto;
+    }
+
+    .grp-quote-filter-select,
+    .grp-quote-filter-input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .grp-quote-filter-search-wrapper {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .grp-quote-filter-search-container {
+        width: 100%;
+    }
+
+    .grp-quote-filter-search-input {
+        width: 100%;
+    }
+}

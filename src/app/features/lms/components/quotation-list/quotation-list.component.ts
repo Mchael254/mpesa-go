@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, map, switchMap } from 'rxjs';
@@ -9,14 +9,17 @@ import {ProductService} from "../../service/product/product.service";
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {Logger} from "../../../../shared/services";
 import {TableDetail} from "../../../../shared/data/table-detail";
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { GroupQuotationsListDTO } from '../../models';
 
 const logger = new Logger('QuotationComponent');
 @Component({
   selector: 'app-quotation-list',
   templateUrl: './quotation-list.component.html',
   styleUrls: ['./quotation-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class QuotationListComponent implements OnInit {
+export class QuotationListComponent implements OnInit, OnDestroy {
   fieldsets: any[];
   buttonConfig: any;
   page: any;
@@ -24,17 +27,26 @@ export class QuotationListComponent implements OnInit {
   rowsInd: any[] = [];
   productList: any[];
   webQuoteTotalLength: number;
+  grpQuotationsList: GroupQuotationsListDTO[];
 
   constructor(
     private quotation_service: QuotationService,
     private product_service: ProductService,
     private router: Router,
     private session_service: SessionStorageService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private cdr: ChangeDetectorRef
   ) {
     this.getListOfWebQuote();
+    this.getGroupQuotationsList();
   }
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    
+  }
+
+  ngOnDestroy(): void {
+      
+  }
 
   paginate(value) {
     let pageObj = { ...value };
@@ -180,4 +192,16 @@ export class QuotationListComponent implements OnInit {
     }
     logger.info('GO BACK');
   }
+
+    /**
+     * The function `getGroupQuotationsList` retrieves a list of group quotations and updates the
+     * component's `grpQuotationsList` property.
+     */
+    getGroupQuotationsList() {
+        this.quotation_service.getGroupQuotationsList().pipe(untilDestroyed(this))
+            .subscribe((res: GroupQuotationsListDTO[]) => {
+                this.grpQuotationsList = res;
+                this.cdr.detectChanges();
+            });
+    }
 }
