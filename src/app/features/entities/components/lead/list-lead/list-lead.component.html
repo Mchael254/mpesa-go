@@ -109,7 +109,15 @@
           </td>
           <td>{{ lead.modeOfIdentity | titlecase }}</td>
           <td>{{ lead.idNumber }}</td>
-          <td>{{ lead.clientType | titlecase }}</td>
+          <td>
+            {{
+              lead.clientType === "13I"
+                ? "Individual"
+                : lead.clientType === "14C"
+                ? "Corporate"
+                : (lead.clientType | titlecase)
+            }}
+          </td>
           <td>
             <div class="actions">
               <button

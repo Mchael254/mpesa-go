@@ -631,7 +631,15 @@
     "converted": "convertido",
     "converted_required": "Se requiere la conversión",
     "potential_close_date": "Fecha de Cierre Potencial",
-    "potential_close_date_required": "La fecha de cierre potencial es requerida"
+    "potential_close_date_required": "La fecha de cierre potencial es requerida",
+    "comment_details": "Detalles del comentario",
+    "comment": "Comentario",
+    "user_name": "Nombre de usuario",
+    "disposition": "Disposición",
+    "lead_comment": "Comentarios del lead",
+    "comment_is_required": "El comentario es obligatorio",
+    "date_is_required": "La fecha es obligatoria",
+    "disposition_is_required": "La disposición es obligatoria"
   },
   "gis": {
     "quotation": {

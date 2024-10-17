@@ -104,7 +104,7 @@
                     </option>
                     <option
                       *ngFor="let type of clientsTypeData"
-                      [value]="type.code"
+                      [value]="type.type"
                     >
                       {{ type.clientTypeName }}
                     </option>
@@ -2251,6 +2251,100 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-3">
+          <div
+            class="bg-transparent"
+            [ngClass]="{
+              'card-header': isCardOpen[6],
+              'local-card-header': !isCardOpen[6]
+            }"
+          >
+            {{ "entities.comment_details" | translate }}
+            <div class="float-end">
+              <button
+                type="button"
+                id="icon"
+                class="btn btn-primary"
+                [attr.aria-expanded]="isCardOpen[6]"
+                (click)="toggleCard(6)"
+              >
+                <i
+                  [ngClass]="{
+                    'fa-chevron-down': !isCardOpen[6],
+                    'fa-chevron-up': isCardOpen[6]
+                  }"
+                  class="fa-solid"
+                ></i>
+              </button>
+            </div>
+          </div>
+          <div class="collapse card-body" [ngClass]="{ show: isCardOpen[6] }">
+            <div class="row">
+              <div class="mb-2">
+                <div class="float-end">
+                  <span class="icon-circle"
+                    ><i
+                      class="fa-solid fa-plus"
+                      (click)="openCommentModal()"
+                    ></i
+                  ></span>
+                </div>
+              </div>
+              <div class="mb-2">
+                <p-table
+                  #commentTable
+                  [value]="commentsData"
+                  styleClass="p-datatable-sm"
+                  responsiveLayout="scroll"
+                  [scrollable]="true"
+                  scrollHeight="400px"
+                  class="ui-datatable"
+                  [globalFilterFields]="['description']"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="head" pSortableColumn="comment">
+                        {{ "entities.comment" | translate
+                        }}<p-sortIcon field="comment"></p-sortIcon>
+                      </th>
+                      <th class="head" pSortableColumn="date">
+                        {{ "entities.date" | translate
+                        }}<p-sortIcon field="date"></p-sortIcon>
+                      </th>
+                      <th class="head" pSortableColumn="userName">
+                        {{ "entities.user_name" | translate
+                        }}<p-sortIcon field="userName"></p-sortIcon>
+                      </th>
+                      <th class="head" pSortableColumn="disposition">
+                        {{ "entities.disposition" | translate
+                        }}<p-sortIcon field="disposition"></p-sortIcon>
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-document>
+                    <tr>
+                      <td class="body">{{ document.comment }}</td>
+                      <td class="body">
+                        {{ document.date | date : "dd/MM/yyyy" }}
+                      </td>
+                      <td class="body">{{ document.userName }}</td>
+                      <td class="body">{{ document.disposition }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8">No Comments found.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <button
       id="saveLeadBtn"
       class="btn float-end rounded-1 px-3 mb-2 btn-primary"
@@ -2259,4 +2353,136 @@
       {{ "entities.save" | translate }}
     </button>
   </form>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="commentModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          {{ "entities.lead_comment" | translate }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeCommentModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createCommentForm">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="comment" class="form-label">{{
+                "entities.comment" | translate
+              }}</label>
+              <textarea
+                class="form-control"
+                id="comment"
+                placeholder="Comment"
+                formControlName="comment"
+                rows="3"
+                [ngClass]="{
+                  'is-invalid':
+                    f['comment']?.invalid &&
+                    (f['comment']?.dirty || f['comment']?.touched)
+                }"
+              ></textarea>
+              <div
+                *ngIf="
+                  f['comment']?.invalid &&
+                  (f['comment']?.dirty || f['comment']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['comment']?.errors
+                }"
+              >
+                <div *ngIf="f['comment']?.errors['required']">
+                  {{ "comment_is_required" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="date" class="form-label">{{
+                "entities.date" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                name="filterByDay"
+                placeholder="Date"
+                onfocus="(this.type='date')"
+                onblur="(this.type='text')"
+                formControlName="date"
+                [ngClass]="{
+                  'is-invalid':
+                    f['date']?.invalid &&
+                    (f['date']?.dirty || f['date']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['date']?.invalid && (f['date']?.dirty || f['date']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['date']?.errors
+                }"
+              >
+                <div *ngIf="f['date']?.errors['required']">
+                  {{ "date_is_required" | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="disposition" class="form-label">{{
+                "entities.disposition" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="disposition"
+                placeholder="Disposition"
+                formControlName="disposition"
+                [ngClass]="{
+                  'is-invalid':
+                    f['disposition']?.invalid &&
+                    (f['disposition']?.dirty || f['disposition']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['disposition']?.invalid &&
+                  (f['disposition']?.dirty || f['disposition']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['disposition']?.errors
+                }"
+              >
+                <div *ngIf="f['disposition']?.errors['required']">
+                  {{ "disposition_is_required" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveComment()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
