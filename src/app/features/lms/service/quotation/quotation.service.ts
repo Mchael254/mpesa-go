@@ -35,4 +35,8 @@ export class QuotationService {
     return this.api.POST(`${this.QUOTATION_BASE_URL}/generate-proposal-no/${code}`, null, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
   }
 
+  getGroupQuotationsList(){
+    return this.api.GET(`${this.QUOTATION_BASE_URL}/group-quotations`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  }
+
 }
