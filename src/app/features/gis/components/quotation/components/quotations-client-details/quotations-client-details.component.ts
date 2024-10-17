@@ -223,7 +223,7 @@ export class QuotationsClientDetailsComponent {
    */
 
   getClient(){
-    this.clientService.getClients(0, 1000).subscribe(data=>{
+    this.clientService.getClients(0, 100).subscribe(data=>{
       this.client = data
       this.clientList = this.client.content
       console.log(this.clientList)
