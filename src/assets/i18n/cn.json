@@ -1901,6 +1901,14 @@
     "productName": "产品名称",
     "engagements": "互动",
     "total": "总计",
-    "categoryAudience": "类别受众百分比"
+    "categoryAudience": "类别受众百分比",
+    "clientAttributes": "客户属性",
+    "prompt": "提示",
+    "range": "范围",
+    "productAttributes": "产品属性",
+    "clientAttributeName": "客户属性名称",
+    "attributeMinValue": "属性最小值",
+    "attributeMaxValue": "属性最大值",
+    "attributeFixedValue": "属性固定值"
   }
 }

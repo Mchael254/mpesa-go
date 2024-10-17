@@ -2221,6 +2221,14 @@
     "productName": "Nom du produit",
     "engagements": "Engagements",
     "total": "Total",
-    "categoryAudience": "% de l'audience de la catégorie"
+    "categoryAudience": "% de l'audience de la catégorie",
+    "clientAttributes": "Attributs du client",
+    "prompt": "Invite",
+    "range": "Gamme",
+    "productAttributes": "Attributs du produit",
+    "clientAttributeName": "Nom de l'attribut client",
+    "attributeMinValue": "Valeur minimale de l'attribut",
+    "attributeMaxValue": "Valeur maximale de l'attribut",
+    "attributeFixedValue": "Valeur fixe de l'attribut"
   }
 }
