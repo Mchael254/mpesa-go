@@ -659,7 +659,15 @@
     "converted": "converted",
     "converted_required": "Converted is Required",
     "potential_close_date": "Potential Close Date",
-    "potential_close_date_required": "Potential Close Date is Required"
+    "potential_close_date_required": "Potential Close Date is Required",
+    "comment_details": "Comment Details",
+    "comment": "Comment",
+    "user_name": "User Name",
+    "disposition": "Disposition",
+    "lead_comment": "Lead Comments",
+    "comment_is_required": "Comment is required",
+    "date_is_required": "Date is required",
+    "disposition_is_required": "Disposition is required"
   },
   "gis": {
     "quotation": {

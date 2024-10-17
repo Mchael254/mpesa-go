@@ -631,7 +631,15 @@
     "converted": "已转换",
     "converted_required": "转换为必填项",
     "potential_close_date": "潜在结束日期",
-    "potential_close_date_required": "潜在结束日期为必填项"
+    "potential_close_date_required": "潜在结束日期为必填项",
+    "comment_details": "评论详情",
+    "comment": "评论",
+    "user_name": "用户名",
+    "disposition": "处理状态",
+    "lead_comment": "潜在客户评论",
+    "comment_is_required": "评论是必需的",
+    "date_is_required": "日期是必需的",
+    "disposition_is_required": "处理状态是必需的"
   },
   "gis": {
     "quotation": {
