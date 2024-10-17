@@ -1902,6 +1902,14 @@
     "productName": "Produktname",
     "engagements": "Interaktionen",
     "total": "Gesamt",
-    "categoryAudience": "% der Zielgruppe der Kategorie"
+    "categoryAudience": "% der Zielgruppe der Kategorie",
+    "clientAttributes": "Kundenattribute",
+    "prompt": "Aufforderung",
+    "range": "Bereich",
+    "productAttributes": "Produktattribute",
+    "clientAttributeName": "Kundenattributname",
+    "attributeMinValue": "Attribut-Mindestwert",
+    "attributeMaxValue": "Attribut-Höchstwert",
+    "attributeFixedValue": "Fester Attributwert"
   }
 }
