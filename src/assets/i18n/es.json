@@ -2220,6 +2220,14 @@
     "productName": "Nombre del producto",
     "engagements": "Interacciones",
     "total": "Total",
-    "categoryAudience": "% de la audiencia de la categoría"
+    "categoryAudience": "% de la audiencia de la categoría",
+    "clientAttributes": "Atributos del cliente",
+    "prompt": "Aviso",
+    "range": "Rango",
+    "productAttributes": "Atributos del producto",
+    "clientAttributeName": "Nombre del atributo del cliente",
+    "attributeMinValue": "Valor mínimo del atributo",
+    "attributeMaxValue": "Valor máximo del atributo",
+    "attributeFixedValue": "Valor fijo del atributo"
   }
 }

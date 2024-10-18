@@ -72,3 +72,44 @@ export interface CampaignActivitiesDTO {
   campaignCode: number,
   campaignActCode: number
 }
+
+export interface ClientAttributesDTO {
+  code: number,
+  name: string,
+  description: string,
+  prompt: string,
+  range: string,
+  inputType: string,
+  columnName: string,
+  tableName: string
+}
+
+export interface ClientSearchAttributesDTO {
+  columnName: string,
+  shtDesc: string,
+  tableName: string
+}
+
+export interface ProductAttributesDTO {
+  code: number,
+  productCode: number,
+  description: string,
+  shortDescription: string,
+  narration: string,
+  system: number
+}
+
+export interface ProductClientAttributesDTO {
+  code: number,
+  productAttributeCode: number,
+  clientAttributeCode: number,
+  min: string,
+  max: string,
+  fixedValue: string
+}
+
+export interface AggregatedProduct {
+  code: number,
+  description: string,
+  shortDescription?: string
+}
