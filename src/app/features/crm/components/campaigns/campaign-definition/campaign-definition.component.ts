@@ -8,7 +8,7 @@ import {map, take} from "rxjs";
 import {ProductsService} from "../../../../gis/components/setups/services/products/products.service";
 import {ProductService as LmsProductService} from "../../../../lms/service/product/product.service";
 import {
-  AggregatedCampaignsDTO, CampaignActivitiesDTO,
+  AggregatedCampaignsDTO, AggregatedProduct, CampaignActivitiesDTO,
   CampaignMessagesDTO,
   CampaignsDTO,
   CampaignTargetsDTO
@@ -64,7 +64,7 @@ export class CampaignDefinitionComponent implements OnInit {
   url = ""
   selectedFile: File;
 
-  productList: AllProduct[] = [];
+  productList: AggregatedProduct[] = [];
   lmsProducts: any[] = [];
 
   navigationLinks: any[] = [
@@ -815,9 +815,9 @@ export class CampaignDefinitionComponent implements OnInit {
       .pipe(
         take(1),
         map(data => {
-          const allProducts: AllProduct[] = [];
+          const allProducts: AggregatedProduct[] = [];
           data.forEach(product => {
-            const combinedProduct: AllProduct = {
+            const combinedProduct: AggregatedProduct = {
               code: product.code,
               description: product.description
             }
@@ -843,9 +843,9 @@ export class CampaignDefinitionComponent implements OnInit {
       .pipe(
         take(1),
         map(data => {
-          const allProducts: AllProduct[] = [];
+          const allProducts: AggregatedProduct[] = [];
           data.forEach(product => {
-            const combinedProduct: AllProduct = {
+            const combinedProduct: AggregatedProduct = {
               code: product.code,
               description: product.description
             }
@@ -1057,8 +1057,10 @@ export class CampaignDefinitionComponent implements OnInit {
   editCampaign() {
     this.editMode = !this.editMode;
     const campaign = this.selectedCampaign.campaign
+    this.selectedSystem = campaign.system;
+    this.onSystemChange();
     log.info(">>campaign", campaign)
-    if (campaign) {
+    if (campaign && this.productList) {
       // this.openCampaignMessageModal();
       this.createCampaignDefinitionForm.patchValue({
         name: campaign.campaignName,
@@ -1082,7 +1084,7 @@ export class CampaignDefinitionComponent implements OnInit {
         pageImpressions: campaign.impressionCount,
         event: campaign.events,
         venue: campaign.venue,
-        products: campaign.product
+        products: campaign.product === null ? this.productList : [campaign.product]
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
@@ -1733,7 +1735,3 @@ export class CampaignDefinitionComponent implements OnInit {
   ngOnDestroy(): void {}
 }
 
-interface AllProduct {
-  code: number,
-  description: string
-}

@@ -25,7 +25,7 @@
 
   <div class="card">
     <div class="card-body">
-      <h5 class="text-dark">Product</h5>
+      <h5 class="text-dark">{{'campaignMngmt.product'| translate }}</h5>
       <div class="row mb-2">
         <div class="col-sm-12 col-md-6">
           <input
@@ -34,84 +34,7 @@
             placeholder="Search"
             aria-label="search"
             aria-describedby="search"
-
-          />
-        </div>
-
-        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
-          <div class="float-end">
-        <span class="icon-circle">
-              <i class="fa-solid fa-plus"
-                 (click)="openDefineProductModal()"></i>
-            </span>
-            <span class="icon-circle">
-              <i class="pi pi-pencil"
-                 (click)="editProduct()"></i>
-            </span>
-            <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-      <p-table
-        #productsTable
-        [autoLayout]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [showCurrentPageReport]="true"
-        [rows]="pageSize || 5"
-        [totalRecords]="productData?.length"
-        [value]="productData"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-        responsiveLayout="stack"
-        [scrollable]="true"
-        [(selection)]="selectedProduct"
-        selectionMode="single"
-        dataKey="code"
-        scrollHeight="400px"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
-      >
-
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-            <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-            <th pSortableColumn="prompt">Prompt <p-sortIcon field="prompt"></p-sortIcon></th>
-            <th pSortableColumn="range">Range <p-sortIcon field="range"></p-sortIcon></th>
-
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-clientAttribute>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4">No Product Detail(s) Found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
-
-  <div class="card mt-3">
-    <div class="card-body">
-      <h5 class="text-dark">Product attributes</h5>
-      <div class="row mb-2">
-        <div class="col-sm-12 col-md-6">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search"
-            aria-label="search"
-            aria-describedby="search"
-
+            (input)="filterProductAttributes($event)"
           />
         </div>
 
@@ -126,7 +49,7 @@
                  (click)="editProductAttribute()"></i>
             </span>
             <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can" id="deleteProductAttr" (click)="deleteProductAttribute()"></i>
             </span>
           </div>
         </div>
@@ -148,26 +71,101 @@
         dataKey="code"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
+        [globalFilterFields]="['description', 'narration']"
       >
 
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="name">Client attribute name <p-sortIcon field="name"></p-sortIcon></th>
-            <th pSortableColumn="description">Attribute min value <p-sortIcon field="description"></p-sortIcon></th>
-            <th pSortableColumn="prompt">Attribute max value <p-sortIcon field="prompt"></p-sortIcon></th>
-            <th pSortableColumn="range">Attribute fixed value <p-sortIcon field="range"></p-sortIcon></th>
-            <th pSortableColumn="range">Range <p-sortIcon field="range"></p-sortIcon></th>
+            <th pSortableColumn="system">{{'campaignMngmt.system'| translate }}<p-sortIcon field="system"></p-sortIcon></th>
+            <th pSortableColumn="description">{{'campaignMngmt.description'| translate }}<p-sortIcon field="description"></p-sortIcon></th>
+            <th pSortableColumn="narration">{{'campaignMngmt.narration'| translate }}<p-sortIcon field="narration"></p-sortIcon></th>
 
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-productAttribute>
+          <tr [pSelectableRow]="productAttribute" (click)="fetchProductClientAttributes(productAttribute)">
+            <td>{{getSystemName(productAttribute?.system) || productAttribute?.system | titlecase}}</td>
+            <td>{{productAttribute?.description | titlecase}}</td>
+            <td>{{productAttribute?.narration | titlecase}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td colspan="4">No Product Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <h5 class="text-dark">{{'campaignMngmt.productAttributes'| translate }}</h5>
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search"
+            aria-label="search"
+            aria-describedby="search"
+            (input)="filterProductClientAttributes($event)"
+          />
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end mt-2">
+          <div class="float-end">
+        <span class="icon-circle">
+              <i class="fa-solid fa-plus"
+                 (click)="openDefineProductClientAttributesModal()"></i>
+            </span>
+            <span class="icon-circle">
+              <i class="pi pi-pencil"
+                 (click)="editProductClientAttribute()"></i>
+            </span>
+            <span class="icon-circle">
+              <i class="fa-regular fa-trash-can" id="deleteProdClientAttr" (click)="deleteProductClientAttribute()"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <p-table
+        #productClientAttributesTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="productClientAttributesData?.length"
+        [value]="productClientAttributesData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedProductClientAttributes"
+        selectionMode="single"
+        dataKey="code"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['min', 'max', 'fixedValue']"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{'campaignMngmt.clientAttributeName'| translate }}</th>
+            <th pSortableColumn="min">{{'campaignMngmt.attributeMinValue'| translate }}<p-sortIcon field="min"></p-sortIcon></th>
+            <th pSortableColumn="max">{{'campaignMngmt.attributeMaxValue'| translate }}<p-sortIcon field="max"></p-sortIcon></th>
+            <th pSortableColumn="fixedValue">{{'campaignMngmt.attributeFixedValue'| translate }}<p-sortIcon field="fixedValue"></p-sortIcon></th>
+            <th>{{'campaignMngmt.range'| translate }}</th>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-productClientAttribute>
+          <tr [pSelectableRow]="productClientAttribute">
+            <td>{{getClientAttribute(productClientAttribute?.clientAttributeCode).name | titlecase}}</td>
+            <td>{{productClientAttribute?.min}}</td>
+            <td>{{productClientAttribute?.max}}</td>
+            <td>{{productClientAttribute?.fixedValue | titlecase}}</td>
+            <td>{{getClientAttribute(productClientAttribute?.clientAttributeCode).range | titlecase}}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -194,23 +192,32 @@
         <button
           type="button"
           class="btn-close"
-          (click)="closeDefineProductModal()"
+          (click)="closeDefineProductAttributesModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createProductForm">
+        <form [formGroup]="createProductAttributesForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.selectAttribute === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="sysName">System name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="sysName"
+                <p-dropdown
+                  [options]="systems"
+                  optionLabel="shortDesc"
+                  optionValue="id"
                   formControlName="sysName"
+                  id="sysName"
+                  [filter]="true"
+                  filterBy="shortDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  [(ngModel)]="selectedSystem"
+                  (onChange)="onSystemChange()"
                   [ngClass]="{ 'is-invalid': g['sysName']?.invalid && (g['sysName']?.dirty || g['sysName']?.touched) }"
-                />
+                >
+                </p-dropdown>
                 <div *ngIf="g['sysName']?.invalid && (g['sysName']?.dirty || g['sysName']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['sysName']?.errors['required']">System name is required</div>
                 </div>
@@ -219,13 +226,21 @@
             <ng-container *ngIf="visibleStatus.productName === 'Y'">
               <div class="col-md-6">
                 <label class="form-label w-100" for="productName">Product name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="productName"
+                <p-dropdown
+                  [options]="productList"
+                  optionLabel="description"
+                  optionValue="code"
                   formControlName="productName"
+                  id="productName"
+                  [filter]="true"
+                  filterBy="description"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  (onChange)="onProductChange($event.value)"
                   [ngClass]="{ 'is-invalid': g['productName']?.invalid && (g['productName']?.dirty || g['productName']?.touched) }"
-                />
+                >
+                </p-dropdown>
                 <div *ngIf="g['productName']?.invalid && (g['productName']?.dirty || g['productName']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['productName']?.errors['required']">Product name is required</div>
                 </div>
@@ -279,8 +294,8 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" id="saveProdAttr" (click)="saveProductAttribute()">Save details</button>
       </div>
     </div>
   </div>
@@ -300,42 +315,54 @@
         <button
           type="button"
           class="btn-close"
-          (click)="closeDefineProductAttributesModal()"
+          (click)="closeDefineProductClientAttributesModal()"
           aria-label="Close"
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createProductAttributesForm">
+        <form [formGroup]="createProductClientAttributesForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.selectAttribute === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="selectAttribute">Select attribute</label>
-                <select class="form-select" id="selectAttribute" formControlName="selectAttribute"
-                [ngClass]="{ 'is-invalid': f['selectAttribute']?.invalid && (f['selectAttribute']?.dirty || f['selectAttribute']?.touched) }">
-                  <option value=""></option>
-                  <option value=""></option>
-                </select>
+                <p-dropdown
+                  [options]="clientAttributesData"
+                  optionLabel="name"
+                  optionValue="code"
+                  formControlName="selectAttribute"
+                  id="selectAttribute"
+                  [filter]="true"
+                  filterBy="shortDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  (ngModelChange)="onSelectClientAttribute($event)"
+                  [ngClass]="{ 'is-invalid': f['selectAttribute']?.invalid && (f['selectAttribute']?.dirty || f['selectAttribute']?.touched) }"
+                >
+                </p-dropdown>
                 <div *ngIf="f['selectAttribute']?.invalid && (f['selectAttribute']?.dirty || f['selectAttribute']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['selectAttribute']?.errors['required']">Attribute is required</div>
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.productAttributeCheck === 'Y'">
-              <div class="col-md-12">
-                <label class="form-label w-100" for="productAttributeCheck">Check</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="productAttributeCheck"
-                  formControlName="productAttributeCheck"
-                  [ngClass]="{ 'is-invalid': f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched) }"
-                />
-                <div *ngIf="f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['productAttributeCheck']?.errors['required']">Check is required</div>
+            <div *ngIf="selectedClientAttribute?.range === 'N'">
+              <ng-container *ngIf="visibleStatus.productAttributeCheck === 'Y'">
+                <div class="col-md-12">
+                  <label class="form-label w-100" for="productAttributeCheck">{{selectedClientAttribute?.description | titlecase}}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="productAttributeCheck"
+                    formControlName="productAttributeCheck"
+                    [ngClass]="{ 'is-invalid': f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched) }"
+                  />
+                  <div *ngIf="f['productAttributeCheck']?.invalid && (f['productAttributeCheck']?.dirty || f['productAttributeCheck']?.touched)" class="form-text text-danger">
+                    <div *ngIf="f['productAttributeCheck']?.errors['required']">Check is required</div>
+                  </div>
                 </div>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="visibleStatus.minValue === 'Y'">
+              </ng-container>
+            </div>
+            <ng-container *ngIf="visibleStatus.minValue === 'Y' && selectedClientAttribute?.range === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="minValue">Min value</label>
                 <input
@@ -350,7 +377,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.maxValue === 'Y'">
+            <ng-container *ngIf="visibleStatus.maxValue === 'Y' && selectedClientAttribute?.range === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="maxValue">Max value</label>
                 <input
@@ -368,8 +395,8 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" id="saveProdClientAttr" (click)="saveProductClientAttribute()">Save details</button>
       </div>
     </div>
   </div>

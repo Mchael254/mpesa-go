@@ -2257,6 +2257,14 @@
     "productName": "Product name",
     "engagements": "Engagements",
     "total": "Total",
-    "categoryAudience": "% of category audience"
+    "categoryAudience": "% of category audience",
+    "clientAttributes": "Client attributes",
+    "prompt": "Prompt",
+    "range": "Range",
+    "productAttributes": "Product attributes",
+    "clientAttributeName": "Client attribute name",
+    "attributeMinValue":"Attribute min value",
+    "attributeMaxValue": "Attribute max value",
+    "attributeFixedValue": "Attribute fixed value"
   }
 }

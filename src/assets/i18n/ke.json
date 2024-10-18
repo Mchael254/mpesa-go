@@ -1903,6 +1903,14 @@
     "productName": "Jina la bidhaa",
     "engagements": "Ushirikiano",
     "total": "Jumla",
-    "categoryAudience": "% ya hadhira ya kitengo"
+    "categoryAudience": "% ya hadhira ya kitengo",
+    "clientAttributes": "Sifa za mteja",
+    "prompt": "Kidokezo",
+    "range": "Aina",
+    "productAttributes": "Sifa za bidhaa",
+    "clientAttributeName": "Jina la sifa ya mteja",
+    "attributeMinValue": "Thamani ya chini ya sifa",
+    "attributeMaxValue": "Thamani ya juu ya sifa",
+    "attributeFixedValue": "Thamani ya kudumu ya sifa"
   }
 }
