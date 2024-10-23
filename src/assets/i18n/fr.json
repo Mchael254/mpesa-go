@@ -1554,7 +1554,13 @@
         "total_contribution": "Contribution totale",
         "total_account_contributions": "Contributions totales du compte",
         "investment_summary_report": "Rapport de synthèse des investissements",
-        "pension_account_summary_report": "Rapport de synthèse du compte de pension"
+        "pension_account_summary_report": "Rapport de synthèse du compte de pension",
+        "generate_statement": "Générer l'état",
+        "to_date": "À ce jour",
+        "from_date": "Date de début",
+        "pension_account_totals": "Totaux du compte de pension",
+        "member_itemized_statement": "État détaillé du membre",
+        "membership_certificate": "Certificat d'adhésion"
       },
       "claims": {
         "claim_initiation": "Début de la réclamation",
