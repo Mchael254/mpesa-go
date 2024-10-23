@@ -24,16 +24,15 @@ import { AdminQuoteSummaryComponent } from './components/admin/admin-quote-summa
 import { AdminCoverageDetailsComponent } from './components/admin/admin-coverage-details/admin-coverage-details.component';
 import { AdminInvestmentDetailsComponent } from './components/admin/admin-investment-details/admin-investment-details.component';
 import { AdminCreditLifeSummaryComponent } from './components/admin/admin-credit-life-summary/admin-credit-life-summary.component';
-import { ServiceRequestsDashboardComponent } from './components/admin/admin-service-requests/service-requests-dashboard/service-requests-dashboard.component';
-import { ServiceRequestLogsComponent } from './components/admin/admin-service-requests/service-request-logs/service-request-logs.component';
-import { ServiceRequestComponent } from './components/admin/admin-service-requests/service-request/service-request.component';
-import { MemberServiceRequestComponent } from './components/member/member-service-request/member-service-request.component';
 import { AgentDashboardComponent } from './components/agent/components/agent-dashboard/agent-dashboard.component';
 import { AgentPoliciesComponent } from './components/agent/components/agent-policies/agent-policies.component';
 import { AgentQuotesComponent } from './components/agent/components/agent-quotes/agent-quotes.component';
 import { AgentClaimsComponent } from './components/agent/components/agent-claims/agent-claims.component';
 import { MyPoliciesComponent } from './components/agent/components/payment/my-policies/my-policies.component';
 import { PolicySummaryComponent } from './components/agent/components/payment/policy-summary/policy-summary.component';
+import { NewServiceRequestComponent } from './components/common/service-request/new-service-request/new-service-request.component';
+import { ServiceRequestDetailsComponent } from './components/common/service-request/service-request-details/service-request-details.component';
+import { ServiceRequestsListingComponent } from './components/common/service-request/service-requests-listing/service-requests-listing.component';
 
 
 @NgModule({
@@ -55,16 +54,15 @@ import { PolicySummaryComponent } from './components/agent/components/payment/po
     AdminQuoteSummaryComponent,
     AdminInvestmentDetailsComponent,
     AdminCreditLifeSummaryComponent,
-    ServiceRequestsDashboardComponent,
-    ServiceRequestLogsComponent,
-    ServiceRequestComponent,
-    MemberServiceRequestComponent,
     AgentDashboardComponent,
     AgentPoliciesComponent,
     AgentQuotesComponent,
     AgentClaimsComponent,
     MyPoliciesComponent,
     PolicySummaryComponent,
+    NewServiceRequestComponent,
+    ServiceRequestDetailsComponent,
+    ServiceRequestsListingComponent,
   ],
   imports: [
     CommonModule,

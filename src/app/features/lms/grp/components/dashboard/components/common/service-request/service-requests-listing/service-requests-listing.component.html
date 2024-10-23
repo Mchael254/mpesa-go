@@ -1,0 +1,249 @@
+<div class="main">
+  <div style="display: flex; padding-top: 1rem; justify-content: start">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="container">
+    <div class="title">{{ "lms.grp.service_request.member.my_service_requests" | translate }}</div>
+    <div class="filter-options" style="padding-top: 35px;">
+      <label for="filterBy" style="color: black; white-space: nowrap;">
+        {{ 'Filter by' }}
+      </label>
+
+      <select class="form-select">
+        <option *ngFor="let column of " [value]="column">{{ column | titlecase }}</option>
+      </select>
+
+      <select class="form-select">
+        <option [value]="'greater'">{{ 'Greater Than' | translate }}</option>
+        <option [value]="'less'">{{ 'Less Than' | translate }}</option>
+        <option [value]="'equals'">{{ 'Equals' | translate }}</option>
+      </select>
+
+      <input type="text" pInputText class="form-control" id="otherNames">
+
+      <div class="new-req-button">
+        <p-button [style]="{'border-radius': '4px'}" (click)="newServiceReq()">{{
+          "lms.grp.service_request.member.new_request" | translate }}</p-button>
+        <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+        </p-multiSelect>
+      </div>
+    </div>
+
+    <div>
+      <p-table [value]="serviceReqListing" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+        styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+        <ng-template pTemplate="header">
+          <tr>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.request_number" | translate
+              }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.category" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.summary" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.date" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.status" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.due_date" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.member.lapsed_date" | translate }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-serviceReq let-rowIndex="rowIndex">
+          <tr (click)="onReceiptsTableRowClick(serviceReq, rowIndex)"
+            [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- modals begin -->
+<!-- modal to GET request summary -->
+<!-- <div class="modal fade" tabindex="-1" #adminDetailsModal id="serviceReqSummaryModal" aria-labelledby="serviceReqSummaryModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title float-left" id="serviceReqSummaryModal">{{ "lms.grp.service_request.member.service_request_summary" | translate }}</h5>
+            <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeServiceReqSummary()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row col-12" style="color: black;">
+              <div class="col-md-6 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.category" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.category_type" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.policy" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.policy_members" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.summary" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.member.description" | translate }}: </td>
+                    <td style="width: 50%; align-items: right;">{{ serviceReqSummary }}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+              
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div> -->
+<!-- end of modal to GET request summary -->
+
+<!-- modal to GET new request -->
+<!-- <div class="modal fade" tabindex="-1" #adminDetailsModal id="newServiceReqModal" aria-labelledby="newServiceReqModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title float-left" id="newServiceReqModal">{{ "lms.grp.service_request.member.service_request" | translate }}</h5>
+            <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+            (click)="closeNewServiceReqModal()"></button>
+          </div>
+          <div class="modal-body">
+              <form [formGroup]="newServiceReqForForm">
+                  <div class="row">
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                      <div>
+                        <label for="investigator" style="color: black;">{{ "lms.grp.service_request.member.category" | translate }}</label>
+                        <select class="form-select" id="investigator" formControlName="investigator">
+                          <option selected="true" disabled="disabled"></option>
+                          <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+                        </select>
+                      </div>
+                    </div>
+              
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                      <div>
+                        <label for="investigator" style="color: black;">{{ "lms.grp.service_request.member.category_type" | translate }}</label>
+                        <select class="form-select" id="investigator" formControlName="investigator">
+                          <option selected="true" disabled="disabled"></option>
+                          <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+                        </select>
+                      </div>
+                    </div>
+              
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                      <div>
+                        <label for="investigator" style="color: black;">{{ "lms.grp.service_request.member.policy" | translate }}</label>
+                        <select class="form-select" id="investigator" formControlName="investigator">
+                          <option selected="true" disabled="disabled"></option>
+                          <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div class="row" style="margin-top: 40px;">
+                      <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div>
+                          <label for="investigator" style="color: black;">{{ "lms.grp.service_request.member.policy_members" | translate }}</label>
+                          <select class="form-select" id="investigator" formControlName="investigator">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+                          </select>
+                        </div>
+                      </div>
+                
+                      <div class="col-md-4 col-sm-12 col-xs-12">
+                          <div>
+                            <label for="investigator" style="color: black;">{{ "lms.grp.service_request.member.preferred_contact_method" | translate }}</label>
+                            <select class="form-select" id="investigator" formControlName="investigator">
+                              <option selected="true" disabled="disabled"></option>
+                              <option *ngFor="let investigator of " [value]="investigator">{{ investigator | titlecase }}</option>
+                            </select>
+                          </div>
+                        </div>
+                
+                      <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div>
+                          <label for="submissionDate" style="color: black;">{{ "lms.grp.service_request.member.preferred_contact_time" | translate }}</label>
+                          <p-calendar formControlName="contactTime" [timeOnly]="true" [showIcon]="true" [showButtonBar]="true"
+                            placeholder="HH:mm">
+                          </p-calendar>
+                        </div>
+                      </div>
+                    </div>
+              
+                  <div class="row" style="margin-top: 40px;">
+                      <div class="col-md-4">
+                          <div>
+                            <label for="invoiceDate" style="color: black;">{{ "lms.grp.service_request.member.due_date" | translate }}</label>
+                            <p-calendar formControlName="invoiceDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+                              placeholder="dd/mm/yy"></p-calendar>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div>
+                            <label for="invoiceNumber" style="color: black;">{{ "lms.grp.service_request.member.invoice_number" | translate }}</label>
+                            <input type="text" pInputText class="form-control" id="invoiceNumber" [style]="{ width: '100%' }"
+                              formControlName="invoiceNumber">
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 col-xs-12">
+                          <div>
+                            <label for="remarks" style="color: black;">{{ "lms.grp.service_request.member.description" | translate }}</label>
+                            <textarea rows="2" cols="5" pInputTextarea id="remarks" [style]="{ width: '100%' }"
+                              formControlName="remarks"></textarea>
+                          </div>
+                        </div>
+                  </div>
+  
+                  <div class="row" style="margin-top: 40px;">
+                      <div class="col-md-4 col-sm-12 col-xs-12">
+                          <div class="d-flex align-items-center flex-wrap">
+                            <div><label for="uploadReport" style="color: black; margin-right: 15px;">{{ "lms.grp.service_request.member.upload_file" | translate }}</label></div>
+                            <div class="form-group">
+                              <input type="file" #fileInput style="display: none;">
+                              <button class="choose-file">
+                                <span class="file-text">{{ "lms.grp.service_request.member.choose_file" | translate }}</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                  </div>
+              
+                  
+                </form>
+  
+                <div class="button-container">
+                  <button class="submit-req">{{ "lms.grp.service_request.member.submit" | translate }}</button>
+                </div>
+              
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div> -->
+<!-- end of modal to GET new request -->
+<!-- modals end -->

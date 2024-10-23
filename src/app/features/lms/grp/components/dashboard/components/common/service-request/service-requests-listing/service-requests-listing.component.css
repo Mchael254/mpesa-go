@@ -136,39 +136,69 @@ tr {
     border-radius: 4px;
     border: 1px solid #00529B;
     background-color: #FFF;
-  }
-  
-  .file-text {
+}
+
+.file-text {
     color: #00529B;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-  }
+}
 
-  .button-container {
+.button-container {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 10px;
-  }
-  
-  button {
+}
+
+button {
     padding: 8px 20px;
     border-radius: 4px;
     cursor: pointer;
     border: 2px solid transparent;
     font-size: 14px;
     transition: background-color 0.3s, color 0.3s, border 0.3s;
-  }
-  
-  button.submit-req {
+}
+
+button.submit-req {
     background-color: #00529B;
     color: #FFFFFF;
     border-color: #00529B;
-  }
-  
-  button.submit-req:hover {
+}
+
+button.submit-req:hover {
     background-color: #65b2f5;
-  }
+}
+
+/* .filter by options  */
+.filter-options {
+    display: flex;
+    align-items: center;
+    /* margin-bottom: 10px; */
+}
+
+label {
+    width: 60px;
+}
+
+select {
+    width: 180px;
+    height: 35px;
+}
+
+input {
+    width: 150px;
+    height: 35px;
+}
+
+label,
+select,
+input {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+/* .filter by options end */
