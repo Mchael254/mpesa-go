@@ -98,74 +98,121 @@
             </div>
 
             <ng-container *ngIf="!investment && !investmentWithRider">
-            <!-- <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div> -->
-            <div class="pension-table-container col-12">
-                <div class="col-6">
-                    <div class="emp-contr">Employee contribution</div>
-
-                    <table class="pension-table">
-                        <tr>
-                            <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_contributions | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Trasfer value:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_transfer_value | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_avc | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Interest:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_interest | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Total fund value:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employee_total | number }}</td>
-                        </tr>
-                    </table>
+                <div class="pension-table-container col-12">
+                    <div class="col-6">
+                        <div class="emp-contr">{{ "lms.grp.member_portal.employee_contribution" | translate }}</div>
+                        <table class="pension-table">
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.contribution" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employee_contributions | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.transfer_value" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employee_transfer_value | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.annual_voluntary_contribution" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employee_avc | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.interest" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employee_interest | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.total_fund_value" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employee_total | number }}</td>
+                            </tr>
+                        </table>
+                    </div>
+            
+                    <div class="col-6">
+                        <div class="emp-contr col-6">{{ "lms.grp.member_portal.employer_contribution" | translate }}</div>
+                        <table class="pension-table">
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.contribution" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employer_contributions | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.transfer_value" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employer_transfer_value | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.annual_voluntary_contribution" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employer_avc | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.interest" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employer_interest | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">{{ "lms.grp.member_portal.total_fund_value" | translate }}:</td>
+                                <td class="table-label-desc">{{ pensionAccountSummary?.employer_total | number }}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
 
-                <div class="col-6">
-                    <div class="emp-contr col-6">Employer contribution</div>
-
-                    <table class="pension-table">
-                        <tr>
-                            <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_contributions | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Trasfer value:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_transfer_value | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_avc | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Interest:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_interest | number }}</td>
-                        </tr>
-                        <tr>
-                            <td class="table-label">Total fund value:</td>
-                            <td class="table-label-desc">{{ pensionAccountSummary?.employer_total | number }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="account-totals">Pension account totals <b>{{ pensionAccountSummary?.total_pension_account | number }}</b></div>
-        </ng-container>
-            <div class="download-link mt-2" *ngIf="blobUrl">
-                <a href="#" (click)="downloadReport($event)">
+                <div class="account-totals">{{ "lms.grp.member_portal.pension_account_totals" | translate }} <b>{{ pensionAccountSummary?.total_pension_account | number }}</b></div>
+            </ng-container>
+            <!-- <div class="download-link mt-2" *ngIf="pensionAccSummaryRptPdf">
+                <a href="#" (click)="downloadPensionReport($event)">
                   <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
                   <span class="download-link">
                     {{ (investment || investmentWithRider) ? ("lms.grp.member_portal.investment_summary_report" | translate) : ("lms.grp.member_portal.pension_account_summary_report" | translate) }}
                   </span>
                 </a>
-              </div>
-
+              </div> -->
+            <div class="download-link mt-2">
+                <a href="#" (click)="toggleDateRangePicker($event)">
+                    <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                    <span class="download-link">
+                        {{"lms.grp.member_portal.member_itemized_statement" | translate}}
+                    </span>
+                </a>
+            </div>
+            <div class="row col-md-8" *ngIf="showDateRangePicker">
+                <form [formGroup]="dateRangeForm" (ngSubmit)="getMemberItemizedStmt($event)" class="w-100">
+                 
+                    <div class="row col-md-12">
+                      <div class="col-md-6">
+                          <div>
+                            <label for="dateFrom" style="color: black; white-space: nowrap;">{{"lms.grp.member_portal.from_date" | translate}}<span style="color: red;">*</span></label>
+                          </div>
+                          <div>
+                              <p-calendar 
+                                formControlName="dateFrom"
+                                dateFormat="dd/mm/yy"
+                                [showIcon]="true"
+                                [maxDate]="toDate"
+                                [showButtonBar]="true"
+                                placeholder="dd/mm/yy"
+                              ></p-calendar>
+                          </div>
+                      </div>
+              
+                      <div class="col-md-6">
+                          <div>
+                            <label for="dateTo" style="color: black; white-space: nowrap;">{{"lms.grp.member_portal.to_date" | translate}}<span style="color: red;">*</span></label>
+                          </div>
+                          <div>
+                              <p-calendar 
+                                formControlName="dateTo"
+                                dateFormat="dd/mm/yy"
+                                [showIcon]="true"
+                                [maxDate]="maxDate"
+                                [showButtonBar]="true"
+                                placeholder="dd/mm/yy"
+                                (onSelect)="onToDateSelect()"
+                              ></p-calendar>
+                          </div>
+                      </div>
+                    </div>
+              
+                  <div class="col-md-12 mt-2 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">{{ "lms.grp.member_portal.generate_statement" | translate }}</button>
+                  </div>
+                </form>
+              </div>          
             <div class="title-desc mt-3">{{ "lms.grp.member_portal.valuations" | translate }}</div>
             <div class="filter-options">
                 <label for="filterBy" style="color: black;">
@@ -218,6 +265,14 @@
                     <span class="download-link">{{ "lms.grp.member_portal.valuations_report" | translate }}</span>
                 </a>
             </div> -->
+            <div class="download-link mt-3">
+                <a href="#" (click)="downloadReport($event, membershipCertRptPdf, 'membership_certificate.pdf')">
+                  <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                  <span class="download-link">
+                    {{"lms.grp.member_portal.membership_certificate" | translate}}
+                  </span>
+                </a>
+              </div>
 
 
         </div>

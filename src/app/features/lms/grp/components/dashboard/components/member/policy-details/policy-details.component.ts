@@ -7,6 +7,7 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
@@ -50,8 +51,16 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   selectedWithdrawalsYear: string = '';
   selectedWithdrawalsMonth: string = '';
   filteredWithdrawals: MemberWithdrawalsDTO[] = [];
-  blobUrl: string | null = null;
-  rptCode: number = 789233;
+  pensionAccSummaryRptPdf: string | null = null;
+  membershipCertRptPdf: string | null = null;
+  memItemizedStmtRptPdf: string | null = null;
+  pensionAccSummaryRptCode: number = 789233;
+  membershipCertRptCode: number = 789256;
+  memberItemizedStmtRptCode: number = 789257;
+  showDateRangePicker = false;
+  maxDate: Date = new Date();
+  toDate: Date | null = null;
+  dateRangeForm: FormGroup;
   productCode: number;
   totalContributions: number;
   private pdfJsLib: any;
@@ -64,6 +73,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     private reportsService: ReportsService,
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
@@ -84,7 +94,10 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.getMemberDetails();
     this.getMemberWithdrawals();
     this.loadPdfJs();
-    this.getReports();
+    this.getPensAccSummaryReport();
+    this.getMembershipCertificate();
+    // this.getMemberItemizedStmt();
+    this.getDateRangeForm();
   }
 
   ngOnDestroy(): void {
@@ -492,13 +505,89 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   }  
 
 
-  // getReports() {
-  //   this.dashboardService.getReports(this.rptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode).subscribe((res) => {
-  //     const blob = new Blob([res], { type: 'application/pdf' });
-  //     this.blobUrl = window.URL.createObjectURL(blob);
-  //     this.cdr.detectChanges();
-  //   });
-  // }
+  getMembershipCertificate() {
+    this.dashboardService.getReports(this.membershipCertRptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode).subscribe((res) => {
+      const blob = new Blob([res], { type: 'application/pdf' });
+      this.membershipCertRptPdf = window.URL.createObjectURL(blob);
+      this.cdr.detectChanges();
+    });
+  }
+
+  getDateRangeForm() {
+    this.dateRangeForm = this.fb.group({
+      dateFrom: [null, [Validators.required]], // "From Date" is required
+      dateTo: [new Date(), [Validators.required]], // Defaults to today's date
+    });
+    this.onToDateSelect();
+  }
+
+  // This method gets called when a To Date is selected
+  onToDateSelect(): void {
+    const selectedToDate = this.dateRangeForm.get('dateTo')?.value;
+
+    if (selectedToDate) {
+      this.toDate = new Date(selectedToDate); // Update the maxDate for From Date
+    }
+  }
+
+  // Custom validation for date range
+  validateDateRange(): boolean {
+    const dateFrom = this.dateRangeForm.get('dateFrom')?.value;
+    const dateTo = this.dateRangeForm.get('dateTo')?.value;
+    return dateFrom && dateTo && new Date(dateFrom) <= new Date(dateTo);
+  }
+
+  toggleDateRangePicker(event: Event): void {
+    event.preventDefault();
+    this.showDateRangePicker = !this.showDateRangePicker;
+  }
+
+  // Function to format date to 'DD-MMM-YYYY' (e.g., '01-Jan-2024')
+  formatDateToCustomString(date: string): string {
+    const dateObj = new Date(date);
+    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    return dateObj.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+  }
+
+
+  getMemberItemizedStmt(event: Event): void {
+    event.preventDefault();
+
+    if (!this.validateDateRange()) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Information',
+        detail: 'Select valid date range'
+      });
+      return;
+    }
+
+    if (this.dateRangeForm.invalid) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Select date range'
+      });
+      return;
+    }
+
+    const dateFrom = this.formatDateToCustomString(this.dateRangeForm.get('dateFrom')?.value);
+    const dateTo = this.formatDateToCustomString(this.dateRangeForm.get('dateTo')?.value || new Date()); // Default to today if "To Date" is not selected
+
+    // Call API to fetch the report
+    this.dashboardService.getReports(this.memberItemizedStmtRptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode,
+      dateFrom, dateTo)
+      .subscribe((res) => {
+        const blob = new Blob([res], { type: 'application/pdf' });
+        this.memItemizedStmtRptPdf = window.URL.createObjectURL(blob);
+        this.dateRangeForm.reset();
+        this.showDateRangePicker = false;  // Hide form after fetching report
+        this.cdr.detectChanges();
+
+        // Automatically trigger download
+        this.downloadReport(event, this.memItemizedStmtRptPdf, 'mem_itemized_stmt.pdf');
+      });
+  }
 
   /**
    * The function `loadPdfJs` dynamically loads the PDF.js library script from a CDN and assigns it to a
@@ -513,11 +602,11 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     document.body.appendChild(script);
   }
 
-  getReports() {
-    this.dashboardService.getReports(this.rptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode)
+  getPensAccSummaryReport() {
+    this.dashboardService.getReports(this.pensionAccSummaryRptCode, this.productCode, this.selectedPolicyCode, this.policyMemCode)
       .subscribe((res) => {
         const blob = new Blob([res], { type: 'application/pdf' });
-        this.blobUrl = window.URL.createObjectURL(blob);
+        this.pensionAccSummaryRptPdf = window.URL.createObjectURL(blob);
         const reader = new FileReader();
 
         reader.onloadend = async () => {
@@ -616,13 +705,24 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     };
   }
 
-  downloadReport(event: Event): void {
-    event.preventDefault();
+  // downloadPensionReport(event: Event): void {
+  //   event.preventDefault();
 
-    if (this.blobUrl) {
+  //   if (this.pensionAccSummaryRptPdf) {
+  //     const link = document.createElement('a');
+  //     link.href = this.pensionAccSummaryRptPdf;
+  //     link.download = 'pension_report.pdf';
+  //     link.click();
+  //   }
+  // }
+
+  downloadReport(event: Event, fileUrl: string, fileName: string): void {
+    event.preventDefault();
+  
+    if (fileUrl) {
       const link = document.createElement('a');
-      link.href = this.blobUrl;
-      link.download = 'pension_report.pdf';
+      link.href = fileUrl;
+      link.download = fileName;
       link.click();
     }
   }
