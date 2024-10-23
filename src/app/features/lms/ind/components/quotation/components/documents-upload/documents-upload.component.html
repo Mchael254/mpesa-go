@@ -36,43 +36,47 @@
                     color="#00529B"
                     size="medium"
                     bdColor="rgba(255, 255, 255, 0.9)">
-                  </ngx-spinner>
+                  </ngx-spinner> 
 
                   <div class="row">
                     <ng-container *ngFor="let document of documentList; let i = index">
                       <div class="col-md-6">
                         <div class="row py-2 align-items-center">
-                          <!-- Document File Icon -->
-                          <div class="col-lg-1 col-md-1 col-sm-12">
-                            <ng-container *ngIf="document.file_extension === 'pdf'; else imageIcon">
-                              <!-- PDF Icon -->
-                              <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
-                                <path fill="#b30000" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>
-                                <path fill="#b30000" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>
-                              </svg> 
-                            </ng-container>
-                            <!-- Image Icon -->
-                             <ng-template #imageIcon>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
-                                <path fill="#0f52ba" d="M19 2H5a3.009 3.009 0 0 0-3 3v8.86l3.88-3.88a3.075 3.075 0 0 1 4.24 0l2.871 2.887l.888-.888a3.008 3.008 0 0 1 4.242 0L22 15.86V5a3.009 3.009 0 0 0-3-3z" opacity=".5"/>
-                                <path fill="#0f52ba" d="M10.12 9.98a3.075 3.075 0 0 0-4.24 0L2 13.86V19a3.009 3.009 0 0 0 3 3h14a3 3 0 0 0 2.16-.92L10.12 9.98z"/>
-                              </svg>
-                            </ng-template>
-                          </div>
-
-                          <!-- Document Name -->
-                          <div class="col-lg-4 col-md-6 col-sm-12">
-                            {{ document.description.replaceAll('_', ' ') | titlecase }}
-                          </div>
-
+                          <!-- Document Name and Icon -->
+                          <div class="col-lg-2 col-md-3 col-sm-12 d-flex flex-column align-items-left">
+                            <!-- Document Name -->
+                            <div class="text-left mb-1">
+                              {{ document.description.replaceAll('_', ' ') | titlecase }}
+                            </div>
+                            <!-- Show icons -->
+                            <div>
+                              <ng-container *ngIf="document.file_extension === 'pdf'; else imageIcon">
+                                <!-- PDF Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
+                                  <path fill="#b30000" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>
+                                  <path fill="#b30000" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>
+                                </svg> 
+                              </ng-container>
+                              <ng-template #imageIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
+                                  <path fill="#0f52ba" d="M19 2H5a3.009 3.009 0 0 0-3 3v8.86l3.88-3.88a3.075 3.075 0 0 1 4.24 0l2.871 2.887l.888-.888a3.008 3.008 0 0 1 4.242 0L22 15.86V5a3.009 3.009 0 0 0-3-3z" opacity=".5"/>
+                                  <path fill="#0f52ba" d="M10.12 9.98a3.075 3.075 0 0 0-4.24 0L2 13.86V19a3.009 3.009 0 0 0 3 3h14a3 3 0 0 0 2.16-.92L10.12 9.98z"/>
+                                </svg>
+                              </ng-template>
+                            </div>                            
+                          </div>     
                           <!-- File Upload/Progress -->
                           <div class="col-lg-4 col-md-6 col-sm-12">
                             <ng-container *ngIf="document.is_uploaded; else fileUpload">
-                              <div class="progress">
-                                <div class="progress-bar bg-success" style="width: 100%;">{{ "lms.ind.quotations.completed" | translate }}</div>
+                              <!-- Completed label placed to the right above the progress bar -->
+                              <div class="d-flex justify-content-between mb-1">
+                                <span></span>
+                                <span class="text-success" style="font-size: 12px;">{{ "lms.ind.quotations.completed" | translate }}</span>
+                              </div>
+                              <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 100%; background-color: #28a745;"></div>
                               </div>
                             </ng-container>
-
                             <!-- File Upload Component -->
                             <ng-template #fileUpload>
                               <p-fileUpload
@@ -90,21 +94,19 @@
                               </p-fileUpload>
                             </ng-template>
                           </div>
-
-                          <!-- Exempt / Upload Later Checkboxes -->
+                          <!-- Exempt / Upload Later Radio Buttons -->
                           <ng-container *ngIf="!document.is_uploaded">
-                            <div class="col-lg-2 col-md-12 col-sm-12">
-                              <div class="form-check">
-                                <input class="form-check-input" type="checkbox" (change)="handleExempt(document)">
+                            <div class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-start align-items-center">
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" (change)="handleExempt(document)" name="uploadOptions{{i}}">
                                 <label class="form-check-label">{{ "lms.ind.quotations.exempt" | translate }}</label>
                               </div>
-                              <div class="form-check">
-                                <input class="form-check-input" type="checkbox" (change)="handleUploadLater(document)">
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" (change)="handleUploadLater(document)" name="uploadOptions{{i}}"> 
                                 <label class="form-check-label">{{ "lms.ind.quotations.upload_later" | translate }}</label>
                               </div>
                             </div>
-                          </ng-container>
-                          
+                        </ng-container>
                           <!-- Delete Uploaded File -->
                           <div class="col-lg-1 col-md-12 col-sm-12" *ngIf="document.is_uploaded" style="cursor: pointer;" (click)="deleteDocumentFileById(document, i)">
                             <i class="fas fa-trash-alt text-danger"></i>
@@ -112,8 +114,8 @@
                         </div>
                       </div>
                     </ng-container>
+                    
                   </div>
-
                   <!-- No Document Message -->
                   <ng-container *ngIf="documentList?.length === 0">
                     <div style="color: red; padding-bottom: 1rem">
@@ -122,12 +124,11 @@
                   </ng-container>
                 </div>
               </div>
-            </div>
+            </div>           
           </div>
         </div>
       </form>
     </div>
-
     <div class="d-flex justify-content-between pb-4">
       <div></div>
       <div>
