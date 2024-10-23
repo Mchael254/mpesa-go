@@ -1588,7 +1588,13 @@
         "total_contribution": "Total contribution",
         "total_account_contributions": "Total account contributions",
         "investment_summary_report": "Investment summary report",
-        "pension_account_summary_report": "Pension account summary report"
+        "pension_account_summary_report": "Pension account summary report",
+        "generate_statement": "Generate statement",
+        "to_date": "To date",
+        "from_date": "From date",
+        "pension_account_totals": "Pension account totals",
+        "member_itemized_statement": "Member itemized statement",
+        "membership_certificate": "Membership certificate"
       },
       "claims": {
         "claim_initiation": "Claim initiation",
