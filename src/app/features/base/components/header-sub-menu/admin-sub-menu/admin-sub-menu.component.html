@@ -68,7 +68,7 @@
               {{ "base.Products" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
               role="button"
@@ -83,7 +83,38 @@
               ></i>
               {{ "base.service_requests" | translate | uppercase }}
             </a>
-          </li>
+          </li> -->
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-server"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
+              {{ "base.service_requests" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/home/lms/grp/dashboard/new-service-request"
+                  >{{ "base.new_service_request" | translate }}</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/home/lms/grp/dashboard/service-requests-listing"
+                  >{{ "base.view_service_requests" | translate }}</a
+                >
+              </li>
+            </ul>
+          </li>          
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -154,7 +185,7 @@
               {{ "base.Products" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
               role="button"
@@ -169,7 +200,38 @@
               ></i>
               {{ "base.service_requests" | translate | uppercase }}
             </a>
-          </li>
+          </li> -->
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-server"
+                style="padding-right: 6px; font-size: 16px"
+              ></i>
+              {{ "base.service_requests" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/home/lms/grp/dashboard/new-service-request"
+                  >{{ "base.new_service_request" | translate }}</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/home/lms/grp/dashboard/service-requests-listing"
+                  >{{ "base.view_service_requests" | translate }}</a
+                >
+              </li>
+            </ul>
+          </li>          
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"

@@ -229,8 +229,9 @@ button.new-msg:hover {
     grid-template-columns: 1fr;
     padding: 5px;
   }
-  
-  .sender, .message {
+
+  .sender,
+  .message {
     display: block;
     width: 100%;
     overflow: auto;
