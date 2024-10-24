@@ -205,7 +205,9 @@
     "general": "General",
     "life_ind": "Life Individual",
     "life_group": "Life Group",
-    "pension": "Pension"
+    "pension": "Pension",
+    "new_service_request": "New service request",
+    "view_service_requests": "View service requests"
   },
   "crm": {
     "activity": "Activity",

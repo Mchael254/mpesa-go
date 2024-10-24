@@ -1,0 +1,135 @@
+<div class="main">
+  <div style="display: flex; padding-top: 1rem; justify-content: start">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="container">
+    <div><span class="title">{{ 'Service request summary' }}</span></div>
+    <div class="row col-12" style="color: black;">
+      <div class="col-md-4 col-xs-12 col-sm-12">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{
+              "lms.grp.service_request.admin.logs.request_number" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{
+              "lms.grp.service_request.admin.logs.request_status" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.request_date"
+              | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ 'Description'}}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-4 col-xs-12 col-sm-12">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.policy" |
+              translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{
+              "lms.grp.service_request.admin.logs.category_type" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{
+              "lms.grp.service_request.admin.logs.policy_member" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-4 col-xs-12 col-sm-12">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.category" |
+              translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{
+              "lms.grp.service_request.admin.logs.policy_number" | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+          <tr>
+            <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.service_request.admin.logs.days_lapsed"
+              | translate }}: </td>
+            <td style="width: 50%; align-items: right;">{{ reqLogs }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">{{ "lms.grp.service_request.admin.logs.notifications" | translate }}</div>
+    <div class="button-container">
+      <button class="new-msg" (click)="showNewMessageModal()">{{ "lms.grp.service_request.admin.logs.new_message" |
+        translate }}</button>
+    </div>
+    <div class="notifications">
+      <div *ngFor="let notification of notifications" class="notification-row" [class.read]="notification.read">
+        <div class="sender">{{ notification.sender }}</div>
+        <div class="message" [title]="notification.message">{{ notification.message }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modals begin -->
+<!-- new message modal -->
+<div class="modal fade" tabindex="-1" #memberSummaryModal id="newMessageModal" aria-labelledby="newMessageModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-m">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="newMessageModal">{{ "lms.grp.service_request.admin.logs.new_message" | translate }}
+        </h6>
+        <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeNewMessageModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="card"> -->
+        <div class="form-group">
+          <div>
+            <textarea rows="6" cols="5" pInputTextarea id="description" [style]="{ width: '100%' }"
+              class="custom-textarea">
+                                                  </textarea>
+          </div>
+        </div>
+
+        <!-- </div> -->
+      </div>
+      <div class="modal-footer custom-footer">
+        <div class="attach-file-container">
+          <div class="attach-button">
+            <button class="plain-button" (click)="fileInput.click()">
+              <i class="pi pi-paperclip vertical-paperclip"></i> {{ "lms.grp.service_request.admin.logs.attach_file" |
+              translate }}
+            </button>
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
+          </div>
+          <div class="attached-file" *ngIf="selectedFileName">
+            <div class="file-name-container" [title]="selectedFileName">
+              <span class="file-name"><img src="assets/images/file-type-pdf.svg" class="pdf-icon">{{ selectedFileName
+                }}</span>
+            </div>
+            <i class="pi pi-trash delete-icon" (click)="removeFile()"></i>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{
+          "lms.grp.service_request.admin.logs.submit" | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- new message modal end -->
+<!-- modals End -->

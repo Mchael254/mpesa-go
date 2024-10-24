@@ -4,6 +4,8 @@ import { DashboardService } from '../../../services/dashboard.service';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { ClaimSummaryDTO, PensionResponse, PoliciesResponse } from '../../../models/admin-policies';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {SESSION_KEY} from "../../../../../../util/session_storage_enum";
 
 const log = new Logger("AdminDashboardComponent")
 @AutoUnsubscribe
@@ -17,20 +19,28 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   clientCode: number = 2422853;
   policiesSummary: PoliciesResponse;
   pensionSummary: PensionResponse;
+  entityType: string;
 
   constructor(
     private router: Router,
     private dashboardService: DashboardService,
+    private session_storage: SessionStorageService,
   ) {}
 
   ngOnInit(): void {
     this.getPoliciesSummary();
     this.getClaimsSummary();
     this.getPensionSummary();
+    this.getData();
   }
 
   ngOnDestroy(): void {
     
+  }
+
+  getData() {
+    this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
+    const userProfileData = this.session_storage.get('memberProfile');
   }
 
   userProfileData = {
