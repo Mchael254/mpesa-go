@@ -16,4 +16,5 @@ export interface OauthToken {
   expires_in: number;
   scope: string;
   refresh_expires_in: number;
+  organizationId?: string;
 }
