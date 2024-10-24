@@ -20,6 +20,7 @@ const SESSION_TOKEN_EXPIRES_AT = 'SESSION_TOKEN_EXPIRES_AT';
 const REFRESH_TOKEN_EXPIRY = 'REFRESH_TOKEN_EXPIRY';
 const SESSION_IS_HTTPS_SECURED = 'SESSION_IS_HTTPS_SECURED';
 const SESSION_DOMAIN = 'SESSION_DOMAIN';
+const SESSION_ORG_CODE = 'SESSION_ORG_CODE';
 
 @Injectable({
     providedIn: 'root',
@@ -77,7 +78,7 @@ export class JwtService {
      * Save the session token
      * @param token OauthToken - the token to be saved
      */
-    saveToken(token: OauthToken) {        
+    saveToken(token: OauthToken) {
         if (this.utilService.isEmpty(token)) {
             this.destroyToken();
         } else {
@@ -101,6 +102,7 @@ export class JwtService {
             this.sessionStorage.setItem(REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
             this.sessionStorage.setItem(SESSION_IS_HTTPS_SECURED, isHttps);
             this.sessionStorage.setItem(SESSION_DOMAIN, domain);
+            this.sessionStorage.setItem(SESSION_ORG_CODE, token.organizationId)
 
 
             // this.cookieService.set(
@@ -144,6 +146,7 @@ export class JwtService {
     destroyToken() {
         this.browserStorage.clearObj('SESSION_TOKEN');
         this.sessionStorage.removeItem(SESSION_TOKEN);
+        this.sessionStorage.removeItem(SESSION_ORG_CODE);
 
         const path = this.tokenPath;
 
@@ -160,7 +163,7 @@ export class JwtService {
         const path = this.tokenPath;
 
         this.sessionStorage.removeItem(REFRESH_TOKEN);
-        
+
         // this.cookieService.delete(REFRESH_TOKEN, path, domain);
     }
 
