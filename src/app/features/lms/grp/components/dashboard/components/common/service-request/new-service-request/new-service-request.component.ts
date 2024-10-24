@@ -74,6 +74,7 @@ export class NewServiceRequestComponent implements OnInit, OnDestroy {
       contactTime: [""],
       summary: [""],
       description: ["", Validators.required],
+      policyMember: ["", Validators.required],
     });
   }
 
