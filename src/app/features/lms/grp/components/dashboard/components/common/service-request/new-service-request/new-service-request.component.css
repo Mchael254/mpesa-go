@@ -82,6 +82,10 @@ button.submit-req:hover {
   color: red;
 }
 
+.row-space {
+  margin-bottom: 40px;
+}
+
 @media (max-width: 1000px) {
   .fixed-width-label {
     margin-bottom: 10px;

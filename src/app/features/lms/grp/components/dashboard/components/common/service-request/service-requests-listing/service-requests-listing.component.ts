@@ -76,57 +76,26 @@ export class ServiceRequestsListingComponent implements OnInit, OnDestroy {
   serviceReqListingColumns() {
     this.columnOptions = [
       { label: 'Request ID', value: 'req' },
-      { label: 'Category', value: 'req' },
-      { label: 'Category type', value: 'req' },
-      { label: 'Status', value: 'req' },
       { label: 'Date submitted', value: 'req' },
       { label: 'Policy number', value: 'req' },
-      { label: 'Assigned to', value: 'req' },
+      { label: 'Category', value: 'req' },
+      { label: 'Category type', value: 'req' },
+      { label: 'Summary', value: 'req' },
+      { label: 'Description', value: 'req' },
+      { label: 'Status', value: 'req' },
+      { label: 'Due date', value: 'req' },
+      { label: 'Solution', value: 'req' },
+      { label: 'Assigned to', value: 'req' }
     ];
 
     this.selectedColumns = this.columnOptions.map(option => option.value);
   }
 
-  detailedMemContrReceipts = [];
-  memberPensionDepReceipts = [];
   serviceReqListing = [
     { req: 'text' },
     { req: 'text' },
     { req: 'text' },
   ];
-  serviceReqSummary = 'req';
-
-  // showServiceReqSummary() {
-  //   const modal = document.getElementById('serviceReqSummaryModal');
-  //   if (modal) {
-  //     modal.classList.add('show');
-  //     modal.style.display = 'block';
-  //   }
-  // }
-
-  // closeServiceReqSummary() {
-  //   const modal = document.getElementById('serviceReqSummaryModal');
-  //   if (modal) {
-  //     modal.classList.remove('show')
-  //     modal.style.display = 'none';
-  //   }
-  // }
-
-  // showNewServiceReqModall() {
-  //   const modal = document.getElementById('newServiceReqModal');
-  //   if (modal) {
-  //     modal.classList.add('show');
-  //     modal.style.display = 'block';
-  //   }
-  // }
-
-  // closeNewServiceReqModal() {
-  //   const modal = document.getElementById('newServiceReqModal');
-  //   if (modal) {
-  //     modal.classList.remove('show')
-  //     modal.style.display = 'none';
-  //   }
-  // }
 
   onReceiptsTableRowClick(memberPensionDepReceipts, index: number) {
     this.selectedRowIndex = index;
