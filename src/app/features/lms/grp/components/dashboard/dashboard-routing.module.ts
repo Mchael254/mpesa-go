@@ -17,16 +17,15 @@ import { AdminQuoteSummaryComponent } from './components/admin/admin-quote-summa
 import { AdminCoverageDetailsComponent } from './components/admin/admin-coverage-details/admin-coverage-details.component';
 import { AdminInvestmentDetailsComponent } from './components/admin/admin-investment-details/admin-investment-details.component';
 import { AdminCreditLifeSummaryComponent } from './components/admin/admin-credit-life-summary/admin-credit-life-summary.component';
-import { ServiceRequestsDashboardComponent } from './components/admin/admin-service-requests/service-requests-dashboard/service-requests-dashboard.component';
-import { ServiceRequestLogsComponent } from './components/admin/admin-service-requests/service-request-logs/service-request-logs.component';
-import { ServiceRequestComponent } from './components/admin/admin-service-requests/service-request/service-request.component';
-import { MemberServiceRequestComponent } from './components/member/member-service-request/member-service-request.component';
 import { AgentDashboardComponent } from './components/agent/components/agent-dashboard/agent-dashboard.component';
 import { AgentPoliciesComponent } from './components/agent/components/agent-policies/agent-policies.component';
 import { AgentQuotesComponent } from './components/agent/components/agent-quotes/agent-quotes.component';
 import { AgentClaimsComponent } from './components/agent/components/agent-claims/agent-claims.component';
 import { MyPoliciesComponent } from './components/agent/components/payment/my-policies/my-policies.component';
 import { PolicySummaryComponent } from './components/agent/components/payment/policy-summary/policy-summary.component';
+import { NewServiceRequestComponent } from './components/common/service-request/new-service-request/new-service-request.component';
+import { ServiceRequestsListingComponent } from './components/common/service-request/service-requests-listing/service-requests-listing.component';
+import { ServiceRequestDetailsComponent } from './components/common/service-request/service-request-details/service-request-details.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: LandingScreenComponent }, //agent
@@ -46,16 +45,15 @@ const routes: Routes = [
   { path: 'quote-summary', component: AdminQuoteSummaryComponent}, //scheme admin normal quote summary
   { path: 'investment', component: AdminInvestmentDetailsComponent}, //scheme admin investment product summary
   { path: 'credit-life', component: AdminCreditLifeSummaryComponent}, //scheme admin credit life product summary
-  { path: 'service-req-dashboard', component: ServiceRequestsDashboardComponent}, //scheme admin service request listing dashboard
-  { path: 'service-req-logs', component: ServiceRequestLogsComponent}, //scheme admin service request logs
-  { path: 'service-request', component: ServiceRequestComponent}, //scheme admin service requests
-  { path: 'member-service-request', component: MemberServiceRequestComponent}, //scheme member service requests screen
   { path: 'agent', component: AgentDashboardComponent}, //agent landing dashboard
   { path: 'agent-policies', component: AgentPoliciesComponent}, //agent policies listing
   { path: 'agent-quotes', component: AgentQuotesComponent}, //agent quotes listing
   { path: 'agent-claims', component: AgentClaimsComponent}, //agent claims listing
   { path: 'agent-individual-policies', component: MyPoliciesComponent}, //individal agent  policies listing
   { path: 'policy-summary', component: PolicySummaryComponent}, //individal agent  policies listing
+  { path: 'new-service-request', component: NewServiceRequestComponent}, //new service request screen
+  { path: 'service-requests-listing', component: ServiceRequestsListingComponent}, //Service requests listing screen
+  { path: 'service-request-details', component: ServiceRequestDetailsComponent}, //Service request details summary
 ];
 
 @NgModule({

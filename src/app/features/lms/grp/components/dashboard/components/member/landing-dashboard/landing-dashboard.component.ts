@@ -52,6 +52,7 @@ export class LandingDashboardComponent implements OnInit {
 
     this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
     const data = this.session_storage.get('memberProfile');
+    log.info("this.entityType", this.entityType)
     this.userProfileData = data;
     this.entityCode = data.code;
     this.entityIdNo =  data.idNo;
