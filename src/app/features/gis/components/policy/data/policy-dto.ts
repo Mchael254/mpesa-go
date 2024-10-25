@@ -598,6 +598,19 @@ export interface EditPolicyClause {
   policyClauseCode: number;
   policyCode: number;
 }
+export interface SubclassesClauses {
+  clause: string;
+  clauseCode: number;
+  clauseType: string;
+  code: number;
+  description: string;
+  editable: string;
+  heading: string;
+  isNew: string;
+  policyBatchNumber: number;
+  policyNumber: string;
+  subclassCode: number;
+}
 
 
 

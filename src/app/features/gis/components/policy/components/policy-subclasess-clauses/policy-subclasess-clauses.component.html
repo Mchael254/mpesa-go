@@ -189,7 +189,7 @@
 
 
                     <div class="d-flex justify-content-end mt-4 mb-4">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{'crm.save_details' |
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="addPolicySubclassClause()">{{'crm.save_details' |
                             translate}}</button>
                     </div>
 
@@ -234,7 +234,7 @@
 
 
                     <div class="d-flex justify-content-end mt-4 mb-4">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{'crm.save_details' |
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="editPolicySubclassClause()">{{'crm.save_details' |
                             translate}}</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
                     </div>
@@ -252,7 +252,7 @@
                             {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
                         <div class="d-flex justify-content-center mb-3">
                             <button type="button" class="btn btn-primary px-5" id="delete"
-                                data-bs-dismiss="modal">{{'gis.policy.yes_delete' |
+                                data-bs-dismiss="modal" (click)="deletePolicyTaxes()">{{'gis.policy.yes_delete' |
                                 translate}}</button>
                         </div>
                         <div class="d-flex justify-content-center mb-2">

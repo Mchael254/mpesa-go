@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -357,6 +357,18 @@ export class PolicyService {
   }
   getClientPolicies(clientCode:any,productCode:any){
     return this.api.GET(`v1/policies/client-policies?clientCode=${clientCode}&proCode=${productCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  createPolicySubclassesClause(data:SubclassesClauses){
+    return this.api.POST(`/v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  updatePolicySubclassesClause(data:SubclassesClauses){
+    return this.api.PUT(`/v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  deletePolicySubclassesClause(code:number,batchNo:number,clausecode:number,policyNo:any,subclassCode:number){
+    return this.api.DELETE(`/v2/policySubclassClauses?%20code=${code}&batch%20number${batchNo}&clause%20code=${clausecode}&policy%20Number=${policyNo}&sub%20class%20code=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }
