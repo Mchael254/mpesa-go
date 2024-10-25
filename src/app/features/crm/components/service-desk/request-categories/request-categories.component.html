@@ -1,0 +1,440 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Service Desk',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service Desk Request',
+        url: '/home/crm'
+      },
+      {
+        label: 'Request Status',
+        url: '/home/crm/request-status'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{'serviceDesk.serviceRequestCategories' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openServiceRequestCategoryModal()"></i
+              ></span>
+              <span class="icon-circle"
+              ><i class="pi pi-pencil"></i
+              ></span>
+              <span class="icon-circle"
+              ><i
+                class="fa-regular fa-trash-can"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #requestCategoriesTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="requestCategoriesData?.length"
+          [value]="requestCategoriesData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.description'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.defaultUser'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-requestCategory>
+            <tr class="custom-table">
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Service Request Category Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card border-0 mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{'serviceDesk.incidents' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openRequestEscalationModal()"></i
+              ></span>
+              <span class="icon-circle"
+              ><i class="pi pi-pencil"></i
+              ></span>
+              <span class="icon-circle"
+              ><i
+                class="fa-regular fa-trash-can"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #incidentsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="incidentsData?.length"
+          [value]="incidentsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.name'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.validityInDays'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.escalatedTo'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-requestStatus>
+            <tr class="custom-table">
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Service Request Status Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Service Request Category Modal-->
+<div
+  class="modal fade"
+  #serviceRequestCategoryModal
+  id="serviceRequestCategoryModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'service request category' : 'new service request category' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeServiceRequestCategoryModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="serviceRequestCategoryForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.name === 'Y'">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  formControlName="name"
+                  [ngClass]="{ 'is-invalid': f['name']?.invalid && (f['name']?.dirty || f['name']?.touched) }"
+                />
+                <div *ngIf="f['name']?.invalid && (f['name']?.dirty || f['name']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['name']?.errors['required']">Name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.shtDesc === 'Y'">
+              <div class="col-md-6">
+                <label for="shtDesc" class="form-label">Short Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="shtDesc"
+                  formControlName="shtDesc"
+                  [ngClass]="{ 'is-invalid': f['shtDesc']?.invalid && (f['shtDesc']?.dirty || f['shtDesc']?.touched) }"
+                />
+                <div *ngIf="f['shtDesc']?.invalid && (f['shtDesc']?.dirty || f['shtDesc']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['shtDesc']?.errors['required']">Short Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.assignee === 'Y'">
+              <div class="col-md-6">
+                <label for="assignee" class="form-label">Category default assignee</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="assignee"
+                  value="{{selectedMainUser?.name}}"
+                  id="assignee"
+                  readonly
+                  (click)="openAllUsersModal()"
+                  [ngClass]="{ 'is-invalid': f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched) }"
+                />
+                <div *ngIf="f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['assignee']?.errors['required']">Assignee is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveServiceRequestCategory()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Request escalation Category Modal-->
+<div
+  class="modal fade"
+  #requestEscalationModal
+  id="requestEscalationModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel2">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'request escalation' : 'new request escalation' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeRequestEscalationModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="requestEscalationForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.system === 'Y'">
+              <div class="col-md-6">
+                <label for="system" class="form-label">System</label>
+                <p-dropdown
+                  [options]="systems"
+                  optionLabel="shortDesc"
+                  optionValue="id"
+                  formControlName="system"
+                  id="system"
+                  [filter]="true"
+                  filterBy="shortDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  appendTo="body"
+                  placeholder="Select option"
+                  [ngClass]="{ 'is-invalid': g['system']?.invalid && (g['system']?.dirty || g['system']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="g['system']?.invalid && (g['system']?.dirty || g['system']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['system']?.errors['required']">System is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.requestCategory === 'Y'">
+              <div class="col-md-6">
+                <label for="requestCategory" class="form-label">Request category</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="requestCategory"
+                  formControlName="requestCategory"
+                  [ngClass]="{ 'is-invalid': g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched) }"
+                />
+                <div *ngIf="g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['requestCategory']?.errors['required']">Request category is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.levelOneDuration === 'Y'">
+              <div class="col-md-6">
+                <label for="levelOneDuration" class="form-label">Level one duration</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="levelOneDuration"
+                  formControlName="levelOneDuration"
+                  [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
+                />
+                <div *ngIf="f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['assignee']?.errors['required']">Assignee is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.levelOneEscalatedTo === 'Y'">
+              <div class="col-md-6">
+                <label for="levelOneEscalatedTo" class="form-label">Escalated to</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="levelOneEscalatedTo"
+                  value="{{selectedMainUser?.name}}"
+                  id="levelOneEscalatedTo"
+                  readonly
+                  (click)="openAllUsersModal()"
+                  [ngClass]="{ 'is-invalid': g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched) }"
+                />
+                <div *ngIf="g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['levelOneEscalatedTo']?.errors['required']">Escalated to is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.levelTwoDuration === 'Y'">
+              <div class="col-md-6">
+                <label for="levelTwoDuration" class="form-label">Level two duration</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="levelTwoDuration"
+                  formControlName="levelTwoDuration"
+                  [ngClass]="{ 'is-invalid': g['levelTwoDuration']?.invalid && (g['levelTwoDuration']?.dirty || g['levelTwoDuration']?.touched) }"
+                />
+                <div *ngIf="g['levelTwoDuration']?.invalid && (g['levelTwoDuration']?.dirty || g['levelTwoDuration']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['levelTwoDuration']?.errors['required']">Level two duration is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.levelTwoEscalatedTo === 'Y'">
+              <div class="col-md-6">
+                <label for="levelTwoEscalatedTo" class="form-label">Escalated to</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="levelTwoEscalatedTo"
+                  value="{{selectedMainUser?.name}}"
+                  id="levelTwoEscalatedTo"
+                  readonly
+                  (click)="openAllUsersModal()"
+                  [ngClass]="{ 'is-invalid': g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched) }"
+                />
+                <div *ngIf="g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['levelTwoEscalatedTo']?.errors['required']">Escalated to is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.assignTo === 'Y'">
+              <div class="col-md-6">
+                <label for="assignTo" class="form-label">Assign to</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="assignTo"
+                  value="{{selectedMainUser?.name}}"
+                  id="assignTo"
+                  readonly
+                  (click)="openAllUsersModal()"
+                  [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
+                />
+                <div *ngIf="g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['assignTo']?.errors['required']">Assign to is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.messageTemplate === 'Y'">
+              <div class="col-md-6">
+                <label for="messageTemplate" class="form-label">Message template</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="messageTemplate"
+                  formControlName="messageTemplate"
+                  [disabled]="true"
+                  [ngClass]="{ 'is-invalid': g['messageTemplate']?.invalid && (g['messageTemplate']?.dirty || g['messageTemplate']?.touched) }"
+                />
+                <div *ngIf="g['messageTemplate']?.invalid && (g['messageTemplate']?.dirty || g['messageTemplate']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['messageTemplate']?.errors['required']">Message template is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveRequestEscalation()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Save user'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Users'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)" [accountType]="'USER'">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
