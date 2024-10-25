@@ -100,29 +100,79 @@ export class DashboardService {
   }
 
 
-  getReports(rpt_code: number, prodCode: number, polCode: number, polMemCode: number) {
-    let payload = {
+  // getReports(rpt_code: number, prodCode: number, polCode: number, polMemCode: number) {
+  //   let payload = {
+  //     "rpt_code": rpt_code,
+  //     "system": "GRP",
+  //     "report_format": "PDF",
+  //     "encode_format": "RAW",
+  //     "params": [
+
+  //       {
+  //         "name": "V_PROD_CODE",
+  //         "value": prodCode
+  //       },
+  //       {
+  //         "name": "V_POL_CODE",
+  //         "value": polCode
+  //       },
+  //       {
+  //         "name": "V_POLM_CODE",
+  //         "value": polMemCode
+  //       }
+
+  //     ]
+  //   }
+  //   return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
+  // }
+
+  getReports(
+    rpt_code: number, 
+    prodCode: number, 
+    polCode: number, 
+    polMemCode: number, 
+    dateFrom?: string,
+    dateTo?: string
+  ) {
+    let params: { name: string, value: number | string }[] = [
+      {
+        "name": "V_PROD_CODE",
+        "value": prodCode
+      },
+      {
+        "name": "V_POL_CODE",
+        "value": polCode
+      },
+      {
+        "name": "V_POLM_CODE",
+        "value": polMemCode
+      }
+    ];
+  
+    // Conditionally add date parameters if provided
+    if (dateFrom) {
+      params.push({
+        "name": "V_DATE_FROM",
+        "value": dateFrom
+      });
+    }
+  
+    if (dateTo) {
+      params.push({
+        "name": "V_DATE_TO",
+        "value": dateTo
+      });
+    }
+  
+    // Build the payload
+    const payload = {
       "rpt_code": rpt_code,
       "system": "GRP",
       "report_format": "PDF",
       "encode_format": "RAW",
-      "params": [
-
-        {
-          "name": "V_PROD_CODE",
-          "value": prodCode
-        },
-        {
-          "name": "V_POL_CODE",
-          "value": polCode
-        },
-        {
-          "name": "V_POLM_CODE",
-          "value": polMemCode
-        }
-
-      ]
-    }
+      "params": params
+    };
+  
     return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 

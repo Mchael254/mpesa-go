@@ -1,23 +1,25 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Logger } from 'src/app/shared/services';
-import { DashboardService } from '../../../../services/dashboard.service';
-import { untilDestroyed } from 'src/app/shared/shared.module';
-import { ServiceRequestService } from '../../../../services/service-request.service';
-import { Observable } from 'rxjs';
-import { ContactMethodDTO, ServiceReqCategoriesDTO, ServiceReqCatTypesDTO, ServiceReqPoliciesDTO } from '../../../../models/admin-policies';
-import { PolicyMemberDTO } from '../../../../../claims/models/claim-models';
 import { ClaimsService } from '../../../../../claims/service/claims.service';
+import { ServiceRequestService } from '../../../../services/service-request.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Observable } from 'rxjs';
+import { Logger } from 'src/app/shared/services';
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { PolicyMemberDTO } from '../../../../../claims/models/claim-models';
+import { ContactMethodDTO, ServiceReqCategoriesDTO, ServiceReqCatTypesDTO, ServiceReqPoliciesDTO } from '../../../../models/admin-policies';
+import { DashboardService } from '../../../../services/dashboard.service';
+import { SESSION_KEY } from "../../../../../../../util/session_storage_enum";
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
-const log = new Logger("ServiceRequestComponent")
+const log = new Logger("NewServiceRequestComponent")
 @Component({
-  selector: 'app-service-request',
-  templateUrl: './service-request.component.html',
-  styleUrls: ['./service-request.component.css'],
+  selector: 'app-new-service-request',
+  templateUrl: './new-service-request.component.html',
+  styleUrls: ['./new-service-request.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ServiceRequestComponent implements OnInit, OnDestroy {
+export class NewServiceRequestComponent implements OnInit, OnDestroy {
   serviceRegForm: FormGroup;
   selectedFile: File = null;
   documentPayload;
@@ -30,6 +32,7 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
   policyMembers: PolicyMemberDTO[] = [];
   userType: string;
   prpClientCode: number = 1000
+  entityType: string;
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +41,7 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
     private schemServiceReqService: ServiceRequestService,
     private claimsService: ClaimsService,
     private messageService: MessageService,
+    private session_storage: SessionStorageService,
   ) { }
 
   ngOnInit(): void {
@@ -47,6 +51,7 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
     this.getServiceReqCategoryTypes();
     this.getServiceReqPolicies();
     this.getPolicyCode();
+    this.getData();
 
   }
 
@@ -54,15 +59,22 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
 
   }
 
+  getData() {
+    this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
+    const userProfileData = this.session_storage.get('memberProfile');
+  }
+
   regForm() {
     this.serviceRegForm = this.fb.group({
       category: ["", Validators.required],
       categoryType: ["", Validators.required],
       policy: ["", Validators.required],
-      policyMember: [""],
+      dueDate: [""],
       contactMethod: ["", Validators.required],
       contactTime: [""],
+      summary: [""],
       description: ["", Validators.required],
+      policyMember: ["", Validators.required],
     });
   }
 
@@ -73,28 +85,28 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
       for (let i = 0; i < input.files.length; i++) {
         const file = input.files[i];
         this.selectedFile = file;
-          // Read the file as a data URL
-          const reader = new FileReader();
-          reader.onload = () => {
-            // Convert the file to Base64 string
-            const base64String = reader.result?.toString().split(',')[1];
-  
-            // Add the file to your files array with additional properties
-            // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType, base64: base64String });
-            // console.log("File:",this.clientDetails)
-            let payload ={
-              docType:this.selectedFile.type,
-              document: base64String,
-              documentName: file.name,
-              documentType: this.selectedFile.type,
-              fileName: this.selectedFile.name,
-              clientCode: this.clientCode
-            }
-            this.documentPayload = payload;
-            log.info("file upload payload", this.documentPayload)
-          };
-           // Read the file as data URL
-           reader.readAsDataURL(file); 
+        // Read the file as a data URL
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Convert the file to Base64 string
+          const base64String = reader.result?.toString().split(',')[1];
+
+          // Add the file to your files array with additional properties
+          // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType, base64: base64String });
+          // console.log("File:",this.clientDetails)
+          let payload = {
+            docType: this.selectedFile.type,
+            document: base64String,
+            documentName: file.name,
+            documentType: this.selectedFile.type,
+            fileName: this.selectedFile.name,
+            clientCode: this.clientCode
+          }
+          this.documentPayload = payload;
+          log.info("file upload payload", this.documentPayload)
+        };
+        // Read the file as data URL
+        reader.readAsDataURL(file);
         // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
       }
     }
@@ -136,7 +148,7 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
   }
 
   onSubmitRequest() {
-    if(this.serviceRegForm.invalid) {
+    if (this.serviceRegForm.invalid) {
       this.messageService.add({
         severity: 'info',
         summary: 'Information',
@@ -154,7 +166,7 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
       description: serviceReqFormData.description,
       reporter: this.userType,
       accountCode: this.prpClientCode
-      };
+    };
     log.info("serviceReqPayload", serviceReqPayload)
     this.schemServiceReqService.postServiceReq(serviceReqPayload).pipe(untilDestroyed(this)).subscribe((res) => {
       log.info("Sucess", res)
@@ -174,6 +186,6 @@ export class ServiceRequestComponent implements OnInit, OnDestroy {
     this.schemServiceReqService.postDocumentInfo(this.documentPayload).pipe(untilDestroyed(this)).subscribe((res) => {
       log.info("fileupInfoloaded", res);
     });
-    
+
   }
 }

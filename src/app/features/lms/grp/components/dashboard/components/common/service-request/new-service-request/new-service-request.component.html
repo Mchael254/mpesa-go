@@ -1,0 +1,130 @@
+<div class="main">
+    <div class="container">
+        <div class="title">{{ "lms.grp.service_request.service_request" | translate }}</div>
+        <form [formGroup]="serviceRegForm">
+            <div class="row" style="padding-top: 10px;">
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="category" style="color: black;">{{
+                            "lms.grp.service_request.category" | translate }}</label>
+                        <select class="form-select" [id]="'category'" formControlName="category">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let cat of serviceReqCategories$ | async" [value]="cat.requestTypeCode">{{
+                                cat.name | titlecase }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="categoryType" style="color: black;">{{
+                            "lms.grp.service_request.category_type" | translate }}</label>
+                        <select class="form-select" [id]="'categoryType'" formControlName="categoryType">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let catType of serviceReqCatTypes$ | async" [value]="catType.description">{{
+                                catType.description | titlecase }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container" style="margin-top: 10px;">
+        <form [formGroup]="serviceRegForm">
+            <div style="padding-top: 10px;" class="row">
+                <div class="col-md-4 row-space">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="policy" style="color: black;">
+                            {{ "lms.grp.service_request.policy" | translate }}
+                        </label>
+                        <select formControlName="policy" class="form-select" id="policy">
+                            <option selected disabled></option>
+                            <option *ngFor="let pol of serviceReqPolicies$ | async" [value]="pol.policyNumber">
+                                {{ pol.accountName | titlecase }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 row-space" *ngIf="entityType === 'ADMIN'">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="policyMember" style="color: black;">
+                            {{ "lms.grp.service_request.policy_members" | translate }}
+                        </label>
+                        <select formControlName="policyMember" class="form-select" id="policyMember">
+                            <option selected disabled></option>
+                            <option *ngFor="let pol of " [value]="pol">
+                                {{ pol }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 row-space">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="contactMethod" style="color: black;">
+                            {{ "lms.grp.service_request.preferred_contact_method" | translate }}
+                        </label>
+                        <select formControlName="contactMethod" class="form-select" id="contactMethod">
+                            <option selected disabled></option>
+                            <option *ngFor="let contactMeth of contactMethods$ | async" [value]="contactMeth.value">
+                                {{ contactMeth.name | titlecase }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 row-space">
+                    <div>
+                        <label for="contactTime" style="color: black;">
+                            {{ "lms.grp.service_request.preferred_contact_time" | translate }}
+                        </label>
+                        <p-calendar formControlName="contactTime" [timeOnly]="true" [showIcon]="true"
+                            placeholder="HH:mm"></p-calendar>
+                    </div>
+                </div>
+                <div class="col-md-4 row-space">
+                    <div>
+                        <label for="dueDate" style="color: black;">{{ "lms.grp.service_request.due_date" | translate
+                            }}</label>
+                        <p-calendar formControlName="dueDate" [showIcon]="true" [showButtonBar]="true"
+                            placeholder="dd/mm/yyyy"></p-calendar>
+                    </div>
+                </div>
+                <div class="col-md-4 row-space">
+                    <div>
+                        <label for="summary" style="color: black;">{{ "lms.grp.service_request.summary" | translate
+                            }}</label>
+                        <input type="text" pInputText formControlName="summary" class="form-control" id="summary">
+                    </div>
+                </div>
+                <div class="col-md-4 row-space">
+                    <div>
+                        <label for="description" style="color: black;">
+                            {{ "lms.grp.service_request.description" | translate }}
+                        </label>
+                        <textarea rows="2" cols="5" pInputTextarea formControlName="description" class="form-control"
+                            id="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12" style="padding-top: 10px;">
+                <div class="d-flex align-items-center flex-wrap">
+                    <label for="fileUpload" style="color: black; margin-right: 10px;">
+                        {{ "lms.grp.service_request.upload_file" | translate }}
+                    </label>
+                    <div class="form-group" style="display: flex; flex-grow: 1; align-items: center;">
+                        <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
+                        <button class="choose-file" (click)="fileInput.click()">
+                            <span class="file-text">{{ "lms.grp.service_request.choose_file" |
+                                translate }}</span>
+                        </button>
+                        <span *ngIf="selectedFile" style="margin-left: 10px;">{{ selectedFile.name }}</span>
+                        <i *ngIf="selectedFile" class="pi pi-trash delete-icon" (click)="removeFile()"></i>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="button-container">
+        <button class="submit-req" (click)="onSubmitRequest()">{{
+            "lms.grp.service_request.submit_request" | translate }}</button>
+    </div>
+</div>
