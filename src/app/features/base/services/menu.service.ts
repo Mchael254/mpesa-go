@@ -258,7 +258,35 @@ export class MenuService {
         name: 'Service Desk',
         nameSlug: 'desk',
         icon: 'fa-solid fa-gears',
-        menuItems: [],
+        menuItems: [
+          {
+            name: 'Service Desk',
+            nameSlug: 'servDesk',
+            subList: [
+              {
+                name: 'Service Desk',
+                link: '/home/crm/service-desk',
+              },
+              {
+                name: 'Request Tracking',
+                link: '/home/crm/request-tracking',
+              },
+              {
+                name: 'Request Report',
+                link: '/home/crm/',
+              },
+              {
+                name: 'Request Categories',
+                link: '/home/crm/request-categories',
+              },
+              {
+                name: 'Request Status',
+                link: '/home/crm/request-status',
+              },
+            ],
+            collapsed: true,
+          },
+        ],
         collapsed: true,
       },
       {
