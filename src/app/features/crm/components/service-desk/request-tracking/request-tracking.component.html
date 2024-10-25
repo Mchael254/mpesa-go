@@ -1,0 +1,302 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Service Desk',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service Desk Request',
+        url: '/home/crm'
+      },
+      {
+        label: 'Request Tracking',
+        url: '/home/crm/request-tracking'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.serviceRequestTracking' | translate}}</h6>
+
+        <div class="row col-lg-12 pb-2">
+          <div class="col-lg-2 col-sm-4 col-6">
+            <label class="float-start">{{ 'serviceDesk.requestStatus' | translate }}:</label><br>
+            <select class="form-select" id="module">
+              <option value="" selected>All</option>
+            </select>
+          </div>
+
+          <div class="col-lg-2 col-sm-6 col-6">
+            <label class="float-start">{{ 'serviceDesk.requestOwner' | translate }}: </label>
+            <select id="system" class="form-select">
+              <option value="" ></option>
+            </select>
+          </div>
+
+          <div class="col-lg-2 col-sm-6 col-6">
+            <label class="float-start">{{ 'serviceDesk.accType' | translate }}: </label>
+            <select class="form-select" >
+              <option value="">All</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #requestTrackingTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="requestTrackingData?.length"
+          [value]="requestTrackingData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.accountName'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.requestType'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.source'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.description'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.policyNumber'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.creationDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.summary'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.dueDate'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.status'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.assignee'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.closedByAssignee'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.closedByInitiator'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.communicationMode'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.referenceNumber'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.comments'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.shortDescription'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.physicalAddress'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.email'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.solutionSMSNumber'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.owner'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-requestTracking>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="20">No Service Request Tracking Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Request tracking modal-->
+<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>-->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{'serviceDesk.serviceRequest' | translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label for="categoryType" class="form-label">Request category type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="categoryType"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="requestIncidence" class="form-label">Request incidence</label>
+              <input
+                type="text"
+                class="form-control"
+                id="requestIncidence"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="requestSource" class="form-label">Request source</label>
+              <input
+                type="text"
+                class="form-control"
+                id="requestSource"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="accType" class="form-label">Account type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="accType"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="acc" class="form-label">Account</label>
+              <input
+                type="text"
+                class="form-control"
+                id="acc"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="summary" class="form-label">Summary</label>
+              <input
+                type="text"
+                class="form-control"
+                id="summary"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="requestDate" class="form-label">Request date</label>
+              <input
+                type="text"
+                class="form-control"
+                id="requestDate"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="dueDate" class="form-label">Due date</label>
+              <input
+                type="text"
+                class="form-control"
+                id="dueDate"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="desc" class="form-label">Description</label>
+              <input
+                type="text"
+                class="form-control"
+                id="desc"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="assignee" class="form-label">Assignee</label>
+              <input
+                type="text"
+                class="form-control"
+                id="assignee"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="owner" class="form-label">Owner</label>
+              <input
+                type="text"
+                class="form-control"
+                id="owner"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="ownerAccType" class="form-label">Owner acc type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="ownerAccType"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="status" class="form-label">Status</label>
+              <input
+                type="text"
+                class="form-control"
+                id="status"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="resDate" class="form-label">Resolution date</label>
+              <input
+                type="text"
+                class="form-control"
+                id="resDate"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="solution" class="form-label">Solution</label>
+              <input
+                type="text"
+                class="form-control"
+                id="solution"
+                disabled
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="comments" class="form-label">Comments</label>
+              <input
+                type="text"
+                class="form-control"
+                id="comments"
+                disabled
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
