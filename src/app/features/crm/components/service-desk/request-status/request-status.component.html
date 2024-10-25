@@ -1,0 +1,160 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Service Desk',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service Desk Request',
+        url: '/home/crm'
+      },
+      {
+        label: 'Request Status',
+        url: '/home/crm/request-status'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{'serviceDesk.serviceRequestStatus' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openServiceRequestStatusModal()"></i
+              ></span>
+              <span class="icon-circle"
+              ><i class="pi pi-pencil"></i
+              ></span>
+              <span class="icon-circle"
+              ><i
+                class="fa-regular fa-trash-can"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #requestStatusTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="requestStatusData?.length"
+          [value]="requestStatusData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.mainStatus'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.shortDescription'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.statusName'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-requestStatus>
+            <tr class="custom-table">
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+              <td>
+
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Service Request Status Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Service Request Status Modal-->
+<div
+  class="modal fade"
+  #serviceRequestStatusModal
+  id="serviceRequestStatusModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'service request status' : 'new service request status' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeServiceRequestStatusModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="serviceRequestStatusForm">
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                formControlName="name"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="shtDesc" class="form-label">Short Description</label>
+              <input
+                type="text"
+                class="form-control"
+                id="shtDesc"
+                formControlName="shtDesc"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="status" class="form-label">Main status</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveServiceRequestStatus()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
