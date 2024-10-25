@@ -28,6 +28,13 @@ import { ActivitiesComponent } from './components/activity-management/activities
 import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
 import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
 import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses/lead-sources-statuses.component';
+import {RequestStatusComponent} from "./components/service-desk/request-status/request-status.component";
+import {RequestCategoriesComponent} from "./components/service-desk/request-categories/request-categories.component";
+import {RequestTrackingComponent} from "./components/service-desk/request-tracking/request-tracking.component";
+import {ServiceDeskComponent} from "./components/service-desk/service-desk.component";
+import {
+  ServiceDeskDetailsComponent
+} from "./components/service-desk/service-desk-details/service-desk-details.component";
 
 const routes: Routes = [
   {
@@ -141,6 +148,26 @@ const routes: Routes = [
   {
     path: 'lead-sources-statuses',
     component: LeadSourcesStatusesComponent,
+  },
+  {
+    path: 'request-status',
+    component: RequestStatusComponent,
+  },
+  {
+    path: 'request-categories',
+    component: RequestCategoriesComponent,
+  },
+  {
+    path: 'request-tracking',
+    component: RequestTrackingComponent,
+  },
+  {
+    path: 'service-desk',
+    component: ServiceDeskComponent,
+  },
+  {
+    path: 'service-desk-details',
+    component: ServiceDeskDetailsComponent,
   },
 ];
 

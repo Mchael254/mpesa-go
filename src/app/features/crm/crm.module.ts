@@ -42,6 +42,13 @@ import { EntitiesModule } from '../entities/entities.module';
 import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
 import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
 import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses/lead-sources-statuses.component';
+import { RequestStatusComponent } from './components/service-desk/request-status/request-status.component';
+import { RequestCategoriesComponent } from './components/service-desk/request-categories/request-categories.component';
+import { RequestTrackingComponent } from './components/service-desk/request-tracking/request-tracking.component';
+import {ServiceDeskComponent} from "./components/service-desk/service-desk.component";
+import {
+  ServiceDeskDetailsComponent
+} from "./components/service-desk/service-desk-details/service-desk-details.component";
 
 @NgModule({
   declarations: [
@@ -74,6 +81,11 @@ import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses
     ActivityTypesComponent,
     PriorityLevelsActivityStatusComponent,
     LeadSourcesStatusesComponent,
+    RequestStatusComponent,
+    RequestCategoriesComponent,
+    RequestTrackingComponent,
+    ServiceDeskComponent,
+    ServiceDeskDetailsComponent,
   ],
   imports: [
     CommonModule,
