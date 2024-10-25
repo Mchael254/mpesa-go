@@ -1,0 +1,341 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Service Desk',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service Desk Request',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service desk',
+        url: '/home/crm/service-desk'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.serviceDesk' | translate}}</h6>
+
+        <form [formGroup]="accountsFilteringForm">
+          <div class="col-lg-12 pb-2">
+            <h6 class="d-flex my-3 w-100">{{'serviceDesk.entity' | translate}}</h6>
+            <div class="d-flex justify-content-start">
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="client" formControlName="accountRadio">
+                  <label class="form-check-label">Clients</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="intermediary" formControlName="accountRadio">
+                  <label class="form-check-label">Intermediary</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="service provider" formControlName="accountRadio">
+                  <label class="form-check-label">Service providers</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="others" formControlName="accountRadio">
+                  <label class="form-check-label">Others</label>
+                </div>
+
+
+            </div>
+
+          </div>
+
+          <div class="row col-lg-12 pb-2">
+            <div class="col-lg-2 col-sm-4 col-6" *ngIf="accountsFilteringForm.get('accountRadio').value === 'intermediary'">
+              <label class="float-start">{{ 'serviceDesk.accType' | translate }}:</label><br>
+              <select class="form-select" id="accType" formControlName="accType">
+                <option value="">In-house agents</option>
+                <option value="">Individual agents</option>
+              </select>
+            </div>
+
+            <div class="col-lg-2 col-sm-4 col-6" *ngIf="accountsFilteringForm.get('accountRadio').value === 'service provider'">
+              <label class="float-start">{{ 'serviceDesk.serviceProviderType' | translate }}:</label><br>
+              <select class="form-select" id="servProvider" formControlName="serviceProviderType">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+
+            <div class="col-lg-2 col-sm-4 col-6">
+              <label class="float-start">{{ 'serviceDesk.searchCriteria' | translate }}:</label><br>
+              <select class="form-select" id="searchCriteria" formControlName="searchCriteria">
+                <option value="" selected>All</option>
+              </select>
+            </div>
+
+            <div class="col-lg-2 col-sm-6 col-6">
+              <label class="float-start">{{ 'serviceDesk.inputSearch' | translate }}: </label>
+              <input
+                type="text"
+                class="form-control" formControlName="inputSearch"
+              />
+            </div>
+
+            <div class="col-lg-8 col-sm-6 col-6 d-inline-grid justify-content-lg-end align-content-end" *ngIf="accountsFilteringForm.get('accountRadio').value === 'others'">
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newOtherModal">New</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="card-body p-0">
+        <ng-container *ngIf="accountsFilteringForm.get('accountRadio').value === 'client'">
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            #clientsTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="accountsData?.length"
+            [value]="accountsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['campaign.campaignName']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="campaign.campaignName">Surname <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Other names <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.objective">Short Desc <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                <th pSortableColumn="campaign.description">ID No. <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Email <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.objective">Telephone <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                <th pSortableColumn="campaign.description">Status <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-client>
+              <tr class="custom-table">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6">No Client Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </ng-container>
+        <ng-container *ngIf="accountsFilteringForm.get('accountRadio').value === 'intermediary'">
+          <p-table
+            #agentsTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="accountsData?.length"
+            [value]="accountsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['campaign.campaignName']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="campaign.campaignName">Short description <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-agent>
+              <tr class="custom-table">
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6">No Agent Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </ng-container>
+        <ng-container *ngIf="accountsFilteringForm.get('accountRadio').value === 'service provider'">
+          <p-table
+            #serviceProviderTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="accountsData?.length"
+            [value]="accountsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['campaign.campaignName']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="campaign.campaignName">Short description <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-serviceProvider>
+              <tr class="custom-table">
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6">No Service Provider Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </ng-container>
+        <ng-container *ngIf="accountsFilteringForm.get('accountRadio').value === 'others'">
+          <p-table
+            #othersTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="accountsData?.length"
+            [value]="accountsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['campaign.campaignName']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">ID no. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Telephone no. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Physical address <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">Email address <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-other>
+              <tr class="custom-table">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6">No Other Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--New other modal-->
+
+<div class="modal fade" id="newOtherModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{'serviceDesk.serviceRequest' | translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row my-2">
+            <div class="col-md-12">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="telNo" class="form-label">Telephone no.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="telNo"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="email" class="form-label">Email address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="address" class="form-label">Physical address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="address"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="id" class="form-label">ID number</label>
+              <input
+                type="text"
+                class="form-control"
+                id="id"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
