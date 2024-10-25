@@ -1,0 +1,72 @@
+<div class="main">
+  <div style="display: flex; padding-top: 1rem; justify-content: start">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="container">
+    <div class="title">{{ "lms.grp.service_request.my_service_requests" | translate }}</div>
+    <div class="filter-options" style="padding-top: 35px;">
+      <label for="filterBy" style="color: black; white-space: nowrap;">
+        {{ "lms.grp.service_request.filter_by" | translate }}
+      </label>
+
+      <select class="form-select">
+        <option *ngFor="let column of " [value]="column">{{ column | titlecase }}</option>
+      </select>
+
+      <select class="form-select">
+        <option [value]="'greater'">{{ "lms.grp.service_request.greater_than" | translate }}</option>
+        <option [value]="'less'">{{ "lms.grp.service_request.less_than" | translate }}</option>
+        <option [value]="'equals'">{{ "lms.grp.service_request.equals" | translate }}</option>
+      </select>
+
+      <input type="text" pInputText class="form-control" id="otherNames">
+
+      <div class="new-req-button">
+        <p-button [style]="{'border-radius': '4px'}" (click)="newServiceReq()">{{
+          "lms.grp.service_request.new_service_request" | translate }}</p-button>
+        <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+        </p-multiSelect>
+      </div>
+    </div>
+
+    <div>
+      <p-table [value]="serviceReqListing" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+        styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+        <ng-template pTemplate="header">
+          <tr>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.request_id" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.date_submitted" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.policy_number" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.category" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.category_type" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.summary" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.description" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.status" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.due_date" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.solution" | translate }}</th>
+            <th *ngIf="selectedColumns.includes('req')">{{ "lms.grp.service_request.assigned_to" | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-serviceReq let-rowIndex="rowIndex">
+          <tr (click)="onReceiptsTableRowClick(serviceReq, rowIndex)"
+            [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+            <td *ngIf="selectedColumns.includes('req')">{{ serviceReq.req }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
