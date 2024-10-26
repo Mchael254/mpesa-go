@@ -1,0 +1,48 @@
+tr > th:nth-child(10){
+    color: var(--primary-color);
+}
+
+tr > td:nth-child(10){
+    color: var(--primary-color);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.table > thead >tr {
+    --bs-table-bg: #BAD0E4;
+}
+
+.input-group span {
+    background: var(--bs-border-color);
+    color: #fff;
+}
+
+table tr th {
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600;
+}
+
+.p-highlight {
+    border: black 2px solid
+} 
+/* primeng table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+td {
+    padding: 2px;
+}
+
+tr {
+    border-bottom: none !important;
+    white-space: nowrap;
+}

@@ -12,6 +12,7 @@ import { DeathClaimsComponent } from './components/claims-initiation/death-claim
 import { ClaimsOptionsComponent } from './components/claims-initiation/claims-options/claims-options.component';
 import {LmsModule} from "../../../lms.module";
 import { SurrenderClaimsComponent } from './components/claims-initiation/surrender-claims/surrender-claims.component';
+import { MaturitiesSelectionComponent } from './components/maturities/maturities-selection/maturities-selection.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { SurrenderClaimsComponent } from './components/claims-initiation/surrend
     DeathClaimsComponent,
     ClaimsOptionsComponent,
     SurrenderClaimsComponent,
+    MaturitiesSelectionComponent,
   ],
   imports: [
     CommonModule,

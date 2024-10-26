@@ -1,0 +1,240 @@
+<div class="mx-4">
+    <div style="display: flex; padding-top: 1rem; justify-content: end">
+        <!-- <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb> -->
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper> -->
+        </div>
+    </div>
+    <div style="position: relative">
+        <ngx-spinner name="client_details_view" type="ball-clip-rotate-multiple"
+            [fullScreen]="false" color="#00529B" size="medium" bdColor="rgba(255, 255, 255, 0.966)">
+        </ngx-spinner> 
+            <div style="font-size: 90%">
+                <form [formGroup]="filterForm">
+                    <div class="card mb-4">
+                        <div class="card-body mx-2 mt-2">
+                            <div class="row">
+                                <h6 class="text-primary font-weight-bold">Maturities</h6>
+                            </div>
+                            <div class="d-flex align-items-center" style="font-size: 0.8rem; padding-bottom: 1rem;">
+                                <div class="col-lg-12 col-md-12 pb-2 d-flex align-items-center w-100">
+                                    <!-- Label -->
+                                    <label for="treatyType" class="quote-label fw-medium text-black me-2">Filter by</label>
+
+                                    <!-- Filter Type Dropdown (e.g., Maturity type, Policy number, Claimant) -->
+                                    <select class="form-select me-2 w-auto" formControlName="filterField" (change)="filterMaturities()">
+                                        <option value="" selected="true" disabled="disabled">
+                                            Maturity type, policy number, claimant...
+                                        </option>
+                                        <option value="claimId">Claim ID</option>
+                                        <option value="policyNumber">Policy Number</option>
+                                        <option value="claimant">Claimant</option>
+                                        <option value="maturityType">Maturity Type</option>
+                                        <option value="claimStatus">Claim Status</option>
+                                        <option value="dateFiled">Date Filed</option>
+                                        <option value="claimAmount">Claim Amount</option>                                   
+                                        <option value="maturityDate">Maturity Date</option>
+                                        <option value="product">Product</option>
+                                        <option value="outstandingLoan">Outstanding Loan</option>
+                                        <option value="paymentStatus">Payment Status</option>
+                                        <option value="effectiveDate">Effective Date</option>
+                                        <option value="requestDate">Request Date</option>
+                                    </select>
+                                    <!-- Select dropdown with auto width -->
+                                    <select class="form-select me-2 w-auto" formControlName="filterOperator" (change)="filterMaturities()">
+                                        <option value="" selected="true" disabled="disabled">Greater than, equals to...</option>
+                                        <option value="equals">Equals</option>
+                                        <option value="greaterThan">Greater Than</option>
+                                        <option value="lessThan">Less Than</option>
+                                    </select>
+                                    <!-- Filter Criteria Input -->
+                                    <input type="text" class="form-control me-2 w-50" id="filterCriteria" formControlName="filterCriteria" 
+                                        (input)="filterMaturities()" placeholder="Enter value" />
+                                    <!-- Button -->
+                                    <button class="btn btn-primary" (click)="processMaturities()">Process</button>
+                                </div>
+                            </div>
+            
+                            <div class="row">
+                                <!-- Maturities Table -->
+                                <div class="table-responsive">
+                                    <p-table [value]="paginatedMaturities()" [paginator]="paginatedMaturities()?.length > 0" [rows]="entriesPerPage"
+                                            [rowsPerPageOptions]="[10, 20, 50]" [totalRecords]="totalEntries"  [showCurrentPageReport]="paginatedMaturities()?.length > 0" dataKey="claimId"
+                                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} claims" styleClass="p-datatable-striped">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox" (change)="toggleMaturitySelection(-1)" [checked]="allSelected()">
+                                                    <span>Claim ID</span>
+                                                    <p-sortIcon field="claimId"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Policy Number</span>
+                                                    <p-sortIcon field="policyNumber"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Claimant</span>
+                                                    <p-sortIcon field="claimant"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Maturity Type</span>
+                                                    <p-sortIcon field="maturityType"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Claim Status</span>
+                                                    <p-sortIcon field="claimStatus"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Date Filed</span>
+                                                    <p-sortIcon field="dateFiled"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Claim Amount</span>
+                                                    <p-sortIcon field="claimAmount"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Maturity Date</span>
+                                                    <p-sortIcon field="maturityDate"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Product</span>
+                                                    <p-sortIcon field="product"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Outstanding Loan</span>
+                                                    <p-sortIcon field="outstandingLoan"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Payment Status</span>
+                                                    <p-sortIcon field="paymentStatus"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Effective Date</span>
+                                                    <p-sortIcon field="effectiveDate"></p-sortIcon>
+                                                </th>
+                                                <th>
+                                                    <span>Request Date</span>
+                                                    <p-sortIcon field="requestDate"></p-sortIcon>
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="text" placeholder="Search Claim ID" formControlName="claimId" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Policy Number" formControlName="policyNumber" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Claimant" formControlName="claimant" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Maturity Type" formControlName="maturityType" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Claim Status" formControlName="claimStatus" (input)="filterMaturities()"/></td>
+                                                <td><input type="date" placeholder="Search Date Filed" formControlName="dateFiled" (input)="filterMaturities()"/></td>
+                                                <td><input type="number" placeholder="Search Claim Amount" formControlName="claimAmount" (input)="filterMaturities()"/></td>
+                                                <td><input type="date" placeholder="Search Maturity Date" formControlName="maturityDate" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Product" formControlName="product" (input)="filterMaturities()"/></td>
+                                                <td><input type="number" placeholder="Search Loan" formControlName="outstandingLoan" (input)="filterMaturities()"/></td>
+                                                <td><input type="text" placeholder="Search Payment Status" formControlName="paymentStatus" (input)="filterMaturities()"/></td>
+                                                <td><input type="date" placeholder="Search Effective Date" formControlName="effectiveDate" (input)="filterMaturities()"/></td>
+                                                <td><input type="date" placeholder="Search Request Date"formControlName="requestDate" (input)="filterMaturities()"/></td>
+                                                <td></td>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-maturity let-rowIndex="rowIndex">
+                                            <tr [style.background-color]="rowIndex % 2 === 0 ? 'white' : '#f0f0f0'">
+                                                <td>
+                                                    <input type="checkbox" (change)="toggleMaturitySelection(maturity.claimId)"
+                                                        [checked]="maturity.isSelected">
+                                                            {{ maturity.claimId }}
+                                                </td>
+                                                <td>{{ maturity.policyNumber }}</td>
+                                                <td>{{ maturity.claimant }}</td>
+                                                <td>{{ maturity.maturityType }}</td>
+                                                <td>{{ maturity.claimStatus }}</td>
+                                                <td>{{ maturity.dateFiled | date: 'dd/MM/yyyy' }}</td>
+                                                <td>Ksh. {{ maturity.claimAmount | number }}</td>
+                                                <td>{{ maturity.maturityDate | date: 'dd/MM/yyyy' }}</td>
+                                                <td>{{ maturity.product }}</td>
+                                                <td>Ksh. {{ maturity.outstandingLoan | number }}</td>
+                                                <td>{{ maturity.paymentStatus }}</td>
+                                                <td>{{ maturity.effectiveDate | date: 'dd/MM/yyyy' }}</td>
+                                                <td>{{ maturity.requestDate | date: 'dd/MM/yyyy' }}</td>
+                                                <td>
+                                                    <button class="btn btn-secondary btn-sm">
+                                                        <i class="pi pi-ellipsis-v"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                    <!-- <div *ngIf="[].length === 0" class="text-danger d-flex justify-content-center">
+                                        No List of Maturities Available
+                                    </div> -->
+                                </div>
+
+                                <!-- Pagination Section -->
+                                <div class="row mt-4">
+                                    <!-- <div class="col-md-6">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-light" (click)="changePage('prev')">
+                                                <i class="pi pi-chevron-left"></i>
+                                            </button>
+                                            <button *ngFor="let page of paginationPages" class="btn btn-light mx-2"
+                                                [class.active]="currentPage === page" (click)="changePage(page)">{{ page }}
+                                            </button>
+                                            <span *ngIf="totalPages > 5" class="mx-2">...</span>
+                                            <button class="btn btn-light" (click)="changePage('next')">
+                                                <i class="pi pi-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </div> -->
+                                    <div class="row align-items-center">
+                                        <!-- Left side: Showing 1 to 10 of 20 entries -->
+                                        <div class="col-md-6">
+                                            <p class="mb-0">Showing {{ (currentPage - 1) * entriesPerPage + 1 }} to 
+                                                {{ currentPage * entriesPerPage }} of {{ totalEntries }} entries
+                                            </p>
+                                        </div>
+
+                                        <!-- Right side: Show 'dropdown' entries -->
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-end align-items-center">
+                                                <label for="showEntries" class="me-2">Show</label>
+                                                    <select class="form-select w-auto" id="showEntries" (change)="changeEntriesPerPage($event)" aria-label="Entries per page">
+                                                        <option value="6">6</option>
+                                                        <option value="10">10</option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                    <label for="showEntries" class="ms-2">entries</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+    </div>
+</div>
+
+<!-- Pagination Section (To be looked into and implemented later)-->
+    <!-- <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-light" (click)="changePage('prev')">
+                    <i class="pi pi-chevron-left"></i>
+                </button>
+                <button *ngFor="let page of paginationPages" class="btn btn-light mx-2"
+                    [class.active]="currentPage === page" (click)="changePage(page)">{{ page }}</button>
+                <span *ngIf="totalPages > 5" class="mx-2">...</span>
+                <button class="btn btn-light" (click)="changePage('next')">
+                    <i class="pi pi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+</div> -->
