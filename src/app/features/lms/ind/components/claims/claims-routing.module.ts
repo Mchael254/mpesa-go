@@ -5,6 +5,7 @@ import { ClaimsInvestigationComponent } from './components/claims-investigation/
 import { ClaimsPaymentProcessingComponent } from './components/claims-payment-processing/claims-payment-processing.component';
 import { PolicyAndClaimsDetailsComponent } from './components/policy-and-claims-details/policy-and-claims-details.component';
 import {ClaimsProcessComponent} from "./components/claims-process/claims-process.component";
+import { MaturitiesSelectionComponent } from './components/maturities/maturities-selection/maturities-selection.component';
 
 
 const routes: Routes = [
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'policy-and-claims-details',
     component: PolicyAndClaimsDetailsComponent
+  },
+  {
+    path: 'maturities-selection',
+    component: MaturitiesSelectionComponent
   },
 
 ];
