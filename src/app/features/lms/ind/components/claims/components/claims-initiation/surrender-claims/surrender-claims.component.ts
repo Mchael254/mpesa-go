@@ -99,7 +99,8 @@ export class SurrenderClaimsComponent {
     return <SurrenderRequest>{
       pol_code: +this.selectedPolicy?.pol_code,
       delete_trans: "N",
-      surr_type: rawValue?.surrenderType,
+      surr_type: 'SR',
+      // surr_type: rawValue?.surrenderType,
       surr_date: rawValue?.surrenderDate,
       done_date: null,
       penalty_rate: null,
