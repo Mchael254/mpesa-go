@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { MessageService } from 'primeng/api';
+import { ClaimsService } from '../../services/claims.service';
 import * as bootstrap from 'bootstrap';
 
 
@@ -56,13 +57,19 @@ export class ClaimantManagementComponent {
    * @param confirmationService ConfirmationService for the delete confirmation dialog.
    * @param messageService MessageService for displaying success/error messages.
    */
-  constructor(private fb: FormBuilder, private confirmationService: ConfirmationService, private messageService: MessageService) { }
+  constructor(
+    private fb: FormBuilder, 
+    private confirmationService: ConfirmationService, 
+    private messageService: MessageService,
+    public claimService:ClaimsService
+  ) { }
 
   /**
    * Initializes the component.
    */
   ngOnInit(): void {
     this.initClaimantForm();
+  
   }
 
   /**
@@ -220,5 +227,8 @@ export class ClaimantManagementComponent {
       modal.hide();
     }
   }
+
+
+
 
 }

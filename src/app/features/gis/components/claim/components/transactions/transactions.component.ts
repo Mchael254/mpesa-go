@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ClaimsService } from '../../services/claims.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transactions',
@@ -9,30 +11,18 @@ import { TranslateService } from '@ngx-translate/core';
 export class TransactionsComponent {
   activeView: string = 'transactionDetails'; // Set default view
 
-  /**
-  * Array of transaction data.
-  */
-  transactionData = [
-    {
-      transType: 'Loss Opening',
-      transDate: '12/08/2024',
-      grossLiability: '30,000,000.00',
-      netLiabilityPayee: '30,000,000.00',
-      paidAmount: '0.00',
-      authorisedBy: 'N',
-      authoriseDate: '',
-      chequeNumber: '',
-      chequeDate: '',
-      receiptNumber: '',
-      action: 'View Transaction'
-    }
-  ];
+  
+  transactionData:any;
 
  
-  constructor(private translateService: TranslateService) { }
+  constructor(
+    private translateService: TranslateService,
+    public claimService:ClaimsService,
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
-    // No initialization logic required
+    this.getClaimTransactionDetails()
   }
   
   setActiveView(view: string) {
@@ -44,8 +34,23 @@ export class TransactionsComponent {
   *
   * @param transaction The transaction data.
   */
-  viewTransaction(transaction: any): void {
-    // TODO: Implement view transaction logic
-    console.log('View Transaction:', transaction);
+  viewTransaction(transaction: any,transactionDetails): void {
+   
+    this.router.navigate([`/home/gis/claim/view-transaction/${transaction}`]);
+    sessionStorage.setItem('transactionDetails',JSON.stringify(transactionDetails))
+    console.log(transactionDetails)
   }
+
+
+  getClaimTransactionDetails(){
+    this.claimService.getClaimTransactionDetails('C/HDO/FSP/22/000009').subscribe({
+      next:(res=>{
+        this.transactionData = res
+        this.transactionData = this.transactionData.embedded[0]
+      
+        console.log(this.transactionData,'transactionDatta')
+      })
+    })
+  }
+
 }

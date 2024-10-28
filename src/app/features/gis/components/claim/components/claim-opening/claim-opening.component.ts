@@ -10,6 +10,11 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { ClaimsService } from '../../services/claims.service';
 import { Router } from '@angular/router';
 import claimSteps from '../../data/claims_steps.json'
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { PerilsService } from '../../../setups/services/perils-territories/perils/perils.service';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClassesSubclassesService } from '../../../setups/services/classes-subclasses/classes-subclasses.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 const log = new Logger("claimOpeningComponent");
 
@@ -30,14 +35,31 @@ interface Peril {
   claimEstimate: number; // Add claim estimate property
 }
 
-interface Claimant {
+interface reasonsToReview {
   value: string;
   label: string;
 }
 
-interface NextReviewUser {
-  value: string;
-  label: string;
+interface perilPayload {
+  action:string,
+  code: number,
+  perilCode:number,
+  perilLevel:string,
+  peril:string,
+  perilAmount:number,
+  perilEstimate:number,
+  thirdParty:string,
+  vCpvCldCode:string 
+  groupCode:number,
+  CommunicationMode:string,
+  PaymentMode:string,
+  vPrpCode: number,
+  LiabilityAdmission:string,
+  LiabilityAdmDate: Date,
+  MainPerilCode: number,
+  PerilRate:number,
+  ExcessCodes: number,
+  PerilRemarks: string
 }
 
 interface PriorityLevel {
@@ -50,9 +72,10 @@ interface PriorityLevel {
   styleUrls: ['./claim-opening.component.css']
 })
 export class ClaimOpeningComponent {
-  steps = claimSteps
+  public steps = claimSteps
   selectedPeril:any;
   chosenPeril:any;
+  selectedClaimant:any;
   perilEstimate: number;
   perilForm: FormGroup; // Form for adding perils in the modal
   addPerilForm:FormGroup;
@@ -67,36 +90,50 @@ export class ClaimOpeningComponent {
   risks: any[]
   causations:any;
   Users:any;
+  addPerilpayload:perilPayload;
   catastropheEvents: CatastropheEvent[] = [
     { value: 'event1', label: 'Event 1' },
     { value: 'event2', label: 'Event 2' },
     { value: 'event3', label: 'Event 3' }
   ];
   partyToBlame: PartyToBlame[] = [
-    { value: 'party1', label: 'Party 1' },
-    { value: 'party2', label: 'Party 2' },
-    { value: 'party3', label: 'Party 3' }
+    { value: 'insured', label: 'The Insured' },
+    { value: 'party2', label: 'Third Party' },
+    { value: 'party3', label: 'Pending' },
+    { value: 'party3', label: 'Third party not identified ' },
+    { value: 'party3', label: 'Third party not involved' }
+   
   ];
-  perils:any[];
+
+  perils:any;
   perilsList:any;
   perilArray:any[]=[]
-
-  nextReviewUsers: NextReviewUser[] = [
-    { value: 'user1', label: 'User 1' },
-    { value: 'user2', label: 'User 2' },
-    { value: 'user3', label: 'User 3' }
-  ];
-  priorityLevels: PriorityLevel[] = [
-    { value: 'high', label: 'High' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'low', label: 'Low' }
-  ];
-   // Sample data (replace with actual data from your application)
-   claimants: { label: string; value: string }[] = [
-    { label: 'John Doe', value: 'johnDoe' },
-    { label: 'Jane Doe', value: 'janeDoe' },
-    { label: 'Peter Pan', value: 'peterPan' }
-  ];
+  nextReviewFields:boolean=false
+  clientDetails:any;
+  claimants:ClientDTO[] = [];
+  user:any;
+  userDetails:any;
+  reasonsToReview:reasonsToReview[]=[
+    { label: 'First Claim Review', value: 'fire' },
+    { label: 'Second Claim Review', value: 'theft' },
+    { label: 'Outstanding Document Follow Up', value: 'accident' },
+    { label: 'Assesors Report Follow Up', value: 'accident' },
+    { label: 'Adjustment Report Follow Up', value: 'accident' },
+    { label: 'Investigators Report Follow Up', value: 'accident' },
+    { label: 'Doctors Report Follow Up', value: 'accident' },
+    { label: 'Repairs Follow Up', value: 'accident' },
+    { label: 'Invoice/Fee Notes Follow Up', value: 'accident' },
+    { label: 'Advocates Update Follow Up', value: 'accident' },
+    { label: 'Recovery Action', value: 'accident' },
+    { label: 'Approval Follow Up', value: 'accident' },
+    { label: 'Executed DV Follow Up', value: 'accident' },
+    { label: 'Post Declinature Follow Up', value: 'accident' },
+    { label: 'General Follow Up', value: 'accident' }
+  ]
+  claimReporter:any[]=[
+    {label:'Client'},
+    {label:'Third Party'}
+  ]
 
   showperils: { label: string; value: string }[] = [
     { label: 'Fire', value: 'fire' },
@@ -110,13 +147,19 @@ export class ClaimOpeningComponent {
     { label: 'Cheque', value: 'cheque' },
     { label: 'Pin', value: 'pin' }
   ];
+  yesNo:any[]=[
+    {label:'Yes',value:'Y'},
+    {label:'No',value:'N'}
+  ]
 
   // Popup flags
   showPerilPopup: boolean = false;
   showClaimNotificationPopup: boolean = false;
   showClaimCapturingPopup: boolean = false;
   showAssigneePopup: boolean = false;
-
+  employeeBenefits:boolean = false;
+  motorFields:boolean = false;
+  
   constructor(
      private fb: FormBuilder,
      private primengConfig: PrimeNGConfig,
@@ -125,7 +168,11 @@ export class ClaimOpeningComponent {
      private policyService: PolicyService,
      private globalMessagingService:GlobalMessagingService,
      private claimService: ClaimsService,
-     private router: Router
+     private router: Router,
+     private clientService:ClientService,
+     private perilService:PerilsService,
+     private classService:ClassesSubclassesService,
+     private authService:AuthService
     ) {
     this.claimsOpeningForm = this.fb.group({
       product: ['', Validators.required],
@@ -148,6 +195,13 @@ export class ClaimOpeningComponent {
       priorityLevel: ['', Validators.required],
       referenceNumber: [''],
       accidentLocation: [''],
+      reasonForReview:[''],
+      reviewRemarks:[''],
+      claimReporter:[''],
+      currency:[''],
+      clientType:[''],
+      insuredAsRegularDriver:[''],
+      vehicleInMotion:['']
     });
 
       // Initialize the form for the peril modal
@@ -164,21 +218,18 @@ export class ClaimOpeningComponent {
     this.getCausations();
     this.getUsers();
     this.primengConfig.ripple = true;
-    this.perilsList = [
-      { label: 'Fire Damage', value: 'Fire Damage' },
-      { label: 'Water Damage', value: 'Water Damage' },
-      { label: 'Theft Loss', value: 'Theft Loss' }
-    ]; 
-
+    this.getClient();   
     this.addPerilForms();
-
-  
+    this.getCurrentUser();
   }
-
+  onSelectReviewUser(){
+    this.nextReviewFields = true
+  }
   getProduct(){
     this.productService.getAllProducts().subscribe({
       next:(res=>{
         this.productList = res
+      
       }),
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -202,6 +253,7 @@ export class ClaimOpeningComponent {
             this.availablePolicies.push(element)
             console.log(this.availablePolicies)
           }
+         
           
         });
         // const policies = this.allPolicies.findIndex(policy => this.allPolicies.product.code === code);
@@ -212,29 +264,40 @@ export class ClaimOpeningComponent {
   addPerilForms(){
     this.addPerilForm = this.fb.group({
       selfAsClaimant: [false],
-      claimant: ['', Validators.required],
-      telNo: [''],
-      email: ['', [Validators.required, Validators.email]],
-      sms: [''],
-      peril: ['', Validators.required],
+      claimant: [null, Validators.required],
+      peril: [null, Validators.required],
+      claimEstimate: [null, Validators.required],
       liabilityAdmission: [false],
-      claimEstimate: ['', Validators.required],
-      mPayDetails: [''],
-      emtDetails: [''],
-      chequeDetails: [''],
-      pinDetails: [''],
-      mpay: [''],
-      emt: [''],
-      cheque: ['']
+      telNo: [null],
+      email: [null, [Validators.required, Validators.email]],
+      sms: [null],
+      mPay: [false],
+      mPayDetails: [null],
+      emt: [false],
+      emtDetails: [null],
+      cheque: [false],
+      chequeDetails: [null]
+  
     });
 
-    // Disable claimant when selfAsClaimant is checked
-    this.addPerilForm.get('selfAsClaimant')?.valueChanges.subscribe(isChecked => {
-      const claimantControl = this.addPerilForm.get('claimant');
-      if (claimantControl) {
-        claimantControl.disable(isChecked);
-      }
-    });
+    // // Disable claimant when selfAsClaimant is checked
+    // this.addPerilForm.get('selfAsClaimant')?.valueChanges.subscribe(isChecked => {
+    //   const claimantControl = this.addPerilForm.get('claimant');
+    //   if (claimantControl) {
+    //     claimantControl.disable(isChecked);
+    //   }
+    // });
+// Watch for changes in the selfAsClaimant field
+this.addPerilForm.get('selfAsClaimant')?.valueChanges.subscribe((isSelfAsClaimantSelected: boolean) => {
+  if (isSelfAsClaimantSelected) {
+    // If self as claimant is selected, populate claimant, telNo, and email from selectedPolicy
+    this.populateClaimantDetailsFromPolicy();
+  } else {
+    // If self as claimant is deselected, you can clear the fields or let the user fill them manually
+    this.clearClaimantDetails();
+  }
+});
+
 
     // Initialize payment details fields as disabled
     this.addPerilForm.get('mPayDetails')?.disable();
@@ -272,10 +335,42 @@ export class ClaimOpeningComponent {
     });
   }
 
+  // Function to populate claimant details from selectedPolicy
+populateClaimantDetailsFromPolicy() {
+  if (this.clientDetails) {
+    const clientName = this.clientDetails.firstName + " " + this.clientDetails.lastName
+    console.log(clientName)
+    this.addPerilForm.patchValue({
+      claimant:clientName, // Assuming selectedPolicy has a claimant property
+      telNo: this.clientDetails.mobileNumber, // Assuming selectedPolicy has a telNo property
+      email: this.clientDetails.emailAddress // Assuming selectedPolicy has an email property
+    });
+  }
+}
+
+// Function to clear claimant details
+clearClaimantDetails() {
+  this.addPerilForm.patchValue({
+    claimant: null,
+    telNo: null,
+    email: null
+  });
+}
+
   onProductSelected(selectedValue: any) {
     this.selectedProduct = selectedValue
     this.getPolicies(this.selectedProduct.code)
-    console.log(this.selectedProduct.code)
+    console.log(selectedValue.productGroupCode)
+    if(selectedValue.productGroupCode === 2){
+      this.employeeBenefits = true
+    }else{
+      this.employeeBenefits = false
+    }
+    if(selectedValue.productGroupCode === 4){
+      this.motorFields = true
+    }else{
+      this.motorFields = false
+    }
   }
 
   checkAvailablePolicies(){
@@ -295,8 +390,45 @@ export class ClaimOpeningComponent {
   }
   onPolicySelected(selectedvalue){
     this.selectedPolicy = selectedvalue
-    console.log(this.selectedPolicy.riskInformation)
+    console.log(this.selectedPolicy)
     this.risks = this.selectedPolicy.riskInformation
+    this.claimsOpeningForm.get('currency').setValue(this.selectedPolicy.currency)
+    this.clientService.getClientById(this.selectedPolicy.clientCode).subscribe({
+      next:(res=>{
+        this.clientDetails = res
+        console.log(this.clientDetails,'client details')
+        this.claimsOpeningForm.get('clientType').setValue(res.clientType.category)
+        
+      })
+    })
+
+  }
+  getClient(){
+    this.clientService.getClients().subscribe({
+      next:(res=>{
+        // Loop through each claimant and add fullName property dynamically
+      this.claimants = res.content.map(claimant => {
+        return {
+          ...claimant, // Spread the existing claimant properties
+          fullName: `${claimant.firstName} ${claimant.lastName}` // Add fullName property
+        };
+      });
+
+      console.log(this.claimants,'Claimants'); // Verify fullName is added
+      }),
+    error: (err => {
+      console.error("Error fetching clients:", err);
+    })
+    })
+  }
+  onClaimantSelect(event: any) {
+    this.selectedClaimant = event.value; // Get the selected claimant object
+    
+    console.log(this.selectedClaimant)
+    this.addPerilForm.patchValue({
+      telNo: this.selectedClaimant.mobileNumber, 
+      email: this.selectedClaimant.emailAddress
+    });
   }
   getCausations(){
     this.claimService.getCausations().subscribe({
@@ -312,58 +444,13 @@ export class ClaimOpeningComponent {
    * Continues the claim opening process.
    */
   continueClaimOpening() {
-      // 3. Simulate claim capture (replace with real API call)
-      // console.log('Claim data:', this.claimForm.value);
+    
+      console.log('Claim data:', this.claimsOpeningForm.value);
       console.log('Peril data:', this.perils);
       this.router.navigate(['/home/gis/claim/claim-transaction']);
-      // 4. Close the Bootstrap modal
-      // this.closeModal('confirmationModal');
-  
-      // 5. Clear the form (Optional)
-      // this.claimForm.reset();
+      
     }
 
-  /**
-   * Method to find and display available products based on user input.
-   */
-  findProducts() {
-    // Simulate search logic - update products based on user input
-  
-  }
-
-  /**
-   * Method to find and display available policies based on user input.
-   */
-  findPolicies() {
-    // Simulate search logic - update policies based on user input
-    
-  }
-
-  /**
-   * Method to find and display available risks based on user input.
-   */
-  findRisks() {
-    // Simulate search logic - update risks based on user input
-    this.risks = [
-      { value: 'risk1', label: 'Risk 1' },
-      { value: 'risk2', label: 'Risk 2' },
-      { value: 'risk3', label: 'Risk 3' }
-    ];
-  }
-
-
-
-  /**
-   * Method to find and display available catastrophes or events based on user input.
-   */
-  findCatastropheEvent() {
-    // Simulate search logic - update catastropheEvents based on user input
-    this.catastropheEvents = [
-      { value: 'event1', label: 'Event 1' },
-      { value: 'event2', label: 'Event 2' },
-      { value: 'event3', label: 'Event 3' }
-    ];
-  }
 
 
   savePerilDetails() {
@@ -467,26 +554,7 @@ export class ClaimOpeningComponent {
 
   onSelectPeril(selectedValue){
     this.chosenPeril = selectedValue
-  }
-
-  savePeril(): void {
-    // Check if the peril already exists in the array
-    // const existingPerilIndex = this.perils.findIndex(peril => peril.label === this.chosenPeril.label);
-  
-    console.log(this.chosenPeril.label)
-    console.log(this.perilForm.value.claimEstimate)
-    this.perilArray.push({ label: this.chosenPeril.label, claimEstimate:this.perilForm.value.claimEstimate })
-
-    console.log(this.perilArray)
-    // if (existingPerilIndex !== -1) {
-    //   // If the peril exists, update the claimEstimate
-    //   console.log(this.perils)
-    //   this.perils[existingPerilIndex].claimEstimate = this.perilEstimate;
-    // } else {
-    //   // If the peril is new, add it to the array
-    //   this.perils.push({ label: this.selectedPeril.label, value: this.selectedPeril.value, claimEstimate: this.perilEstimate });
-    // }
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Peril added successfully', life: 3000 });
+    console.log(this.chosenPeril)
   }
 
   deleteSelectedPeril(): void {
@@ -524,10 +592,6 @@ export class ClaimOpeningComponent {
     }
    
   }
-  onSubmit() {
-    // Handle form submission logic here
-    console.log(this.addPerilForm.value);
-  }
 
   getUsers(){
     this.claimService.getUsers().subscribe({
@@ -538,5 +602,119 @@ export class ClaimOpeningComponent {
       })
     })
   }
+  getCurrentUser(){
+    this.user = this.authService.getCurrentUserName()
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    const passedUserDetailsString = JSON.stringify(this.userDetails);
+    sessionStorage.setItem('passedUserDetails', passedUserDetailsString);
+  }
+
+  getRiskPerils(subclassCode){
+    this.classService.getAllClassPerils().subscribe(
+      {
+        next:(res=>{
+          console.log(res)
+        })
+      }
+    )
+
+    this.claimService.getSubPerilsbyCode(subclassCode).subscribe({
+      next:(res=>{
+       this.perils = res
+       console.log(this.perils.content, 'subperils')
+       this.perils.content.forEach(element => {
+        this.perilService.getPeril(element.perilCode).subscribe({
+          next:(perilRes=>{
+            const combinedPeril = {
+              ...perilRes,
+              subclassSectionPerilsCode: element.subclassSectionPerilsCode // Add the subclassSectionPerilsCode to the peril object
+            };
+            // Push the combined peril object to perilArray
+          this.perilArray.push(combinedPeril);
+          console.log(this.perilArray);
+            // this.perilsList = res
+            // this.perilArray.push(this.perilsList)
+
+            // console.log(this.perilArray,'perils array')
+          })
+        })
+        
+       });
+
+      })
+    })
+  }
+  onRiskSelected(selectedValue){
+    console.log(selectedValue.subClassCode)
+    this.getRiskPerils(selectedValue.subClassCode)
+
+  }
+
+  saveClaimPeril(){
+    console.log(this.chosenPeril.subclassSectionPerilsCode)
+    const selectedPeril = this.addPerilForm.value.peril; // The selected peril object
+    console.log(this.addPerilForm.value.liabilityAdmission)
+     this.addPerilpayload = {
+      action: 'A',
+      code: null,
+      perilCode: this.chosenPeril.subclassSectionPerilsCode ,
+      perilLevel: null,
+      peril: this.addPerilForm.value.peril ? this.addPerilForm.value.peril.description : null,
+      perilAmount: this.addPerilForm.value.claimEstimate,
+      perilEstimate: this.addPerilForm.value.claimEstimate,
+      thirdParty:null, // third party if not self
+      vCpvCldCode: this.selectedClaimant.id,
+      groupCode: null,
+      CommunicationMode: this.getPreferredCommunication(), // Get communication mode
+      PaymentMode: this.getPaymentMode(), // Get payment mode
+      vPrpCode: null, // Assign the client code if available
+      LiabilityAdmission: this.addPerilForm.value.liabilityAdmission ? 'Y' : 'N',
+      LiabilityAdmDate: null,
+      MainPerilCode: null,
+      PerilRate:null,
+      ExcessCodes: null,
+      PerilRemarks: null
+    };
+  
+    console.log(JSON.stringify(this.addPerilpayload));
+
+    this.claimService.addClaimPeril(this.addPerilpayload).subscribe({
+      next:(res=>{
+        this.globalMessagingService.displaySuccessMessage('success','Peril Added successfully')
+        console.log(res)
+      }),
+      error:(err => {
+        this.globalMessagingService.displayErrorMessage('error','Failed to add peril, try again later')
+      })
+    })
+  }
+
+
+  getPreferredCommunication() {
+    // Returns the preferred communication mode based on the form values
+    if (this.addPerilForm.value.telNo) {
+      return 'Tel No';
+    } else if (this.addPerilForm.value.email) {
+      return 'Email';
+    } else if (this.addPerilForm.value.sms) {
+      return 'SMS';
+    }
+    return null;
+  }
+  
+  getPaymentMode() {
+    // Returns the preferred payment mode based on the checkbox selections
+    if (this.addPerilForm.value.mPay) {
+      return this.addPerilForm.value.mPayDetails;
+    } else if (this.addPerilForm.value.emt) {
+      return this.addPerilForm.value.emtDetails;
+    } else if (this.addPerilForm.value.cheque) {
+      return this.addPerilForm.value.chequeDetails;
+    }
+    return null;
+  }
+
+
 
 }

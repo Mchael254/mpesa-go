@@ -105,5 +105,27 @@ export class ClaimsService {
   getUsers(){
     return this.api.GET(`users`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
+  getSubPerilsbyCode(code){
+    return this.api.GET(`api/v1/subperils?subclassCode=${code}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+  }
+  addClaimPeril(data){
+    return this.api.POST(`api/v1/claim-perils`,JSON.stringify(data),API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+  captureClaim(data){
+    return this.api.POST(`api/v1/claims/capture-claim`,JSON.stringify(data),API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
 
+  getClaimByClient(clientCode){
+    return this.api.GET(`api/v2/claims/client/${clientCode}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getClaimTransactionDetails(claimNo){
+    return this.api.GET(`api/v1/claims/claims-transaction-details?claimNo=${claimNo}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+  getRevisionDetails(claimNo,transactionNo){
+    return this.api.GET(`api/v1/claims/revision-details?claimNo=${claimNo}&transactionNo=${transactionNo}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+  makeReady(data){
+    return this.api.POST(`api/v1/claims/make-ready`,JSON.stringify(data),API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
 }

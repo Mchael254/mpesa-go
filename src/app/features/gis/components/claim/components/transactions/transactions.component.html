@@ -7,7 +7,7 @@
                     <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('payments')">{{'gis.claims.claim_transaction_report.claim_payments' | translate }}</button>
                     <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('letters')">{{'gis.claims.claim_transaction_report.letters_and_memos' | translate }}</button>
                     <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('policyEnquiry')">{{'gis.claims.claim_transaction_report.policy_enquiry' | translate }}</button>
-                    <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('backToClaimEnquiry')">{{'gis.claims.claim_transaction_report.back_to_claim_enquiry' | translate }}</button>
+                    <!-- <button type="button" class="btn btn-outline-primary me-2" (click)="setActiveView('backToClaimEnquiry')">{{'gis.claims.claim_transaction_report.back_to_claim_enquiry' | translate }}</button> -->
                 </div>
              
                 <div *ngIf="activeView !== 'transactionDetails'">
@@ -46,18 +46,18 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-transaction>
                         <tr>
-                            <td>{{transaction.transType}}</td>
+                            <td>{{transaction.transactionType}}</td>
                             <td>{{transaction.transDate}}</td>
-                            <td>{{transaction.grossLiability}}</td>
-                            <td>{{transaction.netLiabilityPayee}}</td>
-                            <td>{{transaction.paidAmount}}</td>
-                            <td>{{transaction.authorisedBy}}</td>
-                            <td>{{transaction.authoriseDate}}</td>
+                            <td>{{transaction.grossMovement}}</td>
+                            <td>{{transaction.netMovement}}</td>
+                            <td>{{transaction.claimPaymentVoucherAmount}}</td>
+                            <td>{{transaction.authorizedBy}}</td>
+                            <td>{{transaction.authorizationDate}}</td>
                             <td>{{transaction.chequeNumber}}</td>
                             <td>{{transaction.chequeDate}}</td>
                             <td>{{transaction.receiptNumber}}</td>
                             <td>
-                                <button type="button" class="btn btn-link" (click)="viewTransaction(transaction)">
+                                <button type="button" class="btn btn-link" (click)="viewTransaction(transaction.transactionNo,transaction)">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
                             </td>
@@ -67,7 +67,7 @@
             </div>
 
             <div *ngIf="activeView === 'revisions'">
-                <!-- <app-claim-revisions></app-claim-revisions> -->
+                <app-claim-revisions></app-claim-revisions>
             </div>
 
             <div *ngIf="activeView === 'payments'">
