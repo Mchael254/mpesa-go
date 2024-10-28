@@ -46,9 +46,9 @@ import { RequestStatusComponent } from './components/service-desk/request-status
 import { RequestCategoriesComponent } from './components/service-desk/request-categories/request-categories.component';
 import { RequestTrackingComponent } from './components/service-desk/request-tracking/request-tracking.component';
 import {ServiceDeskComponent} from "./components/service-desk/service-desk.component";
-import {
+/*import {
   ServiceDeskDetailsComponent
-} from "./components/service-desk/service-desk-details/service-desk-details.component";
+} from "./components/service-desk/service-desk-details/service-desk-details.component";*/
 
 @NgModule({
   declarations: [
@@ -85,7 +85,7 @@ import {
     RequestCategoriesComponent,
     RequestTrackingComponent,
     ServiceDeskComponent,
-    ServiceDeskDetailsComponent,
+    // ServiceDeskDetailsComponent,
   ],
   imports: [
     CommonModule,
