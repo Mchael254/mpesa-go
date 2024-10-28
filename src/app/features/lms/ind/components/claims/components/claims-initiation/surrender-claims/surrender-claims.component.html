@@ -101,9 +101,19 @@
 
   <!-- Proceed Button -->
   <div class="button-container">
-    <button class="proceed-btn" (click)="submitClaimRequest()">
-      {{ "lms.ind.book_claim" | translate }}
-    </button>
+    <ng-container *ngIf="!claimNo; else noClaimButton">
+      <!-- If claimNo is not empty -->
+      <button class="proceed-btn" (click)="submitClaimRequest()">
+        {{ "lms.ind.book_claim" | translate }}
+      </button>
+    </ng-container>
+
+    <ng-template #noClaimButton>
+      <!-- If claimNo is empty -->
+      <button class="proceed-btn" (click)="navigateToNextScreen()">
+        {{ "lms.ind.proceed" | translate }}
+      </button>
+    </ng-template>
   </div>
   <!-- End of Proceed Button -->
 </form>
