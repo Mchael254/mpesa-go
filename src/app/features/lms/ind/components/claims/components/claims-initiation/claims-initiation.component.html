@@ -26,8 +26,10 @@
         <app-surrender-claims
           [claimInitForm]="claimInitForm"
           [claimClients]="claimClients$"
-          [causationTypes]="causationTypes$"
-          [causationCauses]="causationCauses$">
+          [selectedPolicy]="selectedPolicy"
+          [eachStep]="eachStep"
+          (valueChanged)="onStepChange($event)"
+        >
         </app-surrender-claims>
       </ng-container>
 

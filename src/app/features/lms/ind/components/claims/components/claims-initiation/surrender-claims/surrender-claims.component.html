@@ -8,10 +8,16 @@
         <div>
           <label for="claimReason">{{ "lms.ind.claim_reason" | translate }}</label>
         </div>
-        <select class="form-select" [id]="'claim_reason'" formControlName="claimReason">
-          <option selected="true" disabled="disabled">{{ "lms.ind.select_an_option" | translate }}</option>
-
-        </select>
+        <p-dropdown
+          [style]="{width: '100%', padding: '0px'}"
+          formControlName="claimReason"
+          [options]="(surReasons$ | async) | sort : 'asc' : 'sht_desc'"
+          optionLabel="sht_desc"
+          placeholder="{{ 'lms.ind.select_an_option' | translate }}">
+          <ng-template let-item pTemplate="item">
+            <div>{{ item.description }}</div>
+          </ng-template>
+        </p-dropdown>
       </div>
     </div>
 
@@ -84,18 +90,30 @@
   </div>
   <!-- End of Claim Details -->
  </div>
-  <ng-container *ngIf="surClaim">
+  <ng-container *ngIf="claimResponse">
     <app-upload-documents
-      [claimInitForm]="claimInitForm">
+      [claimInitForm]="claimInitForm"
+      [claimResponse]="claimResponse"
+    >
     </app-upload-documents>
   </ng-container>
 
 
   <!-- Proceed Button -->
   <div class="button-container">
-    <button class="proceed-btn" (click)="submitClaimInitFormData()">
-      {{ "lms.ind.book_claim" | translate }}
-    </button>
+    <ng-container *ngIf="!claimNo; else noClaimButton">
+      <!-- If claimNo is not empty -->
+      <button class="proceed-btn" (click)="submitClaimRequest()">
+        {{ "lms.ind.book_claim" | translate }}
+      </button>
+    </ng-container>
+
+    <ng-template #noClaimButton>
+      <!-- If claimNo is empty -->
+      <button class="proceed-btn" (click)="navigateToNextScreen()">
+        {{ "lms.ind.proceed" | translate }}
+      </button>
+    </ng-template>
   </div>
   <!-- End of Proceed Button -->
 </form>
