@@ -1,0 +1,123 @@
+<div class="spinner" style="position: relative">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+  </div>
+<div class="card">
+    <div class="card-body">
+        <div class="container">
+            <p class="subheading">
+                {{'gis.claims.view_transaction.claimRevisionSummary' | translate }}
+            </p>
+            <div class="d-flex justify-content-end">
+                <div class="row mb-4">
+                 
+                    <div class="col">
+                      <button class="btn btn-primary" *ngIf="!undoMakeReady" (click)="makeReady()">
+                        <span>{{'gis.claims.view_transaction.makeReady' | translate }}</span>
+                      </button>
+                      <button class="btn btn-outline-primary" *ngIf="undoMakeReady" (click)="undo()">
+                          <span>{{'gis.claims.view_transaction.undoMakeReady' | translate }}</span>
+                        </button>
+                    </div>
+                    <div class="col">
+                      <button class="btn btn-outline-primary" (click)="authorize()">
+                          <span>{{'gis.claims.view_transaction.authorize' | translate }}</span>
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-primary" (click)="reassign()">
+                            <span>{{'gis.claims.view_transaction.reassign' | translate }}</span>
+                          </button>
+                   
+                    </div>
+                    <div class="col">
+                      <button class="btn btn-outline-primary" (click)="printVoucher()">
+                          <span>{{'gis.claims.view_transaction.printVoucher' | translate }}</span>
+                      </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-primary" (click)="dispatchDocuments()">
+                            <span>{{'gis.claims.view_transaction.dispatchDocuments' | translate }}</span>
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-primary" (click)="printVoucher()">
+                            <span>{{'gis.claims.view_transaction.printVoucher' | translate }}</span>
+                        </button>
+                    </div>
+                 
+                  </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <span class="fw-bold"> {{'gis.claims.view_transaction.currentTicket' | translate }}</span>:
+                <span>Loss Opening Data Entry</span>
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.transactionType' | translate }}</span>: {{ transactionDetails.transactionType }}
+              </div>
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.revisionDate' | translate }}</span>: {{transactionDetails.transDate}}
+              </div>
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.revisionOwnPercentage' | translate }}</span>: %
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.ownGrossAmount' | translate }}</span>: {{ transactionDetails.grossMovement | number: '1.2-2' }}
+              </div>
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.ownShare' | translate }}</span>: {{ ownShare | number: '1.2-2' }}
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.authorizedBy' | translate }}</span>:
+              </div>
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.revisionAuthorized' | translate }}</span>: 
+              </div>
+              <div class="col-md-4">
+                <span class="fw-bold">{{'gis.claims.view_transaction.dateAuthorized' | translate }}</span>: 
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <span class="fw-bold">{{'gis.claims.view_transaction.revisionRemarks' | translate }}</span>:
+                
+              </div>
+            </div>
+          
+           
+
+           
+            <div class="d-flex justify-content-start">
+                 
+            <div class="row mt-3">
+           
+                <div class="col">
+                  <button class="btn btn-outline-primary" (click)="sendSMS()">
+                      <span>{{'gis.claims.view_transaction.sendSMS' | translate }}</span>
+                    </button>
+                </div>
+                <div class="col-6">
+                  <button class="btn btn-outline-primary" (click)="sendEmail()">
+                    <span>{{'gis.claims.view_transaction.sendEmail' | translate }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          
+         
+         
+          
+          
+          </div>
+    </div>
+</div>

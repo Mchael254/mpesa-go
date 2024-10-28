@@ -1277,9 +1277,55 @@
         "cheque_date": "支票日期",
         "receipt_number": "收据号码",
         "action": "操作"
-      }
-    }
-  },
+      },
+      "view_transaction":{
+        "claimRevisionSummary": "索赔修改摘要",
+        "currentTicket": "我的当前票据",
+        "lossOpeningDataEntry": "损失开立数据录入",
+        "transactionType": "交易类型",
+        "revisionDate": "修订日期",
+        "revisionOwnPercentage": "修订自有百分比",
+        "ownGrossAmount": "自有总金额",
+        "ownShare": "自有份额",
+        "authorizedBy": "授权人",
+        "revisionAuthorized": "修订授权",
+        "dateAuthorized": "授权日期",
+        "revisionRemarks": "修订备注",
+        "claimOpeningPeril": "索赔开立风险",
+        "makeReady": "准备就绪",
+        "undoMakeReady": "撤销准备就绪",
+        "authorize": "授权",
+        "dispatchDocuments": "分发文件",
+        "printVoucher": "打印凭证",
+        "back": "返回",
+        "reassign": "重新分配",
+        "sendEmail": "发送电子邮件",
+        "sendSMS": "发送短信"
+      },
+      "claim_booking":{
+        "lossDate": "损失日期",
+        "partyToBlame": "责任方",
+        "lossDescription": "损失描述",
+        "type_of_loss": "损失类型",
+        "salvage_retained": "保留的残值",
+        "amt_owed_defaulter": "欠债人的金额",
+        "guard_details_if_any": "如果有，警卫详细信息",
+        "raining": "下雨",
+        "claim_repudiated": "索赔被拒",
+        "reason_repudiated": "拒绝理由",
+        "reasons_for_pending": "待处理的原因",
+        "prevention_measures": "预防措施",
+        "any_suspects": "任何嫌疑人",
+        "claim_amount": "索赔金额",
+        "visibility": "能见度",
+        "insurance_contact_person": "保险联络人",
+        "ref_no": "参考号",
+        "recovery_steps_taken": "采取的恢复步骤",
+        "road_surface_condition": "路面状况"
+    
+  }
+  }
+},
   "lms": {
     "common": {},
     "ind": {

@@ -133,7 +133,7 @@ errorHandl(error: HttpErrorResponse) {
 
 
   getAllClassPerils(): Observable<classPeril[]>{
-    return this.api.GET<classPeril[]>(`subclass-section-perils`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<classPeril[]>(`api/v1/subclass-section-perils`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
