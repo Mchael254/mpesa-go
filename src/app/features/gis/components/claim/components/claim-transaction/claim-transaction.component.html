@@ -1,154 +1,99 @@
-<!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
+<app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
 <div class="container mt-4">
-  <div class="card mb-3 mx-4">
-    <div class="card-body">
-      <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" id="claimManagement-tab" data-bs-toggle="pill"
-                data-bs-target="#claimManagement">Claim Transaction Details</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="documentManagement-tab" data-bs-toggle="pill"
-                data-bs-target="#documentManagement">Document Management</a>
-        </li>
-        <!-- <li class="nav-item">
-            <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                data-bs-target="#pills-contact">Risk Details</a>
-        </li> -->
-        <li class="nav-item">
-            <a class="nav-link" id="transactionManagement-tab" data-bs-toggle="pill"
-            data-bs-target="#transactionManagement">Transaction Management</a>
-    </ul>
-    </div>
+  <!-- TABS CARDS -->
+  <div class="card mb-3">
+      <div class="card-body">
+          <ul class="nav">
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-home">Claim Transaction Summary</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-policy-other-details">Document Management</a>
+              </li>
+             
+              <li class="nav-item">
+                  <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-contact">Transaction Management</a>
+          </ul>
+
+
+      </div>
   </div>
 
+  <!-- MAIN PAGE CARDS -->
 
-
-
-
-
-                <div class="tab-content mt-4 mb-4">
-                  <!-- Claim Management -->
-                  <div class="tab-pane fade show active" id="claimManagement" role="tabpanel" aria-labelledby="claimManagement-tab">
-                    <div class="card mb-4 mx-4">
-                      <div class="card-body">
-                        <app-claimant-details></app-claimant-details>
-                      </div>
-                    </div>
-                    
-                    <div class="card mb-4 mx-4">
-                      <div class="card-body">
-                        <ul class="nav">
-                          <li class="nav-item">
-                            <a class="nav-link active" id="claimEnquiry-tab" data-bs-toggle="pill" data-bs-target="#claimEnquiry" type="button" role="tab" aria-controls="claimEnquiry" aria-selected="true">
-                                Claim Transactions
-                            </a>
-                          </li>
-                          <!-- <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="lettersAndMemos-tab" data-bs-toggle="tab" data-bs-target="#lettersAndMemos" type="button" role="tab" aria-controls="lettersAndMemos" aria-selected="false">Letters and Memos</a>
-                          </li> -->
-                          <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="claimBookingDetails-tab" data-bs-toggle="pill" data-bs-target="#claimBookingDetails" type="button" role="tab" aria-controls="claimBookingDetails" aria-selected="false">Claim Booking Details</a>
-                          </li>
-                          <!-- <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="claimantDetails-tab" data-bs-toggle="tab" data-bs-target="#claimantDetails" type="button" role="tab" aria-controls="claimantDetails" aria-selected="false">Claimant Details</a>
-                          </li> -->
-                          <!-- <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="claimRevisions-tab" data-bs-toggle="tab" data-bs-target="#claimRevisions" type="button" role="tab" aria-controls="claimRevisions" aria-selected="false">Claim Revisions</a>
-                          </li> -->
-                        </ul>
-                      </div>
-                    </div>
-
-                   <div class="card mx-4 mb-4">
-                    <div class="card-body">
-                      <div class="tab-content">
-                        <div class="tab-pane fade show active" id="claimEnquiry" role="tabpanel" aria-labelledby="claimEnquiry-tab">
-                          <app-transactions></app-transactions>
+  
+          <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                <div class="row">
+                  <div class="col-3">
+                    <div class="card mb-4">
+                      
+                        <div class="d-flex align-items-start ">
+                          <div class="nav flex-column mt-3 nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <ul style="padding-left: 1rem;">
+                              <li class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Claim Details</li>
+                              <li class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Claim Transactions</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.claim_booking_details' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.other_details' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.perils' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.salvage_tagging' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.ri_rates' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.third_party_details' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.comments' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.related_claims' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.reasons_for_pending' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.transaction_remark' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction.claim_review' | translate }}</li>
+                              <li class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">{{'gis.claims.claim_transaction_report.letters_and_memos' | translate }}</li>
+                            </ul>
+                           
+                          </div>
                         </div>
-                        <!-- <div class="tab-pane fade" id="lettersAndMemos" role="tabpanel" aria-labelledby="lettersAndMemos-tab">
-                         <app-letters-and-memos></app-letters-and-memos>
-                        </div> -->
-                        <div class="tab-pane fade" id="claimBookingDetails" role="tabpanel" aria-labelledby="claimBookingDetails-tab">
-                        <app-claim-booking></app-claim-booking>
-                        </div>
-                        <div class="tab-pane fade" id="claimantDetails" role="tabpanel" aria-labelledby="claimantDetails-tab">
-                         <app-claimant-details></app-claimant-details>
-                        </div>
-                        <!-- <div class="tab-pane fade" id="claimRevisions" role="tabpanel" aria-labelledby="claimRevisions-tab">
-                          <app-claim-revisions></app-claim-revisions>
-                        </div> -->
-                      </div>
-                    </div>
-                   </div>
-              
                    
+                    </div>
                   </div>
-             
-                
-                    <!-- Document Management -->
-                    <div class="tab-pane fade" id="documentManagement" role="tabpanel" aria-labelledby="documentManagement-tab">
-                      <div class="card mx-4 mb-4">
-                        <div class="card-body">
-                          <app-document-management></app-document-management>
+                  <div class="col-9">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="tab-content" id="v-pills-tabContent">
+                          <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                            <app-claimant-details></app-claimant-details>
+                          </div>
+                          <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                           <app-transactions></app-transactions>
+                          </div>
+                          <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                            <app-claim-booking></app-claim-booking>
+                          </div>
+                          <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
                         </div>
-                     
-                      </div>
-                      <div class="card mx-4">
-                        <div class="card-body">
-                          <ul class="nav nav-tabs" role="tablist">
-                            <!-- <li class="nav-item" role="presentation">
-                              <a class="nav-link active" id="requiredDocuments-tab" data-bs-toggle="tab" data-bs-target="#requiredDocuments" type="button" role="tab" aria-controls="requiredDocuments" aria-selected="true">Required Documents</a>
-                            </li> -->
-                            <li class="nav-item" role="presentation">
-                              <a class="nav-link" id="courtDetails-tab" data-bs-toggle="tab" data-bs-target="#courtDetails" type="button" role="tab" aria-controls="courtDetails" aria-selected="false">Court Details</a>
-                            </li>
-                            <!-- ... more Document Management tabs -->
-                          </ul>
-                        </div>
-                      </div>
-                     
-                
-                      <div class="tab-content">
-                        <!-- <div class="tab-pane fade show active" id="requiredDocuments" role="tabpanel" aria-labelledby="requiredDocuments-tab">
-                          <app-required-documents></app-required-documents>
-                        </div> -->
-                        <div class="tab-pane fade" id="courtDetails" role="tabpanel" aria-labelledby="courtDetails-tab">
-                         <app-court-case-management></app-court-case-management>
-                        </div>
-                        <!-- ... more Document Management tab content -->
                       </div>
                     </div>
-               
-            
-                
-              
-                  <!-- Transaction Management -->
-                  <div class="tab-pane fade" id="transactionManagement" role="tabpanel" aria-labelledby="transactionManagement-tab">
-                    <h3>Transaction Management</h3>
-                    <ul class="nav nav-tabs" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="lossOpeningTransactionCompletion-tab" data-bs-toggle="tab" data-bs-target="#lossOpeningTransactionCompletion" type="button" role="tab" aria-controls="lossOpeningTransactionCompletion" aria-selected="true">Loss Opening Transaction Completion</a>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="claimPayments-tab" data-bs-toggle="tab" data-bs-target="#claimPayments" type="button" role="tab" aria-controls="claimPayments" aria-selected="false">Claim Payments</a>
-                      </li>
-                      <!-- ... more Transaction Management tabs -->
-                    </ul>
-              
-                    <div class="tab-content">
-                      <div class="tab-pane fade show active" id="lossOpeningTransactionCompletion" role="tabpanel" aria-labelledby="lossOpeningTransactionCompletion-tab">
-                        <h3>Loss Opening Transaction Completion</h3>
-                      </div>
-                      <div class="tab-pane fade" id="claimPayments" role="tabpanel" aria-labelledby="claimPayments-tab">
-                        <h3>Claim Payments</h3>
-                      </div>
-                      <!-- ... more Transaction Management tab content -->
-                    </div>
+                         
                   </div>
                 </div>
-            
-       
-   
+                  
 
+                 
+                     
+                        
+                      
+                 
+                  <div class="d-flex justify-content-end mt-4">
+                      <button type="button" class="btn btn-primary">{{'gis.policy.previous' |
+                          translate}}</button>
+                      
+                  </div>
+
+              </div>
+          <div class="tab-pane fade" id="pills-policy-other-details" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+              <app-document-management></app-document-management>
+          </div>
+      </div>
+     
+  
 </div>

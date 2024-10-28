@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { ClaimsService } from '../../services/claims.service';
 @Component({
   selector: 'app-claimant-details',
   templateUrl: './claimant-details.component.html',
@@ -7,6 +7,12 @@ import { Component } from '@angular/core';
 })
 export class ClaimantDetailsComponent {
 
+  constructor(
+    public claimService:ClaimsService
+  ){}
+  ngOnInit(): void {
+    this.getClaimDetailsByClient()
+  }
   /**
   * Claim transaction details data.
   */
@@ -37,4 +43,12 @@ export class ClaimantDetailsComponent {
     currency: 'USH'
   };
 
+
+getClaimDetailsByClient(){
+  this.claimService.getClaimByClient(1195475).subscribe({
+    next:(res=>{
+      console.log(res)
+    })
+  })
+}
 }

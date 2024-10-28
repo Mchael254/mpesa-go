@@ -5,6 +5,7 @@ import { ClaimDetailsComponent } from './components/claim-details/claim-details.
 import { ClaimOpeningComponent } from './components/claim-opening/claim-opening.component';
 import { PerilManagementComponent } from './components/peril-management/peril-management.component';
 import { ClaimTransactionComponent } from './components/claim-transaction/claim-transaction.component';
+import { ViewTransactionComponent } from './components/view-transaction/view-transaction.component';
 const routes: Routes = [
   {
     path: 'list/:id', component:ListClaimsComponent
@@ -25,6 +26,10 @@ const routes: Routes = [
     path:'claim-transaction',
     component:ClaimTransactionComponent
   },
+  {
+    path:'view-transaction/:num',
+    component:ViewTransactionComponent
+  }
 
 ];
 
