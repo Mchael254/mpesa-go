@@ -1,0 +1,37 @@
+.tab-content {
+    height: 100%; /* Make sure it stretches fully */
+    overflow-y: auto; /* Allow scrolling within the tab content */
+}
+
+.tab-content-details {
+    background-color: #ffffff;
+}
+
+.list-group-item {
+    border: none;
+    /* Remove borders between list items */
+    cursor: pointer;
+    /* Change cursor to pointer on hover */
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+
+}
+
+.list-group-item.selected {
+    color: rgba(0, 82, 155, 1);
+    /* Change font color when selected */
+
+}
+.nav-link.active {
+    color: #00529B !important;
+    font-weight: 500;
+    background-color: transparent;
+}
+.nav-link{
+    background-color: transparent;
+    color: #000;
+
+}

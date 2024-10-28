@@ -30,6 +30,9 @@ import { RequiredDocumentsComponent } from './components/required-documents/requ
 import { CourtCaseManagementComponent } from './components/court-case-management/court-case-management.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TransactionsComponent } from './components/transactions/transactions.component'; 
+import { SharedModule } from 'src/app/shared/shared.module';
+import { ViewTransactionComponent } from './components/view-transaction/view-transaction.component';
+import { RevisionSummaryComponent } from './components/revision-summary/revision-summary.component';
 
 
 @NgModule({
@@ -49,7 +52,9 @@ import { TransactionsComponent } from './components/transactions/transactions.co
     DocumentManagementComponent,
     RequiredDocumentsComponent,
     CourtCaseManagementComponent,
-    TransactionsComponent
+    TransactionsComponent,
+    ViewTransactionComponent,
+    RevisionSummaryComponent
   ],
   imports: [
     CommonModule,
@@ -68,7 +73,8 @@ import { TransactionsComponent } from './components/transactions/transactions.co
     RippleModule,
     ConfirmDialogModule,
     TranslateModule,
-    StepsModule
+    SharedModule
+    // StepsModule
   ]
 })
 export class ClaimModule { }

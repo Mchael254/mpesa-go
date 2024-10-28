@@ -1,10 +1,10 @@
-<!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
+<app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 <div class="card mx-4 mt-4 mb-4">
   <div class="card-body">
     <div class="container">
       <h5>{{'gis.claims.opening.claim_opening' | translate }}</h5>
       <form [formGroup]="claimsOpeningForm" class="mt-3">
-        <div class="row mb-3">
+        <div class="row mb-4">
           <div class="col-md-4">
               <label for="product">{{'gis.claims.opening.product' | translate }}</label>
               <br>
@@ -39,11 +39,12 @@
               [options]="risks" 
               formControlName="risk" 
               optionLabel="propertyDescription"
+              (onChange)="onRiskSelected($event.value)"
             >
               </p-dropdown>
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <div class="col-md-4">
               <label for="lossDate">{{'gis.claims.opening.loss_date' | translate }}</label>
               <br>
@@ -60,7 +61,7 @@
               <input type="date" class="form-control" formControlName="notificationDate" (change)="validateNotificationDate()"> 
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <div class="col-md-4">
               <label for="causation">{{'gis.claims.opening.causation' | translate }}</label>
               <br>
@@ -68,93 +69,137 @@
               </p-dropdown>  
           </div>
           <div class="col-md-4">
-              <label for="catastropheEvent">{{'gis.claims.opening.catastrophe_event' | translate }}</label>
+            <label for="partyToBlame">{{'gis.claims.opening.party_to_blame' | translate }}</label>
+            <br>
+            <p-dropdown [options]="partyToBlame" formControlName="partyToBlame" optionLabel="label">
+            </p-dropdown>
+              <!-- <label for="catastropheEvent">{{'gis.claims.opening.catastrophe_event' | translate }}</label>
               <br>
               <p-dropdown [options]="catastropheEvents" formControlName="catastropheEvent" optionLabel="label">
-              </p-dropdown>
+              </p-dropdown> -->
           </div>
           <div class="col-md-4">
             <label for="accidentLocation">{{'gis.claims.opening.accident_location' | translate }}</label>
             <input type="text" class="form-control" formControlName="accidentLocation">
           </div>
         </div>
-        <div class="row mb-3">
+
+        <!-- Motor product fields -->
+        <div class="row mb-4" *ngIf="motorFields">
+         
           <div class="col-md-4">
-              <label for="partyToBlame">{{'gis.claims.opening.party_to_blame' | translate }}</label>
-              <br>
-              <p-dropdown [options]="partyToBlame" formControlName="partyToBlame" optionLabel="label">
-              </p-dropdown>
+            <label for="vehicleInMotion">{{'gis.claims.opening.vehicle_in_motion' | translate }}</label>
+            <p-dropdown [options]="yesNo" formControlName="vehicleInMotion" optionLabel="label"></p-dropdown>
           </div>
           <div class="col-md-4">
-              <label for="averageBasicSalary">{{'gis.claims.opening.average_basic_salary' | translate }}</label>
-              <input type="number" class="form-control" formControlName="averageBasicSalary">
-          </div>
-          <div class="col-md-4">
-              <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
-              <input type="number" class="form-control" formControlName="averageEarnings">
+            <label for="insuredAsRegularDriver">{{'gis.claims.opening.insured_as_regular_driver' | translate }}</label>
+            <p-dropdown [options]="yesNo" formControlName="insuredAsRegularDriver" optionLabel="label"></p-dropdown>
+        
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <div class="col-md-4">
-              <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
-              <input type="number" class="form-control" formControlName="averageEarnings">
-          </div>
-          <div class="col-md-4">
-              <label for="offDutyDateFrom">{{'gis.claims.opening.off_duty_date_from' | translate }}</label>
-              <p-calendar formControlName="offDutyDateFrom"></p-calendar>
-          </div>
-          <div class="col-md-4">
-              <label for="offDutyDateTo">{{'gis.claims.opening.off_duty_date_to' | translate }}</label>
+              <label for="currency">{{'gis.claims.opening.currency' | translate }}</label>
               <br>
-              <p-calendar formControlName="offDutyDateTo"></p-calendar>
+              <input type="text" class="form-control" formControlName="currency" readonly>
+          </div>
+          <div class="col-md-4">
+            <label for="clientType">{{'gis.claims.opening.client_type' | translate }}</label>
+            <br>
+            <input type="text" class="form-control" formControlName="clientType" readonly>
+              <!-- <label for="catastropheEvent">{{'gis.claims.opening.catastrophe_event' | translate }}</label>
+              <br>
+              <p-dropdown [options]="catastropheEvents" formControlName="catastropheEvent" optionLabel="label">
+              </p-dropdown> -->
+          </div>
+          <div class="col-md-4">
+            <label for="claimReporter">{{'gis.claims.opening.claim_reporter' | translate }}</label>
+            <p-dropdown [options]="claimReporter" formControlName="claimReporter" optionLabel="label"></p-dropdown>
+          
+            
           </div>
         </div>
-        <div class="row mb-3">
+      
+        <div class="row mb-4">
           <div class="col-md-4">
             <label for="referenceNumber">{{'gis.claims.opening.reference_number' | translate }}</label>
             <input type="text" class="form-control" formControlName="referenceNumber">
           </div>
           <div class="col-md-4">
-              <label for="nextReviewDate">{{'gis.claims.opening.next_review_date' | translate }}</label>
+              
+
+              <label for="priorityLevel">{{'gis.claims.opening.priority_level' | translate }}</label>
               <br>
-              <p-calendar formControlName="nextReviewDate"></p-calendar>
+              <p-dropdown  formControlName="priorityLevel" optionLabel="label">
+              </p-dropdown>
           </div>
           <div class="col-md-4">
               <label for="nextReviewUser">{{'gis.claims.opening.next_review_user' | translate }}</label>
               <br>
-              <p-dropdown [options]="Users" formControlName="nextReviewUser" optionLabel="name">
+              <p-dropdown [options]="Users" formControlName="nextReviewUser" (onChange)="onSelectReviewUser()" optionLabel="name">
               </p-dropdown>
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4" *ngIf="nextReviewFields">
           <div class="col-md-4">
-              <label for="priorityLevel">{{'gis.claims.opening.priority_level' | translate }}</label>
+            <label for="nextReviewDate">{{'gis.claims.opening.next_review_date' | translate }}</label>
+            <br>
+            <p-calendar formControlName="nextReviewDate"></p-calendar>
+          </div>
+          <div class="col-md-4">
+              <label for="reasonForReview">{{'gis.claims.opening.reason_for_review' | translate }}</label>
               <br>
-              <p-dropdown [options]="priorityLevels" formControlName="priorityLevel" optionLabel="label">
+              <p-dropdown [options]="reasonsToReview" [filter]="true" filterBy="description" formControlName="reasonForReview" optionLabel="label">
               </p-dropdown>
           </div>
           <div class="col-md-4">
-              <label for="priorityLevel">{{'gis.claims.opening.priority_level' | translate }}</label>
-              <br>
-              <p-dropdown [options]="priorityLevels" formControlName="priorityLevel" optionLabel="label">
-              </p-dropdown>
+            <label for="claimDescription">{{'gis.claims.opening.review_remarks' | translate }}</label>
+            <textarea class="form-control" formControlName="reviewRemarks" rows="3"></textarea>      
+          
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label for="claimDescription">{{'gis.claims.opening.claim_description' | translate }}</label>
+            <textarea class="form-control" formControlName="claimDescription" rows="3"></textarea>          
           </div>
           <div class="col-md-4">
             <label class="form-check-label" for="liabilityAdmission">{{'gis.claims.opening.liability_admission' | translate }}</label>
             <br>
             <input type="checkbox" class="form-check-input" formControlName="liabilityAdmission">
 
+          </div>
+        </div>
+          <!-- Fields specific to WIBA -->
+          <div class="row mb-4" *ngIf="employeeBenefits">
+            <div class="col-md-4">
+              <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
+              <input type="number" class="form-control" formControlName="averageEarnings">
+            </div>
+            <div class="col-md-4">
+                <label for="averageBasicSalary">{{'gis.claims.opening.average_basic_salary' | translate }}</label>
+                <input type="number" class="form-control" formControlName="averageBasicSalary">
+            </div>
+            <div class="col-md-4">
+                <label for="averageEarnings">{{'gis.claims.opening.average_earnings' | translate }}</label>
+                <input type="number" class="form-control" formControlName="averageEarnings">
+            </div>
+          </div>
+          <div class="row mb-4" *ngIf="employeeBenefits">
           
+            <div class="col-md-4">
+                <label for="offDutyDateFrom">{{'gis.claims.opening.off_duty_date_from' | translate }}</label>
+                <p-calendar formControlName="offDutyDateFrom"></p-calendar>
+            </div>
+            <div class="col-md-4">
+                <label for="offDutyDateTo">{{'gis.claims.opening.off_duty_date_to' | translate }}</label>
+                <br>
+                <p-calendar formControlName="offDutyDateTo"></p-calendar>
+            </div>
+            <div class="col-md-4">
+            
+            </div>
           </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label for="claimDescription">{{'gis.claims.opening.claim_description' | translate }}</label>
-            <textarea class="form-control" formControlName="claimDescription" rows="3"></textarea>
-
-             
-          </div>
-        </div>
       </form>    
       
     </div>
@@ -164,7 +209,6 @@
 
 <div class="card mx-4 mb-4">
   <div class="card-body">
-
         <!-- <div class="row">
           <div class="col-md-12">
             <div class="form-group">
@@ -173,7 +217,7 @@
           </div>
         </div>
          -->
-         <div class="row mb-3">
+         <div class="row mb-4">
           <div class="col-md-12 d-flex justify-content-between align-items-center">
             <div>
               <p class="subheading">{{'gis.claims.opening.add_peril' | translate }}</p>
@@ -193,9 +237,9 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="container">
-          <h3>Add Peril</h3>
+          <h3 class="subheading mb-4">Add Peril</h3>
         
-          <form [formGroup]="addPerilForm" (ngSubmit)="onSubmit()">
+          <form [formGroup]="addPerilForm">
             <div class="form-group mb-4">
               <label for="selfAsClaimant" class="me-3">Self as Claimant</label>
               <input type="checkbox" class="form-check-input" formControlName="selfAsClaimant">
@@ -205,7 +249,14 @@
               <div class="col-6">
                 <div class="form-group">
                   <label for="claimant">Claimant</label>
-                  <p-dropdown [options]="claimants" [(ngModel)]="addPerilForm.value.claimant" formControlName="claimant" [placeholder]="'Select Claimant'" [filter]="true"></p-dropdown>
+                  <p-dropdown 
+                  [options]="claimants" 
+                  [(ngModel)]="selectedClaimant" 
+                  optionLabel="fullName" 
+                  formControlName="claimant" 
+                  [filter]="true"
+                  (onChange)="onClaimantSelect($event)">
+                </p-dropdown>
                   <div *ngIf="addPerilForm.get('claimant')?.touched && addPerilForm.get('claimant')?.hasError('required')">
                     <small class="text-danger">Claimant is required.</small>
                   </div>
@@ -214,7 +265,7 @@
               <div class="col-6">
                 <div class="form-group">
                   <label for="peril">Peril</label>
-                  <p-dropdown [options]="perils" [(ngModel)]="addPerilForm.value.peril" formControlName="peril"  [filter]="true"></p-dropdown>
+                  <p-dropdown [options]="perilArray" [(ngModel)]="addPerilForm.value.peril" (onChange)="onSelectPeril($event.value)" optionLabel="description" formControlName="peril"  [filter]="true"></p-dropdown>
                   <div *ngIf="addPerilForm.get('peril')?.touched && addPerilForm.get('peril')?.hasError('required')">
                     <small class="text-danger">Peril is required.</small>
                   </div>
@@ -304,8 +355,13 @@
              
               
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary">Cancel</button>
+            <div class="row me-3 mb-4">
+              <div class="col-md-12 d-flex justify-content-end"> 
+                <button type="submit" class="btn btn-primary" (click)="saveClaimPeril()">Save</button>
+                <button type="button" class="btn btn-outline-primary">Cancel</button>
+              </div>
+            </div>
+           
           </form>
         </div>
       </div>
@@ -359,9 +415,10 @@
             </div>
           </form>
         </div>
+      
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{'gis.claims.opening.cancel' | translate}}</button>
-          <button type="button" class="btn btn-primary" (click)="savePeril()" data-bs-dismiss="">{{'gis.claims.opening.save' | translate}}</button>
+          <button type="button" class="btn btn-primary"  data-bs-dismiss="">{{'gis.claims.opening.save' | translate}}</button>
         </div>
       </div>
     </div>

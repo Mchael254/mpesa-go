@@ -12,6 +12,10 @@ export class ClaimTransactionComponent {
   constructor() { }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      window.scrollTo(0, 0); // Reset scroll position
+      document.body.style.overflow = 'auto'; // Ensure scroll is enabled
+  }, 100); // Wait for the DOM to fully load
   }
 
   // Placeholder method for handling tab change

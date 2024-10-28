@@ -1,0 +1,51 @@
+
+<div class="container mt-4">
+  <!-- TABS CARDS -->
+  <div class="card mb-3">
+      <div class="card-body">
+          <ul class="nav">
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-home">Revision Details</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-policy-other-details">Client Documents</a>
+              </li>
+             
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                      data-bs-target="#pills-contact">Events/Cats related claims</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-contact">Other Relationships</a>
+                </li>
+          </ul>
+
+
+      </div>
+  </div>
+
+  <!-- MAIN PAGE CARDS -->
+
+  
+          <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+               <app-revision-summary></app-revision-summary>
+                 
+                  <div class="d-flex justify-content-end mt-4">
+                      <button type="button" class="btn btn-primary" (click)="previous()">{{'gis.policy.previous' |
+                          translate}}</button>
+                      
+                  </div>
+
+              </div>
+          <div class="tab-pane fade" id="pills-policy-other-details" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+              
+          </div>
+      </div>
+     
+  
+</div>
