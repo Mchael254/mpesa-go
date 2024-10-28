@@ -98,7 +98,7 @@ export class SurrenderClaimsComponent {
     const rawValue = this.claimInitForm.getRawValue();
     return <SurrenderRequest>{
       pol_code: +this.selectedPolicy?.pol_code,
-      delete_trans: "N",
+      delete_trans: "  N",
       surr_type: 'SR',
       // surr_type: rawValue?.surrenderType,
       surr_date: rawValue?.surrenderDate,
