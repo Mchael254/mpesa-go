@@ -1,0 +1,999 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Service Desk',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service Desk Request',
+        url: '/home/crm'
+      },
+      {
+        label: 'Service desk',
+        url: '/home/crm/service-desk'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.accDetails' | translate}}</h6>
+        <div class="row">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle">
+                <i class="pi pi-pencil" (click)="openClientDetailsModal()"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <p>
+              <label class="ticketLabel">Name:</label>
+              <span class="ticketDesc">John Doe</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Telephone no:</label>
+              <span class="ticketDesc">John Doe</span>
+            </p>
+          </div>
+          <div class="col-sm-4">
+            <p>
+              <label class="ticketLabel">Sht Desc:</label>
+              <span class="ticketDesc">John Doe</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Email Address:</label>
+              <span class="ticketDesc">johndoe@turnkey.co.ke</span>
+            </p>
+          </div>
+          <div class="col-sm-4">
+            <p>
+              <label class="ticketLabel">Account No.:</label>
+              <span class="ticketDesc">John Doe</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Physical Address:</label>
+              <span class="ticketDesc">John Doe</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.openRequests' | translate}}</h6>
+        <button class="btn btn-primary float-end" (click)="openRequestDetailsModal()">New case</button>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #openRequestsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="openRequestsData?.length"
+          [value]="openRequestsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.policyNo'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.requestType'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.source'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.creationDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.dueDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.receiveDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.action'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-openRequest>
+            <tr class="custom-table">
+              <td>q</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>View</td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7">No Open Requests Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.closedRequests' | translate}}</h6>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #closedRequestsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="closedRequestsData?.length"
+          [value]="closedRequestsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.policyNo'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.requestType'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.source'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.creationDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.dueDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.receiveDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.action'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-closedRequest>
+            <tr class="custom-table">
+              <td>q</td>
+              <td>r</td>
+              <td>54</td>
+              <td>54</td>
+              <td>4</td>
+              <td>54</td>
+              <td>Reopen</td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7">No Closed Requests Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.agencyCommission' | translate}}</h6>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #agencyCommissionTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="agencyCommissionData?.length"
+          [value]="agencyCommissionData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.agentName'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.copDate'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.crRefNo'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.drRefNo'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.commAmt'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.withholdingTax'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.netComm'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.authBy'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-closedRequest>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8">No Agency Commission Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.servProviderFees' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle">
+                <i class="pi pi-pencil" (click)="openServiceProviderFeesModal()"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #serviceProviderFeesTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="serviceProviderFeesData?.length"
+          [value]="serviceProviderFeesData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.clientName'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.policyNo'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.description'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.fee'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-clientsComment>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">No Service Provider Fees Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.clientsComments' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle">
+                <i class="fa-solid fa-plus" (click)="openClientCommentModal()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="pi pi-pencil"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #clientsCommentsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="clientsCommentsData?.length"
+          [value]="clientsCommentsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.dateCaptured'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.clientComments'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.postedDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.solution'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-clientsComment>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">No Clients Comments Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.serviceRequestDocs' | translate}}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle">
+                <i class="fa-solid fa-plus" (click)="openRequestDocsModal()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="pi pi-pencil"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="fa-regular fa-trash-can"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #serviceRequestDocsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="serviceRequestDocsData?.length"
+          [value]="serviceRequestDocsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.description'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+              <th pSortableColumn="campaign.objective">{{'serviceDesk.name'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.modifiedBy'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.dateCreated'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.referenceNo'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="campaign.description">{{'serviceDesk.remarks'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-serviceRequestDoc>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6">No Service Request Documents Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Client Details Modal-->
+<div
+  class="modal fade"
+  #clientDetailsModal
+  id="clientDetailsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'client details' : 'new client' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeClientDetailsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="clientDetailsForm">
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label for="telNo" class="form-label">Telephone no.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="telNo"
+                formControlName="telNo"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="telNoTwo" class="form-label">Telephone no. II</label>
+              <input
+                type="text"
+                class="form-control"
+                id="telNoTwo"
+                formControlName="telNoTwo"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="emailAddress" class="form-label">Email address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="emailAddress"
+                formControlName="emailAddress"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="emailAddressTwo" class="form-label">Email address II</label>
+              <input
+                type="text"
+                class="form-control"
+                id="emailAddressTwo"
+                formControlName="emailAddressTwo"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" formControlName="gender">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="marital" class="form-label">Marital status</label>
+              <select class="form-select" id="marital" formControlName="marital">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="tinNo" class="form-label">TIN no.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="tinNo"
+                formControlName="tinNo"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="postalAddress" class="form-label">Postal address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="postalAddress"
+                formControlName="postalAddress"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="physicalAddress" class="form-label">Physical address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="physicalAddress"
+                formControlName="physicalAddress"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--New Case Modal-->
+<div
+  class="modal fade"
+  #newCaseModal
+  id="newCaseModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-xl align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="newCaseLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'request details' : 'new request' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeRequestDetailsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="requestDetailsForm">
+          <div class="mb-3 row">
+            <label for="polNo" class="col-sm-2 form-label">Policy No</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="polNo" formControlName="polNo">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="requestCategory" class="col-sm-2 form-label">Request category</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="requestCategory" formControlName="requestCategory">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="incident" class="col-sm-2 form-label">Incident</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="incident" formControlName="incident">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="requestCategory" class="col-sm-2 form-label">Request source</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="requestSource" formControlName="requestSource">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="accountType" class="col-sm-2 form-label">Account type</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="accountType" formControlName="accountType">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="account" class="col-sm-2 form-label">Account</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="account" formControlName="account">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="summary" class="col-sm-2 form-label">Summary</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="summary"
+                formControlName="summary"
+              />
+            </div>
+            <label for="desc" class="col-sm-2 form-label">Description</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="desc"
+                formControlName="desc"
+              />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="captureDate" class="col-sm-2 form-label">Capture date</label>
+            <div class="col-sm-4">
+              <input
+                type="date"
+                class="form-control"
+                id="captureDate"
+                formControlName="captureDate"
+              />
+            </div>
+            <label for="requestDate" class="col-sm-2 form-label">Request date</label>
+            <div class="col-sm-4">
+              <input
+                type="date"
+                class="form-control"
+                id="requestDate"
+                formControlName="requestDate"
+              />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="receiveDate" class="col-sm-2 form-label">Receive date</label>
+            <div class="col-sm-4">
+              <input
+                type="date"
+                class="form-control"
+                id="receiveDate"
+                formControlName="receiveDate"
+              />
+            </div>
+            <label for="dueDate" class="col-sm-2 form-label">Due date</label>
+            <div class="col-sm-4">
+              <input
+                type="date"
+                class="form-control"
+                id="dueDate"
+                formControlName="dueDate"
+              />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="assignee" class="col-sm-2 form-label">Assignee</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="assignee" formControlName="assignee">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="reporter" class="col-sm-2 form-label">Reporter/Initiator</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="reporter" formControlName="reporter">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="ownerAccountType" class="col-sm-2 form-label">Owner account type</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="ownerAccountType" formControlName="ownerAccountType">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="status" class="col-sm-2 form-label">Status</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="status" formControlName="status">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="closedBy" class="col-sm-2 form-label">Closed by</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="closedBy"
+                formControlName="closedBy"
+              />
+            </div>
+            <label for="resolutionDate" class="col-sm-2 form-label">Resolution date</label>
+            <div class="col-sm-4">
+              <input
+                type="date"
+                class="form-control"
+                id="resolutionDate"
+                formControlName="resolutionDate"
+              />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="solution" class="col-sm-2 form-label">Solution</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="solution"
+                formControlName="solution"
+              />
+            </div>
+            <label for="comments" class="col-sm-2 form-label">Comments</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="comments"
+                formControlName="comments"
+              />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="prefCommMode" class="col-sm-2 form-label">Preferred comms' mode</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="prefCommMode" formControlName="prefCommMode">
+                <option value=""></option>
+                <option value=""></option>
+              </select>
+            </div>
+            <label for="primaryMode" class="col-sm-2 form-label">Primary mode</label>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="primaryMode"
+                formControlName="primaryMode"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveRequestDetails()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Client comments Modal-->
+<div
+  class="modal fade"
+  #clientCommentsModal
+  id="clientCommentsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="clientCommentsLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'client comment' : 'new client comment' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeClientCommentModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="clientCommentsForm">
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label for="dateCaptured" class="form-label">Date captured</label>
+              <input
+                type="date"
+                class="form-control"
+                id="dateCaptured"
+                formControlName="dateCaptured"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="postedBy" class="form-label">Posted by</label>
+              <input
+                type="text"
+                class="form-control"
+                id="postedBy"
+                formControlName="postedBy"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="clientComments" class="form-label">Client comments</label>
+              <textarea class="form-control" id="clientComments" rows="3" formControlName="clientComments"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label for="sol" class="form-label">Solution</label>
+              <textarea class="form-control" id="sol" rows="3" formControlName="solution"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Request documents Modal-->
+<div
+  class="modal fade"
+  #requestDocsModal
+  id="requestDocsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="requestDocsLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'request documents' : 'new request document' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeRequestDocsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="requestDocsForm">
+          <div class="row my-3">
+            <div class="col-md-6">
+              <label for="dateCaptured" class="form-label">Document type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="docType"
+                formControlName="docType"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="referenceNo" class="form-label">Reference No.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="referenceNo"
+                formControlName="referenceNo"
+                readonly
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="receivedBy" class="form-label">Received by</label>
+              <input
+                type="text"
+                class="form-control"
+                id="receivedBy"
+                formControlName="receivedBy"
+                readonly
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="dateCreated" class="form-label">Date created</label>
+              <input
+                type="date"
+                class="form-control"
+                id="dateCreated"
+                formControlName="dateCreated"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="remarks" class="form-label">Remarks</label>
+              <input
+                type="date"
+                class="form-control"
+                id="remarks"
+                formControlName="remarks"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="dateCreated" class="form-label">Upload document</label>
+              <button class="btn btn-primary">Upload file</button>
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Service provider fees Modal-->
+<div
+  class="modal fade"
+  #serviceProviderFeesModal
+  id="serviceProviderFeesModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="serviceProviderFeesLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'service provider fee' : 'new service provider fee' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeServiceProviderFeesModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="serviceProviderFeesForm">
+          <div class="row my-3">
+            <div class="col-md-12">
+              <label for="clientName" class="form-label">Client name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="clientName"
+                formControlName="clientName"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="policyNo" class="form-label">Policy No.</label>
+              <input
+                type="text"
+                class="form-control"
+                id="policyNo"
+                formControlName="policyNo"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="description" class="form-label">Description</label>
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                formControlName="description"
+              />
+            </div>
+            <div class="col-md-12">
+              <label for="fee" class="form-label">Fee</label>
+              <input
+                type="text"
+                class="form-control"
+                id="fee"
+                formControlName="fee"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveServiceProviderFeeDetails()">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>

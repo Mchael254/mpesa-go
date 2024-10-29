@@ -1322,7 +1322,7 @@
         "insurance_contact_person": "Personne de contact de l'assurance",
         "ref_no": "Numéro de référence",
         "recovery_steps_taken": "Étapes de récupération prises",
-        "road_surface_condition": "État de la surface de la route" 
+        "road_surface_condition": "État de la surface de la route"
       }
   }
   },
@@ -2302,6 +2302,32 @@
     "inputSearch": "Recherche de Saisie",
     "serviceProviderType": "Type de prestataire de service",
     "accDetails": "Détails du Compte",
-    "openRequests": "Requêtes Ouvertes"
+    "openRequests": "Requêtes Ouvertes",
+    "policyNo": "Numéro de Police",
+    "receiveDate": "Date de Réception",
+    "action": "Action",
+    "closedRequests": "Toutes les Demandes Fermées",
+    "clientsComments": "Commentaires des Clients",
+    "dateCaptured": "Date de Capture",
+    "clientComments": "Commentaires du Client",
+    "postedDate": "Date de Publication",
+    "solution": "Solution",
+    "serviceRequestDocs": "Documents de Demande de Service",
+    "modifiedBy": "Modifié par",
+    "dateCreated": "Date de Création",
+    "referenceNo": "Numéro de Référence",
+    "remarks": "Remarques",
+    "agencyCommission": "Commission de l'Agence",
+    "agentName": "Nom de l'Agent",
+    "copDate": "Date de COP",
+    "crRefNo": "Réf Cr No",
+    "drRefNo": "Réf Dr No",
+    "commAmt": "Montant de la Commission",
+    "withholdingTax": "Retenue d'Impôt",
+    "netComm": "Commission nette",
+    "authBy": "Autorisé par",
+    "clientName": "Nom du Client",
+    "fee": "Frais",
+    "servProviderFees": "Frais de Prestataire de Service"
   }
 }

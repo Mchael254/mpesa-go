@@ -1322,7 +1322,7 @@
         "ref_no": "参考号",
         "recovery_steps_taken": "采取的恢复步骤",
         "road_surface_condition": "路面状况"
-    
+
   }
   }
 },
@@ -2003,6 +2003,32 @@
     "inputSearch": "输入搜索",
     "serviceProviderType": "服务提供商类型",
     "accDetails": "账户详情",
-    "openRequests": "开放请求"
+    "openRequests": "开放请求",
+    "policyNo": "保单号码",
+    "receiveDate": "接收日期",
+    "action": "操作",
+    "closedRequests": "所有已关闭请求",
+    "clientsComments": "客户评论",
+    "dateCaptured": "捕获日期",
+    "clientComments": "客户评论",
+    "postedDate": "发布日期",
+    "solution": "解决方案",
+    "serviceRequestDocs": "服务请求文档",
+    "modifiedBy": "修改者",
+    "dateCreated": "创建日期",
+    "referenceNo": "参考编号",
+    "remarks": "备注",
+    "agencyCommission": "代理佣金",
+    "agentName": "代理名称",
+    "copDate": "COP日期",
+    "crRefNo": "Cr参考号",
+    "drRefNo": "Dr参考号",
+    "commAmt": "佣金金额",
+    "withholdingTax": "预扣税",
+    "netComm": "净佣金",
+    "authBy": "授权人",
+    "clientName": "客户名称",
+    "fee": "费用",
+    "servProviderFees": "服务提供商费用"
   }
 }

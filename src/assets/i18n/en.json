@@ -1251,11 +1251,11 @@
           "capture_claim": "Capture Claim",
           "insured_as_claimant": "Insured as Claimant",
           "claimant": "Claimant",
-          "create_claimant": "Create Claimant",        
-          "peril_details": "Peril Details",          
-          "select_peril": "Select Peril",  
+          "create_claimant": "Create Claimant",
+          "peril_details": "Peril Details",
+          "select_peril": "Select Peril",
           "enter_claim_estimate": "Enter Claim Estimate",
-          "cancel": "Cancel", 
+          "cancel": "Cancel",
           "save": "Save",
           "edit_peril": "Edit Peril",
           "confirm_delete_peril": "Are you sure you want to delete this peril?",
@@ -1268,9 +1268,9 @@
           "claim_reporter":"Claim Reporter",
           "vehicle_in_motion":"Was vehicle in motion?",
           "insured_as_regular_driver":"Insured as regular driver"
-          
 
-          
+
+
         },
         "claim_transaction": {
           "claim_transaction_details": "Claim Transaction Details",
@@ -1373,8 +1373,7 @@
           "insurance_contact_person": "Insurance Contact Person",
           "ref_no": "Ref No",
           "recovery_steps_taken": "Recovery Steps Taken",
-          "road_surface_condition": "Road Surface/Condition" 
-}
+          "road_surface_condition": "Road Surface/Condition"
       }
     }
   },
@@ -2364,6 +2363,32 @@
     "inputSearch": "Input Search",
     "serviceProviderType": "Service provider type",
     "accDetails": "Account Details",
-    "openRequests": "Open Requests"
+    "openRequests": "Open Requests",
+    "policyNo": "Policy No.",
+    "receiveDate": "Receive date",
+    "action": "Action",
+    "closedRequests": "All Closed Requests",
+    "clientsComments": "Clients Comments",
+    "dateCaptured": "Date Captured",
+    "clientComments": "Client Comments",
+    "postedDate": "Posted Date",
+    "solution": "Solution",
+    "serviceRequestDocs": "Service Request Documents",
+    "modifiedBy": "Modified By",
+    "dateCreated": "Date Created",
+    "referenceNo": "Reference No.",
+    "remarks": "Remarks",
+    "agencyCommission": "Agency Commission",
+    "agentName": "Agent Name",
+    "copDate": "Cop Date",
+    "crRefNo": "Cr Ref No.",
+    "drRefNo": "Dr Ref No.",
+    "commAmt": "Comm Amount",
+    "withholdingTax": "Withholding Tax",
+    "netComm": "Net Comm",
+    "authBy": "Authorised By",
+    "clientName": "Client Name",
+    "fee": "Fee",
+    "servProviderFees": "Service Provider Fees"
   }
 }
