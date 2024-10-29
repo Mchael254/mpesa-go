@@ -611,6 +611,13 @@ export interface SubclassesClauses {
   policyNumber: string;
   subclassCode: number;
 }
+export interface ClientDD {
+  accountName: string;
+  accountNo: string;
+  bankBranchCode: number;
+  clientCode: number;
+}
+
 
 
 

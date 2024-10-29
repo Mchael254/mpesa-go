@@ -371,5 +371,13 @@ export class PolicyService {
     return this.api.DELETE(`/v2/policySubclassClauses?%20code=${code}&batch%20number${batchNo}&clause%20code=${clausecode}&policy%20Number=${policyNo}&sub%20class%20code=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getPolicySubclassClauses(batchNo:any,policyNo :any,proCode :any){
+    return this.api.GET(`v1/sub-class-clauses?batchNo=${batchNo}&policyNo=${policyNo}&proCode=${proCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getClientDDdetails(clientCode:any){
+    return this.api.GET(`v2/client-dd?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
 

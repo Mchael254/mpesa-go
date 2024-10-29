@@ -74,10 +74,13 @@ export class PolicySubclasessClausesComponent {
         next: (response: any) => {
           this.policyResponse = response;
           this.policyDetailsData = this.policyResponse.content[0]
-          log.debug("Policy Details:", this.policyDetailsData)
+          log.debug("Policy Details Data:", this.policyDetailsData)
           // if (this.policyDetailsData.product.code) {
           //   this.getProductClauses()
           // }
+          if (this.policyDetailsData){
+            this.fetchSubclassClauses();
+          }
           this.cdr.detectChanges();
 
         },
@@ -221,6 +224,24 @@ export class PolicySubclasessClausesComponent {
         error: (error) => {
 
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete policy subclass clauses details.Try again later');
+        }
+      })
+  }
+  fetchSubclassClauses() {
+    this.policyService
+      .getPolicySubclassClauses(this.policyDetailsData.batchNo, this.policyDetailsData.policyNo, this.policyDetailsData.product.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          
+          log.debug('Policy Subclass clause List:', response._embedded);
+          this.policySubclassClauses=response._embedded
+         
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch policy subclass clauses list.Try again later');
         }
       })
   }
