@@ -20,7 +20,8 @@ import {ClauseService} from "../../../../services/clause/clause.service";
 import {ProductService} from "../../../../services/product/product.service";
 import {AuthService} from "../../../../../../shared/services/auth.service";
 import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
-import {Logger} from "../../../../../../shared/services";
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+
 import {AccountContact} from "../../../../../../shared/data/account-contact";
 import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
 import { WebAdmin } from 'src/app/shared/data/web-admin';
@@ -67,6 +68,13 @@ export class QuotationDetailsComponent {
   productCode:any;
   @ViewChild('openModal') openModal;
   @ViewChild('dt1') dt1: Table | undefined;
+  quotationType: any;
+  showIntermediaryField: boolean = false;
+  resultFromCampaign: any;
+  showCampaignField: boolean = false;
+  campaignList: any;
+
+
 
   constructor(
     public bankService:BankService,
@@ -87,6 +95,7 @@ export class QuotationDetailsComponent {
   ){}
 
   ngOnInit(): void {
+    this.fetchCampaigns()
     this.getbranch();
     this.getCurrency();
     this.getProduct();
@@ -120,6 +129,7 @@ export class QuotationDetailsComponent {
     log.debug(this.quotationForm.value)
 
   }
+  ngOnDestroy(): void { }
 
   quickQuoteDetails(){
     this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
@@ -418,10 +428,17 @@ onResize(event: any) {
     const fromTo = this.quotationForm.value.withEffectiveToDate
 
     // Set currency code in the form
+    if (this.quotationType === "D") {
+      this.quotationForm.controls['agentCode'].setValue(0);
+      this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
+  
+  } else if (this.quotationType === "I") {
+    this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
+  }
     this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
     this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
     this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
-    this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
+    // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(this.quotationForm.value.withEffectiveFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(this.quotationForm.value.withEffectiveToDate));
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
@@ -553,5 +570,55 @@ selectedProductClauses(quotationCode){
 }
 unselectClause(event){
   console.log(this.selectedClause)
+}
+onQuotationTypeChange(value: string): void {
+  log.info('SELECTED VALUE:', value)
+  this.quotationType = value;
+  log.debug("Quotation  Type", this.quotationType)
+  this.showIntermediaryField = value === 'I';
+
+
+  if (!this.showIntermediaryField) {
+    this.quotationForm.get('agentCode').reset();
+   
+  }
+
+  // if (!this.showFacultativeFields) {
+  //   this.policyProductForm.get('agentCode').reset();
+   
+  // }
+}
+onResultCampaignTypeChange(value: string): void {
+  log.info('SELECTED VALUE:', value)
+  this.resultFromCampaign = value;
+  log.debug("Result from campaign  ", this.resultFromCampaign)
+  this.showCampaignField = value === 'C';
+
+
+  if (!this.showCampaignField) {
+    this.quotationForm.get('agentCode').reset();
+   
+  }
+
+  // if (!this.showFacultativeFields) {
+  //   this.policyProductForm.get('agentCode').reset();
+   
+  // }
+}
+fetchCampaigns(){
+  this.quotationService
+  .getCampaigns()
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+      this.campaignList= response
+      log.debug("Campaign List:",this.campaignList)
+
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  campaign details.Try again later');
+    }
+  })
 }
 }
