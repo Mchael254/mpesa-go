@@ -1229,7 +1229,7 @@
     "enter_claim_estimate": "Schätzung des Schadens eingeben",
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "edit_peril": "Bewerk Gevaar", 
+    "edit_peril": "Bewerk Gevaar",
     "confirm_delete_peril": "Weet u zeker dat u dit gevaar wilt verwijderen?",
     "enter_peril": "Voer Gevaar in"
   },
@@ -1323,7 +1323,7 @@
         "ref_no": "Referenznummer",
         "recovery_steps_taken": "Ergriffene Schritte zur Wiederherstellung",
         "road_surface_condition": "Straßenzustand"
-    
+
   }
 
 }
@@ -2005,6 +2005,32 @@
     "inputSearch": "Eingabesuche",
     "serviceProviderType": "Dienstanbietertyp",
     "accDetails": "Kontodetails",
-    "openRequests": "Offene Anfragen"
+    "openRequests": "Offene Anfragen",
+    "policyNo": "Policennummer",
+    "receiveDate": "Eingangsdatum",
+    "action": "Aktion",
+    "closedRequests": "Alle geschlossenen Anfragen",
+    "clientsComments": "Kundenkommentare",
+    "dateCaptured": "Erfassungsdatum",
+    "clientComments": "Kundenkommentare",
+    "postedDate": "Veröffentlichungsdatum",
+    "solution": "Lösung",
+    "serviceRequestDocs": "Serviceanforderungsdokumente",
+    "modifiedBy": "Geändert von",
+    "dateCreated": "Erstellungsdatum",
+    "referenceNo": "Referenznummer",
+    "remarks": "Bemerkungen",
+    "agencyCommission": "Agenturprovision",
+    "agentName": "Agentenname",
+    "copDate": "COP-Datum",
+    "crRefNo": "Cr-Referenznummer",
+    "drRefNo": "Dr-Referenznummer",
+    "commAmt": "Provisionsbetrag",
+    "withholdingTax": "Quellensteuer",
+    "netComm": "Netto Provision",
+    "authBy": "Genehmigt von",
+    "clientName": "Kundenname",
+    "fee": "Gebühr",
+    "servProviderFees": "Servicegebühren"
   }
 }
