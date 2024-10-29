@@ -1227,12 +1227,12 @@
       "create_claimant": "Unda Mdai",
       "peril_details": "Maelezo ya Hatari",
       "select_peril": "Chagua Hatari",
-      "enter_claim_estimate": "Ingiza Kadirio la Dai", 
+      "enter_claim_estimate": "Ingiza Kadirio la Dai",
       "cancel": "Ghairi",
       "save": "Hifadhi",
       "edit_peril": "Hariri Hatari",
       "confirm_delete_peril": "Je, una uhakika unataka kufuta hatari hii?",
-      "enter_peril": "Ingiza Hatari" 
+      "enter_peril": "Ingiza Hatari"
     },
     "claim_transaction": {
       "claim_transaction_details": "Maelezo ya shughuli ya madai",
@@ -1325,7 +1325,7 @@
         "recovery_steps_taken": "Hatua zilizochukuliwa za Kupona",
         "road_surface_condition": "Hali ya Uso wa Barabara"
       }
-  
+
   }
   },
   "lms": {
@@ -2005,6 +2005,32 @@
     "inputSearch": "Ingiza Utafutaji",
     "serviceProviderType": "Aina ya mtoa huduma",
     "accDetails": "Maelezo ya Akaunti",
-    "openRequests": "Maombi Yaliyofunguliwa"
+    "openRequests": "Maombi Yaliyofunguliwa",
+    "policyNo": "Nambari ya Sera",
+    "receiveDate": "Tarehe ya Kupokea",
+    "action": "Kitendo",
+    "closedRequests": "Maombi Yote Yaliyofungwa",
+    "clientsComments": "Maoni ya Wateja",
+    "dateCaptured": "Tarehe Iliyonaswa",
+    "clientComments": "Maoni ya Mteja",
+    "postedDate": "Tarehe Iliyochapishwa",
+    "solution": "Suluhisho",
+    "serviceRequestDocs": "Nyaraka za Ombi la Huduma",
+    "modifiedBy": "Imerekebishwa na",
+    "dateCreated": "Tarehe Iliyoanzishwa",
+    "referenceNo": "Nambari ya Rejea",
+    "remarks": "Maoni",
+    "agencyCommission": "Tume ya Wakala",
+    "agentName": "Jina la Wakala",
+    "copDate": "Tarehe ya COP",
+    "crRefNo": "Nambari ya Rejea ya Cr",
+    "drRefNo": "Nambari ya Rejea ya Dr",
+    "commAmt": "Kiasi cha Tume",
+    "withholdingTax": "Kodi ya Zuio",
+    "netComm": "Tume Halisi",
+    "authBy": "Imeidhinishwa na",
+    "clientName": "Jina la Mteja",
+    "fee": "Ada",
+    "servProviderFees": "Ada ya Mtoa Huduma"
   }
 }
