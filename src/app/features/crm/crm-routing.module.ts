@@ -32,9 +32,9 @@ import {RequestStatusComponent} from "./components/service-desk/request-status/r
 import {RequestCategoriesComponent} from "./components/service-desk/request-categories/request-categories.component";
 import {RequestTrackingComponent} from "./components/service-desk/request-tracking/request-tracking.component";
 import {ServiceDeskComponent} from "./components/service-desk/service-desk.component";
-/*import {
+import {
   ServiceDeskDetailsComponent
-} from "./components/service-desk/service-desk-details/service-desk-details.component";*/
+} from "./components/service-desk/service-desk-details/service-desk-details.component";
 
 const routes: Routes = [
   {
@@ -165,10 +165,10 @@ const routes: Routes = [
     path: 'service-desk',
     component: ServiceDeskComponent,
   },
-  /*{
+  {
     path: 'service-desk-details',
     component: ServiceDeskDetailsComponent,
-  },*/
+  },
 ];
 
 @NgModule({
