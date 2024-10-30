@@ -27,6 +27,7 @@ import { ClientDdDetailsComponent } from './components/client-dd-details/client-
 import { PolicyClausesDetailsComponent } from './components/policy-clauses-details/policy-clauses-details.component';
 import { PolicyLevelPerilsComponent } from './components/policy-level-perils/policy-level-perils.component';
 import { PolicyTaxesComponent } from './components/policy-taxes/policy-taxes.component';
+import { PolicySubclasessClausesComponent } from './components/policy-subclasess-clauses/policy-subclasess-clauses.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -42,6 +43,7 @@ import { PolicyTaxesComponent } from './components/policy-taxes/policy-taxes.com
     PolicyClausesDetailsComponent,
     PolicyLevelPerilsComponent,
     PolicyTaxesComponent,
+    PolicySubclasessClausesComponent,
   ],
   imports: [
     CommonModule,

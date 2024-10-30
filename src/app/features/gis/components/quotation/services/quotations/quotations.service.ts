@@ -163,12 +163,15 @@ errorHandl(error: HttpErrorResponse) {
    * @return {Observable<introducersDTO>} - An observable of the response containing introducers data.
    */   
   getIntroducers(): Observable<introducersDTO>{
+    let page = 0;
+  let size = 10
+
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
       });
-      return this.api.GET<introducersDTO>(`introducers`, API_CONFIG.GIS_SETUPS_BASE_URL); 
+      return this.api.GET<introducersDTO>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL); 
   }
 
   /**
@@ -341,6 +344,10 @@ addProductClause(clauseCode,productCode,quotationCode){
 }
 postDocuments(data){
   return this.api.POST(`uploadClientDocument`, JSON.stringify(data),API_CONFIG.DMS_SERVICE)
+}
+getCampaigns(){
+  return this.api.GET(`campaigns`, API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL)
+
 }
 }
 
