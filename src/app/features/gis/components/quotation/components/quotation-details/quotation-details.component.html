@@ -2,148 +2,182 @@
     <p class="title">Quotations:Quotation Details </p>
     <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     <form [formGroup]="quotationForm">
-    <div class="card mb-4">
-        <div class="card-body">
-          <h6>Quotation Details </h6>
-          <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationNum}}</strong></p>
-          <div class="row mb-4 mt-3">
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Source<span class="required" ></span></label>
-                <select  class="form-select form-control-sm mb-1" id="quote-input"  formControlName="source"  placement="right" >
-                    <option selected="true" disabled="disabled"></option>
-                    <option *ngFor="let data of quotationSources"  [value]="data.code" >{{data.description}}</option>
-                  </select >
-                    <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
-                        class="form-text text-danger">
-                        Source is required.
+        <div class="card mb-4">
+            <div class="card-body">
+                <h6>Quotation Details </h6>
+                <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationNum}}</strong></p>
+                <div class="row mb-4 mt-3">
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Source<span class="required"></span></label>
+                        <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="source"
+                            placement="right">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let data of quotationSources" [value]="data.code">{{data.description}}
+                            </option>
+                        </select>
+                        <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
+                            class="form-text text-danger">
+                            Source is required.
+                        </div>
+
                     </div>
-                
-            </div>
-            
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Intermediary<span class="required"></span></label>
-                <!-- <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" [filterBy]="'name'" (onChange)="agentShortDesc()" [filter]="true" ></p-dropdown> -->
-                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="agentCode" data-bs-toggle="modal" data-bs-target="#selectIntermediary">
-                <div *ngIf="quotationForm.get('agentCode').hasError('required') && quotationForm.get('agentCode').touched"
-                class="form-text text-danger">
-                Intermediary is required.
-                </div>
-            </div>
-    <!-- Modal -->
-    <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            
-            <div class="modal-body">
-                <div class="float-start"></div>
-                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-                <h5 class="text-start mt-2 mb-4">Select Intermediary</h5>
-                <div class="input-group mb-4" id="search-input" >
-                        
-                    <span class="input-group-append" style="background-color: #F5F6F8;">
-                        <button class="btn border-end-0 "  type="button">
-                            <i class="fa fa-search" ></i>
-                        </button>
-                      </span>
-                    <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
-                </div>
-             
-              
-                <p-table
-                 #dt1
-                 [value]="agents" 
-                 [tableStyle]="{ 'max-width': '100rem' }"
-                 [resizableColumns]="true" 
-                 styleClass="p-datatable-sm"
-                 class='ui-datatable' 
-                 [globalFilterFields]="['shortDesc', 'name', 'accountType']"
-                 [paginator]="true"
-                 [rows]="5"
-                 [showCurrentPageReport]="true"
-                 currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-                 selectionMode="single" 
-                 [(selection)]="selectedAgent"
-                 dataKey="shortDesc"
-                 >
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th field="shortDesc">Code</th>
-                            <th field="name">Name</th>
-                            <th field="accountType">Intermediary Type </th>
-                            
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-data  >
-                        <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data.id)">
-                            <td>{{ data.shortDesc }}</td>
-                            <td>{{ data.name}}</td>
-                            <td>{{ data.accountType }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-                
-                <div class="float-start"></div>
-                <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
-            </div>
-           
-          </div>
-        </div>
-      </div>
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Quotation Type</label>
+                        <select class="form-select form-control-sm mb-1" id="quote-input"
+                                 placement="right"
+                                #quotationTypeSelect
+                                (change)="onQuotationTypeChange(quotationTypeSelect.value)">
+                                <option selected="true" disabled="disabled"></option>
+                                <option  value="D">Direct</option>
+                                <option  value="I">Intermediary</option>
+
+                            </select>
+
+                    </div>
+                    <div class="col-xl-4" *ngIf="showIntermediaryField">
+                        <label for="" class="quote-label">Intermediary<span class="required"></span></label>
+                        <!-- <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" [filterBy]="'name'" (onChange)="agentShortDesc()" [filter]="true" ></p-dropdown> -->
+                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            formControlName="agentCode" data-bs-toggle="modal" data-bs-target="#selectIntermediary" autocomplete="off">
+                        <div *ngIf="quotationForm.get('agentCode').hasError('required') && quotationForm.get('agentCode').touched"
+                            class="form-text text-danger">
+                            Intermediary is required.
+                        </div>
+                    </div>
+                    <!--INTERMEDIARY MODAL -->
+                    <div class="modal fade" id="selectIntermediary" tabindex="-1"
+                        aria-labelledby="selectIntermediaryLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-body">
+                                    <div class="float-start"></div>
+                                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                    <h5 class="text-start mt-2 mb-4">Select Intermediary</h5>
+                                    <div class="input-group mb-4" id="search-input">
+
+                                        <span class="input-group-append" style="background-color: #F5F6F8;">
+                                            <button class="btn border-end-0 " type="button">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
+                                    </div>
+
+
+                                    <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }"
+                                        [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
+                                        [globalFilterFields]="['shortDesc', 'name', 'accountType']" [paginator]="true"
+                                        [rows]="5" [showCurrentPageReport]="true"
+                                        currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+                                        selectionMode="single" [(selection)]="selectedAgent" dataKey="shortDesc">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th field="shortDesc">Code</th>
+                                                <th field="name">Name</th>
+                                                <th field="accountType">Intermediary Type </th>
+
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-data>
+                                            <tr [pSelectableRow]="data" style="cursor:pointer"
+                                                (click)="getAgentById(data.id)">
+                                                <td>{{ data.shortDesc }}</td>
+                                                <td>{{ data.name}}</td>
+                                                <td>{{ data.accountType }}</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+
+                                    <div class="float-start"></div>
+                                    <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
 
 
 
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Branch<span class="required" ></span></label>
-                <p-dropdown formControlName="branchCode" [options]="branch" optionLabel="name" placeholder=" " [filterBy]="'name'" [filter]="true" ></p-dropdown>
-                <div *ngIf="quotationForm.get('branchCode').hasError('required') && quotationForm.get('branchCode').touched" class="form-text text-danger">
-                    Branch is required.
-                </div>
-            </div>
-           
-          </div>
-          <div class="row mb-4">
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Currency<span class="required"></span></label><br>
-                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
-                <div *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched" class="form-text text-danger">
-                    Currency is required.
-                </div>
-            </div>
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Request for quote date</label>
-                <input type="date" id="quote-input" class="form-control form-control-sm mb-1" (change)="updateQuotationExpiryDate($event)" formControlName="RFQDate">
-                <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched" class="form-text text-danger">
-                    Request for quote date is required.
-                </div>
-            </div>
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Quotation Expiry Date</label>
-                <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="expiryDate">
-                <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched" class="form-text text-danger">
-                    Quotation Expiry Date is required.
-                </div>
-            </div>
-          
-           
-          </div>
-       
-         
-          <div class="collapse" id="collapseExample">
-           
-            <div class="row mb-4">
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">Quotation Type</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="proInterfaceType">
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Branch<span class="required"></span></label>
+                        <p-dropdown formControlName="branchCode" [options]="branch" optionLabel="name" placeholder=" "
+                            [filterBy]="'name'" [filter]="true"></p-dropdown>
+                        <div *ngIf="quotationForm.get('branchCode').hasError('required') && quotationForm.get('branchCode').touched"
+                            class="form-text text-danger">
+                            Branch is required.
+                        </div>
+                    </div>
 
                 </div>
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">Introducer</label>
-                    <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="introducerCode" placement="right" >
-                        <option selected="true" disabled="disabled"></option> 
-                        <option *ngFor="let data of introducers"  [value]="data.code">{{data.surName}}</option>
-                    </select>  
+                <div class="row mb-4">
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Currency<span class="required"></span></label><br>
+                        <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
+                            [filterBy]="'name'" placeholder=" " [filter]="true"></p-dropdown>
+                        <div *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
+                            class="form-text text-danger">
+                            Currency is required.
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Request for quote date</label>
+                        <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                            (change)="updateQuotationExpiryDate($event)" formControlName="RFQDate">
+                        <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
+                            class="form-text text-danger">
+                            Request for quote date is required.
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Quotation Expiry Date</label>
+                        <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                            formControlName="expiryDate">
+                        <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
+                            class="form-text text-danger">
+                            Quotation Expiry Date is required.
+                        </div>
+                    </div>
+
+
                 </div>
-                <!-- <div class="col-xl-4">      
+
+
+                <div class="collapse" id="collapseExample">
+
+                    <div class="row mb-4">
+                       
+                        <div class="col-xl-4">
+                            <label for="" class="quote-label">Introducer</label>
+                            <select class="form-select form-control-sm mb-1" id="quote-input"
+                                formControlName="introducerCode" placement="right">
+                                <option selected="true" disabled="disabled"></option>
+                                <option *ngFor="let data of introducers" [value]="data.code">{{data.surName}}</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-4">
+                            <label for="" class="quote-label">Results from campaign?</label>
+                            <select class="form-select form-control-sm mb-1" id="quote-input" placement="right"
+                            #resultFromCampaignSelect
+                            (change)="onResultCampaignTypeChange(resultFromCampaignSelect.value)">
+                                <option selected="true" disabled="disabled"></option>
+                                <option value="O">Others</option>
+                                <option value="C">Campaign</option>
+
+
+                            </select>
+
+                        </div>
+                        <div class="col-xl-4"  *ngIf="showCampaignField">
+                            <label for="" class="quote-label">Campaign</label>
+                            <select class="form-select form-control-sm mb-1" id="quote-input"
+                               placement="right">
+                                <option selected="true" disabled="disabled"></option>
+                                <option *ngFor="let data of campaignList" [value]="data.code">{{data.campaignName}}</option>
+                            </select>
+                        </div>
+                        <!-- <div class="col-xl-4">      
                     <label for=""class="quote-label">Likelihood</label>
                     <select  class="form-select form-control-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
@@ -153,113 +187,114 @@
     
                       </select >
                 </div> -->
-            </div>
-            <div class="row mb-4">
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">Results from campaign?</label>
-                    <select  class="form-select form-control-sm mb-1" id="quote-input"  placement="right"  >
-                        <option selected="true" disabled="disabled"></option>
-                        <option value="likely">Others</option>
-                        <option value="unlikely">Campaign</option>
-                        
-    
-                      </select >
+                    </div>
+                    <div class="row mb-4">
+                      
+                        <div class="col-xl-4">
+                            <label for="" class="quote-label">Multi-user entry?</label>
+                            <br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="multiUser"
+                                    formControlName="multiUser" id="inlineRadio1" value="Y">
+                                <label class="form-check-label" for="inlineRadio1">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="multiUser"
+                                    formControlName="multiUser" id="inlineRadio2" value="N">
+                                <label class="form-check-label" for="inlineRadio2">No</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <label for="" class="quote-label">Internal comments </label>
+                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                                formControlName="internalComments">
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-4">
+                            <label for="" class="quote-label">External comments </label>
+                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                                formControlName="comments">
 
-                </div>
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">Multi-user entry?</label>
-                    <br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="inlineRadio1" value="Y">
-                        <label class="form-check-label" for="inlineRadio1">Yes</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"  id="inlineRadio2" value="N">
-                        <label class="form-check-label" for="inlineRadio2">No</label>
-                      </div>
-                </div>
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">Internal comments </label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="internalComments">
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-xl-4">
-                    <label for=""class="quote-label">External comments </label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="comments">
+                        </div>
 
+
+
+                    </div>
                 </div>
-    
- 
-              
+                <p class="more" (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+                    aria-expanded="false" aria-controls="collapseExample">More Details <span class="ml-1"
+                        data-toggle="collapse" data-target="#collapseExample" aria-expanded="false"
+                        aria-controls="collapseExample"> <i class="pi pi-angle-double-up" style="font-size:13px"
+                            *ngIf="!show" data-toggle="collapse" data-target="#collapseExample"></i><i
+                            class="pi pi-angle-double-down" style="font-size:13px" *ngIf="show" data-toggle="collapse"
+                            data-target="#collapseExample"></i></span> </p>
             </div>
-          </div>
-          <p class="more" (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">More Details <span class="ml-1" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" > <i class="pi pi-angle-double-up" style="font-size:13px" *ngIf="!show" data-toggle="collapse" data-target="#collapseExample"></i><i class="pi pi-angle-double-down" style="font-size:13px" *ngIf="show" data-toggle="collapse" data-target="#collapseExample"></i></span> </p>
         </div>
-    </div>
     </form>
     <div class="card mb-4">
         <div class="card-body">
-          <h6>Product Details </h6>
-          <div class="spinner" style="position: relative">
-            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-          </div>
-          <form [formGroup]="quotationForm">
-          <div class="row mt-3 mb-3">
-            <div class="col-xl-4">
-               
-                <label for=""class="quote-label">Product</label>
-                <p-dropdown formControlName="productCode" [options]="products" optionLabel="description" [filterBy]="'description'" (onChange)="getProductClause()" placeholder=" " [filter]="true" ></p-dropdown>
-                <div *ngIf="quotationForm.get('productCode').hasError('required') && quotationForm.get('productCode').touched" class="form-text text-danger">
-                    Product is required.
-                </div>
+            <h6>Product Details </h6>
+            <div class="spinner" style="position: relative">
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large"
+                    bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
             </div>
+            <form [formGroup]="quotationForm">
+                <div class="row mt-3 mb-3">
+                    <div class="col-xl-4">
+
+                        <label for="" class="quote-label">Product</label>
+                        <p-dropdown formControlName="productCode" [options]="products" optionLabel="description"
+                            [filterBy]="'description'" (onChange)="getProductClause()" placeholder=" "
+                            [filter]="true"></p-dropdown>
+                        <div *ngIf="quotationForm.get('productCode').hasError('required') && quotationForm.get('productCode').touched"
+                            class="form-text text-danger">
+                            Product is required.
+                        </div>
+                    </div>
 
 
 
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Cover From</label><br>
-                <input type="date" id="quote-input" class="form-control form-control-sm mb-1" (change)="updateCoverToDate($event)" formControlName="withEffectiveFromDate">
-                <div *ngIf="quotationForm.get('withEffectiveFromDate').hasError('required') && quotationForm.get('withEffectiveFromDate').touched" class="form-text text-danger">
-                    Cover From is required.
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Cover From</label><br>
+                        <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                            (change)="updateCoverToDate($event)" formControlName="withEffectiveFromDate">
+                        <div *ngIf="quotationForm.get('withEffectiveFromDate').hasError('required') && quotationForm.get('withEffectiveFromDate').touched"
+                            class="form-text text-danger">
+                            Cover From is required.
+                        </div>
+                    </div>
+                    <div class="col-xl-4">
+                        <label for="" class="quote-label">Cover To</label><br>
+                        <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                            formControlName="withEffectiveToDate">
+                        <div *ngIf="quotationForm.get('withEffectiveToDate').hasError('required') && quotationForm.get('withEffectiveToDate').touched"
+                            class="form-text text-danger">
+                            Cover To is required.
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Cover To</label><br>
-                <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveToDate">
-                <div *ngIf="quotationForm.get('withEffectiveToDate').hasError('required') && quotationForm.get('withEffectiveToDate').touched" class="form-text text-danger">
-                    Cover To is required.
-                </div>
-            </div>
-          </div>
-          
-        </form>
+
+            </form>
         </div>
         <div class="card-body">
-            <p class="mb-4">Import risks <input type="checkbox" (change)="isChecked = !isChecked" id="importRisks" class="ml-3"></p>
-            
-            <p class="more" (click)="showProduct=!showProduct" data-bs-toggle="collapse" data-bs-target="#collapseProductClauses">Product Clauses<span class="ml-1" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" > <i class="pi pi-angle-double-up" style="font-size:13px" *ngIf="!showProduct" data-toggle="collapse" data-target="#collapseExample"></i><i class="pi pi-angle-double-down" style="font-size:13px" *ngIf="showProduct" data-toggle="collapse" data-target="#collapseExample"></i></span> </p>
+            <p class="mb-4">Import risks <input type="checkbox" (change)="isChecked = !isChecked" id="importRisks"
+                    class="ml-3"></p>
+
+            <p class="more" (click)="showProduct=!showProduct" data-bs-toggle="collapse"
+                data-bs-target="#collapseProductClauses">Product Clauses<span class="ml-1" data-toggle="collapse"
+                    data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"> <i
+                        class="pi pi-angle-double-up" style="font-size:13px" *ngIf="!showProduct" data-toggle="collapse"
+                        data-target="#collapseExample"></i><i class="pi pi-angle-double-down" style="font-size:13px"
+                        *ngIf="showProduct" data-toggle="collapse" data-target="#collapseExample"></i></span> </p>
             <div class="collapse" id="collapseProductClauses">
-                <p-table 
-                [value]="clauses"
-                dataKey="code" 
-                editMode="row" 
-                [tableStyle]="{'min-width': '50rem'}"
-                styleClass="p-datatable-sm"
-                responsiveLayout="scroll" 
-                [(selection)]="selectedClause" 
-                class='ui-datatable'
-                selectionMode="multiple"
-                [autoLayout]="true"
-                [paginator]="true"
-                [rows]="5"
-                [showCurrentPageReport]="true"
-                currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-                
-            
-               >
-                <ng-template pTemplate="header">
-                  <tr>
+                <p-table [value]="clauses" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
+                    styleClass="p-datatable-sm" responsiveLayout="scroll" [(selection)]="selectedClause"
+                    class='ui-datatable' selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="5"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="{first} to {last} of {totalRecords} entries">
+                    <ng-template pTemplate="header">
+                        <tr>
                             <th style="width: 5%;padding-right: 50px;">
                                 select
                             </th>
@@ -267,120 +302,128 @@
                             <th style="width: 40%;">Wording</th>
                             <th style="width: 5%;"></th>
                             <th style="width: 5%;">Editable</th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="selectedClauseList">
-                          <td>
-                              <p-tableCheckbox [value]="selectedClauseList" (onChange)="selectedProductClauses($event)" ></p-tableCheckbox>
-                          </td>
-                      
-                          <td  
-                              style=" white-space: nowrap;
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
+                        <tr [pEditableRow]="selectedClauseList">
+                            <td>
+                                <p-tableCheckbox [value]="selectedClauseList"
+                                    (onChange)="selectedProductClauses($event)"></p-tableCheckbox>
+                            </td>
+
+                            <td style=" white-space: nowrap;
                               overflow: hidden;
                               text-overflow: ellipsis;
                               overflow-y: auto;
                               max-width: 250px;" pTooltip="{{selectedClauseList.heading }}" tooltipPosition="top">
-                              <p-cellEditor>
-                                  <ng-template pTemplate="input" *ngIf="selectedClauseList.is_editable  === 'Y'">
-                                      <input pInputText type="text" [(ngModel)]="selectedClauseList.heading" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
-                                  </ng-template>
-                                  <ng-template pTemplate="output">
-                                      {{selectedClauseList.heading}}
-                                  </ng-template>
-                              </p-cellEditor>
-                          </td>
-                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                            <p-cellEditor>
-                                <ng-template pTemplate="input">
-                                    <input pInputText type="text" [(ngModel)]="selectedClauseList.wording" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
-                                </ng-template>
-                                <ng-template pTemplate="output">
-                                    {{selectedClauseList.wording}}
-                                </ng-template>
-                                <!-- Helper icon added next to the wording column -->
-                            </p-cellEditor>
-                          </td>
-                          <td>
-                            <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)" icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                          </td>
-                          <td *ngIf="selectedClauseList.is_editable  !== 'Y'" style="padding-left: 24px;" > -- </td>
-                          <td *ngIf="selectedClauseList.is_editable  === 'Y'">
-                              <div class="flex align-items-center justify-content-center gap-2">
-                                  <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow  icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
-                                  <button *ngIf="editing" pButton pRipple  type="button" pSaveEditableRow icon="pi pi-check" class="p-button-rounded p-button-text p-button-success mr-2"></button>
-                                  <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button>
-                               </div>
-                          </td>
-                    </tr>
-                    <!-- Modal for each row -->
-                    <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}">
-                      <ng-container *ngIf="selectedClauseList">
-                          <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
-                              <p>{{ selectedClauseList.wording }}</p>
-                          </div>
-                      </ng-container>
-                    </p-dialog>
-                  </ng-template>
-              </p-table>
-              </div>
-          </div>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input" *ngIf="selectedClauseList.is_editable  === 'Y'">
+                                        <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
+                                            class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{selectedClauseList.heading}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="selectedClauseList.wording"
+                                            class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{selectedClauseList.wording}}
+                                    </ng-template>
+                                    <!-- Helper icon added next to the wording column -->
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
+                                    icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+                            </td>
+                            <td *ngIf="selectedClauseList.is_editable  !== 'Y'" style="padding-left: 24px;"> -- </td>
+                            <td *ngIf="selectedClauseList.is_editable  === 'Y'">
+                                <div class="flex align-items-center justify-content-center gap-2">
+                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                        icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                        icon="pi pi-check"
+                                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                        icon="pi pi-times"
+                                        class="p-button-rounded p-button-text p-button-danger"></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Modal for each row -->
+                        <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
+                            [style]="{ 'width': '700px'}">
+                            <ng-container *ngIf="selectedClauseList">
+                                <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                    (onResize)="onResize($event)">
+                                    <p>{{ selectedClauseList.wording }}</p>
+                                </div>
+                            </ng-container>
+                        </p-dialog>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
     </div>
 
 
 
     <div class="float-end mb-4">
-        <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
-       
-        <button class="btn btn-primary"  (click)="getExistingQuotations()" >Next</button>
+        <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal"
+            hidden></button>
+
+        <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
     </div>
-    
-    
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="min-width:700px">
                 <div class="modal-body">
-                   <p class="title1 mb-4">Client's Already Existing Quotations</p>
-                   <p-table 
-                   [value]="quotation"
-                   [resizableColumns]="true" 
-                   styleClass="p-datatable-sm"
-                   styleClass="p-datatable-striped"
-                   class='ui-datatable' 
-                   [tableStyle]="{ 'min-width': '50rem' }"
-                   [scrollable]="true" scrollHeight="400px" >
-                       <ng-template pTemplate="header">
-                           <tr>
-                               <th>Quotation Number</th>
-                               <th>Status</th>
-                               <th>Cover From</th>
-                               <th>Cover To</th>
-                           </tr>
-                       </ng-template>
-                       <ng-template pTemplate="body" let-data>
-                           <tr>
-                               <td>{{data.no}}</td>
-                               <td>{{data.status}}</td>
-                               <td>{{data.coverFrom}}</td>
-                               <td>{{data.coverTo}}</td> 
-                           </tr>
-                       </ng-template>
-                   </p-table>
+                    <p class="title1 mb-4">Client's Already Existing Quotations</p>
+                    <p-table [value]="quotation" [resizableColumns]="true" styleClass="p-datatable-sm"
+                        styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
+                        [scrollable]="true" scrollHeight="400px">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Quotation Number</th>
+                                <th>Status</th>
+                                <th>Cover From</th>
+                                <th>Cover To</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-data>
+                            <tr>
+                                <td>{{data.no}}</td>
+                                <td>{{data.status}}</td>
+                                <td>{{data.coverFrom}}</td>
+                                <td>{{data.coverTo}}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
 
-                   <p class="title1 mt-4 float-start">Do you wish to Continue Creating the Quotation?</p>
-                   <div class="mt-3 float-end">
-                    <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
-                    <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal" (click)="saveQuotationDetails()">Yes, continue</button>
-                   </div>
-                  </div>
+                    <p class="title1 mt-4 float-start">Do you wish to Continue Creating the Quotation?</p>
+                    <div class="mt-3 float-end">
+                        <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
+                        <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
+                            (click)="saveQuotationDetails()">Yes, continue</button>
+                    </div>
+                </div>
             </div>
-          </div>
+        </div>
     </div>
 
-           
-              
-            
-        
-    
-       
+
+
+
+
+
+
 </div>

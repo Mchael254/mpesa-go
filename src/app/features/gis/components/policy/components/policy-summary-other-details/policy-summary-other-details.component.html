@@ -3802,25 +3802,23 @@
 
 
                 </ng-container>
+                <!-- CLIENT DD DETAILS -->
                 <ng-container *ngIf="selectedItem === 2">
-
                     <app-client-dd-details></app-client-dd-details>
                 </ng-container>
+
+                 <!-- POLICY TAXES DETAILS -->
                 <ng-container *ngIf="selectedItem === 3">
-                    <!-- POLICY TAXES DETAILS -->
-
-                    
                     <app-policy-taxes></app-policy-taxes>
-
                 </ng-container>
-                <ng-container *ngIf="selectedItem === 4">
-                    <!-- POLICY CLAUSES DETAILS -->
 
+                <!-- POLICY CLAUSES DETAILS -->
+                <ng-container *ngIf="selectedItem === 4">
                     <app-policy-clauses-details></app-policy-clauses-details>
                 </ng-container>
+                <!-- POLICY CLAUSES DETAILS -->
                 <ng-container *ngIf="selectedItem === 5">
-                    <h5>{{'gis.policy.policy_subclasses_clauses' | translate}}</h5>
-                    <p>Details about Policy subclasses clauses...</p>
+                    <app-policy-subclasess-clauses></app-policy-subclasess-clauses>
                 </ng-container>
                 <ng-container *ngIf="selectedItem === 6">
                     <!-- POLICY LEVEL PERIL DETAILS -->

@@ -1,0 +1,36 @@
+.flexible-header {
+    white-space: nowrap;
+    width: auto;
+    text-align: left;
+}
+
+/* .ui-datatable th, .ui-datatable td {
+    white-space: nowrap;
+} */
+.ui-datatable th,
+.ui-datatable td {
+    white-space: nowrap;
+}
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
+.modalTitle {
+    font-weight: 700;
+    font-size: 14px;
+    color: #000;
+}
+.subheading {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    color: #00529B;
+
+}
