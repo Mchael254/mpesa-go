@@ -1,0 +1,87 @@
+<form [formGroup]="primaryDetailForm">
+  <div class="row g-3">
+    <div class="col-6">
+      <label for="campaingName">{{
+        "entities.campaign_name" | translate | titlecase
+      }}</label>
+      <p-dropdown
+        [options]="campaingsData"
+        optionLabel="campaignName"
+        optionValue="code"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Campaign Name"
+        formControlName="campaingName"
+        id="campaingName"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="leadSource">{{
+        "entities.lead_source" | translate | titlecase
+      }}</label>
+      <p-dropdown
+        [options]="leadSourcesData"
+        optionLabel="description"
+        optionValue="code"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Lead Source"
+        formControlName="leadSource"
+        id="leadSource"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="occupation">{{
+        "entities.occupation" | translate | titlecase
+      }}</label>
+      <p-dropdown
+        [options]="occupationsData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Occupation"
+        formControlName="occupation"
+        id="occupation"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="date">{{ "entities.date" | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        name="inputDate"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')"
+        id="date"
+        placeholder="Date"
+        formControlName="date"
+      />
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>

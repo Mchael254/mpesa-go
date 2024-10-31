@@ -1,0 +1,52 @@
+<form [formGroup]="commentDetailForm">
+  <div class="row g-3">
+    <div class="col-12">
+      <label for="comment" class="form-label">{{
+        "entities.comment" | translate
+      }}</label>
+      <textarea
+        class="form-control"
+        id="comment"
+        placeholder="Comment"
+        formControlName="comment"
+        rows="3"
+      ></textarea>
+    </div>
+    <div class="col-12">
+      <label for="date" class="form-label">{{
+        "entities.date" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        name="filterByDay"
+        placeholder="Date"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')"
+        formControlName="date"
+      />
+    </div>
+    <div class="col-12">
+      <label for="disposition" class="form-label">{{
+        "entities.disposition" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="disposition"
+        placeholder="Disposition"
+        formControlName="disposition"
+      />
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>

@@ -1,0 +1,136 @@
+<form [formGroup]="otherDetailForm">
+  <div class="row g-3">
+    <div class="col-6">
+      <label for="sector">{{ "entities.sector" | translate }}</label>
+      <p-dropdown
+        [options]="sectorsData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Sector"
+        formControlName="sector"
+        id="sector"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="currency">{{ "entities.currency" | translate }}</label>
+      <p-dropdown
+        [options]="currenciesData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="currency"
+        formControlName="currency"
+        id="currency"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="annualRevenue">{{
+        "entities.annual_revenue" | translate
+      }}</label>
+      <input
+        type="number"
+        class="form-control"
+        id="annualRevenue"
+        formControlName="annualRevenue"
+      />
+    </div>
+    <div class="col-6">
+      <label for="potential_amount">{{
+        "entities.potential_amount" | translate
+      }}</label>
+      <input
+        type="number"
+        class="form-control"
+        id="potentialAmount"
+        formControlName="potentialAmount"
+      />
+    </div>
+    <div class="col-6">
+      <label for="potentialName">{{
+        "entities.potential_name" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="potentialName"
+        placeholder="Potential Name"
+        formControlName="potentialName"
+      />
+    </div>
+    <div class="col-6">
+      <label for="potentialSaleStage">{{
+        "entities.potential_sale_stage" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="potentialSaleStage"
+        formControlName="potentialSaleStage"
+      />
+    </div>
+    <div class="col-6">
+      <label for="potentialContr">{{
+        "entities.potential_contr" | translate
+      }}</label>
+      <select
+        id="potentialContr"
+        class="form-select"
+        formControlName="potentialContr"
+      >
+        <option value="" selected>
+          {{ "entities.select_title" | translate }}
+        </option>
+        <option value="Y">Yes</option>
+        <option value="N">No</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <label for="converted">{{ "entities.converted" | translate }}</label>
+      <select id="converted" class="form-select" formControlName="converted">
+        <option value="" selected>
+          {{ "entities.select_title" | translate }}
+        </option>
+        <option value="Y">Yes</option>
+        <option value="N">No</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <label for="potentialCloseDate">{{
+        "entities.potential_close_date" | translate | titlecase
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        name="inputpotentialCloseDate"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')"
+        id="potentialCloseDate"
+        placeholder="Date"
+        formControlName="potentialCloseDate"
+      />
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>
