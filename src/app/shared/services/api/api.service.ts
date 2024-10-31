@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../../../environments/environment';
@@ -9,25 +9,34 @@ import { SessionStorageService } from '../session-storage/session-storage.servic
 import { StringManipulation } from '../../../features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private baseURL = environment.API_URLS.get(API_CONFIG.SETUPS_SERVICE_BASE_URL);
+  private baseURL = environment.API_URLS.get(
+    API_CONFIG.SETUPS_SERVICE_BASE_URL
+  );
 
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private session_storage: SessionStorageService ) {}
+  constructor(
+    private http: HttpClient,
+    private appConfig: AppConfigService,
+    private session_storage: SessionStorageService
+  ) {}
 
   private getHeaders(): HttpHeaders {
     // console.log(this.session_storage.getItem('SESSION_TOKEN'));
 
     let headers = new HttpHeaders()
-    .set('Accept', 'application/json')
-    .set('Content-Type', 'application/json')
-    .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
-    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
-    .set('entityType', this.session_storage.get(SESSION_KEY.ENTITY_TYPE));
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set(
+        'X-TenantId',
+        StringManipulation.returnNullIfEmpty(
+          this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+        )
+      )
+      .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
+      .set('entityType', this.session_storage.get(SESSION_KEY.ENTITY_TYPE));
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -52,45 +61,58 @@ export class ApiService {
     return headers;
   }
 
-  GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null): Observable<T> {
+  GET<T>(
+    endpoint: string,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL,
+    params = null
+  ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     let headers: HttpHeaders = this.getHeaders();
 
-    let config = {}
-    if(params===null){
-      config = {headers}
-    }else{
-      config ={headers, params}
+    let config = {};
+    if (params === null) {
+      config = { headers };
+    } else {
+      config = { headers, params };
     }
     return this.http.get<T>(url, config);
   }
 
-  POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null ): Observable<T> {
+  POST<T>(
+    endpoint: string,
+    data: any,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL,
+    params = null
+  ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     let url = '';
-    if(endpoint===null){
-       url = `${this.baseURL}`;
-    }else{
-       url = `${this.baseURL}/${endpoint}`;
+    if (endpoint === null) {
+      url = `${this.baseURL}`;
+    } else {
+      url = `${this.baseURL}/${endpoint}`;
     }
     const headers = this.getHeaders();
-    return this.http.post<T>(url, data, { headers, params:params });
+    return this.http.post<T>(url, data, { headers, params: params });
   }
 
-  public POSTBYTE(endpoint: string, data: any, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params = null): Observable<any> {
-     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+  public POSTBYTE(
+    endpoint: string,
+    data: any,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL,
+    params = null
+  ): Observable<any> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     let url = '';
-    if(endpoint===null){
-       url = `${this.baseURL}`;
-    }else{
-       url = `${this.baseURL}/${endpoint}`;
+    if (endpoint === null) {
+      url = `${this.baseURL}`;
+    } else {
+      url = `${this.baseURL}/${endpoint}`;
     }
     const headers = this.getHeaders();
 
     return this.http.post(url, data, { headers, params, responseType: 'blob' });
   }
-
 
   public downloadFile(endpoint: string, data: any): void {
     this.POST(endpoint, data).subscribe((response: any) => {
@@ -104,23 +126,37 @@ export class ApiService {
     });
   }
 
-  FILEDOWNLOAD<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<Blob> {
+  FILEDOWNLOAD<T>(
+    endpoint: string,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL
+  ): Observable<Blob> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = new HttpHeaders()
-    .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
-    .set('Accept', 'text/csv')
-      .set("Content-Type", "text/csv")
+      .set(
+        'X-TenantId',
+        StringManipulation.returnNullIfEmpty(
+          this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+        )
+      )
+      .set('Accept', 'text/csv')
+      .set('Content-Type', 'text/csv');
     // const options = { headers, params };
     // this.http.get('http://localhost:8080/downloadCsv', { responseType: 'blob' }).subscribe(csvData => {
     //   this.saveBlobAsFile(csvData, 'sampleCsv.csv');
     // });
-       return this.http.get(url, { responseType: 'blob', headers}).pipe(
+    return this.http
+      .get(url, { responseType: 'blob', headers })
+      .pipe
       // tap(data => console.log(data))
-      );
+      ();
   }
 
-  public DOWNLOADFROMBASE64(base64String: string, fileName='file.pdf', fileType='application/pdf'): void {
+  public DOWNLOADFROMBASE64(
+    base64String: string,
+    fileName = 'file.pdf',
+    fileType = 'application/pdf'
+  ): void {
     const byteCharacters = atob(base64String);
     const byteArrays = [];
 
@@ -134,7 +170,7 @@ export class ApiService {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, { type:  fileType});
+    const blob = new Blob(byteArrays, { type: fileType });
     const url = window['URL'].createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -143,7 +179,11 @@ export class ApiService {
     window['URL'].revokeObjectURL(url);
   }
 
-  public DOWNLOADFROMBYTES(bytes: Uint8Array, fileName='file.pdf', fileType='application/pdf'): void {
+  public DOWNLOADFROMBYTES(
+    bytes: Uint8Array,
+    fileName = 'file.pdf',
+    fileType = 'application/pdf'
+  ): void {
     const blob = new Blob([bytes], { type: fileType });
     const url = window['URL'].createObjectURL(blob);
     const link = document.createElement('a');
@@ -151,20 +191,33 @@ export class ApiService {
     link.download = fileName;
     link.click();
     window['URL'].revokeObjectURL(url);
-}
+  }
 
-  FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
+  FILEUPLOAD<T>(
+    endpoint: string,
+    data: FormData,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL
+  ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
 
     const headers = new HttpHeaders()
       .set('Accept', 'application/json')
-      .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)));
+      .set(
+        'X-TenantId',
+        StringManipulation.returnNullIfEmpty(
+          this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+        )
+      );
 
     return this.http.post<T>(url, data, { headers });
   }
 
-  PUT<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+  PUT<T>(
+    endpoint: string,
+    data: any,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL
+  ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
@@ -172,11 +225,25 @@ export class ApiService {
     return this.http.put<T>(url, data, { headers });
   }
 
-  DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, data?: any): Observable<T> {
+  PATCH<T>(
+    endpoint: string,
+    data: any,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL
+  ): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    const url = `${this.baseURL}/${endpoint}`;
+    const headers = this.getHeaders();
+    return this.http.patch<T>(url, data, { headers });
+  }
+
+  DELETE<T>(
+    endpoint: string,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL,
+    data?: any
+  ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
     return this.http.delete<T>(url, { headers, body: data });
   }
-
 }

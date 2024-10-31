@@ -1,0 +1,103 @@
+<form [formGroup]="residentialDetailForm">
+  <div class="row g-3">
+    <div class="col-6">
+      <label for="country">{{ "entities.country" | translate }}</label>
+      <p-dropdown
+        [options]="countryData"
+        [(ngModel)]="selectedCountry"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Country"
+        formControlName="country"
+        id="country"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        (onChange)="onCountryChange()"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="state">{{ "entities.state" | translate }}</label>
+      <p-dropdown
+        [options]="statesData"
+        [(ngModel)]="selectedState"
+        optionLabel="name"
+        optionValue="id"
+        formControlName="state"
+        [style]="{ width: '100%', height: '50%' }"
+        name="city"
+        id="state"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        placeholder="state"
+        (onChange)="onCityChange()"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="town">{{ "entities.town" | translate }}</label>
+      <p-dropdown
+        [options]="townData"
+        optionLabel="name"
+        optionValue="id"
+        formControlName="town"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Town"
+        name="townCode"
+        id="town"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="postalAddress">{{
+        "entities.postal_address" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="postalAddress"
+        formControlName="postalAddress"
+      />
+    </div>
+    <div class="col-6">
+      <label for="postalCode">{{ "entities.postal_code" | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="postalCode"
+        formControlName="postalCode"
+      />
+    </div>
+    <div class="col-6">
+      <label for="physicalAddress">{{
+        "entities.physical_address" | translate
+      }}</label>
+      <input
+        type="text"
+        class="form-control"
+        id="physicalAddress"
+        formControlName="physicalAddress"
+      />
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>

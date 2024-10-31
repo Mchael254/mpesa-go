@@ -1,0 +1,125 @@
+<form [formGroup]="organizationDetailForm">
+  <div class="row g-3">
+    <div class="col-6">
+      <label for="assignedTo">{{ "entities.assigned_to" | translate }}</label>
+      <p-dropdown
+        [options]="assignedToData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Assigned To"
+        formControlName="assignedTo"
+        id="assignedTo"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="organization">{{
+        "entities.organization" | translate
+      }}</label>
+      <p-dropdown
+        [options]="organizationsData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="organization"
+        formControlName="organization"
+        id="organization"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="team">{{ "entities.team" | translate }}</label>
+      <p-dropdown
+        [options]="teamsData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="team"
+        formControlName="team"
+        id="team"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="system">{{ "entities.system" | translate }}</label>
+      <p-dropdown
+        [options]="systemsData"
+        (onChange)="onSystemChange($event.value)"
+        optionLabel="systemName"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="System"
+        formControlName="system"
+        id="system"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="product">{{ "entities.product" | translate }}</label>
+      <p-dropdown
+        [options]="productsData"
+        optionLabel="description"
+        optionValue="code"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Product"
+        formControlName="product"
+        id="product"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="accountName">{{ "entities.account_name" | translate }}</label>
+      <p-dropdown
+        [options]="accountsData"
+        optionLabel="name"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Account Name"
+        formControlName="accountName"
+        id="accountName"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>

@@ -45,22 +45,39 @@
       {{ "entities.assign_role" | translate }}
     </button>
   </div>
-  <div class="col-sm-2 mt-4">
-    <p>
-      WEF
-      <span class="ms-4 fw-bold">
-        {{ entityPartyIdDetails?.effectiveDateFrom | date }}
-      </span>
-    </p>
-  </div>
-  <div class="col-sm-2 mt-4">
-    <p>
-      WET
-      <span class="ms-4 fw-bold">
-        {{ entityPartyIdDetails?.effectiveDateTo | date }}
-      </span>
-    </p>
-  </div>
+  <ng-container
+    *ngIf="
+      partyAccountDetails?.partyType?.partyTypeName === 'Lead';
+      else wefWetFields
+    "
+  >
+    <div class="col-sm-2 mt-4">
+      <button class="btn btn-outline-primary btn-sm">Convert to Client</button>
+    </div>
+    <div class="col-sm-2 mt-4">
+      <button class="btn btn-outline-primary btn-sm">
+        Convert to Prospect
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #wefWetFields>
+    <div class="col-sm-2 mt-4">
+      <p>
+        WEF
+        <span class="ms-4 fw-bold">
+          {{ entityPartyIdDetails?.effectiveDateFrom | date }}
+        </span>
+      </p>
+    </div>
+    <div class="col-sm-2 mt-4">
+      <p>
+        WET
+        <span class="ms-4 fw-bold">
+          {{ entityPartyIdDetails?.effectiveDateTo | date }}
+        </span>
+      </p>
+    </div>
+  </ng-template>
   <div class="col-sm-2 mt-4">
     <p *ngIf="partyAccountDetails?.status">
       {{ "entities.status" | translate }}
@@ -94,6 +111,9 @@
             </span>
             <span *ngIf="partyAccountDetails?.serviceProviderDto?.category">
               {{ partyAccountDetails?.serviceProviderDto?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.leadDto">
+              {{ partyAccountDetails?.category }}
             </span>
           </th>
         </tr>
@@ -141,6 +161,9 @@
               "
             >
               {{ partyAccountDetails?.serviceProviderDto?.providerType?.name }}
+            </span>
+            <span *ngIf="partyAccountDetails?.leadDto">
+              {{ partyAccountDetails?.category }}
             </span>
           </th>
         </tr>

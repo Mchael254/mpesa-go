@@ -38,6 +38,14 @@ import { EditNokFormComponent } from './components/entity/view-entity/entity-oth
 import { ListLeadComponent } from './components/lead/list-lead/list-lead.component';
 import { NewLeadComponent } from './components/lead/new-lead/new-lead.component';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { EditPrimaryFormComponent } from './components/entity/view-entity/entity-other-details/edit-primary-form/edit-primary-form.component';
+import { EditContactFormComponent } from './components/entity/view-entity/entity-other-details/edit-contact-form/edit-contact-form.component';
+import { EditResidentialFormComponent } from './components/entity/view-entity/entity-other-details/edit-residential-form/edit-residential-form.component';
+import { EditOrganizationFormComponent } from './components/entity/view-entity/entity-other-details/edit-organization-form/edit-organization-form.component';
+import { EditOtherDetailsFormComponent } from './components/entity/view-entity/entity-other-details/edit-other-details-form/edit-other-details-form.component';
+import { EditCommentFormComponent } from './components/entity/view-entity/entity-other-details/edit-comment-form/edit-comment-form.component';
+import { EditActivityFormComponent } from './components/entity/view-entity/entity-other-details/edit-activity-form/edit-activity-form.component';
+import { EditLeadContactFormComponent } from './components/entity/view-entity/entity-other-details/edit-lead-contact-form/edit-lead-contact-form.component';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -66,6 +74,14 @@ import { MultiSelectModule } from 'primeng/multiselect';
     EditNokFormComponent,
     ListLeadComponent,
     NewLeadComponent,
+    EditPrimaryFormComponent,
+    EditContactFormComponent,
+    EditResidentialFormComponent,
+    EditOrganizationFormComponent,
+    EditOtherDetailsFormComponent,
+    EditCommentFormComponent,
+    EditActivityFormComponent,
+    EditLeadContactFormComponent,
   ],
   imports: [
     CommonModule,
