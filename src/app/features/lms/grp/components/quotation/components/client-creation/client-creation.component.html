@@ -18,7 +18,7 @@
         bdColor="rgba(255, 255, 255, 0.9)"
       ></ngx-spinner>
         <div>
-        <h5>Client details</h5>
+        <h5>{{ "lms.grp.quotation.client_creation.client_details" | translate }}</h5>
 
         <form [formGroup]="clientDetailsForm">
             <div class="row" style="padding-top: 10px;">
@@ -26,12 +26,12 @@
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" value="newClient" formControlName="clientType"
                             id="inlineRadio1" name="clientType" />
-                        <label class="form-check-label" for="inlineRadio1">New Client</label>
+                        <label class="form-check-label" for="inlineRadio1">{{ "lms.grp.quotation.client_creation.new_client" | translate }}</label>
                     </div>
                     <div class="form-check form-check-inline" id="moveToEnd">
                         <input class="form-check-input" type="radio" value="existingClient" formControlName="clientType"
                             id="inlineRadio2" name="clientType" checked />
-                        <label class="form-check-label" for="inlineRadio2">Existing Client</label>
+                        <label class="form-check-label" for="inlineRadio2">{{ "lms.grp.quotation.client_creation.existing_client" | translate }}</label>
                     </div>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                 <div class="col-md-4"  *ngIf="clientDetailsForm.get('clientType').value === 'newClient'">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Client name<span style="color: red;">*</span></label>
+                            <label for="clientName" style="color: black;">{{ "lms.grp.quotation.client_creation.client_name" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -52,7 +52,7 @@
                                     [style]="{ width: '100%' }"
                                     formControlName="clientName"
                                     [ngClass]="{'is-invalid': highlightInvalid('clientName')}">
-                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">New client name is required</div>
+                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.new_client_name_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
@@ -61,17 +61,17 @@
                 <div class="col-md-4"  *ngIf="clientDetailsForm.get('clientType').value === 'existingClient'">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Client name<span style="color: red;">*</span></label>
+                            <label for="clientName" style="color: black;">{{ "lms.grp.quotation.client_creation.client_name" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
                                 <div>
                                     <p-dropdown id='value' [options]='clientList' [optionLabel]="'label'" [dataKey]="'value'" [editable]="true"
-                                                [style]="{width: '100%', height: '37px', 'line-height': '10px' }" placeholder="Select or Type Client name"
+                                                [style]="{width: '100%', height: '37px', 'line-height': '10px' }" placeholder="{{ 'lms.grp.quotation.client_creation.select_or_type_client_name' | translate }}"
                                                 formControlName='clientName' class="select" #clientDropdown [showClear]="true"  (onClear)="onDropdownClear()"
                                                 [ngClass]="{'is-invalid': highlightInvalid('clientName')}">
                                     </p-dropdown>
-                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">Name is required</div>
+                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.name_is_required" | translate }}</div>
                                 </div>
                             </div>
                         </div> 
@@ -80,24 +80,24 @@
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="type" style="color: black;">Type<span style="color: red;">*</span></label>
+                        <label for="type" style="color: black;">{{ "lms.grp.quotation.client_creation.type" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'type'" formControlName="type" [ngClass]="{'is-invalid': highlightInvalid('type')}">
                           <option selected="true" disabled="disabled"></option>
                           <option *ngFor="let clientType of OrganizationClientType" [value]="clientType.code">{{ clientType.clientTypeName | titlecase }}</option>
                         </select>
-                        <div *ngIf="highlightInvalid('type')" class="invalid-feedback">Type is required</div>
+                        <div *ngIf="highlightInvalid('type')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.type_is_required" | translate }}</div>
                       </div>                      
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="status" style="color: black;">Status<span style="color: red;">*</span></label>
+                        <label for="status" style="color: black;">{{ "lms.grp.quotation.client_creation.status" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'status'" formControlName="status" [ngClass]="{'is-invalid': highlightInvalid('status')}">
                             <option selected="true" disabled="disabled"></option>
                             <option value="A">Active</option>
                             <option value="I">Inactive</option>
                         </select>
-                        <div *ngIf="highlightInvalid('status')" class="invalid-feedback">Status is required</div>
+                        <div *ngIf="highlightInvalid('status')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.status_is_required" | translate }}</div>
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="incorporationDate" style="color: black;">Incorporation date<span style="color: red;">*</span></label>
+                            <label for="incorporationDate" style="color: black;">{{ "lms.grp.quotation.client_creation.incorporation_date" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div >
@@ -118,19 +118,19 @@
                                             [maxDate]="maxDate"
                                             [ngClass]="{'is-invalid': highlightInvalid('incorporationDate')}">
                                 </p-calendar>
-                                <div *ngIf="highlightInvalid('incorporationDate')" class="invalid-feedback">Inc date is required</div>
+                                <div *ngIf="highlightInvalid('incorporationDate')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.inc_date_is_required" | translate }}</div>
                               </div>
                         </div>
                     </div>
                 </div>
                   <div class="col-md-4">
                       <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="modeOfIdentity" style="color: black;">Mode of Identity<span style="color: red;">*</span></label>
+                        <label for="modeOfIdentity" style="color: black;">{{ "lms.grp.quotation.client_creation.mode_of_identity" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'modeOfIdentity'" formControlName="modeOfIdentity" [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentity')}" (change)="onModeOfIdentitySelected($event)">
                             <option selected="true" disabled="disabled"></option>
                             <option *ngFor="let modeOfIdentity of identityType" [value]="modeOfIdentity.id">{{ modeOfIdentity.name | titlecase }}</option>
                         </select>
-                        <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">Identity mode is required</div>
+                        <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.identity_mode_is_required" | translate }}</div>
                     </div>
                     
                 </div>
@@ -138,7 +138,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="registrationNumber" style="color: black;">Registration number<span style="color: red;">*</span></label>
+                            <label for="registrationNumber" style="color: black;">{{ "lms.grp.quotation.client_creation.registration_number" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -164,7 +164,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="occupation" style="color: black;">Occupation<span style="color: red;">*</span></label>
+                            <label for="occupation" style="color: black;">{{ "lms.grp.quotation.client_creation.occupation" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div class="col-lg-12 col-md-12 col-sm-12">
@@ -174,7 +174,7 @@
                                         </option>
                                     </ng-container>
                                 </select>
-                                <div *ngIf="highlightInvalid('occupation')" class="invalid-feedback">Occupation is required</div>
+                                <div *ngIf="highlightInvalid('occupation')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.occupation_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="pinNumber" style="color: black;">Pin number<span style="color: red;">*</span></label>
+                            <label for="pinNumber" style="color: black;">{{ "lms.grp.quotation.client_creation.pin_number" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -194,19 +194,19 @@
                                     [style]="{ width: '100%' }"
                                     formControlName="pinNumber"
                                     [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}">
-                                    <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">PIN no is required</div>
+                                    <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.pin_no_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div style="padding-top: 60px;"><h5>Contact information</h5></div>
+            <div style="padding-top: 60px;"><h5>{{ "lms.grp.quotation.client_creation.contact_information" | translate }}</h5></div>
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                            <label for="phoneNumber" style="color: black;">{{ "lms.grp.quotation.client_creation.phone_number" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -218,7 +218,7 @@
                                     [style]="{ width: '100%' }"
                                     formControlName="phoneNumber"
                                     [ngClass]="{'is-invalid': highlightInvalid('phoneNumber')}">
-                                    <div *ngIf="highlightInvalid('phoneNumber')" class="invalid-feedback">Phone no is required</div>
+                                    <div *ngIf="highlightInvalid('phoneNumber')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.phone_no_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
+                            <label for="email" style="color: black;">{{ "lms.grp.quotation.client_creation.email" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -239,7 +239,7 @@
                                     [style]="{ width: '100%' }"
                                     formControlName="email"
                                     [ngClass]="{'is-invalid': highlightInvalid('email')}">
-                                    <div *ngIf="highlightInvalid('email')" class="invalid-feedback">Email is required</div>
+                                    <div *ngIf="highlightInvalid('email')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.email_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
@@ -248,7 +248,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="address" style="color: black;">Physical address<span style="color: red;">*</span></label>
+                            <label for="address" style="color: black;">{{ "lms.grp.quotation.client_creation.physical_address" | translate }}<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -260,7 +260,7 @@
                                     [style]="{ width: '100%' }"
                                     formControlName="address"
                                     [ngClass]="{'is-invalid': highlightInvalid('address')}">
-                                    <div *ngIf="highlightInvalid('address')" class="invalid-feedback">Address is required</div>
+                                    <div *ngIf="highlightInvalid('address')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.address_is_required" | translate }}</div>
                             </div>
                         </div>
                     </div>
@@ -270,49 +270,49 @@
             <div class="row row-spacing">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="country" style="color: black;">Country<span style="color: red;">*</span></label>
+                        <label for="country" style="color: black;">{{ "lms.grp.quotation.client_creation.country" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'country'" formControlName="country" (change)="selectCountry($event)"
                         [ngClass]="{'is-invalid': highlightInvalid('country')}">
                             <option *ngFor="let data of countryList | sort : 'asc' : 'name'" [value]="data?.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
-                        <div *ngIf="highlightInvalid('country')" class="invalid-feedback">Country is required</div>
+                        <div *ngIf="highlightInvalid('country')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.country_is_required" | translate }}</div>
                     </div>
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="county" style="color: black;">County/State<span style="color: red;">*</span></label>
+                        <label for="county" style="color: black;">{{ "lms.grp.quotation.client_creation.county_or_state" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'county'" formControlName="county" (change)="selectState($event)"
                         [ngClass]="{'is-invalid': highlightInvalid('county')}">
                             <option *ngFor="let data of stateList | sort : 'asc' : 'name'" [value]="data?.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
-                        <div *ngIf="highlightInvalid('county')" class="invalid-feedback">County/State is required</div>
+                        <div *ngIf="highlightInvalid('county')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.county_state_is_required" | translate }}</div>
                     </div>
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="city" style="color: black;">City/Town<span style="color: red;">*</span></label>
+                        <label for="city" style="color: black;">{{ "lms.grp.quotation.client_creation.city_or_town" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'city'" formControlName="city" [ngClass]="{'is-invalid': highlightInvalid('city')}">
                             <option *ngFor="let data of townList | sort : 'asc' : 'name'" [value]="data.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
-                        <div *ngIf="highlightInvalid('city')" class="invalid-feedback">City is required</div>
+                        <div *ngIf="highlightInvalid('city')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.city_is_required" | translate }}</div>
                     </div>
                 </div>
             </div>
 
-            <div style="padding-top: 60px;"><h5>Other details</h5></div>
+            <div style="padding-top: 60px;"><h5>{{ "lms.grp.quotation.client_creation.other_details" | translate }}</h5></div>
 
             <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="affiliatedToInsurer" style="color: black;">Affiliated to the insurer</label>
+                        <label for="affiliatedToInsurer" style="color: black;">{{ "lms.grp.quotation.client_creation.affiliated_to_insurer" | translate }}</label>
                         <select class="form-select" [id]="'affiliatedToInsurer'" formControlName="affiliatedToInsurer">
                             <option selected="true" disabled="disabled"></option>
                             <option value="Y">Yes</option>
@@ -323,14 +323,14 @@
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="representation" style="color: black;">Representation<span style="color: red;">*</span></label>
+                        <label for="representation" style="color: black;">{{ "lms.grp.quotation.client_creation.representation" | translate }}<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'representation'" formControlName="representation"
                         [ngClass]="{'is-invalid': highlightInvalid('representation')}">
                             <option selected="true" disabled="disabled"></option>
                             <option value="C">Direct</option>
                             <option value="I">Indirect</option>
                         </select>
-                        <div *ngIf="highlightInvalid('representation')" class="invalid-feedback">Representation is required</div>
+                        <div *ngIf="highlightInvalid('representation')" class="invalid-feedback">{{ "lms.grp.quotation.client_creation.representation_is_required" | translate }}</div>
                     </div>
                 </div>
             </div>
@@ -346,28 +346,28 @@
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Administrators
+              {{ "lms.grp.quotation.client_creation.administrators" | translate }}
             </button>
           </h2>
           <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 <div class="multiselect-add">
-                    <button class="btn btn-success rounded-circle" (click)="showAdminDetailsModal()">&plus;</button>
+                    <button class="btn btn-success rounded-circle" (click)="showAdminDetailsModal()">+</button>
                     <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
                     </p-multiSelect>
                   </div>
                 <p-table [value]="administratorDetails" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '30rem'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th *ngIf="selectedColumns.includes('contact_person_name')">Name</th>
-                            <th *ngIf="selectedColumns.includes('date_of_birth')">Date of birth</th>
-                            <th *ngIf="selectedColumns.includes('identification_number')">ID number</th>
-                            <th *ngIf="selectedColumns.includes('position')">Position</th>
-                            <th *ngIf="selectedColumns.includes('contact_person_physical_address')">Physical address</th>
-                            <th *ngIf="selectedColumns.includes('phone_number')">Contact</th>
-                            <th *ngIf="selectedColumns.includes('contact_person_email')">Email</th>
-                            <th *ngIf="selectedColumns.includes('wef')">With effect from</th>
-                            <th *ngIf="selectedColumns.includes('wet')">With effect to</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_name')">{{ "lms.grp.quotation.client_creation.name" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('date_of_birth')">{{ "lms.grp.quotation.client_creation.date_of_birth" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('identification_number')">{{ "lms.grp.quotation.client_creation.identification_number" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('position')">{{ "lms.grp.quotation.client_creation.position" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_physical_address')">{{ "lms.grp.quotation.client_creation.physical_address" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('phone_number')">{{ "lms.grp.quotation.client_creation.phone_number" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_email')">{{ "lms.grp.quotation.client_creation.email" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('wef')">{{ "lms.grp.quotation.client_creation.with_effect_from" | translate }}</th>
+                            <th *ngIf="selectedColumns.includes('wet')">{{ "lms.grp.quotation.client_creation.with_effect_to" | translate }}</th>
                             <th class="action-column"></th>
                         </tr>
                     </ng-template>
@@ -389,13 +389,13 @@
                                             <div class="action-buttons">
                                                 <!-- Edit button -->
                                                 <div class="button-wrapper">
-                                                    <p-button label="Edit" icon="pi pi-pencil" (click)="showEditAdminDetailsModal(item)"
+                                                    <p-button label="{{ 'lms.grp.quotation.client_creation.edit' | translate }}" icon="pi pi-pencil" (click)="showEditAdminDetailsModal(item)"
                                                         styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
                                                 </div>
                                             
                                                 <!-- Delete button -->
                                                 <div class="button-wrapper">
-                                                    <p-button label="Delete" icon="pi pi-trash" (click)="deleteAdminDetails(item, $event)"
+                                                    <p-button label="{{ 'lms.grp.quotation.client_creation.delete' | translate }}" icon="pi pi-trash" (click)="deleteAdminDetails(item, $event)"
                                                         styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
                                                 </div>
                                             </div>
@@ -428,7 +428,7 @@
 </div> -->
 <div class="button-cont">
     <button type="button" class="btn btn-primary button"
-        (click)="createAdmin ? continueAfterAddingAdmin() : onContinue()">Continue
+        (click)="createAdmin ? continueAfterAddingAdmin() : onContinue()">{{ "lms.grp.quotation.client_creation.continue" | translate }}
     </button>
 </div>
 </div>
@@ -439,7 +439,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="adminDetailsModal">Capture administrator details</h5>
+        <h5 class="modal-title" id="adminDetailsModal">{{ "lms.grp.quotation.client_creation.capture_administrator_details" | translate }}</h5>
         <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
         (click)="closeAdminDetailsModal()"></button>
       </div>
@@ -449,7 +449,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="name" style="color: black;">Name<span style="color: red;">*</span></label>
+                        <label for="name" style="color: black;">{{ "lms.grp.quotation.client_creation.name" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -468,7 +468,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="position" style="color: black;">Position<span style="color: red;">*</span></label>
+                        <label for="position" style="color: black;">{{ "lms.grp.quotation.client_creation.position" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -489,7 +489,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="col-lg-12 col-md-12 col-sm-12">
-                    <label for="gender" style="color: black;">Gender<span style="color: red;">*</span></label>
+                    <label for="gender" style="color: black;">{{ "lms.grp.quotation.client_creation.gender" | translate }}<span style="color: red;">*</span></label>
                     <select class="form-select" [id]="'gender'" formControlName="gender">
                         <option selected="true" disabled="disabled"></option>
                     <option value="M">Male</option>
@@ -501,7 +501,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="dob" style="color: black;">Date of birth<span style="color: red;">*</span></label>
+                        <label for="dob" style="color: black;">{{ "lms.grp.quotation.client_creation.date_of_birth" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -518,7 +518,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="col-lg-12 col-md-12 col-sm-12">
-                    <label for="identificationType" style="color: black;">Identification type<span style="color: red;">*</span></label>
+                    <label for="identificationType" style="color: black;">{{ "lms.grp.quotation.client_creation.identification_type" | translate }}<span style="color: red;">*</span></label>
                     <select class="form-select" [id]="'identificationType'" formControlName="identificationType">
                       <option selected="true" disabled="disabled"></option>
                       <option *ngFor="let modeOfIdentity of identityType" [value]="modeOfIdentity.id">{{ modeOfIdentity.name | titlecase }}</option>
@@ -529,7 +529,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="IdentificationNumber" style="color: black;">Identification number<span style="color: red;">*</span></label>
+                        <label for="IdentificationNumber" style="color: black;">{{ "lms.grp.quotation.client_creation.identification_number" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -551,7 +551,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="address" style="color: black;">Physical address</label>
+                        <label for="address" style="color: black;">{{ "lms.grp.quotation.client_creation.physical_address" | translate }}</label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -570,7 +570,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                        <label for="phoneNumber" style="color: black;">{{ "lms.grp.quotation.client_creation.phone_number" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -591,7 +591,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
+                        <label for="email" style="color: black;">{{ "lms.grp.quotation.client_creation.email" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -610,7 +610,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="wef" style="color: black;">With effect from<span style="color: red;">*</span></label>
+                        <label for="wef" style="color: black;">{{ "lms.grp.quotation.client_creation.with_effect_from" | translate }}<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -628,7 +628,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="wet" style="color: black;">With effect to</label>
+                        <label for="wet" style="color: black;">{{ "lms.grp.quotation.client_creation.with_effect_to" | translate }}</label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -644,7 +644,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"
-        (click)="isEditMode ? editAdminDetails() : onSaveAdminDets()">Save</button>
+        (click)="isEditMode ? editAdminDetails() : onSaveAdminDets()">{{ "lms.grp.quotation.client_creation.save" | translate }}</button>
       </div>
     </div>
   </div>
