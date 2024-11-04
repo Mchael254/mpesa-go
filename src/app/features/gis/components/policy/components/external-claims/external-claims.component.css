@@ -20,10 +20,10 @@
 #icon i {
     color: #00529B;
 }
-.modalTitle {
-    font-weight: 700;
-    font-size: 14px;
-    color: #000;
+#modalTitle {
+    font-weight: 500;
+    font-size: 17px;
+    color: #00529B;
 }
 .subheading {
     font-family: Roboto;

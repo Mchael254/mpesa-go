@@ -28,6 +28,7 @@ import { PolicyClausesDetailsComponent } from './components/policy-clauses-detai
 import { PolicyLevelPerilsComponent } from './components/policy-level-perils/policy-level-perils.component';
 import { PolicyTaxesComponent } from './components/policy-taxes/policy-taxes.component';
 import { PolicySubclasessClausesComponent } from './components/policy-subclasess-clauses/policy-subclasess-clauses.component';
+import { ExternalClaimsComponent } from './components/external-claims/external-claims.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -44,6 +45,7 @@ import { PolicySubclasessClausesComponent } from './components/policy-subclasess
     PolicyLevelPerilsComponent,
     PolicyTaxesComponent,
     PolicySubclasessClausesComponent,
+    ExternalClaimsComponent,
   ],
   imports: [
     CommonModule,

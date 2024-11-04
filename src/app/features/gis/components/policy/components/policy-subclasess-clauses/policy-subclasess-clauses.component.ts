@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
+import { PolicyResponseDTO, PolicyContent, SubclassesClauses, SelectedSubclassClause } from '../../data/policy-dto';
 import { PolicyService } from '../../services/policy.service';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 
@@ -26,15 +26,19 @@ export class PolicySubclasessClausesComponent {
   errorMessage: string;
   errorOccurred: boolean;
   productClauseList: any;
-  // selectedPolicyClause: any;
-  selectedPolicyClause: any = {};  // Initialize as an empty object
+  selectedPolicyClause: any;
+  selectedPolicyClauses: any = {};  // Initialize as an empty object
 
   modalHeight: number = 200;
   policyClausesDetailsForm: FormGroup;
   editPolicySubclassesClausesDetailsForm: FormGroup;
-  selectedPolicySubclassClauses: any;
+  selectedPolicySubclassClause: any;
+  selectedSubclassClauses: SelectedSubclassClause[] = [];
+
+
   policySubclassesClausesDetailsForm: FormGroup;
   policySubclassClauses: any;
+  addedPolicySubclassClauses: any;
 
 
 
@@ -80,6 +84,8 @@ export class PolicySubclasessClausesComponent {
           // }
           if (this.policyDetailsData){
             this.fetchSubclassClauses();
+            this.fetchAddedPolicySubclassClauses();
+
           }
           this.cdr.detectChanges();
 
@@ -98,8 +104,8 @@ export class PolicySubclasessClausesComponent {
     selectedClause.showHelperModal = true;
   }
   openPolicySubclassesVlauseDeleteModal() {
-    log.debug("Selected Policy Tax", this.selectedPolicySubclassClauses)
-    if (!this.selectedPolicySubclassClauses) {
+    log.debug("Selected Policy Tax", this.selectedPolicySubclassClause)
+    if (!this.selectedPolicySubclassClause) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a clause to continue');
     } else {
       document.getElementById("openModalPolicySubclassesClauseButtonDelete").click();
@@ -121,61 +127,108 @@ export class PolicySubclasessClausesComponent {
       subclassCode: ['']
     });
   }
-  addPolicySubclassClause() {
+  addPolicySubclassClauses() {
+    this.selectedSubclassClauses.forEach((clause) => {
+      this.addPolicySubclassClause(clause);
+    });
     
-    this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('clauseType').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('code').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('editable').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedPolicyClause);
+  }
+  addPolicySubclassClause(clause: SelectedSubclassClause) {
+    // Populate form fields for each clause
+    this.policySubclassesClausesDetailsForm.get('clause').setValue(clause.wording);
+    this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(clause.code);
+    this.policySubclassesClausesDetailsForm.get('clauseType').setValue(clause.clauseType);
+    this.policySubclassesClausesDetailsForm.get('code').setValue(clause.code);
+    this.policySubclassesClausesDetailsForm.get('editable').setValue(clause.editable);
+    this.policySubclassesClausesDetailsForm.get('heading').setValue(clause.heading);
+    this.policySubclassesClausesDetailsForm.get('description').setValue(clause.shortDescription);
     this.policySubclassesClausesDetailsForm.get('policyBatchNumber').setValue(this.batchNo);
     this.policySubclassesClausesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo);
-    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedPolicyClause);
-   
-
+    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(clause.subClassCode);
+    this.policySubclassesClausesDetailsForm.get('isNew').setValue("y");
+  
     const createPolicySubclassesClauseForm = this.policySubclassesClausesDetailsForm.value;
-    log.debug("Add Policy Clauses Form:", createPolicySubclassesClauseForm)
-
-
+    log.debug("Add Policy subclass Clauses Form:", createPolicySubclassesClauseForm);
+  
+    // Service call for each clause
     this.policyService
       .createPolicySubclassesClause(createPolicySubclassesClauseForm)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          // this.policyTaxesResponse = response._embedded
-          log.debug("Response after adding Policy subclass clause:", response)
-          log.debug("POLICY Subclasses clauses", this.policySubclassClauses)
-         
-
-          // this.policyTaxes.push(this.selectedApplicableTax);
-          // log.debug("POLICY TAXES after adding", this.policyTaxes)
-          // this.closebutton.nativeElement.click();
-          this.globalMessagingService.displaySuccessMessage('Success', 'Policy Subclasses clauses details added successfully');
-
-
+          log.debug("Response after adding Policy subclass clause:", response);
+          this.fetchAddedPolicySubclassClauses();
+          this.globalMessagingService.displaySuccessMessage(
+            'Success', 
+            `Policy Subclasses clause ${clause.shortDescription} added successfully`
+          );
         },
         error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy Subclasses clauses details.Try again later');
+          console.error("Failed to add policy Subclasses clause:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error', 
+            `Failed to add policy Subclasses clause ${clause.shortDescription}. Try again later`
+          );
         }
       });
-  } 
+  }
+  // addPolicySubclassClause() {
+
+  //   this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedSubclassClause.shortDescription);
+  //   this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(this.selectedSubclassClause.code);
+  //   this.policySubclassesClausesDetailsForm.get('clauseType').setValue(this.selectedSubclassClause.clauseType);
+  //   this.policySubclassesClausesDetailsForm.get('code').setValue(this.selectedSubclassClause.code);
+  //   this.policySubclassesClausesDetailsForm.get('editable').setValue(this.selectedSubclassClause.editable);
+  //   this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedSubclassClause.heading);
+  //   this.policySubclassesClausesDetailsForm.get('policyBatchNumber').setValue(this.batchNo);
+  //   this.policySubclassesClausesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo);
+  //   this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedSubclassClause.subClassCode);
+   
+  //   const createPolicySubclassesClauseForm = this.policySubclassesClausesDetailsForm.value;
+
+  //   log.debug("Add Policy subclass Clauses Form:", createPolicySubclassesClauseForm)
+
+
+  //   this.policyService
+  //     .createPolicySubclassesClause(createPolicySubclassesClauseForm)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (response: any) => {
+  //         // this.policyTaxesResponse = response._embedded
+  //         log.debug("Response after adding Policy subclass clause:", response)
+  //         log.debug("POLICY Subclasses clauses", this.policySubclassClauses)
+         
+
+  //         // this.policyTaxes.push(this.selectedApplicableTax);
+  //         // log.debug("POLICY TAXES after adding", this.policyTaxes)
+  //         // this.closebutton.nativeElement.click();
+  //         this.globalMessagingService.displaySuccessMessage('Success', 'Policy Subclasses clauses details added successfully');
+
+
+  //       },
+  //       error: (error) => {
+
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy Subclasses clauses details.Try again later');
+  //       }
+  //     });
+  // } 
   editPolicySubclassClause() {
-    
-    this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('clauseType').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('code').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('editable').setValue(this.selectedPolicyClause);
-    this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedPolicyClause);
+    log.debug("SELECTED SUBCLASS CLAUSES",this.selectedPolicySubclassClause)
+    this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedPolicySubclassClause.heading);
+    this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(this.selectedPolicySubclassClause.clauseCode);
+    this.policySubclassesClausesDetailsForm.get('clauseType').setValue(this.selectedPolicySubclassClause.clauseType);
+    this.policySubclassesClausesDetailsForm.get('code').setValue(this.selectedPolicySubclassClause.clauseCode);
+    this.policySubclassesClausesDetailsForm.get('editable').setValue(this.selectedPolicySubclassClause.editable);
+    this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedPolicySubclassClause.heading);
+    this.policySubclassesClausesDetailsForm.get('description').setValue(this.selectedPolicySubclassClause.shortDescription);
     this.policySubclassesClausesDetailsForm.get('policyBatchNumber').setValue(this.batchNo);
     this.policySubclassesClausesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo);
-    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedPolicyClause);
+    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedPolicySubclassClause.subClassCode);
+    this.policySubclassesClausesDetailsForm.get('isNew').setValue("y");
    
 
     const createPolicySubclassesClauseForm = this.policySubclassesClausesDetailsForm.value;
-    log.debug("Add Policy Clauses Form:", createPolicySubclassesClauseForm)
+    log.debug("edit Policy Clauses Form:", createPolicySubclassesClauseForm)
 
 
     this.policyService
@@ -201,10 +254,14 @@ export class PolicySubclasessClausesComponent {
         }
       });
   }
-  deletePolicyTaxes() {
-    log.debug("Selected Policy Subclass clauses", this.selectedPolicySubclassClauses)
+  deletePolicySubclassClause() {
+    log.debug("Selected Policy Subclass clauses", this.selectedPolicySubclassClause)
+    const batchNo = parseInt(this.batchNo)
+    const code = parseInt(this.selectedPolicySubclassClause.clauseCode)
+    const clauseCode = parseInt(this.selectedPolicySubclassClause.clauseCode)
+    const subclassCode = parseInt(this.selectedPolicySubclassClause.subclassCode)
     this.policyService
-      .deletePolicySubclassesClause(this.selectedPolicySubclassClauses.code, this.batchNo,this.selectedPolicySubclassClauses.clauseCode, this.policyDetailsData.policyNo, this.selectedPolicySubclassClauses.subclassCode)
+      .deletePolicySubclassesClause(code, batchNo, clauseCode,this.policyDetailsData.policyNo, subclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -213,12 +270,12 @@ export class PolicySubclasessClausesComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted policy subclass clause')
 
           // Remove the deleted policy subclass clause from the policy subclass clause Details array 
-          // const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
-          // if (index !== -1) {
-          //   this.filteredPolicyTaxes.splice(index, 1);
-          // }
+          const index = this.addedPolicySubclassClauses.findIndex(clause => clause.clauseCode === this.selectedPolicySubclassClause.clauseCode);
+          if (index !== -1) {
+            this.addedPolicySubclassClauses.splice(index, 1);
+          }
           // Clear the selected subclass clause
-          this.selectedPolicySubclassClauses = null;
+          this.selectedPolicySubclassClause = null;
 
         },
         error: (error) => {
@@ -245,4 +302,50 @@ export class PolicySubclasessClausesComponent {
         }
       })
   }
+  OnSelectSubclassClause(subclassClause: any) {
+    log.debug(" Selected subclass clause", subclassClause)
+    this.selectedSubclassClauses = subclassClause;
+   
+    // if (this.selectedSubclassClause) {
+    //   this.addPolicySubclassClause()
+    // }
+  }
+  fetchAddedPolicySubclassClauses() {
+    this.policyService
+      .fetchAddedPolicySubclassClauses(this.policyDetailsData.batchNo, this.policyDetailsData.policyNo)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          
+          this.addedPolicySubclassClauses = response._embedded; 
+          log.debug('Added Policy Subclass clause List:', this.addedPolicySubclassClauses);
+
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch  added policy subclass clauses list.Try again later');
+        }
+      })
+  }
+  openSubclassClauseEditModal() {
+    log.debug("Selected Policy Subclass Clause", this.selectedPolicySubclassClause)
+    if (!this.selectedPolicySubclassClause) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Subclass clause to continue');
+    } else {
+      document.getElementById("openSubclassClauseModalButtonEdit").click();
+    
+
+    }
+  }
+  onEditPolicySubclassClause(subclassClause: any) {
+    this.selectedPolicySubclassClause = subclassClause;
+    log.debug("Selected Policy Subclass to edit",this.selectedPolicySubclassClause)
+    this.policySubclassesClausesDetailsForm.patchValue({
+      heading: this.selectedPolicySubclassClause.heading,
+      clause: subclassClause.clause,
+      // Patch other fields if needed
+    });
+  }
+
 }

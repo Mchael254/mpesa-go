@@ -19,11 +19,18 @@
                                 </button>
                             </div>
                             <div class="col-4">
-                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                <!-- <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#editPolicySubclassClauses" title="Edit">
                                     <i class="fa-solid fa-pencil"></i>
-                                </button>
+                                </button> -->
 
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    id="openSubclassClauseModalButtonEdit" [hidden]="true"
+                                    data-bs-target="#editPolicySubclassClauses" title="Edit">
+                                </button>
+                                <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                                    <i class="fa-solid fa-pencil" (click)="openSubclassClauseEditModal()"></i>
+                                </button>
 
                             </div>
                             <div class="col-4">
@@ -32,7 +39,8 @@
                                     data-bs-target="#deletePolicySubclassClauses" title="Delete">
                                 </button>
                                 <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                                    <i class="fa-solid fa-trash-can" (click)="openPolicySubclassesVlauseDeleteModal()"></i>
+                                    <i class="fa-solid fa-trash-can"
+                                        (click)="openPolicySubclassesVlauseDeleteModal()"></i>
                                 </button>
 
                             </div>
@@ -46,13 +54,14 @@
 
             </div>
         </div>
-        <p-table dataKey="code" selectionMode="single" editMode="row" [tableStyle]="{'min-width': '50rem'}"
-            responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
-            class='ui-datatable' currentPageReportTemplate=" {first} - {last} of {totalRecords}">
+
+        <p-table [value]="addedPolicySubclassClauses" dataKey="clauseCode" selectionMode="single"
+            [(selection)]="selectedPolicySubclassClause" [tableStyle]="{'min-width': '50rem'}" responsiveLayout="scroll"
+            [autoLayout]="true" [paginator]="true" [rows]="5" [showCurrentPageReport]="true" class='ui-datatable'
+            currentPageReportTemplate="{first} - {last} of {totalRecords}">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
                     <th>Header</th>
                     <th>Wording</th>
                     <th>Condition type</th>
@@ -60,89 +69,66 @@
                     <th>{{'gis.quotation.editable' | translate}}</th>
                     <th>Subclass</th>
                     <th></th>
-
+                    <th></th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-productClauseList let-editing="editing" let-ri="rowIndex">
 
-                <tr>
-                    <!-- <td>
-          <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
-      </td> -->
-
-                    <td class="flexible-header" style=" white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          overflow-y: auto;
-          max-width: 250px;" pTooltip="{{productClauseList.heading }}" tooltipPosition="top">
-                        <p-cellEditor>
-                            <ng-template pTemplate="input">
-                                <input pInputText type="text" [(ngModel)]="productClauseList.heading"
-                                    class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                                {{productClauseList.heading}}
-                            </ng-template>
-                        </p-cellEditor>
+            <ng-template pTemplate="body" let-addedPolicySubclassClause let-ri="rowIndex">
+                <tr [pSelectableRow]="addedPolicySubclassClause"
+                    [class.p-highlight]="addedPolicySubclassClause === selectedPolicySubclassClause"
+                    (click)="onEditPolicySubclassClause(selectedPolicySubclassClause)">
+                    <td class="flexible-header"
+                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-y: auto; max-width: 250px;"
+                        pTooltip="{{addedPolicySubclassClause.heading }}" tooltipPosition="top">
+                        {{addedPolicySubclassClause.heading}}
                     </td>
                     <td class="flexible-header"
                         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                        <p-cellEditor>
-                            <ng-template pTemplate="input">
-                                <input pInputTextarea type="text" rows="5" cols="30"
-                                    [(ngModel)]="productClauseList.wording" class="form-control form-control-sm"
-                                    [ngModelOptions]="{standalone: true}">
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                                {{productClauseList.wording}}
-                            </ng-template>
-                            <!-- Helper icon added next to the wording column -->
-                        </p-cellEditor>
+                        {{addedPolicySubclassClause.wording}}
                     </td>
                     <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
+                    <td class="flexible-header">{{addedPolicySubclassClause.isNew}}</td>
+                    <td class="flexible-header">{{addedPolicySubclassClause.editable}}</td>
+                    <td class="flexible-header">{{addedPolicySubclassClause.subClassDescription}}</td>
                     <td class="flexible-header">
-
-                        <button pButton pRipple type="button" (click)="openHelperModal(productClauseList)"
+                        <button pButton pRipple type="button" (click)="openHelperModal(addedPolicySubclassClause)"
                             icon="pi pi-info-circle" class="p-button-rounded p-button-text">
                         </button>
                     </td>
-
-                    <!-- <td *ngIf="selectedClauseList.is_editable  !== 'Y'"
-                    style="padding-left: 24px;">
-                    -- </td> -->
                     <td class="flexible-header">
-                        <div class="flex align-items-center justify-content-center gap-2">
-                            <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                                class="p-button-rounded p-button-text"></button>
-
-                            <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                                class="p-button-rounded p-button-text p-button-success mr-2"></button>
-                            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
-                                class="p-button-rounded p-button-text p-button-danger"></button>
-                        </div>
+                        <div class="flex align-items-center justify-content-center gap-2"></div>
                     </td>
-
                 </tr>
                 <!-- Modal for each row -->
-                <p-dialog [(visible)]="selectedPolicyClause.showHelperModal" [modal]="false"
+                <p-dialog [(visible)]="selectedPolicySubclassClause.showHelperModal" [modal]="false"
                     [style]="{ 'width': '700px'}">
-                    <ng-container *ngIf="selectedPolicyClause">
+                    <ng-container *ngIf="selectedPolicySubclassClause">
                         <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
                             (onResize)="onResize($event)">
-                            <p>{{ selectedPolicyClause.wording }}</p>
+                            <p>{{ selectedPolicySubclassClause.wording }}</p>
                         </div>
                     </ng-container>
                 </p-dialog>
             </ng-template>
+
         </p-table>
+
+        <!-- 
+<p-dialog [(visible)]="selectedPolicySubclassClause.showHelperModal" [modal]="false"
+          [style]="{ 'width': '700px'}">
+    <ng-container *ngIf="selectedPolicySubclassClause">
+        <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
+            <p>{{ selectedPolicySubclassClause.wording }}</p>
+        </div>
+    </ng-container>
+</p-dialog> -->
+
 
 
         <!-- Add Policy Clauses  Modal -->
         <div class="modal fade" id="addPolicySubclassClauses" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered ">
                 <div class="modal-content">
 
                     <div class="modal-body">
@@ -152,9 +138,10 @@
                             Select a clause
                         </p>
                         <p-table #dt1 [value]="policySubclassClauses" [tableStyle]="{'max-width': '465px'}"
-                            [(selection)]="selectedPolicyClause" [resizableColumns]="true" styleClass="p-datatable-sm"
-                            responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="true"
-                            [rows]="5" [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
+                            [(selection)]="selectedSubclassClauses" [resizableColumns]="true"
+                            styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable'
+                            [autoLayout]="true" [paginator]="true" [rows]="5" [scrollable]="true"
+                            scrollDirection="horizontal" [showCurrentPageReport]="true"
                             currentPageReportTemplate=" {first} - {last} of {totalRecords}"
                             [globalFilterFields]="['idNumber', 'emailAddress','lastName','emailAddress']">
 
@@ -162,17 +149,20 @@
 
                                 <tr id="product">
                                     <!-- <th></th> -->
-                                    <th>Select</th>
-                                    <th>Short desc</th>
-                                    <th>Heading</th>
-                                    <th>Subclass</th>
+                                    <th class="flexible-header">Select</th>
+                                    <th class="flexible-header">Short desc</th>
+                                    <th class="flexible-header">Heading</th>
+                                    <th class="flexible-header">Subclass</th>
 
                                 </tr>
                             </ng-template>
 
 
                             <ng-template pTemplate="body" let-policySubclassClauses>
-                                <tr>
+                                <tr [pSelectableRow]="policySubclassClauses"
+                                    [class.p-highlight]="policySubclassClauses === selectedSubclassClauses"
+                                    (click)="OnSelectSubclassClause(selectedSubclassClauses)">
+
 
                                     <td>
                                         <p-tableCheckbox [value]="policySubclassClauses" />
@@ -189,7 +179,8 @@
 
 
                     <div class="d-flex justify-content-end mt-4 mb-4">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="addPolicySubclassClause()">{{'crm.save_details' |
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            (click)="addPolicySubclassClauses()">{{'crm.save_details' |
                             translate}}</button>
                     </div>
 
@@ -208,35 +199,33 @@
                         <p class="modalTitle ms-2" id="selectClient">
                             Edit clause
                         </p>
-                       
-                    <form [formGroup]="editPolicySubclassesClausesDetailsForm">
 
-                        <!-- <h5 class="modal-title mt-2 mb-2 ms-2"
+                        <form [formGroup]="policySubclassesClausesDetailsForm">
+
+                            <!-- <h5 class="modal-title mt-2 mb-2 ms-2"
                             id="editRemarkDetailsLabel">{{'gis.policy.edit_remarks'
                             |
                             translate}} </h5> -->
 
-                        <label for="remark" class="ms-2" id="remarkDescription">
-                           Clause</label>
-                           <input type="text"
-                           id="scheduleInput"
-                           class="form-control form-control-sm ms-2"
-                           formControlName="registrationNumber">
-                   
-                    <label for="remark" class="ms-2" id="remarkDescription">
-                       Wording</label>
-                     <textarea class="row ms-2 " id="remark" rows="5" 
-                     style="width: 100%;" pInputTextarea formControlName="schedule">
+                            <label for="remark" class="ms-2" id="remarkDescription">
+                                Clause</label>
+                            <input type="text" id="scheduleInput" class="form-control form-control-sm ms-2"
+                                formControlName="heading">
+
+                            <label for="remark" class="ms-2" id="remarkDescription">
+                                Wording</label>
+                            <textarea class="row ms-2 " id="remark" rows="5" style="width: 100%;" pInputTextarea
+                                formControlName="clause">
                  </textarea>
-                    </form>
+                        </form>
 
                     </div>
 
 
                     <div class="d-flex justify-content-end mt-4 mb-4">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" >{{'crm.save_details' |
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="editPolicySubclassClause()">{{'crm.save_details' |
                             translate}}</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
                     </div>
 
                 </div>
@@ -251,8 +240,8 @@
                         <p class="deleteMessage mt-4 mb-4">
                             {{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
                         <div class="d-flex justify-content-center mb-3">
-                            <button type="button" class="btn btn-primary px-5" id="delete"
-                                data-bs-dismiss="modal" (click)="deletePolicyTaxes()">{{'gis.policy.yes_delete' |
+                            <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                                (click)="deletePolicySubclassClause()">{{'gis.policy.yes_delete' |
                                 translate}}</button>
                         </div>
                         <div class="d-flex justify-content-center mb-2">
