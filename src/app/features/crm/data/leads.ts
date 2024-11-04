@@ -1,6 +1,5 @@
 export interface Leads {
   accountCode: number;
-  activityCodes: [];
   annualRevenue: number;
   campCode: number;
   campTel: string;
@@ -17,6 +16,7 @@ export interface Leads {
   gender: string;
   idNumber: string;
   industry: string;
+  leadActivities: LeadActivityDto[];
   leadComments: LeadCommentDto[];
   leadDate: string;
   leadSourceCode: number;
@@ -26,6 +26,8 @@ export interface Leads {
   occupation: string;
   organizationCode: number;
   otherNames: string;
+  partyCode: number;
+  pinNumber: string;
   physicalAddress: string;
   postalAddress: string;
   postalCode: string;

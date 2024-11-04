@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../../shared/services/api/api.service';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../environments/api_service_config';
-import { LeadSourceDto, LeadStatusDto, Leads } from '../data/leads';
+import {
+  LeadCommentDto,
+  LeadSourceDto,
+  LeadStatusDto,
+  Leads,
+} from '../data/leads';
 import { HttpParams } from '@angular/common/http';
 import { UtilService } from '../../../shared/services/util/util.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
@@ -67,8 +72,8 @@ export class LeadsService {
     );
   }
 
-  updateLead(data: Leads, leadId: number): Observable<Leads> {
-    return this.api.POST<Leads>(
+  updateLead(data: any, leadId: number): Observable<Leads> {
+    return this.api.PATCH<Leads>(
       `leads/${leadId}`,
       JSON.stringify(data),
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
@@ -76,7 +81,7 @@ export class LeadsService {
   }
 
   deleteLead(leadId: number) {
-    return this.api.POST<Leads>(
+    return this.api.DELETE<Leads>(
       `leads/${leadId}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
@@ -151,6 +156,39 @@ export class LeadsService {
   getLeads(): Observable<Leads[]> {
     return this.api.GET<Leads[]>(
       `leads`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getLeadComments(): Observable<LeadCommentDto[]> {
+    return this.api.GET<LeadCommentDto[]>(
+      `lead-comments`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  createLeadComment(data: LeadCommentDto): Observable<LeadCommentDto> {
+    return this.api.POST<LeadCommentDto>(
+      `lead-comments`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateLeadComment(
+    leadCommentId: number,
+    data: LeadCommentDto
+  ): Observable<LeadCommentDto> {
+    return this.api.PUT<LeadCommentDto>(
+      `lead-comments/${leadCommentId}`,
+      data,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteLeadComment(leadCommentId: number) {
+    return this.api.DELETE<LeadCommentDto>(
+      `lead-comments/${leadCommentId}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }

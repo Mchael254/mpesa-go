@@ -1,8 +1,20 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { StaffDto } from '../../../data/StaffDto';
 import { AgentDTO } from '../../../data/AgentDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
-import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
+import {
+  AccountReqPartyId,
+  EntityDto,
+  PoliciesDTO,
+  ReqPartyById,
+  Roles,
+} from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReplaySubject, finalize, takeUntil, tap } from 'rxjs';
@@ -25,11 +37,11 @@ import { QuotationsDTO } from '../../../../gis/data/quotations-dto';
 import { ClaimsDTO } from '../../../../gis/data/claims-dto';
 
 import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
-import {CountryService} from "../../../../../shared/services/setups/country/country.service";
-import {CountryDto} from "../../../../../shared/data/common/countryDto";
-import {take} from "rxjs/operators";
+import { CountryService } from '../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../shared/data/common/countryDto';
+import { take } from 'rxjs/operators';
 
-const log = new Logger("ViewEntityComponent")
+const log = new Logger('ViewEntityComponent');
 
 @Component({
   selector: 'app-view-entity',
@@ -39,13 +51,14 @@ const log = new Logger("ViewEntityComponent")
 export class ViewEntityComponent implements OnInit {
   @ViewChild('closebutton') closebutton;
   @ViewChild('rolesDropDown') rolesDropdown;
-  @ViewChild(EntityTransactionsComponent) entityTransactions: EntityTransactionsComponent;
+  @ViewChild(EntityTransactionsComponent)
+  entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
   unAssignedPartyTypes: PartyTypeDto[] = [];
   selectedRole: PartyTypeDto;
-  accounts: Roles[]=[];
+  accounts: Roles[] = [];
   policies: Pagination<PoliciesDTO> = <Pagination<PoliciesDTO>>{};
   quotations: Pagination<QuotationsDTO> = <Pagination<QuotationsDTO>>{};
   claims: Pagination<ClaimsDTO> = <Pagination<ClaimsDTO>>{};
@@ -58,7 +71,7 @@ export class ViewEntityComponent implements OnInit {
   entitySummaryForm: FormGroup;
   selectRoleModalForm: FormGroup;
 
-  url = ""
+  url = '';
   entityId: number;
   accountCode: number;
   entityPartyIdDetails: ReqPartyById;
@@ -72,22 +85,22 @@ export class ViewEntityComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  dateFrom = `${this.year-4}-${this.month}-${this.day}`;
+  dateFrom = `${this.year - 4}-${this.month}-${this.day}`;
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  public pieChartOptions: ChartOptions =  {
+  public pieChartOptions: ChartOptions = {
     responsive: true,
   };
   public pieChartLabels: any[] = ['Motor', 'PA', 'Domestic'];
-  public pieChartData: any = [ {data: [23, 25, 30]}];
-  public pieChartType: ChartType = "doughnut";
-  public  pieChartLegend = true;
+  public pieChartData: any = [{ data: [23, 25, 30] }];
+  public pieChartType: ChartType = 'doughnut';
+  public pieChartLegend = true;
   public pieChartPlugins = [];
 
   partyAccountDetails: PartyAccountsDetails;
   accountId: number;
 
-  countries: CountryDto[] = []
+  countries: CountryDto[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -120,13 +133,14 @@ export class ViewEntityComponent implements OnInit {
   }
 
   getCountries() {
-    this.countryService.getCountries()
+    this.countryService
+      .getCountries()
       .pipe(take(1))
       .subscribe({
         next: (countries: CountryDto[]) => {
-          this.countries = countries
+          this.countries = countries;
         },
-        error: (err) => {}
+        error: (err) => {},
       });
   }
 
@@ -136,7 +150,7 @@ export class ViewEntityComponent implements OnInit {
   * Fetch roles not assigned to this entity
    */
   setAccountCode() {
-    console.log('entityAccountIdDetails: ' +this.entityAccountIdDetails);
+    console.log('entityAccountIdDetails: ' + this.entityAccountIdDetails);
 
     this.accountCode = this.entityAccountIdDetails?.[0]?.accountCode;
     // this.accountId = this.entityAccountIdDetails?.[0]?.id;
@@ -144,12 +158,13 @@ export class ViewEntityComponent implements OnInit {
 
     // This fetches the current account set from View Link in other entity tables and set the first account on the dropdown
     this.accountService.currentAccount$
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(currentEntityAccount => {
-        this.selectedAccount = this.entityAccountIdDetails.filter( (entity) => entity?.id == currentEntityAccount?.id)[0];
-        if(this.selectedAccount == null)  this.selectedAccount = this.entityAccountIdDetails?.[0];
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((currentEntityAccount) => {
+        this.selectedAccount = this.entityAccountIdDetails.filter(
+          (entity) => entity?.id == currentEntityAccount?.id
+        )[0];
+        if (this.selectedAccount == null)
+          this.selectedAccount = this.entityAccountIdDetails?.[0];
         this.accountCode = this.selectedAccount?.accountCode;
       });
 
@@ -160,88 +175,96 @@ export class ViewEntityComponent implements OnInit {
     // this.getClaimsByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
   }
 
-      /***
+  /***
    * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
    * @param id representing account code
    */
-       getPartyAccountDetailByAccountId(id: number) {
-        /*let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
+  getPartyAccountDetailByAccountId(id: number) {
+    /*let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
         this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)*/
-        this.accountService.getAccountDetailsByAccountCode(this.accountCode)
-        .pipe(
-          takeUntil(this.destroyed$)
-        )
-        .subscribe((data: PartyAccountsDetails) => {
-          this.partyAccountDetails = data
-          console.log('This is the selected account data >>>>>', this.partyAccountDetails);
-          // this.accountService.setCurrentAccounts(accountType);
-          this.accountService.setCurrentAccounts(this.partyAccountDetails);
-          this.cdr.detectChanges();
-        })
-
-      }
+    this.accountService
+      .getAccountDetailsByAccountCode(this.accountCode)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data: PartyAccountsDetails) => {
+        this.partyAccountDetails = data;
+        console.log(
+          'This is the selected account data >>>>>',
+          this.partyAccountDetails
+        );
+        // this.accountService.setCurrentAccounts(accountType);
+        this.accountService.setCurrentAccounts(this.partyAccountDetails);
+        this.cdr.detectChanges();
+      });
+  }
 
   /***
    *   Fetch Entity Details e.g ID, PIN, ModeofIdentity, ProfileImage etc
-    */
+   */
   getEntityByPartyId() {
-    this.entityService.getEntityByPartyId(this.entityId)
-    .pipe(
-      takeUntil(this.destroyed$),
-    )
-    .subscribe(
-      (data: any) => {
-        this.entityPartyIdDetails = data;
-        const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
+    this.entityService
+      .getEntityByPartyId(this.entityId)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(
+        (data: any) => {
+          this.entityPartyIdDetails = data;
+          const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
 
-        console.log('This is the Entity Details By PartyId', this.entityPartyIdDetails)
+          console.log(
+            'This is the Entity Details By PartyId',
+            this.entityPartyIdDetails
+          );
 
-        this.entitySummaryForm.patchValue({
-          contact: null,
-          category: this.entityPartyIdDetails?.categoryName,
-          taxId: this.entityPartyIdDetails?.modeOfIdentityNumber,
-          phoneNumber: null,
-          emailAddress: null,
-          status: null,
-          dateCreated: datePipe.transform(this.entityPartyIdDetails?.effectiveDateFrom, 'dd-MM-yyy'),
-          entityName: this.entityPartyIdDetails?.name,
-          partyType: this.entityPartyIdDetails?.categoryName,
-          primaryIdType: this.entityPartyIdDetails?.modeOfIdentity.name,
-          pinNumber: this.entityPartyIdDetails?.pinNumber,
-          idNumber: this.entityPartyIdDetails?.modeOfIdentityNumber,
-          // profilePicture: null
-        })
-        this.url = this.entityPartyIdDetails.profileImage ?
-                   'data:image/jpeg;base64,' + this.entityPartyIdDetails.profileImage
-                  : '';
-        this.cdr.detectChanges();
-        this.spinner.hide();
-      },
-      error => {this.spinner.hide();}
-    )
+          this.entitySummaryForm.patchValue({
+            contact: null,
+            category: this.entityPartyIdDetails?.categoryName,
+            taxId: this.entityPartyIdDetails?.modeOfIdentityNumber,
+            phoneNumber: null,
+            emailAddress: null,
+            status: null,
+            dateCreated: datePipe.transform(
+              this.entityPartyIdDetails?.effectiveDateFrom,
+              'dd-MM-yyy'
+            ),
+            entityName: this.entityPartyIdDetails?.name,
+            partyType: this.entityPartyIdDetails?.categoryName,
+            primaryIdType: this.entityPartyIdDetails?.modeOfIdentity.name,
+            pinNumber: this.entityPartyIdDetails?.pinNumber,
+            idNumber: this.entityPartyIdDetails?.modeOfIdentityNumber,
+            // profilePicture: null
+          });
+          this.url = this.entityPartyIdDetails.profileImage
+            ? 'data:image/jpeg;base64,' + this.entityPartyIdDetails.profileImage
+            : '';
+          this.cdr.detectChanges();
+          this.spinner.hide();
+        },
+        (error) => {
+          this.spinner.hide();
+        }
+      );
   }
-
 
   /***
    *   Fetch all accounts (AccountReqPartyId[]) for a specific entity
-    */
+   */
   getEntityAccountById() {
-    this.entityService.getAccountById(this.entityId)
-    .pipe(
-      takeUntil(this.destroyed$),
-      finalize(() => this.setAccountCode())
-    )
-    .subscribe(
-      (data: AccountReqPartyId[]) => {
+    this.entityService
+      .getAccountById(this.entityId)
+      .pipe(
+        takeUntil(this.destroyed$),
+        finalize(() => this.setAccountCode())
+      )
+      .subscribe((data: AccountReqPartyId[]) => {
         this.entityAccountIdDetails = data;
         this.getUnAssignedRoles();
         this.entityService.setCurrentEntityAccounts(data);
 
-        console.log('>>>>>>>>>>> Fetch entity accounts details by entity id', this.entityAccountIdDetails)
+        console.log(
+          '>>>>>>>>>>> Fetch entity accounts details by entity id',
+          this.entityAccountIdDetails
+        );
         // this.fetchAllPartyAccountsDetails();
-      }
-    )
-
+      });
   }
 
   // /***
@@ -309,7 +332,6 @@ export class ViewEntityComponent implements OnInit {
   //     )
   // }
 
-
   // /***
   //  * Fetch Entity Accounts - Intermediary Account
   //  * @param accountCode
@@ -376,20 +398,21 @@ export class ViewEntityComponent implements OnInit {
 
   onFileChange(event) {
     if (event.target.files) {
-      var reader = new FileReader()
+      var reader = new FileReader();
       this.selectedFile = event.target.files[0];
-      reader.readAsDataURL(event.target.files[0])
+      reader.readAsDataURL(event.target.files[0]);
       reader.onload = (event: any) => {
         this.url = event.target.result;
         this.cdr.detectChanges();
-      }
+      };
       this.uploadProfileImage();
     }
   }
 
   uploadProfileImage() {
-    this.entityService.uploadProfileImage(this.entityId, this.selectedFile)
-      .subscribe( res => {
+    this.entityService
+      .uploadProfileImage(this.entityId, this.selectedFile)
+      .subscribe((res) => {
         log.info(res);
         this.entityPartyIdDetails.profileImage = res.file;
       });
@@ -403,15 +426,23 @@ export class ViewEntityComponent implements OnInit {
 
   getUnAssignedRoles() {
     let allPartyTypes: PartyTypeDto[] = [];
-    let assignedPartyTypes: PartyTypeDto[] = this.entityAccountIdDetails.map(o => o.partyType);
-    this.entityService.getPartiesType() // TODO: Find a better way to store/persist party Types in local storage or use services
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
+    let assignedPartyTypes: PartyTypeDto[] = this.entityAccountIdDetails.map(
+      (o) => o.partyType
+    );
+    this.entityService
+      .getPartiesType() // TODO: Find a better way to store/persist party Types in local storage or use services
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((data: PartyTypeDto[]) => {
-        allPartyTypes = data.filter( partyType => partyType?.partyTypeLevel === 1);
-        this.unAssignedPartyTypes = allPartyTypes.filter((o) =>
-          !assignedPartyTypes.find(assigned => o?.partyTypeName.toLowerCase() === assigned?.partyTypeName.toLowerCase())
+        allPartyTypes = data.filter(
+          (partyType) => partyType?.partyTypeLevel === 1
+        );
+        this.unAssignedPartyTypes = allPartyTypes.filter(
+          (o) =>
+            !assignedPartyTypes.find(
+              (assigned) =>
+                o?.partyTypeName.toLowerCase() ===
+                assigned?.partyTypeName.toLowerCase()
+            )
         );
         log.info('Assigned party types: ', assignedPartyTypes);
         log.info('Unassigned party types: ', this.unAssignedPartyTypes);
@@ -420,15 +451,15 @@ export class ViewEntityComponent implements OnInit {
       });
   }
 
-  goToViewClaims(id:number) {
+  goToViewClaims(id: number) {
     this.router.navigate([`/home/gis/claim/list/${this.accountCode}`]);
   }
 
-  goToViewPolicies(id:number) {
+  goToViewPolicies(id: number) {
     this.router.navigate([`/home/gis/policy/list/${this.accountCode}`]);
   }
 
-  goToViewQuotations(id:number) {
+  goToViewQuotations(id: number) {
     // this.router.navigate([`/home/gis/quotation/list/${this.accountCode}`]);
     this.router.navigate([`/home/gis/quotation/list`]);
   }
@@ -453,8 +484,8 @@ export class ViewEntityComponent implements OnInit {
       profileImage: this.entityPartyIdDetails.profileImage,
       profilePicture: this.entityPartyIdDetails.profileImage,
       partyTypeId: this.selectedRole.id,
-      modeOfIdentityName: ''
-    }
+      modeOfIdentityName: '',
+    };
     this.entityService.setCurrentEntity(currentEntity);
 
     let entityRoleName = this.selectedRole?.partyTypeName;
@@ -472,15 +503,20 @@ export class ViewEntityComponent implements OnInit {
       case 'service provider':
         this.router.navigate(['home/entity/service-provider/new']);
         break;
+      case 'lead':
+        this.router.navigate(['home/entity/lead/new']);
+        break;
       default:
         break;
     }
   }
 
   selectAccount(event: any) {
-    if(event){
+    if (event) {
       let accountId: number = Number((event.target as HTMLInputElement).value);
-      let accountType =  this.entityAccountIdDetails.find(account =>  account.id == accountId);
+      let accountType = this.entityAccountIdDetails.find(
+        (account) => account.id == accountId
+      );
       // this.getEntityAccountDetailsByAccountNo(accountId);
       this.accountCode = accountType?.accountCode;
       this.getPartyAccountDetailByAccountId(accountType?.accountCode);
@@ -488,32 +524,25 @@ export class ViewEntityComponent implements OnInit {
   }
 
   manageRoles(id: number) {
-    this.router.navigate([ `/home/entity/manage-roles/${id}`]);
+    this.router.navigate([`/home/entity/manage-roles/${id}`]);
   }
 
   editEntities(id: number) {
-    this.router.navigate([ `/home/entity/edit/${id}`]);
+    this.router.navigate([`/home/entity/edit/${id}`]);
   }
 
   private fetchAllPartyAccountsDetails() {
     let fetchedAccounts: PartyAccountsDetails[] = [];
     this.entityService.currentEntityAccount$
-        .pipe(
-            takeUntil(this.destroyed$)
-        )
-        .subscribe(
-            (data:AccountReqPartyId[]) => {
-                data.forEach(
-                    value =>
-                        this.accountService.getPartyAccountById(value.id)
-                            .pipe()
-                            .subscribe(
-                                partyAccount =>
-                                    fetchedAccounts.push(partyAccount)
-                            )
-                );
-            }
-        )
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((data: AccountReqPartyId[]) => {
+        data.forEach((value) =>
+          this.accountService
+            .getPartyAccountById(value.id)
+            .pipe()
+            .subscribe((partyAccount) => fetchedAccounts.push(partyAccount))
+        );
+      });
 
     this.entityService.setCurrentPartyAcounts(fetchedAccounts);
   }
@@ -524,8 +553,11 @@ export class ViewEntityComponent implements OnInit {
    * @returns void
    */
   fetchTransactions(partyAccountDetails): void {
-    log.info(`party account details from view entity >>> `, partyAccountDetails);
-    const id = partyAccountDetails?.accountCode
+    log.info(
+      `party account details from view entity >>> `,
+      partyAccountDetails
+    );
+    const id = partyAccountDetails?.accountCode;
     this.entityTransactions.fetchGisQuotationsByClientId(id);
     this.entityTransactions.fetchGisClaimsByClientId(id);
     this.entityTransactions.fetchGisPoliciesByClientId(id);
@@ -542,7 +574,6 @@ export class ViewEntityComponent implements OnInit {
   //       console.log('ID is not available');
   //       return;
   //     }
-
 
   //     return this.policiesServices
   //       .getPolicies(pageIndex, dateFrom, dateTo, id)
@@ -609,5 +640,4 @@ export class ViewEntityComponent implements OnInit {
   //         }
   //       );
   // }
-
 }
