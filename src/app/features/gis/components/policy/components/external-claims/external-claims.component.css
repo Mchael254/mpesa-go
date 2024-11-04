@@ -1,0 +1,45 @@
+.flexible-header {
+    white-space: nowrap;
+    width: auto;
+    text-align: left;
+}
+
+/* .ui-datatable th, .ui-datatable td {
+    white-space: nowrap;
+} */
+.ui-datatable th,
+.ui-datatable td {
+    white-space: nowrap;
+}
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
+#modalTitle {
+    font-weight: 500;
+    font-size: 17px;
+    color: #00529B;
+}
+.subheading {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    color: #00529B;
+
+}
+.deleteMessage {
+    color: #000;
+    font-size: 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
+}
