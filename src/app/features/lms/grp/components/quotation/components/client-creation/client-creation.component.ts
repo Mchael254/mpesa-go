@@ -220,7 +220,7 @@ patchClientData(client: ClientDTO) {
     clientName: `${client.firstName} ${client.lastName}`,
     status: client.status,
     type: client.clientType.code,
-    incorporationDate: client.withEffectFromDate,
+    incorporationDate: client.withEffectFromDate ? new Date(client.withEffectFromDate) : null,
     registrationNumber: client.idNumber,
     occupation: client.physicalAddress,
     pinNumber: client.pinNumber,
@@ -228,12 +228,25 @@ patchClientData(client: ClientDTO) {
     email: client.emailAddress,
     address: client.physicalAddress,
     country: client.country,
-    county: client.country,
-    city: client.country,
-    affiliatedToInsurer: client.country,
-    representation: client.country,
+    county: client.state,
+    city: client.town,
+    affiliatedToInsurer: null,
+    representation: null,
     modeOfIdentity: client.modeOfIdentity,
   });
+
+  // Manually trigger selectCountry with the patched country value
+  if (client.country) {
+    this.selectCountry({ target: { value: client.country } });
+  }
+
+  // Using a slight delay to ensure states are fetched before triggering selectState
+  setTimeout(() => {
+    if (client.state) {
+      this.selectState({ target: { value: client.state } });
+    }
+  }, 300);
+
   this.patchedClientId = client.id
   this.storedClientCode = this.patchedClientId;
   console.log("IdOfPAtched", this.patchedClientId)
@@ -264,7 +277,10 @@ onDropdownClear() {
 searchClient() {
   this.clientDetailsForm.get('clientName').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
   .subscribe((clientTyped) => {
-    this.clientId = clientTyped.value;
+    if(clientTyped !== null && clientTyped !== undefined) {
+      this.clientId = clientTyped.value;
+    }
+    
 
     console.log("clientSelectedID", this.clientId)
 
@@ -292,7 +308,7 @@ searchClient() {
     //     this.openDropdown();
     //   })
     // }
-    if (clientTyped.length > 0) {
+    if (clientTyped && clientTyped.length > 0) {
       this.client_service.searchClients(0, 10, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
         this.clientList = data.content.map(client => {
           let fullName = client.firstName ? client.firstName.trim() : '';
@@ -349,6 +365,7 @@ getClientList() {
 The details are patched to the clientDetailsForm when client/searched_client is selected
 */
 getClientById(clientId){
+  if(this.clientId !== null && this.clientId !== undefined) {
     this.client_service.getClientById(this.clientId).subscribe(data =>{
       console.log("searchedByClientId", data)
       this.patchClientData(data);
@@ -356,6 +373,7 @@ getClientById(clientId){
     err => {
       console.log(err);
     })
+  }
 }
 
 
@@ -749,8 +767,8 @@ highlightInvalid(field: string): boolean {
   retrievClientDets() {
     const storedClientData = this.session_storage.get('clientDetails');
     const newClientCodeString = this.session_storage.get('newClientCode');
-    const newClientCode = JSON.parse(newClientCodeString);
-    this.storedClientCode = newClientCode;
+    // const newClientCode = JSON.parse(newClientCodeString);
+    this.storedClientCode = newClientCodeString ? JSON.parse(newClientCodeString) : null;;
 
     if (storedClientData) {
       const clientData = JSON.parse(storedClientData);
@@ -761,7 +779,6 @@ highlightInvalid(field: string): boolean {
           value: this.storedClientCode
         },
       })
-      console.log("clientDetailsFormData",this.clientDetailsForm, clientData, newClientCode);
     }
   }
 
@@ -838,10 +855,12 @@ console.log("this.storedClientCode", this.storedClientCode)
   }
 
   getAdministratorDetails() {
+    if (this.storedClientCode !== undefined && this.storedClientCode !== null) {
     this.adminService.getAdministratorDetails(this.storedClientCode).subscribe((adminDets: ContactPersonDTO[]) => {
       this.administratorDetails = adminDets;
       console.log("Admin/ContactPerson", this.administratorDetails);
     });
+  }
   }
 
 
@@ -859,9 +878,12 @@ console.log("this.storedClientCode", this.storedClientCode)
         name: administratorDetails.contact_person_name,
         phoneNumber: administratorDetails.phone_number,
         email: administratorDetails.contact_person_email,
-        wef: administratorDetails.wef,
-        wet: administratorDetails.wet,
-        dob: administratorDetails.date_of_birth,
+        // wef: administratorDetails.wef,
+        // wet: administratorDetails.wet,
+        wef: administratorDetails.wef ? new Date(administratorDetails.wef) : null,
+        wet: administratorDetails.wet ? new Date(administratorDetails.wet) : null,
+        // dob: administratorDetails.date_of_birth,
+        dob: administratorDetails.date_of_birth ? new Date(administratorDetails.date_of_birth) : null,
         gender: administratorDetails.gender,
         // position: formValues.position
         // idType: formValues.identificationType
