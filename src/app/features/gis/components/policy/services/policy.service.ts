@@ -360,15 +360,15 @@ export class PolicyService {
 
   }
   createPolicySubclassesClause(data:SubclassesClauses){
-    return this.api.POST(`/v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   updatePolicySubclassesClause(data:SubclassesClauses){
-    return this.api.PUT(`/v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.PUT(`v2/policySubclassClauses`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   deletePolicySubclassesClause(code:number,batchNo:number,clausecode:number,policyNo:any,subclassCode:number){
-    return this.api.DELETE(`/v2/policySubclassClauses?%20code=${code}&batch%20number${batchNo}&clause%20code=${clausecode}&policy%20Number=${policyNo}&sub%20class%20code=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.DELETE(`v2/policySubclassClauses?%20code=${code}&batch%20number=${batchNo}&clause%20code=${clausecode}&policy%20Number=${policyNo}&sub%20class%20code=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getPolicySubclassClauses(batchNo:any,policyNo :any,proCode :any){
@@ -377,6 +377,10 @@ export class PolicyService {
   }
   getClientDDdetails(clientCode:any){
     return this.api.GET(`v2/client-dd?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  fetchAddedPolicySubclassClauses(batchNo:any,policyNo :any){
+    return this.api.GET(`v2/policySubclassClauses?batchNo=${batchNo}&policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }

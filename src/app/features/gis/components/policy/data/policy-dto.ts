@@ -617,6 +617,20 @@ export interface ClientDD {
   bankBranchCode: number;
   clientCode: number;
 }
+export interface SelectedSubclassClause {
+  code: number;
+  shortDescription: string;
+  heading: string;
+  clauseType: string;
+  typeDescription: string;
+  productCode: number;
+  productShortDescription: string;
+  subClassCode: number;
+  editable: string;   
+  wording: string;
+  mandatory: any;    
+  subclassDesc: string;
+}
 
 
 
