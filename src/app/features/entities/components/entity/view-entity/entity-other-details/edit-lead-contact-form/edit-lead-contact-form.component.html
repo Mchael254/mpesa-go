@@ -1,0 +1,68 @@
+<form [formGroup]="leadContactDetailForm">
+  <div class="row g-3">
+    <div class="col-6">
+      <label for="leadTitle">{{ "entities.title" | translate }}</label>
+      <p-dropdown
+        [options]="leadTitlesData"
+        optionLabel="description"
+        optionValue="id"
+        [style]="{ width: '100%', height: '50%' }"
+        placeholder="Lead Title"
+        formControlName="leadTitle"
+        id="leadTitle"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        class="center-placeholder"
+        ngDefaultControl
+      >
+      </p-dropdown>
+    </div>
+    <div class="col-6">
+      <label for="mobileNumber">{{
+        "entities.mobile_number" | translate
+      }}</label>
+      <div class="input-group">
+        <select
+          class="form-select"
+          id="countryCodeMob"
+          formControlName="countryCodeMob"
+          style="max-width: 25%"
+        >
+          <option
+            *ngFor="let value of countryData"
+            [value]="'+' + value?.zipCode"
+          >
+            {{ "+" + value?.zipCode }}
+          </option>
+        </select>
+        <input
+          type="tel"
+          class="form-control"
+          id="mobileNumber"
+          formControlName="mobileNumber"
+        />
+      </div>
+    </div>
+    <div class="col-6">
+      <label for="emailAddress">{{ "entities.email" | translate }}</label>
+      <input
+        type="email"
+        class="form-control"
+        id="emailAddress"
+        placeholder="joe@turnkeyafrica.com"
+        formControlName="emailAddress"
+      />
+    </div>
+  </div>
+</form>
+<div class="modal-footer border-0 mt-1">
+  <button
+    type="button"
+    class="btn btn-primary"
+    id="update-details"
+    (click)="updateDetails()"
+  >
+    {{ "entities.update_details" | translate }}
+  </button>
+</div>

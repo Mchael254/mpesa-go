@@ -720,7 +720,7 @@ export class NewLeadComponent implements OnInit {
         next: (data) => {
           if (data) {
             this.leadTitlesData = data;
-            log.info('Fetched Client Title', this.countryData);
+            log.info('Fetched Lead Title', this.leadTitlesData);
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -1193,21 +1193,35 @@ export class NewLeadComponent implements OnInit {
 
     const leadFormValues = this.createLeadForm.getRawValue();
 
-    log.info(`Collected Form Values`, leadFormValues);
-
     const selectedIdentityType = this.modeIdentityType.find(
       (type) => type.id.toString() === leadFormValues.identityType.toString()
     );
-
-    log.info(`selected mode of id`, selectedIdentityType);
 
     const modeOfIdentity = selectedIdentityType
       ? selectedIdentityType.name
       : null;
 
+    const leadActivities = leadFormValues.primaryDetails.leadActivity.map(
+      (activityId: number) => ({
+        activityCode: activityId,
+        code: null,
+        leadCode: null,
+      })
+    );
+
+    const selectedOccupation = this.occupationsData.find(
+      (occupation) => occupation.id === leadFormValues.primaryDetails.occupation
+    );
+
+    const occupation = selectedOccupation ? selectedOccupation.name : null;
+
+    const selectedSector = this.sectorsData.find(
+      (sector) => sector.id === leadFormValues.otherDetails.sector
+    );
+    const sector = selectedSector ? selectedSector.name : null;
+
     const saveLead: Leads = {
       accountCode: leadFormValues.organizationDetails.accountName,
-      activityCodes: leadFormValues.primaryDetails.leadActivity,
       annualRevenue: leadFormValues.otherDetails.annualRevenue,
       campCode: leadFormValues.primaryDetails.campaingName,
       campTel: leadFormValues.contactDetails.telNumber,
@@ -1223,17 +1237,19 @@ export class NewLeadComponent implements OnInit {
       emailAddress: leadFormValues.contactDetails.emailAddress,
       gender: leadFormValues.gender,
       idNumber: leadFormValues.idNumber,
-      industry: leadFormValues.otherDetails.sector,
+      industry: sector,
+      leadActivities: leadActivities,
       leadComments: this.commentsData,
       leadDate: leadFormValues.primaryDetails.date,
       leadSourceCode: leadFormValues.primaryDetails.leadSource,
       leadStatusCode: leadFormValues.primaryDetails.leadStatus,
       mobileNumber: leadFormValues.contactDetails.mobileNumber,
-      // modeOfIdentity: leadFormValues.identityType,
       modeOfIdentity: modeOfIdentity,
-      occupation: leadFormValues.primaryDetails.occupation,
+      occupation: occupation,
       organizationCode: leadFormValues.organizationDetails.organization,
       otherNames: leadFormValues.otherName,
+      partyCode: this.partyId,
+      pinNumber: leadFormValues.pinNumber,
       physicalAddress: leadFormValues.addressDetails.physicalAddress,
       postalAddress: leadFormValues.addressDetails.postalAddress,
       postalCode: leadFormValues.addressDetails.postalCode,
