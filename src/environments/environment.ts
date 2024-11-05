@@ -45,6 +45,6 @@ export const environment = {
     [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
     [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns'],
     [API_CONFIG.CHART_SERVICE_BASE_URL, '/crm/chart'],
-    // [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, 'http://localhost:10402']
+    [API_CONFIG.CRM_SERVICE_REQUEST, '/crm/requests/api/v1'],
   ]),
 };
