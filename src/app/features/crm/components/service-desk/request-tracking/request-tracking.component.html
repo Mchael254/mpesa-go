@@ -29,42 +29,49 @@
       <div class="card-header bg-transparent float-start border-bottom-0">
         <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.serviceRequestTracking' | translate}}</h6>
 
-        <div class="row col-lg-12 pb-2">
-          <div class="col-lg-2 col-sm-4 col-6">
-            <label class="float-start">{{ 'serviceDesk.requestStatus' | translate }}:</label><br>
-            <select class="form-select" id="module">
-              <option value="" selected>All</option>
-            </select>
-          </div>
+        <form [formGroup]="requestTrackingForm">
+          <div class="row col-lg-12 pb-2">
+            <div class="col-lg-2 col-sm-4 col-6">
+              <label class="float-start">{{ 'serviceDesk.requestStatus' | translate }}:</label><br>
+              <select class="form-select"  formControlName="status">
+                <option *ngFor="let status of mainStatusData"
+                        [value]="status">{{status}}</option>
+              </select>
+            </div>
 
-          <div class="col-lg-2 col-sm-6 col-6">
-            <label class="float-start">{{ 'serviceDesk.requestOwner' | translate }}: </label>
-            <select id="system" class="form-select">
-              <option value="" ></option>
-            </select>
-          </div>
+            <div class="col-lg-2 col-sm-6 col-6">
+              <label class="float-start">{{ 'serviceDesk.requestOwner' | translate }}: </label>
+              <select id="system" class="form-select" formControlName="owner">
+                <option value="" ></option>
+              </select>
+            </div>
 
-          <div class="col-lg-2 col-sm-6 col-6">
-            <label class="float-start">{{ 'serviceDesk.accType' | translate }}: </label>
-            <select class="form-select" >
-              <option value="">All</option>
-            </select>
+            <div class="col-lg-2 col-sm-6 col-6">
+              <label class="float-start">{{ 'serviceDesk.accType' | translate }}: </label>
+              <select class="form-select" formControlName="accountType">
+                <option *ngFor="let accType of requestAccTypesData"
+                        [value]="accType">{{accType}}</option>
+              </select>
+            </div>
           </div>
-        </div>
+        </form>
+
       </div>
       <div class="card-body p-0">
 
         <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
         <p-table
           #requestTrackingTable
+          (onLazyLoad)="fetchServiceRequests($event)"
+          [lazy]="true"
           [autoLayout]="true"
           [paginator]="true"
           [rowHover]="true"
           [resizableColumns]="true"
           [showCurrentPageReport]="true"
           [rows]="pageSize || 10"
-          [totalRecords]="requestTrackingData?.length"
-          [value]="requestTrackingData"
+          [totalRecords]="requestTrackingData?.totalElements"
+          [value]="requestTrackingData.content"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
@@ -101,26 +108,36 @@
           </ng-template>
           <ng-template pTemplate="body" let-requestTracking>
             <tr class="custom-table">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>
+<!--                not-->
+              </td>
+              <td>{{requestTracking?.requestType}}</td>
+              <td>not</td>
+              <td>{{requestTracking?.desc}}</td>
+              <td>{{requestTracking?.policyNo}}</td>
+              <td>{{requestTracking?.captureDate}}</td>
+              <td>{{requestTracking?.summary}}</td>
+              <td>{{requestTracking?.dueDate}}</td>
+              <td>{{requestTracking?.mainStatus}}</td>
+              <td>{{requestTracking?.assignee}}</td>
+              <td>{{requestTracking?.closedBy}}</td>
+              <td>{{requestTracking?.closedBy}}</td>
+              <td>{{requestTracking?.communicationMode}}</td>
+              <td>{{requestTracking?.refNumber}}</td>
+              <td>{{requestTracking?.comments}}</td>
+              <td>
+<!--                not-->
+              </td>
+              <td>
+<!--                not-->
+              </td>
+              <td>
+<!--                not-->
+              </td>
+              <td>
+<!--                not-->
+              </td>
+              <td>{{requestTracking?.ownerCode}}</td>
 
             </tr>
           </ng-template>
