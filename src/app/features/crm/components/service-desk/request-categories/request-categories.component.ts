@@ -7,6 +7,9 @@ import {StaffDto} from "../../../../entities/data/StaffDto";
 import {Logger} from "../../../../../shared/services";
 import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
 import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
+import {ServiceRequestService} from "../../../services/service-request.service";
+import {NgxSpinnerService} from "ngx-spinner";
+import {ServiceRequestCategoryDTO} from "../../../data/service-request-dto";
 
 const log = new Logger('RequestCategoriesComponent');
 @Component({
@@ -17,7 +20,8 @@ const log = new Logger('RequestCategoriesComponent');
 export class RequestCategoriesComponent implements OnInit {
   pageSize: 5;
   incidentsData: any;
-  requestCategoriesData: any;
+  requestCategoriesData: ServiceRequestCategoryDTO[];
+  selectedRequestCategory: ServiceRequestCategoryDTO;
 
   editMode: boolean = false;
   serviceRequestCategoryForm: FormGroup;
@@ -51,15 +55,21 @@ export class RequestCategoriesComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
     private mandatoryFieldsService: MandatoryFieldsService,
-    private systemsService: SystemsService
+    private systemsService: SystemsService,
+    private spinner: NgxSpinnerService,
+    private serviceRequestService: ServiceRequestService,
   ) { }
 
   ngOnInit(): void {
     this.serviceRequestCategoryCreateForm();
     this.requestEscalationCreateForm();
     this.getAllSystems();
+    this.fetchServiceCategory();
   }
 
+  /**
+   * Initializes the form for creating service request categories.
+   */
   serviceRequestCategoryCreateForm() {
     this.serviceRequestCategoryForm = this.fb.group({
       name: [''],
@@ -92,6 +102,9 @@ export class RequestCategoriesComponent implements OnInit {
       });
   }
 
+  /**
+   * Initialize the form for request escalation details.
+   */
   requestEscalationCreateForm() {
     this.requestEscalationForm = this.fb.group({
       system: [''],
@@ -129,14 +142,23 @@ export class RequestCategoriesComponent implements OnInit {
       });
   }
 
+  /**
+   * @returns The controls of the `serviceRequestCategoryForm`.
+   */
   get f() {
     return this.serviceRequestCategoryForm.controls;
   }
 
+  /**
+   * The controls of the `requestEscalationForm`.
+   */
   get g() {
     return this.requestEscalationForm.controls;
   }
 
+  /**
+   * Opens the "Service Request Category" modal.
+   */
   openServiceRequestCategoryModal() {
     const modal = document.getElementById('serviceRequestCategoryModal');
     if (modal) {
@@ -145,6 +167,9 @@ export class RequestCategoriesComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the "Service Request Category" modal.
+   */
   closeServiceRequestCategoryModal() {
     this.editMode = false;
     const modal = document.getElementById('serviceRequestCategoryModal');
@@ -154,6 +179,9 @@ export class RequestCategoriesComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the "Service Request Escalation" modal.
+   */
   openRequestEscalationModal() {
     const modal = document.getElementById('requestEscalationModal');
     if (modal) {
@@ -162,6 +190,9 @@ export class RequestCategoriesComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the "Service Request Escalation" modal.
+   */
   closeRequestEscalationModal() {
     this.editMode = false;
     const modal = document.getElementById('requestEscalationModal');
@@ -171,19 +202,31 @@ export class RequestCategoriesComponent implements OnInit {
     }
   }
 
+  /**
+   * Toggles the visibility of the all users modal based on the provided display parameter.
+   */
   private toggleAllUsersModal(display: boolean) {
     this.allUsersModalVisible = display;
   }
+  /**
+   * Closes the "Select User" modal after a user has been selected.
+   */
   processSelectedUser($event: void) {
     this.toggleAllUsersModal(false);
     this.zIndex = 1;
   }
 
+  /**
+   * Opens the "Select User" modal for selecting the assignee of a Service Request Category.
+   */
   openAllUsersModal() {
     this.zIndex  = -1;
     this.toggleAllUsersModal(true);
   }
 
+  /**
+   * Called when a user is selected in the "Select User" modal.
+   */
   getSelectedUser(event: StaffDto) {
     this.selectedMainUser = event;
     log.info(this.selectedMainUser)
@@ -200,6 +243,9 @@ export class RequestCategoriesComponent implements OnInit {
     });
   }*/
 
+  /**
+   * Retrieves the list of systems.
+   */
   getAllSystems() {
     this.systemsService.getSystems()
       .pipe(
@@ -215,8 +261,109 @@ export class RequestCategoriesComponent implements OnInit {
       })
   }
 
-  saveServiceRequestCategory() {
+  /**
+   * Fetches the list of service request categories.
+   */
+  fetchServiceCategory() {
+    this.spinner.show();
+    this.serviceRequestService.getRequestCategory()
+      .subscribe({
+        next: (data) => {
+          this.requestCategoriesData = data;
+          this.spinner.hide();
 
+          log.info("requests>>", data);
+        },
+        error: (err) => {
+          this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        }
+      });
+  }
+
+  /**
+   * Save the service request category.
+   */
+  saveServiceRequestCategory() {
+    this.serviceRequestCategoryForm.markAllAsTouched();
+    if (this.serviceRequestCategoryForm.invalid) return;
+    const serviceRequestCategoryFormValues = this.serviceRequestCategoryForm.getRawValue();
+    const serviceRequestCategoryCode = !this.editMode ? null : this.selectedRequestCategory?.id;
+
+    const saveRequestStatusPayload: ServiceRequestCategoryDTO = {
+      id: serviceRequestCategoryCode,
+      desc:serviceRequestCategoryFormValues?.name,
+      shtDesc:serviceRequestCategoryFormValues?.shtDesc,
+      usrCode:serviceRequestCategoryFormValues?.assignee,
+      sysCode: 0
+    };
+
+    console.log(saveRequestStatusPayload)
+    const serviceRequestServiceCall = this.selectedRequestCategory
+      ? this.serviceRequestService.updateRequestCategory(this.selectedRequestCategory.id, saveRequestStatusPayload)
+      : this.serviceRequestService.createRequestCategory(saveRequestStatusPayload);
+
+    return serviceRequestServiceCall.toPromise()
+      .then(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', this.selectedRequestCategory ? 'Successfully updated request category' : 'Successfully created request category');
+        this.serviceRequestCategoryForm.reset();
+        this.closeServiceRequestCategoryModal();
+        this.fetchServiceCategory();
+      })
+      .catch(error => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message || 'Error saving request category');
+        throw error;
+      });
+  }
+
+  /**
+   * Toggles the edit mode for the service request category on and off.
+   */
+  editRequestCategory() {
+    this.editMode = !this.editMode;
+    if (this.selectedRequestCategory) {
+      this.openServiceRequestCategoryModal();
+      this.serviceRequestCategoryForm.patchValue({
+        name: this.selectedRequestCategory?.desc,
+        shtDesc: this.selectedRequestCategory?.shtDesc,
+        assignee: this.selectedRequestCategory?.user?.id
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No request category is selected!'
+      );
+    }
+  }
+
+  /**
+   * Delete the selected service request category.
+   * If no request category is selected, display an error message.
+   * Otherwise, make a call to the service to delete the request category,
+   * and then display a success message and fetch the list of service categories again.
+   */
+  deleteRequestCategory() {
+    if (this.selectedRequestCategory) {
+      const serviceRequestCategoryCode = this.selectedRequestCategory?.id;
+      this.serviceRequestService.deleteRequestCategory(serviceRequestCategoryCode).subscribe( {
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted request category'
+          );
+          this.selectedRequestCategory = null;
+          this.fetchServiceCategory();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No request category is selected.'
+      );
+    }
   }
 
   saveRequestEscalation() {

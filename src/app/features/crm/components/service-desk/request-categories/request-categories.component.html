@@ -31,16 +31,15 @@
         <div class="row mb-3">
           <div class="col-12">
             <div class="float-end">
-              <span class="icon-circle"
-              ><i class="fa-solid fa-plus" (click)="openServiceRequestCategoryModal()"></i
-              ></span>
-              <span class="icon-circle"
-              ><i class="pi pi-pencil"></i
-              ></span>
-              <span class="icon-circle"
-              ><i
-                class="fa-regular fa-trash-can"></i
-              ></span>
+              <span class="icon-circle">
+                <i class="fa-solid fa-plus" (click)="openServiceRequestCategoryModal()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="pi pi-pencil" (click)="editRequestCategory()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="fa-regular fa-trash-can" (click)="deleteRequestCategory()"></i>
+              </span>
             </div>
           </div>
         </div>
@@ -61,8 +60,9 @@
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
+          [(selection)]= "selectedRequestCategory"
           selectionMode="single"
-          dataKey="code"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
           [globalFilterFields]="['campaign.campaignName']"
@@ -75,17 +75,9 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-requestCategory>
-            <tr class="custom-table">
-              <td>
-
-              </td>
-              <td>
-
-              </td>
-              <td>
-
-              </td>
-
+            <tr class="custom-table" [pSelectableRow]="requestCategory">
+              <td>{{requestCategory?.desc | titlecase}}</td>
+              <td>{{requestCategory?.user?.name | titlecase}}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -232,7 +224,7 @@
                   type="text"
                   class="form-control"
                   formControlName="assignee"
-                  value="{{selectedMainUser?.name}}"
+                  value="{{!this.editMode ? selectedMainUser?.name : selectedRequestCategory?.user?.name}}"
                   id="assignee"
                   readonly
                   (click)="openAllUsersModal()"

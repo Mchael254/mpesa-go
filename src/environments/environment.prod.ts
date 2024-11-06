@@ -34,6 +34,7 @@ export const environment = {
     [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
     [API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL, '/crm/campaigns'],
     [API_CONFIG.CHART_SERVICE_BASE_URL, '/crm/chart'],
+    [API_CONFIG.CRM_SERVICE_REQUEST, '/crm/requests/api/v1'],
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']
