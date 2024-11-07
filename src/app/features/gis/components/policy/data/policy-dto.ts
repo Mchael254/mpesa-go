@@ -631,6 +631,55 @@ export interface SelectedSubclassClause {
   mandatory: any;    
   subclassDesc: string;
 }
+export interface RiskPeril {
+  action: string;
+  annualPremium: number;
+  claimExcess: number;
+  claimExcessMaximum: number;
+  claimExcessMinimum: number;
+  claimExcessType: string;
+  claimLimit: number;
+  code: number;
+  computationType: string;
+  dependLossType: string;
+  description: string;
+  excess: number;
+  excessMaximum: number;
+  excessMinimum: number;
+  excessType: string;
+  expireOnClaim: string;
+  freeLimitAmt: number;
+  ipuCode: number;
+  perilDescription: string;
+  perilLimit: number;
+  perilType: string;
+  personLimit: number;
+  plExcess: number;
+  plExcessMaximum: number;
+  plExcessMinimum: number;
+  plExcessType: string;
+  polBatchNo: number;
+  premRate: number;
+  premiumAmt: number;
+  prorataFull: string;
+  salvagePercentage: number;
+  sectShtDesc: string;
+  subClassPerilCode: number;
+  subClassPerilMapCode: number;
+  sumInsuredOrLimit: string;
+  tlExcess: number;
+  tlExcessMaximum: number;
+  tlExcessMinimum: number;
+  tlExcessType: string;
+  ttdBenPercentage: string;
+}
+export interface ClientDDdetails{
+  accountName: string;
+  accountNo: string;
+  bankBranchCode: number;
+  clientCode: number;
+}
+
 
 
 
