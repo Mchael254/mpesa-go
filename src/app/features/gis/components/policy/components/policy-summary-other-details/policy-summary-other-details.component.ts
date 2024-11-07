@@ -67,11 +67,11 @@ export class PolicySummaryOtherDetailsComponent {
   selectedClientCode: any;
   clientPrpCode: any;
   filteredClients: any[] = [];
-  scheduleListDetails:any;
-  filteredSchedule:any;
-  commissionTransaction:any;
-  selectedCertificate:any;
-  selectedPolicyCertificate:any;
+  scheduleListDetails: any;
+  filteredSchedule: any;
+  commissionTransaction: any;
+  selectedCertificate: any;
+  selectedPolicyCertificate: any;
 
   columns = [
     { label: 'Name', value: 'name' },
@@ -148,8 +148,8 @@ export class PolicySummaryOtherDetailsComponent {
   subclassPeril: any;
   subclassPerilList: any[] = [];
   policyRiskPeril: any[] = []
-  selectedPeril: any;
   selectedRiskPeril: any;
+  selectedPeril: any;
   selectedClause: any;
   passedSubclassCode: any;
   requiredDocumentsForm: FormGroup;
@@ -166,28 +166,32 @@ export class PolicySummaryOtherDetailsComponent {
   policyTaxesDetailsForm: FormGroup;
   populatePolicyTaxesDetailsForm: FormGroup;
   passedBinderCode: any;
-  relatedRiskList:RelatedRisk[]=[];
-  selectedRelatedRisk:any;
+  relatedRiskList: RelatedRisk[] = [];
+  selectedRelatedRisk: any;
   vehicleMakeList: vehicleMake[];
   vehicleModelList: any;
   vehicleModelDetails: vehicleModel[];
   filteredVehicleModel: any;
-  selectedVehicleMakeCode:any;
-  selectedVehicleMake:any;
+  selectedVehicleMakeCode: any;
+  selectedVehicleMake: any;
   commissionTransactionDetailsForm: FormGroup;
-  productClauseList:any;
+  productClauseList: any;
   certificatesDetailsForm: FormGroup;
-  certificatesList:any;
-  addCertificatesForm:FormGroup
-  policyCertificateList:any
-  addedDocumentList:any;
-  submittedDocumentResponse:any;
-  bodytypesList:any;
-  motorColorsList:any;
-  securityDevicesList:any;
-  motorAccessoriesList:any;
+  certificatesList: any;
+  addCertificatesForm: FormGroup
+  policyCertificateList: any
+  addedDocumentList: any;
+  submittedDocumentResponse: any;
+  bodytypesList: any;
+  motorColorsList: any;
+  securityDevicesList: any;
+  motorAccessoriesList: any;
   applicableTaxesList: any;
   scheduleDetailsExist: boolean = false;
+  riskPerilList: any;
+  riskPerilForm: FormGroup;
+
+
 
 
 
@@ -268,6 +272,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.fetchSecurityDevices();
     this.createEditRequiredDocumentsForm();
     this.fetchMotorAccessories();
+    this.createRiskPerilForm()
   }
   ngOnDestroy(): void { }
 
@@ -283,7 +288,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.policyService.policyUtils(this.policyDetails.batchNumber).subscribe({
       next: (res) => {
         this.computationDetails = res
-        console.log('computation details', this.computationDetails)
+        log.debug('computation details', this.computationDetails)
         log.debug("Policy Details", this.policyDetails);
       }
     })
@@ -418,7 +423,7 @@ export class PolicySummaryOtherDetailsComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (clients: any[]) => {
-          console.log('All client details fetched:', clients);
+          log.debug('All client details fetched:', clients);
 
           // Process the array of client details as needed
           // For example, assign it to a component property
@@ -468,7 +473,7 @@ export class PolicySummaryOtherDetailsComponent {
 
     // Transform the input data to DTO format
     const personalDetailsUpdateDTO = transformToDTO(this.selectedInsured);
-    console.log("Transformed Data", personalDetailsUpdateDTO);
+    log.debug("Transformed Data", personalDetailsUpdateDTO);
     this.clientService
       .updateClient(this.selectedInsured.id, this.selectedInsured)
       .pipe(untilDestroyed(this))
@@ -618,7 +623,7 @@ export class PolicySummaryOtherDetailsComponent {
 
   addAnotherRisk() {
     // this.router.navigate([`/home/gis/policy/risk-details/`]);
-    log.debug("NAVIGATION:",this.policyDetails.batchNumber)
+    log.debug("NAVIGATION:", this.policyDetails.batchNumber)
     this.router.navigate([`/home/gis/policy/risk-details/edit/${this.policyDetails.batchNumber}`]);
 
 
@@ -702,9 +707,9 @@ export class PolicySummaryOtherDetailsComponent {
   //     this.updatedScheduleData = data;
   //     this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
 
-  //     console.log('Updated Schedule Data:', this.updatedScheduleData);
+  //      log.debug('Updated Schedule Data:', this.updatedScheduleData);
   //     this.updatedSchedule = this.updatedScheduleData._embedded;
-  //     console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+  //      log.debug('Updated Schedule  nnnnn:', this.updatedSchedule);
   //     const index = this.filteredSchedule.findIndex(item => item.code === this.updatedSchedule.code);
   //     if (index !== -1) {
   //       this.filteredSchedule[index] = this.updatedSchedule;
@@ -729,28 +734,28 @@ export class PolicySummaryOtherDetailsComponent {
     schedule.riskCode = this.SelectedRiskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
-  
+
     // Call the service to update the schedule
     this.policyService.updateSchedules(schedule).subscribe(data => {
       this.updatedScheduleData = data;
-  
+
       // Assuming data._embedded is the updated schedule object
       this.updatedSchedule = this.updatedScheduleData._embedded;
-  
+
       this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated schedule');
-    this.getSchedules();
+      this.getSchedules();
       // // Find the index of the updated schedule in filteredSchedule array
       // const index = this.filteredSchedule.findIndex(item => item.code === this.updatedSchedule.code);
-      
+
       // // If the schedule is found, replace it with the updated schedule
       // if (index !== -1) {
       //   this.filteredSchedule[index] = this.updatedSchedule;
-      //   console.log("NEW SCHEDULE DATA:", this.filteredSchedule);
+      //    log.debug("NEW SCHEDULE DATA:", this.filteredSchedule);
       // }
-  
+
       // Trigger change detection to update the table UI
       this.cdr.detectChanges();
-  
+
       // Reset the form
       this.scheduleDetailsForm.reset();
     }, error => {
@@ -758,11 +763,11 @@ export class PolicySummaryOtherDetailsComponent {
       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
       this.scheduleDetailsForm.reset();
     });
-  
+
     // Detect changes after the entire process
     this.cdr.detectChanges();
   }
-  
+
   createScheduleDetailsForm() {
     this.scheduleDetailsForm = this.fb.group({
       details: this.fb.group({
@@ -832,7 +837,7 @@ export class PolicySummaryOtherDetailsComponent {
     // });
     this.policyService.addInsured(this.batchNo, this.endorsementNo, this.policyNumber, this.selectedClientCode).subscribe(data => {
 
-      console.log('Added client Insured Data:', data);
+      log.debug('Added client Insured Data:', data);
       this.getInsureds()
 
 
@@ -889,14 +894,14 @@ export class PolicySummaryOtherDetailsComponent {
   toggleRiskClauseDetails() {
     this.isRiskClauseDetailsOpen = !this.isRiskClauseDetailsOpen;
   }
- 
+
   toggleRiskDetails() {
     this.isRiskDetailsOpen = !this.isRiskDetailsOpen;
   }
   onSelectRiskClauses(event: any) {
     this.selectedRiskClause = event;
-    console.log(this.selectedRiskClause,'Selected risk clause ')
-    console.log(this.selectedClause,'selected clause ')
+    log.debug(this.selectedRiskClause, 'Selected risk clause ')
+    log.debug(this.selectedClause, 'selected clause ')
 
   }
   openHelperModal(selectedClause: any) {
@@ -952,7 +957,7 @@ export class PolicySummaryOtherDetailsComponent {
       pinNo: data.pinNo,
       // type: string
     };
-    console.log(payload);
+    log.debug(payload);
     this.policyService
       .editInsureds(payload)
       .pipe(untilDestroyed(this))
@@ -960,7 +965,7 @@ export class PolicySummaryOtherDetailsComponent {
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Insured details updated successfully');
 
-          console.log('Success:', response);
+          log.debug('Success:', response);
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to update Insured details.Try again later');
@@ -968,7 +973,7 @@ export class PolicySummaryOtherDetailsComponent {
       });
   }
   //   togglePremiumDetails() {
-  //     console.log("selected risk", this.selectedRisk);
+  //      log.debug("selected risk", this.selectedRisk);
   //     if (!this.selectedRisk) {
   //       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
   //     } else {
@@ -983,7 +988,7 @@ export class PolicySummaryOtherDetailsComponent {
 
   // }
   togglePremiumDetails() {
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
     const passedPolicyRiskString = JSON.stringify(this.selectedRisk);
     sessionStorage.setItem('passedRiskPolicyDetails', passedPolicyRiskString);
 
@@ -1001,7 +1006,7 @@ export class PolicySummaryOtherDetailsComponent {
     }
 
     this.sectionsDetails = risk.sections;
-    console.log("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
+    log.debug("SELECTED RISK SECTION DETAILS", this.sectionsDetails);
     this.selectedSubclassCode = risk.subClassCode;
     log.debug("subclass code:", this.selectedSubclassCode)
     if (this.selectedSubclassCode) {
@@ -1113,7 +1118,7 @@ export class PolicySummaryOtherDetailsComponent {
       this.filteredAllMatchingSections = this.allMatchingSections.filter(section =>
         !this.sectionsDetails.some(detail => detail.sectionCode === section.code)
       );
-      console.log('Filtered Matching Sections:', this.filteredAllMatchingSections);
+      log.debug('Filtered Matching Sections:', this.filteredAllMatchingSections);
 
       // this.getPremium(this.filteredMandatorySections);
     } else {
@@ -1210,16 +1215,16 @@ export class PolicySummaryOtherDetailsComponent {
     log.debug("Premium List:", this.premiumList);
     // Check if premiumList has data and if the index is within bounds
     if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
-      console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+      log.debug(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
 
       // Log the current premiumListIndex before incrementing
-      console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+      log.debug(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
 
       // Increment the premiumListIndex and wrap around using modulo
       this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
 
       // Log the updated premiumListIndex after incrementing
-      console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+      log.debug(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
 
       section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
     } else {
@@ -1247,7 +1252,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: async (data: any) => {
           if (data) {
-            console.log("Risk Section Created data:", data);
+            log.debug("Risk Section Created data:", data);
             this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
 
             await this.getPolicy(); // Wait for getPolicy() to finish
@@ -1280,9 +1285,9 @@ export class PolicySummaryOtherDetailsComponent {
   getRiskClauses() {
 
 
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
     this.selectedSubclassCode = this.selectedRisk.subClassCode;
-    console.log('SELECTED SUBCLASS CODE', this.selectedSubclassCode)
+    log.debug('SELECTED SUBCLASS CODE', this.selectedSubclassCode)
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -1292,7 +1297,7 @@ export class PolicySummaryOtherDetailsComponent {
 
     this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
     const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-    console.log(this.SelectedRiskCode, 'Selected Risk Code ')
+    log.debug(this.SelectedRiskCode, 'Selected Risk Code ')
     if (!risk) {
       console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
       return; // Exit function early if corresponding risk is not found
@@ -1303,12 +1308,15 @@ export class PolicySummaryOtherDetailsComponent {
       next: (res) => {
         this.SubclauseList = res;
         this.SubclauseList = this.SubclauseList._embedded[0]
-        console.log(this.SubclauseList, 'Risk Clauses')
-        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode ==  20225947911);
-        console.log(this.SubclauseList, 'Unfiltered List')
+        log.debug(this.SubclauseList, 'Risk Clauses')
+        this.selectedSubClauseList = this.SubclauseList.filter(clause => clause.riskCode == 20225947911);
+        log.debug(this.SubclauseList, 'Unfiltered List')
 
 
-        console.log(this.selectedSubClauseList, 'Filtered List')
+        log.debug(this.selectedSubClauseList, 'Filtered List')
+        if(this.selectedSubClauseList){
+          this.loadAllClauses()
+        }
       }
     })
   }
@@ -1391,7 +1399,7 @@ export class PolicySummaryOtherDetailsComponent {
       .getRequiredDocuments(null, this.passedSubclassCode, this.selectedTransactionType)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (data:any) => {
+        next: (data: any) => {
 
           if (data) {
 
@@ -1439,7 +1447,7 @@ export class PolicySummaryOtherDetailsComponent {
     }
   }
   toggleRemarksDetails() {
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -1531,7 +1539,7 @@ export class PolicySummaryOtherDetailsComponent {
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Remark details updated successfully');
 
-          console.log('Success:', response);
+          log.debug('Success:', response);
 
           // Update the `filteredRemarks` array with the new data
           const index = this.filteredRemarks.findIndex(
@@ -1645,7 +1653,7 @@ export class PolicySummaryOtherDetailsComponent {
   //   this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
   // }
   toggleCommissionTranscDetails() {
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -1666,7 +1674,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.isCommissionTranscDetailsOpen = !this.isCommissionTranscDetailsOpen;
   }
   toggleRiskServiceList() {
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -1702,12 +1710,12 @@ export class PolicySummaryOtherDetailsComponent {
       next: (res) => {
         this.subclassPeril = res
         this.subclassPeril = this.subclassPeril.content
-        console.log(this.subclassPeril)
+        log.debug(this.subclassPeril)
         this.subclassPeril.forEach(element => {
           this.perilService.getPeril(element.perilCode).subscribe({
             next: (res) => {
               this.subclassPerilList.push(res)
-              console.log(this.subclassPerilList)
+              log.debug(this.subclassPerilList)
             }
           })
 
@@ -1715,51 +1723,234 @@ export class PolicySummaryOtherDetailsComponent {
       }
     })
   }
+  getRiskPerils() {
+    const SelectedRiskCode = this.selectedRisk.riskIpuCode;
+    const subclassCode = this.selectedRisk.subClassCode;
+    log.debug({
+      SelectedRiskCode: this.selectedRisk.riskIpuCode,
+      subclassCode: this.selectedRisk.subClassCode,
+      batchNo: this.batchNo
+    });
+    this.policyService
+      .getRiskPerils(this.batchNo, SelectedRiskCode, subclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.riskPerilList = response._embedded[0]
+          log.debug("Risk Peril List:", this.riskPerilList)
 
-  getRiskPeril() {
-    console.log("selected risk (Risk Peril)", this.selectedRisk);
+        },
+        error: (error) => {
 
-    if (!this.selectedRisk) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
-      return; // Exit function early if selectedRisk is not defined
-    } else {
-      this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
-
-      const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
-      if (!risk) {
-        console.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
-        return; // Exit function early if corresponding risk is not found
-      }
-      this.policyService.getRiskPerils().subscribe({
-        next: (res) => {
-          this.subperils = res
-          this.subperils = this.subperils._embedded
-          console.log(this.batchNo)
-
-          this.subperils.forEach(perilArray => {
-            perilArray.forEach(element => {
-              // console.log(element.ipuCode, "perils");
-              //  console.log(this.SelectedRiskCode)
-
-              if (element.polBatchNo === 233471313) {
-
-                if (element.ipuCode === 20235954513) {
-                  this.policyRiskPeril.push(element)
-                  this.subperils = element
-                  console.log(element, 'risk perils')
-                }
-              }
-            });
-
-          });
-
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
         }
-      });
-    }
-
-
-
+      })
   }
+  onRiskPerilSelected(riskperil: any) {
+    log.debug("SELECTED RISK PERIL", this.selectedRiskPeril)
+  }
+  createRiskPerilForm() {
+    this.riskPerilForm = this.fb.group({
+      action: [''],
+      annualPremium: [0],
+      claimExcess: [0],
+      claimExcessMaximum: [0],
+      claimExcessMinimum: [0],
+      claimExcessType: [''],
+      claimLimit: [0],
+      code: [0],
+      computationType: [''],
+      dependLossType: [''],
+      description: [''],
+      excess: [0],
+      excessMaximum: [0],
+      excessMinimum: [0],
+      excessType: [''],
+      expireOnClaim: [''],
+      freeLimitAmt: [0],
+      ipuCode: [0],
+      perilDescription: [''],
+      perilLimit: [0],
+      perilType: [''],
+      personLimit: [0],
+      plExcess: [0],
+      plExcessMaximum: [0],
+      plExcessMinimum: [0],
+      plExcessType: [''],
+      polBatchNo: [0],
+      premRate: [0],
+      premiumAmt: [0],
+      prorataFull: [''],
+      salvagePercentage: [0],
+      sectShtDesc: [''],
+      subClassPerilCode: [0],
+      subClassPerilMapCode: [0],
+      sumInsuredOrLimit: [''],
+      tlExcess: [0],
+      tlExcessMaximum: [0],
+      tlExcessMinimum: [0],
+      tlExcessType: [''],
+      ttdBenPercentage: ['']
+    });
+  }
+  addRiskPeril() {
+    const riskIpuCode = this.selectedRisk.riskIpuCode
+    log.debug("risk code:", riskIpuCode)
+    log.debug("SELECTED RISK PERIL", this.selectedRiskPeril)
+
+    // this.riskPerilForm.get('action').setValue("A");
+    // this.riskPerilForm.get('annualPremium').setValue(this.selectedRiskPeril.annualPremium);
+    // this.riskPerilForm.get('claimExcess').setValue(this.selectedRiskPeril.claimExcess);
+    // this.riskPerilForm.get('claimExcessMaximum').setValue(this.selectedRiskPeril.claimExcessMaximum);
+    // this.riskPerilForm.get('claimExcessMinimum').setValue(this.selectedRiskPeril.claimExcessMinimum);
+    // this.riskPerilForm.get('claimExcessType').setValue(this.selectedRiskPeril.claimExcessType);
+    // this.riskPerilForm.get('claimLimit').setValue(this.selectedRiskPeril.claimLimit);
+    // this.riskPerilForm.get('code').setValue(this.selectedRiskPeril.code);
+    // this.riskPerilForm.get('computationType').setValue(this.selectedRiskPeril.computationType);
+    // this.riskPerilForm.get('dependLossType').setValue(this.selectedRiskPeril.dependLossType);
+    // this.riskPerilForm.get('description').setValue(this.selectedRiskPeril.description);
+    // this.riskPerilForm.get('excess').setValue(this.selectedRiskPeril.excess);
+    // this.riskPerilForm.get('excessMaximum').setValue(this.selectedRiskPeril.excessMaximum);
+    // this.riskPerilForm.get('excessMinimum').setValue(this.selectedRiskPeril.excessMinimum);
+    // this.riskPerilForm.get('excessType').setValue(this.selectedRiskPeril.excessType);
+    // this.riskPerilForm.get('expireOnClaim').setValue(this.selectedRiskPeril.expireOnClaim);
+    // this.riskPerilForm.get('freeLimitAmt').setValue(this.selectedRiskPeril.freeLimitAmt);
+    // this.riskPerilForm.get('ipuCode').setValue(riskIpuCode);
+    // this.riskPerilForm.get('perilDescription').setValue(this.selectedRiskPeril.perilDescription);
+    // this.riskPerilForm.get('perilLimit').setValue(this.selectedRiskPeril.perilLimit);
+    // this.riskPerilForm.get('perilType').setValue(this.selectedRiskPeril.perilType);
+    // this.riskPerilForm.get('personLimit').setValue(this.selectedRiskPeril.personLimit);
+    // this.riskPerilForm.get('plExcess').setValue(this.selectedRiskPeril.plExcess);
+    // this.riskPerilForm.get('plExcessMaximum').setValue(this.selectedRiskPeril.plExcessMaximum);
+    // this.riskPerilForm.get('plExcessMinimum').setValue(this.selectedRiskPeril.plExcessMinimum);
+    // this.riskPerilForm.get('plExcessType').setValue(this.selectedRiskPeril.plExcessType);
+    // this.riskPerilForm.get('polBatchNo').setValue(this.batchNo);
+    // this.riskPerilForm.get('premRate').setValue(this.selectedRiskPeril.premRate);
+    // this.riskPerilForm.get('premiumAmt').setValue(this.selectedRiskPeril.premiumAmt);
+    // this.riskPerilForm.get('prorataFull').setValue(this.selectedRiskPeril.prorataFull);
+    // this.riskPerilForm.get('salvagePercentage').setValue(this.selectedRiskPeril.salvagePercentage);
+    // this.riskPerilForm.get('sectShtDesc').setValue(this.selectedRiskPeril.sectShtDesc);
+    // this.riskPerilForm.get('subClassPerilCode').setValue(this.selectedRiskPeril.subClassPerilCode);
+    // this.riskPerilForm.get('subClassPerilMapCode').setValue(this.selectedRiskPeril.subClassPerilMapCode);
+    // this.riskPerilForm.get('sumInsuredOrLimit').setValue(this.selectedRiskPeril.sumInsuredOrLimit);
+    // this.riskPerilForm.get('tlExcess').setValue(this.selectedRiskPeril.tlExcess);
+    // this.riskPerilForm.get('tlExcessMaximum').setValue(this.selectedRiskPeril.tlExcessMaximum);
+    // this.riskPerilForm.get('tlExcessMinimum').setValue(this.selectedRiskPeril.tlExcessMinimum);
+    // this.riskPerilForm.get('tlExcessType').setValue(this.selectedRiskPeril.tlExcessType);
+    // this.riskPerilForm.get('ttdBenPercentage').setValue(this.selectedRiskPeril.ttdBenPercentage);
+
+
+    /*DUMMY DATA*/
+    this.riskPerilForm.get('code').setValue(this.selectedRiskPeril.code);
+    this.riskPerilForm.get('action').setValue("A");
+    this.riskPerilForm.get('polBatchNo').setValue(this.batchNo);
+    this.riskPerilForm.get('subClassPerilCode').setValue(this.selectedRiskPeril.subClassPerilCode);
+    this.riskPerilForm.get('perilLimit').setValue(100000);
+    this.riskPerilForm.get('perilType').setValue("BO");
+    this.riskPerilForm.get('sumInsuredOrLimit').setValue("PL");
+    this.riskPerilForm.get('excessType').setValue("P");
+    this.riskPerilForm.get('excess').setValue(5000);
+    this.riskPerilForm.get('excessMinimum').setValue(1000);
+    this.riskPerilForm.get('excessMaximum').setValue(10000);
+    this.riskPerilForm.get('expireOnClaim').setValue(this.selectedRiskPeril.expireOnClaim);
+    this.riskPerilForm.get('personLimit').setValue(20000);
+    this.riskPerilForm.get('claimLimit').setValue(50000);
+    this.riskPerilForm.get('description').setValue(this.selectedRiskPeril.description);
+    this.riskPerilForm.get('tlExcessType').setValue(null);
+    this.riskPerilForm.get('tlExcess').setValue(3000);
+    this.riskPerilForm.get('tlExcessMinimum').setValue(500);
+    this.riskPerilForm.get('tlExcessMaximum').setValue(5000);
+    this.riskPerilForm.get('plExcessType').setValue(null);
+    this.riskPerilForm.get('plExcess').setValue(4000);
+    this.riskPerilForm.get('plExcessMinimum').setValue(700);
+    this.riskPerilForm.get('plExcessMaximum').setValue(7000);
+    this.riskPerilForm.get('salvagePercentage').setValue(10);
+    this.riskPerilForm.get('claimExcessType').setValue(this.selectedRiskPeril.claimExcessType);
+    this.riskPerilForm.get('claimExcessMinimum').setValue(1500);
+    this.riskPerilForm.get('claimExcessMaximum').setValue(15000);
+    this.riskPerilForm.get('dependLossType').setValue(this.selectedRiskPeril.dependLossType);
+    this.riskPerilForm.get('ttdBenPercentage').setValue(null);
+    this.riskPerilForm.get('subClassPerilMapCode').setValue(this.selectedRiskPeril.subClassPerilMapCode);
+    this.riskPerilForm.get('ipuCode').setValue(riskIpuCode);
+    this.riskPerilForm.get('computationType').setValue("SI");
+    this.riskPerilForm.get('claimExcess').setValue(2000);
+    this.riskPerilForm.get('perilDescription').setValue(this.selectedRiskPeril.perilDescription);
+
+
+
+
+    const riskPerilForm = this.riskPerilForm.value;
+    log.debug('Risk Peril Form:', riskPerilForm);
+    this.policyService
+      .addRiskPeril(riskPerilForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: async (data: any) => {
+          if (data) {
+            log.debug(" Added Risk Peril", data);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Risk Peril has been added');
+
+
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to add risk peril details. Try again later'
+          ); console.error(`Error >>>`, err);
+        },
+      });
+  }
+  // getRiskPeril() {
+  //   log.debug("selected risk (Risk Peril)", this.selectedRisk);
+
+  //   if (!this.selectedRisk) {
+  //     this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+  //     return; // Exit function early if selectedRisk is not defined
+  //   } else {
+  //     this.SelectedRiskCode = this.selectedRisk.riskIpuCode;
+
+  //     const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
+  //     if (!risk) {
+  //       log.error('Risk not found for SelectedRiskCode:', this.SelectedRiskCode);
+  //       return; // Exit function early if corresponding risk is not found
+  //     }
+  //     this.policyService.getRiskPerils().subscribe({
+  //       next: (res) => {
+  //         this.subperils = res
+  //         this.subperils = this.subperils._embedded
+  //         log.debug(this.batchNo)
+
+  //         this.subperils.forEach(perilArray => {
+  //           perilArray.forEach(element => {
+  //             //  log.debug(element.ipuCode, "perils");
+  //             //   log.debug(this.SelectedRiskCode)
+
+  //             if (element.polBatchNo === 233471313) {
+
+  //               if (element.ipuCode === 20235954513) {
+  //                 this.policyRiskPeril.push(element)
+  //                 this.subperils = element
+  //                 log.debug(element, 'risk perils')
+  //               }
+  //             }
+  //           });
+
+  //         });
+
+  //       }
+  //     });
+  //   }
+
+
+
+  // }
 
 
   toggleRiskClaimReportDetails() {
@@ -1831,39 +2022,37 @@ export class PolicySummaryOtherDetailsComponent {
     window.URL.revokeObjectURL(url);
     a.remove();
   }
-  getSingleRiskPeril() {
-    console.log(this.selectedPeril)
-  }
+
   deleteRiskPeril() {
 
     this.policyService.deleteRiskPeril(this.selectedRiskPeril.code).subscribe({
       next: (res) => {
-        console.log('delete response', res)
-        this.policyService.getRiskPerils().subscribe({
-          next: (res) => {
-            this.subperils = res
-            this.subperils = this.subperils._embedded
-            console.log(this.batchNo)
+        log.debug('delete response', res)
+        // this.policyService.getRiskPerils().subscribe({
+        //   next: (res) => {
+        //     this.subperils = res
+        //     this.subperils = this.subperils._embedded
+        //     log.debug(this.batchNo)
 
-            this.subperils.forEach(perilArray => {
-              perilArray.forEach(element => {
-                if (element.polBatchNo === 233471313) {
-                  if (element.ipuCode === 20235954513) {
-                    this.policyRiskPeril.push(element)
-                    this.subperils = element
-                    console.log(element, 'risk perils')
-                  }
-                }
-              });
+        //     this.subperils.forEach(perilArray => {
+        //       perilArray.forEach(element => {
+        //         if (element.polBatchNo === 233471313) {
+        //           if (element.ipuCode === 20235954513) {
+        //             this.policyRiskPeril.push(element)
+        //             this.subperils = element
+        //             log.debug(element, 'risk perils')
+        //           }
+        //         }
+        //       });
 
-            });
+        //     });
 
-          }
-        });
+        //   }
+        // });
         this.globalMessagingService.displaySuccessMessage('Success', 'Risk Peril deleted successfully')
       }
     })
-    console.log(this.selectedRiskPeril.code)
+    log.debug(this.selectedRiskPeril.code)
   }
   openRiskPerilDeleteModal() {
     log.debug("Selected Risk Peril", this.selectedRiskPeril)
@@ -1886,7 +2075,7 @@ export class PolicySummaryOtherDetailsComponent {
   deleteRiskClause() {
     this.policyService.deleteRiskClause(this.selectedClause.riskCode, this.selectedClause.policyClauseCode).subscribe({
       next: (data) => {
-        console.log(data)
+        log.debug(data)
         this.getRiskClauses()
         this.globalMessagingService.displaySuccessMessage('Success', 'Risk Clause deleted successfully')
       }
@@ -1931,13 +2120,13 @@ export class PolicySummaryOtherDetailsComponent {
       .addRequiredDocuments(requiredDocForm, this.user)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response:any) => {
+        next: (response: any) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Document details added successfully');
 
           log.debug('response after adding required doc:', response._embedded);
-          this.submittedDocumentResponse=response._embedded;
-          log.debug("Added Document list:",this.submittedDocumentResponse)
-          if(this.submittedDocumentResponse){
+          this.submittedDocumentResponse = response._embedded;
+          log.debug("Added Document list:", this.submittedDocumentResponse)
+          if (this.submittedDocumentResponse) {
             this.getRequiredDocsByCode();
           }
         },
@@ -1956,14 +2145,14 @@ export class PolicySummaryOtherDetailsComponent {
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Document details deleted successfully');
 
-          console.log('Success:', response);
+          log.debug('Success:', response);
           // Remove the deleted tax from the policy tax Details array
-        const index = this.addedDocumentList.findIndex(doc => doc.code === this.selectedDocument.code);
-        if (index !== -1) {
-          this.addedDocumentList.splice(index, 1);
-        }
-        // Clear the selected risk
-        this.selectedDocument = null;
+          const index = this.addedDocumentList.findIndex(doc => doc.code === this.selectedDocument.code);
+          if (index !== -1) {
+            this.addedDocumentList.splice(index, 1);
+          }
+          // Clear the selected risk
+          this.selectedDocument = null;
 
         },
         error: (error) => {
@@ -1979,7 +2168,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: (response: any) => {
           this.remarkList = response._embedded[0];
-          console.log('Remarks list:', this.remarkList);
+          log.debug('Remarks list:', this.remarkList);
           this.filteredRemarks = this.remarkList.filter(remark => remark.polBatchNo == this.batchNo);
           log.debug("FILTERED REMARK LIST", this.filteredRemarks)
 
@@ -1998,7 +2187,7 @@ export class PolicySummaryOtherDetailsComponent {
         .populateRequiredDoc(this.SelectedRiskCode, tempTransactionType, this.user)
         .subscribe({
           next: (response: any) => {
-            console.log('Populate Doc:', response);
+            log.debug('Populate Doc:', response);
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated Required document')
           },
           error: (error) => {
@@ -2043,7 +2232,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: (response: any) => {
           this.policyTaxes = response._embedded
-          console.log('Policy  Taxes:', this.policyTaxes);
+          log.debug('Policy  Taxes:', this.policyTaxes);
           this.filteredPolicyTaxes = this.policyTaxes.filter(policyTaxes => policyTaxes.batchNo == this.batchNo);
           log.debug("FILTERED Policy Taxes LIST", this.filteredPolicyTaxes)
 
@@ -2095,7 +2284,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: (response: any) => {
           this.policyTaxes = response._embedded
-         log.debug("Response after adding tax:", response)
+          log.debug("Response after adding tax:", response)
 
         },
         error: (error) => {
@@ -2131,7 +2320,7 @@ export class PolicySummaryOtherDetailsComponent {
       .subscribe({
         next: (response: any) => {
           this.policyTaxes = response
-          console.log('Policy  Taxes:', this.policyTaxes);
+          log.debug('Policy  Taxes:', this.policyTaxes);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
 
         },
@@ -2152,50 +2341,50 @@ export class PolicySummaryOtherDetailsComponent {
     }
   }
   deletePolicyTaxes() {
-    log.debug("Selected Policy Tax",this.selectedPolicyTax)
+    log.debug("Selected Policy Tax", this.selectedPolicyTax)
     this.policyService
-    .deletePolicyTaxes(this.batchNo,this.selectedPolicyTax.transactionTypeCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.policyTaxes =response
-        console.log('Policy  Taxes:', this.policyTaxes);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
+      .deletePolicyTaxes(this.batchNo, this.selectedPolicyTax.transactionTypeCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.policyTaxes = response
+          log.debug('Policy  Taxes:', this.policyTaxes);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
 
-        // Remove the deleted tax from the policy tax Details array 
-        const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
-        if (index !== -1) {
-          this.filteredPolicyTaxes.splice(index, 1);
+          // Remove the deleted tax from the policy tax Details array 
+          const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
+          if (index !== -1) {
+            this.filteredPolicyTaxes.splice(index, 1);
+          }
+          // Clear the selected risk
+          this.selectedPolicyTax = null;
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
         }
-        // Clear the selected risk
-        this.selectedPolicyTax = null;
-
-      },
-      error: (error) => {
-
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add policy taxes details.Try again later');
-      }
-    })
+      })
   }
-  getRelatedRisks(){
+  getRelatedRisks() {
     this.policyService
-    .getRelatedRisks(this.selectedRisk.riskIpuCode,this.selectedRisk.propertyId)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.relatedRiskList =response._embedded
-        console.log('Related Risks:', this.relatedRiskList);
+      .getRelatedRisks(this.selectedRisk.riskIpuCode, this.selectedRisk.propertyId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.relatedRiskList = response._embedded
+          log.debug('Related Risks:', this.relatedRiskList);
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+        }
+      })
   }
- 
+
   toggleScheduleDetails() {
-    console.log("selected risk", this.selectedRisk);
+    log.debug("selected risk", this.selectedRisk);
 
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
@@ -2205,29 +2394,29 @@ export class PolicySummaryOtherDetailsComponent {
     // Toggle collapse state only if both selectedRisk and corresponding risk are valid
     this.isScheduleDetailOpen = !this.isScheduleDetailOpen;
   }
-  getSchedules(){
+  getSchedules() {
     this.policyService
-    .getSchedules()
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.scheduleListDetails =response._embedded
-        console.log('Schedule List Details:', this.scheduleListDetails);
-        this.filteredSchedule = this.scheduleListDetails.filter(schedule => schedule.riskCode == this.SelectedRiskCode);
-        log.debug("Filtered Schedule:",this.filteredSchedule)
-        if(this.filteredSchedule)
-        this.scheduleDetailsExist = true
+      .getSchedules()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.scheduleListDetails = response._embedded
+          log.debug('Schedule List Details:', this.scheduleListDetails);
+          this.filteredSchedule = this.scheduleListDetails.filter(schedule => schedule.riskCode == this.SelectedRiskCode);
+          log.debug("Filtered Schedule:", this.filteredSchedule)
+          if (this.filteredSchedule)
+            this.scheduleDetailsExist = true
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived schedule details.Try again later');
+        }
+      })
   }
   onEditSchedule(schedule: any) {
-    log.debug('SELECTED SCHEDULE: ',schedule)
-    if(this.selectedSchedule){
+    log.debug('SELECTED SCHEDULE: ', schedule)
+    if (this.selectedSchedule) {
       this.getVehicleMake()
 
     }
@@ -2241,14 +2430,14 @@ export class PolicySummaryOtherDetailsComponent {
           yearOfManufacture: schedule.details.level1.yearOfManufacture,
           value: schedule.details.level1.value,
           bodyType: schedule.details.level1.bodyType,
-          coverType:schedule.details.level1.coverType,
+          coverType: schedule.details.level1.coverType,
 
         }
       },
-    
+
     });
   }
-   getVehicleMake() {
+  getVehicleMake() {
     this.vehicleMakeService
       .getAllVehicleMake()
       .pipe(untilDestroyed(this))
@@ -2262,7 +2451,7 @@ export class PolicySummaryOtherDetailsComponent {
             log.debug("selected vehicle make ", this.selectedVehicleMake);
             this.selectedVehicleMakeCode = this.selectedVehicleMake[0].code;
             log.debug("selected vehicle make code", this.selectedVehicleMakeCode);
-            if(this.selectedVehicleMakeCode){
+            if (this.selectedVehicleMakeCode) {
               this.getVehicleModel()
             }
             this.cdr.detectChanges();
@@ -2322,32 +2511,32 @@ export class PolicySummaryOtherDetailsComponent {
         },
       });
   }
-  getCommissions(){
+  getCommissions() {
     this.policyService
-    .getCommissions(this.selectedRisk.binderCode,this.selectedRisk.riskIpuCode,this.selectedRisk.subClassCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.commissionTransaction =response._embedded
-        console.log(' Comission Transaction:', this.commissionTransaction);
+      .getCommissions(this.selectedRisk.binderCode, this.selectedRisk.riskIpuCode, this.selectedRisk.subClassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.commissionTransaction = response._embedded
+          log.debug(' Comission Transaction:', this.commissionTransaction);
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived commission transactions details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived commission transactions details.Try again later');
+        }
+      })
   }
   createCommissionTranscDetailsForm() {
     this.commissionTransactionDetailsForm = this.fb.group({
       ipuCode: [''],
       transactionCode: [''],
       transactionTypeCode: [''],
-    
+
     });
   }
-  addCommission(transaction:any){
-    log.debug("Commission Transaction Selected:",transaction)
+  addCommission(transaction: any) {
+    log.debug("Commission Transaction Selected:", transaction)
     this.commissionTransactionDetailsForm.get('ipuCode').setValue(this.SelectedRiskCode)
     this.commissionTransactionDetailsForm.get('transactionCode').setValue(transaction.transactionCode)
     this.commissionTransactionDetailsForm.get('transactionTypeCode').setValue(transaction.transactionTypeCode)
@@ -2355,52 +2544,52 @@ export class PolicySummaryOtherDetailsComponent {
     const commissionTransactionDetailsForm = this.commissionTransactionDetailsForm.value;
     log.debug("Commissions Transaction Form:", commissionTransactionDetailsForm)
     this.policyService
-    .addCommission(commissionTransactionDetailsForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.commissionTransaction =response._embedded
-        console.log(' Comission Transaction:', this.commissionTransaction);
-        this.closebutton.nativeElement.click();
+      .addCommission(commissionTransactionDetailsForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.commissionTransaction = response._embedded
+          log.debug(' Comission Transaction:', this.commissionTransaction);
+          this.closebutton.nativeElement.click();
 
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  commission transaction .Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  commission transaction .Try again later');
+        }
+      })
   }
-  deleteCommission(){
+  deleteCommission() {
     this.policyService
-    .deleteCommission(this.selectedTransaction.code)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        log.debug("RESPONSE AFTER DELETING COMMISSION:",response)
-        this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted commission"');
+      .deleteCommission(this.selectedTransaction.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("RESPONSE AFTER DELETING COMMISSION:", response)
+          this.globalMessagingService.displaySuccessMessage('Success', '"Successfully  deleted commission"');
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived risks details.Try again later');
+        }
+      })
   }
-  getProductClauses(){
+  getProductClauses() {
     this.quotationService
-    .getProductClauses(this.policyDetailsData.product.code)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.productClauseList = response;
-        log.debug("Product Clause List:",this.productClauseList)
-      },
-      error: (error) => {
+      .getProductClauses(this.policyDetailsData.product.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.productClauseList = response;
+          log.debug("Product Clause List:", this.productClauseList)
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  product clauses details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  product clauses details.Try again later');
+        }
+      })
   }
   getCertificatesDetailsForm() {
     this.certificatesDetailsForm = this.fb.group({
@@ -2412,7 +2601,7 @@ export class PolicySummaryOtherDetailsComponent {
       printStatus: [''],
       subClassCode: [''],
       user: [''],
-    
+
     });
   }
   createCertificatesForm() {
@@ -2440,8 +2629,8 @@ export class PolicySummaryOtherDetailsComponent {
       withEffectTo: ['']
     });
   }
-  
-  getallCertificates(){
+
+  getallCertificates() {
     this.certificatesDetailsForm.get('agentCode').setValue(this.policyDetailsData.agency)
     this.certificatesDetailsForm.get('branchCertLot').setValue("Y")
     this.certificatesDetailsForm.get('branchCode').setValue(1)
@@ -2455,20 +2644,20 @@ export class PolicySummaryOtherDetailsComponent {
     log.debug("Certificates Form:", certificatesDetailsForm)
 
     this.policyService
-    .getAllCertificates(certificatesDetailsForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.certificatesList = response._embedded;
-        log.debug("Certificates List:",this.certificatesList)
-      },
-      error: (error) => {
+      .getAllCertificates(certificatesDetailsForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.certificatesList = response._embedded;
+          log.debug("Certificates List:", this.certificatesList)
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived certificates details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get retrived certificates details.Try again later');
+        }
+      })
   }
-  addCertificates(){
+  addCertificates() {
 
     this.addCertificatesForm.get('batchNo').setValue(this.batchNo);
     this.addCertificatesForm.get('cancellationDate').setValue(this.selectedPolicyCertificate.cancellationDate);
@@ -2491,41 +2680,41 @@ export class PolicySummaryOtherDetailsComponent {
     this.addCertificatesForm.get('user').setValue(this.user);
     this.addCertificatesForm.get('withEffectFrom').setValue(this.selectedPolicyCertificate.withEffectFrom);
     this.addCertificatesForm.get('withEffectTo').setValue(this.selectedPolicyCertificate.withEffectTo);
-  
+
     const addCertificatesForm = this.addCertificatesForm.value;
     log.debug("Adding Certificates Form:", addCertificatesForm)
 
     this.policyService
-    .addCertificate(addCertificatesForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        log.debug("Adding Certificate:",response)
-        this.getPolicyCertificates()
-      },
-      error: (error) => {
+      .addCertificate(addCertificatesForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Adding Certificate:", response)
+          this.getPolicyCertificates()
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
+        }
+      })
   }
-  getPolicyCertificates(){
+  getPolicyCertificates() {
     this.policyService
-    .getPolicyCertificates(this.selectedRisk.riskIpuCode,this.selectedRisk.propertyId)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.policyCertificateList= response
-        log.debug("Adding Certificate:",response)
+      .getPolicyCertificates(this.selectedRisk.riskIpuCode, this.selectedRisk.propertyId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.policyCertificateList = response
+          log.debug("Adding Certificate:", response)
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add  certificates details.Try again later');
+        }
+      })
   }
-  editCertificates(){
+  editCertificates() {
 
     this.addCertificatesForm.get('batchNo').setValue(this.batchNo);
     this.addCertificatesForm.get('cancellationDate').setValue(this.selectedPolicyCertificate.cancellationDate);
@@ -2548,192 +2737,192 @@ export class PolicySummaryOtherDetailsComponent {
     this.addCertificatesForm.get('user').setValue(this.user);
     this.addCertificatesForm.get('withEffectFrom').setValue(this.selectedPolicyCertificate.withEffectFrom);
     this.addCertificatesForm.get('withEffectTo').setValue(this.selectedPolicyCertificate.withEffectTo);
-  
+
     const editCertificatesForm = this.addCertificatesForm.value;
     log.debug("Editing Certificates Form:", editCertificatesForm)
 
     this.policyService
-    .updateCertificate(editCertificatesForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        log.debug("Edit Certificate response:",response)
-        this.getPolicyCertificates()
-      },
-      error: (error) => {
+      .updateCertificate(editCertificatesForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Edit Certificate response:", response)
+          this.getPolicyCertificates()
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit  certificates details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit  certificates details.Try again later');
+        }
+      })
   }
-  deleteCertificates(){
+  deleteCertificates() {
     this.policyService
-    .deleteCertificates(this.selectedPolicyCertificate.code)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        log.debug("Response after deleting certificate:",response)
+      .deleteCertificates(this.selectedPolicyCertificate.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting certificate:", response)
 
-      },
-      error: (error) => {
+        },
+        error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete  certificate details.Try again later');
-      }
-    })
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete  certificate details.Try again later');
+        }
+      })
   }
-  
 
-onAddRequiredDoc(document: any) {
-  log.debug('SELECTED Document: ',document)
- 
-  this.selectedDocument = document;
-  this.requiredDocumentsForm.patchValue({
-    
-        description: document.description,
-        shortDescription: document.shortDescription,
-       
 
-  });
+  onAddRequiredDoc(document: any) {
+    log.debug('SELECTED Document: ', document)
 
-}
-getRequiredDocsByCode() {
-  this.policyService
-    .getRequiredDocumentsByCode(this.submittedDocumentResponse.code)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        if (response && response._embedded) {
-          // Convert the object to an array of its values
-          this.addedDocumentList = [response._embedded];
-        } else {
-          this.addedDocumentList = [];
-        }
-        log.debug("Adding Document list:", this.addedDocumentList);
-      },
-      error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve documents by code. Try again later');
-      }
+    this.selectedDocument = document;
+    this.requiredDocumentsForm.patchValue({
+
+      description: document.description,
+      shortDescription: document.shortDescription,
+
+
     });
-}
-onEditRequiredDoc(document: any) {
-  log.debug('SELECTED Document: ',document)
- 
-  this.selectedDocument = document;
-  this.editRequiredDocumentsForm.patchValue({
-    
-        description: document.description,
-        code: document.code,
-        dateSubmitted:document.dateSubmitted,
-        remarks:document.remark,
-        referenceNumber:document.referenceNumber,
-        isSubmitted:document.isSubmitted,
-        dateCreated:document.dateCreated
 
-       
-
-  });
-
-}
-editRequiredDocuments() {
-  this.editRequiredDocumentsForm.get('action').setValue("E");
-  this.editRequiredDocumentsForm.get('riskCode').setValue(this.SelectedRiskCode);
-  this.editRequiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
-  this.editRequiredDocumentsForm.get('isMandatory').setValue("N");
-  this.editRequiredDocumentsForm.get('userReceived').setValue(this.user);
-
-  const EditrequiredDocForm = this.editRequiredDocumentsForm.value;
-  log.debug('Edit Required Documents Form:', EditrequiredDocForm);
-  this.policyService
-    .editRequiredDocuments(EditrequiredDocForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response:any) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Document details updated successfully');
-
-        log.debug('response after adding required doc:', response._embedded);
-        this.submittedDocumentResponse=response._embedded;
-        log.debug("Added Document list:",this.submittedDocumentResponse)
-        if(this.submittedDocumentResponse){
-          this.getRequiredDocsByCode();
+  }
+  getRequiredDocsByCode() {
+    this.policyService
+      .getRequiredDocumentsByCode(this.submittedDocumentResponse.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          if (response && response._embedded) {
+            // Convert the object to an array of its values
+            this.addedDocumentList = [response._embedded];
+          } else {
+            this.addedDocumentList = [];
+          }
+          log.debug("Adding Document list:", this.addedDocumentList);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve documents by code. Try again later');
         }
-      },
-      error: (error) => {
+      });
+  }
+  onEditRequiredDoc(document: any) {
+    log.debug('SELECTED Document: ', document)
 
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update document details.Try again later');
-      }
+    this.selectedDocument = document;
+    this.editRequiredDocumentsForm.patchValue({
+
+      description: document.description,
+      code: document.code,
+      dateSubmitted: document.dateSubmitted,
+      remarks: document.remark,
+      referenceNumber: document.referenceNumber,
+      isSubmitted: document.isSubmitted,
+      dateCreated: document.dateCreated
+
+
+
     });
-}
-fetchBodyTypes(){
-  this.policyService
-  .getBodyTypes()
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-      this.bodytypesList= response._embedded
-      log.debug("Body Types:",this.bodytypesList)
 
-    },
-    error: (error) => {
+  }
+  editRequiredDocuments() {
+    this.editRequiredDocumentsForm.get('action').setValue("E");
+    this.editRequiredDocumentsForm.get('riskCode').setValue(this.SelectedRiskCode);
+    this.editRequiredDocumentsForm.get('subClassCode').setValue(this.selectedRisk.subClassCode);
+    this.editRequiredDocumentsForm.get('isMandatory').setValue("N");
+    this.editRequiredDocumentsForm.get('userReceived').setValue(this.user);
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
-    }
-  })
-}
-fetchMotorColours(){
-  this.policyService
-  .getMotorColors()
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-      this.motorColorsList= response._embedded
-      log.debug("Motor Colours:",this.motorColorsList)
+    const EditrequiredDocForm = this.editRequiredDocumentsForm.value;
+    log.debug('Edit Required Documents Form:', EditrequiredDocForm);
+    this.policyService
+      .editRequiredDocuments(EditrequiredDocForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Document details updated successfully');
 
-    },
-    error: (error) => {
+          log.debug('response after adding required doc:', response._embedded);
+          this.submittedDocumentResponse = response._embedded;
+          log.debug("Added Document list:", this.submittedDocumentResponse)
+          if (this.submittedDocumentResponse) {
+            this.getRequiredDocsByCode();
+          }
+        },
+        error: (error) => {
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
-    }
-  })
-}
-fetchSecurityDevices(){
-  this.policyService
-  .getSecurityDevices()
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-      this.securityDevicesList= response._embedded
-      log.debug("Motor Colours:",this.securityDevicesList)
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update document details.Try again later');
+        }
+      });
+  }
+  fetchBodyTypes() {
+    this.policyService
+      .getBodyTypes()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.bodytypesList = response._embedded
+          log.debug("Body Types:", this.bodytypesList)
 
-    },
-    error: (error) => {
+        },
+        error: (error) => {
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
-    }
-  })
-}
-fetchMotorAccessories(){
-  this.policyService
-  .getMotorAccessories()
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-      this.motorAccessoriesList= response._embedded
-      log.debug("Motor Accessories:",this.motorAccessoriesList)
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  body types details.Try again later');
+        }
+      })
+  }
+  fetchMotorColours() {
+    this.policyService
+      .getMotorColors()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.motorColorsList = response._embedded
+          log.debug("Motor Colours:", this.motorColorsList)
 
-    },
-    error: (error) => {
+        },
+        error: (error) => {
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor accessories details.Try again later');
-    }
-  })
-}
-  editRiskClause(event){
-    console.log(event,'edit')
-    console.log(this.selectedRiskClause,'edit var')
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor colors  details.Try again later');
+        }
+      })
+  }
+  fetchSecurityDevices() {
+    this.policyService
+      .getSecurityDevices()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.securityDevicesList = response._embedded
+          log.debug("Motor Colours:", this.securityDevicesList)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  security devices details.Try again later');
+        }
+      })
+  }
+  fetchMotorAccessories() {
+    this.policyService
+      .getMotorAccessories()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.motorAccessoriesList = response._embedded
+          log.debug("Motor Accessories:", this.motorAccessoriesList)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  motor accessories details.Try again later');
+        }
+      })
+  }
+  editRiskClause(event) {
+    log.debug(event, 'edit')
+    log.debug(this.selectedRiskClause, 'edit var')
     this.policyService.editRiskClause(this.selectedRiskClause).subscribe(
       {
-        next:(res=>{
-          console.log(res)
+        next: (res => {
+          log.debug(res)
           this.globalMessagingService.displaySuccessMessage(
             'sucess',
             'Risk Clause updated'
@@ -2756,24 +2945,24 @@ fetchMotorAccessories(){
       subClassCode: [''],
       userReceived: ['']
     });
-    
+
   }
-  fetchApplicableTaxes(){
+  fetchApplicableTaxes() {
     const transactionCategory = "CL"
     this.policyService
-    .getApplicableTaxes(this.selectedSubclassCode,transactionCategory)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        this.applicableTaxesList= response._embedded
-        log.debug("Applicable Taxes:",this.applicableTaxesList)
-  
-      },
-      error: (error) => {
-  
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  applicable taxes details.Try again later');
-      }
-    })
+      .getApplicableTaxes(this.selectedSubclassCode, transactionCategory)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.applicableTaxesList = response._embedded
+          log.debug("Applicable Taxes:", this.applicableTaxesList)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  applicable taxes details.Try again later');
+        }
+      })
   }
   applyFilterGlobalTaxes($event, stringVal) {
     this.dt3.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
@@ -2783,13 +2972,14 @@ fetchMotorAccessories(){
       next: (data) => {
         const model = data._embedded
         this.modelYear = model[0]["List of cover years"]
-        console.log("model year", this.modelYear)
+        log.debug("model year", this.modelYear)
       }, error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
         console.error(err);
       }
     })
   }
+
 }
 
 
