@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Logger} from "../logger/logger.service";
-import {HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpParams} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {DmsDocument, SingleDmsDocument} from "../../data/common/dmsDocument";
 import {ParameterService} from "../system-parameters/parameter.service";
-import {environment} from "../../../../environments/environment";
 import {ApiService} from "../api/api.service";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 
@@ -52,10 +51,6 @@ export class DmsService{
   getDocumentById(docId: string): Observable<SingleDmsDocument> {
     let url: string;
     let urlEndpoint = dmsEndpoints.getByDocId;
-
-    const header = new HttpHeaders({
-      "Accept": "application/json"
-    });
 
     const params = new HttpParams()
       .set('docId', `${docId}`);
@@ -153,6 +148,37 @@ export class DmsService{
 
     return this.api.GET<any>(`v2/document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
+
+  fetchDocumentsByAgentCode(agentCode: string): Observable<DmsDocument[]>{
+    const params = new HttpParams()
+      .set('agentCode', `${agentCode}`);
+    log.info('Fetching documents for agent no: ', `${agentCode}`);
+
+    return this.api.GET<DmsDocument[]>(`getAgentDocsByAgentCode?${params}`, API_CONFIG.DMS_SERVICE);
+  }
+
+  saveAgentDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `uploadAgentDocs`,
+      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+    );
+  }
+
+  saveClientDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `uploadClientDocument`,
+      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+    );
+  }
+
+  saveServiceProviderDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `uploadSPDocument`,
+      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+    );
+  }
+
+
 
   /**
    * Get DMS Full Url

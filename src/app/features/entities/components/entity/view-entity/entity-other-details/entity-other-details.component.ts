@@ -28,6 +28,7 @@ import { EditOrganizationFormComponent } from './edit-organization-form/edit-org
 import { EditCommentFormComponent } from './edit-comment-form/edit-comment-form.component';
 import { EditOtherDetailsFormComponent } from './edit-other-details-form/edit-other-details-form.component';
 import { EditActivityFormComponent } from './edit-activity-form/edit-activity-form.component';
+import {ReqPartyById} from "../../../../data/entityDto";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -68,6 +69,7 @@ export class EntityOtherDetailsComponent implements OnInit {
   @Input() wealthAmlDetails: any;
   @Input() states: StateDto[];
   @Input() nokList: any[];
+  @Input() entityPartyIdDetails: ReqPartyById;
   // @Input() leadDetails: Leads;
 
   public commentsData: any[] = [];
