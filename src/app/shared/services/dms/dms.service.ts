@@ -178,7 +178,15 @@ export class DmsService{
     );
   }
 
+  deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
+    const params = new HttpParams()
+      .set('docId', `${docId}`);
 
+    log.info('Fetching documents for document: ', `${docId}`);
+    return this.api.GET<SingleDmsDocument>(`deleteDocsById?${params}`, API_CONFIG.DMS_SERVICE, {
+      responseType: 'text' as 'json'
+    })
+  }
 
   /**
    * Get DMS Full Url

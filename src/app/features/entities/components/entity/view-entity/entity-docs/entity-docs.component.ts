@@ -107,7 +107,19 @@ export class EntityDocsComponent implements OnInit {
    * If there is an error, logs the error and still calls `fetchDocuments`.
    */
   deleteUploadedFile(doc: any) {
-
+    this.dmsService.deleteDocumentById(doc.id)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'File deleted successfully!');
+          log.info('Calling fetchDocuments...');
+          this.fetchDocuments();
+        },
+        error: (error) => {
+          log.error('Error during document deletion:', error);
+          this.fetchDocuments();
+        }
+      });
   }
 
   /**
