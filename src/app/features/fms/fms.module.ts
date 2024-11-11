@@ -9,11 +9,13 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../../shared/shared.module";
+import { ReceiptComponent } from './components/receipt/receipt.component';
 
 
 @NgModule({
   declarations: [
-    ChequeAuthorizationComponent
+    ChequeAuthorizationComponent,
+    ReceiptComponent
   ],
     imports: [
         CommonModule,
