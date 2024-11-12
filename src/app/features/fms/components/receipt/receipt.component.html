@@ -1,0 +1,652 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+          {
+            label: 'FMS',
+            url: '/home/dashboard'
+          },
+          {
+            label: 'receipt',
+            url: '/home/fms/components/receipt',
+          },
+          {
+            label: 'receipting',
+            url: ''
+          }
+        ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+
+  
+
+  <div class="container drop">
+    <div class="scroll-container bg-white">
+
+      <h1 class="text-start fs-4 mt-1">{{'fms.receipting.capture_receipt' | translate }}</h1>
+
+      <form [formGroup]="receiptingDetailsForm">
+        <!-- Receipt Details Section -->
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="currency" class="text-dark">{{'fms.receipting.currency' | translate }}</label>
+              <div class="dropdown-container">
+                <select id="currency" class="form-control" formControlName="currency" (change)="onCurrencySelected()">
+                  <option *ngFor="let currency of currencies" [value]="currency?.symbol">{{currency?.symbol}}</option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exchange Rate Modal -->
+          <div class="modal fade" id="exchangeRateModal" tabindex="-1" role="dialog" aria-labelledby="exchangeRateLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div *ngIf="useDefaultExchangeRate" >
+                    <p> 1 {{ selectedCurrency }} = {{ exchangeRate }} </p>
+                  </div>
+                  <div *ngIf="!useDefaultExchangeRate">
+                    <label for="exchangeRateInput">Enter Exchange Rate:</label>
+                    <p>1 {{ selectedCurrency }} =</p>
+                    <input type="number" id="exchangeRateInput" placeholder="value in KES" class="form-control" formControlName="exchangeRate" />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" (click)="confirmExchangeRate()">OK</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Mode Dropdown -->
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="paymentMode" class="text-dark">
+                {{ 'fms.receipting.payment_mode' | translate }}
+              </label>
+              <div class="dropdown-container">
+                <select
+                  id="paymentMode"
+                  class="form-control"
+                  formControlName="paymentMode"
+                  (change)="onPaymentModeSelected()"
+                >
+                  <option *ngFor="let paymentMode of paymentModes" [value]="paymentMode.desc">
+                   
+                    {{ paymentMode.desc }}
+                  </option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i> <!-- PrimeNG icon -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Cheque Type Modal -->
+          <div class="modal fade" id="chequeTypeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Select Cheque Type</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="dropdown-container">
+                    <select formControlName="chequeType" class="form-control">
+                      <!-- <option *ngFor="let type of chequeTypes" [value]="type">{{ type }}</option> -->
+                    </select>
+                    <i class="pi pi-chevron-down dropdown-icon"></i>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" (click)="onChequeTypeSelected()">OK</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }}</label>
+              <div class="dropdown-container">
+                <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()">
+                  <!-- <option *ngFor="let bank of bankAccounts" [value]="bank.accountNumber">{{bank.accountName}} - {{bank.accountType}}</option> -->
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receiptNumber" class="text-dark">{{'fms.receipting.receipt_number' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="receiptNumber"
+                formControlName="receiptNumber"
+                
+              >
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receiptingPoint" class="text-dark">{{'fms.receipting.receipting_point' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="receiptingPoint"
+                formControlName="receiptingPoint"
+                
+              ></div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="drawersBank" class="text-dark">{{'fms.receipting.drawers_bank' | translate }}</label>
+              <div class="dropdown-container">
+                <select id="drawersBank" class="form-control" formControlName="drawersBank"
+                  
+                >
+                  <option *ngFor="let bank of drawersBank" [value]="bank.bankName">{{bank.bankName}}</option> 
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <select id="drawersBank" class="form-control" formControlName="drawersBank"
+        [disabled]="receiptingDetailsForm.get('paymentMode')?.value === 'CASH'"
+      > -->
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="amountIssued" class="text-dark">{{'fms.receipting.amount_issued' | translate }}</label>
+              <input type="number" class="form-control" id="amountIssued" formControlName="amountIssued">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="grossReceiptAmount" class="text-dark">{{'fms.receipting.gross_receipt_amount' | translate }}</label>
+              <input type="number" class="form-control" id="grossReceiptAmount" formControlName="grossReceiptAmount">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receiptDate" class="text-dark">{{ 'fms.receipting.receipt_date' | translate }}</label>
+              <input
+                type="date"
+                class="form-control"
+                id="receiptDate"
+                formControlName="receiptDate"
+                [min]="minDate"
+                [disabled]="!backdatingEnabled && minDate === ''"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="documentDate" class="text-dark">{{'fms.receipting.document_date' | translate }}</label>
+              <input type="date" class="form-control" id="documentDate" formControlName="documentDate">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receivedFrom" class="text-dark">{{'fms.receipting.received_from' | translate }}</label>
+              <input type="text" class="form-control" id="receivedFrom" formControlName="receivedFrom">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="manualRef" class="text-dark">{{'fms.receipting.manual_ref' | translate }}</label>
+              <input type="text" class="form-control" id="manualRef" formControlName="manualRef">
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="paymentRef" class="text-dark">{{'fms.receipting.payment_ref' | translate }}</label>
+              <input type="text" class="form-control" id="paymentRef" formControlName="paymentRef"
+                placeholder="Cheque/Eft No./Mpesa Code">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="otherRef" class="text-dark">{{'fms.receipting.other_ref' | translate }}</label>
+              <input type="text" class="form-control" id="otherRef" formControlName="otherRef">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="deductions" class="text-dark">{{'fms.receipting.deductions'| translate}}</label>
+              <div class="dropdown-container">
+                <select id="deductions" class="form-control" formControlName="deductions">
+                  <option value="GROSS">Gross</option>
+                  <option value="NET">Net</option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <!-- Charges Radio Buttons -->
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="charges" class="text-dark">{{ 'fms.receipting.charges' | translate }}</label>
+              <div class="d-flex">
+                <div class="form-check">
+                  <input
+                    class="form-check-input ms-1"
+                    type="radio"
+                    name="charges"
+                    id="chargesYes"
+                    value="yes"
+                    formControlName="charges"
+                    (change)="onChargesChange('yes')"
+                  />
+                  <label class="form-check-label" for="chargesYes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input ms-1"
+                    type="radio"
+                    name="charges"
+                    id="chargesNo"
+                    value="no"
+                    formControlName="charges"
+                    (change)="onChargesChange('no')"
+                  />
+                  <label class="form-check-label" for="chargesNo">No</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charge Amount Field -->
+          <div class="col-md-4" [ngClass]="{ 'hidden': !chargesEnabled }">
+            <div class="form-group">
+              <label for="chargeAmount" class="text-dark">Charge Amount</label>
+              <input
+                type="number"
+                class="form-control"
+                id="chargeAmount"
+                formControlName="chargeAmount"
+                [disabled]="!chargesEnabled"
+              />
+            </div>
+          </div>
+
+          <!-- Charges Modal -->
+          <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="chargesModalLabel">Charges Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <form [formGroup]="receiptingDetailsForm">
+                    <!-- Charge Type -->
+                    <div class="form-group mb-3">
+                      <label for="chargeType">Type</label>
+                      <div class="dropdown-container">
+                        <select class="form-control" id="chargeType" formControlName="selectedChargeType">
+                          <option value="charges">Charges</option>
+                          <option value="bankCharges">Bank Charges</option>
+                        </select>
+                        <i class="pi pi-chevron-down dropdown-icon"></i>
+                      </div>
+                    </div>
+
+                    <!-- Charge Amount -->
+                    <div class="form-group mb-3">
+                      <label for="modalChargeAmount">Amount</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="modalChargeAmount"
+                        formControlName="modalChargeAmount"
+                      />
+                    </div>
+                  </form>
+
+                  <!-- List of Existing Charges -->
+                  <div *ngIf="chargeList.length > 0" class="mt-4">
+                    <h6>Existing Charges</h6>
+                    <ul class="list-group">
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                        *ngFor="let charge of chargeList; let i = index"
+                      >
+                        <span>{{ charge.type }} - {{ charge.amount | currency:selectedCurrency }}</span>
+                        <div>
+                          <button class="btn btn-sm btn-warning me-2" (click)="editCharge(i)">Edit</button>
+                          <button class="btn btn-sm btn-danger" (click)="deleteCharge(i)">Delete</button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" (click)="saveCharges()">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group position-relative">
+              <label for="narration" class="text-dark">
+                {{ 'fms.receipting.narration' | translate }}
+              </label>
+              <div class="d-flex">
+                <!-- Dropdown Menu -->
+                <div class="dropdown-container me-1" style="flex: 2; position: relative;">
+                  <select
+                    id="narrationDropdown"
+                    class="form-control narration-dropdown"
+                    (change)="onNarrationDropdownChange($event)"
+                  >
+                    <option value="" disabled selected hidden></option>
+                    <option *ngFor="let narrate of narrations" [value]="narrate?.narration">
+                      {{ narrate?.narration }}
+                    </option>
+                  </select>
+                  
+                  
+                  <i class="pi pi-chevron-down dropdown-icon"></i>
+                </div>
+          
+                <!-- Textarea for Narration -->
+                 
+                <textarea
+                  class="form-control narration-textarea"
+                  rows="1"
+                  style="flex: 7;"
+                  id="narrationTextarea"
+                  formControlName="narration"
+                  placeholder="Edit description"
+                  (input)="onNarrationTextChange()"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          
+
+          <div class="col-md-4">
+            <!-- Hidden file input -->
+            <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
+
+            <!-- Upload File button -->
+            <button type="button" class="btn btn-primary" (click)="fileInput.click()">{{ 'fms.receipting.uploadFiles' | translate
+              }}</button>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <ul>
+                <li *ngFor="let file of uploadedFiles; let i = index">
+                  {{file.name}}
+                  <button type="button" class="btn btn-danger remove-document-button" (click)="onRemoveFile(i)" *ngIf="i !== -1">Remove</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-md-4 p-0" *ngIf="orgCode === 'A=='">
+            <div class="form-group position-relative">
+              <div class="h-100 d-flex flex-column"></div>
+              <label for="capitalInjection" class="text-dark">{{'fms.receipting.capitalInjection' | translate}}</label>
+              <div class="dropdown-container">
+                <select id="capitalInjection" class="form-control" formControlName="capitalInjection">
+                  <option value="NORMAL">Normal charges</option>
+                  <option value="MISCELLANEOUS">Miscellaneous charges</option>
+                  <option value="OTHER">Other charges</option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-dark mt-4 fs-5 fw-bold mb-3">Allocate Receipt Amount</div>
+
+        <!-- Account Type Section -->
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <label for="accountType" style="color: black;">Account Type:</label>
+            <select
+              id="accountType"
+              formControlName="accountType"
+              class="form-control"
+              (change)="onAccountTypeChange()"
+            >
+              <option value="">Select Account Type</option>
+              <option *ngFor="let type of accountTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+
+          <!-- Search Criteria Section -->
+          <div class="col-md-4">
+            <label for="searchCriteria" style="color: black;">Search Criteria:</label>
+            <select
+              id="searchCriteria"
+              formControlName="searchCriteria"
+              class="form-control"
+              [disabled]="!isAccountTypeSelected"
+            >
+              <option value="policyNumber">By Policy Number</option>
+              <option value="accountNumber">By Account Number</option>
+              <option value="debitNote">By Debit Note</option>
+              <option value="clientName">By Client Name</option>
+            </select>
+          </div>
+
+          <!-- Search Query Input -->
+          <div class="col-md-4">
+            <label for="searchQuery" style="color: black;">Search:</label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="searchQuery"
+                placeholder="Enter search term"
+                formControlName="searchQuery"
+                class="form-control"
+                [disabled]="!isAccountTypeSelected"
+                (keyup.enter)="onSearch()"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="onSearch()"
+                [disabled]="!isAccountTypeSelected"
+              >
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Table -->
+        <div class="row mt-3" *ngIf="searchClients.length > 0">
+          <div class="col-md-12">
+            <p-table [value]="searchClients" responsiveLayout="scroll" class="table-striped">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Client Name</th>
+                  <th>Policy Number</th>
+                  <th>Account Number</th>
+                  <th>Amount</th>
+                  <th>Allocated Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-client let-i="rowIndex">
+                <tr>
+                  <td>{{ client.clientName }}</td>
+                  <td>{{ client.policyNumber }}</td>
+                  <td>{{ client.accountNumber }}</td>
+                  <td>{{ client.amountInsured | currency }}</td>
+                  <td>
+                    <form [formGroup]="getAllocationGroup(i)">
+                      <input
+                        type="number"
+                        formControlName="allocatedAmount"
+                        class="form-control"
+                        placeholder="Enter amount"
+                      />
+                    </form>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-primary"
+                      (click)="addAllocation(client, i)"
+                      [disabled]="!getAllocationGroup(i).valid"
+                    >
+                      Allocate
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+
+        <!-- Allocated Clients Table -->
+        <div class="row mt-3">
+          <div class="col-md-12">
+            <p-table [value]="allocatedClients" responsiveLayout="scroll" class="table-striped">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Client Name</th>
+                  <th>Allocated Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-client>
+                <tr>
+                  <td>{{ client.clientName }}</td>
+                  <td>{{ client.allocatedAmount | currency }}</td>
+                  <td>
+                    <button class="btn btn-danger" (click)="removeAllocation(client)">
+                      <i class="fa fa-trash"></i> Remove
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+
+        <!-- Save Allocations Button -->
+        <div class="row mt-3">
+          <div class="col-md-12">
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onAddAllocationClick()"
+              [disabled]="!canAddAllocation"
+            >
+              Save Allocations
+            </button>
+          </div>
+        </div>
+
+        <!-- Receipt Preview Modal -->
+        <div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-labelledby="receiptPreviewModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <!-- Changes in HTML based on console output data.
+              - Added missing  conditions inside *ngIf: `receipt.amountIssued`
+              -  Made conditional check for `transactions.length` inside *ngFor: to ensure data is only rendered if a transaction array is available
+              -->
+              <div class="modal-body">
+                <div *ngIf="receipt.amountIssued && receipt.receiptNumber && receipt.receivedFrom && receipt.receiptDate && receipt.currency;">
+                  <div>Receipt Number: {{receipt.receiptNumber}}</div>
+                  <div>Amount Issued: {{receipt.amountIssued}}</div>
+                  <div>Received From: {{receipt.receivedFrom}}</div>
+                  <div>Date: {{receipt.receiptDate | date: 'mediumDate'}}</div>
+                  <div>Currency: {{receipt.currency}}</div>
+                  <div *ngIf="receipt.transactions.length > 0">
+                    <p-table [value]="receipt.transactions" ...>
+                      <!-- PrimeNG table code for your receipt.transactions -->
+                    </p-table>
+                  </div>
+                  <div *ngIf="receipt.transactions.length === 0">
+                    <p>No transactions found.</p>
+                  </div>
+                </div>
+                <div *ngIf="!(receipt.amountIssued && receipt.receiptNumber && receipt.receivedFrom && receipt.receiptDate && receipt.currency)">
+                  <p *ngIf="previewError">An error occurred: {{ previewError.message }}</p>
+                  <p>No receipt data available.</p>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- Add a button to send to printer, for example: -->
+                <button type="button" class="btn btn-primary" (click)="onPrintActualReceipt()">Print to Printer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
+          <button type="button" class="btn btn-primary me-3" id="saveReceipt"
+            (click)="handleReceiptAction('save', searchClients)">Save Receipt</button>
+          <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt"
+            (click)="showReceiptPreview()">Print Receipt
+          </button>
+          <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" (click)="onCancelReceipt()">Cancel</button>
+        </div>
+
+        <script>
+          // For using modal in javascript:
+          // get a reference to the modal
+          const receiptPreviewModalElement = document.getElementById('receiptPreviewModal');
+          // if found
+          if (receiptPreviewModalElement) {
+            // create a modal instance
+            const receiptPreviewModal = new bootstrap.Modal(receiptPreviewModalElement);
+            // Add a click listener for the button (replace this with your real click logic):
+            //   document.getElementById("printReceipt").addEventListener("click", function () {
+            //       receiptPreviewModal.show();
+            //   });
+          }
+        </script>
+
+      </form>
+    </div>
+  </div>
+</div>
