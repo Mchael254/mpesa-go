@@ -3,7 +3,7 @@ import { QuotationsService } from '../../../../components/quotation/services/quo
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { PolicyService } from '../../services/policy.service';
-import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
+import { PolicyResponseDTO, PolicyContent, PolicyClause, AddPolicyClauses } from '../../data/policy-dto';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 const log = new Logger("PolicyClausesDetailsComponent");
@@ -24,9 +24,10 @@ export class PolicyClausesDetailsComponent {
   errorMessage: string;
   errorOccurred: boolean;
   productClauseList: any;
+  policyClauseList: any;
   // selectedPolicyClause: any;
   selectedPolicyClause: any = {};  // Initialize as an empty object
-
+  selectedPolicyClauses: PolicyClause[] = []
   modalHeight: number = 200;
   policyClausesDetailsForm: FormGroup;
   editPolicyClausesDetailsForm: FormGroup;
@@ -72,7 +73,8 @@ export class PolicyClausesDetailsComponent {
           this.policyDetailsData = this.policyResponse.content[0]
           log.debug("Policy Details:", this.policyDetailsData)
           if (this.policyDetailsData.product.code) {
-            this.getProductClauses()
+            // this.getProductClauses()
+            this.getPolicyClauses()
           }
           this.cdr.detectChanges();
 
@@ -83,14 +85,30 @@ export class PolicyClausesDetailsComponent {
         }
       })
   }
-  getProductClauses() {
-    this.quotationService
-      .getProductClauses(this.policyDetailsData.product.code)
+  // getProductClauses() {
+  //   this.quotationService
+  //     .getProductClauses(this.policyDetailsData.product.code)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (response: any) => {
+  //         this.productClauseList = response;
+  //         log.debug("Policy clause list :", this.productClauseList)
+
+  //       },
+  //       error: (error) => {
+
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  product clauses details.Try again later');
+  //       }
+  //     })
+  // }
+  getPolicyClauses() {
+    this.policyService
+      .getPolicyClauses(this.batchNo, this.policyDetailsData.product.code, "P")
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.productClauseList = response;
-          log.debug("Policy clause list :", this.productClauseList)
+          this.policyClauseList = response._embedded;
+          log.debug("Policy clause list :", this.policyClauseList)
 
         },
         error: (error) => {
@@ -98,6 +116,18 @@ export class PolicyClausesDetailsComponent {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  product clauses details.Try again later');
         }
       })
+  }
+  onSelectPolicyClauses(policyClause: any) {
+    log.debug(" Selected policy clauses", policyClause)
+    this.selectedPolicyClauses = policyClause;
+
+   
+  }
+  addPolicyClauses() {
+    this.selectedPolicyClauses.forEach((clause) => {
+      this.addPolicyClause(clause);
+    });
+    
   }
   createPolicyClauseDetailsForm() {
     this.policyClausesDetailsForm = this.fb.group({
@@ -109,10 +139,10 @@ export class PolicyClausesDetailsComponent {
 
     });
   }
-  getSelectedClauses() {
-  log.debug('Selected Clauses:', this.selectedPolicyClause);
-  this.addPolicyClauses(this.selectedPolicyClause)
-  }
+  // getSelectedClauses() {
+  //   log.debug('Selected Clauses:', this.selectedPolicyClause);
+  //   this.addPolicyClauses(this.selectedPolicyClause)
+  // }
   // addPolicyClauses(clause: any) {
 
   //   this.policyClausesDetailsForm.get('batchNo').setValue(this.batchNo)
@@ -137,40 +167,66 @@ export class PolicyClausesDetailsComponent {
   //       }
   //     })
   // }
-  addPolicyClauses(clauses: any[]) {
-    // Loop through each selected clause
-    clauses.forEach((clause) => {
-      // Set the form values for the current clause
-      this.policyClausesDetailsForm.get('batchNo').setValue(this.batchNo);
-      this.policyClausesDetailsForm.get('clauseCode').setValue(clause.code);
-      this.policyClausesDetailsForm.get('endorsementNo').setValue(this.policyDetailsData.endorsementNo);
-      this.policyClausesDetailsForm.get('policyNo').setValue(this.policyDetailsData.policyNo);
-      this.policyClausesDetailsForm.get('productCode').setValue(this.policyDetailsData.product.code);
-  
-      // Get the form value after setting the fields
-      const policyClausesDetailsForm = this.policyClausesDetailsForm.value;
-      log.debug('Policy clauses Form:', policyClausesDetailsForm);
-  
-      // Call the service to add the clause
-      this.policyService
-        .addPolicyClause(policyClausesDetailsForm)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            log.debug('Added Clause:', response);
-            this.globalMessagingService.displaySuccessMessage('Success', 'Policy clause added successfully');
+  addPolicyClause(clause: PolicyClause) {
 
-          },
-          error: (error) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Failed to add product clauses details. Try again later'
-            );
-          },
-        });
+    this.policyClausesDetailsForm.get('batchNo').setValue(this.batchNo);
+    this.policyClausesDetailsForm.get('clauseCode').setValue(clause.clauseCode);
+    this.policyClausesDetailsForm.get('endorsementNo').setValue(this.policyDetailsData.endorsementNo);
+    this.policyClausesDetailsForm.get('policyNo').setValue(this.policyDetailsData.policyNo);
+    this.policyClausesDetailsForm.get('productCode').setValue(this.policyDetailsData.product.code);  
+    
+     // Get the form value after setting the fields
+     const policyClausesDetailsForm = this.policyClausesDetailsForm.value;
+     log.debug('Policy clauses Form:', policyClausesDetailsForm);
+
+    this.policyService
+    .addPolicyClause(policyClausesDetailsForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug('Added Clause:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Policy clause added successfully');
+
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Failed to add product clauses details. Try again later'
+        );
+      },
     });
+    // clauses.forEach((clause) => {
+    //   // Set the form values for the current clause
+    //   this.policyClausesDetailsForm.get('batchNo').setValue(this.batchNo);
+    //   this.policyClausesDetailsForm.get('clauseCode').setValue(clause.code);
+    //   this.policyClausesDetailsForm.get('endorsementNo').setValue(this.policyDetailsData.endorsementNo);
+    //   this.policyClausesDetailsForm.get('policyNo').setValue(this.policyDetailsData.policyNo);
+    //   this.policyClausesDetailsForm.get('productCode').setValue(this.policyDetailsData.product.code);
+
+    //   // Get the form value after setting the fields
+    //   const policyClausesDetailsForm = this.policyClausesDetailsForm.value;
+    //   log.debug('Policy clauses Form:', policyClausesDetailsForm);
+
+    //   // Call the service to add the clause
+    //   this.policyService
+    //     .addPolicyClause(policyClausesDetailsForm)
+    //     .pipe(untilDestroyed(this))
+    //     .subscribe({
+    //       next: (response: any) => {
+    //         log.debug('Added Clause:', response);
+    //         this.globalMessagingService.displaySuccessMessage('Success', 'Policy clause added successfully');
+
+    //       },
+    //       error: (error) => {
+    //         this.globalMessagingService.displayErrorMessage(
+    //           'Error',
+    //           'Failed to add product clauses details. Try again later'
+    //         );
+    //       },
+    //     });
+    // });
   }
-  
+
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
@@ -179,12 +235,12 @@ export class PolicyClausesDetailsComponent {
     this.modalHeight = event.height;
   }
 
-  onSelectPolicyClauses(event: any) {
-    log.debug('Selected policy clause ',event)
+  // onSelectPolicyClauses(event: any) {
+  //   log.debug('Selected policy clause ', event)
 
-    // console.log(this.selectedClause,'selected clause ')
+  //   // console.log(this.selectedClause,'selected clause ')
 
-  }
+  // }
   createEditPolicyClauseDetailsForm() {
     this.editPolicyClausesDetailsForm = this.fb.group({
       clause: [''],
@@ -195,19 +251,19 @@ export class PolicyClausesDetailsComponent {
 
     });
   }
-  editpolicyClause(clause){
-    console.log('Selected Policy Clause',clause)
+  editpolicyClause(clause) {
+    console.log('Selected Policy Clause', clause)
     this.editPolicyClausesDetailsForm.get('clause').setValue(clause.wording);
-      this.editPolicyClausesDetailsForm.get('clauseHeading').setValue(clause.heading);
-      this.editPolicyClausesDetailsForm.get('clauseItemNo').setValue(0);
-      this.editPolicyClausesDetailsForm.get('policyClauseCode').setValue(clause.code);
-      this.editPolicyClausesDetailsForm.get('policyCode').setValue(this.batchNo);
-  
-      // Get the form value after setting the fields
-      const editPolicyClausesDetailsForm = this.editPolicyClausesDetailsForm.value;
-      log.debug('Policy clauses Form to be edited:', editPolicyClausesDetailsForm);
+    this.editPolicyClausesDetailsForm.get('clauseHeading').setValue(clause.heading);
+    this.editPolicyClausesDetailsForm.get('clauseItemNo').setValue(0);
+    this.editPolicyClausesDetailsForm.get('policyClauseCode').setValue(clause.code);
+    this.editPolicyClausesDetailsForm.get('policyCode').setValue(this.batchNo);
 
-      this.policyService
+    // Get the form value after setting the fields
+    const editPolicyClausesDetailsForm = this.editPolicyClausesDetailsForm.value;
+    log.debug('Policy clauses Form to be edited:', editPolicyClausesDetailsForm);
+
+    this.policyService
       .editPolicyClause(editPolicyClausesDetailsForm)
       .pipe(untilDestroyed(this))
       .subscribe({

@@ -584,7 +584,21 @@ export interface AddCertificates {
   withEffectFrom: string;
   withEffectTo: string;
 }
-export interface PolicyClauses{
+export interface PolicyClause {
+  heading: string;
+  shortDescription: string | null;
+  clauseCode: string | null;
+  type: string;
+  typeDescription: string | null;
+  proCode: number;
+  productShortDescription: string;
+  subClassCode: string | null;
+  editable: string;
+  wording: string | null;
+  clauseMandantory: string;
+  subClassDescription: string | null;
+}
+export interface AddPolicyClauses{
   batchNo: number;
   clauseCode: string;
   endorsementNo: string;
