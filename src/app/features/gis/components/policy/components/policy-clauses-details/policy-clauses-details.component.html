@@ -56,7 +56,7 @@
 
             </div>
         </div>
-        <p-table [value]="productClauseList" dataKey="code" selectionMode="single" editMode="row"
+        <p-table [value]="policyClauseList" dataKey="code" selectionMode="single" editMode="row"
             [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedPolicyClause"
             responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5"
             [showCurrentPageReport]="true"  class='ui-datatable'
@@ -74,13 +74,13 @@
 
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-productClauseList let-editing="editing"
+            <ng-template pTemplate="body" let-policyClauseList let-editing="editing"
                 let-ri="rowIndex">
                
-                    <tr (click)="onSelectPolicyClauses(productClauseList)"
-                    [pEditableRow]="productClauseList"
-                    [pSelectableRow]="productClauseList"
-                    [class.p-highlight]="productClauseList === selectedPolicyClause">
+                    <tr (click)="onSelectPolicyClauses(policyClauseList)"
+                    [pEditableRow]="policyClauseList"
+                    [pSelectableRow]="policyClauseList"
+                    [class.p-highlight]="policyClauseList === selectedPolicyClause">
                     <!-- <td>
           <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
       </td> -->
@@ -89,16 +89,16 @@
           overflow: hidden;
           text-overflow: ellipsis;
           overflow-y: auto;
-          max-width: 250px;" pTooltip="{{productClauseList.heading }}" tooltipPosition="top">
+          max-width: 250px;" pTooltip="{{policyClauseList.heading }}" tooltipPosition="top">
                         <p-cellEditor>
                             <ng-template pTemplate="input">
                                 <input pInputText type="text"
-                                    [(ngModel)]="productClauseList.heading"
+                                    [(ngModel)]="policyClauseList.heading"
                                     class="form-control form-control-sm"
                                     [ngModelOptions]="{standalone: true}">
                             </ng-template>
                             <ng-template pTemplate="output">
-                                {{productClauseList.heading}}
+                                {{policyClauseList.heading}}
                             </ng-template>
                         </p-cellEditor>
                     </td>
@@ -107,12 +107,12 @@
                         <p-cellEditor>
                             <ng-template pTemplate="input">
                                 <input pInputTextarea type="text" rows="5" cols="30"
-                                    [(ngModel)]="productClauseList.wording"
+                                    [(ngModel)]="policyClauseList.wording"
                                     class="form-control form-control-sm"
                                     [ngModelOptions]="{standalone: true}">
                             </ng-template>
                             <ng-template pTemplate="output">
-                                {{productClauseList.wording}}
+                                {{policyClauseList.wording}}
                             </ng-template>
                             <!-- Helper icon added next to the wording column -->
                         </p-cellEditor>
@@ -122,7 +122,7 @@
                     <td class="flexible-header"></td>
                     <td class="flexible-header">
                         
-                            <button pButton pRipple type="button" (click)="openHelperModal(productClauseList)" 
+                            <button pButton pRipple type="button" (click)="openHelperModal(policyClauseList)" 
     icon="pi pi-info-circle" class="p-button-rounded p-button-text">
 </button>
                     </td>
@@ -138,7 +138,7 @@
                                 <button *ngIf="editing" pButton pRipple type="button"
                                                                 pSaveEditableRow icon="pi pi-check"
                                                                 class="p-button-rounded p-button-text p-button-success mr-2"
-                                                                (click)="editpolicyClause(productClauseList)"></button>
+                                                                (click)="editpolicyClause(policyClauseList)"></button>
                             <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
                                 icon="pi pi-times"
                                 class="p-button-rounded p-button-text p-button-danger"></button>
@@ -172,9 +172,9 @@
                         <p class="modalTitle" id="selectClient">
                             Product Clauses
                         </p>
-                        <p-table #dt1 [value]="productClauseList"
-                        [tableStyle]="{'max-width': '465px'}" 
-                        [(selection)]="selectedPolicyClause" [resizableColumns]="true"
+                        <p-table #dt1 [value]="policyClauseList"
+                        [tableStyle]="{'max-width': '465px'}"  
+                        [(selection)]="selectedPolicyClauses" [resizableColumns]="true"
                         styleClass="p-datatable-sm" responsiveLayout="scroll"
                         class='ui-datatable' [autoLayout]="true" [paginator]="true"
                         [rows]="5" [scrollable]="true" scrollDirection="horizontal"
@@ -194,14 +194,17 @@
                         </ng-template>
 
                         
-                            <ng-template pTemplate="body" let-productClauseList >
-                                <tr>
+                            <ng-template pTemplate="body" let-policyClauseList >
+                                <tr
+                                [pSelectableRow]="policyClauseList"
+                                [class.p-highlight]="policyClauseList === selectedPolicyClauses"
+                                (click)="onSelectPolicyClauses(selectedPolicyClauses)">
 
                                     <td>
-                                        <p-tableCheckbox [value]="productClauseList" />
+                                        <p-tableCheckbox [value]="policyClauseList" />
                                     </td>
-                                <td>{{productClauseList.shortDescription}} </td>
-                                <td>{{productClauseList.heading}}</td>
+                                <td>{{policyClauseList.shortDescription}} </td>
+                                <td>{{policyClauseList.heading}}</td>
                             </tr>
                         </ng-template>
 
@@ -212,7 +215,7 @@
 
                     <div class="d-flex justify-content-end mt-4 mb-4">
                         <button type="button" class="btn btn-primary"
-                            data-bs-dismiss="modal" (click)="getSelectedClauses()">{{'crm.save_details' |
+                            data-bs-dismiss="modal" (click)="addPolicyClauses()">{{'crm.save_details' |
                             translate}}</button>
                     </div>
 

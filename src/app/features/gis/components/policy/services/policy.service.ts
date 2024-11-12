@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp, AddPolicyClauses } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -339,7 +339,11 @@ export class PolicyService {
   editRiskClause(data){
     return this.api.PUT(`v1/edit-risk-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
-  addPolicyClause(data:PolicyClauses){
+  getPolicyClauses( batchNo:any,productCode:any,transType:any){
+    return this.api.GET(`v1/policy-clause?polBatchNo=${batchNo}&proCode=${productCode}&transType=${transType}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  addPolicyClause(data:AddPolicyClauses){
     return this.api.POST(`v1/policy-clause`, JSON.stringify(data),API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
