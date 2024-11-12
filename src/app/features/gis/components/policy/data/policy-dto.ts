@@ -679,6 +679,21 @@ export interface ClientDDdetails{
   bankBranchCode: number;
   clientCode: number;
 }
+export interface ExternalClaimExp {
+  claimPaid: string;
+  clientCode: number;
+  code: number;
+  damageAmount: number;
+  insurer: string;
+  lossAmount: number;
+  noAcc: string | null;
+  otherAmount: number;
+  policyNo: string;
+  remarks: string;
+  riskDetails: string;
+  totalPaidAmount: number;
+  year: number;
+}
 
 
 

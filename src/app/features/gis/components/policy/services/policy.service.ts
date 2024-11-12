@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -74,7 +74,7 @@ export class PolicyService {
 
   }
   addPolicyRisk(batchNo: number, data: RiskInformation, user) {
-    return this.api.POST(`v1/policy-Risks-Controller?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`v1/policy-risks?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getPolicyRisks(policyNo:String){
@@ -394,6 +394,21 @@ export class PolicyService {
     return this.api.POST(`v1/peril`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  
+  addExternalClaimExp( data:ExternalClaimExp){
+    return this.api.POST(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  fetchExternalClaimExp(clientCode:number){
+    return this.api.GET(`v2/external-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  editExternalClaimExp( data:ExternalClaimExp){
+    return this.api.PUT(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  deleteExternalClaimExp(code:number){
+    return this.api.DELETE(`v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }
 
