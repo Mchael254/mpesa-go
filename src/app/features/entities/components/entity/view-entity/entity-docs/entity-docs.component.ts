@@ -209,10 +209,10 @@ export class EntityDocsComponent implements OnInit {
   fetchClientDocs(clientCode: string) {
     this.dmsService.fetchDocumentsByClientCode(clientCode)
       .subscribe((data) => {
-        data.forEach( doc => {
+        /*data.forEach( doc => {
           const splitName = doc['actualName'].split('.');
           doc.format = splitName[1]?.toUpperCase();
-        });
+        });*/
         this.viewAllDocs = data;
         this.cdr.detectChanges();
 

@@ -7,8 +7,8 @@
     </div>
     <div class="col-md-9">
       <div class="form-group" style="display: flex; flex-grow: 1; align-items: center;">
-        <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
-        <button class="btn btn-primary btn-sm ms-4" (click)="fileInput.click()">
+        <input type="file" #fileInput style="display: none;" id="uploadDoc" (change)="onFileSelected($event)">
+        <button class="btn btn-primary btn-sm ms-4"  (click)="fileInput.click()">
           <span class="file-text">Select a file to upload</span>
         </button>
         <div class="form-check float-start">
@@ -28,7 +28,7 @@
           <span *ngIf = "doc?.actualName" title="{{doc?.actualName}}" (click)="fetchSelectedDoc()">
             {{doc?.actualName?.substring(0,50) | titlecase}}
           </span>
-          <i class="pi pi-times text-danger ms-3" (click)="deleteUploadedFile(doc)"></i>
+          <i class="pi pi-times text-danger ms-3" id="deleteFile" (click)="deleteUploadedFile(doc)"></i>
         </div>
       </div>
     </li>
