@@ -31,26 +31,42 @@
                         <div class="row mt-4 mb-4">
                             <div class="col-sm-6">
                                 <label for="clientName" class="form-label">Client Name</label>
-                                <input type="text" class="form-control" id="clientName" placeholder="" formControlName="clientCode">
+                                <input type="text" class="form-control" id="clientName" placeholder=""
+                                    formControlName="clientCode">
                             </div>
                             <div class="col-sm-6">
                                 <label for="clientName" class="form-label">Account Name</label>
-                                <input type="text" class="form-control" id="clientName" placeholder="" formControlName="accountName">
+                                <input type="text" class="form-control" id="clientName" placeholder=""
+                                    formControlName="accountName">
                             </div>
                         </div>
                         <!-- ROW 2 -->
                         <div class="row">
                             <div class="col-sm-6">
                                 <label for="clientName" class="form-label">Account No.</label>
-                                <input type="text" class="form-control" id="clientName" placeholder="" formControlName="accountNo">
+                                <input type="text" class="form-control" id="clientName" placeholder=""
+                                    formControlName="accountNo">
                             </div>
                             <div class="col-sm-6">
                                 <label for="clientName" class="form-label">Bank Branch</label>
                                 <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name"
-                                    optionValue="id" (onChange)="onBranchSelected($event.value)"
-                                    [filterBy]="'description'" [filter]="true" formControlName="bankBranchCode"></p-dropdown>
+                                    optionValue="id" (onChange)="onBranchSelected($event.value)" [filterBy]="'name'"
+                                    [filter]="true" formControlName="bankBranchCode"></p-dropdown>
                             </div>
                         </div>
+                        <div class="row mt-2 mb-2 mx-3">
+                            <div class="col-6 ">
+                                <!-- <button type="button" class="btn btn-primary"
+                                    (click)="clearForm()">{{'gis.quotation.clear' |
+                                    translate}}</button> -->
+
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary " id="" (click)="UpdateClientDDdetails()" data-bs-dismiss="modal">{{'gis.quotation.save_details'
+                                    | translate}}</button>
+                            </div>
+                        </div>
+                        
                     </form>
                 </div>
             </div>

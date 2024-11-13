@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit, InsuredApiResponse, editInsured, RequiredDocuments, commission, PolicyTaxes, populatePolicyTaxes, PolicyScheduleDetails, Certificates, AddCertificates, PolicyClauses, EditPolicyClause, EditRequiredDocuments, SubclassesClauses, RiskPeril, ClientDDdetails, ExternalClaimExp } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 import { Remarks } from '../../../data/policies-dto';
@@ -74,7 +74,7 @@ export class PolicyService {
 
   }
   addPolicyRisk(batchNo: number, data: RiskInformation, user) {
-    return this.api.POST(`v1/policy-Risks-Controller?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`v1/policy-risks?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getPolicyRisks(policyNo:String){
@@ -199,10 +199,14 @@ export class PolicyService {
   getSubsclassPerils(subclassCode){
     return this.api.GET(`api/v1/subperils?subclassCode=${subclassCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
-  
-  getRiskPerils(){
-    return this.api.GET(`v2/risk-perils`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  getRiskPerils(batchNo:any,riskCode:any,subclassCode:any){
+    return this.api.GET(`v1?batchNo=${batchNo}&ipuCode=${riskCode}&subClassCode=${subclassCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
   }
+  
+  // getRiskPerils(){
+  //   return this.api.GET(`v2/risk-perils`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  // }
   generateRiskClaimReport(data){
    
     const headers = new HttpHeaders({
@@ -379,8 +383,31 @@ export class PolicyService {
     return this.api.GET(`v2/client-dd?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  updateClientDDdetails(data:ClientDDdetails){
+    return this.api.PUT(`v1/client-details`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
   fetchAddedPolicySubclassClauses(batchNo:any,policyNo :any){
     return this.api.GET(`v2/policySubclassClauses?batchNo=${batchNo}&policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  addRiskPeril(data:RiskPeril){
+    return this.api.POST(`v1/peril`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  addExternalClaimExp( data:ExternalClaimExp){
+    return this.api.POST(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  fetchExternalClaimExp(clientCode:number){
+    return this.api.GET(`v2/external-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  editExternalClaimExp( data:ExternalClaimExp){
+    return this.api.PUT(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  deleteExternalClaimExp(code:number){
+    return this.api.DELETE(`v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }
