@@ -214,17 +214,17 @@ export class PolicySubclasessClausesComponent {
   // } 
   editPolicySubclassClause() {
     log.debug("SELECTED SUBCLASS CLAUSES",this.selectedPolicySubclassClause)
-    this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedPolicySubclassClause.heading);
+    // this.policySubclassesClausesDetailsForm.get('clause').setValue(this.selectedPolicySubclassClause.clause);
     this.policySubclassesClausesDetailsForm.get('clauseCode').setValue(this.selectedPolicySubclassClause.clauseCode);
     this.policySubclassesClausesDetailsForm.get('clauseType').setValue(this.selectedPolicySubclassClause.clauseType);
     this.policySubclassesClausesDetailsForm.get('code').setValue(this.selectedPolicySubclassClause.clauseCode);
     this.policySubclassesClausesDetailsForm.get('editable').setValue(this.selectedPolicySubclassClause.editable);
-    this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedPolicySubclassClause.heading);
-    this.policySubclassesClausesDetailsForm.get('description').setValue(this.selectedPolicySubclassClause.shortDescription);
+    // this.policySubclassesClausesDetailsForm.get('heading').setValue(this.selectedPolicySubclassClause.heading);
+    this.policySubclassesClausesDetailsForm.get('description').setValue(this.selectedPolicySubclassClause.description);
     this.policySubclassesClausesDetailsForm.get('policyBatchNumber').setValue(this.batchNo);
     this.policySubclassesClausesDetailsForm.get('policyNumber').setValue(this.policyDetailsData.policyNo);
-    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedPolicySubclassClause.subClassCode);
-    this.policySubclassesClausesDetailsForm.get('isNew').setValue("y");
+    this.policySubclassesClausesDetailsForm.get('subclassCode').setValue(this.selectedPolicySubclassClause.subclassCode);
+    this.policySubclassesClausesDetailsForm.get('isNew').setValue(this.selectedPolicySubclassClause.isNew);
    
 
     const createPolicySubclassesClauseForm = this.policySubclassesClausesDetailsForm.value;
@@ -343,7 +343,7 @@ export class PolicySubclasessClausesComponent {
     log.debug("Selected Policy Subclass to edit",this.selectedPolicySubclassClause)
     this.policySubclassesClausesDetailsForm.patchValue({
       heading: this.selectedPolicySubclassClause.heading,
-      clause: subclassClause.clause,
+      clause: this.selectedPolicySubclassClause.clause,
       // Patch other fields if needed
     });
   }

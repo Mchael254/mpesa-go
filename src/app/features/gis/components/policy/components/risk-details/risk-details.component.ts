@@ -831,6 +831,7 @@ export class RiskDetailsComponent {
 
     this.covertypeSections = this.subclassSectionCoverList?.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode)
     log.debug("All section for a selected Cover Type:", this.covertypeSections)
+    log.debug("All sectionsss :", this.sectionList)
 
     if (this.sectionList && this.covertypeSections) {
       this.allMatchingSections = [];
@@ -841,6 +842,7 @@ export class RiskDetailsComponent {
 
       log.debug("Retrieved All matching sections", this.allMatchingSections);
     }
+ 
     this.filterMandatorySections();
 
   }
@@ -1265,10 +1267,18 @@ export class RiskDetailsComponent {
   }
   filterMandatorySections() {
     log.debug("selectedCover should be coverdesc", this.selectedCoverType?.coverTypeShortDescription)
+    log.debug("selectedCover should be coverdesc", this.selectedCoverType?.coverTypeCode)
+    log.debug("selectedCover should be coverdesc", this.selectedCoverType)
+    log.debug("MANDATORY SECTIONS",this.mandatorySections)
     const coverType = this.selectedCoverType?.coverTypeShortDescription
+    const covertypeCode =this.selectedCoverType?.coverTypeCode
     if (coverType) {
-      this.filteredMandatorySections = this.mandatorySections.filter(section =>
-        section.coverTypeShortDescription === (coverType === "COMP" ? "COMP" : coverType));
+      // this.filteredMandatorySections = this.mandatorySections.filter(section =>
+      //   section.coverTypeShortDescription === (coverType === "COMP" ? "COMP" : coverType));
+        this.filteredMandatorySections = this.mandatorySections.filter(section => 
+          (coverType === "COMP" ? section.coverTypeShortDescription === "COMP" : section.coverTypeShortDescription === coverType) ||
+          section.coverTypeCode === covertypeCode
+        );
       log.debug("Filtered Section", this.filteredMandatorySections);
 
       this.filteredAllMatchingSections = this.allMatchingSections.filter(section =>

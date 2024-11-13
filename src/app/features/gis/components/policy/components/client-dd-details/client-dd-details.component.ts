@@ -23,7 +23,7 @@ export class ClientDdDetailsComponent {
   userDetails: any
   userBranchId: any;
   userBranchName: any;
-  selectedBranchCode: any;
+  selectedBankBranchCode: any;
   selectedBranchDescription: any;
   errorOccurred: boolean;
   errorMessage: string;
@@ -34,6 +34,7 @@ export class ClientDdDetailsComponent {
   clientDDList: any;
   selectedClientDD: any;
   clientDDDetailsForm: FormGroup;
+  clientBranchCode: number;
 
 
   constructor(
@@ -50,7 +51,6 @@ export class ClientDdDetailsComponent {
   ) { }
 
   ngOnInit(): void {
-    this.fetchBranches();
     this.getUtil();
     this.editClientDDDetailsForm();
   }
@@ -69,49 +69,40 @@ export class ClientDdDetailsComponent {
   }
 
   fetchBranches() {
-    this.bankService.getBankBranchListByBankId(24).subscribe({
-      next: (data) => {
+    
+    this.bankService
+    .getBankBranchById(this.clientBranchCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.branchList = response
+        log.debug("Branch list:", this.branchList)
 
-        if (data) {
-          this.branchList = data;
-          log.info('Fetched Bank Branches', this.branchList);
-          
-          this.cdr.detectChanges();
-
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to get Bank branches details.Try again later');
-
-        }
       },
-      error: (err) => {
+      error: (error) => {
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  branch list.Try again later');
+      }
+    })
   }
   onBranchSelected(selectedValue: any) {
-    this.selectedBranchCode = selectedValue;
+    this.selectedBankBranchCode = selectedValue;
+    log.debug("SELECTED BANK BRANCH CODE",this.selectedBankBranchCode)
     const selectedBranch = this.branchList.find(branch => branch.id === selectedValue);
-    if (selectedBranch) {
-      console.log("Selected Branch Data:", selectedBranch);
+    // if (selectedBranch) {
+    //   console.log("Selected Branch Data:", selectedBranch);
 
-      const selectedBranchCode = selectedBranch.id;
-      const selectedBranchName = selectedBranch.name;
+    //   const selectedBranchCode = selectedBranch.id;
+    //   const selectedBranchName = selectedBranch.name;
 
-      console.log("Selected Agent Code:", selectedBranchCode);
-      console.log("Selected Agent Name:", selectedBranchName);
-      this.selectedBranchCode = selectedBranchCode;
-      this.selectedBranchDescription = selectedBranchCode;
+    //   console.log("Selected Agent Code:", selectedBranchCode);
+    //   console.log("Selected Agent Name:", selectedBranchName);
+    //   this.selectedBranchCode = selectedBranchCode;
+    //   this.selectedBranchDescription = selectedBranchCode;
 
-    } else {
-      console.log("Branch not found in agentList");
-    }
+    // } else {
+    //   console.log("Branch not found in agentList");
+    // }
 
   }
   getUtil() {
@@ -173,6 +164,10 @@ export class ClientDdDetailsComponent {
   OnSelectClientDD(clientDD: any) {
     log.debug(" Selected client DD", clientDD)
     this.selectedClientDD = clientDD;
+    this.clientBranchCode = parseInt(this.selectedClientDD.clientDDBranchCode)
+    log.debug(" Selected client DD branch code", this.clientBranchCode)
+    this.fetchBranches();
+
     this.clientDDDetailsForm.patchValue({
 
       accountName: clientDD.clientDdAccountName,
@@ -183,6 +178,30 @@ export class ClientDdDetailsComponent {
     if (this.selectedClientDD) {
       // this.addPolicyTaxes()
     }
+  }
+  UpdateClientDDdetails() {
+   
+    this.clientDDDetailsForm.get('bankBranchCode').setValue(this.selectedBankBranchCode);
+    this.clientDDDetailsForm.get('clientCode').setValue(this.selectedClientDD.clientCode);
+
+  
+    const updateClientDDdetailsForm = this.clientDDDetailsForm.value;
+    log.debug('Update Client DD details Form:', updateClientDDdetailsForm);
+    this.policyService
+      .updateClientDDdetails(updateClientDDdetailsForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+         
+          log.debug('response after updating client DD details', response);
+          this.fetchClientDDdetails()
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit Client DD  details.Try again later');
+        }
+      });
   }
 
 }
