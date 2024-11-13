@@ -22,7 +22,7 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Organizations', link: '/home/crm/organization' },
         { label: 'Countries & Holidays', link: '/home/crm/country' },
-        { label: 'Hierarchy', link: '' },
+        { label: 'Hierarchy', link: '/home/crm/hierarchy' },
       ],
     },
     {
