@@ -644,7 +644,11 @@
     "lead_comment": "Commentaires sur le lead",
     "comment_is_required": "Le commentaire est requis",
     "date_is_required": "La date est requise",
-    "disposition_is_required": "La disposition est requise"
+    "disposition_is_required": "La disposition est requise",
+    "documentsAttached": "Documents joints",
+    "selectUpload": "Sélectionner un fichier à télécharger",
+    "documents": "Documents",
+    "preview": "Aperçu"
   },
   "gis": {
     "quotation": {

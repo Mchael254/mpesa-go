@@ -2,7 +2,7 @@
   <div class="row col-md-12">
     <div class="col-md-3">
       <h5>
-        {{'entities.documentsAttached' | translate}}
+        {{'entity.documentsAttached' | translate}}
       </h5>
     </div>
     <div class="col-md-9">

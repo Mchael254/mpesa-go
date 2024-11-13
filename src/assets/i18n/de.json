@@ -644,7 +644,11 @@
     "lead_comment": "Lead-Kommentare",
     "comment_is_required": "Kommentar ist erforderlich",
     "date_is_required": "Datum ist erforderlich",
-    "disposition_is_required": "Disposition ist erforderlich"
+    "disposition_is_required": "Disposition ist erforderlich",
+    "documentsAttached": "Angehängte Dokumente",
+    "selectUpload": "Datei zum Hochladen auswählen",
+    "documents": "Dokumente",
+    "preview": "Vorschau"
   },
   "gis": {
     "quotation": {

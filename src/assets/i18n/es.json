@@ -644,7 +644,11 @@
     "lead_comment": "Comentarios del lead",
     "comment_is_required": "El comentario es obligatorio",
     "date_is_required": "La fecha es obligatoria",
-    "disposition_is_required": "La disposición es obligatoria"
+    "disposition_is_required": "La disposición es obligatoria",
+    "documentsAttached": "Documentos adjuntos",
+    "selectUpload": "Seleccionar archivo para cargar",
+    "documents": "Documentos",
+    "preview": "Vista previa"
   },
   "gis": {
     "quotation": {
