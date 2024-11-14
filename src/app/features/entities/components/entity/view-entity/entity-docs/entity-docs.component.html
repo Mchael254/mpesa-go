@@ -1,0 +1,111 @@
+<div class="row">
+  <div class="row col-md-12">
+    <div class="col-md-3">
+      <h5>
+        {{'entities.documentsAttached' | translate}}
+      </h5>
+    </div>
+    <div class="col-md-9">
+      <div class="form-group" style="display: flex; flex-grow: 1; align-items: center;">
+        <input type="file" #fileInput style="display: none;" id="uploadDoc" (change)="onFileSelected($event)">
+        <button class="btn btn-primary btn-sm ms-4"  (click)="fileInput.click()">
+          <span class="file-text">{{'entities.selectUpload' | translate}}</span>
+        </button>
+        <div class="form-check float-start">
+          <span *ngIf="!isLoading; else loading"></span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul *ngFor="let doc of viewAllDocs" class="m-0">
+    <li>
+      <div class="row pill-box fadeIn">
+        <div class="col-md-9 col-9 text-primary fw-medium">
+          <span *ngIf = "doc?.actualName" title="{{doc?.actualName}}" (click)="fetchSelectedDoc()">
+            {{doc?.actualName?.substring(0,50) | titlecase}}
+          </span>
+          <i class="pi pi-times text-danger ms-3" id="deleteFile" (click)="deleteUploadedFile(doc)"></i>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!--DOC Viewer modal-->
+<div class="modal fade" id="docViewerToggle" aria-labelledby="docViewerToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="docViewerToggleLabel">{{'entities.documents' | translate}}</h1>
+        <button type="button" class="btn-close" (click)="closeDocViewerModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row col-12 mb-3">
+          <div class="col-3 border-end border-secondary-subtle">
+
+            <div class="form-check mt-2 form-check-item" *ngFor="let doc of viewAllDocs; let i = index">
+
+              <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
+                     data-bs-target="#documentCarousel"
+                     [attr.data-bs-slide-to]="i">
+                <span *ngIf = "doc?.actualName" class="doc-name" title="{{doc?.actualName | titlecase}}">
+                  {{doc?.actualName?.substring(0,18) | titlecase}}...
+                </span>
+
+                <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;"></i>
+              </label><br>
+            </div>
+
+          </div>
+          <div class="col-9">
+
+            <!-- carousel -->
+            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">
+                <ng-container *ngFor="let doc of docsList; let i = index" >
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleIndicators"
+                    [attr.data-bs-slide-to]="i"
+                    class="{{ i === 0 ? 'active' : '' }}"
+                  ></button>
+                </ng-container>
+              </div>
+              <div class="carousel-inner">
+                <ng-container *ngIf="docsList.length > 0">
+                  <div
+                    *ngFor="let doc of docsList; let i = index"
+                    class="{{ i === 0 ? 'carousel-item active' : 'carousel-item' }}"
+                  >
+                    <label class="form-label w-100 d-flex justify-content-center">{{'entities.preview' | translate}}: {{ doc.fileName }}</label><br>
+                    <ngx-doc-viewer
+                      [isBase64]="!!doc.isBase64"
+                      [base64String]="doc?.base64String"
+                      [fileName]="doc?.fileName ?? ''"
+                      [srcUrl]="doc?.srcUrl ?? ''"
+                      [mimeType]="doc?.mimeType"
+                    ></ngx-doc-viewer>
+                  </div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="docsList.length > 0">
+                <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

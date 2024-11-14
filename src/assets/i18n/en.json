@@ -674,7 +674,11 @@
     "lead_comment": "Lead Comments",
     "comment_is_required": "Comment is required",
     "date_is_required": "Date is required",
-    "disposition_is_required": "Disposition is required"
+    "disposition_is_required": "Disposition is required",
+    "documentsAttached": "Documents Attached",
+    "selectUpload": "Select a file to upload",
+    "documents": "Documents",
+    "preview": "Preview"
   },
   "gis": {
     "quotation": {

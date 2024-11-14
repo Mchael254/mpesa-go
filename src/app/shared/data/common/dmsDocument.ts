@@ -46,6 +46,13 @@ export interface DmsDocument{
   shareholderNo?: string;
   versionLabel?: string;
   format?: string;
+  userName?: string,
+  clientCode?: string,
+  agentName?: string,
+  docData?: string
+  spName?: string,
+  spCode?: string,
+  originalFileName?: string
 }
 
 /**

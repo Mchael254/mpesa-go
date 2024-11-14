@@ -644,7 +644,11 @@
     "lead_comment": "潜在客户评论",
     "comment_is_required": "评论是必需的",
     "date_is_required": "日期是必需的",
-    "disposition_is_required": "处理状态是必需的"
+    "disposition_is_required": "处理状态是必需的",
+    "documentsAttached": "附件文件",
+    "selectUpload": "选择文件上传",
+    "documents": "文件",
+    "preview": "预览"
   },
   "gis": {
     "quotation": {

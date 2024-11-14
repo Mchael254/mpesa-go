@@ -46,6 +46,7 @@ import { EditOtherDetailsFormComponent } from './components/entity/view-entity/e
 import { EditCommentFormComponent } from './components/entity/view-entity/entity-other-details/edit-comment-form/edit-comment-form.component';
 import { EditActivityFormComponent } from './components/entity/view-entity/entity-other-details/edit-activity-form/edit-activity-form.component';
 import { EditLeadContactFormComponent } from './components/entity/view-entity/entity-other-details/edit-lead-contact-form/edit-lead-contact-form.component';
+import { EntityDocsComponent } from './components/entity/view-entity/entity-docs/entity-docs.component';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -82,6 +83,7 @@ import { EditLeadContactFormComponent } from './components/entity/view-entity/en
     EditCommentFormComponent,
     EditActivityFormComponent,
     EditLeadContactFormComponent,
+    EntityDocsComponent,
   ],
   imports: [
     CommonModule,
