@@ -644,7 +644,11 @@
     "lead_comment": "Maoni ya Kiongozi",
     "comment_is_required": "Maoni yanahitajika",
     "date_is_required": "Tarehe inahitajika",
-    "disposition_is_required": "Maamuzi yanahitajika"
+    "disposition_is_required": "Maamuzi yanahitajika",
+    "documentsAttached": "Nyaraka Zilizounganishwa",
+    "selectUpload": "Chagua faili kupakia",
+    "documents": "Nyaraka",
+    "preview": "Onyesho la awali"
   },
   "gis": {
     "quotation": {

@@ -1,0 +1,22 @@
+ul li {
+  list-style-type: none;
+  color: #00529B;
+  font-weight: 500;
+  line-height: 2;
+}
+.pill-box {
+  margin: .5rem 0.2rem 0;
+  padding: 5px 0;
+}
+.carousel-control-next, .carousel-control-prev {
+  top: 50%;
+  height: 20%;
+}
+.doc-name {
+  display: inline-block;
+  width: 172px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
