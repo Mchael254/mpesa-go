@@ -708,6 +708,21 @@ export interface ExternalClaimExp {
   totalPaidAmount: number;
   year: number;
 }
+export interface RiskService {
+  rssCode: number;
+  rssRsCode: number;
+  rsDesc: string;
+  sclDesc: string;
+  rssMandatory: string;
+  rssRemarks: string | null;
+  rssDoneDate: string; 
+  rssDoneBy: string;
+  rssSectCode: number;
+  sectDesc: string;
+  rssSectType: string;
+  covtShtDesc: string;
+}
+
 
 
 
