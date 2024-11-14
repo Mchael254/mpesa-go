@@ -414,5 +414,8 @@ export class PolicyService {
     return this.api.DELETE(`v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getRiskService(subClassCode:any, coverTypeCode){
+    return this.api.GET(`v1/risk-services?subclassCode=${subClassCode}&coverTypeCode=${coverTypeCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
 }
 

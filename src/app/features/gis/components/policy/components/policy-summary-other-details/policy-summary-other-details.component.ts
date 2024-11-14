@@ -4,7 +4,7 @@ import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Sidebar } from 'primeng/sidebar';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
-import { Insured, PolicyContent, PolicyResponseDTO, RelatedRisk, RiskInformation } from '../../data/policy-dto';
+import { Insured, PolicyContent, PolicyResponseDTO, RelatedRisk, RiskInformation, RiskService } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -190,6 +190,7 @@ export class PolicySummaryOtherDetailsComponent {
   scheduleDetailsExist: boolean = false;
   riskPerilList: any;
   riskPerilForm: FormGroup;
+  riskServiceList: RiskService[] = [];
 
 
 
@@ -1693,6 +1694,28 @@ export class PolicySummaryOtherDetailsComponent {
 
     // Toggle collapse state only if both selectedRisk and corresponding risk are valid
     this.isRiskServiceListOpen = !this.isRiskServiceListOpen;
+  }
+  getRiskServices(){
+    const coverTypeCode = this.selectedRisk.coverTypeCode;
+    const subclassCode = this.selectedRisk.subClassCode;
+    log.debug({
+      subclassCode: this.selectedRisk.subClassCode,
+      coverTypeCode: coverTypeCode
+    });
+    this.policyService
+      .getRiskService( subclassCode,coverTypeCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.riskServiceList = response._embedded
+          log.debug("Risk Service List:", this.riskServiceList)
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  risk service  details.Try again later');
+        }
+      })
   }
 
   openCommissionTranscDeleteModal() {
