@@ -17,3 +17,16 @@
   border: 1px solid #00529B;
   border-radius: 2px 1px 2px 2px;
 }
+
+.icon-circle {
+  display: inline-block;
+  background-color: #e4e7eb;
+  color: #00529b;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  cursor: pointer;
+}
