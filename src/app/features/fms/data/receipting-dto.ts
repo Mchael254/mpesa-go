@@ -1,21 +1,25 @@
+
 export interface CurrencyDTO{
   "code": number;
   "symbol": string;
   "desc": string;
   "roundOff": number
 }
-// export interface ReceiptNumberDTO{
-//   bankAccountCode: number;
-//     bankAccountBranchCode: number;
-//     bankAccountName: string;
-//     bankAccountType: string;
-//     receiptingPointId: number;
-//     receiptingPointName: string;
-//     receiptingPointAutoManual: string;
-//     branchReceiptNumber: number;
-//     receiptNumber: string;
-//     newCurrencyExchangeRateAmount: number
-// }
+export interface ReceiptNumberDTO{
+  bankAccountCode: number;
+  bankAccountBranchCode: number;
+  bankAccountName: string;
+  bankAccountType: string;
+  receiptingPointId: number;
+  receiptingPointName: string;
+  receiptingPointAutoManual: string;
+  branchReceiptNumber: number;
+  receiptNumber: string;
+  newCurrencyExchangeRateAmount: number;
+}
+export interface ManualExchangeRateDTO{
+  data: string;
+}
 export interface DrawersBankDTO {
   bankName: string;
 branchName: string | null;
@@ -29,12 +33,18 @@ export interface NarrationDTO{
 export interface ReceiptingPointsDTO{
   id: number;
     name: string;
-    code?:number;
+    
     autoManual: string;
-    printerName: string;
+    printerName: string | null;
     userRestricted: string;
 }
-
+export interface BankDTO{
+  code: number;
+  branchCode: number;
+  name: string;
+  type: string;
+  defaultBank: string;
+}
 export interface PaymentModesDTO{
   code: string;
   desc: string;
@@ -54,6 +64,27 @@ export interface PaymentModesDTO{
   emailApplicable: string;
   bnkRateType: string;
 
+}
+export interface AccountTypeDTO{
+      branchCode: number;
+      userCode: number;
+      code: number;
+      systemCode: number;
+      accCode: number;
+      name: string;
+      coaAccNumber: string;
+      coaAccOrgCode: number;
+      coaBranchCode: number;
+      receiptBank: number;
+      chequeBank: number;
+      subClass: string;
+      active: string;
+      receiptAccount: string;
+      restrictGrossDebitRcpt: string;
+      vatApplicable: string;
+      rateApplicable: number;
+      actTypeShtDesc: string;
+      systemName: string;
 }
 export interface GroupBusinessAccount {
     accountNumber: string; // Primary key for this data type

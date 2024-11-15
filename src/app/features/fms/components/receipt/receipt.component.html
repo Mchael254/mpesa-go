@@ -122,8 +122,10 @@
               <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }}</label>
               <div class="dropdown-container">
                 <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()">
-                  <!-- <option *ngFor="let bank of bankAccounts" [value]="bank.accountNumber">{{bank.accountName}} - {{bank.accountType}}</option> -->
+                   <option *ngFor="let bank of bankAccounts" [value]="bank.name">{{bank.name}} - {{bank.name}}</option> 
                 </select>
+                  
+                
                 <i class="pi pi-chevron-down dropdown-icon"></i>
               </div>
             </div>
@@ -448,7 +450,7 @@
               (change)="onAccountTypeChange()"
             >
               <option value="">Select Account Type</option>
-              <option *ngFor="let type of accountTypes" [value]="type">{{ type }}</option>
+              <option *ngFor="let type of accountTypes" [value]="type">{{ type.name }}</option>
             </select>
           </div>
 
