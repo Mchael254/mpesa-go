@@ -25,14 +25,11 @@ import {SectorService} from "../../../../../shared/services/setups/sector/sector
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import { DatePipe } from '@angular/common';
 import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
-import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
-import {AuthService} from "../../../../../shared/services/auth.service";
-import {DmsService} from "../../../../../shared/services/dms/dms.service";
 const log =  new Logger("CreateClientComponent")
 
 @Component({
   selector: 'app-new-client',
-  templateUrl: './new-client2.component.html',
+  templateUrl: './new-client.component.html',
   styleUrls: ['./new-client.component.css']
 })
 /**
@@ -144,9 +141,6 @@ export class NewClientComponent implements OnInit{
     }
   ];
   timeStamp:any;
-  isLoading: boolean = false;
-  documentPayload: any;
-  selectedFile: File;
   constructor(
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
@@ -164,18 +158,16 @@ export class NewClientComponent implements OnInit{
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private utilService: UtilService,
-    private setupsParameterService: SetupsParametersService,
-    private authService: AuthService,
-    private dmsService: DmsService
+    private setupsParameterService: SetupsParametersService
   ) { }
-/**
- * Initializes the New Client Component.
- * - Retrieves entity details from session storage.
- * - Initializes the client registration form.
- * - Retrieves the client ID from route parameters.
- * - Fetches necessary data for populating form fields, including countries, sectors, currencies,
- *   client titles, identity types, occupations, client types, and client branches.
- */
+  /**
+   * Initializes the New Client Component.
+   * - Retrieves entity details from session storage.
+   * - Initializes the client registration form.
+   * - Retrieves the client ID from route parameters.
+   * - Fetches necessary data for populating form fields, including countries, sectors, currencies,
+   *   client titles, identity types, occupations, client types, and client branches.
+   */
   ngOnInit(): void {
     this.createClientRegistrationForm();
     const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
@@ -204,29 +196,29 @@ export class NewClientComponent implements OnInit{
    */
   getPartyDetails(id: number): void {
     this.entityService.getEntityById(id)
-    .subscribe({
-      next: (party) => {
-        this.entityDetails = {
-          categoryName: party.categoryName,
-          countryId: party.countryId,
-          dateOfBirth: party.dateOfBirth,
-          effectiveDateFrom: party.effectiveDateFrom,
-          effectiveDateTo: party.effectiveDateTo,
-          id: party.id,
-          modeOfIdentity: party.modeOfIdentity,
-          identityNumber: party.identityNumber,
-          name: party.name,
-          organizationId: party.organizationId,
-          pinNumber: party.pinNumber,
-          profilePicture: party.profilePicture,
-          profileImage: party.profileImage
-        };
-        this.patchClientEntityFormValues()
-      },
-      error: (e) => {
-        log.error(`error fetching parties >>>`, e)
-      }
-    })
+      .subscribe({
+        next: (party) => {
+          this.entityDetails = {
+            categoryName: party.categoryName,
+            countryId: party.countryId,
+            dateOfBirth: party.dateOfBirth,
+            effectiveDateFrom: party.effectiveDateFrom,
+            effectiveDateTo: party.effectiveDateTo,
+            id: party.id,
+            modeOfIdentity: party.modeOfIdentity,
+            identityNumber: party.identityNumber,
+            name: party.name,
+            organizationId: party.organizationId,
+            pinNumber: party.pinNumber,
+            profilePicture: party.profilePicture,
+            profileImage: party.profileImage
+          };
+          this.patchClientEntityFormValues()
+        },
+        error: (e) => {
+          log.error(`error fetching parties >>>`, e)
+        }
+      })
   }
 
   /**
@@ -332,19 +324,19 @@ export class NewClientComponent implements OnInit{
    */
   defineSmsNumberFormat(): void {
     this.setupsParameterService.getParameters('SMS_NO_FORMAT')
-    .subscribe({
-      next: (param) => {
-        const phoneNumberRegex = param[0].value;
-        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
-        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
-        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
-        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
-        log.info(`from sms number format >>>`, param);
-      },
-      error: (e) => {
-        log.error(`Error fetching SMS number format >>>`, e);
-      }
-    })
+      .subscribe({
+        next: (param) => {
+          const phoneNumberRegex = param[0].value;
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+          log.info(`from sms number format >>>`, param);
+        },
+        error: (e) => {
+          log.error(`Error fetching SMS number format >>>`, e);
+        }
+      })
   }
 
   /**
@@ -363,10 +355,10 @@ export class NewClientComponent implements OnInit{
   }
 
 
-/**
- * After the view has been initialized, this method retrieves mandatory field data
- * and updates the visibility and validation of form fields based on the received data.
- */
+  /**
+   * After the view has been initialized, this method retrieves mandatory field data
+   * and updates the visibility and validation of form fields based on the received data.
+   */
   ngAfterViewInit() {
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
@@ -492,19 +484,19 @@ export class NewClientComponent implements OnInit{
   ];
   option= 'Individual';*/
 
-/**
- * Handles the selection of a user type and updates the clientType property accordingly.
- * @param e - The event object containing information about the selected user type.
- */
+  /**
+   * Handles the selection of a user type and updates the clientType property accordingly.
+   * @param e - The event object containing information about the selected user type.
+   */
   selectUserType(e) {
     this.clientType = e.target.value;
     console.log(`userType >>>`, this.clientType, e.target.value)
   }
 
   /**
- * Handles the selection of a utility bill type and updates the utilityBill property accordingly.
- * @param e - The event object containing information about the selected utility bill.
- */
+   * Handles the selection of a utility bill type and updates the utilityBill property accordingly.
+   * @param e - The event object containing information about the selected utility bill.
+   */
   selectUtilityBill(e) {
     this.utilityBill = e.target.value;
     // log.info(`utilityBill >>>`, this.utilityBill, e.target.value)
@@ -512,9 +504,9 @@ export class NewClientComponent implements OnInit{
   get f() { return this.clientRegistrationForm.controls; }
 
   /**
- * Saves client basic information, including address, contact details, payment details,
- * and wealth details, by making an API call with the form values.
- */
+   * Saves client basic information, including address, contact details, payment details,
+   * and wealth details, by making an API call with the form values.
+   */
   saveClientBasic() {
 
     this.submitted = true;
@@ -664,37 +656,35 @@ export class NewClientComponent implements OnInit{
 
       }
 
-    const clientDetails: any = {
-      clientBranchCode: clientFormValues.contact_details.clientBranch
-    }
-    //preparing Client Dto
-    const saveClient: any = {
-      address: address,
-      contactDetails: contact,
-      effectiveDateFrom: null,
-      effectiveDateTo: null,
-      id: null,
-      createdBy: null,
-      partyId: this.entityDetails.id,
-      partyTypeShortDesc: "CLIENT",
-      paymentDetails: payment,
-      clientDetails: clientDetails,
-      firstName: clientFormValues.surname,
-      gender: clientFormValues.gender ? clientFormValues.gender : null,
-      lastName: clientFormValues.otherName,
-      pinNumber: clientFormValues.pinNumber,
-      category: this.clientType,
-      status: "A",
-      wealthAmlDetails:wealth,
-      countryId: clientFormValues.citizenship,
-      dateCreated: null,
-      accountType: clientFormValues.clientTypeId,
-      dateOfBirth: this.entityDetails?.dateOfBirth,
-      organizationId: 2,
-      modeOfIdentityid: this.entityDetails?.modeOfIdentity?.id,
-      nextOfKinDetailsList: null,
-      modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
-      modeOfIdentityNumber: this.entityDetails?.identityNumber,
+      const clientDetails: any = {
+        clientBranchCode: clientFormValues.contact_details.clientBranch
+      }
+      //preparing Client Dto
+      const saveClient: any = {
+        address: address,
+        contactDetails: contact,
+        effectiveDateFrom: null,
+        effectiveDateTo: null,
+        id: 0,
+        createdBy: null,
+        partyId: this.entityDetails.id,
+        partyTypeShortDesc: "CLIENT",
+        paymentDetails: payment,
+        clientDetails: clientDetails,
+        firstName: clientFormValues.surname,
+        gender: clientFormValues.gender ? clientFormValues.gender : null,
+        lastName: clientFormValues.otherName,
+        pinNumber: clientFormValues.pinNumber,
+        category: this.clientType,
+        status: "A",
+        wealthAmlDetails:wealth,
+        countryId: clientFormValues.citizenship,
+        dateCreated: null,
+        accountType: clientFormValues.clientTypeId,
+        dateOfBirth: this.entityDetails?.dateOfBirth,
+        organizationId: 2,
+        modeOfIdentityid: this.entityDetails?.modeOfIdentity?.id,
+        nextOfKinDetailsList: null,
 
       }
       this.clientsService.saveClientDetails(saveClient)
@@ -723,10 +713,10 @@ export class NewClientComponent implements OnInit{
 
   }
 
-/**
- * Handles file uploads and sets the URL of the uploaded file for display.
- * @param event - The file input change event containing uploaded files.
- */
+  /**
+   * Handles file uploads and sets the URL of the uploaded file for display.
+   * @param event - The file input change event containing uploaded files.
+   */
   onUpload(event)
   {
     if (event.target.files) {
@@ -763,9 +753,9 @@ export class NewClientComponent implements OnInit{
   // }
 
   /**
- * Fetches sectors data for the specified organization and updates the component's sectorData property.
- * @param organizationId - The ID of the organization for which sectors are being fetched.
- */
+   * Fetches sectors data for the specified organization and updates the component's sectorData property.
+   * @param organizationId - The ID of the organization for which sectors are being fetched.
+   */
   getSectors(organizationId: number) {
     this.sectorService.getSectors(organizationId)
       .pipe(
@@ -779,8 +769,8 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches currency data and updates the component's currenciesData property.
- */
+   * Fetches currency data and updates the component's currenciesData property.
+   */
   getCurrencies() {
     this.bankService.getCurrencies()
       .pipe(
@@ -793,10 +783,10 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches client titles based on the specified organization ID and updates the component's
- * clientTitlesData property.
- * @param organizationId The organization ID for which client titles are fetched.
- */
+   * Fetches client titles based on the specified organization ID and updates the component's
+   * clientTitlesData property.
+   * @param organizationId The organization ID for which client titles are fetched.
+   */
   getClientTitles(organizationId: number) {
     this.accountService.getClientTitles(organizationId)
       .pipe(
@@ -809,8 +799,8 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches identity types and updates the component's identityTypeData property.
- */
+   * Fetches identity types and updates the component's identityTypeData property.
+   */
   getIdentityType() {
     this.clientsService.getIdentityType()
       .pipe(
@@ -824,10 +814,10 @@ export class NewClientComponent implements OnInit{
   }
 
   /**
- * Fetches occupation data based on the provided organization ID and
- *  updates the component's occupationData property.
- * @param organizationId The organization ID used to retrieve occupation data.
- */
+   * Fetches occupation data based on the provided organization ID and
+   *  updates the component's occupationData property.
+   * @param organizationId The organization ID used to retrieve occupation data.
+   */
   getOccupation(organizationId: number) {
     this.occupationService.getOccupations(organizationId)
       .pipe(
@@ -840,10 +830,10 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches client types based on the provided organization ID and
- * updates the component's clientTypeData property.
- * @param organizationId The organization ID used to retrieve client types.
- */
+   * Fetches client types based on the provided organization ID and
+   * updates the component's clientTypeData property.
+   * @param organizationId The organization ID used to retrieve client types.
+   */
   getClientType(organizationId: number) {
     this.clientService.getClientType(organizationId)
       .pipe(
@@ -856,9 +846,9 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches client branches and updates the component's clientBranchData property.
- * This function is typically used to populate a dropdown or list of client branches.
- */
+   * Fetches client branches and updates the component's clientBranchData property.
+   * This function is typically used to populate a dropdown or list of client branches.
+   */
   getClientBranch() {
     this.clientsService.getCLientBranches()
       .pipe(
@@ -872,10 +862,10 @@ export class NewClientComponent implements OnInit{
   }
   ngOnDestroy() {
   }
-/**
- * Fetches a list of countries and updates the component's countryData property.
- * This function is typically used to populate a dropdown or list of countries.
- */
+  /**
+   * Fetches a list of countries and updates the component's countryData property.
+   * This function is typically used to populate a dropdown or list of countries.
+   */
   fetchCountries(){
     log.info('Fetching countries list');
     this.countryService.getCountries()
@@ -888,13 +878,13 @@ export class NewClientComponent implements OnInit{
         // }
       });
   }
-/**
- * Fetches a list of main city states for a specific country based on the given countryId
- * and updates the component's citiesData property.
- * This function is typically used to populate a dropdown or list of city states for a specific country.
- *
- * @param countryId - The unique identifier of the country for which city states are being fetched.
- */
+  /**
+   * Fetches a list of main city states for a specific country based on the given countryId
+   * and updates the component's citiesData property.
+   * This function is typically used to populate a dropdown or list of city states for a specific country.
+   *
+   * @param countryId - The unique identifier of the country for which city states are being fetched.
+   */
   fetchMainCityStates(countryId: number){
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
@@ -902,13 +892,13 @@ export class NewClientComponent implements OnInit{
         this.citiesData  = data;
       })
   }
-/**
- * Fetches a list of towns for a specific city-state based on the given stateId
- * and updates the component's townData property.
- * This function is typically used to populate a dropdown or list of towns for a specific city-state.
- *
- * @param stateId - The unique identifier of the city-state for which towns are being fetched.
- */
+  /**
+   * Fetches a list of towns for a specific city-state based on the given stateId
+   * and updates the component's townData property.
+   * This function is typically used to populate a dropdown or list of towns for a specific city-state.
+   *
+   * @param stateId - The unique identifier of the city-state for which towns are being fetched.
+   */
   fetchTowns(stateId:number){
     log.info(`Fetching towns list for city-state, ${stateId}`);
     this.countryService.getTownsByMainCityState(stateId)
@@ -916,13 +906,13 @@ export class NewClientComponent implements OnInit{
         this.townData = data;
       })
   }
-/**
- * Handles the change event when a user selects a different country in a form.
- * This function resets the county and town fields in the form,
- * fetches the list of banks based on the selected country,
- * and fetches the main city-states for the selected country.
- * It also triggers change detection to update the view.
- */
+  /**
+   * Handles the change event when a user selects a different country in a form.
+   * This function resets the county and town fields in the form,
+   * fetches the list of banks based on the selected country,
+   * and fetches the main city-states for the selected country.
+   * It also triggers change detection to update the view.
+   */
   onCountryChange() {
     this.clientRegistrationForm.patchValue({
       county: null,
@@ -937,11 +927,11 @@ export class NewClientComponent implements OnInit{
       });
     this.cdr.detectChanges();
   }
-/**
- * Handles the change event when a user selects a different city-state in a form.
- * This function fetches the list of towns associated with the selected city-state
- * and updates the townData property accordingly.
- */
+  /**
+   * Handles the change event when a user selects a different city-state in a form.
+   * This function fetches the list of towns associated with the selected city-state
+   * and updates the townData property accordingly.
+   */
   onCityChange() {
     this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
@@ -949,13 +939,13 @@ export class NewClientComponent implements OnInit{
         this.townData = data;
       })
   }
-/**
- * Fetches the list of banks based on the selected country ID and updates the banksData property.
- * It also logs the retrieved bank data for debugging purposes.
- * After receiving the bank data, you can call other functions to fetch bank branches or perform further actions.
- *
- * @param countryId - The ID of the selected country for which banks are being fetched.
- */
+  /**
+   * Fetches the list of banks based on the selected country ID and updates the banksData property.
+   * It also logs the retrieved bank data for debugging purposes.
+   * After receiving the bank data, you can call other functions to fetch bank branches or perform further actions.
+   *
+   * @param countryId - The ID of the selected country for which banks are being fetched.
+   */
   getBanks(countryId: number) {
     this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
@@ -964,15 +954,15 @@ export class NewClientComponent implements OnInit{
         console.log('Bank DATA', this.banksData);
       })
 
-      // Call getBankBranches after receiving banksData
+    // Call getBankBranches after receiving banksData
   }
-/**
- * Handles the selection of a bank by updating the selectedBank property and resetting the branch selection.
- * It triggers the retrieval of bank branches based on the selected bank ID.
- */
+  /**
+   * Handles the selection of a bank by updating the selectedBank property and resetting the branch selection.
+   * It triggers the retrieval of bank branches based on the selected bank ID.
+   */
   onBankSelection() {
-   /* const bankId = event.target.value; // Get the selected bank ID from the event
-    this.getBankBranches(bankId);*/
+    /* const bankId = event.target.value; // Get the selected bank ID from the event
+     this.getBankBranches(bankId);*/
     log.info(`selected bank ==> `, this.selectedBank);
     this.clientRegistrationForm.patchValue({
       branch: null
@@ -981,10 +971,10 @@ export class NewClientComponent implements OnInit{
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
   }
-/**
- * Retrieves bank branches based on the provided bank ID and updates the bankBranchData property.
- * @param bankId The ID of the selected bank to fetch branches for.
- */
+  /**
+   * Retrieves bank branches based on the provided bank ID and updates the bankBranchData property.
+   * @param bankId The ID of the selected bank to fetch branches for.
+   */
   getBankBranches(bankId: number) {
     if (bankId) {
       this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {
@@ -993,54 +983,6 @@ export class NewClientComponent implements OnInit{
     } else {
       this.bankBranchData = [];
     }
-  }
-
-  onFileSelected(event: Event): void {
-    const assignee = this.authService.getCurrentUserName();
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        this.selectedFile = file;
-        // Read the file as a data URL
-        const reader = new FileReader();
-        reader.onload = () => {
-          // Convert the file to Base64 string
-          const base64String = reader.result?.toString().split(',')[1];
-
-          let payload: DmsDocument = {
-            actualName: file.name,
-            userName: assignee,
-            docType: this.selectedFile.type,
-            docData: base64String,
-            originalFileName: file.name
-          }
-          // payload = { ...payload, clientName: this.entityPartyIdDetails?.name, clientCode: this.partyAccountDetails?.accountCode.toString() };
-
-          this.documentPayload = payload;
-          log.info("file upload payload", this.documentPayload);
-
-          // this.uploadFile();
-        };
-        // Read the file as data URL
-        reader.readAsDataURL(file);
-      }
-    }
-  }
-
-  uploadFile() {
-    this.dmsService.saveClientDocs(this.documentPayload).pipe(untilDestroyed(this))
-      .subscribe({
-        next: (res) => {
-          log.info("client file uploaded", res);
-          this.selectedFile = null;
-          this.globalMessagingService.displaySuccessMessage('Success', 'File uploaded successfully!');
-        },
-        error: (err) => {
-          let errorMessage = err?.error?.message ?? err.message;
-          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        }
-      });
   }
 
 }
