@@ -477,6 +477,8 @@
     "reports_content": "Contenido de los informes",
     "required": "Requerido",
     "residential_address_details": "Detalles de la dirección residencial",
+    "uploadDocs": "Subir documentos",
+    "chooseFile": "Elegir archivo",
     "road": "Calle",
     "road_required": "Calle requerida",
     "roles": "Roles",
