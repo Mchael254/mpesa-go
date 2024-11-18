@@ -2,7 +2,7 @@ import { Component, OnInit,NgZone,ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ReceiptingService } from '../../services/receipting.service';
-import {DrawersBankDTO,NarrationDTO,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO} from '../../data/receipting-dto'
+import {DrawersBankDTO,NarrationDTO,ReceiptNumberDTO,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, CurrencyDTO, BankDTO} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -16,8 +16,7 @@ import { Logger } from 'src/app/shared/services';
 import { ReceiptService } from '../../services/receipt.service';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
-//import {AuthService} from "../../../shared/services/auth.service";
+
 import { PaymentModesService } from 'src/app/shared/services/setups/payment-modes/payment-modes.service';
 import { PaymentModesDto } from 'src/app/shared/data/common/payment-modes-dto';
 
@@ -56,11 +55,10 @@ export class ReceiptComponent implements OnInit {
   allocatedClients: any[] = [];
   totalAllocatedAmount = 0;
   isAccountTypeSelected = false;
-  accountType: string = '';
+ 
   transactions: Transaction[] = [];
   searchQuery: string = '';
-  // accountTypes: string[] = ['Savings', 'Current', 'Loan']; // Mock data for account types
-  accountTypes: string[] =[];
+  
   canAddAllocation = false; // Ensure this is mutable and not readonly
   paymentModes:PaymentModesDTO[]=[];
 bankAccounts:BankDTO[]=[];
@@ -95,8 +93,9 @@ receiptingPoints: any[]=[];
   //     accountType: 'Current',
   //   },
   // ];
+  accountTypes:AccountTypeDTO[]=[];
   mockClientData:any[]=[];
-     
+    receiptNumber:ReceiptNumberDTO[]=[];
     countryId:number=1100;
     branchCode:number=344;
     groupBusinessAccounts: any[] = []; // Initialize an empty array for group business accounts
@@ -104,16 +103,16 @@ receiptingPoints: any[]=[];
 
 
 
-// filteredNarrations: any[] = [...this.narrations]; // Copy of the narrations
+
 originalNarration: string | null = null; // Track selected narration from dropdown
 isNarrationFromLov = false; // Flag to indicate if narration is from dropdown
 
-//get currencies-not reas
-  orgCode: string;
 
+  orgCode: string;
+  manualExchangeRate:any;
 constructor(
   private fb: FormBuilder,
-  private translateService: TranslateService,
+ // private translateService: TranslateService,
   private receiptingService: ReceiptingService,
   private modalService: NgbModal,
   private ngZone: NgZone,
@@ -135,11 +134,11 @@ constructor(
   //   }
   // });
 
-  translateService.setDefaultLang('en');
-  translateService.use('en'); // Initial language
+  //translateService.setDefaultLang('en');
+  //translateService.use('en'); // Initial language
 
   // Add supported languages
-  translateService.addLangs(['en', 'es', 'fr', 'zh', 'sw', 'de']);
+ // translateService.addLangs(['en', 'es', 'fr', 'zh', 'sw', 'de']);
   // Add validation for drawers bank based on payment mode
   // this.receiptingDetailsForm.get('paymentMode')?.valueChanges.subscribe(paymentMode => {
   //   if (paymentMode === 'CASH') {
@@ -156,57 +155,41 @@ constructor(
 }
 ngOnInit(): void {
   this.captureReceiptForm();
-  this.fetchAllCurrencies();
+ // this.fetchAllCurrencies();
+ this.fetchReceiptNumber()
+ this.fetchReceiptingPoints();
+ this.fetchCurrencies();
   this.fetchPaymentModes();
   //this.fetchCurrencies();
   this.fetchDrawersBank();
   this.fetchNarrations();
+
+ this.fetchManualExchangeRate();
+ this.fetchAccountTypes();
+ // this.checKBackDatingStatus();
   this.getPaymentModeSelected();
-   this.disableDrawersBank();
+  // this.disableDrawersBank();
   //this.fetchCurrencies();
   // this.fetchPaymentModes();
-  //this.fetchBanks();
+this.fetchBanks();
  this.loggedInUser = this.authService.getCurrentUser();
 console.log('logged user>',this.loggedInUser.code);
+console.log('logged user>',this.loggedInUser);
 console.log(this.currencies);
   // this.fetchReceiptingPoints()
   // this.initializeForm();
-//   this.receiptingDetailsForm.get('bankAccount')?.valueChanges.subscribe(bank => {
-//     this.toggleChargeField(bank);
-//   });
-//   this.receiptingDetailsForm.get('receiptNumber')?.disable();
 
-//   this.receiptingService.getBackdatingEnabled().subscribe(isEnabled => {
-//     this.backdatingEnabled = isEnabled; // Set the backdating flag
-//   },
-//   error => {
-//     console.error('Error fetching backdating status:', error);
-//   }
-// );
 
-// this.receiptingService.getBackdatingEnabled().subscribe(
-//   (isEnabled: boolean) => {
-//     this.backdatingEnabled = isEnabled;
-//     this.setDateRestrictions();
-//   },
-//   (error) => console.error('Error fetching backdating status:', error)
-// )
 //alert("orgcode set to:  " + this.sessionStorage.getItem('SESSION_ORG_CODE'));
-// console.log('>>>',this.sessionStorage.getItem("SESSION_ORG_CODE"));
-// this.orgCode = this.sessionStorage.getItem("SESSION_ORG_CODE");
-// alert(this.orgCode);
+console.log('>>>',this.sessionStorage.getItem("SESSION_ORG_CODE"));
+this.orgCode = this.sessionStorage.getItem("SESSION_ORG_CODE");
+console.log(this.orgCode);
 
 
 
 
 
-//   this.receiptingService.getBackdatingEnabled().subscribe(
-//     (isEnabled: boolean) => {
-//       this.backdatingEnabled = isEnabled;
-//       this.setDateRestrictions();
-//     },
-//     (error) => console.error('Error fetching backdating status:', error)
-//   );
+
 
 //   this.receiptingDetailsForm.get('receiptNumber')?.disable();
 
@@ -260,54 +243,56 @@ captureReceiptForm(){
     transactions: this.fb.array([]), // Array of transactions
   });
 }
-fetchCurrencies(){
-this.currencyService.getCurrencies().subscribe({
-    next: (data) => {
-      this.currencies = data;
-  log.info("requests>>", data);
-    },
-    error: (err) => {
-      
-      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-    }
+checkBankSelected(){
+  this.receiptingDetailsForm.get('bankAccount')?.valueChanges.subscribe(bank => {
+    this.toggleChargeField(bank);
   });
+  this.receiptingDetailsForm.get('receiptNumber')?.disable();
 
- 
 }
 
+
+
+fetchManualExchangeRate() {
+  this.receiptService.getManualExchangeRate().subscribe({
+    next: (response) => {
+      this.manualExchangeRate = response.data;
+      console.log('manual exchange rate:', this.manualExchangeRate);
+    },
+    error: (err) => {
+      console.error('Error while fetching data:', err);
+    }
+  });
+}
 fetchPaymentModes(){
 this.receiptService.getPaymentModes().subscribe({
     next: (response) => {
       this.paymentModes = response.data;
-      console.log("requests>>", this.paymentModes);
+      console.log("payment modes>>", this.paymentModes);
   // log.info("requests>>", response);
     },
     error: (err) => {
       
-      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+      //this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
   });
 }
-// fetchPaymentModes(){
-//   this.receiptService.getPaymentModes(2).subscribe(
-//     {
-//       next:(data) => {
-//         this.paymentModes = data;
-//     log.info("requests>>", data);
-//       },
-//       error:(err) => {
-//       console.log(err);
-        
-//          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-//       }
-   
-//     });
-// }
+fetchReceiptNumber(){
+  this.receiptService.getReceiptNumber(1,940).subscribe({
+    next:(response)=>{
+      this.receiptNumber=response.data;
+      log.info('receipt number>>',this.receiptNumber);
+    },
+    error:(err)=>{
+      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+    }
+  })
+}
 fetchReceiptingPoints(){
-  this.receiptService.getReceiptingPoints(this.branchCode).subscribe({
-        next: (data) => {
-          this.receiptingPoints = data;
-      log.info("requests>>", data);
+  this.receiptService.getReceiptingPoints(1).subscribe({
+        next: (response) => {
+          this.receiptingPoints = response.data;
+      log.info("receipting points>>",this.receiptingPoints );
         },
         error: (err) => {
              console.log(err);
@@ -320,7 +305,7 @@ fetchDrawersBank(){
       .subscribe({
         next: (data) => {
           this.drawersBank = data;
-      log.info("requests>>", data);
+      log.info("drawers bank>>", data);
         },
         error: (err) => {
           console.log(err); 
@@ -344,31 +329,33 @@ fetchNarrations() {
       console.log("Fetched narrations:", this.narrations); // Log to verify
     },
     error: (err) => {
+      
       console.log("Error fetching narrations:", err);
      
       // this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
   });
 }
-fetchAllCurrencies(){
-  this.currencyService.getCurrencies().subscribe(
-    {
-      next:(data)=>{
-        this.currencies=data;
-        log.info('reuquests>>',data);
-      },
+fetchCurrencies(){
+  this.receiptService.getCurrencies(1).subscribe({
+    next:(response)=>{
+      this.currencies=response.data;
+      log.info('currencies>>',this.currencies);
+    },
     error:(err)=>{
+
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
-    }
-  )
+  })
 }
+
 fetchBanks(){
-  this.bankService.getBanks(this.countryId)
+  this.receiptService.getBanks(1,268)
       .subscribe({
-        next: (data) => {
-          this.bankAccounts = data;
-      log.info("requests>>", data);
+        next: (response) => {
+        this.bankAccounts = response.data;
+      log.info("banks>>", this.bankAccounts);
+      
         },
         error: (err) => {
            console.log(err);
@@ -377,6 +364,42 @@ fetchBanks(){
       });
 }
 
+fetchAccountTypes(){
+  this.receiptService.getAccountTypes(2,2003,1).subscribe({
+    next:(response)=>{
+      this.accountTypes = response.data;
+      log.info('account types request>>>',this.accountTypes);
+    },
+    error:(err)=>{
+      console.error('error while fetching account types',err);
+    }
+  })
+}
+checKBackDatingStatus(){
+  this.receiptingService.getBackdatingEnabled().subscribe(isEnabled => {
+    this.backdatingEnabled = isEnabled; // Set the backdating flag
+  },
+  error => {
+    console.error('Error fetching backdating status:', error);
+  }
+);
+
+this.receiptingService.getBackdatingEnabled().subscribe(
+  (isEnabled: boolean) => {
+    this.backdatingEnabled = isEnabled;
+    this.setDateRestrictions(); 
+
+  },
+  (error) => console.error('Error fetching backdating status:', error)
+)
+  this.receiptingService.getBackdatingEnabled().subscribe(
+    (isEnabled: boolean) => {
+      this.backdatingEnabled = isEnabled;
+      this.setDateRestrictions();
+    },
+    (error) => console.error('Error fetching backdating status:', error)
+  );
+}
 
    // Open the modal dynamically and clear form values
    showChargesModal(): void {
@@ -571,6 +594,7 @@ private handleChequeMode(chequeTypeModal: Modal | null): void {
 
   // Reset payment mode to allow re-triggering
   setTimeout(() => {
+
     this.receiptingDetailsForm.patchValue({ paymentMode: '' }, { emitEvent: false });
   }, ); // Slight delay to avoid glitches
 }
