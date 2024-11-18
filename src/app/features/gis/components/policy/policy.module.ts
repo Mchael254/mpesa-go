@@ -30,6 +30,7 @@ import { PolicyTaxesComponent } from './components/policy-taxes/policy-taxes.com
 import { PolicySubclasessClausesComponent } from './components/policy-subclasess-clauses/policy-subclasess-clauses.component';
 import { ExternalClaimsComponent } from './components/external-claims/external-claims.component';
 import { ServiceProvidersComponent } from './components/service-providers/service-providers.component';
+import { InternalClaimsComponent } from './components/internal-claims/internal-claims.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -48,6 +49,7 @@ import { ServiceProvidersComponent } from './components/service-providers/servic
     PolicySubclasessClausesComponent,
     ExternalClaimsComponent,
     ServiceProvidersComponent,
+    InternalClaimsComponent,
   ],
   imports: [
     CommonModule,
