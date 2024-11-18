@@ -49,6 +49,7 @@ import {ServiceDeskComponent} from "./components/service-desk/service-desk.compo
 import {
   ServiceDeskDetailsComponent
 } from "./components/service-desk/service-desk-details/service-desk-details.component";
+import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import {
     RequestTrackingComponent,
     ServiceDeskComponent,
     ServiceDeskDetailsComponent,
+    HierarchyComponent,
   ],
   imports: [
     CommonModule,
