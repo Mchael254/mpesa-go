@@ -722,6 +722,17 @@ export interface RiskService {
   rssSectType: string;
   covtShtDesc: string;
 }
+export interface InternalClaimExp {
+  cmbPolClientPolicyNo: string;
+  claimNo: string;
+  ostReserve: number;
+  totalReserve: number;
+  recoveries: number;
+  salvages: number;
+  totalPayments: number;
+  netPaid: number;
+}
+
 
 
 

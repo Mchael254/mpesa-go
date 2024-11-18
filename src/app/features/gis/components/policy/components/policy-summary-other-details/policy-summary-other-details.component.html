@@ -23,9 +23,9 @@
                         <li class="list-group-item" (click)="selectItem(8)" [class.selected]="selectedItem === 8">
                             {{'gis.policy.limits_of_liability' | translate}}</li>
                         <li class="list-group-item" (click)="selectItem(9)" [class.selected]="selectedItem === 9">
-                            {{'gis.policy.external_claim_exp' | translate}}.</li>
+                            {{'gis.policy.external_claim_exp' | translate}}</li>
                         <li class="list-group-item" (click)="selectItem(10)" [class.selected]="selectedItem === 10">
-                            {{'gis.policy.internal_claim_exp' | translate}}.</li>
+                            {{'gis.policy.internal_claim_exp' | translate}}</li>
                         <li class="list-group-item" (click)="selectItem(11)" [class.selected]="selectedItem === 11">
                             {{'gis.policy.service_providers' | translate}}</li>
                         <li class="list-group-item" (click)="selectItem(12)" [class.selected]="selectedItem === 12">
@@ -3843,9 +3843,10 @@
                 <ng-container *ngIf="selectedItem === 9">
                    <app-external-claims></app-external-claims>
                 </ng-container>
+                <!-- INTERNAL CLAIM EXPEREIENCE -->
                 <ng-container *ngIf="selectedItem === 10">
-                    <h5>{{'gis.policy.internal_claim_exp' | translate}}..</h5>
-                    <p>Details about Internal claims exp...</p>
+                    <app-internal-claims></app-internal-claims>
+
                 </ng-container>
                <!-- SERVICE PROVIDERS -->
                 <ng-container *ngIf="selectedItem === 11">
