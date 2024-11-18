@@ -35,6 +35,7 @@ import {ServiceDeskComponent} from "./components/service-desk/service-desk.compo
 import {
   ServiceDeskDetailsComponent
 } from "./components/service-desk/service-desk-details/service-desk-details.component";
+import {HierarchyComponent} from "./components/hierarchy/hierarchy.component";
 
 const routes: Routes = [
   {
@@ -168,6 +169,10 @@ const routes: Routes = [
   {
     path: 'service-desk-details',
     component: ServiceDeskDetailsComponent,
+  },
+  {
+    path: 'hierarchy',
+    component: HierarchyComponent,
   },
 ];
 

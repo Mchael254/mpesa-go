@@ -212,7 +212,8 @@
     "Request Report": "Request Report",
     "Escalations": "Escalations",
     "Request Categories": "Request Categories",
-    "Request Status": "Request Status"
+    "Request Status": "Request Status",
+    "Hierarchy": "Hierarchy"
   },
   "crm": {
     "activity": "Activity",
@@ -274,7 +275,30 @@
     "lead_sources": "Lead Sources",
     "no_lead_source_found": "No Lead Source found",
     "lead_statuses": "Lead Statuses",
-    "no_lead_status_found": "No Lead Status found"
+    "no_lead_status_found": "No Lead Status found",
+    "hierarchyType": "Hierarchy type",
+    "hierarchyLevels": "Hierarchy levels",
+    "subDivisions": "Org Subdivisions",
+    "definedLevels": "Defined levels",
+    "form": "Form",
+    "parentDivision": "Parent division",
+    "divisionLevelType": "Division level type",
+    "divisionLevel": "Division level",
+    "divisionHead": "Division head",
+    "location": "Location",
+    "managerAllowed": "Manager allowed",
+    "overrideCommAllowed": "Override comm allowed",
+    "WEF": "WEF",
+    "WET": "WET",
+
+    "prevSubdivHeads": "Previous subdivision heads",
+    "accountType": "Account type",
+    "headAccountType": "Head account type",
+    "intermediary": "Intermediary",
+    "payIntermediary": "Pay intermediary",
+    "ranking": "Ranking",
+    "agentName": "Agent name",
+    "agentShortDesc": "Agent short description"
   },
   "entities": {
     "account_number": "Account Number",

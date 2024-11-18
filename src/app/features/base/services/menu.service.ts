@@ -151,6 +151,10 @@ export class MenuService {
                 name: 'Countries',
                 link: '/home/crm/country',
               },
+              {
+                name: 'Hierarchy',
+                link: '/home/crm/hierarchy',
+              }
             ],
             collapsed: true,
           },

@@ -1,0 +1,599 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'Hierarchy',
+        url: '/home/crm/hierarchy'
+      },
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <label class="form-label w-100 text-black fs-5 fw-medium">{{'crm.system' | translate}}</label>
+          <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
+            <div class="form-div px-3">
+              <form>
+                <div class="row">
+                  <ng-container *ngFor="let system of systems">
+                    <div class="col-sm-4 my-2">
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input select-system"
+                          type="radio"
+                          name="system"
+                          value="{{ system.id }}"
+                          (click)="selectSystem(system)"
+                          [checked]="selectedSystem?.id === system.id"
+                        />
+                        <label class="form-check-label" for="{{ system.id }}">{{
+                            system.systemName | titlecase
+                          }}</label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </form>
+            </div>
+          </ng-container>
+          <ng-template #showSystemsLoading>
+            <div class="my-5 mx-5">
+              <ngx-spinner
+                type="ball-clip-rotate-multiple"
+                [fullScreen]="false"
+                color="#00529B"
+                size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"
+              ></ngx-spinner>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-6">
+          <h5 class="text-dark">{{'crm.hierarchyType' | translate}}</h5>
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+          <div class="float-end">
+            <span
+              class="icon-circle open-activity-type-modal"
+              (click)="openDefineHierarchyTypeModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </span>
+            <span
+              class="icon-circle edit-activity-type"
+              (click)="editHierarchyType()"
+            >
+              <i class="pi pi-pencil"></i>
+            </span>
+            <span
+              class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <p-table
+        #hierarchyTypeTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="hierarchyTypeData?.length"
+        [value]="hierarchyTypeData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedHierarchyType"
+        selectionMode="single"
+        dataKey="id"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['description', 'code']"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="gis_exception_code">{{'crm.description' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.accountType' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.headAccountType' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.type' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.intermediary' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.payIntermediary' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-hierarchyType>
+          <tr
+            [pSelectableRow]="hierarchyType"
+            class="attach-system"
+          >
+            <td>{{ hierarchyType.desc }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">No Hierarchy Type Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-6">
+          <h5 class="text-dark">{{'crm.hierarchyLevels' | translate}}</h5>
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+          <div class="float-end">
+            <span
+              class="icon-circle open-activity-type-modal"
+              (click)="openDefineHierarchyLevelsModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </span>
+            <span
+              class="icon-circle edit-activity-type"
+              (click)="editHierarchyLevels()"
+            >
+              <i class="pi pi-pencil"></i>
+            </span>
+            <span
+              class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <p-table
+        #hierarchyLevelTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="hierarchyLevelData?.length"
+        [value]="hierarchyLevelData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedHierarchyLevel"
+        selectionMode="single"
+        dataKey="id"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['description', 'code']"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="gis_exception_code">{{'crm.description' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.ranking' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.type' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-hierarchyType>
+          <tr
+            [pSelectableRow]="hierarchyType"
+            class="attach-system"
+          >
+            <td>{{ hierarchyType.desc }}</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No Hierarchy Level Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-12">
+          <h5 class="text-dark">{{'crm.subDivisions' | translate}}</h5>
+        </div>
+
+        <div class="col-sm-12 col-md-5 border-end">
+          <p class="mt-3 fw-medium float-start">{{'crm.definedLevels' | translate}}</p>
+          <div class="float-end">
+            <span
+              class="icon-circle open-activity-type-modal">
+              <i class="fa-solid fa-plus"></i>
+            </span>
+            <span
+              class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-7 ps-4">
+          <p class="mt-3 fw-medium float-start w-100">{{'crm.form' | translate}}</p>
+          <form [formGroup]="orgSubDivForm">
+            <div class="row my-3">
+              <div class="col-md-6">
+                <label class="form-label w-100" for="parentDivision">{{'crm.parentDivision' | translate}}</label>
+                <input type="text" class="form-control" id="parentDivision" formControlName="parentDivision">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="divisionLevelType">{{'crm.divisionLevelType' | translate}}</label>
+                <select class="form-select" id="divisionLevelType" formControlName="divisionLevelType">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="divisionLevel">{{'crm.divisionLevel' | translate}}</label>
+                <select class="form-select" id="divisionLevel" formControlName="divisionLevel">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="name">{{'crm.name' | translate}}</label>
+                <input type="text" class="form-control" id="name" formControlName="name">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="divisionHead">{{'crm.divisionHead' | translate}}</label>
+                <select class="form-select" id="divisionHead" formControlName="divisionHead">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="location">{{'crm.location' | translate}}</label>
+                <select class="form-select" id="location" formControlName="location">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="managerAllowed">{{'crm.managerAllowed' | translate}}</label>
+                <select class="form-select" id="managerAllowed" formControlName="managerAllowed">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="overrideCommAllowed">{{'crm.overrideCommAllowed' | translate}}</label>
+                <select class="form-select" id="overrideCommAllowed" formControlName="overrideCommAllowed">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="wef">{{'crm.WEF' | translate}}</label>
+                <input type="text" class="form-control"
+                onfocus="(this.type='date')" onblur="(this.type='text')" id="wef" formControlName="wef">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label w-100" for="wet">{{'crm.WET' | translate}}</label>
+                <input type="text" class="form-control"
+                onfocus="(this.type='date')" onblur="(this.type='text')" id="wet" formControlName="wet">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-12 col-md-6">
+          <h5 class="text-dark">{{'crm.prevSubdivHeads' | translate}}</h5>
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+          <div class="float-end">
+            <span
+              class="icon-circle open-activity-type-modal"
+              (click)="openDefinePreviousSubDivHeadsModal()"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </span>
+            <span
+              class="icon-circle edit-activity-type"
+              (click)="editPreviousSubDivHeads()"
+            >
+              <i class="pi pi-pencil"></i>
+            </span>
+            <span
+              class="icon-circle">
+              <i class="fa-regular fa-trash-can"></i>
+            </span>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+      </div>
+      <p-table
+        #previousSubDivHeadsTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="previousSubDivHeadsData?.length"
+        [value]="previousSubDivHeadsData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedPreviousSubDivHeads"
+        selectionMode="single"
+        dataKey="id"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['description', 'code']"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="gis_exception_code">{{'crm.agentName' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.agentShortDesc' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.WEF' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="gis_exception_code">{{'crm.WET' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-hierarchyType>
+          <tr
+            [pSelectableRow]="hierarchyType"
+            class="attach-system"
+          >
+            <td>{{ hierarchyType.desc }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4">No Previous Subdivision Heads Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+
+<!--Create Hierarchy Type modal-->
+<div
+  class="modal fade"
+  #newHierarchyType
+  id="newHierarchyType"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Add" }} a hierarchy type
+        </h5>
+        <button
+          type="button"
+          class="btn-close close-activity-type-modal"
+          (click)="closeDefineHierarchyTypeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="hierarchyTypeForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="description">{{'crm.description' | translate}}</label>
+                <input type="text" class="form-control" id="description" formControlName="description"
+                       [ngClass]="{ 'is-invalid': f['description']?.invalid && (f['description']?.dirty || f['description']?.touched) }">
+                <div *ngIf="f['description']?.invalid && (f['description']?.dirty || f['description']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.accType === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="accType">{{'crm.accountType' | translate}}</label>
+                <select class="form-select" id="accType" formControlName="accType">
+                  <option value=""></option>
+                </select>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.headAccType === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="headAccType">{{'crm.headAccountType' | translate}}</label>
+                <select class="form-select" id="headAccType" formControlName="headAccType">
+                  <option value=""></option>
+                </select>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.type === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="type">{{'crm.type' | translate}}</label>
+                <select class="form-select" id="type" formControlName="type">
+                  <option value=""></option>
+                </select>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.intermediary === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="intermediary">{{'crm.intermediary' | translate}}</label>
+                <input type="text" class="form-control" id="intermediary" formControlName="intermediary">
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.payIntermediary === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="payIntermediary">{{'crm.payIntermediary' | translate}}</label>
+                <select class="form-select" id="payIntermediary" formControlName="payIntermediary">
+                  <option value=""></option>
+                </select>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveHierarchyType()">Save details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Create Hierarchy Level modal-->
+<div
+  class="modal fade"
+  #newHierarchyLevel
+  id="newHierarchyLevel"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Add" }} a hierarchy level
+        </h5>
+        <button
+          type="button"
+          class="btn-close close-activity-type-modal"
+          (click)="closeDefineHierarchyLevelsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="hierarchyLevelsForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="desc">{{'crm.description' | translate}}</label>
+                <input type="text" class="form-control" id="desc" formControlName="desc"
+                       [ngClass]="{ 'is-invalid': g['desc']?.invalid && (g['desc']?.dirty || g['desc']?.touched) }">
+                <div *ngIf="g['desc']?.invalid && (g['desc']?.dirty || g['desc']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['desc']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.ranking === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="ranking">{{'crm.ranking' | translate}}</label>
+                <select class="form-select" id="ranking" formControlName="ranking"
+                        [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
+                  <option value=""></option>
+                </select>
+                <div *ngIf="g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['ranking']?.errors['required']">Ranking is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.type === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="levelType">{{'crm.type' | translate}}</label>
+                <select class="form-select" id="levelType" formControlName="type">
+                  <option value=""></option>
+                </select>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveHierarchyLevel()">Save details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Create Hierarchy head history modal-->
+<div
+  class="modal fade"
+  #newHierarchyHeadHistory
+  id="newHierarchyHeadHistory"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog" style="width: 320px">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title text-black">
+          {{ editMode ? "Edit" : "Add" }} a hierarchy head history
+        </h5>
+        <button
+          type="button"
+          class="btn-close close-activity-type-modal"
+          (click)="closeDefinePreviousSubDivHeadsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="hierarchyHeadHistoryForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.agentName === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="agentName">{{'crm.agentName' | translate}}</label>
+                <input type="text" class="form-control" id="agentName" formControlName="agentName">
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.wef === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="headWef">{{'crm.WEF' | translate}}</label>
+                <input type="text" class="form-control" id="headWef" formControlName="wef"
+                       onfocus="(this.type='date')" onblur="(this.type='text')">
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.wet === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="headWet">{{'crm.WET' | translate}}</label>
+                <input type="text" class="form-control" id="headWet" formControlName="wet"
+                       onfocus="(this.type='date')" onblur="(this.type='text')">
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveHierarchyHeadHistory()">Save details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
