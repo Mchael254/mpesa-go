@@ -207,7 +207,7 @@ export class ExternalClaimsComponent {
           else {
             this.errorOccurred = true;
             this.errorMessage = 'Empty response received from the server.';
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to get  Insurers.Try again later');
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to get external claim Experience.Try again later');
           }
 
         },
@@ -221,27 +221,67 @@ export class ExternalClaimsComponent {
         },
       })
   }
+  // onSelectExternalClaim(externalClaim: any) {
+  //   log.debug("Selected EXternal claim to be edited", externalClaim)
+  //   this.selectedExternalClaim = externalClaim
+  //   const selectedInsurer = this.insuranceList.find((insurer)=>insurer.name === this.selectedExternalClaim.insurer);
+  //   log.info("Selected Insurer",selectedInsurer)
+
+  //   this.insurersDetailsForm.patchValue({
+
+  //     policyNo: this.selectedExternalClaim.policyNo,
+  //     insurer:this.selectedExternalClaim.insurer,
+  //     year: this.selectedExternalClaim.year,
+  //     riskDetails: this.selectedExternalClaim.riskDetails,
+  //     lossAmount: this.selectedExternalClaim.lossAmount,
+  //     claimPaid: this.selectedExternalClaim.claimPaid,
+  //     noAcc: this.selectedExternalClaim.noAcc,
+  //     damageAmount: this.selectedExternalClaim.damageAmount,
+  //     totalPaidAmount: this.selectedExternalClaim.totalPaidAmount,
+  //     otherAmount: this.selectedExternalClaim.otherAmount,
+  //     remarks: this.selectedExternalClaim.remarks,
+
+  //   });
+
+  // }
   onSelectExternalClaim(externalClaim: any) {
-    log.debug("Selected EXternal claim to be edited", externalClaim)
-    this.selectedExternalClaim = externalClaim
+    log.debug("Selected External Claim to be edited", externalClaim);
 
+    this.selectedExternalClaim = externalClaim;
+
+    // Find the matching insurer from the insurance list
+    const selectedInsurer = this.insuranceList.find(
+        (insurer) => insurer.name === this.selectedExternalClaim.insurer
+    );
+
+    if (!selectedInsurer) {
+        log.warn(
+            "Insurer not found in insuranceList for the selected claim",
+            this.selectedExternalClaim.insurer
+        );
+    } else {
+        log.info("Selected Insurer", selectedInsurer);
+    }
+
+    // Ensure the insurer matches the dropdown value
     this.insurersDetailsForm.patchValue({
-
-      policyNo: this.selectedExternalClaim.policyNo,
-      insurer: this.selectedExternalClaim.insurer,
-      year: this.selectedExternalClaim.year,
-      riskDetails: this.selectedExternalClaim.riskDetails,
-      lossAmount: this.selectedExternalClaim.lossAmount,
-      claimPaid: this.selectedExternalClaim.claimPaid,
-      noAcc: this.selectedExternalClaim.noAcc,
-      damageAmount: this.selectedExternalClaim.damageAmount,
-      totalPaidAmount: this.selectedExternalClaim.totalPaidAmount,
-      otherAmount: this.selectedExternalClaim.otherAmount,
-      remarks: this.selectedExternalClaim.remarks,
-
+        policyNo: this.selectedExternalClaim.policyNo,
+        insurer: selectedInsurer?.name || null, // Patch the dropdown with the correct name
+        year: this.selectedExternalClaim.year,
+        riskDetails: this.selectedExternalClaim.riskDetails,
+        lossAmount: this.selectedExternalClaim.lossAmount,
+        claimPaid: this.selectedExternalClaim.claimPaid,
+        noAcc: this.selectedExternalClaim.noAcc,
+        damageAmount: this.selectedExternalClaim.damageAmount,
+        totalPaidAmount: this.selectedExternalClaim.totalPaidAmount,
+        otherAmount: this.selectedExternalClaim.otherAmount,
+        remarks: this.selectedExternalClaim.remarks,
     });
 
-  }
+    log.debug("Form values after patching:", this.insurersDetailsForm.value);
+}
+
+
   editExternalClaimExp() {
     // Mark all fields as touched and validate the form
     this.insurersDetailsForm.markAllAsTouched();

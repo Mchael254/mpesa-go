@@ -410,7 +410,7 @@ export class PolicyProductComponent {
 
   loadAllClients() {
     this.clientService
-      .getClients(0, 100)
+      .getClients(0, 200)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
