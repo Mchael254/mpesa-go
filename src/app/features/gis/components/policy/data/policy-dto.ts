@@ -584,7 +584,21 @@ export interface AddCertificates {
   withEffectFrom: string;
   withEffectTo: string;
 }
-export interface PolicyClauses{
+export interface PolicyClause {
+  heading: string;
+  shortDescription: string | null;
+  clauseCode: string | null;
+  type: string;
+  typeDescription: string | null;
+  proCode: number;
+  productShortDescription: string;
+  subClassCode: string | null;
+  editable: string;
+  wording: string | null;
+  clauseMandantory: string;
+  subClassDescription: string | null;
+}
+export interface AddPolicyClauses{
   batchNo: number;
   clauseCode: string;
   endorsementNo: string;
@@ -694,6 +708,32 @@ export interface ExternalClaimExp {
   totalPaidAmount: number;
   year: number;
 }
+export interface RiskService {
+  rssCode: number;
+  rssRsCode: number;
+  rsDesc: string;
+  sclDesc: string;
+  rssMandatory: string;
+  rssRemarks: string | null;
+  rssDoneDate: string; 
+  rssDoneBy: string;
+  rssSectCode: number;
+  sectDesc: string;
+  rssSectType: string;
+  covtShtDesc: string;
+}
+export interface InternalClaimExp {
+  cmbPolClientPolicyNo: string;
+  claimNo: string;
+  ostReserve: number;
+  totalReserve: number;
+  recoveries: number;
+  salvages: number;
+  totalPayments: number;
+  netPaid: number;
+}
+
+
 
 
 
