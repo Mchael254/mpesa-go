@@ -1,5 +1,5 @@
 // import { DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
@@ -28,6 +28,7 @@ import {SetupsParametersService} from "../../../../../shared/services/setups-par
 import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {DmsService} from "../../../../../shared/services/dms/dms.service";
+import {AppConfigService} from "../../../../../core/config/app-config-service";
 const log =  new Logger("CreateClientComponent")
 
 @Component({
@@ -147,6 +148,20 @@ export class NewClientComponent implements OnInit{
   isLoading: boolean = false;
   documentPayload: any;
   selectedFile: File;
+
+  @Input() shouldReroute: boolean = true;
+  @Output() onClickSaveClient: EventEmitter<any> = new EventEmitter<any>();
+
+  allUsersModalVisible: boolean = false;
+  zIndex= 1;
+  selectedMainUser: ClientDTO;
+  private today = new Date();
+  public eighteenYearsAgo: Date = new Date(
+    this.today.setFullYear(this.today.getFullYear() - 18)
+  );
+  pinNumberRegex: string;
+  selectedOption: IdentityModeDTO;
+
   constructor(
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
@@ -166,8 +181,11 @@ export class NewClientComponent implements OnInit{
     private utilService: UtilService,
     private setupsParameterService: SetupsParametersService,
     private authService: AuthService,
-    private dmsService: DmsService
-  ) { }
+    private dmsService: DmsService,
+    private appConfig: AppConfigService,
+  ) {
+    this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
+  }
 /**
  * Initializes the New Client Component.
  * - Retrieves entity details from session storage.
@@ -237,19 +255,19 @@ export class NewClientComponent implements OnInit{
     this.clientRegistrationForm = this.fb.group({
       partyTypeShtDesc: "CLIENT",
       partyId: 16673590,
-      identity_type: new FormControl({value: '', disabled: true}),
+      identity_type: [''],
       citizenship: [''],
-      surname: new FormControl({value: '', disabled: true}),
+      surname: [''],
       certRegNo: [''],
       regName: [''],
       tradeName: [''],
       regDate: [''],
       countryOfIncorporation: [''],
       parentCompany: [''],
-      otherName: new FormControl({value: '', disabled: true}),
-      dateOfBirth: new FormControl({value: '', disabled: true}),
-      idNumber: new FormControl({value: '', disabled: true}),
-      pinNumber: new FormControl({value: '', disabled: true}),
+      otherName: [''],
+      dateOfBirth: [''],
+      idNumber: [''],
+      pinNumber: ['', Validators.pattern(this.pinNumberRegex)],
       gender: [''],
       clientTypeId: [''],
 
@@ -323,6 +341,8 @@ export class NewClientComponent implements OnInit{
       ),
     });
     this.defineSmsNumberFormat();
+    this.defineDisabledFormInputs();
+    this.updateRegex();
   }
 
 
@@ -345,6 +365,57 @@ export class NewClientComponent implements OnInit{
         log.error(`Error fetching SMS number format >>>`, e);
       }
     })
+  }
+
+  defineDisabledFormInputs(): void {
+    if (this.shouldReroute) {
+      this.clientRegistrationForm.get('otherName')?.disable();
+      this.clientRegistrationForm.get('otherName')?.updateValueAndValidity();
+      this.clientRegistrationForm.get('dateOfBirth')?.disable();
+      this.clientRegistrationForm.get('dateOfBirth')?.updateValueAndValidity();
+      this.clientRegistrationForm.get('identity_type')?.disable();
+      this.clientRegistrationForm.get('identity_type')?.updateValueAndValidity();
+      this.clientRegistrationForm.get('surname')?.disable();
+      this.clientRegistrationForm.get('surname')?.updateValueAndValidity();
+      this.clientRegistrationForm.get('idNumber')?.disable();
+      this.clientRegistrationForm.get('idNumber')?.updateValueAndValidity();
+      this.clientRegistrationForm.get('pinNumber')?.disable();
+      this.clientRegistrationForm.get('pinNumber')?.updateValueAndValidity();
+    }
+  }
+
+  updateRegex() {
+    this.clientRegistrationForm.get('identity_type')?.valueChanges.subscribe((selectedId) => {
+      this.selectedOption = this.identityTypeData.find(option => option.id == selectedId);
+
+      const identityControl = this.clientRegistrationForm.get('idNumber');
+      log.info(this.clientRegistrationForm.get('identity_type').getRawValue(), this.selectedOption)
+      if (this.selectedOption) {
+        identityControl?.setValidators([
+          Validators.required,
+          Validators.pattern(this.selectedOption.identityFormat),
+        ]);
+      } else {
+        identityControl?.clearValidators();
+      }
+      identityControl?.updateValueAndValidity();
+    });
+  }
+
+  getRegexFormat(pattern: string | undefined): string | null {
+    if (!pattern) return null;
+
+    const format: { [key: string]: string } = {
+      '^[0-9]{3}\\/[0-9]{5}$': '123/45678',
+      '^[0-9]{8}$': '12345678',
+      '^[A-Z]{1,2}[0-9]{6,8}[A-Z]{0,1}$': 'AB12345678C',
+      '^A[0-9]{8}$': 'A12345678',
+      '^[0-9]{5}-[0-9]{5}-[0-9]{4}$': '12345-67890-1234',
+      '^[0-9]{5}\\/[0-9]{5}$': '12345/67890',
+      '^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$': 'ABC/DEF/123456',
+    };
+
+    return format[pattern] || 'Enter a valid value';
   }
 
   /**
@@ -594,9 +665,10 @@ export class NewClientComponent implements OnInit{
         // phoneNumber: clientFormValues.contact_details.phoneNumber,
         receivedDocuments: "N", /*Todo: provide field to capture*/
         // smsNumber: clientFormValues.contact_details.smsNumber,
-        titleShortDescription: "DR",
+        // titleShortDescription: "DR",
         phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
         smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
+        titleId: clientFormValues.contact_details.clientTitle
 
       }
 
@@ -665,7 +737,7 @@ export class NewClientComponent implements OnInit{
       }
 
     const clientDetails: any = {
-      clientBranchCode: clientFormValues.contact_details.clientBranch
+      branchId: clientFormValues.contact_details.clientBranch
     }
     //preparing Client Dto
     const saveClient: any = {
@@ -675,7 +747,7 @@ export class NewClientComponent implements OnInit{
       effectiveDateTo: null,
       id: null,
       createdBy: null,
-      partyId: this.entityDetails.id,
+      partyId: this.entityDetails?.id,
       partyTypeShortDesc: "CLIENT",
       paymentDetails: payment,
       clientDetails: clientDetails,
@@ -691,12 +763,15 @@ export class NewClientComponent implements OnInit{
       accountType: clientFormValues.clientTypeId,
       dateOfBirth: this.entityDetails?.dateOfBirth,
       organizationId: 2,
-      modeOfIdentityid: this.entityDetails?.modeOfIdentity?.id,
+      modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
+      idNumber: clientFormValues.idNumber,
+      // system: GIS/LMS
       nextOfKinDetailsList: null,
       modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
       modeOfIdentityNumber: this.entityDetails?.identityNumber,
 
       }
+      log.info(saveClient)
       this.clientsService.saveClientDetails(saveClient)
         .pipe(
           takeUntil(this.destroyed$),
@@ -704,19 +779,26 @@ export class NewClientComponent implements OnInit{
         .subscribe(clientData => {
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
+          this.onClickSaveClient.emit();
+          this.clientRegistrationForm.reset();
           // this.clients = clientData;
           log.debug("Timestamp:",this.timeStamp)
-          if(this.timeStamp){
-            log.debug("BACK TO GIS:")
+          if(this.shouldReroute){
+            if(this.timeStamp){
+              log.debug("BACK TO GIS:")
 
-            this.router.navigate(['/home/gis/policy/policy-product']);
+              this.router.navigate(['/home/gis/policy/policy-product']);
 
-          }else{
-            log.debug("BACK TO CRM:")
+            }else{
+              log.debug("BACK TO CRM:")
 
-            this.router.navigate(['home/entity/client/list']);
+              this.router.navigate(['home/entity/client/list']);
+              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
 
+            }
           }
+
         });
 
     });
@@ -1043,4 +1125,81 @@ export class NewClientComponent implements OnInit{
       });
   }
 
+  private toggleAllUsersModal(display: boolean) {
+    this.allUsersModalVisible = display;
+  }
+
+
+  processSelectedUser($event: void) {
+    this.toggleAllUsersModal(false);
+    this.zIndex = 1;
+  }
+
+  getSelectedUser(event: any) {
+    this.selectedMainUser = event;
+    log.info(this.selectedMainUser)
+    this.patchClientFormValues(this.selectedMainUser);
+  }
+
+  openAllUsersModal() {
+    this.zIndex  = -1;
+    this.toggleAllUsersModal(true);
+  }
+
+  patchClientFormValues(client: any) {
+    this.clientRegistrationForm.patchValue({
+      assignedTo: client?.id,
+      surname: client?.lastName,
+      otherName: client?.firstName,
+      identity_type: client?.modeOfIdentity,
+      citizenship: client?.country,
+      dateOfBirth: client?.dateOfBirth,
+      idNumber: client?.idNumber,
+      pinNumber: client?.pinNumber,
+      gender: client?.gender,
+      clientTypeId: client?.clientType?.code,
+      contact_details: {
+        clientBranch: client?.branchCode,
+        clientTitle: client?.clientTitle ,
+        smsNumber: client?.mobileNumber,
+        phoneNumber: client?.phoneNumber,
+        email: client?.emailAddress,
+        channel: client?.preferredChannel,
+      },
+      address: {
+        box_number: client?.box_number,
+        country: client?.address?.country_id,
+        county: client?.address?.state_id,
+        town: client?.address?.town_id,
+        physical_address: client?.address?.physical_address,
+        road: client?.address?.road,
+        house_number: client?.address?.house_number,
+        utility_address_proof: client?.address?.utility_address_proof,
+        is_utility_address: client?.address?.is_utility_address,
+      },
+      payment_details: {
+        bank: client?.paymentDetails,
+        branch: client?.paymentDetails?.bank_branch_id,
+        account_number: client?.paymentDetails?.account_number,
+        currency: client?.paymentDetails?.currency_id,
+        effective_to_date: client?.paymentDetails?.effective_to_date,
+        effective_from_date: client?.paymentDetails?.effective_from_date,
+        mpayNo: client?.paymentDetails?.mpayno,
+        Iban: client?.paymentDetails?.iban,
+        is_default_channel: client?.paymentDetails?.is_default_channel,
+      },
+      wealth_details: {
+        wealth_citizenship: client?.wealthAmlDetails?.citizenship_country_id,
+        marital_status: client?.wealthAmlDetails?.marital_status,
+        funds_source: client?.wealthAmlDetails?.funds_source,
+        typeOfEmployment: client?.wealthAmlDetails?.is_self_employed,
+        economic_sector: client?.wealthAmlDetails?.sector_id,
+        occupation: client?.wealthAmlDetails?.occupation_id,
+        purposeinInsurance: client?.wealthAmlDetails?.insurancePurpose,
+        premiumFrequency: client?.wealthAmlDetails?.premiumFrequency,
+        distributeChannel: client?.wealthAmlDetails?.distributeChannel,
+      }
+
+    });
+  }
 }

@@ -2,7 +2,7 @@
   <div class="mr-auto p-2">
     <h4 class="htxt page-header">{{ 'entities.new_client' | translate | titlecase }}</h4>
   </div>
-  <div class="me-4">
+  <div class="me-4" *ngIf="shouldReroute">
     <app-dynamic-breadcrumb [breadCrumbItems]="clientBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
@@ -14,6 +14,20 @@
         <div class="card mb-3">
           <div class="card-body">
             <h5 class="card-title fs-5">{{ 'entities.prime_identity' | translate }}</h5>
+            <div class="row my-3">
+              <div class="col-md-4">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="NEW_CLIENT" name="client"
+                         id="inlineRadio1" checked/>
+                  <label class="form-check-label" for="inlineRadio1">{{ "entities.new_client" | translate }}</label>
+                </div>
+                <div class="form-check form-check-inline" (click)="openAllUsersModal()">
+                  <input class="form-check-input" type="radio" value="EXISTING_CLIENT" name="client"
+                         id="inlineRadio2"/>
+                  <label class="form-check-label" for="inlineRadio2">{{ "entities.existing_client" | translate }}</label>
+                </div>
+              </div>
+            </div>
             <div class="form-group row">
 
               <div class="col-sm-4">
@@ -39,8 +53,17 @@
                   <label for="identity_type" class="label col-form-label">
                     {{ 'entities.identity_type' | translate | titlecase }}
                   </label>
-                  <input type="text" class="form-control" id="identity_type" name="identity_type" formControlName="identity_type"
-                         [ngClass]="{ 'is-invalid': f['identity_type']?.invalid && (f['identity_type']?.dirty || f['identity_type']?.touched) }">
+                  <select id="identity_type" class="form-select" placeholder="Primary ID Type" formControlName="identity_type"
+                          [ngClass]="{'is-invalid': f['identity_type']?.invalid && (f['identity_type']?.dirty || f['identity_type']?.touched)}"
+                  >
+                    <option value="" selected disabled>
+                      {{ "entities.primary" | translate | titlecase }}
+                      {{ "entities.id_type" | translate }}
+                    </option>
+                    <option *ngFor="let type of identityTypeData" [value]="type.id">
+                      {{ type.name }}
+                    </option>
+                  </select>
                   <div *ngIf="f['identity_type']?.invalid && (f['identity_type']?.dirty || f['identity_type']?.touched)" class="form-text text-danger">
                     <div *ngIf="f['identity_type']?.errors['required']">
                       {{ 'entities.identifier' | translate | titlecase }} {{ 'entities.type' | translate }} {{ 'entities.required' | translate  }}
@@ -95,7 +118,7 @@
                   <div class="col-sm-4">
                     <label for="dateOfBirth" class="label col-form-label">{{ 'entities.dob' | translate | titlecase }}</label>
                     <input type="text"  class="form-control" id="dateOfBirth" name="dateOfBirth" class="form-control" formControlName="dateOfBirth"
-                           onfocus="(this.type='date')" onblur="(this.type='text')"
+                           onfocus="(this.type='date')" onblur="(this.type='text')" [max]="eighteenYearsAgo | date : 'yyyy-MM-dd'"
                            [ngClass]="{ 'is-invalid': f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched) }">
                     <div *ngIf="f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched)" class="form-text text-danger">
                       <div *ngIf="f['dateOfBirth']?.errors['required']">{{ 'entities.dob' | translate | titlecase }} {{ 'entities.required' | translate }}</div>
@@ -110,6 +133,9 @@
 
                     <div *ngIf="f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched)" class="form-text text-danger">
                       <div *ngIf="f['idNumber']?.errors['required']">{{ 'entities.id_number' | translate }} {{ 'entities.required' | translate }}</div>
+                      <div *ngIf="f['idNumber'].errors['pattern']">
+                        {{ "entities.id_number" | translate }} {{ "entities.format" | translate }} {{ getRegexFormat(selectedOption?.identityFormat) }}
+                      </div>
                     </div>
                   </div>
                 </ng-container>
@@ -211,6 +237,9 @@
                     <div *ngIf="f['pinNumber']?.errors['required']">
                       {{ 'entities.pin_number' | translate }} {{ 'entities.required' | translate }}
                     </div>
+                    <div *ngIf="f['pinNumber'].errors['pattern']">
+                      {{ "entities.pin_number" | translate }} {{ "entities.format" | translate }} A123456789R
+                    </div>
                   </div>
                 </div>
               </ng-container>
@@ -251,7 +280,7 @@
                               [ngClass]="{ 'is-invalid': f['contact_details']['controls']['clientTitle']['invalid'] &&
                   (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched']) }">
                         <option value="" disabled selected>Select Title</option>
-                        <option *ngFor="let clientTitles of clientTitlesData" value="{{ clientTitles.shortDescription }}">{{ clientTitles.description | titlecase}}</option>
+                        <option *ngFor="let clientTitles of clientTitlesData" value="{{ clientTitles.id }}">{{ clientTitles.description | titlecase}}</option>
                       </select>
                       <div *ngIf="f['contact_details']['controls']['clientTitle']['invalid'] && (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['contact_details']['controls']['clientTitle']['errors']['required']">
@@ -907,7 +936,7 @@
                 <div class="col-md-9">
                   <div class="form-group" style="display: flex; flex-grow: 1; align-items: center;">
                     <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
-                    <button class="btn btn-outline-primary btn-sm ms-4" (click)="fileInput.click()">
+                    <button class="btn btn-outline-primary" (click)="fileInput.click()">
                       <span class="file-text"> {{ 'entities.chooseFile' | translate }}</span>
                     </button>
                     <div class="form-check float-start">
@@ -932,5 +961,18 @@
 
 </div>
 
-
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Okay'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Clients'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)" [accountType]="'CLIENT'">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
 

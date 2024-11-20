@@ -144,7 +144,7 @@ export class ClientService {
 
     saveClientDetails(clientData: ClientDTO): Observable<ClientDTO[]> {
     return this.api.POST<ClientDTO[]>(
-      `clients`,
+      `v2/api/clients`,
       JSON.stringify(clientData),
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
