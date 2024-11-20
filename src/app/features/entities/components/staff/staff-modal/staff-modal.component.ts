@@ -165,6 +165,7 @@ export class StaffModalComponent implements OnInit, OnDestroy {
       next: (res: Pagination<ClientDTO>) => {
         this.lazyLoadedUsers = res;
         this.shouldShowwUsers = true;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -179,6 +180,7 @@ export class StaffModalComponent implements OnInit, OnDestroy {
       next: (res: Pagination<ClientDTO>) => {
         this.lazyLoadedUsers = res;
         this.shouldShowwUsers = true;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -197,6 +199,7 @@ export class StaffModalComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.lazyLoadedUsers = res;
         this.shouldShowwUsers = true;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;
@@ -221,6 +224,7 @@ export class StaffModalComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.lazyLoadedUsers = res;
         this.shouldShowwUsers = true;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         let errorMessage = err?.error?.message ?? err.message;

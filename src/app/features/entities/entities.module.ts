@@ -98,7 +98,7 @@ import { EntityDocsComponent } from './components/entity/view-entity/entity-docs
     TableModule,
     FormsModule,
   ],
-  exports: [StaffModalComponent],
+  exports: [StaffModalComponent, NewClientComponent],
   providers: [DatePipe],
 })
 export class EntitiesModule {}
