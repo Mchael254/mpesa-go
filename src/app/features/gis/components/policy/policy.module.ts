@@ -31,6 +31,7 @@ import { PolicySubclasessClausesComponent } from './components/policy-subclasess
 import { ExternalClaimsComponent } from './components/external-claims/external-claims.component';
 import { ServiceProvidersComponent } from './components/service-providers/service-providers.component';
 import { InternalClaimsComponent } from './components/internal-claims/internal-claims.component';
+import { ReasonsForPendingComponent } from './components/reasons-for-pending/reasons-for-pending.component';
 @NgModule({
   declarations: [
     ListPoliciesComponent,
@@ -50,6 +51,7 @@ import { InternalClaimsComponent } from './components/internal-claims/internal-c
     ExternalClaimsComponent,
     ServiceProvidersComponent,
     InternalClaimsComponent,
+    ReasonsForPendingComponent,
   ],
   imports: [
     CommonModule,
