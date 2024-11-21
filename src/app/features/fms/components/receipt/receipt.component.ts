@@ -1,25 +1,17 @@
-import { Component, OnInit,NgZone,ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit,NgZone,ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ReceiptingService } from '../../services/receipting.service';
-import {DrawersBankDTO,NarrationDTO,ReceiptNumberDTO,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, CurrencyDTO, BankDTO} from '../../data/receipting-dto'
+import {DrawersBankDTO,NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, CurrencyDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
-
-import { Observable, Subscriber } from 'rxjs';
 import {AuthService} from 'src/app/shared/services/auth.service';
-import * as bootstrap from 'bootstrap'; // Import Bootstrap's JavaScript library
+import * as bootstrap from 'bootstrap'; 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger } from 'src/app/shared/services';
 import { ReceiptService } from '../../services/receipt.service';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-
-import { PaymentModesService } from 'src/app/shared/services/setups/payment-modes/payment-modes.service';
-import { PaymentModesDto } from 'src/app/shared/data/common/payment-modes-dto';
-
 const log = new Logger('ReceiptComponent');
 
 
@@ -33,13 +25,10 @@ const log = new Logger('ReceiptComponent');
 
 export class ReceiptComponent implements OnInit {
   receiptingDetailsForm: FormGroup;
-
-    backdatingEnabled = false;
-
-    minDate: string = '';
+      backdatingEnabled = false;
+minDate: string = '';
     loggedInUser:any;
-    // chargesEnabled = false;
-    chargesEnabled: boolean = false;
+  chargesEnabled: boolean = false;
     selectedChargeType: string = 'charges';
     chargeAmount: number = 0;
     private chargesModal: Modal | undefined;
@@ -50,156 +39,106 @@ export class ReceiptComponent implements OnInit {
   chargeAmountInput: number = 0;
   chargeList: { type: string; amount: number }[] = [];
   editingIndex: number | null = null;
-  
   searchClients: any[] = [];
+  selectedClient: any;
   allocatedClients: any[] = [];
   totalAllocatedAmount = 0;
-  isAccountTypeSelected = false;
- 
-  transactions: Transaction[] = [];
+   isAccountTypeSelected = false;
+transactions:TransactionDTO[]=[];
   searchQuery: string = '';
-  
-  canAddAllocation = false; // Ensure this is mutable and not readonly
+  canAddAllocation = false; 
   paymentModes:PaymentModesDTO[]=[];
 bankAccounts:BankDTO[]=[];
     drawersBank:DrawersBankDTO[]=[];
-   
-    
-narrations:NarrationDTO[]=[];
-filteredNarrations: NarrationDTO[] = []; // Updated to store filtered narrations
-   
+   narrations:NarrationDTO[]=[];
+filteredNarrations: NarrationDTO[] = [];
+loading = false; 
+selectedCurrencyCode: number | undefined; // To store the currency code globally
+selectedCurrencySymbol: string | undefined; // To store the currency symbol for checks
+currencyGlobal:number | undefined;
 currencies:CurrencyDTO[]=[];
 receiptingPoints: any[]=[];
-    // receiptingPoints: any[] = [
-    //   { code: 'BR1', name: 'Branch 1', prefix: 'BR1' },
-    //   { code: 'BR2', name: 'Branch 2', prefix: 'BR2' }
-    // ];
-   // Example mock data for testing
-  //  mockClientData = [
-  //   {
-  //     clientName: 'John Doe',
-  //     policyNumber: 'P12345',
-  //     accountNumber: 'A1001',
-  //     debitNote: 'DN001',
-  //     amountInsured: 5000,
-  //     accountType: 'Savings',
-  //   },
-  //   {
-  //     clientName: 'Jane Smith',
-  //     policyNumber: 'P67890',
-  //     accountNumber: 'A2002',
-  //     debitNote: 'DN002',
-  //     amountInsured: 10000,
-  //     accountType: 'Current',
-  //   },
-  // ];
+    charges:ChargesDTO[]=[];
   accountTypes:AccountTypeDTO[]=[];
-  mockClientData:any[]=[];
+  clients:ClientsDTO[]=[];
+
     receiptNumber:ReceiptNumberDTO[]=[];
     countryId:number=1100;
     branchCode:number=344;
-    groupBusinessAccounts: any[] = []; // Initialize an empty array for group business accounts
-    glAccounts: any[] = []; // Initialize an empty array for GL accounts
+      groupBusinessAccounts: any[] = []; 
+    glAccounts: any[] = []; 
+originalNarration: string | null = null; 
+isNarrationFromLov = false; 
+orgCode: string;
+// exchangeRate:ExchangeRateDTO[]=[];
+exchangeRates: string | undefined; // Fetched exchange rate
 
-
-
-
-originalNarration: string | null = null; // Track selected narration from dropdown
-isNarrationFromLov = false; // Flag to indicate if narration is from dropdown
-
-
-  orgCode: string;
+rate:any;
   manualExchangeRate:any;
+  @ViewChild('fileDescriptionModal', { static: false }) fileDescriptionModal!: ElementRef;
+
 constructor(
   private fb: FormBuilder,
  // private translateService: TranslateService,
   private receiptingService: ReceiptingService,
   private modalService: NgbModal,
-  private ngZone: NgZone,
+  private renderer: Renderer2,
   private sessionStorage: SessionStorageService,
   private globalMessagingService:GlobalMessagingService,
   private receiptService:ReceiptService,
-  private bankService: BankService,
-  private currencyService: CurrencyService,
-  private paymentModeService: PaymentModesService,
- 
   private authService:AuthService
 ) {
 
   
-  // this.receiptingDetailsForm.get('charges')?.valueChanges.subscribe((value: string) => {
-  //   this.chargesEnabled = value === 'yes';
-  //   if (this.chargesEnabled) {
-  //     this.showChargesModal();
-  //   }
-  // });
+  
 
   //translateService.setDefaultLang('en');
   //translateService.use('en'); // Initial language
 
   // Add supported languages
  // translateService.addLangs(['en', 'es', 'fr', 'zh', 'sw', 'de']);
-  // Add validation for drawers bank based on payment mode
-  // this.receiptingDetailsForm.get('paymentMode')?.valueChanges.subscribe(paymentMode => {
-  //   if (paymentMode === 'CASH') {
-  //     this.receiptingDetailsForm.get('drawersBank')?.disable();
-  //   } else {
-  //     this.receiptingDetailsForm.get('drawersBank')?.enable();
-  //     this.receiptingDetailsForm.get('drawersBank')?.setValidators([Validators.required, Validators.minLength(1)]);
-  //   }
-  //   this.receiptingDetailsForm.get('drawersBank')?.updateValueAndValidity();
-  // });
+
 
  
 
 }
 ngOnInit(): void {
   this.captureReceiptForm();
- // this.fetchAllCurrencies();
  this.fetchReceiptNumber()
  this.fetchReceiptingPoints();
  this.fetchCurrencies();
   this.fetchPaymentModes();
-  //this.fetchCurrencies();
+ this.onPaymentModeSelected();
   this.fetchDrawersBank();
   this.fetchNarrations();
-
- this.fetchManualExchangeRate();
+this.fetchManualExchangeRate();
+ this.fetchCharges();
  this.fetchAccountTypes();
- // this.checKBackDatingStatus();
   this.getPaymentModeSelected();
-  // this.disableDrawersBank();
-  //this.fetchCurrencies();
-  // this.fetchPaymentModes();
 this.fetchBanks();
  this.loggedInUser = this.authService.getCurrentUser();
 console.log('logged user>',this.loggedInUser.code);
 console.log('logged user>',this.loggedInUser);
 console.log(this.currencies);
-  // this.fetchReceiptingPoints()
-  // this.initializeForm();
-
-
-//alert("orgcode set to:  " + this.sessionStorage.getItem('SESSION_ORG_CODE'));
 console.log('>>>',this.sessionStorage.getItem("SESSION_ORG_CODE"));
 this.orgCode = this.sessionStorage.getItem("SESSION_ORG_CODE");
 console.log(this.orgCode);
 
 
+}
 
-
-
-
-
-//   this.receiptingDetailsForm.get('receiptNumber')?.disable();
-
-//   this.receiptingDetailsForm.get('receiptingPoint')?.disable();
-
-//   const modalElement = document.getElementById('chargesModal');
-//   if (modalElement) {
-//     this.chargesModal = new Modal(modalElement); // Initialize the modal
-//   }
- 
+onClickClient(selectedClient) {
+  this.fetchTransactions(
+    selectedClient.systemShortDesc,
+    selectedClient.code,
+    selectedClient.accountCode,
+    selectedClient.receiptType,
+    selectedClient.shortDesc
+  );
+  console.log("selected client>>", selectedClient.accountCode);
+  // this.yourservice.method(this.system, selectedClient?.clientCode).subscribe
+  
+  // this.table2data;
 
 }
 captureReceiptForm(){
@@ -217,32 +156,32 @@ captureReceiptForm(){
     otherRef: [''],
     documentDate: [''],
     manualRef: [''],
-    currency: ['KES', Validators.required], // Default currency is KES
-    paymentMode: ['', Validators.required],
+    currency: ['', Validators.required], // Default currency is KES
+    paymentMode: ['CASH', Validators.required],
     chequeType: [{ value: '', disabled: true }],
     bankAccount: [''],
     receiptingPoint: [{ value: '', disabled: true }],
     charges: ['no', Validators.required],
       chargeAmount: [{ value: '', disabled: true }],
       selectedChargeType:['', Validators.required],
+      description: ['', Validators.required],
       modalChargeAmount: ['', [Validators.required, Validators.min(1)]],
       allocatedAmount: ['', [Validators.required, Validators.min(1)]],
     deductions: [''], 
     exchangeRate:[''],
+    exchangeRates:[''],
     capitalInjection: [''], 
     allocationType: [''],
     accountType: ['', Validators.required],
       searchCriteria: [{ value: '', disabled: true }, Validators.required],
       searchQuery: [{ value: '', disabled: true }, Validators.required],
       allocations:[''],
-   
-
-    // multiOrgSearchTerm: [''],
     multiOrgAllocatedAmount: [''],
     multiOrgAllocationEnabled: [false],
-    transactions: this.fb.array([]), // Array of transactions
+    transactions: this.fb.array([]), 
   });
 }
+
 checkBankSelected(){
   this.receiptingDetailsForm.get('bankAccount')?.valueChanges.subscribe(bank => {
     this.toggleChargeField(bank);
@@ -251,55 +190,64 @@ checkBankSelected(){
 
 }
 
-
-
 fetchManualExchangeRate() {
   this.receiptService.getManualExchangeRate().subscribe({
     next: (response) => {
       this.manualExchangeRate = response.data;
-      console.log('manual exchange rate:', this.manualExchangeRate);
+     // this.system = response.Systemshortdesc
     },
     error: (err) => {
       console.error('Error while fetching data:', err);
     }
   });
 }
+
+fetchExchangeRate(){
+  this.receiptService.getExchangeRate(this.currencyGlobal || this.selectedCurrencyCode,2).subscribe({
+    next:(response)=>{
+      this.rate=response.data;
+      alert(this.rate);
+    },
+    error:(err)=>{
+      console.error('error fetching Exchange Rates',this.exchangeRate);
+    }
+  })
+}
 fetchPaymentModes(){
 this.receiptService.getPaymentModes().subscribe({
     next: (response) => {
       this.paymentModes = response.data;
-      console.log("payment modes>>", this.paymentModes);
-  // log.info("requests>>", response);
+      
     },
     error: (err) => {
-      
-      //this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
   });
 }
+
 fetchReceiptNumber(){
   this.receiptService.getReceiptNumber(1,940).subscribe({
     next:(response)=>{
       this.receiptNumber=response.data;
-      log.info('receipt number>>',this.receiptNumber);
     },
     error:(err)=>{
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
   })
 }
+
 fetchReceiptingPoints(){
   this.receiptService.getReceiptingPoints(1).subscribe({
         next: (response) => {
           this.receiptingPoints = response.data;
-      log.info("receipting points>>",this.receiptingPoints );
         },
         error: (err) => {
              console.log(err);
-          // this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
         }
       });
 }
+
 fetchDrawersBank(){
   this.receiptService.getDrawersBanks()
       .subscribe({
@@ -308,11 +256,11 @@ fetchDrawersBank(){
       log.info("drawers bank>>", data);
         },
         error: (err) => {
-          console.log(err); 
-          // this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        this.globalMessagingService.displayErrorMessage('Error', err.error.error);
         }
       });
 }
+
 getPaymentModeSelected(){
   this.receiptingDetailsForm.get('paymentMode')?.valueChanges.subscribe((paymentMode) => {
     this.updatePaymentModeFields(paymentMode);
@@ -322,31 +270,58 @@ getPaymentModeSelected(){
 fetchNarrations() {
   this.receiptService.getNarrations().subscribe({
     next: (response) => {
-      // Access the `data` property from the response and assign to `this.narrations`
-      this.narrations = response.data || []; // Use an empty array as fallback
+      this.narrations = response.data || []; 
       this.filteredNarrations = [...this.narrations]; // Copy for display
-
-      console.log("Fetched narrations:", this.narrations); // Log to verify
     },
     error: (err) => {
-      
-      console.log("Error fetching narrations:", err);
-     
-      // this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
   });
 }
-fetchCurrencies(){
-  this.receiptService.getCurrencies(1).subscribe({
-    next:(response)=>{
-      this.currencies=response.data;
-      log.info('currencies>>',this.currencies);
-    },
-    error:(err)=>{
 
+// fetchCurrencies(){
+//   this.receiptService.getCurrencies(2).subscribe({
+//     next:(response)=>{
+//       this.currencies=response.data;
+//       console.log(this.currencies);
+      
+//       // Find the currency object with the symbol 'KES'
+//       const defaultCurrency = this.currencies.find(currency => currency.symbol === 'KES');
+      
+//       if (defaultCurrency) {
+//         this.currencyGlobal = defaultCurrency.code; // Assign the currency code to global variable
+//         console.log(`Default Currency Code (KES): ${this.currencyGlobal}`);
+//         alert(`Default Currency Code (KES): ${this.currencyGlobal}`);
+//       }
+      
+//     },
+//     error:(err)=>{
+// this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+//     }
+//   })
+// }
+fetchCurrencies(): void {
+  this.receiptService.getCurrencies(2).subscribe({
+    next: (response) => {
+      this.currencies = response.data; // Assign fetched currencies
+      console.log(this.currencies);
+
+      if (this.currencies.length > 0) {
+        // Use the first currency as the default
+        const defaultCurrency = this.currencies[0];
+        this.currencyGlobal = defaultCurrency.code; // Assign the first currency's code as default
+        this.receiptingDetailsForm.get('currency')?.setValue(defaultCurrency.symbol); // Set default in the form field
+
+        //console.log(`Default Currency Code: ${this.currencyGlobal}`);
+        //console.log(`Default Currency Symbol: ${defaultCurrency.symbol}`);
+      } else {
+        //console.warn('No currencies found in the response.');
+      }
+    },
+    error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
     }
-  })
+  });
 }
 
 fetchBanks(){
@@ -354,27 +329,125 @@ fetchBanks(){
       .subscribe({
         next: (response) => {
         this.bankAccounts = response.data;
-      log.info("banks>>", this.bankAccounts);
-      
-        },
+       },
         error: (err) => {
-           console.log(err);
-          // this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+          
+           this.globalMessagingService.displayErrorMessage('Error', err.error.error);
         }
       });
 }
 
-fetchAccountTypes(){
-  this.receiptService.getAccountTypes(2,2003,1).subscribe({
-    next:(response)=>{
-      this.accountTypes = response.data;
-      log.info('account types request>>>',this.accountTypes);
-    },
-    error:(err)=>{
-      console.error('error while fetching account types',err);
-    }
+fetchCharges(){
+  this.receiptService.getCharges(2,1).subscribe({
+next:(response)=>{
+this.charges=response.data;
+},
+error:(err)=>{
+  console.error('error while fetchig>>',err);
+}
   })
 }
+
+
+
+fetchAccountTypes() {
+  this.receiptService.getAccountTypes(2, 2003, 1).subscribe({
+    next: (response) => {
+      this.accountTypes = response.data || [];
+    },
+    error: (err) => {
+
+      console.error('Error fetching account types:', err);
+      //alert('Failed to fetch account types.');
+    },
+  });
+}
+
+// Enable search fields when account type is selected
+onAccountTypeChange(): void {
+  const accountType = this.receiptingDetailsForm.get('accountType')?.value;
+  this.isAccountTypeSelected = !!accountType;
+
+  if (this.isAccountTypeSelected) {
+    this.receiptingDetailsForm.get('searchCriteria')?.enable();
+    this.receiptingDetailsForm.get('searchQuery')?.enable();
+  } else {
+    this.receiptingDetailsForm.get('searchCriteria')?.disable();
+    this.receiptingDetailsForm.get('searchQuery')?.disable();
+  }
+}
+
+
+  
+  
+  
+  onSearch(): void {
+    const { accountType, searchCriteria, searchQuery } = this.receiptingDetailsForm.value;
+  
+    if (!accountType || !searchCriteria || !searchQuery) {
+      alert('Please provide all the required fields.');
+      return;
+    }
+  
+    const criteriaMapping = {
+      clientName: 'CLIENT_NAME',
+      policyNumber: 'POL_NO',
+      accountNumber: 'ACC_NO',
+      debitNote: 'DR_CR_NO',
+    };
+  
+    const apiSearchCriteria = criteriaMapping[searchCriteria];
+    if (!apiSearchCriteria) {
+      alert('Invalid search criteria selected.');
+      return;
+    }
+  
+    this.fetchClients(apiSearchCriteria, searchQuery.trim());
+  }
+  
+  fetchClients(searchCriteria: string, searchValue: string): void {
+    const accountType = this.receiptingDetailsForm.get('accountType')?.value;
+    const selectedAccountType = this.accountTypes.find((type) => type.name === accountType);
+  
+    if (selectedAccountType) {
+      const { systemCode, accCode } = selectedAccountType;
+      this.loading = true;
+  
+      this.receiptService.getClients(systemCode, accCode, searchCriteria, searchValue).subscribe({
+        next: (response) => {
+          this.clients = response.data || [];
+          console.log('Clients:', this.clients);
+          alert('clients found');
+
+          if (!this.clients.length) {
+            alert('No clients found for the given criteria.');
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching clients:', err);
+          alert('Failed to fetch clients.');
+        },
+        complete: () => {
+          this.loading = false;
+        },
+      });
+    } else {
+      alert('Invalid account type selected.');
+    }
+  }
+  
+  fetchTransactions(systemShortDesc,clientCode,accountCode,receiptType,clientShtDesc){
+    this.receiptService.getTransactions(systemShortDesc,clientCode,accountCode,receiptType,clientShtDesc).subscribe({
+      next:(response)=>{
+        this.transactions=response.data;
+      },
+      error:(err)=>{
+        console.error('error fetching transactions',err);
+      }
+  
+    });
+  }
+
 checKBackDatingStatus(){
   this.receiptingService.getBackdatingEnabled().subscribe(isEnabled => {
     this.backdatingEnabled = isEnabled; // Set the backdating flag
@@ -569,7 +642,7 @@ private updatePaymentModeFields(paymentMode: string): void {
     this.handleCashMode(chequeTypeModal);
     // this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
     // chequeTypeModal?.hide();
-    // this.receiptingDetailsForm.get('drawersBank')?.disable();
+     this.receiptingDetailsForm.get('drawersBank')?.disable();
   } else if (paymentMode === 'CHEQUE') {
     this.handleChequeMode(chequeTypeModal);
     // this.showChequeTypeModal(chequeTypeModal);
@@ -688,40 +761,11 @@ private isClientAlreadyAllocated(accountNumber: string): boolean {
   return this.allocatedClients.some((c) => c.accountNumber === accountNumber);
 }
 
-// Enable search fields when account type is selected
-onAccountTypeChange(): void {
-  const accountType = this.receiptingDetailsForm.get('accountType')?.value;
-  this.isAccountTypeSelected = !!accountType;
 
-  if (this.isAccountTypeSelected) {
-    this.receiptingDetailsForm.get('searchCriteria')?.enable();
-    this.receiptingDetailsForm.get('searchQuery')?.enable();
-  } else {
-    this.receiptingDetailsForm.get('searchCriteria')?.disable();
-    this.receiptingDetailsForm.get('searchQuery')?.disable();
-  }
-}
-// Handle search functionality
-onSearch(): void {
-  const formValues = this.receiptingDetailsForm.value;
-  const { accountType, searchCriteria, searchQuery } = formValues;
 
-  this.searchClients = this.mockClientData.filter(
-    (client) =>
-      client.accountType === accountType &&
-      client[searchCriteria]?.toString().toLowerCase() === searchQuery.toLowerCase()
-  );
+// Trigger client fetching when account type or search criteria changes
 
-  if (this.searchClients.length === 0) {
-    alert(`No matching records found for '${searchQuery}' with account type '${accountType}'`);
-  }
 
-  // Add the filtered clients to the allocations form
-  this.allocations.clear();
-  this.searchClients.forEach((client) => this.addClientToAllocations(client));
-}
-   
-  
     // Remove allocated client
     removeAllocation(client: any): void {
       this.allocatedClients = this.allocatedClients.filter(
@@ -810,45 +854,158 @@ onSearch(): void {
   currentTab: string;
 
   selectedCurrency: string = 'KES'; // Default currency
-  exchangeRate: number = 1; // Default exchange rate
   useDefaultExchangeRate: boolean = false; // Mock parameter (replace with real logic)
+  exchangeRate: number = 1; // Default exchange rate
+ 
 
-  onCurrencySelected(): void {
-    const currencyCode = this.receiptingDetailsForm.get('currency')?.value;
-    this.selectedCurrency = currencyCode;
+  
+  onCurrencyChanged(currencyCode: number, currencySymbol: string): void {
+    this.selectedCurrencyCode = currencyCode;
+    this.selectedCurrency = currencySymbol;
 
-    if (currencyCode !== 'KES') {
-      // Mock: Check if the client prefers the default exchange rate
-      this.useDefaultExchangeRate = this.checkClientPreference();
+    // Check if the client has set a manual exchange rate
+    // this.receiptService.getManualExchangeRate()
+    //   .subscribe({
+    //     next: (response) => {
+    //       const isManualRateSetup = response.data === "Y";
+    //       this.useDefaultExchangeRate = !isManualRateSetup;
 
-      // Show the exchange rate modal
-      this.showExchangeRateModal();
+    //       if (isManualRateSetup) {
+    //         // Show modal for manual rate input
+    //         this.showExchangeRateModal();
+    //       } else {
+    //         // Fetch the default exchange rate
+    //         this.fetchDefaultExchangeRate();
+    //       }
+    //     },
+    //     error: (err) => {
+    //       console.error('Error fetching manual exchange rate setup:', err);
+    //     }
+    //   });
+    this.receiptService.getManualExchangeRate()
+  .subscribe({
+    next: (response) => {
+      const isManualRateSetup = response.data === "N"; // Now works as expected
+      this.useDefaultExchangeRate = !isManualRateSetup;
+
+      if (isManualRateSetup) {
+        this.showExchangeRateModal(); // Show modal for manual rate input
+      } else {
+        this.fetchDefaultExchangeRate(); // Fetch default exchange rate
+      }
+    },
+    error: (err) => {
+      console.error('Error fetching manual exchange rate setup:', err);
     }
+  });
 
-   // console.log(`Currency Selected: ${currencyCode}`);
   }
 
+  // fetchDefaultExchangeRate(): void {
+  //   this.receiptService.getExchangeRate(this.selectedCurrencyCode,2)
+  //     .subscribe({
+  //       next: (response) => {
+  //         this.exchangeRates = response.data;
+  //         this.showExchangeRateModal();
+  //       },
+  //       error: (err) => {
+  //         console.error('Error fetching default exchange rate:', err);
+  //       }
+  //     });
+  // }
+  fetchDefaultExchangeRate(): void {
+    this.receiptService.getExchangeRate(this.selectedCurrencyCode, 2)
+      .subscribe({
+        next: (response) => {
+          this.exchangeRates = response.data; // `data` is now a string
+          alert(this.exchangeRates);
+          this.showExchangeRateModal(); // Show modal with exchange rate
+        },
+        error: (err) => {
+          console.error('Error fetching default exchange rate:', err);
+        }
+      });
+  }
+  
+  confirmExchangeRate(): void {
+    const manualRate = this.receiptingDetailsForm.get('exchangeRate')?.value;
+    if (!this.useDefaultExchangeRate && manualRate) {
+      // Post the entered manual rate
+        // New method for posting manual exchange rate
+        this.receiptService.postManualExchangeRate(manualRate).subscribe({
+          next: (response) => {
+            if (response.success) {
+              console.log('Manual rate successfully posted:', response.data);
+    
+            } else {
+              console.error('Failed to post manual rate:', response.msg);
+              alert('error while posting exchange rates');
+            }
+          },
+          error: (err) => {
+            console.error('Error posting manual exchange rate:', err);
+          }
+        });
+        
+    }
+  }
+
+  showExchangeRateModal(): void {
+    const modal = new bootstrap.Modal(document.getElementById('exchangeRateModal')!);
+    modal.show();
+  }
+  onCurrencySelected(): void {
+    const selectedSymbol = this.receiptingDetailsForm.get('currency')?.value; // Get selected currency symbol
+    const selectedCurrencyObj = this.currencies.find(
+      (currency) => currency.symbol === selectedSymbol
+    ); // Find the currency object by symbol
+  
+    if (selectedCurrencyObj) {
+      // Assign globally accessible properties
+      this.selectedCurrencyCode = selectedCurrencyObj.code;
+      this.selectedCurrencySymbol = selectedCurrencyObj.symbol;
+  
+      console.log(`Currency Selected: ${this.selectedCurrencySymbol}`);
+      console.log(`Currency Code: ${this.selectedCurrencyCode}`);
+  alert( this.selectedCurrencyCode);
+      if (this.selectedCurrencySymbol !== 'KES') {
+        // Mock: Check if the client prefers the default exchange rate
+        this.useDefaultExchangeRate = this.checkClientPreference();
+  
+        // Show the exchange rate modal
+        this.showExchangeRateModal();
+      }
+    } else {
+      console.warn('Selected currency not found');
+    }
+  }
+  
+ 
+  
   // Mock function to simulate checking client preference (replace with API logic)
   checkClientPreference(): boolean {
     // Replace with actual logic to determine the client’s preference
     return Math.random() < 0.5; // Random yes/no for demo purposes
   }
+  
+ 
+  
 
-  // Show the Bootstrap modal
-  showExchangeRateModal(): void {
-    const modalElement = document.getElementById('exchangeRateModal') as HTMLElement;
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-  }
+  // // Show the Bootstrap modal
+  // showExchangeRateModal(): void {
+  //   const modalElement = document.getElementById('exchangeRateModal') as HTMLElement;
+  //   const modal = new bootstrap.Modal(modalElement);
+  //   modal.show();
+  // }
 
-  // Confirm and proceed with the exchange rate
-  confirmExchangeRate(): void {
-    console.log(`Exchange Rate: ${this.exchangeRate}`);
-    // Close the modal
-    const modalElement = document.getElementById('exchangeRateModal') as HTMLElement;
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    modal?.hide();
-  }
+  // // Confirm and proceed with the exchange rate
+  // confirmExchangeRate(): void {
+  //   console.log(`Exchange Rate: ${this.exchangeRate}`);
+  //   // Close the modal
+  //   const modalElement = document.getElementById('exchangeRateModal') as HTMLElement;
+  //   const modal = bootstrap.Modal.getInstance(modalElement);
+  //   modal?.hide();
+  // }
 
 
 
@@ -953,11 +1110,7 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
 
   getNextReceiptNumber(receiptingPoint: any): number {
     let nextNumber = 1;
-    // ... (fetch the last receipt number for this receipting point from your API)
-    // Example:
-    // this.receiptingService.getLastReceiptNumber(receiptingPoint.code).subscribe(lastNumber => {
-    //   nextNumber = lastNumber + 1;
-    // });
+    
     return nextNumber;
   }
 
@@ -1056,9 +1209,7 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
     // ...
   }
 
-  /**
-   * Reset form fields based on the selected currency
-   */
+ 
   private resetReceiptFields(): void {
     // ... logic to reset fields based on currency, payment mode, etc. ...
     this.receiptingDetailsForm.patchValue({
@@ -1088,14 +1239,7 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
     });
   }
 
-  /**
-   * Update form fields based on the selected payment mode
-   * @param paymentMode - The payment mode selected by the user
-   */
-
-  /**
-   * Update default receipting point based on bank selection
-   */
+ 
   private updateDefaultReceiptingPoint(): void {
     // ... logic to fetch and update the default receipting point ...
   }
@@ -1107,16 +1251,7 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
     // ... logic to fetch and update the default printer ...
   }
 
-  /**
-   * Generate a new receipt number
-   */
 
-
-  /**
-   * Method to update the allocated amount for a transaction
-   * @param transaction - The transaction to update
-   * @param event - The event triggered by the input change
-   */
   onTransactionAllocatedAmountChange(transaction: any): void {
     // Instead of directly updating transaction.allocatedAmount,
     // use the form control to update the value:
@@ -1145,28 +1280,11 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
     this.updateTotalAllocatedAmount();
   }
 
-  /**
-   * Method to update the allocated amount for a GL account
-   * @param account - The GL account to update
-   * @param event - The event triggered by the input change
-   */
+ 
   onGlAccountAllocatedAmountChange(account: any): void {
     account.allocatedAmount = event;
     this.updateTotalAllocatedAmount();
   }
-
-  /**
-   * Method to update the total allocated amount
-   */
-
-
-
-
-
-  /**
-   * Method to handle the manage account type action
-   */
-
 
   /*
    * Method to handle print confirmation
@@ -1193,42 +1311,53 @@ let prefix = this.receiptingDetailsForm.get('receiptingPoint')?.value; //  Get t
     this.showReceiptPreview();
   }
 
-
-
-  /**
-   * Method to handle file selection for upload
-   * @param event - The event triggered by the file input
-   */
-  onFileSelected(event: any): void {
+onFileSelected(event: any): void {
   const files = event.target.files;
   if (files && files.length > 0) {
-    this.uploadedFiles = Array.from(files); // Convert to array
+    this.uploadedFiles = Array.from(files); // Convert FileList to array
     console.log('Files Selected:', this.uploadedFiles);
+
+    // Show the modal
+    this.openModal();
   }
 }
 
-onUploadFiles(): void {
-  // Handle the file upload logic here using fileUploadService
-  console.log('Files to upload:', this.uploadedFiles);
+openModal(): void {
+  const modal = this.fileDescriptionModal.nativeElement;
+  this.renderer.addClass(modal, 'show');
+  this.renderer.setStyle(modal, 'display', 'block');
+  this.renderer.setAttribute(modal, 'aria-hidden', 'false');
+}
+
+closeModal(): void {
+  const modal = this.fileDescriptionModal.nativeElement;
+  this.renderer.removeClass(modal, 'show');
+  this.renderer.setStyle(modal, 'display', 'none');
+  this.renderer.setAttribute(modal, 'aria-hidden', 'true');
+}
+
+saveFileDescription(): void {
+  console.log('Save button clicked');
+  if (this.receiptingDetailsForm.valid) {
+    const description = this.receiptingDetailsForm.get('description')?.value;
+    console.log('File description:', description);
+    console.log('Files to upload:', this.uploadedFiles);
+
+    // Add your logic here to process the file and description
+    this.closeModal();
+    this.receiptingDetailsForm.reset();
+  } else {
+    this.receiptingDetailsForm.markAllAsTouched(); // Force validation feedback
+    alert('Form is invalid');
+  }
 }
 
 
-
-  /**
-   * Method to handle removing a file from the uploaded files list
-   * @param index - The index of the file to remove
-   */
-  onRemoveFile(index: number): void {
-    this.uploadedFiles.splice(index, 1);
-  }
-
-  /**
-   * Method to handle changes in the allocated amount for a client
-   * @param allocation - The allocation object
-   * @param amount - The new amount
-   */
-
-
+onRemoveFile(index: number): void {
+  this.uploadedFiles.splice(index, 1); // Remove the file from the list
+  console.log('File removed. Remaining files:', this.uploadedFiles);
+}
+ 
 
 
   // Function to add a new transaction to the form array
