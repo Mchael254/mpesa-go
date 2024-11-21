@@ -12,9 +12,9 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-3">
-          <div class="card-body">
+          <div class="card-body mx-2">
             <h5 class="card-title fs-5">{{ 'entities.prime_identity' | translate }}</h5>
-            <div class="row my-3">
+            <div class="row my-4">
               <div class="col-md-4">
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="NEW_CLIENT" name="client"
@@ -256,7 +256,7 @@
               </span>
             </h3>
             <div id="flush-collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body" formGroupName="contact_details">
+              <div class="accordion-body mx-2" formGroupName="contact_details">
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.clientBranch === 'Y'">
                     <div class="col-sm-4">
@@ -400,7 +400,7 @@
               </span>
             </h2>
             <div id="flush-collapsePostal" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body" formGroupName="address">
+              <div class="accordion-body mx-2" formGroupName="address">
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.box_number === 'Y'">
                     <div class="col-sm-4">
@@ -490,7 +490,7 @@
               </span>
             </h2>
             <div id="flush-collapseResidential" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body" formGroupName="address">
+              <div class="accordion-body mx-2" formGroupName="address">
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.town === 'Y'">
                     <div class="col-sm-4">
@@ -595,7 +595,7 @@
               </span>
             </h2>
             <div id="flush-collapseBanking" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body" formGroupName="payment_details">
+              <div class="accordion-body mx-2" formGroupName="payment_details">
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.bank === 'Y'">
                     <div class="col-sm-4">
@@ -760,7 +760,7 @@
               </span>
             </h2>
             <div id="flush-collapseWealth" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body" formGroupName="wealth_details">
+              <div class="accordion-body mx-2" formGroupName="wealth_details">
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.wealth_citizenship === 'Y'">
                     <div class="col-sm-4">
@@ -932,7 +932,7 @@
               </span>
             </h2>
             <div id="flush-collapseDocs" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body">
+              <div class="accordion-body mx-2">
                 <div class="col-md-9">
                   <div class="form-group" style="display: flex; flex-grow: 1; align-items: center;">
                     <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
