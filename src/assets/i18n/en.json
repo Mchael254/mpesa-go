@@ -320,7 +320,7 @@
     "bank": "Bank",
     "bank_details": "Bank Details",
     "bank_required": "Bank is required",
-    "banking_details": "Banking Details",
+    "banking_details": "Banking details",
     "basic_information": "Basic Information",
     "branch": "Branch",
     "branch_required": "Branch is required",
@@ -447,6 +447,7 @@
     "new_business_account": "New Business Account",
     "new_claim": "New Claim",
     "new_client": "New Client",
+    "existing_client": "Existing Client",
     "new_entity": "New Entity",
     "new_policy": "New Policy",
     "new_quote": "New Quote",
@@ -496,7 +497,7 @@
     "policies": "Policies",
     "policies_in_force": "Policies in Force",
     "policy_number": "Policy Number",
-    "postal_address_details": "Postal Address details",
+    "postal_address_details": "Postal address details",
     "preferred_channel": "Preferred Channel",
     "preferred_channel_required": "Preferred Channel is required",
     "preferred_contact_channel": "Preferred contact channel",
@@ -528,7 +529,9 @@
     "reports": "Reports",
     "reports_content": "Reports Content",
     "required": "required",
-    "residential_address_details": "Residential Address details",
+    "residential_address_details": "Residential address details",
+    "uploadDocs": "Upload documents",
+    "chooseFile": "Choose file",
     "road": "Road",
     "road_required": "Road is required",
     "roles": "Roles",
@@ -2280,7 +2283,7 @@
       "capitalInjection": "Capital Injection",
       "deductions": "Deductions",
       "chargeAmount": "Charge Amount"
-      
+
     },
     "allocation": {
       "allocate_funds": "Allocate Funds",
@@ -2303,7 +2306,7 @@
       "allocatedAmount": "Allocated Amount",
       "cancel_receipt": "Cancel Receipt"
     },
-    
+
     "client": {
         "name": "Client Name",
         "date": "Date",
@@ -2316,7 +2319,7 @@
     "common":{
      "close":"cancel"
   },
-  
+
     "receipt_authorization": {
       "title": "Receipt Authorization",
       "normal_tab": "Normal Receipts",
