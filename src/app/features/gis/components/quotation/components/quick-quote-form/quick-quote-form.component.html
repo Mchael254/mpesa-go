@@ -27,7 +27,7 @@
                 <!-- ROW 1 -->
                 <div class="row mb-4">
                     <div class="col-sm-4 col-6" *ngIf="!new">
-                        <label for="name" class="required quote-label" id="name">{{'gis.quotation.name' |
+                        <label for="name" class=" quote-label" id="name">{{'gis.quotation.name' |
                             translate}}</label>
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
@@ -102,53 +102,13 @@
 
                     <!-- ROW 2 -->
                     <div class="row mb-4">
-                        <div class="col-sm-4 col-6 ">
-                            <label class="required quote-label" for="Source" id="Source">{{'gis.quotation.source' |
-                                translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
-                                formControlName="source" (change)="onSourceSelected($event)">
-                                <option value=""></option>
-                                <option *ngFor="let source of sourceDetail" [value]="source.code">{{ source.description
-                                    | sentenceCase}}</option>
-                            </select>
-                            <!-- Display error message under the "Source" field -->
-                            <div *ngIf="personalDetailsForm.get('source').hasError('required') && personalDetailsForm.get('source').touched"
-                                class="form-text text-danger">
-                                Source is required.
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-6" *ngIf="!new">
-                            <label for="Branch" class="quote-label" id="Branch">{{'gis.quotation.branch' |
-                                translate}}</label>
-
-                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
-                                optionLabel="description" (onChange)="onBranchSelected($event.value)"
-                                [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
-                                [ngModel]="userBranchName"></p-dropdown>
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('branchCode').hasError('required') && personalDetailsForm.get('branchCode').touched"
-                                class="form-text text-danger">
-                                {{'gis.quotation.branch_is_required' | translate}}
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-6" *ngIf="new">
-                            <label for="Branch" class="quote-label" id="Branch">{{'gis.quotation.branch' |
-                                translate}}</label>
-
-                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
-                                optionLabel="description" (onChange)="onBranchSelected($event.value)"
-                                [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
-                                [ngModel]="userBranchName"></p-dropdown>
-
-
-                        </div>
                         <div class="col-sm-4 col-6">
                             <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
                                 translate}}</label><br>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
-                                optionLabel="description"  dataKey="code"  (onChange)="onProductSelected($event.value)" placeholder=" "
-                                [filterBy]="'description'"  [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
+                                optionLabel="description" dataKey="code" (onChange)="onProductSelected($event.value)"
+                                placeholder=" " [filterBy]="'description'" [placeholder]="parsedProductDesc"
+                                [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
@@ -156,16 +116,12 @@
                                 {{'gis.quotation.product_is_required' | translate}}
                             </div>
                         </div>
-
-                    </div>
-                    <!-- ROW 3 -->
-                    <div class="row mb-4">
                         <div class="col-sm-4 col-6">
                             <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
                             <select class="form-select form-control-sm " id="quote-input"
                                 (change)="onSubclassSelected($event)" formControlName="subclassCode"
-                                placeholder ="parsedSubclassDesc">
+                                placeholder="parsedSubclassDesc">
                                 <option value=""></option>
                                 <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
                                     {{subclass.description | sentenceCase}}</option>
@@ -177,25 +133,8 @@
                             </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="binder" class="quote-label required" id="binder">{{'gis.quotation.binder' |
-                                translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4 " id="quote-input"
-                                formControlName="bindCode" (change)="onSelectBinder($event)"
-                                placeholder ="parsedBinderDesc">
-                                <option></option>
-                                <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
-                                    binder.binder_short_description | sentenceCase }}</option>
-                            </select>
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('bindCode').hasError('required') && personalDetailsForm.get('bindCode').touched"
-                                class="form-text text-danger">
-                                {{'gis.quotation.binder_is_required' | translate}}
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-6">
                             <label for="cover-From" class="quote-label required"
-                                id="cover-From">{{'gis.quotation.cover_from' |
-                                translate}}</label>
+                                id="cover-From"> {{'gis.quotation.effective_date' | translate}}</label>
                             <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
                             <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveFromDate" [(ngModel)]="coverFromDate"
@@ -206,37 +145,26 @@
                                 {{'gis.quotation.cover_from_is_required' | translate}}
                             </div>
                         </div>
-
-
                     </div>
-                    <!-- ROW 4 -->
+                    <!-- ROW 3 -->
                     <div class="row mb-4">
-                        <div class="col-sm-4 col-6">
-                            <label for="cover-To" class="quote-label required" id="cover-To"> {{'gis.quotation.cover_to'
-                                |
-                                translate}}</label>
-                            <input type="date" id="cover-to" class="form-control form-control-sm mb-1 "
-                                formControlName="withEffectiveToDate" [(ngModel)]="passedCoverToDate">
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('withEffectiveToDate').hasError('required') && personalDetailsForm.get('withEffectiveToDate').touched"
-                                class="form-text text-danger">
-                                {{'gis.quotation.cover_to_is_required' | translate}}
-                            </div>
-                        </div>
                         <div class="col-sm-4 col-6">
                             <label for="currency" class="required quote-label" id="currency">{{'gis.quotation.currency'
                                 | translate}}</label>
 
-                            <input class="form-control form-control-sm mb-1 ms-n4" id="quote-input"
-                                formControlName="currencyCode" [value]="selectedCurrency | sentenceCase" readonly>
+                                
+                                <p-dropdown formControlName="currencyCode" [options]="currencyList"
+                                optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
+                                placeholder=" " [filterBy]="'name'" [placeholder]="selectedCurrency"
+                                [filter]="true"></p-dropdown>
                             <!-- Display error message under the field -->
                             <!-- <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
                                 class="form-text text-danger">
                                 Currency is required.
                             </div> -->
                         </div>
-
                     </div>
+                 
 
                     <!-- ROW 5 -->
                     <div *ngIf="formData && selectedProductCode" class="row">
@@ -248,14 +176,13 @@
                                             *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
                                             <input [type]="field.type" [formControlName]="field.name" id="quote-input"
-                                                class="form-control form-control-sm mb-1 col-md-8" >
+                                                class="form-control form-control-sm mb-1 col-md-8">
                                         </div>
                                         <div *ngIf="field.name == 'yearOfManufacture'">
                                             <label class="quote-label required" [for]="field.name">{{ field.label
                                                 }}</label>
                                             <select id="yearOfManufacture" id="quote-input"
-                                                class="form-select form-control-sm mb-1"
-                                                [formControlName]="field.name"
+                                                class="form-select form-control-sm mb-1" [formControlName]="field.name"
                                                 [ngModel]="parsedYearOfManufacture">
                                                 <option></option>
                                                 <option *ngFor="let year of years" [value]="year">{{ year }}</option>
@@ -266,16 +193,14 @@
                                                 }}</label>
                                             <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                appCommaFormat
-                                                [ngModel]="parsedSumInsured">
+                                                appCommaFormat [ngModel]="parsedSumInsured">
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
                                                 [formControlName]="field.name"
                                                 (input)="updateCarRegNoValue($event); validateCarRegNo()"
-                                                placeholder="e.g KCA 345R"
-                                                [ngModel]="parsedCarRegNo">
+                                                placeholder="e.g KCA 345R" [ngModel]="parsedCarRegNo">
 
                                             <!-- <div *ngIf="carRegNoHasError" class="form-text text-danger">
                                                 {{'gis.quotation.please_enter_valid_reg_no' | translate}}

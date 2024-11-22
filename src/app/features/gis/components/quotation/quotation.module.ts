@@ -26,6 +26,7 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     QuoteAssigningComponent,
     RiskSectionDetailsComponent,
     QuotationSummaryComponent,
+    CoverTypesComparisonComponent,
   ],
   imports: [
     CommonModule,
