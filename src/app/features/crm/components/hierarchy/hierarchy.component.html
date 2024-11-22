@@ -90,7 +90,9 @@
             </span>
             <span
               class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can"
+                 (click)="deleteHierarchyLevelType()">
+              </i>
             </span>
           </div>
         </div>
@@ -109,32 +111,31 @@
         [scrollable]="true"
         [(selection)]="selectedHierarchyType"
         selectionMode="single"
-        dataKey="id"
+        dataKey="code"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
+        [globalFilterFields]="['description', 'accountTypeCode', 'type', 'intermediaryCode', 'payIntermediary', 'managerCode']"
       >
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">{{'crm.description' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.accountType' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.headAccountType' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.type' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.intermediary' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.payIntermediary' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="description">{{'crm.description' | translate}} <p-sortIcon field="description"></p-sortIcon></th>
+            <th pSortableColumn="accountTypeCode">{{'crm.accountType' | translate}} <p-sortIcon field="accountTypeCode"></p-sortIcon></th>
+            <th pSortableColumn="managerCode">{{'crm.headAccountType' | translate}} <p-sortIcon field="managerCode"></p-sortIcon></th>
+            <th pSortableColumn="type">{{'crm.type' | translate}} <p-sortIcon field="type"></p-sortIcon></th>
+            <th pSortableColumn="intermediaryCode">{{'crm.intermediary' | translate}} <p-sortIcon field="intermediaryCode"></p-sortIcon></th>
+            <th pSortableColumn="payIntermediary">{{'crm.payIntermediary' | translate}} <p-sortIcon field="payIntermediary"></p-sortIcon></th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-hierarchyType>
           <tr
-            [pSelectableRow]="hierarchyType"
-            class="attach-system"
+            [pSelectableRow]="hierarchyType" (click)="fetchHierarchyLevels(hierarchyType)"
           >
-            <td>{{ hierarchyType.desc }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ hierarchyType?.description | titlecase }}</td>
+            <td>{{ hierarchyType?.accountTypeName | titlecase }}</td>
+            <td>{{ hierarchyType?.managerName | titlecase }}</td>
+            <td>{{ hierarchyType?.type | titlecase }}</td>
+            <td>{{ hierarchyType?.intermediaryCode }}</td>
+            <td>{{ hierarchyType?.payIntermediary === 'Y' ? 'Yes' : 'No' }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -169,7 +170,9 @@
             </span>
             <span
               class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can"
+              (click)="deleteHierarchyLevel()">
+              </i>
             </span>
           </div>
         </div>
@@ -188,26 +191,26 @@
         [scrollable]="true"
         [(selection)]="selectedHierarchyLevel"
         selectionMode="single"
-        dataKey="id"
+        dataKey="code"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
       >
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">{{'crm.description' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.ranking' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.type' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="description">{{'crm.description' | translate}} <p-sortIcon field="description"></p-sortIcon></th>
+            <th pSortableColumn="ranking">{{'crm.ranking' | translate}} <p-sortIcon field="ranking"></p-sortIcon></th>
+            <th pSortableColumn="type">{{'crm.type' | translate}} <p-sortIcon field="type"></p-sortIcon></th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-hierarchyType>
+        <ng-template pTemplate="body" let-hierarchyLevel>
           <tr
-            [pSelectableRow]="hierarchyType"
+            [pSelectableRow]="hierarchyLevel"
             class="attach-system"
           >
-            <td>{{ hierarchyType.desc }}</td>
-            <td></td>
-            <td></td>
+            <td>{{ hierarchyLevel?.description | titlecase }}</td>
+            <td>{{ hierarchyLevel?.ranking }}</td>
+            <td>{{ hierarchyLevel?.type | titlecase }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -226,7 +229,7 @@
           <h5 class="text-dark">{{'crm.subDivisions' | translate}}</h5>
         </div>
 
-        <div class="col-sm-12 col-md-5 border-end">
+        <div class="col-sm-12 col-md-4 border-end">
           <p class="mt-3 fw-medium float-start">{{'crm.definedLevels' | translate}}</p>
           <div class="float-end">
             <span
@@ -240,65 +243,76 @@
           </div>
         </div>
 
-        <div class="col-sm-12 col-md-7 ps-4">
+        <div class="col-sm-12 col-md-8 ps-4">
           <p class="mt-3 fw-medium float-start w-100">{{'crm.form' | translate}}</p>
           <form [formGroup]="orgSubDivForm">
-            <div class="row my-3">
-              <div class="col-md-6">
-                <label class="form-label w-100" for="parentDivision">{{'crm.parentDivision' | translate}}</label>
-                <input type="text" class="form-control" id="parentDivision" formControlName="parentDivision">
+            <div class="my-3">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="parentDivision">{{'crm.parentDivision' | translate}}</label>
+                  <input type="text" class="form-control" id="parentDivision" formControlName="parentDivision">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="divisionLevelType">{{'crm.divisionLevelType' | translate}}</label>
+                  <select class="form-select" id="divisionLevelType" formControlName="divisionLevelType">
+                    <option value=""></option>
+                  </select>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="divisionLevelType">{{'crm.divisionLevelType' | translate}}</label>
-                <select class="form-select" id="divisionLevelType" formControlName="divisionLevelType">
-                  <option value=""></option>
-                </select>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="divisionLevel">{{'crm.divisionLevel' | translate}}</label>
+                  <select class="form-select" id="divisionLevel" formControlName="divisionLevel">
+                    <option value=""></option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="name">{{'crm.name' | translate}}</label>
+                  <input type="text" class="form-control" id="name" formControlName="name">
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="divisionLevel">{{'crm.divisionLevel' | translate}}</label>
-                <select class="form-select" id="divisionLevel" formControlName="divisionLevel">
-                  <option value=""></option>
-                </select>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="divisionHead">{{'crm.divisionHead' | translate}}</label>
+                  <select class="form-select" id="divisionHead" formControlName="divisionHead">
+                    <option value=""></option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="location">{{'crm.location' | translate}}</label>
+                  <select class="form-select" id="location" formControlName="location">
+                    <option value=""></option>
+                  </select>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="name">{{'crm.name' | translate}}</label>
-                <input type="text" class="form-control" id="name" formControlName="name">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="managerAllowed">{{'crm.managerAllowed' | translate}}</label>
+                  <select class="form-select" id="managerAllowed" formControlName="managerAllowed">
+                    <option value=""></option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="overrideCommAllowed">{{'crm.overrideCommAllowed' | translate}}</label>
+                  <select class="form-select" id="overrideCommAllowed" formControlName="overrideCommAllowed">
+                    <option value=""></option>
+                  </select>
+                </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="divisionHead">{{'crm.divisionHead' | translate}}</label>
-                <select class="form-select" id="divisionHead" formControlName="divisionHead">
-                  <option value=""></option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="location">{{'crm.location' | translate}}</label>
-                <select class="form-select" id="location" formControlName="location">
-                  <option value=""></option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="managerAllowed">{{'crm.managerAllowed' | translate}}</label>
-                <select class="form-select" id="managerAllowed" formControlName="managerAllowed">
-                  <option value=""></option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="overrideCommAllowed">{{'crm.overrideCommAllowed' | translate}}</label>
-                <select class="form-select" id="overrideCommAllowed" formControlName="overrideCommAllowed">
-                  <option value=""></option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="wef">{{'crm.WEF' | translate}}</label>
-                <input type="text" class="form-control"
-                onfocus="(this.type='date')" onblur="(this.type='text')" id="wef" formControlName="wef">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label w-100" for="wet">{{'crm.WET' | translate}}</label>
-                <input type="text" class="form-control"
-                onfocus="(this.type='date')" onblur="(this.type='text')" id="wet" formControlName="wet">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="wef">{{'crm.WEF' | translate}}</label>
+                  <input type="text" class="form-control"
+                         onfocus="(this.type='date')" onblur="(this.type='text')" id="wef" formControlName="wef">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label w-100" for="wet">{{'crm.WET' | translate}}</label>
+                  <input type="text" class="form-control"
+                         onfocus="(this.type='date')" onblur="(this.type='text')" id="wet" formControlName="wet">
+                </div>
               </div>
             </div>
+            <button class="btn btn-primary float-end">{{'crm.save_details' | translate}}</button>
           </form>
         </div>
       </div>
@@ -351,7 +365,7 @@
         [scrollable]="true"
         [(selection)]="selectedPreviousSubDivHeads"
         selectionMode="single"
-        dataKey="id"
+        dataKey="code"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [globalFilterFields]="['description', 'code']"
@@ -360,19 +374,19 @@
           <tr>
             <th pSortableColumn="gis_exception_code">{{'crm.agentName' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
             <th pSortableColumn="gis_exception_code">{{'crm.agentShortDesc' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.WEF' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
-            <th pSortableColumn="gis_exception_code">{{'crm.WET' | translate}} <p-sortIcon field="gis_exception_code"></p-sortIcon></th>
+            <th pSortableColumn="wef">{{'crm.WEF' | translate}} <p-sortIcon field="wef"></p-sortIcon></th>
+            <th pSortableColumn="wef">{{'crm.WET' | translate}} <p-sortIcon field="wef"></p-sortIcon></th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-hierarchyType>
+        <ng-template pTemplate="body" let-subDivisionHead>
           <tr
-            [pSelectableRow]="hierarchyType"
+            [pSelectableRow]="subDivisionHead"
             class="attach-system"
           >
-            <td>{{ hierarchyType.desc }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ subDivisionHead?.agentCode }}</td>
+            <td>{{ subDivisionHead?.desc }}</td>
+            <td>{{ subDivisionHead?.wef }}</td>
+            <td>{{ subDivisionHead?.wef }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -394,7 +408,7 @@
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
 >
-  <div class="modal-dialog modal-sm">
+  <div class="modal-dialog" style="width: 400px">
     <div class="modal-content">
       <div class="modal-header border-bottom-0 pb-0">
         <h5 class="modal-title text-black">
@@ -423,38 +437,68 @@
             <ng-container *ngIf="visibleStatus.accType === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="accType">{{'crm.accountType' | translate}}</label>
-                <select class="form-select" id="accType" formControlName="accType">
-                  <option value=""></option>
-                </select>
+                <p-dropdown
+                  [options]="accountTypeData"
+                  optionLabel="accountType"
+                  optionValue="id"
+                  formControlName="accType"
+                  id="accType"
+                  [filter]="true"
+                  filterBy="accountType"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  [ngClass]="{ 'is-invalid': f['accType']?.invalid && (f['accType']?.dirty || f['accType']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="f['accType']?.invalid && (f['accType']?.dirty || f['accType']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['accType']?.errors['required']">Account type is required</div>
+                </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.headAccType === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="headAccType">{{'crm.headAccountType' | translate}}</label>
-                <select class="form-select" id="headAccType" formControlName="headAccType">
-                  <option value=""></option>
-                </select>
+                <p-dropdown
+                  [options]="accountTypeData"
+                  optionLabel="accountType"
+                  optionValue="id"
+                  formControlName="headAccType"
+                  id="headAccType"
+                  [filter]="true"
+                  filterBy="accountType"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  [ngClass]="{ 'is-invalid': f['headAccType']?.invalid && (f['headAccType']?.dirty || f['headAccType']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="f['headAccType']?.invalid && (f['headAccType']?.dirty || f['headAccType']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['headAccType']?.errors['required']">Head account type is required</div>
+                </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.type === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="type">{{'crm.type' | translate}}</label>
                 <select class="form-select" id="type" formControlName="type">
-                  <option value=""></option>
+                  <option value="{{type.value}}" *ngFor="let type of hierarchyTypeEnumData">{{type.name}}</option>
                 </select>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.intermediary === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="intermediary">{{'crm.intermediary' | translate}}</label>
-                <input type="text" class="form-control" id="intermediary" formControlName="intermediary">
+                <input type="text" class="form-control" id="intermediary" formControlName="intermediary"
+                       (click)="openAllUsersModal()" value="{{selectedMainUser?.name}}" readonly>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.payIntermediary === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="payIntermediary">{{'crm.payIntermediary' | translate}}</label>
                 <select class="form-select" id="payIntermediary" formControlName="payIntermediary">
-                  <option value=""></option>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
                 </select>
               </div>
             </ng-container>
@@ -509,10 +553,12 @@
             <ng-container *ngIf="visibleStatus.ranking === 'Y'">
               <div class="col-md-12">
                 <label class="form-label w-100" for="ranking">{{'crm.ranking' | translate}}</label>
-                <select class="form-select" id="ranking" formControlName="ranking"
+                <!--<select class="form-select" id="ranking" formControlName="ranking"
                         [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
                   <option value=""></option>
-                </select>
+                </select>-->
+                <input type="number" class="form-control" id="ranking" formControlName="ranking"
+                       [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
                 <div *ngIf="g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['ranking']?.errors['required']">Ranking is required</div>
                 </div>
@@ -522,7 +568,7 @@
               <div class="col-md-12">
                 <label class="form-label w-100" for="levelType">{{'crm.type' | translate}}</label>
                 <select class="form-select" id="levelType" formControlName="type">
-                  <option value=""></option>
+                  <option value="{{ type.value }}" *ngFor="let type of hierarchyLevelsEnumData">{{ type.name }}</option>
                 </select>
               </div>
             </ng-container>
@@ -597,3 +643,18 @@
     </div>
   </div>
 </div>
+
+<!--Modal for Listing all agents !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Okay'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Intermediaries'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)" [accountType]="'AGENT'">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
