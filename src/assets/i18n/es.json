@@ -833,7 +833,8 @@
       "recursive": "Rekursiv",
       "rate_table": "Tariftabelle",
       "absolute_range": "Absoluter Bereich",
-      "step_ranges": "Stufenbereiche"
+      "step_ranges": "Stufenbereiche",
+      "effective_date": "Fecha de vigencia"
     },
     "policy": {
       "underwriting_new_transaction": "Suscripción: Nueva transacción",
