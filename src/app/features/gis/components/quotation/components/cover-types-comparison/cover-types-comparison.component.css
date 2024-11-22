@@ -1,0 +1,128 @@
+.card-title {
+    font-family: Roboto;
+    color: black;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28.13px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+}
+
+.card {
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+}
+
+.cover-types-body {
+    padding-top: 30px;
+    padding-bottom: 30px;
+
+}
+
+.cover-name {
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 38.13px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+}
+
+.title2 {
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 23.44px;
+    text-align: right;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+}
+
+.cover-premium {
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 23.44px;
+    text-align: right;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-left: 30px;
+
+}
+
+.radio-btn {
+    width: 20px;
+    height: 20px;
+    accent-color: #00529B;
+    /* Changes the color of the radio button */
+    cursor: pointer;
+    transform: scale(1);
+    /* Increase the size */
+    margin-right: 10px;
+    /* Space between radio button and text */
+}
+
+.subheading {
+    font-family: Roboto;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    /* color: #00529B; */
+
+}
+
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
+
+.divider {
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
+
+}
+.modal-title{
+    color: #000;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.title3{
+    color: #000;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.details-label{
+    color: #000;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.btn-link{
+    text-decoration: underline;
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}

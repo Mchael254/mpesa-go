@@ -11,6 +11,7 @@ import { QuotationDetailsComponent } from './components/quotation-details/quotat
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
+import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 
 const routes: Routes = [
   {
@@ -22,8 +23,12 @@ const routes: Routes = [
   {
     path: 'quick-quote', component:QuickQuoteFormComponent
   },
+ 
+  //  {
+  //   path: 'cover-type-details', component:CoverTypesDetailsComponent
+  // },
   {
-    path: 'cover-type-details', component:CoverTypesDetailsComponent
+    path: 'cover-type-details', component:CoverTypesComparisonComponent
   },
   {
     path: 'quote-summary', component:QuoteSummaryComponent

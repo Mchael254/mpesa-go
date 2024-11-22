@@ -212,6 +212,11 @@ export class QuickQuoteFormComponent {
     this.loadAllClients();
     this.getCountries();
 
+      // Get today's date in yyyy-MM-dd format
+      const today = new Date();
+      this.coverFromDate = today.toISOString().split('T')[0]; 
+      log.debug("Effective Date",this.coverFromDate)
+
     this.loadAllQoutationSources();
     this.LoadAllFormFields(this.selectedProductCode);
     this.dynamicForm = this.fb.group({});
@@ -394,7 +399,7 @@ export class QuickQuoteFormComponent {
           this.parsedBinderDesc = filteredBinder.binder_name
           log.debug("Filtered Binder description", this.parsedBinderDesc)
           const currencyCode = filteredBinder.currency_code
-          this.loadAllCurrencies(currencyCode)
+          this.loadAllCurrencies()
 
           this.selectedBinderCode = filteredBinderCode
           this.selectedBinder = filteredBinder
@@ -533,7 +538,7 @@ export class QuickQuoteFormComponent {
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails?.branchId;
-    log.debug("Branch Id", this.userBranchId);
+    log.debug("User Branch Id", this.userBranchId);
     this.fetchBranches();
 
   }
@@ -574,6 +579,7 @@ export class QuickQuoteFormComponent {
         log.info('Fetched Branches', this.branchList);
         const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
         log.debug("branch", branch);
+        this.selectedBranchCode=this.branchList[0].id; 
         this.userBranchName = branch[0]?.name;
         this.branchList.forEach(branch => {
           // Access each product inside the callback function
@@ -695,8 +701,8 @@ export class QuickQuoteFormComponent {
       agentCode: [''],
       agentShortDescription: [''],
       bdivCode: [''],
-      bindCode: ['', Validators.required],
-      branchCode: ['', Validators.required],
+      bindCode: ['', ],
+      branchCode: ['',],
       clientCode: [''],
       clientType: [''],
       coinLeaderCombined: [''],
@@ -708,9 +714,9 @@ export class QuickQuoteFormComponent {
       paymentMode: [''],
       proInterfaceType: [''],
       productCode: ['', Validators.required],
-      source: ['', Validators.required],
+      source: ['', ],
       withEffectiveFromDate: ['', Validators.required],
-      withEffectiveToDate: ['', Validators.required],
+      withEffectiveToDate: ['',],
       multiUser: [''],
       comments: [''],
       internalComments: [''],
@@ -777,6 +783,7 @@ export class QuickQuoteFormComponent {
     // Load the dynamic form fields based on the selected product
     this.LoadAllFormFields(this.selectedProductCode);
     this.getProductExpiryPeriod();
+    this.getCoverToDate()
   }
   /**
    * Retrieves cover to date based on the selected product and cover from date.
@@ -915,7 +922,17 @@ export class QuickQuoteFormComponent {
     this.binderService.getAllBindersQuick(code).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      console.log("All Binders Details:", this.binderListDetails); // Debugging
+      console.log("All Binders Details:", this.binderListDetails); 
+      if (this.binderListDetails && this.binderListDetails.length > 0) {
+        this.selectedBinder = this.binderListDetails[0]; // Set the first binder as the selected one
+        console.log("Selected Binder:", this.selectedBinder);
+        this.selectedBinderCode= this.selectedBinder.code
+        this.currencyCode= this.selectedBinder.currency_code;
+        console.log("Selected Currency Code:", this.currencyCode);
+        this.loadAllCurrencies();
+      } else {
+        console.error("Binder list is empty or undefined");
+      }
       this.cdr.detectChanges();
     });
   }
@@ -941,7 +958,7 @@ export class QuickQuoteFormComponent {
 
     console.log("Selected Binder:", this.selectedBinder);
     console.log("Selected Currency Code:", this.currencyCode);
-    this.loadAllCurrencies(this.currencyCode);
+    // this.loadAllCurrencies(this.currencyCode);
 
   }
   /**
@@ -953,20 +970,25 @@ export class QuickQuoteFormComponent {
    * @method loadAllCurrencies
    * @return {void}
    */
-  loadAllCurrencies(code: number) {
+  loadAllCurrencies() {
     this.currencyService.getAllCurrencies().subscribe(data => {
       this.currencyList = data;
       log.info(this.currencyList, "this is a currency list");
-      const curr = this.currencyList.filter(currency => currency.id == code);
+      const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
       this.selectedCurrency = curr[0].name
       log.debug("Selected Currency:", this.selectedCurrency);
       this.selectedCurrencyCode = curr[0].id;
       log.debug("Selected Currency code:", this.selectedCurrencyCode);
-      this.personalDetailsForm.get('currencyCode').setValue(this.selectedCurrencyCode);
+      // this.personalDetailsForm.get('currencyCode').setValue(this.selectedCurrencyCode);
 
       this.cdr.detectChanges()
 
     })
+  }
+  onCurrencySelected(selectedValue: any){
+    this.selectedCurrencyCode = selectedValue.id;
+    log.debug("Selecetd currency from the dropdown:",this.selectedCurrencyCode)
+
   }
   /**
    * Loads cover types for the provided subclass code.
@@ -1360,6 +1382,8 @@ export class QuickQuoteFormComponent {
   computePremiumV2() {
     this.ngxSpinner.show();
     this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
+    this.personalDetailsForm.get('withEffectiveToDate').setValue(this.passedCoverToDate);
+
     if (this.selectedBranchCode) {
       this.personalDetailsForm.get('branchCode').setValue(this.selectedBranchCode);
     }
