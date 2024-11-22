@@ -835,7 +835,8 @@
       "recursive": "Rejelea",
       "rate_table": "Jedwali la Viwango",
       "absolute_range": "Kiwango Kamili",
-      "step_ranges": "Viwanja vya Hatua"
+      "step_ranges": "Viwanja vya Hatua",
+      "effective_date": "Tarehe ya kuanza kutumika"
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",

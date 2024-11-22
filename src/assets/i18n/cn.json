@@ -833,7 +833,8 @@
       "recursive": "递归",
       "rate_table": "费率表",
       "absolute_range": "绝对范围",
-      "step_ranges": "阶梯范围"
+      "step_ranges": "阶梯范围",
+      "effective_date": "生效日期"
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",
