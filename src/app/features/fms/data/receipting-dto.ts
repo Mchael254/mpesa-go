@@ -1,9 +1,17 @@
+export interface GenericResponse<F> {
+  data: F;
+  msg: string;
+  success: boolean;
+}
 
 export interface CurrencyDTO{
   "code": number;
   "symbol": string;
   "desc": string;
   "roundOff": number
+}
+export interface ExchangeRateDTO{
+  data:string;
 }
 export interface ReceiptNumberDTO{
   bankAccountCode: number;
@@ -20,6 +28,13 @@ export interface ReceiptNumberDTO{
 export interface ManualExchangeRateDTO{
   data: string;
 }
+// DTO for the response schema
+export interface ManualExchangeRateResponseDTO {
+  msg: string;
+  success: boolean;
+  data: string; // Adjust type if necessary (e.g., object or another type)
+}
+
 export interface DrawersBankDTO {
   bankName: string;
 branchName: string | null;
@@ -65,6 +80,21 @@ export interface PaymentModesDTO{
   bnkRateType: string;
 
 }
+export interface ChargesDTO{
+  id: number;
+  name: string;
+  accNo: string;
+  branchCode: number;
+  orgCode: number;
+  tempReceiptExpensesList: [
+    {
+      id: number;
+      receiptCharge: string;
+      amount: number;
+      receiptNo: number;
+    }
+    ]
+}
 export interface AccountTypeDTO{
       branchCode: number;
       userCode: number;
@@ -85,6 +115,76 @@ export interface AccountTypeDTO{
       rateApplicable: number;
       actTypeShtDesc: string;
       systemName: string;
+}
+// export interface ClientsDTO{
+//   branchCode: number;
+//   userCode:number;
+//   code: number;
+//   systemCode: number;
+//   accCode: number;
+//   name: string;
+//   coaAccNumber: string;
+//   coaAccOrgCode: number;
+//   coaBranchCode: number;
+//   receiptBank: number;
+//   chequeBank: number;
+//   subClass: string;
+//   active: string;
+//   receiptAccount:string;
+//   restrictGrossDebitRcpt: string;
+//   vatApplicable: string;
+//   rateApplicable: number;
+//   actTypeShtDesc: string;
+//   systemName: string;
+// }
+export interface ClientsDTO{
+  tableUsed: string;
+  code: number;
+  accountCode: number;
+  shortDesc: string;
+  name: string;
+  acctNo: string;
+  systemCode: number;
+  systemShortDesc: string;
+  receiptType: string;
+}
+export interface TransactionDTO{
+systemShortDescription: string;
+      transactionNumber: number;
+      transactionDate: Date;
+      referenceNumber: string;
+      transactionType: string;
+      clientCode: number;
+      amount: number;
+      balance: number;
+      commission: number;
+      withholdingTax: number;
+      transactionLevy: number;
+      serviceDuty: number;
+      settlementAmount: number;
+      narrations: string;
+      accountCode: string;
+      clientPolicyNumber: string;
+      receiptType: string;
+      extras: number;
+      policyHolderFund: number;
+      agentDiscount: number;
+      policyBatchNumber: number;
+      propertyCode: number;
+      clientName: string;
+      vat: number;
+      commissionPayable: number;
+      vatPayable: number;
+      healthFund: number;
+      roadSafetyFund: number;
+      clientVatAmount: number;
+      certificateCharge: number;
+      motorLevy: number;
+      originalInstallmentPremium: number;
+      outstandingPremiumBalance: number;
+      nextInstallmentNumber: number;
+      paidToDate: Date;
+      transmissionReferenceNumber: string;
 }
 export interface GroupBusinessAccount {
     accountNumber: string; // Primary key for this data type
