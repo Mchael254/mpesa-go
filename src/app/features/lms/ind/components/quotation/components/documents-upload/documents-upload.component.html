@@ -1,146 +1,112 @@
-<div class="mx-4">
-  <div style="display: flex; padding-top: 1rem; justify-content: end">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+ <!-- Main Container for Upload Documents Page -->
+<div class="container mx-4">
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-section d-flex justify-content-end py-3">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
-  <div class="row">
+
+  <!-- Stepper Navigation -->
+  <div class="row mb-3">
     <div class="col-md-12">
       <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     </div>
   </div>
 
-  <div style="position: relative">
-    <ngx-spinner name="product_view"
-      type="ball-clip-rotate-multiple"
-      [fullScreen]="false"
-      color="#00529B"
-      size="medium"
-      bdColor="rgba(255, 255, 255, 0.966)">
+  <!-- Content Wrapper with Spinner -->
+  <div class="document-upload-section position-relative">
+    <ngx-spinner 
+        name="product_view"
+        type="ball-clip-rotate-multiple"
+        [fullScreen]="false"
+        color="#00529B"
+        size="medium"
+        bdColor="rgba(255, 255, 255, 0.966)">
     </ngx-spinner>
 
-    <div style="font-size: 90%">
+    <div class="card shadow-sm p-3 mb-4">
+      <h6 class="card-title text-primary fw-bold fs-6 mb-3">{{ "lms.ind.quotations.documents_upload" | translate }}</h6>
+
       <form>
-        <div class="card mb-4">
-          <div class="card-body mx-2 mt-2">
-            <h6 class="text-primary" style="font-weight: 600; font-size: 14px">
-              {{ "lms.ind.quotations.documents_upload" | translate }}
-            </h6>
 
-            <div class="row">
-              <div class="col-md-10">
-                <div style="position: relative">
-                  <ngx-spinner
-                    name="upload_spinner"
-                    type="ball-clip-rotate-multiple"
-                    [fullScreen]="false"
-                    color="#00529B"
-                    size="medium"
-                    bdColor="rgba(255, 255, 255, 0.9)">
-                  </ngx-spinner> 
+        <div class="row g-3">
 
-                  <div class="row">
-                    <ng-container *ngFor="let document of documentList; let i = index">
-                      <div class="col-md-6">
-                        <div class="row py-2 align-items-center">
-                          <!-- Document Name and Icon -->
-                          <div class="col-lg-2 col-md-3 col-sm-12 d-flex flex-column align-items-left">
-                            <!-- Document Name -->
-                            <div class="text-left mb-1">
-                              {{ document.description.replaceAll('_', ' ') | titlecase }}
-                            </div>
-                            <!-- Show icons -->
-                            <div>
-                              <ng-container *ngIf="document.file_extension === 'pdf'; else imageIcon">
-                                <!-- PDF Icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
-                                  <path fill="#b30000" d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"/>
-                                  <path fill="#b30000" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"/>
-                                </svg> 
-                              </ng-container>
-                              <ng-template #imageIcon>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24">
-                                  <path fill="#0f52ba" d="M19 2H5a3.009 3.009 0 0 0-3 3v8.86l3.88-3.88a3.075 3.075 0 0 1 4.24 0l2.871 2.887l.888-.888a3.008 3.008 0 0 1 4.242 0L22 15.86V5a3.009 3.009 0 0 0-3-3z" opacity=".5"/>
-                                  <path fill="#0f52ba" d="M10.12 9.98a3.075 3.075 0 0 0-4.24 0L2 13.86V19a3.009 3.009 0 0 0 3 3h14a3 3 0 0 0 2.16-.92L10.12 9.98z"/>
-                                </svg>
-                              </ng-template>
-                            </div>                            
-                          </div>     
-                          <!-- File Upload/Progress -->
-                          <div class="col-lg-4 col-md-6 col-sm-12">
-                            <ng-container *ngIf="document.is_uploaded; else fileUpload">
-                              <!-- Completed label placed to the right above the progress bar -->
-                              <div class="d-flex justify-content-between mb-1">
-                                <span></span>
-                                <span class="text-success" style="font-size: 12px;">{{ "lms.ind.quotations.completed" | translate }}</span>
-                              </div>
-                              <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success" style="width: 100%; background-color: #28a745;"></div>
-                              </div>
-                            </ng-container>
-                            <!-- File Upload Component -->
-                            <ng-template #fileUpload>
-                              <p-fileUpload
-                                mode="basic"
-                                name="{{document.description}}"
-                                accept=".pdf"
-                                (onUpload)="onBasicUploadAuto($event)"
-                                (onSelect)="uploadFile($event, document.description)"
-                                [auto]="true"
-                                [chooseLabel]="'lms.ind.quotations.choose_file' | translate"
-                                [showUploadButton]="true"
-                                [showCancelButton]="true"
-                                (onError)="onError()"
-                                (onProgress)="onProgress($event)">
-                              </p-fileUpload>
-                            </ng-template>
-                          </div>
-                          <!-- Exempt / Upload Later Radio Buttons -->
-                          <ng-container *ngIf="!document.is_uploaded">
-                            <div class="col-lg-6 col-md-12 col-sm-12 d-flex justify-content-start align-items-center">
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" (change)="handleExempt(document)" name="uploadOptions{{i}}">
-                                <label class="form-check-label">{{ "lms.ind.quotations.exempt" | translate }}</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" (change)="handleUploadLater(document)" name="uploadOptions{{i}}"> 
-                                <label class="form-check-label">{{ "lms.ind.quotations.upload_later" | translate }}</label>
-                              </div>
-                            </div>
-                        </ng-container>
-                          <!-- Delete Uploaded File -->
-                          <div class="col-lg-1 col-md-12 col-sm-12" *ngIf="document.is_uploaded" style="cursor: pointer;" (click)="deleteDocumentFileById(document, i)">
-                            <i class="fas fa-trash-alt text-danger"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </ng-container>
-                    
-                  </div>
-                  <!-- No Document Message -->
-                  <ng-container *ngIf="documentList?.length === 0">
-                    <div style="color: red; padding-bottom: 1rem">
-                      {{ "lms.ind.quotations.no_file_upload_available" | translate }}.
-                    </div>
-                  </ng-container>
+          <ng-container *ngFor="let document of documentList; let i = index">
+            <div class="col-md-6 col-sm-12 document-item">
+
+              <!-- Document Title and Choose File Button on the Same Row -->
+              <div class="d-flex align-items-center">
+                <label [for]="'document' + i" class="document-title">
+                    {{ document.description.replaceAll('_', ' ') | titlecase }} <span class="text-danger">*</span>
+                </label>
+
+                <!-- Choose File Button, visible if not uploaded -->
+                <div class="form-group mb-0" *ngIf="!document.is_uploaded" style="margin-left: 10px;">
+                  <input type="file" [id]="'document' + i" #fileInput style="display: none;" (change)="uploadFile($event, document.description)" />
+                  <button type="button" class="btn choose-file" (click)="fileInput.click()">
+                    <span class="file-text">{{ "lms.ind.quotations.choose_file" | translate }}</span>
+                  </button>
                 </div>
               </div>
-            </div>           
-          </div>
+
+              <!-- Exempt / Upload Later Radio Buttons - Visible by default, hidden when uploaded -->
+              <div class="radio-options mt-2" *ngIf="!document.is_uploaded">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" (change)="handleExempt(document)" name="uploadOptions{{i}}" />
+                  <label class="form-check-label">{{ "lms.ind.quotations.exempt" | translate }}</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" (change)="handleUploadLater(document)" name="uploadOptions{{i}}" />
+                  <label class="form-check-label">{{ "lms.ind.quotations.upload_later" | translate }}</label>
+                </div>
+              </div>
+
+              <!-- File Information and Progress -->
+              <div *ngIf="document.is_uploaded" class="file-container mt-2 d-flex align-items-start gap-2">
+                <ng-container *ngIf="document.file_extension === 'pdf'; else imageIcon">
+                  <img src="assets/images/file-type-pdf.svg" class="pdf-icon" alt="PDF Icon">
+                </ng-container>
+                <ng-template #imageIcon>
+                  <img src="assets/images/file-type-image.svg" class="pdf-icon" alt="Image Icon">
+                </ng-template>
+
+                <div class="file-details flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="file-name text-primary">{{ document.description }}</span>
+                    <span class="completed text-success fw-light">{{ "lms.ind.quotations.completed" | translate }}</span>
+                  </div>
+                  <p-progressBar class="progress-bar" [value]="100">
+                    <ng-template pTemplate="content" let-value>
+                      <span>{{ value }}%</span>
+                    </ng-template>
+                  </p-progressBar>
+                </div>
+
+                <i class="pi pi-trash delete-icon text-danger fs-5" (click)="deleteDocumentFileById(document, i)"></i>
+              </div>
+
+            </div>
+          </ng-container>
+
         </div>
+
+        <!-- No Document Message -->
+        <ng-container *ngIf="documentList?.length === 0">
+          <div class="text-danger mt-3">
+              {{ "lms.ind.quotations.no_file_upload_available" | translate }}.
+          </div>
+        </ng-container>
+        
       </form>
     </div>
-    <div class="d-flex justify-content-between pb-4">
-      <div></div>
-      <div>
-        <button [ngClass]="validateDocument()?'btn-primary':'btn-danger'"
-            (click)="nextPage()"
-            data-bs-toggle="modal"
-            data-bs-target="#draft"
-            class="btn "
-            style="font-size: 13px;">
-          {{ "lms.ind.quotations.save_and_continue" | translate }}
-        </button>
-      </div>
+
+     <!-- Navigation Button -->
+    <div class="d-flex justify-content-end mt-4">
+      <button [ngClass]="validateDocument() ? 'btn-primary' : 'btn-danger'" (click)="nextPage()" data-bs-toggle="modal" data-bs-target="#draft" class="btn btn-lg">
+        {{ "lms.ind.quotations.save_and_continue" | translate }}
+      </button>
     </div>
   </div>
+  
 </div>
