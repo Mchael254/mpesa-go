@@ -1,3 +1,80 @@
+button {
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+.document-title {
+  color: #333;
+  font-size: 18px;
+  font-weight: 400;
+  margin-right: 4px; 
+}
+
+.pdf-icon {
+   width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.choose-file {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  background-color: #FFF;
+  color: #00529B; 
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.choose-file:hover {
+  /* background-color: #00529B; */
+  color: #FFFFFF; 
+  box-shadow: 0px 4px 8px rgba(0, 82, 155, 0.3); 
+  transform: scale(1.05); 
+}
+
+.form-group {
+  margin: 0; 
+}
+
+.file-text {
+  color: #00529B;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.document-item {
+  align-items: center; 
+}
+
+.delete-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  color: red;
+}
+
+:host ::ng-deep .p-progressbar-value {
+  border-radius: 10px;
+  background: #138700;
+  font-size: 0px;
+}
+
+:host ::ng-deep .p-progressbar {
+  width: 100%;
+  height: 3px;
+}
+
 :host ::ng-deep .p-button {
     color: #3B82F6;
     background: white;
@@ -10,4 +87,163 @@
 
 :host ::ng-deep plusicon.p-element.p-icon-wrapper.ng-star-inserted {
     display: none;
+}
+.file-details {
+  flex-grow: 1;
+  position: relative;
+}
+
+.file-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  white-space: nowrap;
+  margin-top: 10px;
+  width: 70%;
+}
+
+.file-name-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.file-name {
+  color: #00529B;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-right: 10px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.completed {
+  color: #138700;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.progress-bar {
+  width: 100%;
+}
+
+.delete-icon {
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  button {
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+
+  .document-title {
+    font-size: 16px;
+    margin-right: 2px;
+  }
+
+  .pdf-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  .choose-file {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .form-group {
+    margin: 5px 0;
+  }
+
+  .file-text {
+    font-size: 12px;
+  }
+
+  .document-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .file-container {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .file-name-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-name {
+    font-size: 10px;
+    margin-right: 5px;
+  }
+
+  .completed {
+    font-size: 10px;
+  }
+
+  .progress-bar {
+    height: 2px;
+  }
+
+  .delete-icon {
+    font-size: 14px;
+    margin-left: 5px;
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  button {
+    padding: 4px 12px;
+    font-size: 10px;
+  }
+
+  .document-title {
+    font-size: 14px;
+  }
+
+  .choose-file {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .pdf-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+  }
+
+  .file-container {
+    gap: 5px;
+  }
+
+  .file-name {
+    font-size: 8px;
+  }
+
+  .completed {
+    font-size: 8px;
+  }
+
+  .delete-icon {
+    font-size: 12px;
+  }
 }
