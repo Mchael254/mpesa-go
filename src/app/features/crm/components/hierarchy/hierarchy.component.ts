@@ -269,7 +269,11 @@ export class HierarchyComponent implements OnInit {
         description: this.selectedHierarchyType.description,
         accType: this.selectedHierarchyType.accountTypeCode,
         headAccType: this.selectedHierarchyType.managerCode,
+<<<<<<< HEAD
         type: this.selectedHierarchyType.type === 'Other Hierarchy' ? 'O' : 'C',
+=======
+        type: this.selectedHierarchyType.type,
+>>>>>>> 005a28ac1b0ed191c11ee6cfe9ae6b683f36e457
         intermediary: this.selectedHierarchyType.intermediaryCode,
         payIntermediary: this.selectedHierarchyType.payIntermediary
 
@@ -318,16 +322,24 @@ export class HierarchyComponent implements OnInit {
  */
   editHierarchyLevels() {
     this.editMode = !this.editMode;
+<<<<<<< HEAD
     log.info("select>>", this.selectedHierarchyLevel);
 
     const filterLevel = this.hierarchyLevelsEnumData.find(product => product.name === this.selectedHierarchyLevel.type);
+=======
+    log.info("select>>", this.selectedHierarchyLevel)
+>>>>>>> 005a28ac1b0ed191c11ee6cfe9ae6b683f36e457
 
     if (this.selectedHierarchyLevel) {
       this.openDefineHierarchyLevelsModal();
       this.hierarchyLevelsForm.patchValue({
         desc: this.selectedHierarchyLevel.description,
         ranking: this.selectedHierarchyLevel.ranking,
+<<<<<<< HEAD
         type: filterLevel?.value
+=======
+        type: this.selectedHierarchyLevel.type
+>>>>>>> 005a28ac1b0ed191c11ee6cfe9ae6b683f36e457
       })
     }
     else {
@@ -547,8 +559,13 @@ export class HierarchyComponent implements OnInit {
             'success',
             'Successfully deleted a hierarchy level'
           );
+<<<<<<< HEAD
           this.fetchHierarchyLevels(this.selectedHierarchyType);
           this.selectedHierarchyType = null;
+=======
+          this.selectedHierarchyType = null;
+          this.fetchHierarchyLevels(this.selectedHierarchyType?.code);
+>>>>>>> 005a28ac1b0ed191c11ee6cfe9ae6b683f36e457
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
