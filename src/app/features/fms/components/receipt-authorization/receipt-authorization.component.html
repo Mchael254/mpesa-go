@@ -1,0 +1,312 @@
+
+<div class="base-content-section ">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/dashboard'
+      },
+      {
+        label: 'authorize',
+        url: '/home/fms/components/receipt_authorization'
+      },
+      {
+        label: 'receipting',
+        url: ''
+      }
+    ]">
+
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+
+
+
+<div class="container mt-1 mb-2 ">
+  <div class="scroll-container bg-white">
+    <h1 class="text-start fs-4 mt-1 mb-2">{{ 'fms.receipt_authorization.title' | translate }}</h1>
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'normal'"
+          (click)="setActiveTab('normal')"
+          id="normal-tab"
+          data-bs-toggle="tab"
+          href="#normal"
+          role="tab"
+          aria-controls="normal"
+          aria-selected="true">
+          {{ 'fms.receipt_authorization.normal_tab' | translate }}
+        </a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a
+          class="nav-link"
+          [class.active]="activeTab === 'batch'"
+          (click)="setActiveTab('batch')"
+          id="batch-tab"
+          data-bs-toggle="tab"
+          href="#batch"
+          role="tab"
+          aria-controls="batch"
+          aria-selected="false">
+          {{ 'fms.receipt_authorization.batch_tab' | translate }}
+        </a>
+      </li>
+    </ul>
+    
+    <div class="tab-content mt-3">
+      <div class="tab-pane fade show active" id="normal" role="tabpanel" aria-labelledby="normal-tab">
+        <div class="mb-3" *ngIf="error">
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        </div>
+        <div class="row align-items-center mb-3 justify-content-between">
+          <!-- Left: Search Input -->
+          <div class="col-md-3 d-flex align-items-center">
+            <label for="search-input" class="form-label text-black me-2 mb-0">
+              {{ 'fms.receipt_authorization.search' | translate }}
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="search-input" 
+              placeholder="by receipt no/policy no" 
+              [(ngModel)]="searchValue" 
+              (input)="searchNormalReceipts()" 
+            />
+          </div>
+        
+          <!-- Right: Action Buttons -->
+          <div class="col-md-6 d-flex justify-content-end">
+            <!-- <button class="btn btn-primary me-2" 
+                    (click)="selectAllNormalReceipts()">
+              {{ 'fms.receipt_authorization.select_all' | translate }}
+            </button> -->
+            <button class="btn btn-primary me-2" 
+                    (click)="authorizeAllNormalReceipts()">
+              {{ 'fms.receipt_authorization.authorize_all' | translate }}
+            </button>
+            <button class="btn btn-danger" 
+                    (click)="rejectAllSelectedReceipts()">
+              {{ 'fms.receipt_authorization.reject_all' | translate }}
+            </button>
+          </div>
+        </div>
+        
+        
+        <p-table [value]="filteredNormalReceipts" responsiveLayout="scroll" dataKey="receiptNo" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]"  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            styleClass="p-datatable-gridlines">
+            <ng-template pTemplate="header" >
+              <tr>
+                <th scope="col" class="checkbox-column custom-header" ><input type="checkbox" (click)="selectAllNormalReceipts()"></th>
+                <th scope="col" class="custom-header"  (click)="sortNormalReceipts('receiptNo')">{{ 'fms.receipt_authorization.receipt_no' | translate }}</th>
+                <th scope="col" class="custom-header"  (click)="sortNormalReceipts('policyNo')">{{ 'fms.receipt_authorization.policy_no' | translate }}</th>
+                <th scope="col" class="custom-header memo" (click)="sortNormalReceipts('paymentMemo')">{{ 'fms.receipt_authorization.payment_memo' | translate }}</th>
+                <th scope="col" class="custom-header" (click)="sortNormalReceipts('amount')">{{ 'fms.receipt_authorization.amount' | translate }}</th>
+                <th scope="col" class="custom-header" (click)="sortNormalReceipts('captureDate')">{{ 'fms.receipt_authorization.capture_date' | translate }}</th>
+                <th scope="col" class="custom-header" (click)="sortNormalReceipts('authorizationDate')">{{ 'fms.receipt_authorization.authorization_date' | translate }}</th>
+                <th scope="col" class="custom-header" >{{ 'fms.receipt_authorization.status' | translate }}</th>
+                <th scope="col" class="custom-header" >{{ 'fms.receipt_authorization.actions' | translate }}</th>
+              </tr>
+            </ng-template>
+            
+          <ng-template pTemplate="body" let-receipt>
+            <tr (click)="selectNormalReceipt(receipt)" [class.table-active]="receipt === selectedNormalReceipt">
+              <td scope="row"><input type="checkbox"  class="form-check-input custom-checkbox" [(ngModel)]="receipt.selected"></td>
+              <td>{{ receipt.receiptNo }}</td>
+              <td>{{ receipt.policyNo }}</td>
+              <td>{{ receipt.paymentMemo }}</td>
+              <td>{{ receipt.amount }}</td>
+              <td>{{ receipt.captureDate | date }}</td>
+              <!-- <td><input type="date" formControlName="authorization_date"></td> -->
+              <td> 
+              <input 
+                type="date" 
+                formControlName="authorizationDate" 
+                [min]="minDate" 
+                
+                
+              /></td>
+              <td>{{ receipt.status }}</td>
+              <!-- <td>
+                <div class="d-flex">
+                <button class="btn btn-primary" (click)="authorizeNormalReceipt(receipt)" *ngIf="receipt.status === 'Pending'">{{ 'fms.receipt_authorization.authorize' | translate }}</button>
+                <button class="btn btn-danger" (click)="rejectNormalReceipt(receipt)" *ngIf="receipt.status === 'Pending'">{{ 'fms.receipt_authorization.reject' | translate }}</button>
+              </div>
+              </td> -->
+              <td>
+                <div class="dropdown">
+                  <!-- Icon button that toggles the dropdown -->
+                  <button 
+                    class="btn btn-light" 
+                    id="dropdownMenuButton" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                  >
+                    <i class="pi pi-ellipsis-v"></i>
+                  </button>
+              
+                  <!-- Dropdown menu for authorize and reject actions -->
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li>
+                      <button 
+                        class="dropdown-item text-primary" 
+                        (click)="authorizeReceipt(receipt, 'normal')"
+                        *ngIf="receipt.status === 'Pending'"
+                      >
+                        {{ 'fms.receipt_authorization.authorize' | translate }}
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        class="dropdown-item text-danger" 
+                        (click)="rejectReceipt(receipt, 'normal')"
+                        *ngIf="receipt.status === 'Pending'"
+                      >
+                        {{ 'fms.receipt_authorization.reject' | translate }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+              
+              
+              
+              
+            </tr>
+          </ng-template>
+        </p-table>
+   
+        
+        <div class="modal fade" id="rejectionRemarksModal" tabindex="-1" aria-labelledby="rejectionRemarksModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="rejectionRemarksModalLabel">{{ 'fms.receipt_authorization.rejection_remarks' | translate }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="normalReceiptForm">
+                  <div class="mb-3">
+                    <label for="rejectionRemarks" class="form-label">{{ 'fms.receipt_authorization.rejection_remarks' | translate }}</label>
+                    <textarea class="form-control" id="rejectionRemarks" formControlName="rejectionRemarks"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'fms.receipt_authorization.close' | translate }}</button>
+                <button type="button" class="btn btn-danger" (click)="confirmRejectNormalReceipt()">{{ 'fms.receipt_authorization.reject' | translate }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="tab-pane fade" id="batch" role="tabpanel" aria-labelledby="batch-tab">
+        <div class="mb-3" *ngIf="error">
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        </div>
+        <div class="row mb-3 align-items-center justify-content-between">
+          <!-- Left: Search Label and Input Field -->
+          <div class="col-md-3 d-flex align-items-center">
+            <label for="search-input" class="form-label text-black me-2 mb-0">
+              {{ 'fms.receipt_authorization.search' | translate }}
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="search-input" 
+              placeholder="by statement no/amount"
+              [(ngModel)]="searchValue" 
+              (input)="searchBatchReceipts()" 
+            />
+          </div>
+        
+          <!-- Right: Action Buttons -->
+          <div class="col-md-6 d-flex justify-content-end me-4">
+            <!-- <button class="btn btn-primary me-2" 
+                    (click)="selectAllBatchReceipts()">
+              {{ 'fms.receipt_authorization.select_all' | translate }}
+            </button> -->
+            <button class="btn btn-primary me-2" 
+                    (click)="authorizeAllBatchReceipts()">
+              {{ 'fms.receipt_authorization.authorize_all' | translate }}
+            </button>
+            <button class="btn btn-danger" 
+                    (click)="rejectAllSelectedReceipts()">
+              {{ 'fms.receipt_authorization.reject_all' | translate }}
+            </button>
+          </div>
+        </div>
+        
+        <p-table [value]="filteredBatchReceipts" responsiveLayout="scroll" dataKey="statementNo" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]"  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            styleClass="p-datatable-gridlines">
+          <ng-template pTemplate="header">
+            <tr >
+              <th scope="col"><input type="checkbox"  (click)="selectAllBatchReceipts()"></th>
+              <th scope="col" (click)="sortBatchReceipts('statementNo')">{{ 'fms.receipt_authorization.statement_no' | translate }}</th>
+              <th scope="col" (click)="sortBatchReceipts('totalAmount')">{{ 'fms.receipt_authorization.total_amount' | translate }}</th>
+              <th scope="col">{{ 'fms.receipt_authorization.status' | translate }}</th>
+              <th scope="col">{{'fms.receipt_authorization.actions' | translate}}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-receipt>
+            <tr (click)="selectBatchReceipt(receipt)" [class.table-active]="receipt === selectedBatchReceipt">
+              <td scope="row"><input type="checkbox"  class="form-check-input custom-checkbox" [(ngModel)]="receipt.selected"></td>
+              <td>{{ receipt.statementNo }}</td>
+              <td>{{ receipt.totalAmount }}</td>
+              <td>{{ receipt.status }}</td>
+              
+             
+              <!-- <td>
+                <button class="btn btn-primary" (click)="authorizeBatchReceipt(receipt)" *ngIf="receipt.status === 'Pending'">{{ 'fms.receipt_authorization.authorize' | translate }}</button>
+                <button class="btn btn-danger" (click)="rejectBatchReceipt(receipt)" *ngIf="receipt.status === 'Pending'">{{ 'fms.receipt_authorization.reject' | translate }}</button>
+              </td> -->
+              <td>
+                <div class="dropdown">
+                  <!-- Icon button that toggles the dropdown for batch receipts -->
+                  <button 
+                    class="btn btn-light" 
+                    id="batchDropdownButton" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                  >
+                    <i class="pi pi-ellipsis-v"></i>
+                  </button>
+              
+                  <!-- Dropdown menu for authorize and reject actions specific to batch receipts -->
+                  <ul class="dropdown-menu" aria-labelledby="batchDropdownButton">
+                    <li>
+                      <button 
+                        class="dropdown-item text-primary" 
+                        (click)="authorizeReceipt(receipt, 'batch')"
+                        *ngIf="receipt.status === 'Pending'"
+                      >
+                        {{ 'fms.receipt_authorization.authorize' | translate }}
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        class="dropdown-item text-danger" 
+                        (click)="rejectReceipt(receipt, 'batch')"
+                        *ngIf="receipt.status === 'Pending'"
+                      >
+                        {{ 'fms.receipt_authorization.reject' | translate }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+              
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
