@@ -242,3 +242,30 @@ export interface CrmApiResponse {
   message: string;
   status: number;
 }
+
+export interface OrgDivisionLevelTypesDTO {
+  accountTypeCode: number,
+  code: number,
+  description: string,
+  intermediaryCode: number,
+  managerCode: number,
+  payIntermediary: string,
+  systemCode: number,
+  type: string
+}
+
+export interface OrgDivisionLevelsDTO {
+  code: number,
+  description: string,
+  divisionLevelTypeCode: number,
+  ranking: number,
+  type: string
+}
+
+export interface OrgPreviousSubDivHeadsDTO {
+  agentCode: number,
+  code: number,
+  subdivisionCode: string,
+  wef: string,
+  wet: string
+}
