@@ -5,10 +5,10 @@ export interface GenericResponse<F> {
 }
 
 export interface CurrencyDTO{
-  "code": number;
-  "symbol": string;
-  "desc": string;
-  "roundOff": number
+  code: number;
+  symbol: string;
+  desc: string;
+  roundOff: number;
 }
 export interface ExchangeRateDTO{
   data:string;
@@ -32,7 +32,7 @@ export interface ManualExchangeRateDTO{
 export interface ManualExchangeRateResponseDTO {
   msg: string;
   success: boolean;
-  data: string; // Adjust type if necessary (e.g., object or another type)
+  data: string | object; // Adjust type if necessary (e.g., object or another type)
 }
 
 export interface DrawersBankDTO {
@@ -95,6 +95,15 @@ export interface ChargesDTO{
     }
     ]
 }
+export interface ChargeManagementDTO {
+  addEdit: string;
+  receiptExpenseId: number;
+  receiptNo: number;
+  receiptChargeId: number;
+  receiptChargeAmount: number;
+  suspenseRct: string;
+}
+
 export interface AccountTypeDTO{
       branchCode: number;
       userCode: number;
