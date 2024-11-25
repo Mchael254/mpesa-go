@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse } from '../data/receipting-dto';
+import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO } from '../data/receipting-dto';
 import { ApiService } from '../../../shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
 import { HttpParams } from '@angular/common/http';
@@ -34,9 +34,9 @@ export class ReceiptService {
       params
     );
     }
-    getReceiptNumber(branchCode:number,userCode:number):Observable<{data:ReceiptNumberDTO[]}>{
+    getReceiptNumber(branchCode:number,userCode:number):Observable<ReceiptNumberDTO[]>{
       const params = new HttpParams().set('branchCode',`${branchCode}`).set('userCode',`${userCode}`);
-      return this.api.GET<{data:ReceiptNumberDTO[]}>(
+      return this.api.GET<ReceiptNumberDTO[]>(
         `receipts/get-receipt-no`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
@@ -74,7 +74,7 @@ getPaymentModes():Observable< {data: PaymentModesDTO[]}> {
     //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     //   );
     // }
-    getManualExchangeRate(): Observable<GenericResponse<string>> {
+    getManualExchangeRateParameter(): Observable<GenericResponse<string>> {
       return this.api.GET<GenericResponse<string>>(
         `parameters/manual-exchange-rate-setup`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
@@ -103,14 +103,17 @@ getExchangeRate(selectedCurrency: number, orgCode: number): Observable<GenericRe
 }
 
 
-     // New method for posting manual exchange rate
-     postManualExchangeRate(exchangeRate: number): Observable<ManualExchangeRateResponseDTO> {
-      return this.api.POST<ManualExchangeRateResponseDTO>(
-        `currencies/set-manual-rate`,
-        { exchangeRate },
-        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-      );
-    }
+postManualExchangeRate( selectedCurrency: number,
+  branchCode: number,
+  userName: string,
+  newCurrencyExchangeRateAmount: number): Observable<ManualExchangeRateResponseDTO> {
+  return this.api.POST<ManualExchangeRateResponseDTO>(
+    `currencies/set-manual-rate`,
+    {  selectedCurrency,branchCode, userName,newCurrencyExchangeRateAmount },
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL // Ensure this is properly set
+  );
+}
+
     
 
     getCharges(orgCode:number,brhCode:number):Observable<{data:ChargesDTO[]}>{
@@ -124,6 +127,15 @@ getExchangeRate(selectedCurrency: number, orgCode: number): Observable<GenericRe
       );
 
     }
+
+    postChargeManagement(data: ChargeManagementDTO): Observable<any> {
+      return this.api.POST<any>(
+        'charges/manage',
+         data,
+          API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
+    }
+
+    
     getAccountTypes(orgCode:number,userCode:number,branchCode:number):Observable<{data:AccountTypeDTO[]}>{
       const params = new HttpParams().set('orgCode',`${orgCode}`).set('usrCode',`${userCode}`).set('branchCode',`${branchCode}`)
      return this.api.GET<{data:AccountTypeDTO[]}>(
