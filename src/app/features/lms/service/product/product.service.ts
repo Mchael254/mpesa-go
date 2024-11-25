@@ -69,12 +69,12 @@ export class ProductService {
   }
 
   getListOfProductCoverTypeByProductCode(prodOptionCode: number) {
-    return this.api.GET(`product-cover-types/product/${prodOptionCode}`).pipe(
+    return this.api.GET(`products/${prodOptionCode}/cover-types`).pipe(
       map((_prod_cover_type: any) => {
         return _prod_cover_type;
       })
     );
-  }
+  } 
 
   getListOfProductTermByProductCode(
     prodCode: number,

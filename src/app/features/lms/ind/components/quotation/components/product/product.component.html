@@ -1,84 +1,108 @@
-<div class="container-fluid text-black">
-  <div style="display: flex; padding-top: 1rem; justify-content: end">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+<!-- Main Container for Product Page -->
+<div class="container-fluid">
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-container">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
+
+  <!-- Stepper Navigation -->
   <div class="row">
     <div class="col-md-12">
       <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
     </div>
   </div>
-  <div style="position: relative;">
 
-    <ngx-spinner name="product_view" type="ball-clip-rotate-multiple" 
-        [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)">
+  <!-- Content Wrapper with Spinner -->
+  <div class="spinner-container">
+    <!-- Spinner to indicate loading status for Client Details View -->
+    <ngx-spinner 
+        name="product_view" 
+        type="ball-clip-rotate-multiple" 
+        [fullScreen]="false" 
+        color="#00529B" 
+        size="medium" 
+        bdColor = "rgba(255, 255, 255, 0.966)">
     </ngx-spinner> 
 
-    <div class="full-border fadeIn">
-      <div class="fw-medium pb-2 fs-6 d-flex justify-content-center" style="color: var(--primary-color);">{{ "lms.ind.quotations.product_selection" | translate }}</div>
+    <div class="full-border">
+      <div class="section-header text-center">{{ "lms.ind.quotations.product_selection" | translate }}</div>
+
       <div [formGroup]="productForm">
         <div>
-          <div class="pt-2" style="color: var(--primary-color); padding: 0 0 0.4rem 0rem; font-weight: 500;">{{ "lms.ind.quotations.product_details" | translate }}</div>
+          <div class="section-header">{{ "lms.ind.quotations.product_details" | translate }}</div>
+
           <div class="row">
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+            <!-- Product Dropdown -->
+            <div class="col-md-4 col-sm-12">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.product" | translate }}</label>
-              <select formControlName="product" class="form-select" (change)="selectProduct($event)">
+              <select class="form-select" formControlName="product" (change)="selectProduct($event)">
                 <option [value]="" selected disabled>{{ "lms.ind.quotations.select_product" | translate }}</option>
                 <ng-container *ngFor="let product of productList">
-                  <option [value]="product?.code">{{ product?.description | titlecase }}</option>
+                  <option [value]="product?.code">
+                      {{ product?.description | titlecase }}
+                  </option>
                 </ng-container>
               </select>
             </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+            <!-- Option Dropdown -->
+            <div class="col-md-4 col-sm-12">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.option" | translate }}</label>
-              <select formControlName="option" class="form-select" (change)="selectProductOption($event)">
+              <select class="form-select" formControlName="option" (change)="selectProductOption($event)">
                 <option [value]="" selected disabled>{{ "lms.ind.quotations.select_option" | translate }}</option>
-                  <ng-container *ngFor="let option of productOptionList">
-                    <option [value]="option['code']">{{ option.desc | titlecase }}</option>
-                  </ng-container>
+                <ng-container *ngFor="let option of productOptionList">
+                  <option [value]="option['code']">
+                      {{ option.desc | titlecase }}
+                  </option>
+                </ng-container>
               </select>
             </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+            <!-- Term Dropdown -->
+            <div class="col-md-4 col-sm-12">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.term" | translate }}</label>
-                <select formControlName="term" class="form-select" (change)="selectProductTerm($event)">
+                <select class="form-select" formControlName="term" (change)="selectProductTerm($event)">
                   <option [value]="" selected disabled>{{ "lms.ind.quotations.select_term" | translate }}</option>
                   <ng-container *ngFor="let term of productTermList()['prod_terms']">
-                    <option [value]="term['term']" [selected]="term['term'] === 0">{{ term["term"] === 0 ? term["desc"] : term["term"] }}</option>
+                    <option [value]="term['term']" [selected]="term['term'] === 0">
+                        {{ term["term"] === 0 ? term["desc"] : term["term"] }}
+                    </option>
                   </ng-container>
                 </select>
             </div>
 
           </div>
 
-          <div class="row">
+           <div class="row align-items-center margin-top-lg">
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4 text-black">
-              <div>&nbsp;</div>
-                <label class="form-check-label required">{{ coverageOptionLabel }}</label>
-              <div>
-                <!-- Radio buttons only visible when calculate_from is 'B' -->
-                <div class="mb-1" *ngIf="calculateFrom === 'B'">
+            <!-- Coverage Option Dropdown -->
+            <div class="col-md-4 col-sm-12">
+              <div class="d-flex align-items-center">
+                <!-- Label aligned with radio buttons in the same row -->
+                <label [for]="'Label'" class="required text-black">{{ coverageOptionLabel }}</label>
+
+                <!-- Radio buttons in the same row as label and only visible when calculate_from is 'B' -->
+                <div class="d-flex" *ngIf="calculateFrom === 'B'">
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="sum_as" formControlName="sa_prem_select" value="SA"/>
+                    <input class="form-check-input" type="radio" id="sum_as" formControlName="sa_prem_select" value="SA" />
                     <label class="form-check-label" for="sum_as">{{ "lms.ind.quotations.sum_assured" | translate }}</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="prem" formControlName="sa_prem_select" value="P"/>
+                    <input class="form-check-input" type="radio" id="prem" formControlName="sa_prem_select" value="P" />
                     <label class="form-check-label" for="prem">{{ "lms.ind.quotations.premium" | translate }}</label>
                   </div>
                 </div>
-                <!-- The input field for sum assured or premium -->
-                <input type="text" class="form-control" formControlName="sa_prem_amount" style="padding-right: 2rem"/>
               </div>
+              <!-- Input field closer to the label and radio buttons -->
+              <input type="text" class="form-control mt-1 input-padding" formControlName="sa_prem_amount" />
             </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
-              <div>&nbsp;</div>
+            <!-- Frequency of Payment Dropdown-->
+            <div class="col-md-4 col-sm-12 margin-top-sm">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.frequency_of_payment" | translate }}</label>
-                <select formControlName="freq_payment" class="form-select">
+                <select class="form-select" formControlName="freq_payment">
                   <option [value]="" selected disabled>{{ "lms.ind.quotations.select_frequency_of_payment" | translate }}</option>
                   <ng-container *ngFor="let freq of paymentOfFrequencyList">
                     <option [value]="freq?.sht_desc">{{ freq?.desc | titlecase }}</option>
@@ -86,41 +110,54 @@
                 </select>
             </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
-              <div>&nbsp;</div>
+            <!-- Proposal Date -->
+            <div class="col-md-4 col-sm-12 margin-top-sm">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.proposal_date" | translate }}</label>
-              <p-calendar ngDefaultControl formControlName="proposal_date" dateFormat="dd/mm/yy" 
-                  [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
-                <ng-template pTemplate="header">
-                </ng-template>
+              <p-calendar 
+                  ngDefaultControl 
+                  formControlName="proposal_date" 
+                  dateFormat="dd/mm/yy" 
+                  [showIcon]="true" 
+                  [showButtonBar]="true" 
+                  (ngModelChange)="selectDate()">
+                <ng-template pTemplate="header"></ng-template>
               </p-calendar>
             </div>
 
           </div>
 
-          <div class="row">
+          <div class="row align-items-center margin-top-lg">
             
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+            <!-- Proposal Sign Date -->
+            <div class="col-md-4">
               <label [for]="'Label'" class="required text-black">{{ "lms.ind.quotations.proposal_sign_date" | translate }}</label>
-              <p-calendar ngDefaultControl formControlName="proposal_sign_date" dateFormat="dd/mm/yy" 
-                  [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
-                <ng-template pTemplate="header" >
-                </ng-template>
+              <p-calendar 
+                  ngDefaultControl 
+                  formControlName="proposal_sign_date" 
+                  dateFormat="dd/mm/yy" 
+                  [showIcon]="true" 
+                  [showButtonBar]="true" 
+                  (ngModelChange)="selectDate()">
+                <ng-template pTemplate="header" ></ng-template>
               </p-calendar>
             </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+            <!-- Agent Dropdown-->
+            <div class="col-md-4">
               <div class="label">
                 <label for="" class="quote-label">{{ "lms.ind.quotations.agent" | translate }}</label>
               </div>
               <div>
                 <p-dropdown id="value"
-                    [options]="agentList" [optionLabel]="'details'"
-                    [dataKey]="'value'" [editable]="true"
+                    [options]="agentList" 
+                    [optionLabel]="'details'"
+                    [dataKey]="'value'" 
+                    [editable]="true"
                     [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                     [placeholder]="'lms.ind.quotations.select_or_type_agent_name' | translate"
-                    (onChange)="selectClient($event)" 
-                    formControlName="agent" class="select">
+                    formControlName="agent" 
+                    class="select"
+                    (onChange)="selectClient($event)">
                 </p-dropdown>
               </div>
             </div>
@@ -134,9 +171,13 @@
 
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingOne">
-                <button class="accordion-button collapsed" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                    aria-expanded="false" aria-controls="flush-collapseOne">
+                <button 
+                    class="accordion-button collapsed" 
+                    type="button"
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#flush-collapseOne"
+                    aria-expanded="false" 
+                    aria-controls="flush-collapseOne">
                   {{ "lms.ind.quotations.cover_types" | translate }}
                 </button>
               </h2>
@@ -147,7 +188,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 mb-2">
                         <div class="form-check">
                           <input class="form-check-input" type="checkbox"
-                              [value]="cover['selected']" [id]="i" (change)="coverTypeState(cover)"/>
+                              [checked]="cover['selected']" [id]="i" (change)="coverTypeState(cover)"/>
                             <label class="form-check-label" [for]="i">{{ cover["cover_type_description"] | titlecase }}</label>
                         </div>
                       </div>
@@ -162,7 +203,7 @@
 
           </div>
 
-          <div>
+          <div *ngIf="isEscalationAllowed">
             <div class="text-black">
               <div style="color: var(--primary-color); padding: 0 0 0.4rem 0rem; font-weight: 500;">
                 {{ "lms.ind.quotations.escalation" | translate }}
@@ -191,7 +232,7 @@
                         <option [value]="" selected disabled>{{ "lms.ind.quotations.select_option" | translate }}</option>
                         <ng-container>
                           <option *ngFor="let option of escalationOption" [value]="option.value">
-                            {{ option.label }}
+                              {{ option.label }}
                           </option>
                         </ng-container>
                       </select>
@@ -205,7 +246,7 @@
                         <option [value]="" selected disabled>{{ "lms.ind.quotations.select_rate" | translate }}</option>
                         <ng-container *ngFor="let rate of escalationRate">
                           <option [value]="rate.code">
-                            {{ rate.rate }}
+                              {{ rate.rate }}
                           </option>
                         </ng-container>
                       </select>
@@ -220,7 +261,7 @@
           <div>
             <div class="text-black pt-2">
               <div style="color: var(--primary-color); padding: 0 0 0.4rem 0rem; font-weight: 500;">
-                {{ "lms.ind.quotations.coinsurance" | translate }}
+                  {{ "lms.ind.quotations.coinsurance" | translate }}
               </div>
               <div class="col fadeIn">
                 <div class="w-75">
@@ -245,7 +286,7 @@
                         <option [value]="" selected disabled>{{ "lms.ind.quotations.select_leader" | translate }}</option>
                         <ng-container *ngFor="let option of leaderOption">
                           <option [value]="option.code">
-                            {{ option.short_description }} - {{ option.name | titlecase  }}
+                              {{ option.short_description }} - {{ option.name | titlecase  }}
                           </option>
                         </ng-container>
                       </select>
