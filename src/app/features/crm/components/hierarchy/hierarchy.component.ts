@@ -269,7 +269,7 @@ export class HierarchyComponent implements OnInit {
         description: this.selectedHierarchyType.description,
         accType: this.selectedHierarchyType.accountTypeCode,
         headAccType: this.selectedHierarchyType.managerCode,
-        type: this.selectedHierarchyType.type,
+        type: this.selectedHierarchyType.type === 'Other Hierarchy' ? 'O' : 'C',
         intermediary: this.selectedHierarchyType.intermediaryCode,
         payIntermediary: this.selectedHierarchyType.payIntermediary
 
@@ -318,14 +318,16 @@ export class HierarchyComponent implements OnInit {
  */
   editHierarchyLevels() {
     this.editMode = !this.editMode;
-    log.info("select>>", this.selectedHierarchyLevel)
+    log.info("select>>", this.selectedHierarchyLevel);
+
+    const filterLevel = this.hierarchyLevelsEnumData.find(product => product.name === this.selectedHierarchyLevel.type);
 
     if (this.selectedHierarchyLevel) {
       this.openDefineHierarchyLevelsModal();
       this.hierarchyLevelsForm.patchValue({
         desc: this.selectedHierarchyLevel.description,
         ranking: this.selectedHierarchyLevel.ranking,
-        type: this.selectedHierarchyLevel.type
+        type: filterLevel?.value
       })
     }
     else {
@@ -545,8 +547,8 @@ export class HierarchyComponent implements OnInit {
             'success',
             'Successfully deleted a hierarchy level'
           );
+          this.fetchHierarchyLevels(this.selectedHierarchyType);
           this.selectedHierarchyType = null;
-          this.fetchHierarchyLevels(this.selectedHierarchyType?.code);
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
