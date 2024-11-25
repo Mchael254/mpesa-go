@@ -2,7 +2,7 @@ import { Component, OnInit,NgZone,ViewChild, ElementRef, Renderer2 } from '@angu
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ReceiptingService } from '../../services/receipting.service';
-import {DrawersBankDTO,NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, CurrencyDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO} from '../../data/receipting-dto'
+import {DrawersBankDTO,NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, CurrencyDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
 import {AuthService} from 'src/app/shared/services/auth.service';
@@ -34,8 +34,8 @@ minDate: string = '';
     private chargesModal: Modal | undefined;
     chargeTypes: string[]=[];
   // chargeTypes: string[] = ['charges', 'bank charges']; // Predefined values for dropdown
-  // chequeTypes = ['normal Cheque', 'pd Cheque'];
-  chequeTypes =[];
+   chequeTypes = ['normal Cheque', 'pd Cheque'];
+
   chargeAmountInput: number = 0;
   chargeList: { type: string; amount: number }[] = [];
   editingIndex: number | null = null;
@@ -53,16 +53,18 @@ bankAccounts:BankDTO[]=[];
    narrations:NarrationDTO[]=[];
 filteredNarrations: NarrationDTO[] = [];
 loading = false; 
-selectedCurrencyCode: number | undefined; // To store the currency code globally
+
 selectedCurrencySymbol: string | undefined; // To store the currency symbol for checks
-currencyGlobal:number | undefined;
+selectedCurrencyCode: any;
+currencyGlobal: number | null = null;
 currencies:CurrencyDTO[]=[];
 receiptingPoints: any[]=[];
     charges:ChargesDTO[]=[];
   accountTypes:AccountTypeDTO[]=[];
   clients:ClientsDTO[]=[];
-
-    receiptNumber:ReceiptNumberDTO[]=[];
+  receiptNumber: string = '';
+  branchNo:number;
+    // receiptNumber:ReceiptNumberDTO[]=[];
     countryId:number=1100;
     branchCode:number=344;
       groupBusinessAccounts: any[] = []; 
@@ -71,9 +73,11 @@ originalNarration: string | null = null;
 isNarrationFromLov = false; 
 orgCode: string;
 // exchangeRate:ExchangeRateDTO[]=[];
+currencySymbolGlobal:string | undefined;
 exchangeRates: string | undefined; // Fetched exchange rate
 
 rate:any;
+
   manualExchangeRate:any;
   @ViewChild('fileDescriptionModal', { static: false }) fileDescriptionModal!: ElementRef;
 
@@ -103,19 +107,29 @@ constructor(
 
 }
 ngOnInit(): void {
-  this.captureReceiptForm();
- this.fetchReceiptNumber()
+  
+  
+
  this.fetchReceiptingPoints();
  this.fetchCurrencies();
-  this.fetchPaymentModes();
- this.onPaymentModeSelected();
-  this.fetchDrawersBank();
-  this.fetchNarrations();
-this.fetchManualExchangeRate();
+ this.captureReceiptForm();
+ this.fetchReceiptNumber();
+ this.fetchPaymentModes();
+ this.fetchManualExchangeRateParameter();
+//  this.fetchExchangeRate();
+// this.fetchDefaultExchangeRate();
+//  this.myfunction();
+
+//  this.onPaymentModeSelected();
+//   this.fetchDrawersBank();
+//   this.fetchNarrations();
+
  this.fetchCharges();
+ this.submitChargeManagement();
  this.fetchAccountTypes();
-  this.getPaymentModeSelected();
-this.fetchBanks();
+//   this.getPaymentModeSelected();
+ this.fetchBanks();
+
  this.loggedInUser = this.authService.getCurrentUser();
 console.log('logged user>',this.loggedInUser.code);
 console.log('logged user>',this.loggedInUser);
@@ -145,7 +159,8 @@ captureReceiptForm(){
   this.receiptingDetailsForm = this.fb.group({
     amountIssued: ['', Validators.required],
     openCheque: [''],
-    receiptNumber: [{ value: '', disabled: true }],
+    receiptNumber:['',Validators.required],
+    // receiptNumber: [{ value: '', disabled: true }],
     ipfFinancier: [''],
     grossReceiptAmount: [''],
     receivedFrom: ['', Validators.required],
@@ -157,10 +172,12 @@ captureReceiptForm(){
     documentDate: [''],
     manualRef: [''],
     currency: ['', Validators.required], // Default currency is KES
-    paymentMode: ['CASH', Validators.required],
+    paymentMode: ['', Validators.required],
     chequeType: [{ value: '', disabled: true }],
     bankAccount: [''],
-    receiptingPoint: [{ value: '', disabled: true }],
+    receiptingPoint:['',Validators.required],
+
+    // receiptingPoint: [{ value: '', disabled: true }],
     charges: ['no', Validators.required],
       chargeAmount: [{ value: '', disabled: true }],
       selectedChargeType:['', Validators.required],
@@ -190,10 +207,11 @@ checkBankSelected(){
 
 }
 
-fetchManualExchangeRate() {
-  this.receiptService.getManualExchangeRate().subscribe({
+fetchManualExchangeRateParameter() {
+  this.receiptService.getManualExchangeRateParameter().subscribe({
     next: (response) => {
       this.manualExchangeRate = response.data;
+      
      // this.system = response.Systemshortdesc
     },
     error: (err) => {
@@ -202,17 +220,6 @@ fetchManualExchangeRate() {
   });
 }
 
-fetchExchangeRate(){
-  this.receiptService.getExchangeRate(this.currencyGlobal || this.selectedCurrencyCode,2).subscribe({
-    next:(response)=>{
-      this.rate=response.data;
-      alert(this.rate);
-    },
-    error:(err)=>{
-      console.error('error fetching Exchange Rates',this.exchangeRate);
-    }
-  })
-}
 fetchPaymentModes(){
 this.receiptService.getPaymentModes().subscribe({
     next: (response) => {
@@ -225,16 +232,45 @@ this.receiptService.getPaymentModes().subscribe({
   });
 }
 
-fetchReceiptNumber(){
-  this.receiptService.getReceiptNumber(1,940).subscribe({
-    next:(response)=>{
-      this.receiptNumber=response.data;
+// fetchReceiptNumber():void{
+//   this.receiptService.getReceiptNumber(1,940).subscribe({
+//     next:(response)=>{
+//       this.receiptNumber=response;
+//       log.info(this.receiptNumber);
+//     alert(this.receiptNumber);
+      
+//     },
+//     error:(err)=>{
+//       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+//     }
+//   })
+// }
+fetchReceiptNumber(): void {
+  this.receiptService.getReceiptNumber(1, 940).subscribe({
+    next: (response: ReceiptNumberDTO[]) => {
+      if (response && response.length > 0) {
+        const receipt = response[0]; // Get the first item in the array
+        this.receiptNumber = receipt.receiptNumber; // Assign receipt number
+        this.branchNo = receipt.branchReceiptNumber;
+        console.log('Fetched Receipt:', this.receiptNumber);
+        console.log(this.branchNo);
+alert(this.receiptNumber);
+        // Update the form field
+        this.receiptingDetailsForm.get('receiptNumber')?.patchValue(this.receiptNumber);
+      } else {
+        console.warn('No receipt numbers returned from API.');
+      }
     },
-    error:(err)=>{
-      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-    }
-  })
+    error: (err) => {
+      console.error('Error fetching receipt number:', err);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        err.error?.error || 'Failed to fetch receipt number.'
+      );
+    },
+  });
 }
+
 
 fetchReceiptingPoints(){
   this.receiptService.getReceiptingPoints(1).subscribe({
@@ -279,41 +315,25 @@ fetchNarrations() {
   });
 }
 
-// fetchCurrencies(){
-//   this.receiptService.getCurrencies(2).subscribe({
-//     next:(response)=>{
-//       this.currencies=response.data;
-//       console.log(this.currencies);
-      
-//       // Find the currency object with the symbol 'KES'
-//       const defaultCurrency = this.currencies.find(currency => currency.symbol === 'KES');
-      
-//       if (defaultCurrency) {
-//         this.currencyGlobal = defaultCurrency.code; // Assign the currency code to global variable
-//         console.log(`Default Currency Code (KES): ${this.currencyGlobal}`);
-//         alert(`Default Currency Code (KES): ${this.currencyGlobal}`);
-//       }
-      
-//     },
-//     error:(err)=>{
-// this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-//     }
-//   })
-// }
+
 fetchCurrencies(): void {
   this.receiptService.getCurrencies(2).subscribe({
     next: (response) => {
       this.currencies = response.data; // Assign fetched currencies
-      console.log(this.currencies);
+     // console.log(this.currencies);
 
       if (this.currencies.length > 0) {
         // Use the first currency as the default
-        const defaultCurrency = this.currencies[0];
-        this.currencyGlobal = defaultCurrency.code; // Assign the first currency's code as default
-        this.receiptingDetailsForm.get('currency')?.setValue(defaultCurrency.symbol); // Set default in the form field
-
-        //console.log(`Default Currency Code: ${this.currencyGlobal}`);
-        //console.log(`Default Currency Symbol: ${defaultCurrency.symbol}`);
+        const defaultCurrency = this.currencies[0].code;
+       this.currencySymbolGlobal=this.currencies[0].symbol;
+       
+        this.currencyGlobal = defaultCurrency; // Assign the first currency's code as default
+        
+       
+    this.receiptingDetailsForm.get('currency')?.patchValue(defaultCurrency);
+      
+        // this.receiptingDetailsForm.get('currency')?.patchValue( this.currencySymbolGlobal); // Set default in the form field
+   
       } else {
         //console.warn('No currencies found in the response.');
       }
@@ -323,6 +343,169 @@ fetchCurrencies(): void {
     }
   });
 }
+
+
+
+onCurrencyChanged(event: Event): void {
+  this.selectedCurrencyCode = (event.target as HTMLSelectElement).value;
+// Find the currency from the list
+const selectedCurrency = this.currencies.find(
+  (currency) => currency.code === this.selectedCurrencyCode
+);
+
+// Get the symbol of the selected currency
+this.selectedCurrencySymbol = selectedCurrency ? selectedCurrency.symbol : '';
+
+
+// this.selectedCurrencyCode= (event.target as HTMLSelectElement).value;
+// console.log("global currency>", this.selectedCurrencyCode)
+  
+  this.receiptService.getManualExchangeRateParameter()
+.subscribe({
+  next: (response) => {
+    
+    const isManualRateSetup = response.data === "N"; // Now works as expected
+    
+    if(isManualRateSetup){
+     
+      this.fetchDefaultExchangeRate();
+    }else if(!isManualRateSetup){
+      this.showExchangeRateModal2();
+    }
+   
+   
+  },
+  error: (err) => {
+    console.error('Error fetching manual exchange rate setup:', err);
+  }
+});
+
+}
+
+
+fetchDefaultExchangeRate(): void {
+  this.receiptService.getExchangeRate(this.selectedCurrencyCode, 2)
+    .subscribe({
+      next: (response) => {
+        this.exchangeRates = response.data; // `data` is now a string
+       // alert(`the exchange rate is ${this.exchangeRates}`);
+        this.showExchangeRateModal(); // Show modal with exchange rate
+      },
+      error: (err) => {
+        console.error('Error fetching default exchange rate:', err);
+      }
+    });
+}
+
+
+confirmExchangeRateValue():void{
+if(this.exchangeRate > 0){
+  
+  this.receiptService.postManualExchangeRate(this.selectedCurrencyCode,1,'FMSADMIN',this.exchangeRate).subscribe({
+    next: (response) => {
+      //console.log('Manual exchange rate saved successfully:', response);
+     // alert('exchange rate posted');
+      this.closeModal2(); // Close modal on success
+    },
+    error: (err) => {
+     // console.error('Error saving manual exchange rate:', err);
+     // alert('failed to post');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Failed to save manual exchange rate. Please try again.'
+      );
+    },
+  });
+}else{
+  alert('please enter a valid value!');
+}
+}
+confirmExchangeRate(): void {
+    this.closeModal();
+}
+
+// confirmExchangeRate(): void {
+//   console.log("okay click", this.selectedCurrencyCode);
+//   if (this.useDefaultExchangeRate) {
+    
+//     this.closeModal();
+//   } else {
+    
+//     const manualRate = this.receiptingDetailsForm.get('exchangeRates')?.value;
+//     console.log("exchange>>", manualRate) // Ensure this is defined
+//     if (!manualRate || manualRate <= 0) {
+//       this.globalMessagingService.displayErrorMessage(
+//         'Validation Error',
+//         'Please enter a valid exchange rate.'
+//       );
+//       return; // Prevent closing the modal if the value is invalid
+//     }
+
+   
+
+//     this.receiptService.postManualExchangeRate(this.selectedCurrencyCode,1,'FMSADMIN',this.exchangeRate).subscribe({
+//       next: (response) => {
+        
+//         this.closeModal(); // Close modal on success
+//       },
+//       error: (err) => {
+      
+//         this.globalMessagingService.displayErrorMessage(
+//           'Error',
+//           'Failed to save manual exchange rate. Please try again.'
+//         );
+//       },
+//     });
+//   }
+// }
+closeModal2(): void {
+  const modalElement = document.getElementById('exchangeRateModal2');
+  if (modalElement) {
+    const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+    bootstrapModal?.hide();
+  }
+}
+closeModal(): void {
+  const modalElement = document.getElementById('exchangeRateModal');
+  if (modalElement) {
+    const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+    bootstrapModal?.hide();
+  }
+}
+
+showExchangeRateModal(): void {
+  const modal = new bootstrap.Modal(document.getElementById('exchangeRateModal')!);
+  modal.show();
+}
+showExchangeRateModal2():void{
+  const modal = new bootstrap.Modal(document.getElementById('exchangeRateModal2')!);
+  modal.show();
+}
+// onCurrencySelected(): void {
+//   const selectedSymbol = this.receiptingDetailsForm.get('currency')?.value; // Get selected currency symbol
+//   const selectedCurrencyObj = this.currencies.find(
+//     (currency) => currency.symbol === selectedSymbol
+//   ); // Find the currency object by symbol
+
+//   if (selectedCurrencyObj) {
+//     // Assign globally accessible properties
+//     this.selectedCurrencyCode = selectedCurrencyObj.code;
+//     this.selectedCurrencySymbol = selectedCurrencyObj.symbol;
+
+//     console.log(`Currency Selected: ${this.selectedCurrencySymbol}`);
+//     console.log(`Currency Code: ${this.selectedCurrencyCode}`);
+// alert( this.selectedCurrencyCode);
+//     if (this.selectedCurrencySymbol !== 'KES') {
+//       // Mock: Check if the client prefers the default exchange rate
+//       this.useDefaultExchangeRate = this.checkClientPreference();
+
+//       // Show the exchange rate modal
+//       this.showExchangeRateModal();
+//     }
+//   } else {
+//     console.warn('Selected currency not found');
+//   }
+// }
 
 fetchBanks(){
   this.receiptService.getBanks(1,268)
@@ -341,6 +524,9 @@ fetchCharges(){
   this.receiptService.getCharges(2,1).subscribe({
 next:(response)=>{
 this.charges=response.data;
+console.log('charges',this.charges);
+const rec=this.receiptingDetailsForm.getRawValue();
+console.log(rec)
 },
 error:(err)=>{
   console.error('error while fetchig>>',err);
@@ -348,6 +534,30 @@ error:(err)=>{
   })
 }
 
+submitChargeManagement(): void {
+  const payload: ChargeManagementDTO = {
+    addEdit: 'A',
+    receiptExpenseId: 12345678,
+    receiptNo: this.branchNo,
+    receiptChargeId: 41,
+    receiptChargeAmount:1000,
+    suspenseRct: 'N'
+  };
+
+  this.receiptService.postChargeManagement(payload).subscribe({
+    next: (response) => {
+      console.log('Charge management posted successfully:', response);
+      alert('Charge management saved successfully');
+    },
+    error: (err) => {
+      console.error('Error posting charge management:', err);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Failed to post charge management. Please try again.'
+      );
+    },
+  });
+}
 
 
 fetchAccountTypes() {
@@ -628,7 +838,7 @@ disableDrawersBank(){
 
 onPaymentModeSelected(): void {
   const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-  console.log(`Payment Mode Selected: ${paymentMode}`);
+ // console.log(`Payment Mode Selected: ${paymentMode}`);
   this.updatePaymentModeFields(paymentMode);
 }
 
@@ -640,11 +850,14 @@ private updatePaymentModeFields(paymentMode: string): void {
 
   if (paymentMode === 'CASH') {
     this.handleCashMode(chequeTypeModal);
-    // this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
-    // chequeTypeModal?.hide();
+     this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
+     chequeTypeModal?.hide();
+     this.receiptingDetailsForm.patchValue({ chequeType: '' });
      this.receiptingDetailsForm.get('drawersBank')?.disable();
   } else if (paymentMode === 'CHEQUE') {
     this.handleChequeMode(chequeTypeModal);
+    //this.receiptingDetailsForm.get('chequeTypes')?.value;
+    //this.onCancelChequModal(this.chequeTypes);
     // this.showChequeTypeModal(chequeTypeModal);
   } else {
     this.resetChequeFields(chequeTypeModal);
@@ -656,6 +869,7 @@ private updatePaymentModeFields(paymentMode: string): void {
   // this.receiptingDetailsForm.get('drawersBank')?.updateValueAndValidity();
   // this.receiptingDetailsForm.get('chequeType')?.updateValueAndValidity();
 }
+
 private handleCashMode(chequeTypeModal: Modal | null): void {
   this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
   chequeTypeModal?.hide();
@@ -677,7 +891,17 @@ private resetChequeFields(chequeTypeModal: Modal | null): void {
   this.receiptingDetailsForm.patchValue({ chequeType: '' });
 }
 
+onCancelChequModal(chequeTypes:any){
+  if(this.chequeTypes == null){
+alert('please select cheque type');
+  }else{
+   
+    const ChequeTypeModal= new bootstrap.Modal(document.getElementById('chequeTypeModal')!);
+    ChequeTypeModal.hide();
+   
+  }
 
+}
 
 onChequeTypeSelected(): void {
   const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
@@ -853,17 +1077,12 @@ private isClientAlreadyAllocated(accountNumber: string): boolean {
   searchTerm: any;
   currentTab: string;
 
-  selectedCurrency: string = 'KES'; // Default currency
-  useDefaultExchangeRate: boolean = false; // Mock parameter (replace with real logic)
+  selectedCurrency: string; // Default currency
+  useDefaultExchangeRate: boolean = true; // Mock parameter (replace with real logic)
+  dontUseDefaultExchangeRate:boolean=true;
   exchangeRate: number = 1; // Default exchange rate
  
-
-  
-  onCurrencyChanged(currencyCode: number, currencySymbol: string): void {
-    this.selectedCurrencyCode = currencyCode;
-    this.selectedCurrency = currencySymbol;
-
-    // Check if the client has set a manual exchange rate
+// Check if the client has set a manual exchange rate
     // this.receiptService.getManualExchangeRate()
     //   .subscribe({
     //     next: (response) => {
@@ -882,103 +1101,7 @@ private isClientAlreadyAllocated(accountNumber: string): boolean {
     //       console.error('Error fetching manual exchange rate setup:', err);
     //     }
     //   });
-    this.receiptService.getManualExchangeRate()
-  .subscribe({
-    next: (response) => {
-      const isManualRateSetup = response.data === "N"; // Now works as expected
-      this.useDefaultExchangeRate = !isManualRateSetup;
-
-      if (isManualRateSetup) {
-        this.showExchangeRateModal(); // Show modal for manual rate input
-      } else {
-        this.fetchDefaultExchangeRate(); // Fetch default exchange rate
-      }
-    },
-    error: (err) => {
-      console.error('Error fetching manual exchange rate setup:', err);
-    }
-  });
-
-  }
-
-  // fetchDefaultExchangeRate(): void {
-  //   this.receiptService.getExchangeRate(this.selectedCurrencyCode,2)
-  //     .subscribe({
-  //       next: (response) => {
-  //         this.exchangeRates = response.data;
-  //         this.showExchangeRateModal();
-  //       },
-  //       error: (err) => {
-  //         console.error('Error fetching default exchange rate:', err);
-  //       }
-  //     });
-  // }
-  fetchDefaultExchangeRate(): void {
-    this.receiptService.getExchangeRate(this.selectedCurrencyCode, 2)
-      .subscribe({
-        next: (response) => {
-          this.exchangeRates = response.data; // `data` is now a string
-          alert(this.exchangeRates);
-          this.showExchangeRateModal(); // Show modal with exchange rate
-        },
-        error: (err) => {
-          console.error('Error fetching default exchange rate:', err);
-        }
-      });
-  }
   
-  confirmExchangeRate(): void {
-    const manualRate = this.receiptingDetailsForm.get('exchangeRate')?.value;
-    if (!this.useDefaultExchangeRate && manualRate) {
-      // Post the entered manual rate
-        // New method for posting manual exchange rate
-        this.receiptService.postManualExchangeRate(manualRate).subscribe({
-          next: (response) => {
-            if (response.success) {
-              console.log('Manual rate successfully posted:', response.data);
-    
-            } else {
-              console.error('Failed to post manual rate:', response.msg);
-              alert('error while posting exchange rates');
-            }
-          },
-          error: (err) => {
-            console.error('Error posting manual exchange rate:', err);
-          }
-        });
-        
-    }
-  }
-
-  showExchangeRateModal(): void {
-    const modal = new bootstrap.Modal(document.getElementById('exchangeRateModal')!);
-    modal.show();
-  }
-  onCurrencySelected(): void {
-    const selectedSymbol = this.receiptingDetailsForm.get('currency')?.value; // Get selected currency symbol
-    const selectedCurrencyObj = this.currencies.find(
-      (currency) => currency.symbol === selectedSymbol
-    ); // Find the currency object by symbol
-  
-    if (selectedCurrencyObj) {
-      // Assign globally accessible properties
-      this.selectedCurrencyCode = selectedCurrencyObj.code;
-      this.selectedCurrencySymbol = selectedCurrencyObj.symbol;
-  
-      console.log(`Currency Selected: ${this.selectedCurrencySymbol}`);
-      console.log(`Currency Code: ${this.selectedCurrencyCode}`);
-  alert( this.selectedCurrencyCode);
-      if (this.selectedCurrencySymbol !== 'KES') {
-        // Mock: Check if the client prefers the default exchange rate
-        this.useDefaultExchangeRate = this.checkClientPreference();
-  
-        // Show the exchange rate modal
-        this.showExchangeRateModal();
-      }
-    } else {
-      console.warn('Selected currency not found');
-    }
-  }
   
  
   
@@ -1018,26 +1141,28 @@ private isClientAlreadyAllocated(accountNumber: string): boolean {
 
     // Check if a bank account is actually selected
     if (bank) {
-    //  const selectedBank = this.bankAccounts.find(b => b.accountNumber === bank);
-        const selectedBank:any='';
-        if (selectedBank) {
-            // Find the correct receipting point
-            const receiptingPoint = this.receiptingPoints.find(rp => rp.code === this.getReceiptingPointForBankAccount(selectedBank));
+      this.fetchReceiptNumber();
+      this.fetchReceiptingPoints();
+    // //  const selectedBank = this.bankAccounts.find(b => b.accountNumber === bank);
+    //     const selectedBank:any='';
+    //     if (selectedBank) {
+    //         // Find the correct receipting point
+    //         const receiptingPoint = this.receiptingPoints.find(rp => rp.code === this.getReceiptingPointForBankAccount(selectedBank));
 
-            if (receiptingPoint) {
-                this.receiptingDetailsForm.patchValue({
-                    receiptingPoint: receiptingPoint.code,
-                    receiptNumber: `${receiptingPoint.prefix}-${1}`
-                });
+    //         if (receiptingPoint) {
+    //             this.receiptingDetailsForm.patchValue({
+    //                 receiptingPoint: receiptingPoint.code,
+    //                 receiptNumber: `${receiptingPoint.prefix}-${1}`
+    //             });
 
-                // ... you may need to update the values and their validations
+    //             // ... you may need to update the values and their validations
 
-            } else {
-                console.warn("No corresponding receipting point found for this bank.");
-            }
-        } else {
-            console.error("Selected bank account does not exist:", bank);
-        }
+    //         } else {
+    //             console.warn("No corresponding receipting point found for this bank.");
+    //         }
+    //     } else {
+    //         console.error("Selected bank account does not exist:", bank);
+    //     }
     }
 }
 
@@ -1329,12 +1454,12 @@ openModal(): void {
   this.renderer.setAttribute(modal, 'aria-hidden', 'false');
 }
 
-closeModal(): void {
-  const modal = this.fileDescriptionModal.nativeElement;
-  this.renderer.removeClass(modal, 'show');
-  this.renderer.setStyle(modal, 'display', 'none');
-  this.renderer.setAttribute(modal, 'aria-hidden', 'true');
-}
+// closeModal(): void {
+//   const modal = this.fileDescriptionModal.nativeElement;
+//   this.renderer.removeClass(modal, 'show');
+//   this.renderer.setStyle(modal, 'display', 'none');
+//   this.renderer.setAttribute(modal, 'aria-hidden', 'true');
+// }
 
 saveFileDescription(): void {
   console.log('Save button clicked');
