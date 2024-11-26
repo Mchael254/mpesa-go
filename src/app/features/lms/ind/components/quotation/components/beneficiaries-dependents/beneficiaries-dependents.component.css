@@ -1,94 +1,128 @@
-div > label {
-    margin-top: 1rem;
-  }
-  
-  label {
-    margin-bottom: 0.5rem;
-  }
-  .p-dropdown .p-dropdown-label .p-placeholder {
-    color: #ca1b0e !important;
-    transform: translateY(-4px) !important;
-    font-size: 12px !important;
-  }
-  
-  .modal-content {
-    border-radius: 0px;
-  }
-  
-  .t_hover:hover {
-    color: rgba(255, 255, 255, 0.782) !important;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 3px solid black;
-  }
-  
-  .btn {
-    --bs-btn-padding-x: 0.35rem !important;
-    --bs-btn-padding-y: 0.375rem !important;
-    --bs-btn-font-size: 0.7rem !important;
-  }
-  
-  .p-input-icon-right > .p-icon-wrapper.p-icon,
-  .p-input-icon-left > i:first-of-type {
-    color: #6c757d7c;
-  }
-  
-  .d-flex > .mx-2 {
-    justify-content: space-between;
-    color: black !important;
-    font-size: 22px;
-    cursor: pointer;
-  }
-  
-  .d-flex > .mx-2:hover {
-    color: black !important;
-  }
-  
-  .text-danger:hover,
-  .text-success:hover {
-    color: black !important;
-  }
-  
-  
-  .modal-content {
-    transform: translateX(50px) !important;
-    width: 100% !important;
-  
-  }
-  
-  tr.ng-star-inserted {
-    border: 0;
-    border: solid 1px white;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: white;
-    border-bottom: solid 1px black;
-  }
-  .table > :not(caption) > * > * {
-    padding: 0.7rem 0.7rem;
-  }
-  
-  .dropdown-menu {
-    border: solid 1px gray;
-  }
-
-  .table > thead >tr {
-    --bs-table-bg: #BAD0E4;
-
+/* General Styling for Section Titles */
+.text-primary {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--primary-color);
 }
 
-.input-group span {
-    background: var(--bs-border-color);
-    color: #fff;
+/* Add padding and border to the full-border section */
+.full-border {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9; 
+  margin-bottom: 20px;
 }
 
-table tr th {
-    color: rgba(0, 0, 0, 0.6) !important;
-    font-weight: 500;
+/* Style the table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
-.table-bordered>:not(caption)>*>* {
-    border-width: 0px;
+/* Remove borders between rows and columns */
+.table th, .table td {
+  border: none; 
 }
-  
-  
+
+/* Table Header Styling */
+.table thead th {
+  color: var(--primary-color); 
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 12px;
+}
+
+/* Distinguish Rows by Alternating Colors */
+.table tbody tr:nth-child(odd) {
+  background-color: #eaeaea; /* Light gray for odd rows */
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #ffffff; /* White for even rows */
+}
+
+/* Highlight row on hover */
+.table tbody tr:hover {
+  background-color: #d6eaf8; /* Subtle blue for hover */
+  transition: background-color 0.3s ease;
+}
+
+/* Table Cell Styling */
+.table tbody td {
+  padding: 10px;
+  text-align: left;
+  border: none;
+}
+
+/* Add Spinner Styling */
+.spinner-border {
+  margin-left: 10px;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Button Styling */
+.b-r {
+  color: var(--primary-color);
+  color: #003a6f;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.b-r:hover {
+  color: var(--primary-color); 
+}
+
+button.btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  background-color: #FFF;
+  color: #00529B; 
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Custom Modal Dimensions */
+.modal-custom {
+  max-width: 719px;
+  height: 527px;
+  margin: auto;
+}
+
+.modal-dialog {
+  max-width: 717px;
+  height: 478px;
+  margin: auto;
+}
+
+/* Add padding around modal content */
+.modal-content {
+  padding: 32px;
+}
+.modal-title {
+  color: var(--primary-color);
+  font-size: 20px;
+}
+
+.modal-content {
+  color: black;
+}
+
+/* Add gap between columns */
+.row.g-5 {
+  --bs-gutter-x: 50px; /* Horizontal gap of 50px */
+}
