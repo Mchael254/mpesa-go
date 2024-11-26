@@ -1,24 +1,41 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {SystemsDto} from "../../../../shared/data/common/systemsDto";
-import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
-import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
-import {NgxSpinnerService} from "ngx-spinner";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {untilDestroyed} from "../../../../shared/services/until-destroyed";
-import {MandatoryFieldsService} from "../../../../shared/services/mandatory-fields/mandatory-fields.service";
-import {OrganizationService} from "../../services/organization.service";
-import {Logger} from "../../../../shared/services";
-import {AccountService} from "../../../entities/services/account/account.service";
-import {AccountTypeDTO, AgentDTO} from "../../../entities/data/AgentDTO";
-import {OrgDivisionLevelsDTO, OrgDivisionLevelTypesDTO, OrgPreviousSubDivHeadsDTO} from "../../data/organization-dto";
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { SystemsDto } from '../../../../shared/data/common/systemsDto';
+import { SystemsService } from '../../../../shared/services/setups/systems/systems.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { untilDestroyed } from '../../../../shared/services/until-destroyed';
+import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import { OrganizationService } from '../../services/organization.service';
+import { AccountService } from '../../../entities/services/account/account.service';
+import { AccountTypeDTO, AgentDTO } from '../../../entities/data/AgentDTO';
+import {
+  OrgDivisionLevelsDTO,
+  OrgDivisionLevelTypesDTO,
+  OrgPreviousSubDivHeadsDTO,
+  SubDivisionDto,
+  ReqSubDivisionDto,
+} from '../../data/organization-dto';
+import { Logger } from '../../../../shared/services/logger/logger.service';
+import { UtilService } from '../../../../shared/services/util/util.service';
+import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
 
 const log = new Logger('HierarchyComponent');
+
+interface SubDivisionUI extends ReqSubDivisionDto {
+  expanded?: boolean;
+  selected?: boolean;
+  hasChildren?: boolean;
+}
+
 @Component({
   selector: 'app-hierarchy',
   templateUrl: './hierarchy.component.html',
-  styleUrls: ['./hierarchy.component.css']
+  styleUrls: ['./hierarchy.component.css'],
 })
 export class HierarchyComponent implements OnInit {
+  @ViewChild('subDivisionConfirmationModal')
+  subDivisionConfirmationModal!: ReusableInputComponent;
   pageSize: 5;
   systems: SystemsDto[] = [];
   selectedSystem: SystemsDto = {
@@ -40,6 +57,14 @@ export class HierarchyComponent implements OnInit {
   hierarchyLevelsForm: FormGroup;
   hierarchyHeadHistoryForm: FormGroup;
 
+  public subDivisionData: SubDivisionUI[] = [];
+  public selectedDivision: SubDivisionUI | null = null;
+  public isEditMode: boolean = false;
+
+  public errorOccurred = false;
+  public errorMessage: string = '';
+  public submitted = false;
+
   visibleStatus: any = {
     parentDivision: 'Y',
     divisionLevelType: 'Y',
@@ -51,37 +76,37 @@ export class HierarchyComponent implements OnInit {
     overrideCommAllowed: 'Y',
     wef: 'Y',
     wet: 'Y',
-  //
     description: 'Y',
     accType: 'Y',
     headAccType: 'Y',
     type: 'Y',
     intermediary: 'Y',
     payIntermediary: 'Y',
-  //
+    //
     ranking: 'Y',
     agentName: 'Y',
-    desc: 'Y'
-  }
+    desc: 'Y',
+  };
 
   groupId: string = 'hierarchyLevelTab';
   groupIdHierarchyType: string = 'hierarchyTypeTab';
   accountTypeData: AccountTypeDTO[];
   allUsersModalVisible: boolean = false;
-  zIndex= 1;
+  zIndex = 1;
   selectedMainUser: AgentDTO;
   hierarchyTypeEnumData: any;
   hierarchyLevelsEnumData: any;
 
   constructor(
     private systemsService: SystemsService,
+    private organizationService: OrganizationService,
     private globalMessagingService: GlobalMessagingService,
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
     private mandatoryFieldsService: MandatoryFieldsService,
     private cdr: ChangeDetectorRef,
-    private organizationService: OrganizationService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private utilService: UtilService
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +124,7 @@ export class HierarchyComponent implements OnInit {
   orgSubDivCreateForm() {
     this.orgSubDivForm = this.fb.group({
       parentDivision: [''],
+      code: [''],
       divisionLevelType: [''],
       divisionLevel: [''],
       name: [''],
@@ -107,7 +133,7 @@ export class HierarchyComponent implements OnInit {
       managerAllowed: [''],
       overrideCommAllowed: [''],
       wef: [''],
-      wet: ['']
+      wet: [''],
     });
   }
 
@@ -124,7 +150,7 @@ export class HierarchyComponent implements OnInit {
       headAccType: [''],
       type: [''],
       intermediary: [''],
-      payIntermediary: ['']
+      payIntermediary: [''],
     });
     this.mandatoryFieldsService
       .getMandatoryFieldsByGroupId(this.groupIdHierarchyType)
@@ -165,7 +191,7 @@ export class HierarchyComponent implements OnInit {
     this.hierarchyLevelsForm = this.fb.group({
       desc: [''],
       ranking: [''],
-      type: ['']
+      type: [''],
     });
     this.mandatoryFieldsService
       .getMandatoryFieldsByGroupId(this.groupId)
@@ -204,7 +230,7 @@ export class HierarchyComponent implements OnInit {
     this.hierarchyHeadHistoryForm = this.fb.group({
       agentName: [''],
       wef: [''],
-      wet: ['']
+      wet: [''],
     });
   }
 
@@ -222,11 +248,11 @@ export class HierarchyComponent implements OnInit {
     return this.hierarchyLevelsForm.controls;
   }
 
-/**
- * Opens the modal for defining a new hierarchy type.
- * Checks if a system is selected before displaying the modal.
- * If no system is selected, an error message is displayed.
- */
+  /**
+   * Opens the modal for defining a new hierarchy type.
+   * Checks if a system is selected before displaying the modal.
+   * If no system is selected, an error message is displayed.
+   */
   openDefineHierarchyTypeModal() {
     const modal = document.getElementById('newHierarchyType');
     if (modal && this.selectedSystem?.id !== undefined) {
@@ -240,11 +266,11 @@ export class HierarchyComponent implements OnInit {
     }
   }
 
-/**
- * Closes the modal for defining a hierarchy type.
- * Sets the edit mode to false and hides the modal element
- * by removing the 'show' class and setting its display to 'none'.
- */
+  /**
+   * Closes the modal for defining a hierarchy type.
+   * Sets the edit mode to false and hides the modal element
+   * by removing the 'show' class and setting its display to 'none'.
+   */
   closeDefineHierarchyTypeModal() {
     this.editMode = false;
     const modal = document.getElementById('newHierarchyType');
@@ -261,7 +287,7 @@ export class HierarchyComponent implements OnInit {
    */
   editHierarchyType() {
     this.editMode = !this.editMode;
-    log.info("select>>", this.selectedHierarchyType)
+    log.info('select>>', this.selectedHierarchyType);
 
     if (this.selectedHierarchyType) {
       this.openDefineHierarchyTypeModal();
@@ -271,15 +297,13 @@ export class HierarchyComponent implements OnInit {
         headAccType: this.selectedHierarchyType.managerCode,
         type: this.selectedHierarchyType.type === 'Other Hierarchy' ? 'O' : 'C',
         intermediary: this.selectedHierarchyType.intermediaryCode,
-        payIntermediary: this.selectedHierarchyType.payIntermediary
-
-      })
-    }
-    else {
+        payIntermediary: this.selectedHierarchyType.payIntermediary,
+      });
+    } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No hierarchy type is selected.'
-      )
+      );
     }
   }
 
@@ -310,34 +334,34 @@ export class HierarchyComponent implements OnInit {
     }
   }
 
-/**
- * Toggles the edit mode for hierarchy levels.
- * If a hierarchy level is selected, it opens the modal for defining a hierarchy level
- * and populates the form with the selected hierarchy level's details.
- * Otherwise, an error message is displayed indicating no hierarchy level is selected.
- */
+  /**
+   * Toggles the edit mode for hierarchy levels.
+   * If a hierarchy level is selected, it opens the modal for defining a hierarchy level
+   * and populates the form with the selected hierarchy level's details.
+   * Otherwise, an error message is displayed indicating no hierarchy level is selected.
+   */
   editHierarchyLevels() {
     this.editMode = !this.editMode;
-    log.info("select>>", this.selectedHierarchyLevel);
+    log.info('select>>', this.selectedHierarchyLevel);
 
-    const filterLevel = this.hierarchyLevelsEnumData.find(product => product.name === this.selectedHierarchyLevel.type);
+    const filterLevel = this.hierarchyLevelsEnumData.find(
+      (product) => product.name === this.selectedHierarchyLevel.type
+    );
 
     if (this.selectedHierarchyLevel) {
       this.openDefineHierarchyLevelsModal();
       this.hierarchyLevelsForm.patchValue({
         desc: this.selectedHierarchyLevel.description,
         ranking: this.selectedHierarchyLevel.ranking,
-        type: filterLevel?.value
-      })
-    }
-    else {
+        type: filterLevel?.value,
+      });
+    } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No hierarchy level is selected.'
-      )
+      );
     }
   }
-
 
   /**
    * Opens the modal for defining a hierarchy head history.
@@ -422,7 +446,9 @@ export class HierarchyComponent implements OnInit {
     if (this.hierarchyTypeForm.invalid) return;
 
     const hierarchyTypeFormValues = this.hierarchyTypeForm.getRawValue();
-    const hierarchyTypeCode = this.selectedHierarchyType?.code ? this.selectedHierarchyType?.code : null;
+    const hierarchyTypeCode = this.selectedHierarchyType?.code
+      ? this.selectedHierarchyType?.code
+      : null;
 
     const saveHierarchyTypePayload: OrgDivisionLevelTypesDTO = {
       accountTypeCode: hierarchyTypeFormValues.accType,
@@ -432,17 +458,27 @@ export class HierarchyComponent implements OnInit {
       managerCode: hierarchyTypeFormValues.headAccType,
       payIntermediary: hierarchyTypeFormValues.payIntermediary,
       systemCode: this.selectedSystem?.id,
-      type: hierarchyTypeFormValues.type
-    }
-    log.info("save hierarchy type>>>", saveHierarchyTypePayload);
+      type: hierarchyTypeFormValues.type,
+    };
+    log.info('save hierarchy type>>>', saveHierarchyTypePayload);
 
     const orgServiceCall = this.selectedHierarchyType
-      ? this.organizationService.updateOrgDivisionLevelType(hierarchyTypeCode, saveHierarchyTypePayload)
-      : this.organizationService.createOrgDivisionLevelType(saveHierarchyTypePayload);
+      ? this.organizationService.updateOrgDivisionLevelType(
+          hierarchyTypeCode,
+          saveHierarchyTypePayload
+        )
+      : this.organizationService.createOrgDivisionLevelType(
+          saveHierarchyTypePayload
+        );
 
     return orgServiceCall.subscribe({
       next: (data) => {
-        this.globalMessagingService.displaySuccessMessage('Success', `Successfully ${this.selectedHierarchyType ? 'updated' : 'created'} a hierarchy type`);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          `Successfully ${
+            this.selectedHierarchyType ? 'updated' : 'created'
+          } a hierarchy type`
+        );
 
         this.hierarchyTypeForm.reset();
         this.closeDefineHierarchyTypeModal();
@@ -450,9 +486,12 @@ export class HierarchyComponent implements OnInit {
         this.selectedHierarchyType = null;
       },
       error: (err) => {
-        log.info('>>>>>>>>>', err.error.message)
-        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-      }
+        log.info('>>>>>>>>>', err.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.message
+        );
+      },
     });
   }
 
@@ -466,19 +505,24 @@ export class HierarchyComponent implements OnInit {
   deleteHierarchyLevelType() {
     if (this.selectedHierarchyType) {
       const hierarchyLevelTypeId = this.selectedHierarchyType?.code;
-      this.organizationService.deleteOrgDivisionLevelType(hierarchyLevelTypeId).subscribe( {
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a hierarchy type'
-          );
-          this.selectedHierarchyType = null;
-          this.fetchHierarchyLevelType();
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        },
-      });
+      this.organizationService
+        .deleteOrgDivisionLevelType(hierarchyLevelTypeId)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a hierarchy type'
+            );
+            this.selectedHierarchyType = null;
+            this.fetchHierarchyLevelType();
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err.error.message
+            );
+          },
+        });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -486,7 +530,6 @@ export class HierarchyComponent implements OnInit {
       );
     }
   }
-
 
   /**
    * Saves a hierarchy level.
@@ -500,7 +543,9 @@ export class HierarchyComponent implements OnInit {
     if (this.hierarchyLevelsForm.invalid) return;
 
     const hierarchyLevelFormValues = this.hierarchyLevelsForm.getRawValue();
-    const hierarchyLevelCode = this.selectedHierarchyLevel?.code ? this.selectedHierarchyLevel?.code : null;
+    const hierarchyLevelCode = this.selectedHierarchyLevel?.code
+      ? this.selectedHierarchyLevel?.code
+      : null;
 
     const saveHierarchyLevelPayload: OrgDivisionLevelsDTO = {
       description: hierarchyLevelFormValues.desc,
@@ -508,16 +553,26 @@ export class HierarchyComponent implements OnInit {
       type: hierarchyLevelFormValues.type,
       code: hierarchyLevelCode,
       divisionLevelTypeCode: this.selectedHierarchyType?.code,
-    }
-    log.info("save hierarchy level>>>", saveHierarchyLevelPayload);
+    };
+    log.info('save hierarchy level>>>', saveHierarchyLevelPayload);
 
     const orgServiceCall = this.selectedHierarchyLevel
-      ? this.organizationService.updateOrgDivisionLevel(hierarchyLevelCode, saveHierarchyLevelPayload)
-      : this.organizationService.createOrgDivisionLevel(saveHierarchyLevelPayload);
+      ? this.organizationService.updateOrgDivisionLevel(
+          hierarchyLevelCode,
+          saveHierarchyLevelPayload
+        )
+      : this.organizationService.createOrgDivisionLevel(
+          saveHierarchyLevelPayload
+        );
 
     return orgServiceCall.subscribe({
       next: (data) => {
-        this.globalMessagingService.displaySuccessMessage('Success', `Successfully ${this.selectedHierarchyLevel ? 'updated' : 'created'} a hierarchy level`);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          `Successfully ${
+            this.selectedHierarchyLevel ? 'updated' : 'created'
+          } a hierarchy level`
+        );
 
         this.hierarchyLevelsForm.reset();
         this.closeDefineHierarchyLevelsModal();
@@ -525,9 +580,12 @@ export class HierarchyComponent implements OnInit {
         this.selectedHierarchyLevel = null;
       },
       error: (err) => {
-        log.info('>>>>>>>>>', err.error.message)
-        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-      }
+        log.info('>>>>>>>>>', err.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.message
+        );
+      },
     });
   }
 
@@ -541,19 +599,24 @@ export class HierarchyComponent implements OnInit {
   deleteHierarchyLevel() {
     if (this.selectedHierarchyLevel) {
       const hierarchyLevelId = this.selectedHierarchyLevel?.code;
-      this.organizationService.deleteOrgDivisionLevel(hierarchyLevelId).subscribe( {
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a hierarchy level'
-          );
-          this.fetchHierarchyLevels(this.selectedHierarchyType);
-          this.selectedHierarchyType = null;
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        },
-      });
+      this.organizationService
+        .deleteOrgDivisionLevel(hierarchyLevelId)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a hierarchy level'
+            );
+            this.fetchHierarchyLevels(this.selectedHierarchyType);
+            this.selectedHierarchyType = null;
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err.error.message
+            );
+          },
+        });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -562,8 +625,59 @@ export class HierarchyComponent implements OnInit {
     }
   }
 
-  saveHierarchyHeadHistory() {
+  fetchOrganizationSubDivision(divisionLevelTypeCode) {
+    this.organizationService
+      .getOrganizationSubDivision(divisionLevelTypeCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.subDivisionData = data;
+            log.info('Fetch Sub Division Data', this.subDivisionData);
 
+            this.subDivisionData = this.addExpansionState(data);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              this.errorMessage
+            );
+          }
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.message || 'An error occurred';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
+  addExpansionState(data): SubDivisionUI[] {
+    return data.map((division) => ({
+      ...division,
+      expanded: false,
+      hasChildren: division.children?.length > 0,
+      children: division.children
+        ? this.addExpansionState(division.children)
+        : [],
+    }));
+  }
+
+  toggleExpand(division: SubDivisionUI) {
+    if (division.expanded) {
+      division.expanded = false;
+    } else {
+      division.expanded = true;
+
+      if (division.children?.length === 0) {
+        division.hasChildren = false;
+      }
+    }
   }
 
   /**
@@ -573,19 +687,29 @@ export class HierarchyComponent implements OnInit {
    */
   fetchHierarchyLevelType() {
     this.spinner.show();
-    this.organizationService.getOrgDivisionLevelTypes(this.selectedSystem?.id)
+    this.organizationService
+      .getOrgDivisionLevelTypes(this.selectedSystem?.id)
       .subscribe({
         next: (data) => {
           this.hierarchyTypeData = data;
           this.spinner.hide();
-          log.info("hierarchy level type>>", data);
+          log.info('hierarchy level type>>', data);
         },
         error: (err) => {
           let errorMessage = err?.error?.message ?? err.message;
           this.spinner.hide();
-          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        }
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            errorMessage
+          );
+        },
       });
+  }
+
+  onHierachyTypeRowSelect(hierarchyType) {
+    const hierarchyTypeCode = hierarchyType.code;
+    this.fetchHierarchyLevels(hierarchyTypeCode);
+    this.fetchOrganizationSubDivision(hierarchyTypeCode);
   }
 
   /**
@@ -596,20 +720,19 @@ export class HierarchyComponent implements OnInit {
    */
   fetchHierarchyLevels(hierarchyTypeCode) {
     this.spinner.show();
-    this.organizationService.getOrgDivisionLevels(hierarchyTypeCode?.code)
-      .subscribe({
-        next: (data) => {
-          this.hierarchyLevelData = data;
-          this.spinner.hide();
+    this.organizationService.getOrgDivisionLevels(hierarchyTypeCode).subscribe({
+      next: (data) => {
+        this.hierarchyLevelData = data;
+        this.spinner.hide();
 
-          log.info("hierarchy level>>", data);
-        },
-        error: (err) => {
-          let errorMessage = err?.error?.message ?? err.message;
-          this.spinner.hide();
-          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        }
-      });
+        log.info('hierarchy level>>', data);
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.spinner.hide();
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 
   /**
@@ -638,12 +761,11 @@ export class HierarchyComponent implements OnInit {
    * Logs the hierarchy type enum data for debugging purposes.
    */
   fetchHierarchyTypeEnum() {
-    this.organizationService.getHierarchiesType()
-      .subscribe((data) => {
-        this.hierarchyTypeEnumData = data;
+    this.organizationService.getHierarchiesType().subscribe((data) => {
+      this.hierarchyTypeEnumData = data;
 
-        log.info("hierarchy type enum>>", data);
-      });
+      log.info('hierarchy type enum>>', data);
+    });
   }
 
   /**
@@ -652,12 +774,11 @@ export class HierarchyComponent implements OnInit {
    * Logs the hierarchy level enum data for debugging purposes.
    */
   fetchHierarchyLevelEnum() {
-    this.organizationService.getHierarchiesLevels()
-      .subscribe((data) => {
-        this.hierarchyLevelsEnumData = data;
+    this.organizationService.getHierarchiesLevels().subscribe((data) => {
+      this.hierarchyLevelsEnumData = data;
 
-        log.info("hierarchy level enum>>", data);
-      });
+      log.info('hierarchy level enum>>', data);
+    });
   }
 
   /**
@@ -703,7 +824,7 @@ export class HierarchyComponent implements OnInit {
    */
   getSelectedUser(event: any) {
     this.selectedMainUser = event;
-    log.info(this.selectedMainUser)
+    log.info(this.selectedMainUser);
     this.patchClientFormValues(this.selectedMainUser);
   }
 
@@ -715,6 +836,10 @@ export class HierarchyComponent implements OnInit {
     this.hierarchyTypeForm.patchValue({
       intermediary: agent?.id,
     });
+
+    this.orgSubDivForm.patchValue({
+      divisionHead: agent?.id,
+    });
   }
 
   /**
@@ -722,8 +847,203 @@ export class HierarchyComponent implements OnInit {
    * @param agent - The selected agent.
    */
   openAllUsersModal() {
-    this.zIndex  = -1;
+    this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
+
+  selectDivision(division: SubDivisionUI) {
+    if (division.selected) {
+      division.selected = false;
+      this.selectedDivision = null;
+    } else {
+      if (this.selectedDivision) {
+        this.selectedDivision.selected = false;
+      }
+      division.selected = true;
+      this.selectedDivision = division;
+    }
+
+    log.info('Selected Division:', this.selectedDivision);
+    this.isEditMode = true;
+    this.editSubDivision(this.selectedDivision);
+  }
+
+  createSubDivision() {
+    this.isEditMode = false;
+    this.orgSubDivForm.reset();
+    this.orgSubDivForm.patchValue({
+      parentDivision: this.selectedDivision?.code || '',
+    });
+    log.info(
+      'Creating new SubDivision under:',
+      this.selectedDivision?.name || 'Root Division'
+    );
+  }
+
+  saveSubDivision() {
+    this.submitted = true;
+    this.orgSubDivForm.markAllAsTouched();
+
+    // Validate the form
+    if (this.orgSubDivForm.invalid) {
+      const invalidControls = Array.from(
+        document.querySelectorAll('.is-invalid')
+      ) as Array<HTMLInputElement | HTMLSelectElement>;
+
+      let firstInvalidUnfilledControl =
+        invalidControls.find((control) => !control.value) || invalidControls[0];
+
+      if (firstInvalidUnfilledControl) {
+        firstInvalidUnfilledControl.focus();
+        const scrollContainer = this.utilService.findScrollContainer(
+          firstInvalidUnfilledControl
+        );
+        if (scrollContainer) {
+          scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+        }
+      }
+      return;
+    }
+
+    const formValues = this.orgSubDivForm.getRawValue();
+    const systemCode = this.selectedSystem.id;
+
+    const parentCode = this.isEditMode
+      ? this.selectedDivision?.parentCode || null
+      : this.selectedDivision?.code || null;
+
+    const parentId = this.isEditMode
+      ? this.selectedDivision?.parentId || null
+      : this.selectedDivision?.id || null;
+
+    const subDivisionDto: SubDivisionDto = {
+      agentSequenceNumber: null,
+      branchCode: null,
+      code: formValues.code,
+      divisionHeadAgentCode: formValues.divisionHead
+        ? Number(formValues.divisionHead)
+        : null,
+      divisionLevelTypeCode: String(formValues.divisionLevelType || ''),
+      id: this.isEditMode ? this.selectedDivision!.id : null,
+      locationCode: formValues.location,
+      managerAllowed: formValues.managerAllowed,
+      name: formValues.name,
+      organizationDivisionLevelCode: String(formValues.divisionLevel || ''),
+      overCommissionEarn: formValues.overrideCommAllowed,
+      parentCode: parentCode,
+      parentId: parentId,
+      postLevel: null,
+      regionCode: null,
+      status: null,
+      systemCode: systemCode,
+      unitPrefix: null,
+      urbanArea: null,
+      wef: formValues.wef,
+      wet: formValues.wet,
+    };
+
+    // Call the appropriate service based on mode
+    const serviceCall = this.isEditMode
+      ? this.organizationService.updateOrganizationSubDivision(
+          subDivisionDto.id!,
+          subDivisionDto
+        )
+      : this.organizationService.createOrganizationSubDivision(subDivisionDto);
+
+    serviceCall.subscribe({
+      next: (data) => {
+        if (data) {
+          const successMessage = this.isEditMode
+            ? 'Successfully Updated a SubDivision'
+            : 'Successfully Created a SubDivision';
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            successMessage
+          );
+          this.fetchOrganizationSubDivision(this.selectedHierarchyType.code);
+        } else {
+          this.handleError();
+        }
+      },
+      error: (err) => {
+        this.handleError();
+      },
+    });
+  }
+
+  handleError() {
+    this.errorOccurred = true;
+    this.errorMessage = 'Something went wrong. Please try Again';
+    this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+  }
+
+  editSubDivision(selectedDivision: SubDivisionDto) {
+    const divisionLevelTypeCode = this.hierarchyTypeData.find(
+      (item) => item.code.toString() === selectedDivision.divisionLevelTypeCode
+    )?.code;
+
+    const divisionLevelCode = this.hierarchyLevelData.find(
+      (item) =>
+        item.code.toString() === selectedDivision.organizationDivisionLevelCode
+    )?.code;
+
+    this.orgSubDivForm.patchValue({
+      parentDivision: selectedDivision.parentCode || '',
+      code: selectedDivision.code || '',
+      divisionLevelType: divisionLevelTypeCode || null,
+      divisionLevel: divisionLevelCode || null,
+      name: selectedDivision.name || '',
+      divisionHead: selectedDivision.divisionHeadAgentCode || '',
+      location: selectedDivision.locationCode || '',
+      managerAllowed: selectedDivision.managerAllowed || '',
+      overrideCommAllowed: selectedDivision.overCommissionEarn || '',
+      wef: selectedDivision.wef || '',
+      wet: selectedDivision.wet || '',
+    });
+  }
+
+  deleteSubDivision() {
+    this.subDivisionConfirmationModal.show();
+  }
+
+  confirmSubDivisionDelete() {
+    if (this.selectedDivision) {
+      const subDivisionId = this.selectedDivision.id;
+      this.organizationService
+        .deleteOrganizationSubDivision(subDivisionId)
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deleted a subDivision'
+              );
+              this.selectedDivision = null;
+              this.fetchOrganizationSubDivision(
+                this.selectedHierarchyType.code
+              );
+              this.orgSubDivForm.reset();
+            } else {
+              this.handleError();
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No subdivision is selected!.'
+      );
+    }
+  }
+
+  saveHierarchyHeadHistory() {}
+
   ngOnDestroy(): void {}
 }

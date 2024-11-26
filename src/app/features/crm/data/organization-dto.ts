@@ -244,28 +244,77 @@ export interface CrmApiResponse {
 }
 
 export interface OrgDivisionLevelTypesDTO {
-  accountTypeCode: number,
-  code: number,
-  description: string,
-  intermediaryCode: number,
-  managerCode: number,
-  payIntermediary: string,
-  systemCode: number,
-  type: string
+  accountTypeCode: number;
+  code: number;
+  description: string;
+  intermediaryCode: number;
+  managerCode: number;
+  payIntermediary: string;
+  systemCode: number;
+  type: string;
 }
 
 export interface OrgDivisionLevelsDTO {
-  code: number,
-  description: string,
-  divisionLevelTypeCode: number,
-  ranking: number,
-  type: string
+  code: number;
+  description: string;
+  divisionLevelTypeCode: number;
+  ranking: number;
+  type: string;
 }
 
 export interface OrgPreviousSubDivHeadsDTO {
-  agentCode: number,
-  code: number,
-  subdivisionCode: string,
-  wef: string,
-  wet: string
+  agentCode: number;
+  code: number;
+  subdivisionCode: string;
+  wef: string;
+  wet: string;
+}
+
+export interface SubDivisionDto {
+  agentSequenceNumber: string;
+  branchCode: number;
+  code: string;
+  divisionHeadAgentCode: number;
+  divisionLevelTypeCode: string;
+  id: number;
+  locationCode: number;
+  managerAllowed: string;
+  name: string;
+  organizationDivisionLevelCode: string;
+  overCommissionEarn: string;
+  parentCode: string;
+  parentId: number;
+  postLevel: string;
+  regionCode: number;
+  status: string;
+  systemCode: number;
+  unitPrefix: string;
+  urbanArea: string;
+  wef: string;
+  wet: string;
+}
+
+export interface ReqSubDivisionDto {
+  agentSequenceNumber: string;
+  branchCode: number;
+  children: [];
+  code: string;
+  divisionHeadAgentCode: number;
+  divisionLevelTypeCode: string;
+  id: number;
+  locationCode: number;
+  managerAllowed: string;
+  name: string;
+  organizationDivisionLevelCode: string;
+  overCommissionEarn: string;
+  parentCode: string;
+  parentId: number;
+  postLevel: string;
+  regionCode: number;
+  status: string;
+  systemCode: number;
+  unitPrefix: string;
+  urbanArea: string;
+  wef: string;
+  wet: string;
 }

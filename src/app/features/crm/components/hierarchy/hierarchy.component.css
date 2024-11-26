@@ -10,3 +10,35 @@
   margin-right: 10px;
   cursor: pointer;
 }
+
+.subdivision-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.subdivision-list li {
+  list-style: none;
+  margin-left: 5px;
+}
+
+.subdivision-list li div {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.subdivision-list li div i {
+  margin-right: 8px;
+}
+
+.selected {
+  background-color: #f0f0f0;
+  color: #93adf5;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.subdivision-list li div:hover {
+  background-color: #f0f0f0;
+}

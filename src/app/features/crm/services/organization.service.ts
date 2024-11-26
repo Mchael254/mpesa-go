@@ -14,7 +14,12 @@ import {
   OrganizationRegionDTO,
   PostOrganizationDTO,
   PostOrganizationRegionDTO,
-  YesNoDTO, OrgDivisionLevelTypesDTO, OrgDivisionLevelsDTO, OrgPreviousSubDivHeadsDTO,
+  YesNoDTO,
+  OrgDivisionLevelTypesDTO,
+  OrgDivisionLevelsDTO,
+  OrgPreviousSubDivHeadsDTO,
+  ReqSubDivisionDto,
+  SubDivisionDto,
 } from '../data/organization-dto';
 import { UtilService } from '../../../shared/services';
 import { ApiService } from '../../../shared/services/api/api.service';
@@ -425,9 +430,10 @@ export class OrganizationService {
     );
   }
 
-  getOrgDivisionLevelTypes(systemCode?:number): Observable<OrgDivisionLevelTypesDTO[]> {
-    const params = new HttpParams()
-      .set('systemCode', `${systemCode}`);
+  getOrgDivisionLevelTypes(
+    systemCode?: number
+  ): Observable<OrgDivisionLevelTypesDTO[]> {
+    const params = new HttpParams().set('systemCode', `${systemCode}`);
     return this.api.GET<OrgDivisionLevelTypesDTO[]>(
       `organization-division-level-types`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
@@ -463,9 +469,13 @@ export class OrganizationService {
     );
   }
 
-  getOrgDivisionLevels(divisionLevelTypeCode?:number): Observable<OrgDivisionLevelsDTO[]> {
-    const params = new HttpParams()
-      .set('divisionLevelTypeCode', `${divisionLevelTypeCode}`);
+  getOrgDivisionLevels(
+    divisionLevelTypeCode?: number
+  ): Observable<OrgDivisionLevelsDTO[]> {
+    const params = new HttpParams().set(
+      'divisionLevelTypeCode',
+      `${divisionLevelTypeCode}`
+    );
     return this.api.GET<OrgDivisionLevelsDTO[]>(
       `organization-division-levels`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
@@ -520,7 +530,8 @@ export class OrganizationService {
       .set('divisionLevelTypeCode', `${divisionLevelTypeCode}`);*/
     return this.api.GET<OrgPreviousSubDivHeadsDTO[]>(
       `subdivision-head-histories`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   createOrgPrevSubDivisionHead(
@@ -547,6 +558,59 @@ export class OrganizationService {
   deleteOrgPrevSubDivisionHead(orgDivisionLevelId: number) {
     return this.api.DELETE<OrgPreviousSubDivHeadsDTO>(
       `subdivision-head-histories/${orgDivisionLevelId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  getOrganizationSubDivision(
+    divisionLevelTypeCode: string
+  ): Observable<ReqSubDivisionDto[]> {
+    const params = new HttpParams().set(
+      'divisionLevelTypeCode',
+      `${divisionLevelTypeCode}`
+    );
+    return this.api.GET<ReqSubDivisionDto[]>(
+      `organization-subdivisions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  getOrganizationSubDivisionByParentCode(
+    parentCode: string
+  ): Observable<ReqSubDivisionDto[]> {
+    const params = new HttpParams().set('parentCode', `${parentCode}`);
+    return this.api.GET<ReqSubDivisionDto[]>(
+      `organization-subdivisions/subLevels`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+  createOrganizationSubDivision(
+    data: SubDivisionDto
+  ): Observable<SubDivisionDto> {
+    return this.api.POST<SubDivisionDto>(
+      `organization-subdivisions`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  updateOrganizationSubDivision(
+    subDivisionId: number,
+    data: SubDivisionDto
+  ): Observable<SubDivisionDto> {
+    return this.api.PUT<SubDivisionDto>(
+      `organization-subdivisions/${subDivisionId}`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteOrganizationSubDivision(subDivisionId: number) {
+    return this.api.DELETE<SubDivisionDto>(
+      `organization-subdivisions/${subDivisionId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
