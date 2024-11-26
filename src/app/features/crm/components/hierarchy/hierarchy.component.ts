@@ -19,6 +19,7 @@ import {
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
+import {Table} from "primeng/table";
 
 const log = new Logger('HierarchyComponent');
 
@@ -96,6 +97,12 @@ export class HierarchyComponent implements OnInit {
   selectedMainUser: AgentDTO;
   hierarchyTypeEnumData: any;
   hierarchyLevelsEnumData: any;
+  patchHierarchyTypeUser: boolean = false;
+
+  @ViewChild('hierarchyTypeConfirmationModal') hierarchyTypeConfirmationModal: ReusableInputComponent;
+  @ViewChild('hierarchyLevelConfirmationModal') hierarchyLevelConfirmationModal: ReusableInputComponent;
+  @ViewChild('hierarchyPrevHeadsConfirmationModal') hierarchyPrevHeadsConfirmationModal: ReusableInputComponent;
+  @ViewChild('previousSubDivHeadsTable') previousSubDivHeadsTable: Table;
 
   constructor(
     private systemsService: SystemsService,
@@ -256,6 +263,7 @@ export class HierarchyComponent implements OnInit {
   openDefineHierarchyTypeModal() {
     const modal = document.getElementById('newHierarchyType');
     if (modal && this.selectedSystem?.id !== undefined) {
+      this.patchHierarchyTypeUser = !this.patchHierarchyTypeUser;
       modal.classList.add('show');
       modal.style.display = 'block';
     } else {
@@ -394,9 +402,22 @@ export class HierarchyComponent implements OnInit {
    * opens the modal for defining a hierarchy level with the selected hierarchy level's details.
    */
   editPreviousSubDivHeads() {
-    if (this.selectedHierarchyType) {
-      this.editMode = !this.editMode;
-      this.openDefineHierarchyLevelsModal();
+    this.editMode = !this.editMode;
+
+    if (this.selectedPreviousSubDivHeads) {
+      this.openDefinePreviousSubDivHeadsModal();
+      this.hierarchyHeadHistoryForm.patchValue({
+        agentName: this.selectedPreviousSubDivHeads.agentCode,
+        wef: this.selectedPreviousSubDivHeads.wef,
+        wet: this.selectedPreviousSubDivHeads.wet
+
+      })
+    }
+    else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No hierarchy type is selected.'
+      )
     }
   }
 
@@ -484,6 +505,7 @@ export class HierarchyComponent implements OnInit {
         this.closeDefineHierarchyTypeModal();
         this.fetchHierarchyLevelType();
         this.selectedHierarchyType = null;
+        this.selectedMainUser = null;
       },
       error: (err) => {
         log.info('>>>>>>>>>', err.error.message);
@@ -503,32 +525,7 @@ export class HierarchyComponent implements OnInit {
    * If no hierarchy type is selected, displays an error message.
    */
   deleteHierarchyLevelType() {
-    if (this.selectedHierarchyType) {
-      const hierarchyLevelTypeId = this.selectedHierarchyType?.code;
-      this.organizationService
-        .deleteOrgDivisionLevelType(hierarchyLevelTypeId)
-        .subscribe({
-          next: (data) => {
-            this.globalMessagingService.displaySuccessMessage(
-              'success',
-              'Successfully deleted a hierarchy type'
-            );
-            this.selectedHierarchyType = null;
-            this.fetchHierarchyLevelType();
-          },
-          error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              err.error.message
-            );
-          },
-        });
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No hierarchy type is selected.'
-      );
-    }
+    this.hierarchyTypeConfirmationModal.show();
   }
 
   /**
@@ -597,32 +594,7 @@ export class HierarchyComponent implements OnInit {
    * If no hierarchy level is selected, displays an error message.
    */
   deleteHierarchyLevel() {
-    if (this.selectedHierarchyLevel) {
-      const hierarchyLevelId = this.selectedHierarchyLevel?.code;
-      this.organizationService
-        .deleteOrgDivisionLevel(hierarchyLevelId)
-        .subscribe({
-          next: (data) => {
-            this.globalMessagingService.displaySuccessMessage(
-              'success',
-              'Successfully deleted a hierarchy level'
-            );
-            this.fetchHierarchyLevels(this.selectedHierarchyType);
-            this.selectedHierarchyType = null;
-          },
-          error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              err.error.message
-            );
-          },
-        });
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No hierarchy level is selected.'
-      );
-    }
+    this.hierarchyLevelConfirmationModal.show();
   }
 
   fetchOrganizationSubDivision(divisionLevelTypeCode) {
@@ -678,6 +650,10 @@ export class HierarchyComponent implements OnInit {
         division.hasChildren = false;
       }
     }
+  }
+
+  deleteHierarchyHeadHistory() {
+    this.hierarchyPrevHeadsConfirmationModal.show();
   }
 
   /**
@@ -825,20 +801,26 @@ export class HierarchyComponent implements OnInit {
   getSelectedUser(event: any) {
     this.selectedMainUser = event;
     log.info(this.selectedMainUser);
-    this.patchClientFormValues(this.selectedMainUser);
+    if (this.patchHierarchyTypeUser === false) {
+      this.patchPreviousSubDivFormValues(this.selectedMainUser);
+    } else {
+      this.patchHierarchyTypeFormValues(this.selectedMainUser);
+    }
   }
 
   /**
    * Patches the hierarchy type form with the selected user's id.
    * @param user - The selected user.
    */
-  patchClientFormValues(agent: any) {
+  patchHierarchyTypeFormValues(agent: any) {
     this.hierarchyTypeForm.patchValue({
       intermediary: agent?.id,
     });
+  }
 
-    this.orgSubDivForm.patchValue({
-      divisionHead: agent?.id,
+  patchPreviousSubDivFormValues(agent: any) {
+    this.hierarchyHeadHistoryForm.patchValue({
+      agentName: agent?.id,
     });
   }
 
@@ -1043,7 +1025,124 @@ export class HierarchyComponent implements OnInit {
     }
   }
 
-  saveHierarchyHeadHistory() {}
+  saveHierarchyHeadHistory() {
+    const hierarchyHeadHistoryFormValues = this.hierarchyHeadHistoryForm.getRawValue();
+    const hierarchyHeadHistoryCode = this.selectedPreviousSubDivHeads?.code ? this.selectedPreviousSubDivHeads?.code : null;
+
+    const saveHierarchyHeadHistoryPayload: OrgPreviousSubDivHeadsDTO = {
+      agentCode: hierarchyHeadHistoryFormValues.agentName,
+      code: hierarchyHeadHistoryCode,
+      subdivisionCode: "123",
+      wef: hierarchyHeadHistoryFormValues.wef,
+      wet: hierarchyHeadHistoryFormValues.wet
+    }
+    log.info("save previous subdiv heads>>>", saveHierarchyHeadHistoryPayload);
+
+    const orgServiceCall = this.selectedPreviousSubDivHeads
+      ? this.organizationService.updateOrgPrevSubDivisionHead(hierarchyHeadHistoryCode, saveHierarchyHeadHistoryPayload)
+      : this.organizationService.createOrgPrevSubDivisionHead(saveHierarchyHeadHistoryPayload);
+
+    return orgServiceCall.subscribe({
+      next: (data) => {
+        this.globalMessagingService.displaySuccessMessage('Success',
+          `Successfully ${this.selectedPreviousSubDivHeads ? 'updated' : 'created'} a hierarchy previous subdivision head`);
+
+        this.hierarchyHeadHistoryForm.reset();
+        this.closeDefinePreviousSubDivHeadsModal();
+        this.fetchPreviousSubDivisionHeads();
+        this.selectedPreviousSubDivHeads = null;
+        this.selectedMainUser = null;
+      },
+      error: (err) => {
+        log.info('>>>>>>>>>', err.error.message)
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      }
+    });
+  }
 
   ngOnDestroy(): void {}
+
+  confirmHierarchyTypeDelete() {
+    if (this.selectedHierarchyType) {
+      const hierarchyLevelTypeId = this.selectedHierarchyType?.code;
+      this.organizationService.deleteOrgDivisionLevelType(hierarchyLevelTypeId).subscribe( {
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a hierarchy type'
+          );
+          this.selectedHierarchyType = null;
+          this.fetchHierarchyLevelType();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No hierarchy type is selected.'
+      );
+    }
+  }
+
+  confirmHierarchyLevelDelete() {
+    if (this.selectedHierarchyLevel) {
+      const hierarchyLevelId = this.selectedHierarchyLevel?.code;
+      this.organizationService.deleteOrgDivisionLevel(hierarchyLevelId).subscribe( {
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a hierarchy level'
+          );
+          this.fetchHierarchyLevels(this.selectedHierarchyType);
+          this.selectedHierarchyType = null;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No hierarchy level is selected.'
+      );
+    }
+  }
+
+  /**
+   * Confirms deletion of a hierarchy previous subdivision head.
+   * If a hierarchy previous subdivision head is selected, sends a request to the server to delete it.
+   * If the request is successful, displays a success message, fetches the hierarchy previous subdivision heads and resets the selected hierarchy previous subdivision head to null.
+   * If the request fails, displays an error message.
+   * If no hierarchy previous subdivision head is selected, displays an error message.
+   */
+  confirmHierarchyPrevHeadsDelete() {
+    if (this.selectedPreviousSubDivHeads) {
+      const hierarchyPreviousSubDivId = this.selectedPreviousSubDivHeads?.code;
+      this.organizationService.deleteOrgPrevSubDivisionHead(hierarchyPreviousSubDivId).subscribe( {
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a hierarchy previous subdivision head'
+          );
+          this.fetchPreviousSubDivisionHeads();
+          this.selectedPreviousSubDivHeads = null;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No hierarchy previous sub division head is selected.'
+      );
+    }
+  }
+
+  filterPreviousHeads(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.previousSubDivHeadsTable.filterGlobal(filterValue, 'contains');
+  }
 }
