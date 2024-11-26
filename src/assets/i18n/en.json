@@ -298,7 +298,8 @@
     "payIntermediary": "Pay intermediary",
     "ranking": "Ranking",
     "agentName": "Agent name",
-    "agentShortDesc": "Agent short description"
+    "agentShortDesc": "Agent short description",
+    "code": "Code"
   },
   "entities": {
     "account_number": "Account Number",
@@ -866,7 +867,7 @@
       "rate_table": "Rate Table",
       "absolute_range": "Absolute Range",
       "step_ranges": "Step Ranges",
-      "effective_date":"Effective date"
+      "effective_date": "Effective date"
     },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
@@ -2251,13 +2252,13 @@
     "correction": "Send for correction",
     "reject": "Reject",
     "receipting": {
-      "capture_receipt":"Capture receipt",
+      "capture_receipt": "Capture receipt",
       "receipt_details": "Receipt Details",
       "currency": "Currency",
       "payment_mode": "Payment Mode",
       "bank_account": "Bank Account",
       "receipting_point": "Receipting Point",
-      "receipt_number":"Receipt Number",
+      "receipt_number": "Receipt Number",
       "amount_issued": "Amount Issued",
       "cheque_type": "Cheque Type",
       "ipf_financier": "IPF Financier",
@@ -2279,12 +2280,11 @@
       "printed": "Printed",
       "spoilt_receipt_paper": "Spoilt Receipt Paper",
       "not_printed": "Not Printed",
-      "uploadFiles":"Upload file",
+      "uploadFiles": "Upload file",
       "charges": "Charges",
       "capitalInjection": "Capital Injection",
       "deductions": "Deductions",
       "chargeAmount": "Charge Amount"
-
     },
     "allocation": {
       "allocate_funds": "Allocate Funds",
@@ -2303,23 +2303,23 @@
       "save_allocations": "Save Allocations",
       "print_receipt": "Print Receipt",
       "add_allocation": "Add Allocation",
-      "allocation_type":"Allocation Type",
+      "allocation_type": "Allocation Type",
       "allocatedAmount": "Allocated Amount",
       "cancel_receipt": "Cancel Receipt"
     },
 
     "client": {
-        "name": "Client Name",
-        "date": "Date",
-        "narration": "Narration",
-        "amount": "Amount"
-      },
+      "name": "Client Name",
+      "date": "Date",
+      "narration": "Narration",
+      "amount": "Amount"
+    },
     "account_types": {
       "manage_account_type": "Manage Account Type"
     },
-    "common":{
-     "close":"cancel"
-  },
+    "common": {
+      "close": "cancel"
+    },
 
     "receipt_authorization": {
       "title": "Receipt Authorization",
@@ -2328,15 +2328,15 @@
       "select_all": "Select All",
       "authorize_all": "Authorize All",
       "reject_all": "Reject All",
-      "search":"Search",
+      "search": "Search",
       "receipt_no": "Receipt No.",
       "policy_no": "Policy No.",
       "payment_memo": "Payment Memo",
       "amount": "Amount",
       "capture_date": "Capture Date",
-      "authorization_date":"authorization_date",
+      "authorization_date": "authorization_date",
       "status": "Status",
-      "actions":"Actions",
+      "actions": "Actions",
       "authorize": "Authorize",
       "reject": "Reject",
       "rejection_remarks": "Rejection Remarks",
