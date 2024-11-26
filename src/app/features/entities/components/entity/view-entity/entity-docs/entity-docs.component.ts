@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
 import {Logger} from "../../../../../../shared/services";
 import {untilDestroyed} from "../../../../../../shared/services/until-destroyed";
@@ -8,6 +8,7 @@ import {ReqPartyById} from "../../../../data/entityDto";
 import {AuthService} from "../../../../../../shared/services/auth.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {take} from "rxjs/internal/operators/take";
+import {ReusableInputComponent} from "../../../../../../shared/components/reusable-input/reusable-input.component";
 
 const log = new Logger("EntityDocsComponent")
 @Component({
@@ -28,6 +29,8 @@ export class EntityDocsComponent implements OnInit {
   viewAllDocs: DmsDocument[] = [];
   docsList: any[] = [];
   isLoading: boolean = false;
+  @ViewChild('deleteDocConfirmationModal') deleteDocConfirmationModal: ReusableInputComponent;
+  selectedDoc: DmsDocument;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -107,7 +110,15 @@ export class EntityDocsComponent implements OnInit {
    * If there is an error, logs the error and still calls `fetchDocuments`.
    */
   deleteUploadedFile(doc: any) {
-    this.dmsService.deleteDocumentById(doc.id)
+    this.deleteDocConfirmationModal.show();
+    this.selectedDoc = doc
+  }
+
+  /**
+   * Deletes a selected document and displays success or error messages accordingly.
+   */
+  confirmDocDelete() {
+    this.dmsService.deleteDocumentById(this.selectedDoc.id)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
@@ -121,7 +132,6 @@ export class EntityDocsComponent implements OnInit {
         }
       });
   }
-
   /**
    * Uploads a file based on the party type selected.
    *
