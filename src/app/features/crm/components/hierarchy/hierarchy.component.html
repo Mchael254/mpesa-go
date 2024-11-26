@@ -92,7 +92,7 @@
             </span>
             <span class="icon-circle">
               <i
-                class="fa-regular fa-trash-can"
+                class="fa-regular fa-trash-can" id="deleteHierarchyType"
                 (click)="deleteHierarchyLevelType()"
               >
               </i>
@@ -132,21 +132,21 @@
               {{ "crm.description" | translate }}
               <p-sortIcon field="description"></p-sortIcon>
             </th>
-            <th pSortableColumn="accountTypeCode">
+            <th pSortableColumn="accountTypeName">
               {{ "crm.accountType" | translate }}
-              <p-sortIcon field="accountTypeCode"></p-sortIcon>
+              <p-sortIcon field="accountTypeName"></p-sortIcon>
             </th>
-            <th pSortableColumn="managerCode">
+            <th pSortableColumn="managerName">
               {{ "crm.headAccountType" | translate }}
-              <p-sortIcon field="managerCode"></p-sortIcon>
+              <p-sortIcon field="managerName"></p-sortIcon>
             </th>
             <th pSortableColumn="type">
               {{ "crm.type" | translate }}
               <p-sortIcon field="type"></p-sortIcon>
             </th>
-            <th pSortableColumn="intermediaryCode">
+            <th pSortableColumn="intermediaryName">
               {{ "crm.intermediary" | translate }}
-              <p-sortIcon field="intermediaryCode"></p-sortIcon>
+              <p-sortIcon field="intermediaryName"></p-sortIcon>
             </th>
             <th pSortableColumn="payIntermediary">
               {{ "crm.payIntermediary" | translate }}
@@ -163,7 +163,7 @@
             <td>{{ hierarchyType?.accountTypeName | titlecase }}</td>
             <td>{{ hierarchyType?.managerName | titlecase }}</td>
             <td>{{ hierarchyType?.type | titlecase }}</td>
-            <td>{{ hierarchyType?.intermediaryCode }}</td>
+            <td>{{ hierarchyType?.intermediaryName }}</td>
             <td>{{ hierarchyType?.payIntermediary === "Y" ? "Yes" : "No" }}</td>
           </tr>
         </ng-template>
@@ -199,7 +199,7 @@
             </span>
             <span class="icon-circle">
               <i
-                class="fa-regular fa-trash-can"
+                class="fa-regular fa-trash-can" id="deleteHierarchyLevel"
                 (click)="deleteHierarchyLevel()"
               >
               </i>
@@ -545,12 +545,14 @@
               <i class="pi pi-pencil"></i>
             </span>
             <span class="icon-circle">
-              <i class="fa-regular fa-trash-can"></i>
+              <i class="fa-regular fa-trash-can" id="deleteHierarchyPrevHead"
+              (click)="deleteHierarchyHeadHistory()"></i>
             </span>
           </div>
         </div>
         <div class="col-sm-6">
-          <input type="text" class="form-control" placeholder="Search" />
+          <input type="text" class="form-control" placeholder="Search"
+                 (input)="filterPreviousHeads($event)"/>
         </div>
       </div>
       <p-table
@@ -570,32 +572,32 @@
         dataKey="code"
         scrollHeight="400px"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [globalFilterFields]="['description', 'code']"
+        [globalFilterFields]="['agentName', 'agentShortDescription']"
       >
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="gis_exception_code">
+            <th pSortableColumn="agentName">
               {{ "crm.agentName" | translate }}
-              <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              <p-sortIcon field="agentName"></p-sortIcon>
             </th>
-            <th pSortableColumn="gis_exception_code">
+            <th pSortableColumn="agentShortDescription">
               {{ "crm.agentShortDesc" | translate }}
-              <p-sortIcon field="gis_exception_code"></p-sortIcon>
+              <p-sortIcon field="agentShortDescription"></p-sortIcon>
             </th>
             <th pSortableColumn="wef">
               {{ "crm.WEF" | translate }} <p-sortIcon field="wef"></p-sortIcon>
             </th>
-            <th pSortableColumn="wef">
-              {{ "crm.WET" | translate }} <p-sortIcon field="wef"></p-sortIcon>
+            <th pSortableColumn="wet">
+              {{ "crm.WET" | translate }} <p-sortIcon field="wet"></p-sortIcon>
             </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-subDivisionHead>
           <tr [pSelectableRow]="subDivisionHead" class="attach-system">
-            <td>{{ subDivisionHead?.agentCode }}</td>
-            <td>{{ subDivisionHead?.desc }}</td>
+            <td>{{ subDivisionHead?.agentName | titlecase }}</td>
+            <td>{{ subDivisionHead?.agentShortDescription }}</td>
             <td>{{ subDivisionHead?.wef }}</td>
-            <td>{{ subDivisionHead?.wef }}</td>
+            <td>{{ subDivisionHead?.wet }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
@@ -606,6 +608,7 @@
       </p-table>
     </div>
   </div>
+
 
   <!--Create Hierarchy Type modal-->
   <div
@@ -785,7 +788,8 @@
           <button
             type="button"
             class="btn btn-primary"
-            (click)="saveHierarchyType()"
+            id="saveHierarchyType"
+          (click)="saveHierarchyType()"
           >
             Save details
           </button>
@@ -856,64 +860,35 @@
                         [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
                   <option value=""></option>
                 </select>-->
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="ranking"
-                    formControlName="ranking"
-                    [ngClass]="{
-                      'is-invalid':
-                        g['ranking']?.invalid &&
-                        (g['ranking']?.dirty || g['ranking']?.touched)
-                    }"
-                  />
-                  <div
-                    *ngIf="
-                      g['ranking']?.invalid &&
-                      (g['ranking']?.dirty || g['ranking']?.touched)
-                    "
-                    class="form-text text-danger"
-                  >
-                    <div *ngIf="g['ranking']?.errors['required']">
-                      Ranking is required
-                    </div>
-                  </div>
+                <input type="number" class="form-control" id="ranking" formControlName="ranking"
+                       [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
+                <div *ngIf="g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['ranking']?.errors['required']">Ranking is required</div>
                 </div>
-              </ng-container>
-              <ng-container *ngIf="visibleStatus.type === 'Y'">
-                <div class="col-md-12">
-                  <label class="form-label w-100" for="levelType">{{
-                    "crm.type" | translate
-                  }}</label>
-                  <select
-                    class="form-select"
-                    id="levelType"
-                    formControlName="type"
-                  >
-                    <option
-                      value="{{ type.value }}"
-                      *ngFor="let type of hierarchyLevelsEnumData"
-                    >
-                      {{ type.name }}
-                    </option>
-                  </select>
-                </div>
-              </ng-container>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer border-top-0">
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="saveHierarchyLevel()"
-          >
-            Save details
-          </button>
-        </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.type === 'Y'">
+              <div class="col-md-12">
+                <label class="form-label w-100" for="levelType">{{'crm.type' | translate}}</label>
+                <select class="form-select" id="levelType" formControlName="type">
+                  <option value="{{ type.value }}" *ngFor="let type of hierarchyLevelsEnumData">{{ type.name }}</option>
+                </select>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="saveHierarchyLevel"
+          (click)="saveHierarchyLevel()">Save details
+        </button>
       </div>
     </div>
   </div>
+</div>
 
   <!--Create Hierarchy head history modal-->
   <div
@@ -950,6 +925,7 @@
                     id="agentName"
                     formControlName="agentName"
                   />
+                       (click)="openAllUsersModal()" value="{{selectedMainUser?.name}}" readonly>
                 </div>
               </ng-container>
               <ng-container *ngIf="visibleStatus.wef === 'Y'">
@@ -989,7 +965,8 @@
           <button
             type="button"
             class="btn btn-primary"
-            (click)="saveHierarchyHeadHistory()"
+            id="saveHierarchyHead"
+          (click)="saveHierarchyHeadHistory()"
           >
             Save details
           </button>
@@ -1007,7 +984,8 @@
     [modalTitle]="'Intermediaries'"
     [zIndex]="1"
     (actionEmitter)="processSelectedUser($event)"
-  >
+
+  id="process-selected-user">
     <div modal-body-content>
       <app-staff-modal
         (userSelected)="getSelectedUser($event)"
@@ -1025,3 +1003,27 @@
     #subDivisionConfirmationModal
   ></app-reusable-input>
 </div>
+
+<app-reusable-input
+  [modalId]="'hierarchyTypeConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this hierarchy type?'"
+  (confirmed)="confirmHierarchyTypeDelete()"
+  #hierarchyTypeConfirmationModal
+></app-reusable-input>
+
+<app-reusable-input
+  [modalId]="'hierarchyLevelConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this hierarchy level?'"
+  (confirmed)="confirmHierarchyLevelDelete()"
+  #hierarchyLevelConfirmationModal
+></app-reusable-input>
+
+<app-reusable-input
+  [modalId]="'hierarchyPrevHeadsConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this previous sub division head?'"
+  (confirmed)="confirmHierarchyPrevHeadsDelete()"
+  #hierarchyPrevHeadsConfirmationModal
+></app-reusable-input>
