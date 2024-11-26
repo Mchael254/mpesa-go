@@ -109,3 +109,10 @@
     </div>
   </div>
 </div>
+<app-reusable-input
+  [modalId]="'deleteDocConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this document?'"
+  (confirmed)="confirmDocDelete()"
+  #deleteDocConfirmationModal
+></app-reusable-input>
