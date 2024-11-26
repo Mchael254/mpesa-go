@@ -269,7 +269,8 @@
     "payIntermediary": "支付中介",
     "ranking": "排名",
     "agentName": "代理名称",
-    "agentShortDesc": "代理简短描述"
+    "agentShortDesc": "代理简短描述",
+    "code": "代码"
   },
   "entities": {
     "account_number": "帐号",
@@ -1308,7 +1309,7 @@
         "receipt_number": "收据号码",
         "action": "操作"
       },
-      "view_transaction":{
+      "view_transaction": {
         "claimRevisionSummary": "索赔修改摘要",
         "currentTicket": "我的当前票据",
         "lossOpeningDataEntry": "损失开立数据录入",
@@ -1332,7 +1333,7 @@
         "sendEmail": "发送电子邮件",
         "sendSMS": "发送短信"
       },
-      "claim_booking":{
+      "claim_booking": {
         "lossDate": "损失日期",
         "partyToBlame": "责任方",
         "lossDescription": "损失描述",
@@ -1352,10 +1353,9 @@
         "ref_no": "参考号",
         "recovery_steps_taken": "采取的恢复步骤",
         "road_surface_condition": "路面状况"
-
-  }
-  }
-},
+      }
+    }
+  },
   "lms": {
     "common": {},
     "ind": {
