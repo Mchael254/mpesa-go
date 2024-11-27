@@ -10,12 +10,14 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../../shared/shared.module";
 import { ReceiptComponent } from './components/receipt/receipt.component';
+import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
 
 
 @NgModule({
   declarations: [
     ChequeAuthorizationComponent,
-    ReceiptComponent
+    ReceiptComponent,
+    ReceiptAuthorizationComponent
   ],
     imports: [
         CommonModule,
