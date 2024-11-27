@@ -35,8 +35,8 @@
             <div class="form-group position-relative">
               <label for="currency" class="text-dark">{{'fms.receipting.currency' | translate }}</label>
               <div class="dropdown-container">
-                <select id="currency" class="form-control" formControlName="currency" (change)="onCurrencySelected()">
-                  <option *ngFor="let currency of currencies" [value]="currency?.symbol">{{currency?.symbol}}</option>
+                <select id="currency" class="form-control" formControlName="currency" (change)="onCurrencyChanged($event)">
+                  <option *ngFor="let currency of currencies" [value]="currency.code">{{currency?.symbol}}</option>
                 </select>
                 <i class="pi pi-chevron-down dropdown-icon"></i>
               </div>
@@ -70,7 +70,7 @@
             </div>
           </div> -->
           <!-- Exchange Rate Modal -->
-<div
+<!-- <div
 class="modal fade"
 id="exchangeRateModal"
 tabindex="-1"
@@ -93,11 +93,11 @@ aria-hidden="true"
     </div>
     <div class="modal-body">
       <div *ngIf="useDefaultExchangeRate">
-        <p>1 {{ selectedCurrency }} = {{ exchangeRate }}</p>
+        <p>1 {{ currencySymbolGlobal }} = {{ exchangeRates }}</p>
       </div>
-      <div *ngIf="!useDefaultExchangeRate">
+      <div *ngIf="dontUseDefaultExchangeRate">
         <label for="exchangeRateInput">Enter Exchange Rate:</label>
-        <p>1 {{ selectedCurrency }} =</p>
+        <p>1 {{ currencySymbolGlobal }} =</p>
         <input
           type="number"
           id="exchangeRateInput"
@@ -112,8 +112,84 @@ aria-hidden="true"
     </div>
   </div>
 </div>
+</div> -->
+<div
+class="modal fade"
+id="exchangeRateModal2"
+tabindex="-1"
+role="dialog"
+aria-labelledby="exchangeRateLabel"
+aria-hidden="true"
+>
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+     
+      <div >
+        <label for="exchangeRateInput">Enter Exchange Rate:</label>
+        <p>1 {{ currencySymbolGlobal }} =</p>
+        <input
+          type="number"
+          id="exchangeRateInput"
+          placeholder="value in KES"
+          class="form-control"
+          formControlName="exchangeRate"
+        />
+       
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="confirmExchangeRateValue()">OK</button>
+    </div>
+  </div>
 </div>
-
+</div>
+<div
+class="modal fade"
+id="exchangeRateModal"
+tabindex="-1"
+role="dialog"
+aria-labelledby="exchangeRateLabel"
+aria-hidden="true"
+>
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- <div *ngIf="useDefaultExchangeRate"> -->
+        <div>
+        <p>1 {{ currencySymbolGlobal }} = {{ exchangeRates }} </p><p>{{this.selectedCurrencySymbol}}</p>
+      </div>
+    
+    </div>
+    <div class="modal-footer">
+   
+      <button type="button" class="btn btn-primary" (click)="confirmExchangeRate()">OK</button>
+    </div>
+  </div>
+</div>
+</div>
 
           <!-- Payment Mode Dropdown -->
           <div class="col-md-4">
@@ -149,7 +225,7 @@ aria-hidden="true"
                 <div class="modal-body">
                   <div class="dropdown-container">
                     <select formControlName="chequeType" class="form-control">
-                      <!-- <option *ngFor="let type of chequeTypes" [value]="type">{{ type }}</option> -->
+                      <option *ngFor="let type of chequeTypes" [value]="type">{{ type }}</option>
                     </select>
                     <i class="pi pi-chevron-down dropdown-icon"></i>
                   </div>
@@ -166,7 +242,8 @@ aria-hidden="true"
             <div class="form-group position-relative">
               <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }}</label>
               <div class="dropdown-container">
-                <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()">
+                <select id="bankAccount" class="form-control" formControlName="bankAccount" >
+                <!-- <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()"> -->
                    <option *ngFor="let bank of bankAccounts" [value]="bank.name">{{bank.name}} - {{bank.name}}</option> 
                 </select>
                   
@@ -178,6 +255,19 @@ aria-hidden="true"
         </div>
 
         <div class="row mt-3">
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receiptingPoint" class="text-dark">{{'fms.receipting.receipting_point' | translate }}</label>
+              <input
+                type="text"
+                class="form-control"
+                id="receiptingPoint"
+                formControlName="receiptingPoint"
+                
+              ></div>
+          </div>
+
           <div class="col-md-4">
             <div class="form-group">
               <label for="receiptNumber" class="text-dark">{{'fms.receipting.receipt_number' | translate }}</label>
@@ -191,17 +281,7 @@ aria-hidden="true"
             </div>
           </div>
 
-          <div class="col-md-4">
-            <div class="form-group">
-              <label for="receiptingPoint" class="text-dark">{{'fms.receipting.receipting_point' | translate }}</label>
-              <input
-                type="text"
-                class="form-control"
-                id="receiptingPoint"
-                formControlName="receiptingPoint"
-                
-              ></div>
-          </div>
+         
 
           <div class="col-md-4">
             <div class="form-group position-relative">
@@ -347,8 +427,69 @@ aria-hidden="true"
             </div>
           </div>
 
-          <!-- Charges Modal -->
-          <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
+     
+          <!-- <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="chargesModalLabel">Charges Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <form [formGroup]="receiptingDetailsForm">
+                   =
+                    <div class="form-group mb-3">
+                      <label for="chargeType">Type</label>
+                      <div class="dropdown-container">
+                        <select class="form-control" id="chargeType" formControlName="selectedChargeType">
+                      
+                          <option *ngFor="let charge of charges" value="bankCharges" value="charge.name">{{charge.name}} </option>
+                        </select>
+                        <i class="pi pi-chevron-down dropdown-icon"></i>
+                      </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label for="modalChargeAmount">Amount</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="modalChargeAmount"
+                        formControlName="modalChargeAmount"
+                      />
+                    </div>
+                  </form>
+
+                  
+                  <div *ngIf="chargeList.length > 0" class="mt-4">
+                    <h6>Existing Charges</h6>
+                    <ul class="list-group">
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                        *ngFor="let charge of chargeList; let i = index"
+                      >
+                        <span>{{ charge.type }} - {{ charge.amount | currency:selectedCurrency }}</span>
+                        <div>
+                          <button class="btn btn-sm btn-warning me-2" (click)="editCharge(i)">Edit</button>
+                          <button class="btn btn-sm btn-danger" (click)="deleteCharge(i)">Delete</button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" (click)="saveCharges()">Save</button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+
+           <!-- Charges Modal -->
+           <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -363,8 +504,8 @@ aria-hidden="true"
                       <label for="chargeType">Type</label>
                       <div class="dropdown-container">
                         <select class="form-control" id="chargeType" formControlName="selectedChargeType">
-                          <option value="charges">Charges</option>
-                          <option value="bankCharges">Bank Charges</option>
+                      
+                          <option *ngFor="let charge of charges" value="bankCharges" value="charge.name">{{charge.name}} </option>
                         </select>
                         <i class="pi pi-chevron-down dropdown-icon"></i>
                       </div>
