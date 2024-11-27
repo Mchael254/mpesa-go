@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails } from '../../data/quotationsDTO';
+import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
 import { environment } from '../../../../../../../environments/environment';
@@ -31,14 +31,14 @@ export class QuotationsService {
    */
   constructor(
     private appConfig: AppConfigService,
-    private http: HttpClient, 
+    private http: HttpClient,
     private session_storage: SessionStorageService,
-    private api:ApiService
-    ) { }
-   /**
-   * Base URL for quotation services obtained from application configuration.
-   * @type {string}
-   */ 
+    private api: ApiService
+  ) { }
+  /**
+  * Base URL for quotation services obtained from application configuration.
+  * @type {string}
+  */
   baseUrl = this.appConfig.config.contextPath.gis_services;
   computationUrl = this.appConfig.config.contextPath.computation_service;
   notificationUrl = this.appConfig.config.contextPath.notification_service;
@@ -57,40 +57,40 @@ export class QuotationsService {
     })
   }
   // Error handling
-errorHandl(error: HttpErrorResponse) {
-  let errorMessage = '';
-  if(error.error instanceof ErrorEvent) {
-    // Get client-side error
-    errorMessage = error.error.message;
-  } else {
-    // Get server-side error
-    errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-  }
-  console.log(errorMessage);
-  return throwError(errorMessage);
-  }
-    /**
-   * Retrieves quotation sources using an HTTP GET request.
-   * @method getQuotationSources
-   * @return {Observable<any>} - An observable of the response containing quotation sources.
-   */
-    getAllQuotationSources(): Observable<any>{
-      let page = 0;
-      let size = 10;
-  
-      return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  errorHandl(error: HttpErrorResponse) {
+    let errorMessage = '';
+    if (error.error instanceof ErrorEvent) {
+      // Get client-side error
+      errorMessage = error.error.message;
+    } else {
+      // Get server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
- /**
-   * Creates a new quotation using an HTTP POST request.
-   * @method createQuotation
-   * @param {quotationDTO} data - The data for creating the quotation.
-   * @param {string} user - The user associated with the quotation.
-   * @return {Observable<any>} - An observable of the response containing created quotation data.
-   */
-  createQuotation(data:quotationDTO,user){
-    console.log("Data",JSON.stringify(data))
-    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
-      
+    console.log(errorMessage);
+    return throwError(errorMessage);
+  }
+  /**
+ * Retrieves quotation sources using an HTTP GET request.
+ * @method getQuotationSources
+ * @return {Observable<any>} - An observable of the response containing quotation sources.
+ */
+  getAllQuotationSources(): Observable<any> {
+    let page = 0;
+    let size = 10;
+
+    return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  /**
+    * Creates a new quotation using an HTTP POST request.
+    * @method createQuotation
+    * @param {quotationDTO} data - The data for creating the quotation.
+    * @param {string} user - The user associated with the quotation.
+    * @return {Observable<any>} - An observable of the response containing created quotation data.
+    */
+  createQuotation(data: quotationDTO, user) {
+    console.log("Data", JSON.stringify(data))
+    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+
   }
   /**
    * Retrieves quotations based on specified parameters using an HTTP GET request.
@@ -100,8 +100,8 @@ errorHandl(error: HttpErrorResponse) {
    * @param {string} dateTo - The ending date for the quotations.
    * @return {Observable<any>} - An observable of the response containing quotation data.
    */
-  getQuotations(clientId, dateFrom, dateTo){
-    return this.api.GET(`v2/quotation?dateFrom=${dateFrom}&dateTo=${dateTo}&clientId=${clientId}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getQuotations(clientId, dateFrom, dateTo) {
+    return this.api.GET(`v2/quotation?dateFrom=${dateFrom}&dateTo=${dateTo}&clientId=${clientId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   /**
    * Creates a new quotation risk using an HTTP POST request.
@@ -110,68 +110,68 @@ errorHandl(error: HttpErrorResponse) {
    * @param {quotationRisk[]} data - The data representing the quotation risk.
    * @return {Observable<any>} - An observable of the response containing the created quotation risk data.
    */
-  createQuotationRisk(quotationCode ,data:quotationRisk[]){
-    console.log(JSON.stringify(data),"Data from the service")
-    return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
+  createQuotationRisk(quotationCode, data: quotationRisk[]) {
+    console.log(JSON.stringify(data), "Data from the service")
+    return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-   /**
-   * Retrieves risk sections for a given quotation risk code using an HTTP GET request.
-   * @method getRiskSection
-   * @param {string} quotationRiskCode - The quotation risk code for which to retrieve risk sections.
-   * @return {Observable<riskSection[]>} - An observable of the response containing risk sections.
-   */
-  getRiskSection(quotationRiskCode):Observable<riskSection[]>{
-    return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  /**
+  * Retrieves risk sections for a given quotation risk code using an HTTP GET request.
+  * @method getRiskSection
+  * @param {string} quotationRiskCode - The quotation risk code for which to retrieve risk sections.
+  * @return {Observable<riskSection[]>} - An observable of the response containing risk sections.
+  */
+  getRiskSection(quotationRiskCode): Observable<riskSection[]> {
+    return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-   /**
-   * Creates new risk sections for a given quotation risk code using an HTTP POST request.
-   * @method createRiskSection
-   * @param {string} quotationRiskCode - The quotation risk code associated with the risk sections.
-   * @param {riskSection[]} data - The data representing the risk sections.
-   * @return {Observable<any>} - An observable of the response containing the created risk sections data.
-   */
-  createRiskSection(quotationRiskCode ,data:riskSection[]){
-    console.log(data , "QUOTATION RISK SECTION")
-    return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
+  /**
+  * Creates new risk sections for a given quotation risk code using an HTTP POST request.
+  * @method createRiskSection
+  * @param {string} quotationRiskCode - The quotation risk code associated with the risk sections.
+  * @param {riskSection[]} data - The data representing the risk sections.
+  * @return {Observable<any>} - An observable of the response containing the created risk sections data.
+  */
+  createRiskSection(quotationRiskCode, data: riskSection[]) {
+    console.log(data, "QUOTATION RISK SECTION")
+    return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-    /**
-   * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
-   * @method updateRiskSection
-   * @param {string} quotationRiskCode - The quotation risk code associated with the risk sections.
-   * @param {riskSection[]} data - The data representing the updated risk sections.
-   * @return {Observable<any>} - An observable of the response containing the updated risk sections data.
-   */
-  updateRiskSection(quotationRiskCode ,data:riskSection[]){
-    return this.api.PUT(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
+  /**
+ * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
+ * @method updateRiskSection
+ * @param {string} quotationRiskCode - The quotation risk code associated with the risk sections.
+ * @param {riskSection[]} data - The data representing the updated risk sections.
+ * @return {Observable<any>} - An observable of the response containing the updated risk sections data.
+ */
+  updateRiskSection(quotationRiskCode, data: riskSection[]) {
+    return this.api.PUT(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-   /**
-   * Retrieves details of a quotation using an HTTP GET request.
-   * @method getQuotationDetails
-   * @param {string} quotationNo - The quotation number for which to retrieve details.
-   * @return {Observable<any>} - An observable of the response containing quotation details.
-   */
-  getQuotationDetails(quotationNo){
-    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
+  /**
+  * Retrieves details of a quotation using an HTTP GET request.
+  * @method getQuotationDetails
+  * @param {string} quotationNo - The quotation number for which to retrieve details.
+  * @return {Observable<any>} - An observable of the response containing quotation details.
+  */
+  getQuotationDetails(quotationNo) {
+    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-    /**
-   * Retrieves introducers using an HTTP GET request.
-   * @method getIntroducers
-   * @return {Observable<introducersDTO>} - An observable of the response containing introducers data.
-   */   
-  getIntroducers(): Observable<introducersDTO>{
+  /**
+ * Retrieves introducers using an HTTP GET request.
+ * @method getIntroducers
+ * @return {Observable<introducersDTO>} - An observable of the response containing introducers data.
+ */
+  getIntroducers(): Observable<introducersDTO> {
     let page = 0;
-  let size = 10
+    let size = 10
 
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-      });
-      return this.api.GET<introducersDTO>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL); 
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+    return this.api.GET<introducersDTO>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
   /**
@@ -183,188 +183,188 @@ errorHandl(error: HttpErrorResponse) {
   // computePremium(quotationCode){
   //   return this.api.POST(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
   // }
-  computePremium(computationDetails){
-    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`,computationDetails)
+  computePremium(computationDetails) {
+    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
   }
-   /**
+  /**
 
-   * Creates new schedule details using an HTTP POST request.
-   * @method createSchedule
-   * @param {scheduleDetails[]} data - The data representing the schedule details to be created.
-   * @return {Observable<any>} - An observable of the response containing the created schedule details data.
-   */
-  createSchedule(data:scheduleDetails[]){
-    return this.api.POST(`v2/schedule-details`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
+  * Creates new schedule details using an HTTP POST request.
+  * @method createSchedule
+  * @param {scheduleDetails[]} data - The data representing the schedule details to be created.
+  * @return {Observable<any>} - An observable of the response containing the created schedule details data.
+  */
+  createSchedule(data: scheduleDetails[]) {
+    return this.api.POST(`v2/schedule-details`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  
+
   /**
    * Updates existing schedule details using an HTTP PUT request.
    * @method updateSchedule
    * @param {scheduleDetails[]} data - The data representing the updated schedule details.
    * @return {Observable<any>} - An observable of the response containing the updated schedule details data.
    */
-  updateSchedule(data:scheduleDetails[]){
-    return this.api.PUT(`v2/schedule-details`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
+  updateSchedule(data: scheduleDetails[]) {
+    return this.api.PUT(`v2/schedule-details`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
     // return this.api.PUT(`/${this.baseUrl}/quotation//api/v2/schedule-details`, JSON.stringify(data),this.httpOptions)
   }
-    /**
-   * Retrieves product clauses for a given product code using an HTTP GET request.
-   * @method getProductClauses
-   * @param {string} productCode - The product code for which to retrieve clauses.
-   * @return {Observable<any>} - An observable of the response containing product clauses.
-   */
- getProductClauses(productCode){
-    return this.api.GET(`api/v1/products/${productCode}/clauses`,API_CONFIG.GIS_SETUPS_BASE_URL)
- }
- deleteSchedule(level:any,riskCode:any,code:any){
-    return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`,API_CONFIG.GIS_QUOTATION_BASE_URL) 
- }
- makeReady(quotationCode,user){
-  return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
- }
- confirmQuotation(quotationCode,user){
-  return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
- }
- authoriseQuotation(quotationCode,user){
-    return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
- }
- getExternalClaimsExperience(clientCode){
-  return this.api.GET(`api/v1/external-claims-experiences?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
- }
- getInternalClaimsExperience(clientCode){
-  return this.api.GET(`api/v1/internal-claims-experience?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
- }
-
-
- getAgents(
-  page: number | null = 0,
-  size: number | null = 10,
-  sortList: string = 'createdDate',
-
-): Observable<Pagination<AgentDTO>> {
-  //  const baseUrl = this.appConfig.config.contextPath.accounts_services;
-  // const headers = new HttpHeaders({
-  //   'Content-Type': 'application/json',
-  //   'Accept': 'application/json',
-  //   'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  // });
-  // const params = new HttpParams()
-  //   .set('page', `${page}`)
-  //   .set('size', `${size}`)
-  //   .set('organizationId', 2)
-  //   .set('sortListFields', `${sortList}`)
-  
-
-  return this.api.GET<Pagination<AgentDTO>>(`agents?page=${page}&size=${size}&organizationId=2&sortListFields=${sortList}`,API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
-}
-quotationUtils(transactionCode){
-  const params = new HttpParams()
-  .set('transactionCode', transactionCode)
-  .set('transactionsType','QUOTATION')
-
-  const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  });
-
-  return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
-    headers: headers,
-    params:params
-  })
-}
-sendEmail(data){
-  return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
-}
-sendSms(data){
-  return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
-}
-getUserProfile(){
-  const baseUrl = this.appConfig.config.contextPath.users_services;
-  return this.http.get(`/${baseUrl}/administration/users/profile`)
-}
-getLimits(productCode,type,quotRiskCode?){
-  let url = `v1/quotation/scheduleValues?pageSize=100&pageNo=0&quotationProductCode=${productCode}&scheduleValueType=${type}`;
-
-  if (quotRiskCode) {
-    url += `&quotRiskCode=${quotRiskCode}`;
+  /**
+ * Retrieves product clauses for a given product code using an HTTP GET request.
+ * @method getProductClauses
+ * @param {string} productCode - The product code for which to retrieve clauses.
+ * @return {Observable<any>} - An observable of the response containing product clauses.
+ */
+  getProductClauses(productCode) {
+    return this.api.GET(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
+  }
+  deleteSchedule(level: any, riskCode: any, code: any) {
+    return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  makeReady(quotationCode, user) {
+    return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  confirmQuotation(quotationCode, user) {
+    return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  authoriseQuotation(quotationCode, user) {
+    return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  getExternalClaimsExperience(clientCode) {
+    return this.api.GET(`api/v1/external-claims-experiences?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+  }
+  getInternalClaimsExperience(clientCode) {
+    return this.api.GET(`api/v1/internal-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
 
-  return this.api.GET(url,API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+  getAgents(
+    page: number | null = 0,
+    size: number | null = 10,
+    sortList: string = 'createdDate',
+
+  ): Observable<Pagination<AgentDTO>> {
+    //  const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    // const headers = new HttpHeaders({
+    //   'Content-Type': 'application/json',
+    //   'Accept': 'application/json',
+    //   'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    // });
+    // const params = new HttpParams()
+    //   .set('page', `${page}`)
+    //   .set('size', `${size}`)
+    //   .set('organizationId', 2)
+    //   .set('sortListFields', `${sortList}`)
+
+
+    return this.api.GET<Pagination<AgentDTO>>(`agents?page=${page}&size=${size}&organizationId=2&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
+  }
+  quotationUtils(transactionCode) {
+    const params = new HttpParams()
+      .set('transactionCode', transactionCode)
+      .set('transactionsType', 'QUOTATION')
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+
+    return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`, {
+      headers: headers,
+      params: params
+    })
+  }
+  sendEmail(data) {
+    return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data), this.httpOptions)
+  }
+  sendSms(data) {
+    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data), this.httpOptions)
+  }
+  getUserProfile() {
+    const baseUrl = this.appConfig.config.contextPath.users_services;
+    return this.http.get(`/${baseUrl}/administration/users/profile`)
+  }
+  getLimits(productCode, type, quotRiskCode?) {
+    let url = `v1/quotation/scheduleValues?pageSize=100&pageNo=0&quotationProductCode=${productCode}&scheduleValueType=${type}`;
+
+    if (quotRiskCode) {
+      url += `&quotRiskCode=${quotRiskCode}`;
+    }
+
+    return this.api.GET(url, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  assignProductLimits(productCode) {
+
+    return this.api.POST(`v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL
+    )
+
+  }
+  documentTypes(accountType) {
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+
+    return this.api.GET(`required-documents?accountType=${accountType}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
+  }
+  getRiskClauses(code: number): Observable<riskClauses[]> {
+    let page = 0;
+    let size = 1000
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+
+    })
+
+    return this.api.GET<riskClauses[]>(`v1/riskClauses/?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  captureRiskClauses(clauseCode: number, productCode: number, quoteCode: number, riskCode: number) {
+    return this.api.POST(`v1/riskClauses?clauseCode=${clauseCode}&productCode=${productCode}&quoteCode=${quoteCode}&riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+  }
+
+
+  addProductClause(clauseCode, productCode, quotationCode) {
+    const params = new HttpParams()
+      .set('clauseCode', clauseCode)
+      .set('productCode', productCode)
+      .set('quotationCode', quotationCode)
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+
+    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  postDocuments(data) {
+    return this.api.POST(`uploadClientDocument`, JSON.stringify(data), API_CONFIG.DMS_SERVICE)
+  }
+  getCampaigns() {
+    return this.api.GET(`campaigns`, API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL)
+
+  }
+  getRegexPatterns(
+    subclassCode: number): Observable<RegexPattern[]> {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['subclassCode'] = subclassCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+
+  }
 }
-assignProductLimits(productCode){
 
-  return this.api.POST(`v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL
-)
 
-}
-documentTypes(accountType){
 
-  const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  });
-
-  return this.api.GET(`required-documents?accountType=${accountType}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
-}
-getRiskClauses(code:number): Observable<riskClauses[]>{
-  let page = 0;
-  let size = 1000
- const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  
-  })
-  
-  return this.api.GET<riskClauses[]>(`v1/riskClauses/?riskCode=${code}&page=${page}&pageSize=${size}`,API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  ) 
-}
-captureRiskClauses(clauseCode:number, productCode:number,quoteCode:number,riskCode :number){
-  return this.api.POST(`v1/riskClauses?clauseCode=${clauseCode}&productCode=${productCode}&quoteCode=${quoteCode}&riskCode=${riskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
-  
-}
- 
-
-addProductClause(clauseCode,productCode,quotationCode){
-  const params = new HttpParams()
-  .set('clauseCode', clauseCode)
-  .set('productCode', productCode)
-  .set('quotationCode', quotationCode)
-
-  const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  });
-
-  return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
-}
-postDocuments(data){
-  return this.api.POST(`uploadClientDocument`, JSON.stringify(data),API_CONFIG.DMS_SERVICE)
-}
-getCampaigns(){
-  return this.api.GET(`campaigns`, API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL)
-
-}
-getRegexPatterns(
-  subclassCode: number): Observable<RegexPattern[]> {
-  // Create an object to hold parameters only if they are provided
-  const paramsObj: { [param: string]: string } = {};
-  // Add the mandatory parameter
-  paramsObj['subclassCode'] = subclassCode.toString();
-
-  const params = new HttpParams({ fromObject: paramsObj });
-
-  return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-
-}
-}
-
-  
- 
 
 
 
