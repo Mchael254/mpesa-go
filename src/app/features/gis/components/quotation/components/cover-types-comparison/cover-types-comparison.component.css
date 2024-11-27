@@ -126,3 +126,16 @@
     font-weight: 400;
     line-height: normal;
 }
+.flexible-header {
+    white-space: nowrap;
+    width: auto;
+    text-align: left;
+}
+.ui-datatable th,
+.ui-datatable td {
+    white-space: nowrap;
+}
+.custom-row {
+    padding: 5px 0;
+    height: 30px; /* Adjust this value to fit your design */
+}

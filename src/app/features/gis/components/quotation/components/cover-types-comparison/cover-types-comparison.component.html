@@ -19,6 +19,7 @@
                       [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
                       [(ngModel)]="selectedCoverType"
                       [checked]="i === 0"
+                      (change)="onCoverTypeChange()"
                       class="radio-btn"
                     />
                     <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeShortDescription }}</span><br />
@@ -50,7 +51,7 @@
                               <div class="col-sm-7 d-flex justify-content-end">
                                 <div class="row mb-2">
                                   <div class="col-3">
-                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleClauseDetails()">
+                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleClauseDetails();passCovertypeDesc(selectedCoverType) ">
                                       <i class="fa-solid fa-chevron-down"></i>
                                     </button>
                                   </div>
@@ -59,29 +60,74 @@
                             </div>
                           </div>
                           <div class="collapse" id="clauseDetails" [class.show]="isClauseDetailsOpen">
-                            <p-table
-                              #dt1
-                              [value]=""
-                              dataKey="code"
-                              selectionMode="single"
-                              [tableStyle]="{ 'min-width': '50rem' }"
-                              responsiveLayout="scroll"
-                              [autoLayout]="true"
-                            >
-                              <ng-template pTemplate="header">
+                          
+
+                            
+                            <p-table [value]="clauseList" dataKey="code" selectionMode="single"
+                           [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
+                            responsiveLayout="scroll" [autoLayout]="true"
+                            [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                            currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                            [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm">
+
+                            <ng-template pTemplate="header">
                                 <tr>
-                                  <th>Heading</th>
-                                  <th>Description</th>
-                                  <th>Mandatory</th>
+                                    <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
+                                    <th class="flexible-header" >Heading</th>
+                                    <th class="flexible-header" >Description</th>
+                                    <th class="flexible-header"></th>
+                                    <th class="flexible-header" >Mandatory</th>
+
+                                   
+
                                 </tr>
-                              </ng-template>
-                              <ng-template pTemplate="body" let-filteredRemarks let-ri="rowIndex">
-                                <tr>
-                                  <td></td>
-                                  <td></td>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-clauseList 
+                                let-ri="rowIndex">
+                                <tr  [pSelectableRow]="clauseList"
+                                [class.p-highlight]="clauseList === selectedClause"
+                                class="custom-row">
+                                  
+
+                                    <td class="flexible-header"  style=" white-space: nowrap;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+                              overflow-y: auto;
+                              max-width: 250px;" pTooltip="{{clauseList.heading }}"
+                                        tooltipPosition="top">
+                                       {{clauseList.heading}}
+                                    </td>
+                                    <td class="flexible-header"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
+                                        {{clauseList.heading}}
+                                    </td>
+                                    <td class="flexible-header">
+                                      <button pButton pRipple type="button"
+                                          (click)="openHelperModal(clauseList)"
+                                          icon="pi pi-info-circle"
+                                          class="p-button-rounded p-button-text"></button>
+                                  </td>
+                                    <td class="flexible-header">{{clauseList.isMandatory}}</td>
+
+                                  
+
+                                   
+                                
+
                                 </tr>
-                              </ng-template>
-                            </p-table>
+                                <!-- Modal for each row -->
+                                <p-dialog [(visible)]="clauseList.showHelperModal"
+                                    [modal]="false" [style]="{ 'width': '700px'}">
+                                    <ng-container *ngIf="clauseList">
+                                        <div pResizable
+                                            [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                            (onResize)="onResize($event)">
+                                            <p>{{ clauseList.heading }}</p>
+                                        </div>
+                                    </ng-container>
+                                </p-dialog>
+                            </ng-template>
+                        </p-table>
                           </div>
                         </div>
                       </div>
@@ -153,7 +199,7 @@
                               <div class="col-sm-7 d-flex justify-content-end">
                                 <div class="row mb-2">
                                   <div class="col-3">
-                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleExcessDetails()">
+                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleExcessDetails();">
                                       <i class="fa-solid fa-chevron-down"></i>
                                     </button>
                                   </div>

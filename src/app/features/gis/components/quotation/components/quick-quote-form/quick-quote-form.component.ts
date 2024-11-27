@@ -25,7 +25,7 @@ import { BranchService } from '../../../../../../shared/services/setups/branch/b
 import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Limit, PremiumComputationRequest, Risk } from '../../data/quotationsDTO';
+import { Clause, Limit, PremiumComputationRequest, Risk } from '../../data/quotationsDTO';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
@@ -181,14 +181,7 @@ export class QuickQuoteFormComponent {
   parsedSumInsured: string;
   filteredBranchCodeNumber: number;
   regexPattern: any;
-  separateDialCode = false;
-  SearchCountryField = SearchCountryField;
-  // TooltipLabel = TooltipLabel;
-  CountryISO = CountryISO;
-  preferredCountries: CountryISO[] = [
-    CountryISO.UnitedStates,
-    CountryISO.UnitedKingdom
-  ];
+  
 
 
   constructor(
@@ -1076,18 +1069,18 @@ export class QuickQuoteFormComponent {
         this.removeFormControls();
 
         // Add new form controls for each product-specific field
-        // this.formData.forEach(field => {
-        //   this.control = new FormControl('', [Validators.required, Validators.pattern(field.regexPattern)]);
+        this.formData.forEach(field => {
+          this.control = new FormControl('', [Validators.required, Validators.pattern(field.regexPattern)]);
 
-        //   // Add a custom validator for displaying a specific error message
-        //   this.control.setValidators([Validators.required, Validators.pattern(new RegExp(field.regexPattern))]);
+          // Add a custom validator for displaying a specific error message
+          this.control.setValidators([Validators.required, Validators.pattern(new RegExp(field.regexPattern))]);
 
-        //   log.debug("Control", this.control);
-        //   this.dynamicForm.addControl(field.name, this.control);
-        //   // this.dynamicRegexPattern = field.regexPattern;
-        //   this.dynamicRegexPattern = this.regexPattern;
-        //   log.debug("Regex", field.regexPattern);
-        // });
+          log.debug("Control", this.control);
+          this.dynamicForm.addControl(field.name, this.control);
+          // this.dynamicRegexPattern = field.regexPattern;
+          // this.dynamicRegexPattern = this.regexPattern;
+          // log.debug("Regex", field.regexPattern);
+        });
       });
     }
   }
@@ -1243,11 +1236,11 @@ export class QuickQuoteFormComponent {
         this.premiumList = data;
         log.debug("data ", data)
         this.allPremiumRate.push(...this.premiumList)
-        log.debug(this.premiumList, "premium List");
+        log.debug( "premium List",this.premiumList);
 
         // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
       });
-      log.debug(this.allPremiumRate, "all quick quote premium List");
+      log.debug("all quick quote premium List",this.allPremiumRate);
 
     }
 
@@ -1256,17 +1249,18 @@ export class QuickQuoteFormComponent {
 
   setRiskPremiumDto(): Risk[] {
     log.debug("subclass cover type", this.subclassCoverType)
+    log.debug("Car Reg no:",this.carRegNoValue)
 
     return this.subclassCoverType.map(item => {
       let risk: Risk = {
-        propertyId: this.dynamicForm.get('carRegNo').value,
+        propertyId: this.carRegNoValue,
         withEffectFrom: this.coverFromDate,
         withEffectTo: this.passedCoverToDate,
         prorata: "F",
         subclassSection: {
           code: this.selectedSubclassCode
         },
-        itemDescription: this.dynamicForm.get('carRegNo').value,
+        itemDescription: this.carRegNoValue,
         noClaimDiscountLevel: 0,
         subclassCoverTypeDto: {
           subclassCode: this.selectedSubclassCode,
@@ -1294,6 +1288,7 @@ export class QuickQuoteFormComponent {
   }
 
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
+    log.debug("Current form structure:", this.dynamicForm.controls);
     const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
     log.debug("SUM INSURED", sumInsured)
     sessionStorage.setItem('sumInsuredValue', sumInsured);
@@ -1541,7 +1536,7 @@ export class QuickQuoteFormComponent {
 
     const selfDeclaredValue = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
     const yearOfManufacture = this.dynamicForm.get('yearOfManufacture').value;
-    const carRegNo = this.dynamicForm.get('carRegNo').value;
+    const carRegNo = this.carRegNoValue;
 
     // Store values in session storage
     sessionStorage.setItem('sumInsured', JSON.stringify(selfDeclaredValue));
@@ -1574,4 +1569,5 @@ export class QuickQuoteFormComponent {
     }
   });
  }
+
 }

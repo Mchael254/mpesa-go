@@ -292,4 +292,12 @@ export interface QuotationDetails {
   export interface RegexPattern {
     riskIdFormat:string
   }
+  export interface Clause {
+    code: number;
+    coverTypeCode: number;
+    subclassCode: number;
+    classShortDescription: string;
+    heading: string;
+    isMandatory: string;
+}
   
