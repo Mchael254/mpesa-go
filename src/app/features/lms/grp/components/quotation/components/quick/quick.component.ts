@@ -356,8 +356,8 @@ highlightInvalid(field: string): boolean {
           }
           );
         }
-      } else {/*
-      together with the method -highlightInvalid(field: string), it helps
+      } else {
+        /*together with the method -highlightInvalid(field: string), it helps
        highlight all invalid form fields on click of Continue button
        */
       Object.keys(this.quickForm.controls).forEach(field => {
@@ -371,12 +371,14 @@ highlightInvalid(field: string): boolean {
   retrievQuoteDets() {
     const storedQuoteData = this.session_storage.get('quotation_code');
     const newClientCodeString = this.session_storage.get('newClientCode');
-    const newClientCode = JSON.parse(newClientCodeString);
-    this.clientCode = newClientCode;
+    // const newClientCode = JSON.parse(newClientCodeString);
+    // this.clientCode = newClientCode;
+    this.clientCode = newClientCodeString ? JSON.parse(newClientCodeString) : null;
 
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
       const formData = quoteData.formData;
+      formData.effectiveDate = new Date(formData.effectiveDate);
       this.quickForm.patchValue(formData);
       console.log("quickFormFormData", formData);
 
@@ -388,7 +390,7 @@ highlightInvalid(field: string): boolean {
       this.quickForm.patchValue({
         clients: formData.clients.label,
         intermediary: formData.intermediary.name,
-        // effectiveDate: formatDate(formData.effectiveDate, 'dd/MM/yyyy', 'en-US')
+        effectiveDate: formData.effectiveDate ? new Date(formData.effectiveDate) : null
       })
     }
   }

@@ -4,6 +4,9 @@ export interface ClientDTO {
   clientTitle: string,
   clientType: ClientTypeDTO,
   country: number,
+  mobileNumber: string | null;
+  state: string | null;
+  town: string | null;
   createdBy: string,
   dateOfBirth: string,
   emailAddress: string,

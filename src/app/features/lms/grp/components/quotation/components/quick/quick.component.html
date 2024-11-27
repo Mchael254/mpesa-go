@@ -8,10 +8,10 @@
       
     <!-- <div><span class="client-details">Client</span></div> -->
     <form class="form" [formGroup]="quickForm">
-    <div class="product-details">Product details</div>
+    <div class="product-details">{{ "lms.grp.quotation.quick_quote.product_details" | translate }}</div>
     <div class="row"> 
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Product<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.product" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='products'
                             [options]='productList'
@@ -23,11 +23,11 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('products')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('products')" class="invalid-feedback">Product is required</div>
+                <div *ngIf="highlightInvalid('products')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.product_is_required" | translate }}</div>
             </div>
         </div>
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Duration Type<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.duration_type" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='durationType'
                             [options]='durationType'
@@ -37,11 +37,11 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('durationType')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('durationType')" class="invalid-feedback">Duration type required</div>
+                <div *ngIf="highlightInvalid('durationType')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.duration_type_required" | translate }}</div>
             </div>
         </div>
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Facultative Type<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.facultative_type" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='facultativeType'
                             [options]='facultativeType'
@@ -51,13 +51,13 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('facultativeType')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('facultativeType')" class="invalid-feedback">Facultative type required</div>
+                <div *ngIf="highlightInvalid('facultativeType')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.facultative_type_required" | translate }}</div>
             </div>
         </div>
     </div>
     <div class="row" style="padding-top: 30px;"> 
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Quotation Covers<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.quotation_covers" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='quotationCovers'
                             [options]='quotationCovers'
@@ -67,11 +67,11 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('quotationCovers')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('quotationCovers')" class="invalid-feedback">Quote cover required</div>
+                <div *ngIf="highlightInvalid('quotationCovers')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.quote_cover_required" | translate }}</div>
             </div>
         </div>
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12" >
-            <div class="label"><label>Frequency of Payment<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.frequency_of_payment" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='frequencyOfPayment'
                             [options]='frequencyOfPayment'
@@ -81,11 +81,11 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('frequencyOfPayment')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('frequencyOfPayment')" class="invalid-feedback">Freq of payment required</div>
+                <div *ngIf="highlightInvalid('frequencyOfPayment')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.freq_of_payment_required" | translate }}</div>
             </div>
         </div>
         <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12" >
-            <div class="label"><label>Unit Rate Option<span style="color: red;">*</span></label></div>
+            <div class="label"><label>{{ "lms.grp.quotation.quick_quote.unit_rate_option" | translate }}<span style="color: red;">*</span></label></div>
             <div class="form-group">
                 <p-dropdown id='unitRateOption'
                             [options]='unitRateOption'
@@ -95,13 +95,13 @@
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('unitRateOption')}">
                 </p-dropdown>
-                <div *ngIf="highlightInvalid('unitRateOption')" class="invalid-feedback">Unit rate is required</div>
+                <div *ngIf="highlightInvalid('unitRateOption')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.unit_rate_is_required" | translate }}</div>
             </div>
         </div>
     </div>
         <div class="row" style="padding-top: 30px;"> 
             <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-                <div class="label"><label>Currency<span style="color: red;">*</span></label></div>
+                <div class="label"><label>{{ "lms.grp.quotation.quick_quote.currency" | translate }}<span style="color: red;">*</span></label></div>
                 <div class="form-group">
                     <p-dropdown id='currency'
                                 [options]='currencyList'
@@ -114,11 +114,11 @@
                                 class="select"
                                 [ngClass]="{'is-invalid': highlightInvalid('currency')}">
                     </p-dropdown>
-                    <div *ngIf="highlightInvalid('currency')" class="invalid-feedback">Currency is required</div>
+                    <div *ngIf="highlightInvalid('currency')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.currency_is_required" | translate }}</div>
                 </div>
             </div>
             <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-              <div class="label"><label>Effective Date<span style="color: red;">*</span></label></div>
+              <div class="label"><label>{{ "lms.grp.quotation.quick_quote.effective_date" | translate }}<span style="color: red;">*</span></label></div>
               <div class="form-group">
                 <p-calendar formControlName="effectiveDate" 
                             dateFormat="dd/mm/yy" 
@@ -130,11 +130,11 @@
                             [ngClass]="{'is-invalid': highlightInvalid('effectiveDate')}"
                             >
                 </p-calendar>
-                <div *ngIf="highlightInvalid('effectiveDate')" class="invalid-feedback">Date is required</div>
+                <div *ngIf="highlightInvalid('effectiveDate')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.date_is_required" | translate }}</div>
               </div>
             </div>
             <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-              <div class="label"><label>Quotation Calculation Type<span style="color: red;">*</span></label></div>
+              <div class="label"><label>{{ "lms.grp.quotation.quick_quote.quotation_calculation_type" | translate }}<span style="color: red;">*</span></label></div>
               <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
@@ -146,7 +146,7 @@
                     [ngClass]="{'is-invalid': highlightInvalid('quotationCalcType')}"
                   >
                   <label class="form-check-label pl-2" for="detailed">
-                      Detailed
+                      {{ "lms.grp.quotation.quick_quote.detailed" | translate }}
                   </label>
                 </div>
                 <div class="form-check radio-group" id="inline" style="float: right;">
@@ -160,15 +160,15 @@
                     [ngClass]="{'is-invalid': highlightInvalid('quotationCalcType')}"
                   >
                   <label class="form-check-label pl-2" for="aggregate">
-                      Aggregate
+                      {{ "lms.grp.quotation.quick_quote.aggregate" | translate }}
                   </label>
                 </div>
             </div>
       </div>
-      <div class="product-details" style="padding-top: 50px;">Intermediary details<span style="color: red;">*</span></div>
+      <div class="product-details" style="padding-top: 50px;">{{ "lms.grp.quotation.quick_quote.intermediary_details" | translate }}<span style="color: red;">*</span></div>
   <div class="row" > 
       <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-          <div class="label"><label>Intermediary</label></div>
+          <div class="label"><label>{{ "lms.grp.quotation.quick_quote.intermediary" | translate }}</label></div>
           <div class="form-group">
               <p-dropdown id='intermediary'
                           [options]='intermediaries'
@@ -180,11 +180,11 @@
                           [ngClass]="{'is-invalid': highlightInvalid('intermediary')}"
                           >
               </p-dropdown>
-              <div *ngIf="highlightInvalid('intermediary')" class="invalid-feedback">Intermediary is required</div>
+              <div *ngIf="highlightInvalid('intermediary')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.intermediary_is_required" | translate }}</div>
           </div>
       </div>
       <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-        <div class="label"><label>Branch</label></div>
+        <div class="label"><label>{{ "lms.grp.quotation.quick_quote.branch" | translate }}</label></div>
         <div class="form-group">
             <p-dropdown id='branch'
                         [options]='branch'
@@ -197,11 +197,11 @@
         </div>
     </div>
       <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
-        <div class="label"><label>Commission Rate</label></div>
+        <div class="label"><label>{{ "lms.grp.quotation.quick_quote.commission_rate" | translate }}</label></div>
         <div class="form-group">
           <input type="number" pInputText class="form-control" id='commissionRate' [style]="{ width: '100%', height: '38px' }"
             formControlName='commissionRate' [ngClass]="{'is-invalid': highlightInvalid('commissionRate')}">
-          <div *ngIf="highlightInvalid('commissionRate')" class="invalid-feedback">Commission cannot be greater than 100%</div>
+          <div *ngIf="highlightInvalid('commissionRate')" class="invalid-feedback">{{ "lms.grp.quotation.quick_quote.commission_cannot_be_greater_than_100" | translate }}</div>
         </div>
       </div>
   </div>
@@ -212,7 +212,7 @@
         type="button"
         class="btn btn-primary button"
         (click)="onContinue()"
-      >Continue
+      >{{ "lms.grp.quotation.quick_quote.continue" | translate }}
       </button>
     </div>
     <ngx-spinner
