@@ -11,9 +11,10 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Logger } from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+
 import { forkJoin } from 'rxjs';
-import { PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Clause, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -137,6 +138,11 @@ export class CoverTypesComparisonComponent {
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
   @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   isModalOpen: boolean = false;
+
+  clauseList:Clause[] = []
+  selectedClause:any;
+  modalHeight: number = 200; // Initial height
+
 
   
 
@@ -268,6 +274,8 @@ export class CoverTypesComparisonComponent {
     this.createSectionDetailsForm();
 
   }
+  ngOnDestroy(): void { }
+
 
   toggleCollapsible(index: number) {
     if (this.currentExpandedIndex === index) {
@@ -300,6 +308,10 @@ export class CoverTypesComparisonComponent {
    
     this.passedCovertypeDescription = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
     this.passedCovertypeCode = selectedCoverCode;
+    if (this.passedCovertypeCode){
+      log.debug("Fetch Clauses function")
+      this.fetchClauses()
+    }
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
     log.debug("Passed covertype desc:",this.passedCoverTypeShortDes)
     log.debug("Passed covertype desc:",this.passedCovertypeDescription)
@@ -1156,6 +1168,39 @@ export class CoverTypesComparisonComponent {
   }
   getLimits(index: number) {
     return this.premiumPayload.risks[index]?.limits || [];
+  }
+
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+  }
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
+  fetchClauses(){
+    this.quotationService
+    .getClauses(this.passedCovertypeCode, this.selectedSubclassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+  
+        this.clauseList=  response._embedded
+        log.debug("Clause List ", this.clauseList);
+       
+      },
+      error: (error) => {
+  
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
+      }
+    });
+   }
+   onCoverTypeChange() {
+log.info("On cover type change called")
+    // Collapse all expanded sections
+    this.isClauseDetailsOpen = false;
+    this.isLimitsDetailsOpen = false;
+    this.isExcessDetailsOpen = false;
+    this.isBenefitsDetailsOpen = false;
   }
 
 }
