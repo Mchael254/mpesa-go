@@ -4,7 +4,7 @@ import {APP_CONFIG, AppConfigService} from '../../../../core/config/app-config-s
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { Clause, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { Clause, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {ApiService} from "../../../../shared/services/api/api.service";
@@ -171,6 +171,20 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<Clause[]>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+
+  }
+  getLimitsOfLiability(
+    quotationProductCode: number,
+    subclassCode: number,): Observable<LimitsOfLiability[]> {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['quotationProductCode'] = quotationProductCode.toString();
+    paramsObj['subclassCode'] = subclassCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
 

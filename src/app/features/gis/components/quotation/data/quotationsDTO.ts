@@ -300,4 +300,11 @@ export interface QuotationDetails {
     heading: string;
     isMandatory: string;
 }
+export interface LimitsOfLiability {
+  code: number;
+  narration: string | null;
+  value: string;
+  subclassCode: number;
+  quotationValueCode: number;
+}
   
