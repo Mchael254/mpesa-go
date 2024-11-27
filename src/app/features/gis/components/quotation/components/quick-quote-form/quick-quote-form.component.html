@@ -61,12 +61,8 @@
                     <div class="col-sm-4 col-6" *ngIf="!new">
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
-                            <ngx-intl-tel-input [cssClass]="'custom'" [preferredCountries]="[CountryISO.UnitedStates, CountryISO.UnitedKingdom]"
-			[enableAutoCountrySelect]="true" [enablePlaceholder]="true" [searchCountryFlag]="true"
-			[searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-			[selectedCountryISO]="CountryISO.UnitedKingdom" [phoneValidation]="true" name="phone" formControlName="phone">
-		</ngx-intl-tel-input>
-                        <!-- <div class="input-group">
+                            
+                        <div class="input-group">
                             <select id="zipDropdown" (change)="onZipCodeSelected($event)" [(ngModel)]="selectedZipCode">
                                 <option *ngFor="let country of countryList" [value]="country.zipCodeString">{{
                                     country.zipCodeString }}</option>
@@ -74,7 +70,7 @@
 
                             <input type="tel" id="quote-input" class="form-control form-control-sm mb-1"
                                 [(ngModel)]="newClientData.inputClientPhone" (blur)="onInputChange()">
-                        </div> -->
+                        </div>
 
 
 
