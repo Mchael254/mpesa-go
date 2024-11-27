@@ -4,7 +4,7 @@ import {APP_CONFIG, AppConfigService} from '../../../../core/config/app-config-s
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { PremiumComputationRequest, quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {ApiService} from "../../../../shared/services/api/api.service";
@@ -147,6 +147,17 @@ export class QuotationsService {
   sendSms(data){
     return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
   }
-
+  getRegexPatterns(
+    subclassCode: number): Observable<RegexPattern[]> {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['subclassCode'] = subclassCode.toString();
+  
+    const params = new HttpParams({ fromObject: paramsObj });
+  
+    return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  
+  }
 
 }
