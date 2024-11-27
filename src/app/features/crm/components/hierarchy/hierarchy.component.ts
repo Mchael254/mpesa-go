@@ -125,7 +125,6 @@ export class HierarchyComponent implements OnInit {
     this.fetchHierarchyTypeEnum();
     this.fetchAccountTypes();
     this.fetchHierarchyLevelEnum();
-    this.fetchPreviousSubDivisionHeads();
   }
 
   orgSubDivCreateForm() {
@@ -762,9 +761,9 @@ export class HierarchyComponent implements OnInit {
    * If the request is successful, sets the previousSubDivHeadsData property to the response data and hides the spinner.
    * If the request fails, displays an error message and hides the spinner.
    */
-  fetchPreviousSubDivisionHeads(): void {
+  fetchPreviousSubDivisionHeads(selectedDivision: SubDivisionUI): void {
     this.spinner.show();
-    this.organizationService.getOrgPrevSubDivisionHeads().subscribe({
+    this.organizationService.getOrgPrevSubDivisionHeads(selectedDivision?.code).subscribe({
       next: (res: OrgPreviousSubDivHeadsDTO[]) => {
         this.previousSubDivHeadsData = res;
         this.spinner.hide();
@@ -848,6 +847,7 @@ export class HierarchyComponent implements OnInit {
     log.info('Selected Division:', this.selectedDivision);
     this.isEditMode = true;
     this.editSubDivision(this.selectedDivision);
+    this.fetchPreviousSubDivisionHeads(this.selectedDivision);
   }
 
   createSubDivision() {
@@ -1032,7 +1032,7 @@ export class HierarchyComponent implements OnInit {
     const saveHierarchyHeadHistoryPayload: OrgPreviousSubDivHeadsDTO = {
       agentCode: hierarchyHeadHistoryFormValues.agentName,
       code: hierarchyHeadHistoryCode,
-      subdivisionCode: "123",
+      subdivisionCode: this.selectedDivision?.code,
       wef: hierarchyHeadHistoryFormValues.wef,
       wet: hierarchyHeadHistoryFormValues.wet
     }
@@ -1049,7 +1049,7 @@ export class HierarchyComponent implements OnInit {
 
         this.hierarchyHeadHistoryForm.reset();
         this.closeDefinePreviousSubDivHeadsModal();
-        this.fetchPreviousSubDivisionHeads();
+        this.fetchPreviousSubDivisionHeads(this.selectedDivision);
         this.selectedPreviousSubDivHeads = null;
         this.selectedMainUser = null;
       },
@@ -1126,7 +1126,7 @@ export class HierarchyComponent implements OnInit {
             'success',
             'Successfully deleted a hierarchy previous subdivision head'
           );
-          this.fetchPreviousSubDivisionHeads();
+          this.fetchPreviousSubDivisionHeads(this.selectedDivision);
           this.selectedPreviousSubDivHeads = null;
         },
         error: (err) => {

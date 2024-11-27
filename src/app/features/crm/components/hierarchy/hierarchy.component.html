@@ -924,8 +924,8 @@
                     class="form-control"
                     id="agentName"
                     formControlName="agentName"
+                    (click)="openAllUsersModal()" value="{{selectedMainUser?.name}}" readonly
                   />
-                       (click)="openAllUsersModal()" value="{{selectedMainUser?.name}}" readonly>
                 </div>
               </ng-container>
               <ng-container *ngIf="visibleStatus.wef === 'Y'">
