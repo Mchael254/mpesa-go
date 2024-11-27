@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
+import { quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
 import { environment } from '../../../../../../../environments/environment';
@@ -347,6 +347,18 @@ postDocuments(data){
 }
 getCampaigns(){
   return this.api.GET(`campaigns`, API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL)
+
+}
+getRegexPatterns(
+  subclassCode: number): Observable<RegexPattern[]> {
+  // Create an object to hold parameters only if they are provided
+  const paramsObj: { [param: string]: string } = {};
+  // Add the mandatory parameter
+  paramsObj['subclassCode'] = subclassCode.toString();
+
+  const params = new HttpParams({ fromObject: paramsObj });
+
+  return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
 }
 }
