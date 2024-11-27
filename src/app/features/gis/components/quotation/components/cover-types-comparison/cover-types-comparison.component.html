@@ -148,7 +148,7 @@
                               <div class="col-sm-7 d-flex justify-content-end">
                                 <div class="row mb-2">
                                   <div class="col-3">
-                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleLimitsDetails()">
+                                    <button type="button" id="icon" class="btn btn-primary" (click)="toggleLimitsDetails(); passCovertypeDesc(selectedCoverType)">
                                       <i class="fa-solid fa-chevron-down"></i>
                                     </button>
                                   </div>
@@ -159,25 +159,40 @@
                           <div class="collapse" id="limitsOfLiabilityDetails" [class.show]="isLimitsDetailsOpen">
                             <p-table
                               #dt1
-                              [value]=""
+                              [value]="limitsOfLiabilityList"
                               dataKey="code"
                               selectionMode="single"
                               [tableStyle]="{ 'min-width': '50rem' }"
                               responsiveLayout="scroll"
-                              [autoLayout]="true"
+                              [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                              currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                              [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm"
                             >
                               <ng-template pTemplate="header">
                                 <tr>
-                                  <th>Narration</th>
-                                  <th>Value</th>
+                                  <th class="flexible-header">Narration</th>
+                                  <th class="flexible-header">Value</th>
                                 </tr>
                               </ng-template>
-                              <ng-template pTemplate="body" let-filteredRemarks let-ri="rowIndex">
+                              <ng-template pTemplate="body" let-limits let-ri="rowIndex">
                                 <tr>
-                                  <td></td>
-                                  <td></td>
+                                  <td class="flexible-header" class="flexible-header"  style=" white-space: nowrap;
+                                  overflow: hidden;
+                                  text-overflow: ellipsis;
+                                  overflow-y: auto;
+                                  max-width: 250px;" pTooltip="{{limits.narration }}"
+                                            tooltipPosition="top">{{limits.narration}}</td>
+                                  <td class="flexible-header">{{limits.value}}</td>
                                 </tr>
                               </ng-template>
+                              <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="1"></td>
+                
+                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">No data to display.</td>
+                                </tr>
+                
+                            </ng-template>
                             </p-table>
                           </div>
                         </div>
@@ -263,7 +278,7 @@
                         (click)="passCovertypeDesc(selectedCoverType);" >
                        Add benefits</button>
                      <div class="row ms-3">
-                        <div class="col-lg-4 col-12">
+                        <div class="col-lg-6 col-12">
                             <div class="row" *ngFor="let risk of riskLevelPremiums; let i = index">
                                 <div class="row" *ngFor="let limit of getLimits(i)">
                                 <div class="col-6">

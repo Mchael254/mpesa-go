@@ -14,7 +14,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
-import { Clause, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Clause, LimitsOfLiability, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -142,6 +142,7 @@ export class CoverTypesComparisonComponent {
   clauseList:Clause[] = []
   selectedClause:any;
   modalHeight: number = 200; // Initial height
+  limitsOfLiabilityList:LimitsOfLiability[]=[] ;
 
 
   
@@ -312,6 +313,7 @@ export class CoverTypesComparisonComponent {
       log.debug("Fetch Clauses function")
       this.fetchClauses()
     }
+    this.fetchLimitsOfLiability()
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
     log.debug("Passed covertype desc:",this.passedCoverTypeShortDes)
     log.debug("Passed covertype desc:",this.passedCovertypeDescription)
@@ -1202,5 +1204,24 @@ log.info("On cover type change called")
     this.isExcessDetailsOpen = false;
     this.isBenefitsDetailsOpen = false;
   }
+  fetchLimitsOfLiability(){
+    const productCode =this.premiumPayload?.product.code
+    log.debug("Product Code:",productCode)
+    this.quotationService
+    .getLimitsOfLiability(productCode, this.selectedSubclassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+  
+        this.limitsOfLiabilityList=  response._embedded
+        log.debug("Limits of Liability List ", this.clauseList);
+       
+      },
+      error: (error) => {
+  
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+      }
+    });
+   }
 
 }
