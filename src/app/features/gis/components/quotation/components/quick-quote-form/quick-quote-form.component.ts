@@ -33,6 +33,7 @@ import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
 import { firstValueFrom, Observable, tap } from 'rxjs';
+import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -179,6 +180,15 @@ export class QuickQuoteFormComponent {
   parsedYearOfManufacture: string;
   parsedSumInsured: string;
   filteredBranchCodeNumber: number;
+  regexPattern: any;
+  separateDialCode = false;
+  SearchCountryField = SearchCountryField;
+  // TooltipLabel = TooltipLabel;
+  CountryISO = CountryISO;
+  preferredCountries: CountryISO[] = [
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom
+  ];
 
 
   constructor(
@@ -909,6 +919,7 @@ export class QuickQuoteFormComponent {
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders(this.selectedSubclassCode);
     this.loadSubclassSectionCovertype(this.selectedSubclassCode);
+    this.fetchRegexPattern();
 
   }
   /**
@@ -1065,17 +1076,18 @@ export class QuickQuoteFormComponent {
         this.removeFormControls();
 
         // Add new form controls for each product-specific field
-        this.formData.forEach(field => {
-          this.control = new FormControl('', [Validators.required, Validators.pattern(field.regexPattern)]);
+        // this.formData.forEach(field => {
+        //   this.control = new FormControl('', [Validators.required, Validators.pattern(field.regexPattern)]);
 
-          // Add a custom validator for displaying a specific error message
-          this.control.setValidators([Validators.required, Validators.pattern(new RegExp(field.regexPattern))]);
+        //   // Add a custom validator for displaying a specific error message
+        //   this.control.setValidators([Validators.required, Validators.pattern(new RegExp(field.regexPattern))]);
 
-          log.debug("Control", this.control);
-          this.dynamicForm.addControl(field.name, this.control);
-          this.dynamicRegexPattern = field.regexPattern;
-          log.debug("Regex", field.regexPattern);
-        });
+        //   log.debug("Control", this.control);
+        //   this.dynamicForm.addControl(field.name, this.control);
+        //   // this.dynamicRegexPattern = field.regexPattern;
+        //   this.dynamicRegexPattern = this.regexPattern;
+        //   log.debug("Regex", field.regexPattern);
+        // });
       });
     }
   }
@@ -1544,5 +1556,22 @@ export class QuickQuoteFormComponent {
     // const formData = this.personalDetailsForm.value;
     // sessionStorage.setItem('formState', JSON.stringify(formData));
   }
+ fetchRegexPattern(){
+  this.quotationService
+  .getRegexPatterns(this.selectedSubclassCode)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
 
+      this.regexPattern=  response._embedded.riskIdFormat
+      log.debug("New Regex Pattern", this.regexPattern);
+      this.dynamicRegexPattern= this.regexPattern
+     
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch regex patterns. Try again later');
+    }
+  });
+ }
 }

@@ -289,5 +289,7 @@ export interface QuotationDetails {
     sumInsuredRate: string | null; // Change to string since it's coming as a string
     limitAmount: number | string | null; // Allow limitAmount to be string or number
   }
-  
+  export interface RegexPattern {
+    riskIdFormat:string
+  }
   
