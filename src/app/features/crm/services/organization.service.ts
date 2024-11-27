@@ -525,12 +525,13 @@ export class OrganizationService {
     );
   }
 
-  getOrgPrevSubDivisionHeads(): Observable<OrgPreviousSubDivHeadsDTO[]> {
-    /*const params = new HttpParams()
-      .set('divisionLevelTypeCode', `${divisionLevelTypeCode}`);*/
+  getOrgPrevSubDivisionHeads(subdivisionCode: string): Observable<OrgPreviousSubDivHeadsDTO[]> {
+    const params = new HttpParams()
+      .set('subDivision', `${subdivisionCode}`);
     return this.api.GET<OrgPreviousSubDivHeadsDTO[]>(
       `subdivision-head-histories`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
