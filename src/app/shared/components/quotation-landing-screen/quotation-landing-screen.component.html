@@ -105,43 +105,43 @@
         <div class="d-flex justify-content-end grp-quote-filter-button-wrapper">
           <button style="font-size: 12px; padding: 0.5em 1em;" type="button"
             class="btn btn-sm btn-primary grp-quote-filter-new-quote-btn"
-            [routerLink]="'/home/lms/grp/quotation/client'">New quote</button>
+            [routerLink]="'/home/lms/grp/quotation/client'">{{ "shared.quotation_landing_screen.new_quote" | translate }}</button>
         </div>
       </div>
       <div class="grp-quote-filter-options d-flex justify-content-between align-items-center">
         <div class="grp-quote-filter-controls">
-          <label for="filterBy" class="grp-quote-filter-label">Filter by</label>
+          <label for="filterBy" class="grp-quote-filter-label">{{ "shared.quotation_landing_screen.filter_by" | translate }}</label>
           <select class="form-select grp-quote-filter-select" (change)="onColumnChange($event)">
-            <option value="" disabled selected>Select option</option>
+            <option value="" disabled selected>{{ "shared.quotation_landing_screen.select_option" | translate }}</option>
             <option *ngFor="let column of grpQuotationsColumns" [value]="column.field">
               {{ column.label | titlecase }}
             </option>
           </select>
           <ng-container *ngIf="isNumericField(selectedColumn)">
             <select class="form-select grp-quote-filter-select" (change)="onConditionChange($event)">
-              <option value="" disabled selected>Select condition</option>
-              <option [value]="'greater'">{{ 'Greater Than' | translate }}</option>
-              <option [value]="'less'">{{ 'Less Than' | translate }}</option>
-              <option [value]="'equals'">{{ 'Equals' | translate }}</option>
+              <option value="" disabled selected>{{ "shared.quotation_landing_screen.select_condition" | translate }}</option>
+              <option [value]="'greater'">{{ "shared.quotation_landing_screen.greater_than" | translate }}</option>
+              <option [value]="'less'">{{ "shared.quotation_landing_screen.less_than" | translate }}</option>
+              <option [value]="'equals'">{{ "shared.quotation_landing_screen.equals" | translate }}</option>
             </select>
           </ng-container>
           <ng-container *ngIf="selectedColumn === 'cover_from_date' || selectedColumn === 'cover_to_date' || selectedColumn === 'quotation_date'">
             <p-calendar class="grp-quote-filter-input" [showIcon]="true" [dateFormat]="'dd-MM-yy'"
-              placeholder="Range from" (onSelect)="handleDateSelection($event, 'from')" (onChange)="applyFilter()">
+              placeholder='{{ "shared.quotation_landing_screen.range_from" | translate }}' (onSelect)="handleDateSelection($event, 'from')" (onChange)="applyFilter()">
             </p-calendar>
             <p-calendar class="grp-quote-filter-input" [showIcon]="true" [dateFormat]="'dd-MM-yy'" [minDate]="minToDate"
-              placeholder="Range to" (onSelect)="handleDateSelection($event, 'to')" (onChange)="applyFilter()">
+              placeholder='{{ "shared.quotation_landing_screen.range_to" | translate }}' (onSelect)="handleDateSelection($event, 'to')" (onChange)="applyFilter()">
             </p-calendar>
           </ng-container>
           <ng-container
             *ngIf="selectedColumn !== 'cover_from_date' && selectedColumn !== 'cover_to_date' && selectedColumn !== 'quotation_date'">
             <input type="text" pInputText class="form-control grp-quote-filter-input" id="otherNames"
-              (input)="onFilterInput($event)" placeholder="Enter value">
+              (input)="onFilterInput($event)" placeholder='{{ "shared.quotation_landing_screen.enter_value" | translate }}'>
           </ng-container>
         </div>
         <div class="d-flex justify-content-end grp-quote-filter-search-wrapper">
           <div class="position-relative grp-quote-filter-search-container">
-            <input type="text" class="form-control grp-quote-filter-search-input" placeholder="{{ 'Search' | translate }}"
+            <input type="text" class="form-control grp-quote-filter-search-input" placeholder='{{ "shared.quotation_landing_screen.search" | translate }}'
               (input)="onSearch($event)">
             <i class="pi pi-search grp-quote-filter-search-icon"></i>
           </div>
@@ -153,21 +153,21 @@
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} quotes" styleClass="p-datatable-striped">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="quotation_number">Quotation No.<p-sortIcon field="quotation_number"></p-sortIcon></th>
-              <th pSortableColumn="product">Product.<p-sortIcon field="product"></p-sortIcon></th>
-              <th pSortableColumn="client_name">Client<p-sortIcon field="client_name"></p-sortIcon></th>
-              <th pSortableColumn="agency_name">Intermediary<p-sortIcon field="agency_name"></p-sortIcon></th>
-              <th pSortableColumn="sum_assured">Sum assured<p-sortIcon field="sum_assured"></p-sortIcon></th>
-              <th pSortableColumn="total_premium">Premium<p-sortIcon field="total_premium"></p-sortIcon></th>
-              <th pSortableColumn="cover_from_date">Cover from<p-sortIcon field="cover_from_date"></p-sortIcon></th>
-              <th pSortableColumn="cover_to_date">Cover to<p-sortIcon field="cover_to_date"></p-sortIcon></th>
-              <th pSortableColumn="quotation_date">Date created<p-sortIcon field="quotation_date"></p-sortIcon></th>
-              <th pSortableColumn="quotation_status">Status<p-sortIcon field="quotation_status"></p-sortIcon></th>
-              <th>Action</th>
+              <th pSortableColumn="quotation_number">{{ "shared.quotation_landing_screen.quotation_number" | translate }}<p-sortIcon field="quotation_number"></p-sortIcon></th>
+              <th pSortableColumn="product">{{ "shared.quotation_landing_screen.product" | translate }}<p-sortIcon field="product"></p-sortIcon></th>
+              <th pSortableColumn="client_name">{{ "shared.quotation_landing_screen.client" | translate }}<p-sortIcon field="client_name"></p-sortIcon></th>
+              <th pSortableColumn="agency_name">{{ "shared.quotation_landing_screen.intermediary" | translate }}<p-sortIcon field="agency_name"></p-sortIcon></th>
+              <th pSortableColumn="sum_assured">{{ "shared.quotation_landing_screen.sum_assured" | translate }}<p-sortIcon field="sum_assured"></p-sortIcon></th>
+              <th pSortableColumn="total_premium">{{ "shared.quotation_landing_screen.premium" | translate }}<p-sortIcon field="total_premium"></p-sortIcon></th>
+              <th pSortableColumn="cover_from_date">{{ "shared.quotation_landing_screen.cover_from" | translate }}<p-sortIcon field="cover_from_date"></p-sortIcon></th>
+              <th pSortableColumn="cover_to_date">{{ "shared.quotation_landing_screen.cover_to" | translate }}<p-sortIcon field="cover_to_date"></p-sortIcon></th>
+              <th pSortableColumn="quotation_date">{{ "shared.quotation_landing_screen.date_created" | translate }}<p-sortIcon field="quotation_date"></p-sortIcon></th>
+              <th pSortableColumn="quotation_status">{{ "shared.quotation_landing_screen.status" | translate }}<p-sortIcon field="quotation_status"></p-sortIcon></th>
+              <th>{{ "shared.quotation_landing_screen.action" | translate }}</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-quoteData>
-            <tr>
+          <ng-template pTemplate="body" let-quoteData let-rowIndex="rowIndex">
+            <tr (click)="onQuotationTableRowClick(quoteData, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
               <td>{{ quoteData?.quotation_number || "-" }}</td>
               <td>{{ quoteData?.product || "-" | titlecase }}</td>
               <td>{{ quoteData?.client_name || "-" | titlecase }}</td>
@@ -180,7 +180,28 @@
               <td>{{ quoteData?.cover_to_date | date: 'dd-MM-yyyy'|| "-" }}</td>
               <td>{{ quoteData?.quotation_date | date: 'dd-MM-yyyy' || "-" }}</td>
               <td>{{ quoteData?.quotation_status || "-" | titlecase }}</td>
-              <td>{{ "Process" }}</td>
+              <td>
+                <div class="dropdown">
+                  <i 
+                    class="pi pi-ellipsis-v" 
+                    id="actionDropdown" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false" 
+                    style="cursor: pointer;">
+                  </i>
+                  <ul class="dropdown-menu" aria-labelledby="actionDropdown">
+                    <li>
+                      <button class="dropdown-item" (click)="onProcess()">Process</button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item" (click)="onReassign()">Reassign</button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item" (click)="onRevise()">Revise</button>
+                    </li>
+                  </ul>
+                </div>
+              </td>                            
             </tr>
           </ng-template>
         </p-table>
