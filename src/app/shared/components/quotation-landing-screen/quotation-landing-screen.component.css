@@ -152,6 +152,24 @@ tr {
     display: inline-block;
 }
 
+/* Center text horizontally in dropdown items */
+.dropdown-item {
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+  } 
+
+#actionDropdown:hover {
+    color: #b8bbb9;
+  }
+  
+
+.selected-row {
+    background-color: #cce5ff !important;
+    /*Changes row color on click*/
+}
+
 /* Media Query for Medium Screens (901px to 1357px) */
 @media (min-width: 901px) and (max-width: 1357px) {
     .grp-quote-filter-controls {
