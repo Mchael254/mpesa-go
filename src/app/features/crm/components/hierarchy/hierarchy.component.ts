@@ -375,9 +375,15 @@ export class HierarchyComponent implements OnInit {
    */
   openDefinePreviousSubDivHeadsModal() {
     const modal = document.getElementById('newHierarchyHeadHistory');
-    if (modal) {
+    if (modal && this.selectedDivision) {
+      this.patchHierarchyTypeUser = false;
       modal.classList.add('show');
       modal.style.display = 'block';
+    }else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No organization subdivision is selected.'
+      );
     }
   }
 
@@ -572,7 +578,7 @@ export class HierarchyComponent implements OnInit {
 
         this.hierarchyLevelsForm.reset();
         this.closeDefineHierarchyLevelsModal();
-        this.fetchHierarchyLevels(this.selectedHierarchyType);
+        this.fetchHierarchyLevels(this.selectedHierarchyType?.code);
         this.selectedHierarchyLevel = null;
       },
       error: (err) => {
@@ -761,7 +767,7 @@ export class HierarchyComponent implements OnInit {
    * If the request is successful, sets the previousSubDivHeadsData property to the response data and hides the spinner.
    * If the request fails, displays an error message and hides the spinner.
    */
-  fetchPreviousSubDivisionHeads(selectedDivision: SubDivisionUI): void {
+  fetchPreviousSubDivisionHeads(selectedDivision: any): void {
     this.spinner.show();
     this.organizationService.getOrgPrevSubDivisionHeads(selectedDivision?.code).subscribe({
       next: (res: OrgPreviousSubDivHeadsDTO[]) => {
