@@ -17,6 +17,7 @@ import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Clause, LimitsOfLiability } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -68,6 +69,12 @@ export class QuoteSummaryComponent {
   user: any;
   userDetails: any
   userBranchId: any;
+  selectedRisk:any;
+  clauseList:Clause[] = []
+  selectedClause:any;
+  modalHeight: number = 200; // Initial height
+  limitsOfLiabilityList:LimitsOfLiability[]=[] ;
+  
 
   constructor(
     public fb: FormBuilder,
@@ -393,4 +400,32 @@ export class QuoteSummaryComponent {
       this.sendSms();
     }
   }
+  openRiskDeleteModal() {
+    log.debug("Selected Risk", this.selectedRisk)
+    if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+    } else {
+      document.getElementById("openRiskModalButtonDelete").click();
+
+    }
+  }
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+  }
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
+  getSumInsuredForSection(sectionsDetails: any[], sectionDescription: string): number {
+    if (!sectionsDetails) {
+        return 0; // Fallback if sectionsDetails is null or undefined
+    }
+    const section = sectionsDetails.find(sec => sec.description === sectionDescription);
+    return section?.limitAmount || 0;
+}
+onRiskSelect(riskItem: any): void {
+  this.selectedRisk = riskItem;
+  console.log('Selected Risk:', riskItem);
+}
+
 }

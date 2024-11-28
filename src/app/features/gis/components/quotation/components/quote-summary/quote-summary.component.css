@@ -29,7 +29,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin-left:-30px
+    /* margin-left:-30px */
 }
 /* #value{
     margin-left: -40px;
@@ -87,13 +87,15 @@ border: 1px solid #00529B;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    padding: 0.6rem 0.6rem;
+    padding-left: 0rem
     /* text-align: left; */
 }
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
   padding: 0.6rem 0.6rem;
   padding-left: 0rem;
   color: rgba(0, 0, 0, 0.80);
-  font-weight: 600;
+  font-weight: 500;
 
 
 }
@@ -188,3 +190,45 @@ border: 1px solid #00529B;
   font-family: Roboto;
   font-size: 14px;
 }
+#icon {
+  background-color: #E4E7EB;
+  border-radius: 100px;
+  border: none;
+}
+
+#icon i {
+  color: #00529B;
+}
+.nav-link.active {
+  color: #00529B !important;
+  font-weight: 500;
+
+
+}
+.nav-link {
+  display: inline-block;  /* Keeps the link inline but allows for width control */
+  position: relative;  /* Allows positioning of the line */
+  padding-bottom: 0px;
+}
+
+.nav-link::after {
+  content: '';  /* Creates an empty element */
+  position: absolute;
+  left: 13%;  
+  right: 13%;  
+  bottom: 0;  
+  height: 2px;  
+}
+.nav-link.active::after {
+  background-color: #00529B;  /* Optional: Change the line color when the link is active */
+}
+
+.nav-item {
+  margin-right: 20px;  
+  margin-left:-20px;
+}
+
+.nav-item:last-child {
+  margin-right: 0;  /* Remove margin on the last item to avoid extra space */
+}
+
