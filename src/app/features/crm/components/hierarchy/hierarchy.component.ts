@@ -379,7 +379,7 @@ export class HierarchyComponent implements OnInit {
       this.patchHierarchyTypeUser = false;
       modal.classList.add('show');
       modal.style.display = 'block';
-    }else {
+    } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No organization subdivision is selected.'
