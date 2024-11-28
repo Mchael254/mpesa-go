@@ -200,6 +200,32 @@
     "Request Categories": "Catégories de demande",
     "Request Status": "Statut de la demande"
   },
+  "shared": {
+    "quotation_landing_screen": {
+        "new_quote": "Nouveau devis",
+        "filter_by": "Filtrer par",
+        "select_option": "Sélectionner une option",
+        "select_condition": "Sélectionner une condition",
+        "greater_than": "Plus grand que",
+        "less_than": "Moins que",
+        "equals": "Égale à",
+        "search": "Rechercher",
+        "range_from": "Plage de",
+        "range_to": "Plage à",
+        "enter_value": "Entrer une valeur",
+        "quotation_number": "N° de devis",
+        "product": "Produit",
+        "client": "Client",
+        "intermediary": "Intermédiaire",
+        "sum_assured": "Capital assuré",
+        "premium": "Prime",
+        "cover_from": "Couverture à partir de",
+        "cover_to": "Couverture jusqu'à",
+        "date_created": "Date de création",
+        "status": "Statut",
+        "action": "Action"
+    }
+},
   "crm": {
     "activity": "Activité",
     "category": "Catégorie",

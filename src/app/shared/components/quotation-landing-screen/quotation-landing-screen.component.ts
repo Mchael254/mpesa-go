@@ -25,6 +25,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   fromDate: Date | null = null;
   toDate: Date | null = null;
   minToDate: Date | null = null;
+  selectedRowIndex: number;
   constructor(
     private session_service: 
     SessionStorageService, 
@@ -47,6 +48,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
 
   selectLmsIndRow(i: any) {
+    if (!i || !i.client_code || !i.account_code) {
+      return;
+    }
     this.session_service.set(SESSION_KEY.WEB_QUOTE_DETAILS, i)
     let quote={};
     quote['client_code'] = i['client_code'];
@@ -102,6 +106,11 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   // This method is triggered when the user types in the search box
   onSearch(event: Event): void {
+    if (!this.LMS_GRP) {
+      this.filteredLMS_GRP = []; // Handles undefined
+      return;
+    }
+    
     const inputElement = event.target as HTMLInputElement;
     const searchTerm = inputElement.value.toLowerCase().trim().replace(/,/g, '');
 
@@ -190,6 +199,11 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   applyFilter(): void {
+    if (!this.LMS_GRP) {
+      this.filteredLMS_GRP = [];
+      return;
+    }
+
     if (!this.selectedColumn || (!this.filterValue && !this.fromDate && !this.toDate)) {
       this.filteredLMS_GRP = [...this.LMS_GRP];
       return;
@@ -285,4 +299,17 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       inputElement.value = '';
     }
   }
+
+  onQuotationTableRowClick(filteredLMS_GRP, index: number) {
+    this.selectedRowIndex = index;
+    if(filteredLMS_GRP){
+      
+    }
+  }
+
+  onProcess(){}
+
+  onReassign(){}
+
+  onRevise(){}
 }
