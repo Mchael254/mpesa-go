@@ -98,8 +98,9 @@
                                        {{clauseList.heading}}
                                     </td>
                                     <td class="flexible-header"
-                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                                        {{clauseList.heading}}
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
+                                        >
+                                        {{clauseList.wording}}
                                     </td>
                                     <td class="flexible-header">
                                       <button pButton pRipple type="button"
@@ -122,7 +123,7 @@
                                         <div pResizable
                                             [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
                                             (onResize)="onResize($event)">
-                                            <p>{{ clauseList.heading }}</p>
+                                            <p>{{ clauseList.wording }}</p>
                                         </div>
                                     </ng-container>
                                 </p-dialog>
@@ -310,9 +311,10 @@
     
     <div class="float-end mb-4  " >
         
-        <button class="btn btn-primary" type="submit" id="btnCoverTypes"
-        >
-            {{'gis.quotation.select_cover' | translate}}</button>
+      
+            <button class="btn btn-primary" type="submit" id="btnCoverTypes"
+                        (click)="passCovertypeDesc(selectedCoverType);selectCover();">
+                        {{'gis.quotation.select_cover' | translate}}</button>
     </div>
     </div>
   </div>
