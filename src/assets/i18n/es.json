@@ -200,6 +200,32 @@
     "Request Categories": "Categorías de solicitud",
     "Request Status": "Estado de la solicitud"
   },
+  "shared": {
+    "quotation_landing_screen": {
+        "new_quote": "Nueva cotización",
+        "filter_by": "Filtrar por",
+        "select_option": "Seleccionar una opción",
+        "select_condition": "Seleccionar una condición",
+        "greater_than": "Mayor que",
+        "less_than": "Menor que",
+        "equals": "Igual a",
+        "search": "Buscar",
+        "range_from": "Rango desde",
+        "range_to": "Rango hasta",
+        "enter_value": "Ingresar valor",
+        "quotation_number": "N.º de cotización",
+        "product": "Producto",
+        "client": "Cliente",
+        "intermediary": "Intermediario",
+        "sum_assured": "Suma asegurada",
+        "premium": "Prima",
+        "cover_from": "Cobertura desde",
+        "cover_to": "Cobertura hasta",
+        "date_created": "Fecha de creación",
+        "status": "Estado",
+        "action": "Acción"
+    }
+},
   "crm": {
     "activity": "Actividad",
     "category": "Categoría",

@@ -215,6 +215,32 @@
     "Request Status": "Request Status",
     "Hierarchy": "Hierarchy"
   },
+  "shared": {
+    "quotation_landing_screen": {
+      "new_quote": "New quote",
+      "filter_by": "Filter by",
+      "select_option": "Select option",
+      "select_condition": "Select condition",
+      "greater_than": "Greater than",
+      "less_than": "Less than",
+      "equals": "Equals",
+      "search": "Search",
+      "range_from": "Range from",
+      "range_to": "Range to",
+      "enter_value": "Enter value",
+      "quotation_number": "Quotation No.",
+      "product": "Product",
+      "client": "Client",
+      "intermediary": "Intermediary",
+      "sum_assured": "Sum assured",
+      "premium": "Premium",
+      "cover_from": "Cover From",
+      "cover_to": "Cover to",
+      "date_created": "Date created",
+      "status": "Status",
+      "action": "Action"
+    }
+  },
   "crm": {
     "activity": "Activity",
     "category": "Category",
