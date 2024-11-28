@@ -8,6 +8,11 @@ div > label {
 label {
   margin-bottom: 0.5rem;
 }
+
+.text-primary {
+  font-size: 20px; 
+}
+
 .p-dropdown .p-dropdown-label .p-placeholder {
   color: #ca1b0e !important;
   transform: translateY(-4px) !important;
@@ -41,7 +46,7 @@ tr.ng-star-inserted:hover {
 
 table > thead > tr > th,
 tbody {
-  border: solid 1px #e7e6e6;
+  border: none;
 }
 
 .btn {
