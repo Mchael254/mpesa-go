@@ -1,19 +1,29 @@
+<!-- Main Container for Insurance History -->
 <div class="container-fluid">
+
+  <!-- Breadcrumb Navigation -->
   <div style="display: flex; padding-top: 1rem; justify-content: end">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
+
+  <!-- Stepper Component -->
   <div class="row">
     <div class="col-md-12">
-      <app-stepper [currentStep]="4" [stepperData]="steps"></app-stepper>
+      <app-stepper [currentStep]="5" [stepperData]="steps"></app-stepper>
     </div>
   </div>
 
-  <div class="full-border p-5">
+  <!-- Content Section -->
+  <div class="full-border p-5" style="box-shadow: none; border: 1px solid #ddd;">
+
     <div>
+
       <div class="d-flex justify-content-between">
-        <div class="fw-bold text-black">Insurance history</div>
+        <!-- Section Header -->
+        <div class="text-primary" style="margin-bottom: 0;">{{ "lms.ind.quotations.insurance_history" | translate }}</div>
       </div>
+
+      <!-- Content Wrapper with Spinner -->
       <div class="text-black" style="position: relative; color: black; ">
         <ngx-spinner
           name="ins_view"
@@ -21,403 +31,99 @@
           [fullScreen]="false"
           color="#00529B"
           size="medium"
-          bdColor="rgba(255, 255, 255, 0.0)"
-        ></ngx-spinner>
+          bdColor="rgba(255, 255, 255, 0.0)">
+        </ngx-spinner>
 
         <div class="col fadeIn">
+          <!-- Main Form Section -->
           <div [formGroup]="insuranceHistoryForm" class="w-100">
+
             <div>
-              <div class="my-5">
-                <label class="required"
-                  >Do you have any active, lapsed, paid up or surrendered life
-                  assurance policy from any life assurance company ?</label
-                >
+
+              <!-- Question 1 Section -->
+              <div class="mt-2">
+                <label class="required">{{ "lms.ind.quotations.policy_question" | translate }} ?</label>
                 <div></div>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="question1Yes"
-                    formControlName="question1"
-                    value="Y"
-                  />
-                  <label class="form-check-label" for="question1Yes">Yes</label>
+                  <input class="form-check-input" type="radio" id="question1Yes" formControlName="question1" value="Y" />
+                  <label class="form-check-label" for="question1Yes">{{ "lms.ind.quotations.yes" | translate }}</label>
                 </span>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="question1No"
-                    formControlName="question1"
-                    value="N"
-                    (click)="selectFirstQuestion()"
-                  />
-                  <label class="form-check-label" for="question1No">No</label>
+                  <input class="form-check-input" type="radio" id="question1No" formControlName="question1" value="N"
+                      (click)="selectFirstQuestion()" />
+                  <label class="form-check-label" for="question1No">{{ "lms.ind.quotations.no" | translate }}</label>
                 </span>
 
                 <div>
-                  <div class="text-black" *ngIf="getValue('question1') === 'Y'">
+                  <!-- Dynamic Table for Question 1 -->
+                  <div *ngIf="getValue('question1') === 'Y'" class="text-black">
                     <div>
-                      <div class="text-black">
-                        <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                        Beneficiaries and Trustees
-                      </div> -->
-                        <div
-                          class="d-flex justify-content-between"
-                          style="padding: 0 0 0 0rem"
-                        >
-                          <div></div>
-                          <div>
-                            <div
-                            *ngIf="!editFirstForm"
-                              (click)="addEmptyPolicyList(policyListOne)"
-                              class="b-r d-flex justify-content-center align-content-center"
-                            >
-                              <i class="fa-solid fa-plus"></i>
-                            </div>
-                          </div>
-                        </div>
-                        <ng-container>
-                          <div class="table-responsive">
-                            <table
-                              formArrayName="responseOne"
-                              class="table table-bordered"
-                            >
-                              <thead>
-                                <tr style="font-weight: 400; font-size: 12px">
-                                  <th>Policy No.</th>
-                                  <th>Insurance Company</th>
-                                  <th>Annual Premium</th>
-                                  <th>Sum Assured</th>
-                                  <th>Status</th>
-                                  <th style="width: 2rem"></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <ng-container
-                                  *ngFor="
-                                    let row of policyListOne;
-                                    let i = index
-                                  "
-                                >
-                                  <tr
-                                    [formGroup]="insuranceHistoryFormOne"
-                                    *ngIf="row?.isEdit === true"
-                                  >
-                                    <td>
-                                      <input
-                                        formControlName="policy_no"
-                                        type="text"
-                                        class="form-control"
-                                        required
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        formControlName="provider"
-                                        type="text"
-                                        class="form-control"
-                                        required
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        formControlName="premium"
-                                        type="number"
-                                        class="form-control"
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        formControlName="sum_assured"
-                                        type="number"
-                                        class="form-control"
-                                      />
-                                    </td>
-                                    <td>
-                                      <select
-                                        class="form-select"
-                                        formControlName="cover_status"
-                                      >
-                                        <option
-                                          style="font-size: 11px"
-                                          value=""
-                                          disabled
-                                          selected
-                                        >
-                                          Status
-                                        </option>
-                                        <ng-container
-                                          *ngFor="
-                                            let type of coverStatusTypeListOne
-                                          "
-                                        >
-                                          <option [value]="type['name']">
-                                            {{ type["value"] | titlecase }}
-                                          </option>
-                                        </ng-container>
-                                      </select>
-                                    </td>
-                                    <td
-                                      class="d-flex justify-content-between py-2"
-                                    >
-                                      <div
-                                        (click)="addResponseOne(i)"
-                                        class="mx-2"
-                                      >
-                                        <i
-                                          class="fa-solid fa-check text-success"
-                                        ></i>
-                                      </div>
-                                      <div
-                                        (click)="cancelPolicyListOne(i)"
-                                        class="mx-2"
-                                      >
-                                        <i
-                                          class="fa-solid fa-x text-danger"
-                                        ></i>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  <tr></tr>
-                                  <tr *ngIf="row['isEdit'] === false">
-                                    <td>{{ row["policy_no"] }}</td>
-                                    <td>{{ row["provider"] }}</td>
-                                    <td>{{ row["premium"] }}</td>
-                                    <td>{{ row["sum_assured"] }}</td>
-                                    <td>
-                                      {{
-                                        filterCoverStatusType(
-                                          row["cover_status"]
-                                        )
-                                      }}
-                                    </td>
-                                    <td
-                                      class="d-flex justify-content-between py-2"
-                                    >
-                                      <div
-                                        (click)="editPolicyOne(i)"
-                                        class="mx-2"
-                                      >
-                                        <i class="fas fa-edit text-success"></i>
-                                        <!-- Edit Icon -->
-                                      </div>
-                                      <div
-                                        (click)="deletePolicyListOne(i)"
-                                        class="mx-2"
-                                      >
-                                        <i
-                                          class="fas fa-trash-alt text-danger"
-                                        ></i>
-                                        <!-- Remove Icon -->
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </ng-container>
-                              </tbody>
-                            </table>
-
-                            <div *ngIf="editEntity">
-                              <div
-                                style="
-                                  left: 50%;
-                                  right: 50%;
-                                  width: 3rem;
-                                  height: 3rem;
-                                  position: relative;
-                                "
-                                class="spinner-border text-primary spinner-border"
-                                role="status"
-                              >
-                                <span class="visually-hidden">Loading...</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            *ngIf="policyListOne.length === 0"
-                            class="d-flex justify-content-center text-danger"
-                          >
-                            No Available Policy!
-                          </div>
-                        </ng-container>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="my-5">
-              <label class="required"
-                >Has any proposal on your life ever been declined, deferred,
-                withdrawn or accepted on special terms ?</label
-              >
-              <div></div>
-              <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="male"
-                  formControlName="question2"
-                  value="Y"
-                />
-                <label class="form-check-label" for="male">Yes</label>
-              </span>
-              <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="female"
-                  formControlName="question2"
-                  value="N"
-                  (click)="selectSecondQuestion()"
-                />
-                <label class="form-check-label" for="female">No</label>
-              </span>
-
-              <div>
-                <div class="text-black" *ngIf="getValue('question2') === 'Y'">
-                  <div>
-                    <div class="text-black">
-                      <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                        Beneficiaries and Trustees
-                      </div> -->
-                      <div
-                        class="d-flex justify-content-between"
-                        style="padding: 0 0 0 0rem"
-                      >
+                      <!-- Add Button for Dynamic Rows -->
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
                         <div></div>
                         <div>
-                          <div
-                            (click)="addEmptyPolicyList(policyListTwo)"
-                            class="b-r d-flex justify-content-center align-content-center"
-                          >
+                          <div *ngIf="!editFirstForm" (click)="addEmptyPolicyList(policyListOne)" class="b-r d-flex justify-content-center align-content-center">
                             <i class="fa-solid fa-plus"></i>
                           </div>
                         </div>
                       </div>
                       <ng-container>
+                        <!-- Table to Display/Edit Insurance Policies -->
                         <div class="table-responsive">
-                          <table
-                            formArrayName="responseOne"
-                            class="table table-bordered"
-                          >
+                          <table formArrayName="responseOne" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0;">
                             <thead>
-                              <tr style="font-weight: 400; font-size: 12px">
-                                <th>Policy No.</th>
-                                <th>Insurance Company</th>
-                                <th>Annual Premium</th>
-                                <th>Sum Assured</th>
-                                <th>Status</th>
-                                <th style="width: 2rem"></th>
+                              <tr style="font-weight: 400; font-size: 12px; border: none;">
+                                <th>{{ "lms.ind.quotations.insurance_company" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.policy_no" | translate }}.</th>
+                                <th>{{ "lms.ind.quotations.annual_premium" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.sum_assured" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.status" | translate }}</th>
+                                <th style="width: 2rem"></th>  
                               </tr>
                             </thead>
                             <tbody>
-                              <ng-container
-                                *ngFor="let row of policyListTwo; let i = index"
-                              >
-                                <tr
-                                  [formGroup]="insuranceHistoryFormTwo"
-                                  *ngIf="row['isEdit'] === true"
-                                >
+                              <ng-container *ngFor="let row of policyListOne; let i = index">
+                                <tr [formGroup]="insuranceHistoryFormOne" *ngIf="row?.isEdit === true">
+                                  <td><input formControlName="provider" type="text" class="form-control" required/></td>
+                                  <td><input formControlName="policy_no" type="text" class="form-control" required/></td>
+                                  <td><input formControlName="premium" type="number" class="form-control"/></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control"/></td>
                                   <td>
-                                    <input
-                                      formControlName="policy_no"
-                                      type="text"
-                                      class="form-control"
-                                      required
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      formControlName="provider"
-                                      type="text"
-                                      class="form-control"
-                                      required
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      formControlName="premium"
-                                      type="number"
-                                      class="form-control"
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      formControlName="sum_assured"
-                                      type="number"
-                                      class="form-control"
-                                    />
-                                  </td>
-                                  <td>
-                                    <select
-                                      class="form-select"
-                                      formControlName="cover_status"
-                                    >
-                                      <option
-                                        style="font-size: 11px"
-                                        value=""
-                                        disabled
-                                        selected
-                                      >
-                                        Status
-                                      </option>
-                                      <ng-container
-                                        *ngFor="let type of coverStatusTypeListTwo"
-                                      >
+                                    <select class="form-select" formControlName="cover_status">
+                                      <option style="font-size: 11px" value="" disabled selected>{{ "lms.ind.quotations.status" | translate }}</option>
+                                      <ng-container *ngFor="let type of coverStatusTypeListOne">
                                         <option [value]="type['name']">
                                           {{ type["value"] | titlecase }}
                                         </option>
                                       </ng-container>
                                     </select>
                                   </td>
-                                  <td
-                                    class="d-flex justify-content-between py-2"
-                                  >
-                                    <div
-                                      (click)="addResponseTwo(i)"
-                                      class="mx-2"
-                                    >
-                                      <i
-                                        class="fa-solid fa-check text-success"
-                                      ></i>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="addResponseOne(i)" class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
                                     </div>
-                                    <div
-                                      (click)="cancelPolicyListTwo(i)"
-                                      class="mx-2"
-                                    >
+                                    <div (click)="cancelPolicyListOne(i)" class="mx-2">
                                       <i class="fa-solid fa-x text-danger"></i>
                                     </div>
                                   </td>
                                 </tr>
+                                <tr></tr>
                                 <tr *ngIf="row['isEdit'] === false">
                                   <td>{{ row["policy_no"] }}</td>
                                   <td>{{ row["provider"] }}</td>
                                   <td>{{ row["premium"] }}</td>
                                   <td>{{ row["sum_assured"] }}</td>
-                                  <td>
-                                    {{
-                                      filterCoverStatusType(row["cover_status"])
-                                    }}
+                                  <td>{{ filterCoverStatusType (
+                                          row["cover_status"]
+                                        ) }}
                                   </td>
-                                  <td
-                                    class="d-flex justify-content-between py-2"
-                                  >
-                                    <div
-                                      (click)="editPolicyTwo(i)"
-                                      class="mx-2"
-                                    >
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="editPolicyOne(i)" class="mx-2">
                                       <i class="fas fa-edit text-success"></i>
                                       <!-- Edit Icon -->
                                     </div>
-                                    <div
-                                      (click)="deletepolicyListTwo(i)"
-                                      class="mx-2"
-                                    >
-                                      <i
-                                        class="fas fa-trash-alt text-danger"
-                                      ></i>
+                                    <div (click)="deletePolicyListOne(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
                                       <!-- Remove Icon -->
                                     </div>
                                   </td>
@@ -427,26 +133,124 @@
                           </table>
 
                           <div *ngIf="editEntity">
-                            <div
-                              style="
-                                left: 50%;
-                                right: 50%;
-                                width: 3rem;
-                                height: 3rem;
-                                position: relative;
-                              "
-                              class="spinner-border text-primary spinner-border"
-                              role="status"
-                            >
-                              <span class="visually-hidden">Loading...</span>
+                            <div class="spinner-border text-primary spinner-border" role="status"
+                                style="left: 50%; right: 50%; width: 3rem; height: 3rem; position: relative;">
+                              <span class="visually-hidden">{{ "lms.ind.quotations.loading" | translate }}...</span>
                             </div>
                           </div>
                         </div>
-                        <div
-                          *ngIf="policyListOne.length === 0"
-                          class="d-flex justify-content-center text-danger"
-                        >
-                          No Available Policy!
+                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center">
+                            {{ "lms.ind.quotations.no_record_capture" | translate }}. &nbsp;
+                          <span style="color: gray">&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
+                        </div>
+                      </ng-container>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-0">
+              <label class="required">{{ "lms.ind.quotations.proposal_question" | translate }} ?</label>
+              <div style="margin-top: 12px;">
+                <span class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="male"
+                      formControlName="question2" value="Y"/>
+                  <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
+                </span>
+                <span class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="female"
+                      formControlName="question2" value="N" (click)="selectSecondQuestion()"/>
+                  <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
+                </span>
+              </div>
+
+              <div>
+                <div class="text-black" *ngIf="getValue('question2') === 'Y'">
+                  <div>
+                    <div class="text-black">
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                        <div></div>
+                        <div>
+                          <div (click)="addEmptyPolicyList(policyListTwo)" class="b-r d-flex justify-content-center align-content-center">
+                            <i class="fa-solid fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container>
+                        <div class="table-responsive">
+                          <table formArrayName="responseOne" class="table table-bordered">
+                            <thead>
+                              <tr style="font-weight: 400; font-size: 12px">
+                                <th>{{ "lms.ind.quotations.insurance_company" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.policy_no" | translate }}.</th>
+                                <th>{{ "lms.ind.quotations.annual_premium" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.sum_assured" | translate }}</th>
+                                <th>{{ "lms.ind.quotations.status" | translate }}</th>
+                                <th style="width: 2rem"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container *ngFor="let row of policyListTwo; let i = index">
+                                <tr [formGroup]="insuranceHistoryFormTwo" *ngIf="row['isEdit'] === true">
+                                  <td><input formControlName="policy_no" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="provider" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="premium" type="number" class="form-control"/></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control"/></td>
+                                  <td>
+                                    <select class="form-select" formControlName="cover_status">
+                                      <option style="font-size: 11px" value="" disabled selected>{{ "lms.ind.quotations.status" | translate }}</option>
+                                      <ng-container *ngFor="let type of coverStatusTypeListTwo">
+                                        <option [value]="type['name']">
+                                            {{ type["value"] | titlecase }}
+                                        </option>
+                                      </ng-container>
+                                    </select>
+                                  </td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="addResponseTwo(i)" class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
+                                    </div>
+                                    <div (click)="cancelPolicyListTwo(i)" class="mx-2">
+                                      <i class="fa-solid fa-x text-danger"></i>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="row['isEdit'] === false">
+                                  <td>{{ row["policy_no"] }}</td>
+                                  <td>{{ row["provider"] }}</td>
+                                  <td>{{ row["premium"] }}</td>
+                                  <td>{{ row["sum_assured"] }}</td>
+                                  <td>{{ filterCoverStatusType (
+                                         row["cover_status"]
+                                      ) }}
+                                  </td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="editPolicyTwo(i)" class="mx-2">
+                                      <i class="fas fa-edit text-success"></i>
+                                      <!-- Edit Icon -->
+                                    </div>
+                                    <div (click)="deletepolicyListTwo(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
+                                      <!-- Remove Icon -->
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
+                          <div *ngIf="editEntity">
+                            <div class="spinner-border text-primary spinner-border" role="status"
+                                style=" left: 50%; right: 50%; width: 3rem; height: 3rem; position: relative;">
+                              <span class="visually-hidden">{{ "lms.ind.quotations.loading" | translate }}...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center">
+                            {{ "lms.ind.quotations.no_record_capture" | translate }}. &nbsp;
+                          <span style="color: gray">&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
                         </div>
                       </ng-container>
                     </div>
@@ -460,21 +264,13 @@
     </div>
   </div>
   <div class="d-flex justify-content-between pb-4">
-    <button
-      routerLink="/home/lms/ind/quotation/client-details"
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-    >
-      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
+    <button routerLink="/home/lms/ind/quotation/beneficiaries-dependents" class="btn btn-sm text-primary fw-medium fs-6" type="button" 
+      style="padding: 0.6em; text-decoration: underline" type="button">
+        {{ "lms.ind.quotations.back" | translate }}
     </button>
-    <button
-      routerLink="/home/lms/ind/quotation/lifestyle-details"
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-    >
-      Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+    <button routerLink="/home/lms/ind/quotation/lifestyle-details" class="btn btn-primary btn-sm" type="button"
+      style="padding: 0.6em">
+        {{ "lms.ind.quotations.next" | translate }} &nbsp;&nbsp;
     </button>
   </div>
 </div>
