@@ -156,8 +156,8 @@
                                 
                                 <p-dropdown formControlName="currencyCode" [options]="currencyList"
                                 optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
-                                placeholder=" " [filterBy]="'name'" [placeholder]="selectedCurrency"
-                                [filter]="true"></p-dropdown>
+                               [filterBy]="'name'" 
+                                [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
                             <!-- Display error message under the field -->
                             <!-- <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
                                 class="form-text text-danger">

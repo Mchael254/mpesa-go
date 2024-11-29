@@ -180,6 +180,7 @@ export class QuickQuoteFormComponent {
   parsedSumInsured: string;
   filteredBranchCodeNumber: number;
   regexPattern: any;
+  defaultCurrencyName: any;
   
 
 
@@ -307,6 +308,7 @@ export class QuickQuoteFormComponent {
     }
     this.premiumComputationRequest;
     // this.loadFormData()
+    this.loadAllCurrencies()
 
   }
   ngOnDestroy(): void { }
@@ -932,7 +934,6 @@ export class QuickQuoteFormComponent {
         this.selectedBinderCode= this.selectedBinder.code
         this.currencyCode= this.selectedBinder.currency_code;
         console.log("Selected Currency Code:", this.currencyCode);
-        this.loadAllCurrencies();
       } else {
         console.error("Binder list is empty or undefined");
       }
@@ -961,7 +962,6 @@ export class QuickQuoteFormComponent {
 
     console.log("Selected Binder:", this.selectedBinder);
     console.log("Selected Currency Code:", this.currencyCode);
-    // this.loadAllCurrencies(this.currencyCode);
 
   }
   /**
@@ -977,11 +977,21 @@ export class QuickQuoteFormComponent {
     this.currencyService.getAllCurrencies().subscribe(data => {
       this.currencyList = data;
       log.info(this.currencyList, "this is a currency list");
-      const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
-      this.selectedCurrency = curr[0].name
-      log.debug("Selected Currency:", this.selectedCurrency);
-      this.selectedCurrencyCode = curr[0].id;
-      log.debug("Selected Currency code:", this.selectedCurrencyCode);
+      // const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
+      const defaultCurrency =this.currencyList.find(currency => currency.currencyDefault == "Y")
+      if (defaultCurrency) {
+        log.debug("DEFAULT CURRENCY",defaultCurrency)
+        this.defaultCurrencyName= defaultCurrency.name
+        log.debug("DEFAULT CURRENCY Name",this.defaultCurrencyName)
+        // Set the default value in the form control
+        this.personalDetailsForm.get('currencyCode')?.setValue(this.defaultCurrencyName);
+      }
+    
+
+      // this.selectedCurrency = curr[0].name
+      // log.debug("Selected Currency:", this.selectedCurrency);
+      // this.selectedCurrencyCode = curr[0].id;
+      // log.debug("Selected Currency code:", this.selectedCurrencyCode);
       // this.personalDetailsForm.get('currencyCode').setValue(this.selectedCurrencyCode);
 
       this.cdr.detectChanges()
