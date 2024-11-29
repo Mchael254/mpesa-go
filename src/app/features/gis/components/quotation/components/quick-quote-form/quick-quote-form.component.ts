@@ -33,7 +33,6 @@ import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
 import { firstValueFrom, Observable, tap } from 'rxjs';
-import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -1231,6 +1230,7 @@ export class QuickQuoteFormComponent {
     log.debug("MANDA SEC", this.mandatorySections)
     for (let i = 0; i < this.mandatorySections.length; i++) {
       this.selectedSectionList = this.mandatorySections[i];
+      log.debug("SELECTED SECTIONS",this.selectedSectionList)
       const selectedSectionCode = this.selectedSectionList.sectionCode;
       this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
         this.premiumList = data;
