@@ -307,4 +307,12 @@ export interface LimitsOfLiability {
   subclassCode: number;
   quotationValueCode: number;
 }
+export interface Excesses {
+  code: number;
+  coverTypeCode: number;
+  subclassCode: number;
+  shortDescription: string;
+  heading: string;
+  isMandatory: string;
+}
   

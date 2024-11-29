@@ -14,7 +14,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
-import { Clause, LimitsOfLiability, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -143,6 +143,8 @@ export class CoverTypesComparisonComponent {
   selectedClause:any;
   modalHeight: number = 200; // Initial height
   limitsOfLiabilityList:LimitsOfLiability[]=[] ;
+  excessesList:Excesses[] = []
+  selectedExcess:any;
 
 
   
@@ -312,6 +314,7 @@ export class CoverTypesComparisonComponent {
     if (this.passedCovertypeCode){
       log.debug("Fetch Clauses function")
       this.fetchClauses()
+      this.fetchExcesses()
     }
     this.fetchLimitsOfLiability()
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
@@ -1220,6 +1223,24 @@ log.info("On cover type change called")
       error: (error) => {
   
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+      }
+    });
+   }
+
+   fetchExcesses(){
+    this.quotationService
+    .getExcesses(this.passedCovertypeCode, this.selectedSubclassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+  
+        this.excessesList=  response._embedded
+        log.debug("Excesses List ", this.excessesList);
+       
+      },
+      error: (error) => {
+  
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
       }
     });
    }

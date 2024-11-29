@@ -17,6 +17,7 @@ import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Clause, LimitsOfLiability } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -68,6 +69,13 @@ export class QuoteSummaryComponent {
   user: any;
   userDetails: any
   userBranchId: any;
+  selectedRisk:any;
+  clauseList:Clause[] = []
+  selectedClause:any;
+  modalHeight: number = 200; // Initial height
+  limitsOfLiabilityList:LimitsOfLiability[]=[] ;
+  totalTaxes: number = 0;
+  taxList: { description: string; amount: number }[] = [];
 
   constructor(
     public fb: FormBuilder,
@@ -141,7 +149,10 @@ export class QuoteSummaryComponent {
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.no;
       log.debug("Quotation Number:", this.quotationNo)
-
+      if(this.quotationDetails){
+        log.info("CALCULATE TAXES XALLED")
+        this.calculateTaxes()
+      }
 
       this.insuredCode = this.quotationDetails.clientCode;
       log.debug("Insured Code:", this.insuredCode)
@@ -393,4 +404,49 @@ export class QuoteSummaryComponent {
       this.sendSms();
     }
   }
+  openRiskDeleteModal() {
+    log.debug("Selected Risk", this.selectedRisk)
+    if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+    } else {
+      document.getElementById("openRiskModalButtonDelete").click();
+
+    }
+  }
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+  }
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
+  getSumInsuredForSection(sectionsDetails: any[], sectionDescription: string): number {
+    if (!sectionsDetails) {
+        return 0; // Fallback if sectionsDetails is null or undefined
+    }
+    const section = sectionsDetails.find(sec => sec.description === sectionDescription);
+    return section?.limitAmount || 0;
+}
+onRiskSelect(riskItem: any): void {
+  this.selectedRisk = riskItem;
+  console.log('Selected Risk:', riskItem);
+}
+calculateTaxes() {
+  this.totalTaxes = 0;
+  this.taxList = [];
+  if (this.quotationDetails.taxInformation) {
+    this.quotationDetails.taxInformation.forEach((tax: any) => {
+      if (tax.quotationRate) {
+        this.totalTaxes += tax.quotationRate;
+        log.debug("Total Taxes:",this.totalTaxes)
+        this.taxList.push({ description: tax.description, amount: tax.quotationRate });
+        log.debug("Total Taxes List:",this.taxList)
+
+      }
+    });
+  }
+}
+getTaxTooltip(): string {
+  return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
+}
 }
