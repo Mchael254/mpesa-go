@@ -1,0 +1,113 @@
+/* General Styling for Section Titles */
+.container-fluid {
+  padding: 1rem;
+}
+
+.breadcrumb-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+}
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.text-primary {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.bmi {
+    font-weight: bold;
+}
+
+/* Small Devices (Max Width: 576px) */
+@media (max-width: 576px) {
+  .breadcrumb-container {
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+
+  .lifestyle-details-container {
+    padding: 1rem;
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    text-align: center;
+  }
+
+}
+
+/* Medium Devices (Max Width: 768px) */
+@media (max-width: 768px) {
+  .breadcrumb-container {
+    justify-content: center;
+  }
+
+  .lifestyle-details-container {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 18px;
+    text-align: left;
+  }
+
+}
+
+/* Small Devices (Max Width: 576px) */
+@media (max-width: 576px) {
+  .breadcrumb-container {
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+
+  .lifestyle-details-container {
+    padding: 1rem;
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    text-align: center;
+  }
+
+}
+
+/* Medium Devices (Max Width: 768px) */
+@media (max-width: 768px) {
+  .breadcrumb-container {
+    justify-content: center;
+  }
+
+  .lifestyle-details-container {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 18px;
+    text-align: left;
+  }
+
+}
+
+/* Large Devices (Max Width: 992px) */
+@media (max-width: 992px) {
+  .breadcrumb-container {
+    justify-content: flex-start;
+  }
+
+  .lifestyle-details-container {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+}
+
