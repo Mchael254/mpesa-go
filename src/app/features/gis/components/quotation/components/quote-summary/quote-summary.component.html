@@ -72,9 +72,7 @@
                         <tr>
                             <th>{{'gis.quotation.product' | translate}}</th>
                             <th>Total sum insured</th>
-                            <!-- Loop through taxInformation and display each tax type in the header -->
-                            <th>
-                                Total taxes</th>
+                            <th>Total taxes</th>
                             <th>{{'gis.quotation.premium' | translate}}</th>
                             <th>{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
@@ -82,11 +80,12 @@
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td>{{ productDesc}}</td>
-                            <td class="text-end"> {{
-                                quotationDetails.quotationProduct[0].totalSumInsured |
+                            <td class="text-end"> {{quotationDetails.quotationProduct[0].totalSumInsured |
                                 number }}</td>
-                            <!-- Loop through taxInformation and display each tax amount in the corresponding column -->
-                            <td class="text-end">
+                                <td class="" 
+                                pTooltip="{{ getTaxTooltip() }}" 
+                                tooltipPosition="bottom">
+                              {{ totalTaxes | number }}
                             </td>
                             <td class="text-end">{{passedPremium | number}}</td>
                             <td class="text-end">{{ quotationDetails.quotationProduct[0].premium |
@@ -178,22 +177,8 @@
                         </tr>
                     </ng-template>
                 </p-table>
-                <!-- TABS -->
-                <!-- <p-tabView>
-                    <p-tabPanel header="Risk section"> 
-                        <ng-template pTemplate="content"> Risk Section </ng-template>
-
-                    </p-tabPanel>
-                    <p-tabPanel header="Clauses">
-                        <ng-template pTemplate="content"> Clauses </ng-template>
-                    </p-tabPanel>
-                    <p-tabPanel header="Limits of Liability">
-                        <ng-template pTemplate="content"> Limits of liability </ng-template>
-                    </p-tabPanel>
-                    <p-tabPanel header="Excess">
-                        <ng-template pTemplate="content">Excess </ng-template>
-                    </p-tabPanel>
-                </p-tabView> -->
+                
+                <!-- TABS  -->
 
                 <ul class="nav  mt-5">
                     <li class="nav-item">

@@ -33,7 +33,6 @@ import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
 import { firstValueFrom, Observable, tap } from 'rxjs';
-import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 
 const log = new Logger("QuickQuoteFormComponent");
 
