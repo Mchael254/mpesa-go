@@ -74,7 +74,8 @@ export class QuoteSummaryComponent {
   selectedClause:any;
   modalHeight: number = 200; // Initial height
   limitsOfLiabilityList:LimitsOfLiability[]=[] ;
-  
+  totalTaxes: number = 0;
+  taxList: { description: string; amount: number }[] = [];
 
   constructor(
     public fb: FormBuilder,
@@ -148,7 +149,10 @@ export class QuoteSummaryComponent {
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.no;
       log.debug("Quotation Number:", this.quotationNo)
-
+      if(this.quotationDetails){
+        log.info("CALCULATE TAXES XALLED")
+        this.calculateTaxes()
+      }
 
       this.insuredCode = this.quotationDetails.clientCode;
       log.debug("Insured Code:", this.insuredCode)
@@ -427,5 +431,22 @@ onRiskSelect(riskItem: any): void {
   this.selectedRisk = riskItem;
   console.log('Selected Risk:', riskItem);
 }
+calculateTaxes() {
+  this.totalTaxes = 0;
+  this.taxList = [];
+  if (this.quotationDetails.taxInformation) {
+    this.quotationDetails.taxInformation.forEach((tax: any) => {
+      if (tax.quotationRate) {
+        this.totalTaxes += tax.quotationRate;
+        log.debug("Total Taxes:",this.totalTaxes)
+        this.taxList.push({ description: tax.description, amount: tax.quotationRate });
+        log.debug("Total Taxes List:",this.taxList)
 
+      }
+    });
+  }
+}
+getTaxTooltip(): string {
+  return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
+}
 }
