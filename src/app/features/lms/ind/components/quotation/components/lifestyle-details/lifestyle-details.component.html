@@ -1,330 +1,273 @@
+<!-- Main Container for Lifestyle Details -->
 <div class="container-fluid">
-  <div style="display: flex; padding-top: 1rem; justify-content: end">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-container">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
+
+  <!-- Stepper Component -->
   <div class="row">
     <div class="col-md-12">
-      <app-stepper [currentStep]="5" [stepperData]="steps"></app-stepper>
+      <app-stepper [currentStep]="6" [stepperData]="steps"></app-stepper>
     </div>
   </div>
 
-  <div class="full-border p-5">
+  <!-- Lifestyle Details Section -->
+  <div class="full-border p-5" style="box-shadow: none;">
+
     <div>
+      <!-- Section Title -->
       <div class="d-flex justify-content-between">
-        <div class="fw-bold text-black">Lifestyle details</div>
+        <div  class="text-primary">{{ "lms.ind.quotations.lifestyle_details" | translate }}</div>
       </div>
-      <div class="text-black" style="position: relative; color: black; ">
+
+      <!-- Content Wrapper with Spinner -->
+      <div class="text-black">
         <ngx-spinner
           name="lifestyle_screen"
           type="ball-clip-rotate-multiple"
           [fullScreen]="false"
           color="#00529B"
           size="medium"
-          bdColor="rgba(255, 255, 255, 0.9)"
-        ></ngx-spinner>
+          bdColor="rgba(255, 255, 255, 0.9)">
+        </ngx-spinner>
+
+        <!-- Lifestyle Form -->
         <div class="col fadeIn">
+
           <div class="row">
-            <ng-container [formGroup] = bmiForm>
-              <div class="col-lg-4 col-sm-12">
-
-                <label for="height" class="mt-3 mb-1 ">Height (cm)</label>
-                <span   *ngIf="bmiNotReady">
-                  <div
-                    style="width: 1.4rem; height: 1.4rem"
-                    class="spinner-border text-primary spinner-border"
-                    role="status"
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </span>
-                <input type="number" class="form-control"(keyup.enter)="getBMI()" formControlName="height" [id]="'height'" />
-              </div>
-              <div class="col-lg-4 col-sm-12">
-                <label for="weight" class="mt-3 mb-1">Weight (kg)</label>
-                <input type="number" formControlName="weight" class="form-control" [id]="'weight'" (keyup.enter)="getBMI()"/>
-              </div>
-
-              <div class="col-lg-4 col-sm-12" *ngIf="bmi['bmi'] || !bmiNotReady">
-                <label for="weight" class="mt-3 mb-1 fw-bold"></label>
-                <div>
-
-                  <label for="weight" class="mt-3 mb-1 fw-bold">Your BMI: </label> {{bmi['bmi'] || 0}}
-
-                </div>
-              </div>
-
-
-            </ng-container>
-
-
-
+             
             <div [formGroup]="clientLifestyleForm" class="w-100">
+              <!-- Question 1 -->
               <div class="my-4">
-                <label class="required"
-                  >Is your occupation associated with any specific hazard or do
-                  you take part in any activity, sports, hobbies that may be
-                  dangerous or involve extra risk.</label
-                >
+                <label class="required">1. {{ "lms.ind.quotations.risky_occupation" | translate }} ?</label>
                 <div class="my-2"></div>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="male"
-                    formControlName="isClientHazardous"
-                    value="Y"
-                  />
-                  <label class="form-check-label" for="male">Yes</label>
+                  <input class="form-check-input" type="radio" id="male" formControlName="isClientHazardous" value="Y" />
+                  <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
                 </span>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="female"
-                    formControlName="isClientHazardous"
-                    value="N"
-                  />
-                  <label class="form-check-label" for="female">No</label>
+                  <input class="form-check-input" type="radio" id="female" formControlName="isClientHazardous" value="N" />
+                  <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
                 </span>
 
+                <!-- Description -->
                 <div class="row" *ngIf="getValue('isClientHazardous') == 'Y'">
                   <div class="col-lg-6 col-sm-12" >
-                    <div><label for="desc_q1" class="mt-3 mb-1">Description</label></div>
+                    <div><label for="desc_q1" class="mt-3 mb-1">{{ "lms.ind.quotations.description" | translate }}</label></div>
                     <textarea id="desc_q1" cols="50" rows="5"></textarea>
                   </div>
                 </div>
               </div>
 
+              <!-- Question 2 -->
               <div class="my-4">
-                <label class="required"
-                  >Have you travelled outside Nigeria for the past 6 months or
-                  intend to in the near future</label
-                >
+                <label class="required">2. {{ "lms.ind.quotations.travel" | translate }} ?</label>
                 <div class="my-2"></div>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="male"
-                    formControlName="question2"
-                    value="Y"
-                  />
-                  <label class="form-check-label" for="male">Yes</label>
+                  <input class="form-check-input" type="radio" id="male" formControlName="question2" value="Y" />
+                  <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
                 </span>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="female"
-                    formControlName="question2"
-                    value="N"
-                  />
-                  <label class="form-check-label" for="female">No</label>
+                  <input class="form-check-input" type="radio" id="female" formControlName="question2" value="N" />
+                  <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
                 </span>
 
+                <!-- Country Dropdown -->
                 <div class="row" *ngIf="getValue('question2') == 'Y'">
                   <div class="col-lg-6 col-md-6 col-sm-12">
-                    <label for="clientType">Enter Country</label>
+                    <label for="clientType">{{ "lms.ind.quotations.enter_country" | translate }}</label>
                     <select class="form-select" [id]="'clientType'">
-                      <ng-container *ngFor="let country of countryList">
+                      <option [value]="" selected disabled>{{ "lms.ind.quotations.select_country" | translate }}</option>
+                      <ng-container *ngFor="let country of countryList | sort : 'asc' : 'name'">
                         <option [value]="country['id']">
-                          {{ country["name"] | lowercase }}
+                          {{ country["name"] | titlecase }}
                         </option>
                       </ng-container>
                     </select>
                   </div>
+
+                  <!-- Description -->
                   <div class="col-lg-6 col-md-12 col-sm-12">
-                    <div><label for="desc_q1" class="mt-3 mb-1">Description</label></div>
+                    <div><label for="desc_q1" class="mt-3 mb-1">{{ "lms.ind.quotations.description" | translate }}</label></div>
                     <textarea id="desc_q1" cols="50" rows="5"></textarea>
                   </div>
                 </div>
               </div>
 
+              <!-- Question 3 -->
               <div class="my-4">
-                <label class="required"
-                  >Do you consume or have consumed any of the following</label
-                >
+                <label class="required">3. {{ "lms.ind.quotations.consumption_question" | translate }} ?</label>
                 <div class="my-2"></div>
-                <div class="row mt-1">
-                  <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div>a. Tobacco</div>
 
+                <div class="row mt-1">
+
+                  <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div>a. {{ "lms.ind.quotations.tobacco" | translate }}</div>
                     <div>
                       <div>
                         <div>
                           <div></div>
                           <span class="form-check form-check-inline">
                             <span class="form-check form-check-inline">
-                              <input
-                                class="form-check-input"
-                                type="radio"
-                                id="yes"
-                                formControlName="question3"
-                                value="Y"
-                              />
-                              <label class="form-check-label" for="yes"
-                                >Yes</label
-                              >
+                              <input class="form-check-input" type="radio" id="yes" formControlName="question3" value="Y" />
+                              <label class="form-check-label" for="yes">{{ "lms.ind.quotations.yes" | translate }}</label>
                             </span>
                             <span class="form-check form-check-inline">
-                              <input
-                                class="form-check-input"
-                                type="radio"
-                                id="no"
-                                formControlName="question3"
-                                value="N"
-                              />
-                              <label class="form-check-label" for="no"
-                                >No</label
-                              >
+                              <input class="form-check-input" type="radio" id="no" formControlName="question3" value="N" />
+                              <label class="form-check-label" for="no">{{ "lms.ind.quotations.no" | translate }}</label>
                             </span>
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
+
                   <div class="col-lg-9 col-md-12 col-sm-12">
                     <div class="row" *ngIf="getValue('question3') == 'Y'">
+
+                      <!-- Quantity -->
                       <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="surname">Quantity</label>
-                        <input
-                        formControlName="tobaccoQuantity"
-                          type="text"
-                          class="form-control"
-                          [id]="'surname'"
-                        />
+                        <label for="surname">{{ "lms.ind.quotations.quantity" | translate }}</label>
+                        <input class="form-control" type="text" [id]="'surname'" formControlName="tobaccoQuantity" />
                       </div>
+
+                      <!-- Frequency Dropdown -->
                       <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="clientType">Frequency</label>
+                        <label for="clientType">{{ "lms.ind.quotations.frequency" | translate }}</label>
                         <select class="form-select" [id]="'clientType'" formControlName="tobaccoFrequency">
-                          <ng-container
-                            *ngFor="
-                              let product of frequencyOfPayment
-                            "
-                          >
+                          <ng-container *ngFor="let product of frequencyOfPayment">
                             <option [value]="product['value']">
-                              {{ product['label'] | titlecase}}
+                                {{ product['label'] | titlecase}}
                             </option>
                           </ng-container>
                         </select>
                       </div>
+
+                      <!-- Period Consumed -->
                       <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="surname">Period Consumed</label>
-                        <input
-                        formControlName="tobaccoConsumptionPeriod"
-                          type="text"
-                          class="form-control"
-                          [id]="'surname'"
-                        />
+                        <label for="surname">{{ "lms.ind.quotations.period_consumed" | translate }}</label>
+                        <input class="form-control" type="text" [id]="'surname'" formControlName="tobaccoConsumptionPeriod" />
                       </div>
+
                     </div>
                   </div>
+
                 </div>
 
-                <div>b. Alcohol</div>
+                <div>b. {{ "lms.ind.quotations.alcohol" | translate }}</div>
 
                 <div>
                   <div>
                     <div class="mt-2">
+
                       <div class="mt-1"></div>
 
                       <div class="row">
+
                         <div class="col-lg-3 col-md-6 col-sm-12">
                           <div></div>
                           <span class="form-check form-check-inline">
                             <span class="form-check form-check-inline">
-                              <input
-                                class="form-check-input"
-                                type="radio"
-                                id="yes"
-                                formControlName="question4"
-                                value="Y"
-                              />
-                              <label class="form-check-label" for="yes"
-                                >Yes</label
-                              >
+                              <input class="form-check-input" type="radio" id="yes" formControlName="question4" value="Y" />
+                              <label class="form-check-label" for="yes">{{ "lms.ind.quotations.yes" | translate }}</label>
                             </span>
                             <span class="form-check form-check-inline">
-                              <input
-                                class="form-check-input"
-                                type="radio"
-                                id="no"
-                                formControlName="question4"
-                                value="N"
-                              />
-                              <label class="form-check-label" for="no"
-                                >No</label
-                              >
+                              <input class="form-check-input" type="radio" id="no" formControlName="question4" value="N" />
+                              <label class="form-check-label" for="no">{{ "lms.ind.quotations.no" | translate }}</label>
                             </span>
                           </span>
                         </div>
 
                         <div class="col-lg-9 col-md-12 col-sm-12">
+
                           <div class="row" *ngIf="getValue('question4') == 'Y'">
+
+                            <!-- Quantity -->
                             <div class="col-lg-4 col-md-6 col-sm-12">
-                              <label for="surname">Quantity</label>
-                              <input
-                              formControlName="alcoholQuantity"
-                                type="text"
-                                class="form-control"
-                                [id]="'surname'"
-                              />
+                              <label for="surname">{{ "lms.ind.quotations.quantity" | translate }}</label>
+                              <input class="form-control" type="text" [id]="'surname'" formControlName="alcoholQuantity" />
                             </div>
+
+                            <!-- Frequency Dropdown -->
                             <div class="col-lg-4 col-md-6 col-sm-12">
-                              <label for="clientType">Frequency</label>
+                              <label for="clientType">{{ "lms.ind.quotations.frequency" | translate }}</label>
                               <select class="form-select" [id]="'clientType'" formControlName="alcoholFrequency">
-                                <ng-container
-                            *ngFor="
-                              let product of frequencyOfPayment
-                            "
-                          >
-                            <option [value]="product['value']">
-                              {{ product['label'] | titlecase}}
-                            </option>
-                          </ng-container>
+                                <ng-container *ngFor=" let product of frequencyOfPayment ">
+                                  <option [value]="product['value']">
+                                      {{ product['label'] | titlecase}}
+                                  </option>
+                                </ng-container>
                               </select>
                             </div>
+
+                            <!-- Period Consumed -->
                             <div class="col-lg-4 col-md-6 col-sm-12">
-                              <label for="surname">Period Consumed</label>
-                              <input
-                              formControlName="alcoholConsumptionPeriod"
-                                type="text"
-                                class="form-control"
-                                [id]="'surname'"
-                              />
+                              <label for="surname">{{ "lms.ind.quotations.period_consumed" | translate }}</label>
+                              <input class="form-control" type="text" [id]="'surname'" formControlName="alcoholConsumptionPeriod" />
                             </div>
+
                           </div>
+
                         </div>
+
                       </div>
+
                     </div>
                   </div>
                 </div>
+
               </div>
+
             </div>
+
+            <!-- BMI Section -->
+            <ng-container [formGroup] = bmiForm>
+              <label class="bmi">{{ "lms.ind.quotations.body_mass_index" | translate }}</label>
+              <div class="col-lg-4 col-sm-12">
+                <label for="height" class="mt-3 mb-1 ">{{ "lms.ind.quotations.height" | translate }}</label>
+                <span *ngIf="bmiNotReady">
+                  <div class="spinner-border text-primary spinner-border" role="status" style="width: 1.4rem; height: 1.4rem">
+                    <span class="visually-hidden">{{ "lms.ind.quotations.loading" | translate }}...</span>
+                  </div>
+                </span>
+                <input type="number" class="form-control"(keyup.enter)="getBMI()" formControlName="height" [id]="'height'" />
+              </div>
+
+              <div class="col-lg-4 col-sm-12">
+                <label for="weight" class="mt-3 mb-1">{{ "lms.ind.quotations.weight" | translate }}</label>
+                <input type="number" formControlName="weight" class="form-control" [id]="'weight'" (keyup.enter)="getBMI()"/>
+              </div>
+
+              <div class="col-lg-4 col-sm-12" *ngIf="bmi['bmi'] || !bmiNotReady">
+                <label for="weight" class="mt-3 mb-1 fw-bold"></label>
+                <div>
+                  <label for="weight" class="mt-3 mb-1 fw-bold">{{ "lms.ind.quotations.bmi" | translate }}: </label> {{bmi['bmi'] || 0}}
+                </div>
+              </div>
+
+            </ng-container>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
   </div>
 
-  <div class="d-flex justify-content-between m-4">
-    <button
-      routerLink="/home/lms/ind/quotation/insurance-history"
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-    >
-      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
+  <!-- Navigation Buttons -->
+  <div class="d-flex justify-content-between pb-4">
+    <button routerLink="/home/lms/ind/quotation/insurance-history" class="btn btn-sm text-primary fw-medium fs-6" type="button" 
+      style="padding: 0.6em; text-decoration: underline">
+          {{ "lms.ind.quotations.back" | translate }}
     </button>
-    <button
-    (click)="saveClientLifeStyle()"
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-    >
-      Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+    <button (click)="saveClientLifeStyle()" class="btn btn-primary btn-sm" type="button" style="padding: 0.6em">
+            {{ "lms.ind.quotations.next" | translate }} &nbsp;&nbsp;
     </button>
   </div>
+
 </div>
