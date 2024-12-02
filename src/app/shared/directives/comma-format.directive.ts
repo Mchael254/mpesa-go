@@ -3,8 +3,11 @@ import {Directive, ElementRef, HostListener} from '@angular/core';
   selector: '[appCommaFormat]'
 })
 export class CommaformatDirective {
+  private currencyDelimiter: string;
+  constructor(private el: ElementRef) {
+    this.currencyDelimiter = sessionStorage.getItem('currencyDelimiter') || ','; // Default to comma if not found
 
-  constructor(private el: ElementRef) { }
+   }
 
   @HostListener('input')
   onInput() {
@@ -14,12 +17,18 @@ export class CommaformatDirective {
   }
   private formatNumber(value: string): string {
     // Remove existing commas and convert to number
-    const numberValue = Number(value.replace(/,/g, ''));
+    // const numberValue = Number(value.replace(/,/g, ''));
+    const numberValue = Number(value.replace(new RegExp(`\\${this.currencyDelimiter}`, 'g'), ''));
 
-    // Format the number with commas if it's greater than 1000
-    if (numberValue >= 1000) {
-      return numberValue.toLocaleString();
+
+     // Format the number using the specified delimiter (e.g., comma)
+     if (!isNaN(numberValue) && numberValue >= 1000) {
+      return numberValue.toLocaleString().replace(',', this.currencyDelimiter); // Replace the default comma with the specified delimiter
     }
+        // Format the number with commas if it's greater than 1000
+    // if (numberValue >= 1000) {
+    //   return numberValue.toLocaleString();
+    // }
 
     return value;
   }

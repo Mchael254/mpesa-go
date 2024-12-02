@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { QuotationRoutingModule } from './quotation-routing.module';
 import { ListQuotationsComponent } from './components/list-quotations/list-quotations.component';
@@ -27,6 +27,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
+import { NgxCurrencyDirective } from 'ngx-currency';
 
 
 @NgModule({
@@ -60,8 +61,10 @@ import { CoverTypesComparisonComponent } from './components/cover-types-comparis
     TreeModule,
     FileUploadModule,
     BadgeModule,
-    RadioButtonModule
+    RadioButtonModule,
+    NgxCurrencyDirective
   ],
-  
+  providers: [DatePipe],
+
 })
 export class QuotationModule { }

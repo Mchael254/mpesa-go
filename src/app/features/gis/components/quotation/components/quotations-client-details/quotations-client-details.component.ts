@@ -153,7 +153,7 @@ export class QuotationsClientDetailsComponent {
         .subscribe(
           (data) => {
             this.occupationData = data;
-            console.log("occuption data",this.occupationData)
+            log.debug("occuption data",this.occupationData)
           },
         );
     }
@@ -226,7 +226,7 @@ export class QuotationsClientDetailsComponent {
     this.clientService.getClients(0, 100).subscribe(data=>{
       this.client = data
       this.clientList = this.client.content
-      console.log(this.clientList)
+      log.debug(this.clientList)
     })
   }
    /**
@@ -238,7 +238,7 @@ export class QuotationsClientDetailsComponent {
   getClientDetails(id){
     this.clientService.getClientById(id).subscribe(data=>{
       this.clientDetails = data;
-      console.log(this.clientDetails)
+      log.debug(this.clientDetails)
       this.clientTypeName = this.clientDetails.clientType.clientTypeName
       if(this.clientTypeName = 'INDIVIDUAL'){
         this.clientForm.controls['clientTypeId'].setValue('I')

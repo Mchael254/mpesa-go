@@ -139,22 +139,22 @@ export class QuotationDetailsComponent {
       sessionStorage.setItem('quotationCode', this.quickQuotationCode );
       this.quotationService.getQuotationDetails(this.quickQuotationNum).subscribe(res=>{
         this.quickQuotationDetails = res
-        console.log("QUICK QUOTE DETAILS",this.quickQuotationDetails)
+        log.debug("QUICK QUOTE DETAILS",this.quickQuotationDetails)
         this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
         this.quotationForm.controls['withEffectiveFromDate'].setValue(this.quickQuotationDetails.coverFrom);
         this.quotationForm.controls['withEffectiveToDate'].setValue(this.quickQuotationDetails.coverTo);
         // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
-        console.log(this.quickQuotationDetails.source)
+        log.debug(this.quickQuotationDetails.source)
         const productCode = this.quickQuotationDetails.quotationProduct[0].proCode
         this.productService.getProductByCode(productCode).subscribe(res=>{
           this.quotationForm.controls['productCode'].setValue(res);
         })
 
-        console.log("Test currency",this.currency)
+        log.debug("Test currency",this.currency)
         this.currency.forEach(el=>{
 
           if(el.symbol === this.quickQuotationDetails.currency){
-            console.log("Test currency", el)
+            log.debug("Test currency", el)
             this.quotationForm.controls['currencyCode'].setValue(el);
           }
         })
@@ -184,9 +184,9 @@ export class QuotationDetailsComponent {
  * Logs the current value of the quotation form.
  */
   // getCurrencyCode(){
-  //   console.log(this.quotationForm.value.currencyCode)
+  //   log.debug(this.quotationForm.value.currencyCode)
   //   this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-  // console.log(this.quotationForm.value)
+  // log.debug(this.quotationForm.value)
   // }
 
 /**
@@ -214,7 +214,7 @@ export class QuotationDetailsComponent {
     this.quotationService.getAllQuotationSources().subscribe(res=>{
       const sources = res
       this.quotationSources = sources.content
-      console.log("SOURCES",this.quotationSources)
+      log.debug("SOURCES",this.quotationSources)
     })
   }
  /**
@@ -275,7 +275,7 @@ export class QuotationDetailsComponent {
      * @return {Observable<any>} - An observable of the response containing created quotation data.
      */
     if(this.quickQuotationDetails){
-      console.log("Quick Quotation results")
+      log.debug("Quick Quotation results")
       this.router.navigate(['/home/gis/quotation/quote-assigning'])
       this.spinner.hide()
 
@@ -283,7 +283,7 @@ export class QuotationDetailsComponent {
       this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
         this.quotationNo = data;
         this.spinner.hide()
-        console.log(this.quotationNo,"Quotation results:")
+        log.debug(this.quotationNo,"Quotation results:")
         this.router.navigate(['/home/gis/quotation/quote-assigning'])
       },(error: HttpErrorResponse) => {
         log.info(error);
@@ -311,7 +311,7 @@ export class QuotationDetailsComponent {
           this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
             this.quotationNo = data
             this.spinner.hide()
-            console.log(this.quotationForm.value)
+            log.debug(this.quotationForm.value)
             sessionStorage.setItem('quotationNum',this.quotationNum );
             sessionStorage.setItem('quotationCode',this.quotationCode );
             sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
@@ -341,7 +341,7 @@ export class QuotationDetailsComponent {
       this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
         this.quotationNo = data;
         this.spinner.hide()
-        console.log(this.quotationNo,'quotation number output');
+        log.debug(this.quotationNo,'quotation number output');
         this.quotationCode=this.quotationNo._embedded[0].quotationCode;
         this.quotationNum = this.quotationNo._embedded[0].quotationNumber
         sessionStorage.setItem('quotationNum',this.quotationNum );
@@ -382,7 +382,7 @@ export class QuotationDetailsComponent {
   getAgents(){
     this.quotationService.getAgents().subscribe(data=>{
       this.agents = data.content
-     console.log("AGENTS",data)
+     log.debug("AGENTS",data)
     })
   }
    /**
@@ -500,11 +500,11 @@ updateCoverToDate(e) {
 
     // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
     //   this.productDetails = res
-    //   console.log(this.productDetails)
+    //   log.debug(this.productDetails)
       // if(this.productDetails.expires === 'Y'){
         this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
           this.midnightexpiry = res
-          console.log(this.midnightexpiry)
+          log.debug(this.midnightexpiry)
           this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
         })
 
@@ -554,22 +554,22 @@ selectedProductClauses(quotationCode){
   if(this.selectedClause){
     this.selectedClause.forEach(el=>{
       this.quotationService.addProductClause(el.code,this.productCode,quotationCode).subscribe(res=>{
-        console.log(res)
+        log.debug(res)
       })
-      console.log(el.code)
+      log.debug(el.code)
     })
   }
 
   // this.clauseService.getSingleClause(code).subscribe(
   //   {
   //     next:(res)=>{
-  //       console.log(res)
+  //       log.debug(res)
   //     }
   //   }
   // )
 }
 unselectClause(event){
-  console.log(this.selectedClause)
+  log.debug(this.selectedClause)
 }
 onQuotationTypeChange(value: string): void {
   log.info('SELECTED VALUE:', value)
