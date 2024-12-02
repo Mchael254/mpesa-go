@@ -215,24 +215,24 @@ export class RiskSectionDetailsComponent {
     this.createScheduleDetailsForm();
 
     const riskFormDetails = sessionStorage.getItem('riskFormData');
-    console.log('Risk form details session storage', riskFormDetails,)
+    log.debug('Risk form details session storage', riskFormDetails,)
 
     const sections = sessionStorage.getItem('sections')
-    console.log("Sections", sections)
+    log.debug("Sections", sections)
     if (sections) {
 
       this.sectionArray = JSON.parse(sections)
-      console.log("parsed sections", this.sectionArray)
+      log.debug("parsed sections", this.sectionArray)
     }
     const schedules = sessionStorage.getItem('schedules')
-    console.log("Schedules", schedules)
+    log.debug("Schedules", schedules)
     if (schedules) {
       this.scheduleList = JSON.parse(schedules)
-      console.log("parsed Schedules", this.scheduleList)
+      log.debug("parsed Schedules", this.scheduleList)
     }
     // if (riskFormDetails) {
     //   const parsedData = JSON.parse(riskFormDetails);
-    //   console.log(parsedData)
+    //   log.debug(parsedData)
     //   this.riskDetailsForm.setValue(parsedData);
 
     // }
@@ -242,9 +242,9 @@ export class RiskSectionDetailsComponent {
       this.riskIdPassed(value);
     });
     this.riskDetailsForm.get('coverTypeShortDescription').valueChanges.subscribe((selectedValue) => {
-      console.log('Selected CoverType:', selectedValue);
+      log.debug('Selected CoverType:', selectedValue);
       this.selectedCoverType = selectedValue
-      console.log('Selected CoverType:', this.selectedCoverType);
+      log.debug('Selected CoverType:', this.selectedCoverType);
     });
     this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
       this.updateCoverToDate();
@@ -413,7 +413,7 @@ export class RiskSectionDetailsComponent {
     const selectedValue = event.target.value; // Get the selected value
     this.selectedSubclassCode = selectedValue;
     // Perform your action based on the selected value
-    console.log(`Selected value: ${selectedValue}`);
+    log.debug(`Selected value: ${selectedValue}`);
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
 
     this.loadCovertypeBySubclassCode(selectedValue);
@@ -523,7 +523,7 @@ export class RiskSectionDetailsComponent {
     this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      console.log("All Binders Details:", this.binderListDetails); // Debugging
+      log.debug("All Binders Details:", this.binderListDetails); // Debugging
       this.selectedBinderCode = this.binderListDetails[0].code;
 
       this.cdr.detectChanges();
@@ -553,7 +553,7 @@ export class RiskSectionDetailsComponent {
   //   const selectedValue = event.target.value; // Get the selected value
 
   //   // Perform your action based on the selected value
-  //   console.log(`Selected value: ${selectedValue}`);
+  //   log.debug(`Selected value: ${selectedValue}`);
 
   // }
 
@@ -623,7 +623,7 @@ export class RiskSectionDetailsComponent {
   //   log.debug("event logged",event.target.value[0].code)
   //   const selectedValue = event.target.value;
   //   this.selectedVehicleMakeCode=selectedValue;
-  //   console.log(`Selected vehicle value: ${selectedValue}`);
+  //   log.debug(`Selected vehicle value: ${selectedValue}`);
   //   log.debug(this.selectedVehicleMakeCode,'Sekected vehicle make Code')
 
   //   this.getVehicleModel();
@@ -643,7 +643,7 @@ export class RiskSectionDetailsComponent {
 
     // Check if the object is found
     if (selectedObject) {
-      console.log('Selected Vehicle Object:', selectedObject);
+      log.debug('Selected Vehicle Object:', selectedObject);
       // Perform further actions with the selected object as needed
     } else {
       console.error('Selected Vehicle Object not found');
@@ -682,14 +682,14 @@ export class RiskSectionDetailsComponent {
 
     // Check if the object is found
     if (selectedObject) {
-      console.log('Selected Vehicle Model:', selectedObject);
+      log.debug('Selected Vehicle Model:', selectedObject);
       // Perform further actions with the selected object as needed
     } else {
       console.error('Selected Vehicle Model not found');
     }
     this.selectedVehicleModelName = selectedObject.name;
     this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
-    console.log('Selected Vehicle make model', this.vehiclemakeModel);
+    log.debug('Selected Vehicle make model', this.vehiclemakeModel);
 
   }
 
@@ -713,25 +713,25 @@ export class RiskSectionDetailsComponent {
     delete risk.dateRange;
     const riskArray = [risk];
     // const propertyIdValue = this.riskDetailsForm.get('propertyId').value;
-    console.log(riskArray)
+    log.debug(riskArray)
     this.quotationService.createQuotationRisk(this.quotationCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
 
       // this.quotationRiskCode = this.quotationRiskData._embedded[0];
       // this.quotationRiskCode.forEach(([key, value]) => {
-      //   console.log(`${key}: ${value}`);
+      //   log.debug(`${key}: ${value}`);
       // });
       const quotationRiskCode = this.quotationRiskData._embedded[0];
       if (quotationRiskCode) {
         for (const key in quotationRiskCode) {
           if (quotationRiskCode.hasOwnProperty(key)) {
             const value = quotationRiskCode[key];
-            console.log(`${value}`);
+            log.debug(`${value}`);
             this.riskCode = value;
           }
         }
       } else {
-        console.log("The quotationRiskCode object is not defined.");
+        log.debug("The quotationRiskCode object is not defined.");
       }
 
       log.debug(this.quotationRiskData, "Quotation Risk Code Data");
@@ -816,7 +816,7 @@ export class RiskSectionDetailsComponent {
     }
 
     if (this.passedRiskId !== undefined) {
-      console.log('Passed Risk Id', this.passedRiskId);
+      log.debug('Passed Risk Id', this.passedRiskId);
     } else {
       console.error('Unable to retrieve value from the event object.');
     }
@@ -889,16 +889,16 @@ export class RiskSectionDetailsComponent {
   //   const section = this.sectionDetailsForm.value;
 
   //   if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
-  //     console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+  //     log.debug(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
 
   //     // Log the current premiumListIndex before incrementing
-  //     console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+  //     log.debug(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
 
   //     // Increment the premiumListIndex and wrap around using modulo
   //     this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
 
   //     // Log the updated premiumListIndex after incrementing
-  //     console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+  //     log.debug(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
 
   //     section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
   //     section.sectionShortDescription = this.premiumList[this.premiumListIndex].sectionShortDescription;
@@ -979,9 +979,9 @@ export class RiskSectionDetailsComponent {
       });
 
       // Log the sections array
-      console.log("Sections to be created:", sections);
+      log.debug("Sections to be created:", sections);
       this.sections = sections;
-      console.log("Sections to be created:", this.sections);
+      log.debug("Sections to be created:", this.sections);
 
       // Send the array of sections to the service
       this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
@@ -1169,7 +1169,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
         try {
           this.scheduleData = data;
           this.scheduleList = this.scheduleData._embedded
-          console.log("Schedule Data:", this.scheduleData);
+          log.debug("Schedule Data:", this.scheduleData);
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
 
         } catch (error) {
@@ -1229,9 +1229,9 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
     this.quotationService.updateSchedule(schedule).subscribe(data => {
       this.updatedScheduleData = data;
-      console.log('Updated Schedule Data:', this.updatedScheduleData);
+      log.debug('Updated Schedule Data:', this.updatedScheduleData);
       this.updatedSchedule = this.updatedScheduleData._embedded;
-      console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+      log.debug('Updated Schedule  nnnnn:', this.updatedSchedule);
       this.scheduleList = this.updatedSchedule;
       log.debug("UPDATED SCHEDULE LIST:", this.scheduleList)
       const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
@@ -1258,9 +1258,9 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
     const levelNumber = this.extractLevelNumber(this.selectedSchedule.details);
     if (levelNumber !== null) {
       this.passedlevel = levelNumber;
-      console.log("the level passsed", this.passedlevel)
+      log.debug("the level passsed", this.passedlevel)
     } else {
-      console.log("No 'level' property found in the object.");
+      log.debug("No 'level' property found in the object.");
     }
   }
   extractLevelNumber(obj: any): number | null {
@@ -1290,7 +1290,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
         });
       } else {
-        console.log('Invalid level number:', level);
+        log.debug('Invalid level number:', level);
         // Handle the case where level is not a valid number
       }
     } else {
@@ -1304,8 +1304,8 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
 
   finish() {
-    console.log('sections', this.sectionArray)
-    console.log('Schedules', this.scheduleList)
+    log.debug('sections', this.sectionArray)
+    log.debug('Schedules', this.scheduleList)
 
     sessionStorage.setItem('sections', JSON.stringify(this.sectionArray))
     sessionStorage.setItem('schedules', JSON.stringify(this.scheduleList))
@@ -1316,7 +1316,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
     this.sectionService.getSectionByCode(this.checkedSectionCode).subscribe(data => {
       this.sectionList = data;
       sessionStorage.setItem('sectionType', this.sectionList.type)
-      console.log(this.sectionList.type, "SECTION LIST WITH TYPE")
+      log.debug(this.sectionList.type, "SECTION LIST WITH TYPE")
     })
   }
   getPremiumRates() {
@@ -1509,7 +1509,7 @@ getModelYear() {
     next: (data) => {
       const model = data._embedded
       this.modelYear = model[0]["List of cover years"]
-      console.log("model year", this.modelYear)
+      log.debug("model year", this.modelYear)
     }, error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
       console.error(err);

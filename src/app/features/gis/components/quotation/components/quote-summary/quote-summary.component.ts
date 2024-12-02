@@ -190,11 +190,11 @@ export class QuoteSummaryComponent {
   }
 
   editItem(item: any): void {
-    console.log('Edit item clicked', item);
+    log.debug('Edit item clicked', item);
   }
 
   deleteItem(item: any): void {
-    console.log('Delete item clicked', item);
+    log.debug('Delete item clicked', item);
   }
   getClient() {
     if (this.passedNewClientDetails) {
@@ -267,7 +267,7 @@ export class QuoteSummaryComponent {
   }
   cancelQuote() {
 
-    console.log("Starting cancelQuote method");
+    log.debug("Starting cancelQuote method");
   
     // Remove specific items from session storage
     sessionStorage.removeItem('clientCode');
@@ -286,18 +286,18 @@ export class QuoteSummaryComponent {
     sessionStorage.removeItem('subclassCoverType');
     sessionStorage.removeItem('sumInsuredValue');
   
-    console.log("Session storage items removed");
+    log.debug("Session storage items removed");
   
     // Use NgZone.run to execute the navigation code inside the Angular zone
     this.ngZone.run(() => {
-      console.log("Navigating to quick-quote screen");
+      log.debug("Navigating to quick-quote screen");
       this.router.navigate(['/home/gis/quotation/quick-quote']);
 
     });
     
  
   
-    console.log("Navigation code executed");
+    log.debug("Navigation code executed");
   }
   
  
@@ -332,8 +332,8 @@ export class QuoteSummaryComponent {
     const current = currentDate.toISOString();
     const emailForm = this.emailForm.value;
 
-    console.log(this.clientDetails)
-    // console.log(this.emailForm.value)
+    log.debug(this.clientDetails)
+    // log.debug(this.emailForm.value)
 
     emailForm.address = [
       this.selectedEmail
@@ -356,14 +356,14 @@ export class QuoteSummaryComponent {
         next: (res) => {
           const response = res
           this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-          console.log(res)
+          log.debug(res)
         }, error: (error: HttpErrorResponse) => {
           log.info(error);
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
         }
       })
-    console.log('Submitted payload:', JSON.stringify(emailForm));
+    log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
   createSmsForm() {
@@ -429,7 +429,7 @@ export class QuoteSummaryComponent {
 }
 onRiskSelect(riskItem: any): void {
   this.selectedRisk = riskItem;
-  console.log('Selected Risk:', riskItem);
+  log.debug('Selected Risk:', riskItem);
 }
 calculateTaxes() {
   this.totalTaxes = 0;
