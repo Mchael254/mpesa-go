@@ -137,7 +137,7 @@ export class QuotationSummaryComponent {
     this.spinner.show()
 
     this.getPremiumComputationDetails()
-    console.log("MORE DETAILS TEST",this.quotationDetails )
+    log.debug("MORE DETAILS TEST",this.quotationDetails )
     this.getAgent();
     this.sumInsured =Number( sessionStorage.getItem('limitAmount'))
     log.debug('SUM INSURED NGONIT',this.sumInsured)
@@ -191,8 +191,8 @@ internal(){
   getQuotationDetails(code){
     this.quotationService.getQuotationDetails(code).subscribe(res=>{
       this.quotationView = res
-      console.log("DETAILS TEST quotation data",this.quotationView )
-      console.log(code,"code")
+      log.debug("DETAILS TEST quotation data",this.quotationView )
+      log.debug(code,"code")
        // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
       this.riskDetails = this.quotationView.riskInformation
@@ -202,7 +202,7 @@ internal(){
       log.debug(this.taxDetails)
       // this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(res=>{
       //   this.agents = res
-      //   console.log(res)
+      //   log.debug(res)
       // })
        // Extract risk information
     this.riskDetails = this.quotationView.riskInformation;
@@ -227,7 +227,7 @@ internal(){
       }
     }
 log.debug('SUM INSURED',this.sumInsured)
-    console.log('Session storage values set for LIMITS:', {
+    log.debug('Session storage values set for LIMITS:', {
       premiumRate: sessionStorage.getItem('premiumRate'),
       sectionType: sessionStorage.getItem('sectionType'),
       sectionDescription: sessionStorage.getItem('sectionDescription'),
@@ -244,7 +244,7 @@ log.debug('SUM INSURED',this.sumInsured)
         next: (res) => {
           this.agents = res
           this.spinner.hide()
-          console.log(res,"AGENTS")
+          log.debug(res,"AGENTS")
         },
         error: (e) => {
           log.debug(e.message)
@@ -263,7 +263,7 @@ log.debug('SUM INSURED',this.sumInsured)
       }
 
     })
-    console.log(this.schedules,"schedules Details")
+    log.debug(this.schedules,"schedules Details")
     log.debug(this.sections,"section Details")
 
   }
@@ -283,16 +283,16 @@ log.debug('SUM INSURED',this.sumInsured)
   getProductDetails(code){
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
-      console.log("Product details", this.productDetails)
+      log.debug("Product details", this.productDetails)
     })
 
 
   }
   getbranch(){
-    console.log(JSON.parse(this.moreDetails),"more  details")
+    log.debug(JSON.parse(this.moreDetails),"more  details")
     this.branchService.getBranchById(JSON.parse(this.moreDetails).branchCode).subscribe(data=>{
       this.branch = data
-      console.log(this.branch)
+      log.debug(this.branch)
     })
   }
 
@@ -440,7 +440,7 @@ log.debug('SUM INSURED',this.sumInsured)
          const limitAmount = this.sumInsured
 
 
-         console.log('Retrieved values from session storage:', {
+         log.debug('Retrieved values from session storage:', {
            premiumRate,
            sectionType,
            multiplierDivisionFactor,
@@ -480,7 +480,7 @@ log.debug('SUM INSURED',this.sumInsured)
     next:(res)=>{
       this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
           this.premium = res
-          console.log(res)
+          log.debug(res)
       },
     error : (error: HttpErrorResponse) => {
       log.info(error);
@@ -532,8 +532,8 @@ log.debug('SUM INSURED',this.sumInsured)
   emaildetails(){
     const currentDate = new Date();
     const current = currentDate.toISOString();
-    console.log(this.clientDetails)
-    console.log(this.emailForm.value)
+    log.debug(this.clientDetails)
+    log.debug(this.emailForm.value)
 
 
 
@@ -560,13 +560,13 @@ log.debug('SUM INSURED',this.sumInsured)
         {next:(res)=>{
         const response = res
         this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully' );
-        console.log(res)
+        log.debug(res)
       },error : (error: HttpErrorResponse) => {
         log.info(error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
 
         }  })
-      console.log('Submitted payload:',JSON.stringify(payload) );
+      log.debug('Submitted payload:',JSON.stringify(payload) );
   }
 sendSms(){
   const payload = {
@@ -601,7 +601,7 @@ sendSms(){
             this.limits = res
             this.limitsList = this.limits._embedded
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
-            console.log(res)
+            log.debug(res)
           }
 
           }
@@ -691,7 +691,7 @@ onFileSelected(event: Event): void {
 
           // Add the file to your files array with additional properties
           this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType, base64: base64String });
-          console.log("File:",this.clientDetails)
+          log.debug("File:",this.clientDetails)
           let payload ={
             agentCode: "",
             agentName: "",
@@ -774,7 +774,7 @@ downloadFile(fileItem: FileItem): void {
 
 printFile(fileItem: FileItem): void {
   // Implement your print logic here
-  console.log('Print file:', fileItem.name);
+  log.debug('Print file:', fileItem.name);
 }
 
 deleteFile(index: number): void {

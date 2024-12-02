@@ -397,7 +397,7 @@ export class CoverTypesComparisonComponent {
       this.passedMandatorySections = this.covertypeSpecificSection;
 
 
-      console.log('Selected Sections loadSubclass Section:', this.passedMandatorySections);
+      log.debug('Selected Sections loadSubclass Section:', this.passedMandatorySections);
       sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
 
       this.findTemporaryPremium();
@@ -427,7 +427,7 @@ export class CoverTypesComparisonComponent {
     log.debug("Last updated Covertype:", this.lastUpdatedCoverTypeCode)
     log.debug("New updated Covertype:", this.passedCovertypeCode)
     if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
-      console.log("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
+      log.debug("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
       // If the codes match, use the existing temporaryPremiumList
       this.cdr.detectChanges();
       log.debug("Premium List", this.temporaryPremiumList);
@@ -466,7 +466,7 @@ export class CoverTypesComparisonComponent {
     // Check if the section is checked and add it to the selectedSections array
     if (section.isChecked && !this.passedSections.includes(section)) {
       this.passedSections.push(section);
-      console.log('Selected Sections:', this.passedSections);
+      log.debug('Selected Sections:', this.passedSections);
       sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
 
       this.loadAllPremiums();
@@ -484,7 +484,7 @@ export class CoverTypesComparisonComponent {
 
   createRiskSection(payload: any) {
     // Your implementation for createRiskSection
-    console.log('createRiskSection called with payload:', payload);
+    log.debug('createRiskSection called with payload:', payload);
     sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
   }
   loadAllPremiums() {
@@ -509,8 +509,8 @@ export class CoverTypesComparisonComponent {
 
 
   onCreateRiskSection() {
-    console.log('Selected Sections:', this.passedSections);
-    console.log('Premium Rates:', this.premiumList);
+    log.debug('Selected Sections:', this.passedSections);
+    log.debug('Premium Rates:', this.premiumList);
 
     const premiumRates: PremiumRate[] = this.premiumList;
 
@@ -704,7 +704,7 @@ export class CoverTypesComparisonComponent {
       this.quotationData = data;
       this.quotationCode = this.quotationData._embedded[0].quotationCode;
       this.quotationNo = this.quotationData._embedded[0].quotationNumber;
-      console.log("Quotation results:", this.quotationData)
+      log.debug("Quotation results:", this.quotationData)
       log.debug("Quotation Number", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
       if (this.quotationNo) {
@@ -751,7 +751,7 @@ export class CoverTypesComparisonComponent {
 
     // FROM DYNAMIC FORM
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    console.log('Quick Form Risk', risk);
+    log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
     log.debug("quotation code:", this.quotationCode)
     log.debug("passed quotation code:", this.passedQuotationCode)
@@ -774,16 +774,16 @@ export class CoverTypesComparisonComponent {
         for (const key in quotationRiskCode) {
           if (quotationRiskCode.hasOwnProperty(key)) {
             const value = quotationRiskCode[key];
-            console.log(`${value}`);
+            log.debug(`${value}`);
             this.riskCode = value;
           }
         }
       } else {
-        console.log("The quotationRiskCode object is not defined.");
+        log.debug("The quotationRiskCode object is not defined.");
       }
 
-      console.log(this.quotationRiskData, "Quotation Risk Code Data");
-      console.log(this.riskCode, "Quotation Risk Code ");
+      log.debug(this.quotationRiskData, "Quotation Risk Code Data");
+      log.debug(this.riskCode, "Quotation Risk Code ");
       this.onCreateRiskSection()
 
     })
@@ -860,7 +860,7 @@ export class CoverTypesComparisonComponent {
       // If passedNumber doesn't exist, check the quotation data and handle accordingly
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
         // Quotation data is not empty
-        console.log("QUOTATION DATA IS NOT EMPTY");
+        log.debug("QUOTATION DATA IS NOT EMPTY");
 
         const quotationNumberString = JSON.stringify(this.quotationNo);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
@@ -870,7 +870,7 @@ export class CoverTypesComparisonComponent {
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       } else {
         // Quotation data is empty, create a new quotation
-        console.log("QUOTATION DATA IS EMPTY");
+        log.debug("QUOTATION DATA IS EMPTY");
         this.createQuotation();
         this.getQuotationNumber();
       }
@@ -969,7 +969,7 @@ export class CoverTypesComparisonComponent {
       }
     });
 
-    console.log('Section Codes Array:', this.sectionCodesArray);
+    log.debug('Section Codes Array:', this.sectionCodesArray);
   }
 
   computePremiumQuickQuote() {
@@ -979,7 +979,7 @@ export class CoverTypesComparisonComponent {
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
           const premiums = res;
-          console.log(res)
+          log.debug(res)
           const newriskLevelPremiums = res.riskLevelPremiums;
 
 
@@ -1022,7 +1022,7 @@ export class CoverTypesComparisonComponent {
 
             }
           }
-          console.log(JSON.stringify(this.premiumPayload, null, 2));
+          log.debug(JSON.stringify(this.premiumPayload, null, 2));
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
           this.loadClientQuotation()
 
@@ -1062,8 +1062,8 @@ export class CoverTypesComparisonComponent {
     const current = currentDate.toISOString();
     const emailForm = this.emailForm.value;
 
-    console.log(this.clientDetails)
-    // console.log(this.emailForm.value)
+    log.debug(this.clientDetails)
+    // log.debug(this.emailForm.value)
 
     emailForm.address = [
       this.selectedEmail
@@ -1086,14 +1086,14 @@ export class CoverTypesComparisonComponent {
         next: (res) => {
           const response = res
           this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-          console.log(res)
+          log.debug(res)
         }, error: (error: HttpErrorResponse) => {
           log.info(error);
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
         }
       })
-    console.log('Submitted payload:', JSON.stringify(emailForm));
+    log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
   createSmsForm() {
