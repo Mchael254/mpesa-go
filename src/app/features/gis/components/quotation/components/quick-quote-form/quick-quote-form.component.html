@@ -61,7 +61,7 @@
                     <div class="col-sm-4 col-6" *ngIf="!new">
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
-                            
+
                         <div class="input-group">
                             <select id="zipDropdown" (change)="onZipCodeSelected($event)" [(ngModel)]="selectedZipCode">
                                 <option *ngFor="let country of countryList" [value]="country.zipCodeString">{{
@@ -134,12 +134,20 @@
                             </div>
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="cover-From" class="quote-label required"
-                                id="cover-From"> {{'gis.quotation.effective_date' | translate}}</label>
+                            <label for="cover-From" class="quote-label required" id="cover-From">
+                                {{'gis.quotation.effective_date' | translate}}</label>
                             <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-                            <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
+                            <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
                                 formControlName="withEffectiveFromDate" [(ngModel)]="coverFromDate"
-                                (ngModelChange)="getCoverToDate()">
+                                (ngModelChange)="getCoverToDate()"> -->
+
+
+                            <p-calendar formControlName="withEffectiveFromDate" [dateFormat]="dateFormat"
+                                [showIcon]="true" [showButtonBar]="true" [placeholder]="coverFromDate"
+                                [minDate]="minDate" [(ngModel)]="coverFromDate" (ngModelChange)="getCoverToDate()">
+                            </p-calendar>
+
+
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('withEffectiveFromDate').hasError('required') && personalDetailsForm.get('withEffectiveFromDate').touched"
                                 class="form-text text-danger">
@@ -153,10 +161,9 @@
                             <label for="currency" class="required quote-label" id="currency">{{'gis.quotation.currency'
                                 | translate}}</label>
 
-                                
-                                <p-dropdown formControlName="currencyCode" [options]="currencyList"
-                                optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
-                               [filterBy]="'name'" 
+
+                            <p-dropdown formControlName="currencyCode" [options]="currencyList" optionLabel="name"
+                                dataKey="id" (onChange)="onCurrencySelected($event.value)" [filterBy]="'name'"
                                 [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
                             <!-- Display error message under the field -->
                             <!-- <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
@@ -165,7 +172,7 @@
                             </div> -->
                         </div>
                     </div>
-                 
+
 
                     <!-- ROW 5 -->
                     <div *ngIf="formData && selectedProductCode" class="row">
@@ -192,9 +199,13 @@
                                         <div *ngIf="field.name == 'selfDeclaredValue'">
                                             <label class="quote-label required" [for]="field.name">{{ field.label
                                                 }}</label>
-                                            <input type="text" id="quote-input"
+                                            <!-- <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                appCommaFormat [ngModel]="parsedSumInsured">
+                                                appCommaFormat [ngModel]="parsedSumInsured"> -->
+                                                <input type="text" id="quote-input"
+                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
+                                                 [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
+                                          
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>

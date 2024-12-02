@@ -33,6 +33,8 @@ import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
 import { firstValueFrom, Observable, tap } from 'rxjs';
+import { DatePipe } from '@angular/common';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -46,7 +48,7 @@ export class QuickQuoteFormComponent {
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
-
+  public currencyObj: NgxCurrencyConfig;
   productList: Products[];
   ProductDescriptionArray: any = [];
   selectedProduct: Products[];
@@ -130,6 +132,7 @@ export class QuickQuoteFormComponent {
   userDetails: any
   userBranchId: any;
   userBranchName: any;
+  dateFormat:any;
   branchList: OrganizationBranchDto[];
   selectedBranchCode: any;
   selectedBranchDescription: any;
@@ -181,7 +184,10 @@ export class QuickQuoteFormComponent {
   filteredBranchCodeNumber: number;
   regexPattern: any;
   defaultCurrencyName: any;
-  
+  minDate: Date | undefined;
+  currencyDelimiter: any;
+  defaultCurrencySymbol: any;
+  selectedCurrencySymbol: any;
 
 
   constructor(
@@ -206,19 +212,20 @@ export class QuickQuoteFormComponent {
     private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
-
-
-  ) { }
+    private datePipe: DatePipe
+    
+  ) {
+    
+   }
 
   ngOnInit(): void {
+    this.minDate = new Date();
     this.loadAllproducts();
     this.loadAllClients();
     this.getCountries();
 
-      // Get today's date in yyyy-MM-dd format
-      const today = new Date();
-      this.coverFromDate = today.toISOString().split('T')[0]; 
-      log.debug("Effective Date",this.coverFromDate)
+     
+
 
     this.loadAllQoutationSources();
     this.LoadAllFormFields(this.selectedProductCode);
@@ -226,6 +233,7 @@ export class QuickQuoteFormComponent {
     this.createPersonalDetailsForm();
     this.createForm();
     this.getuser();
+  
     this.loadAllSubclass();
     this.populateYears();
 
@@ -241,7 +249,7 @@ export class QuickQuoteFormComponent {
 
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
       this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-      console.log("Client Details:", this.passedNewClientDetails);
+      log.debug("Client Details:", this.passedNewClientDetails);
 
     } else {
       log.debug("Existing Client has been passed")
@@ -252,7 +260,7 @@ export class QuickQuoteFormComponent {
 
 
 
-    console.log("Quotation Details:", this.passedQuotation);
+    log.debug("Quotation Details:", this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
     if (this.passedQuotation) {
@@ -267,7 +275,7 @@ export class QuickQuoteFormComponent {
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
     // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
 
-    console.log("Client Details:", this.PassedClientDetails);
+    log.debug("Client Details:", this.PassedClientDetails);
     if (this.passedQuotation) {
       if (this.PassedClientDetails) {
         this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
@@ -286,7 +294,7 @@ export class QuickQuoteFormComponent {
       }
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
       this.isAddRisk = JSON.parse(passedIsAddRiskString);
-      console.log("isAddRiskk Details:", this.isAddRisk);
+      log.debug("isAddRiskk Details:", this.isAddRisk);
 
       this.selectedCountry = this.PassedClientDetails.country;
       log.info("Paased selected country:", this.selectedCountry)
@@ -298,11 +306,11 @@ export class QuickQuoteFormComponent {
 
 
     const quickQuoteFormDetails = sessionStorage.getItem('quickQuoteFormData');
-    console.log(quickQuoteFormDetails, 'Quick Quote form details session storage')
+    log.debug(quickQuoteFormDetails, 'Quick Quote form details session storage')
 
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
-      console.log(parsedData)
+      log.debug(parsedData)
       this.personalDetailsForm.setValue(parsedData);
 
     }
@@ -543,15 +551,30 @@ export class QuickQuoteFormComponent {
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails?.branchId;
     log.debug("User Branch Id", this.userBranchId);
+    this.dateFormat= this.userDetails?.orgDateFormat
+    log.debug("Organization Date Format:",this.dateFormat)
+     // Get today's date in yyyy-MM-dd format
+     const today = new Date();
+     // Format today's date to the format specified in myFormat
+   this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
+    // this.coverFromDate = today.toISOString().split('T')[0]; 
+    log.debug(" Date format",this.dateFormat)
+
+    log.debug("Effective Date",this.coverFromDate)
+
+    this.currencyDelimiter= this.userDetails?.currencyDelimiter
+    log.debug("Organization currency delimeter",this.currencyDelimiter)
+    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+
     this.fetchBranches();
 
   }
   onZipCodeSelected(event: any) {
     this.selectedZipCode = event.target.value;
-    console.log("Selected Zip Code:", this.selectedZipCode);
+    log.debug("Selected Zip Code:", this.selectedZipCode);
   }
   onInputChange() {
-    console.log("Method called")
+    log.debug("Method called")
     this.newClientData.inputClientZipCode = this.selectedZipCode;
     log.debug("New User Data", this.newClientData);
     const newClientDetailsString = JSON.stringify(this.newClientData);
@@ -744,12 +767,12 @@ export class QuickQuoteFormComponent {
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
       this.clientType = this.clientDetails.clientType.clientTypeName
-      console.log("Selected Client Details:", this.clientDetails)
+      log.debug("Selected Client Details:", this.clientDetails)
       const clientDetailsString = JSON.stringify(this.clientDetails);
       sessionStorage.setItem('clientDetails', clientDetailsString);
-      console.log("Selected code client:", this.clientType)
+      log.debug("Selected code client:", this.clientType)
       this.selectedCountry = this.clientDetails.country;
-      console.log("Selected client country:", this.selectedCountry)
+      log.debug("Selected client country:", this.selectedCountry)
       this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
@@ -779,7 +802,7 @@ export class QuickQuoteFormComponent {
    */
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue.code;
-    console.log("Selected Product Code:", this.selectedProductCode);
+    log.debug("Selected Product Code:", this.selectedProductCode);
 
     this.getProductSubclass(this.selectedProductCode);
     // this.loadAllSubclass()
@@ -907,7 +930,7 @@ export class QuickQuoteFormComponent {
     const selectedValue = event.target.value; // Get the selected value
     this.selectedSubclassCode = selectedValue;
     // Perform your action based on the selected value
-    console.log(`Selected value: ${selectedValue}`);
+    log.debug(`Selected value: ${selectedValue}`);
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
@@ -927,13 +950,13 @@ export class QuickQuoteFormComponent {
     this.binderService.getAllBindersQuick(code).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      console.log("All Binders Details:", this.binderListDetails); 
+      log.debug("All Binders Details:", this.binderListDetails); 
       if (this.binderListDetails && this.binderListDetails.length > 0) {
         this.selectedBinder = this.binderListDetails[0]; // Set the first binder as the selected one
-        console.log("Selected Binder:", this.selectedBinder);
+        log.debug("Selected Binder:", this.selectedBinder);
         this.selectedBinderCode= this.selectedBinder.code
         this.currencyCode= this.selectedBinder.currency_code;
-        console.log("Selected Currency Code:", this.currencyCode);
+        log.debug("Selected Currency Code:", this.currencyCode);
       } else {
         console.error("Binder list is empty or undefined");
       }
@@ -960,8 +983,8 @@ export class QuickQuoteFormComponent {
 
     }
 
-    console.log("Selected Binder:", this.selectedBinder);
-    console.log("Selected Currency Code:", this.currencyCode);
+    log.debug("Selected Binder:", this.selectedBinder);
+    log.debug("Selected Currency Code:", this.currencyCode);
 
   }
   /**
@@ -983,8 +1006,23 @@ export class QuickQuoteFormComponent {
         log.debug("DEFAULT CURRENCY",defaultCurrency)
         this.defaultCurrencyName= defaultCurrency.name
         log.debug("DEFAULT CURRENCY Name",this.defaultCurrencyName)
+        this.defaultCurrencySymbol= defaultCurrency.symbol
+        log.debug("DEFAULT CURRENCY Symbol",this.defaultCurrencySymbol)
+
         // Set the default value in the form control
         this.personalDetailsForm.get('currencyCode')?.setValue(this.defaultCurrencyName);
+        this.currencyObj = {
+          prefix: this.defaultCurrencySymbol ,
+          allowNegative: false,
+          allowZero: false,
+          decimal: '.',
+          precision: 0,
+          thousands: this.currencyDelimiter,
+          suffix: '',
+          nullable: true,
+          align: 'left',
+    
+        };
       }
     
 
@@ -1001,6 +1039,22 @@ export class QuickQuoteFormComponent {
   onCurrencySelected(selectedValue: any){
     this.selectedCurrencyCode = selectedValue.id;
     log.debug("Selecetd currency from the dropdown:",this.selectedCurrencyCode)
+    const selectedCurrency =this.currencyList.find(currency => currency.id == this.selectedCurrencyCode)
+    log.debug("Selected Currency",selectedCurrency)
+    this.selectedCurrencySymbol = selectedCurrency.symbol
+    log.debug("Selected Currency symbol",this.selectedCurrencySymbol)
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol ,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: this.currencyDelimiter,
+      suffix: '',
+      nullable: true,
+      align: 'left',
+
+    };
 
   }
   /**
@@ -1039,15 +1093,15 @@ export class QuickQuoteFormComponent {
     this.quotationService.getAllQuotationSources().subscribe(data => {
       this.sourceList = data;
       this.sourceDetail = data.content;
-      console.log(this.sourceDetail, "Source list")
+      log.debug(this.sourceDetail, "Source list")
     })
   }
 
   onSourceSelected(event: any) {
     this.selectedSourceCode = event.target.value;
-    console.log("Selected Source Code:", this.selectedSourceCode);
+    log.debug("Selected Source Code:", this.selectedSourceCode);
     this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
-    console.log("Selected Source :", this.selectedSource);
+    log.debug("Selected Source :", this.selectedSource);
     // this.sharedService.setQuotationSource(this.selectedSource)
     const quotationSourceString = JSON.stringify(this.selectedSource);
     sessionStorage.setItem('quotationSource', quotationSourceString);
@@ -1070,9 +1124,9 @@ export class QuickQuoteFormComponent {
       const formFieldDescription = "product-quick-quote-".concat(selectedProductCode.toString());
       this.quotationService.getFormFields(formFieldDescription).subscribe(data => {
         this.formContent = data;
-        console.log(this.formContent, "Form-content"); // Debugging: Check the received data
+        log.debug(this.formContent, "Form-content"); // Debugging: Check the received data
         this.formData = this.formContent[0].fields;
-        console.log(this.formData, "formData is defined here");
+        log.debug(this.formData, "formData is defined here");
 
         // Clear existing form controls
         this.removeFormControls();
@@ -1107,19 +1161,19 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   validateCarRegNo() {
-    console.log('Entered value:', this.carRegNoValue);
+    log.debug('Entered value:', this.carRegNoValue);
 
     // Validate against the regex pattern
     const regex = new RegExp(this.dynamicRegexPattern);
-    console.log('Regex pattern:', regex);
+    log.debug('Regex pattern:', regex);
     this.carRegNoHasError = !regex.test(this.carRegNoValue);
-    console.log('Has error:', this.carRegNoHasError);
+    log.debug('Has error:', this.carRegNoHasError);
     if (this.existingPropertyIds) {
       // Check for duplicate property IDs
       const isDuplicate = this.existingPropertyIds.includes(this.carRegNoValue);
       if (isDuplicate) {
         this.carRegNoHasError = true; // Set error to true if a duplicate is found
-        console.log('Duplicate property ID found.', isDuplicate);
+        log.debug('Duplicate property ID found.', isDuplicate);
       }
     }
 
@@ -1414,23 +1468,23 @@ export class QuickQuoteFormComponent {
     this.personalDetailsForm.updateValueAndValidity();
 
     // Log form validity for debugging
-    console.log('Form Valid:', this.personalDetailsForm.valid);
-    console.log('Form Values:', this.personalDetailsForm.value);
+    log.debug('Form Valid:', this.personalDetailsForm.valid);
+    log.debug('Form Values:', this.personalDetailsForm.value);
 
     if (this.personalDetailsForm.invalid) {
-      console.log('Form is invalid, will not proceed');
+      log.debug('Form is invalid, will not proceed');
       this.ngxSpinner.hide();
       return;
     }
     Object.keys(this.personalDetailsForm.controls).forEach(control => {
       if (this.personalDetailsForm.get(control).invalid) {
-        console.log(`${control} is invalid`, this.personalDetailsForm.get(control).errors);
+        log.debug(`${control} is invalid`, this.personalDetailsForm.get(control).errors);
       }
     });
 
 
     // If form is valid, proceed with the premium computation logic
-    console.log('Form is valid, proceeding with premium computation...');
+    log.debug('Form is valid, proceeding with premium computation...');
     sessionStorage.setItem('product', this.selectedProductCode);
 
     this.premiumComputationRequest = {
@@ -1487,7 +1541,7 @@ export class QuickQuoteFormComponent {
 
   }
   onCreateRiskSection() {
-    console.log('Selected Sections:', this.passedSections);
+    log.debug('Selected Sections:', this.passedSections);
 
     // Assuming this.premiumList is an array of premium rates retrieved from the service
     const premiumRates = this.premiumList;
@@ -1550,13 +1604,13 @@ export class QuickQuoteFormComponent {
 
     // Store values in session storage
     sessionStorage.setItem('sumInsured', JSON.stringify(selfDeclaredValue));
-    console.log('sumInsured:', selfDeclaredValue);
+    log.debug('sumInsured:', selfDeclaredValue);
 
     sessionStorage.setItem('yearOfManufacture', JSON.stringify(yearOfManufacture));
-    console.log('yearOfManufacture:', yearOfManufacture);
+    log.debug('yearOfManufacture:', yearOfManufacture);
 
     sessionStorage.setItem('carRegNo', JSON.stringify(carRegNo));
-    console.log('carRegNo:', carRegNo);
+    log.debug('carRegNo:', carRegNo);
 
     // const formData = this.personalDetailsForm.value;
     // sessionStorage.setItem('formState', JSON.stringify(formData));
@@ -1579,5 +1633,6 @@ export class QuickQuoteFormComponent {
     }
   });
  }
+
 
 }
