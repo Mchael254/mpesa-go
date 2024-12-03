@@ -58,9 +58,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   ) {
     this.util = new Utils(this.session_storage)
     this.insuranceHistoryForm = this.fb.group({
-      question1: ['N'],
+      question1: ['N', Validators.required],
       responseOne: [],
-      question2: ['N'],
+      question2: ['N', Validators.required],
       responseTwo: [],
     });
     this.insuranceHistoryFormOne = this.createInsuranceHistoryFormFormGroup();
@@ -74,11 +74,11 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   createInsuranceHistoryFormFormGroup() {
     return this.fb.group({
       code: [],
-      policy_no: [''], // You can set initial values or validations as needed
-      provider: [''],
-      premium: [''],
-      sum_assured: [''],
-      cover_status: [''],
+      policy_no: ['', Validators.required], 
+      provider: ['', Validators.required],
+      premium: ['', [Validators.required, Validators.min(0)]],
+      sum_assured: ['', [Validators.required, Validators.min(0)]],
+      cover_status: ['', Validators.required],
     });
   }
 
@@ -220,22 +220,19 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   deletePolicyListOne(i: number) {
     this.spinner_service.show('ins_view');
-    let deleted_pol = this.policyListOne.find((data, x) => {return i === x});
+    const deleted_pol = this.policyListOne.find((data, x) => i === x);
+
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
-    .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
-    ))
-    .subscribe(data =>{
-      this.policyListOne = this.policyListOne.filter((data, x) => {
-        return i !== x;
-      });
-      this.toast.success('Delete Data Successfully', 'Insurance history'.toUpperCase())
-      this.spinner_service.hide('ins_view')
-
-    },
-    err=>{
-      this.toast.danger('Failed to Delete Data', 'Insurance history'.toUpperCase())
-
-    })
+      .pipe(finalize(() => this.spinner_service.hide('ins_view')))
+      .subscribe(
+        () => {
+          this.policyListOne = this.policyListOne.filter((_, x) => i !== x);
+          this.toast.success('Delete Data Successfully', 'INSURANCE HISTORY');
+        },
+        err => {
+          this.toast.danger('Failed to Delete Data', 'INSURANCE HISTORY');
+        }
+      );
   }
 
   cancelPolicyListOne(i: number) {
@@ -244,8 +241,6 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       return data;
     }).filter(data => { return data?.code});
     this.editFirstForm = true;
-
-
   }
 
 
@@ -355,12 +350,15 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   saveInsuranceHistory(data: any) {
-    let ins = { ...data };
+    const ins = { ...data };
     ins['clnt_code'] = this.util.getClientCode();
-    // ins['prp_code'] = this.util.getClientCode();
     ins['prp_code'] = null;
-    console.log(ins);
-    return this.client_history_service.saveInsuranceHistory(ins);
+
+    // Filter out unnecessary fields (like `code`)
+    const { code, ...filteredData } = ins;
+
+    console.log('Final Payload:', filteredData); // Log the filtered data
+    return this.client_history_service.saveInsuranceHistory(filteredData);
   }
 
   deleteInsuranceHistory() {
