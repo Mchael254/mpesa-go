@@ -751,6 +751,8 @@ export class CoverTypesComparisonComponent {
 
     // FROM DYNAMIC FORM
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
+    log.debug("Property ID",this.premiumPayload?.risks[0].propertyId)
+    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK",this.premiumPayload)
     log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
     log.debug("quotation code:", this.quotationCode)
@@ -1081,18 +1083,18 @@ export class CoverTypesComparisonComponent {
     // emailForm.cc = this.selectedEmail;
     // emailForm.bcc = this.selectedEmail;
 
-    this.quotationService.sendEmail(emailForm).subscribe(
-      {
-        next: (res) => {
-          const response = res
-          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-          log.debug(res)
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendEmail(emailForm).subscribe(
+    //   {
+    //     next: (res) => {
+    //       const response = res
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+    //       log.debug(res)
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
-      })
+    //     }
+    //   })
     log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
@@ -1114,18 +1116,18 @@ export class CoverTypesComparisonComponent {
 
 
     };
-    this.quotationService.sendSms(payload).subscribe(
-      {
-        next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendSms(payload).subscribe(
+    //   {
+    //     next: (res) => {
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
+    //     }
 
-      }
-    )
+    //   }
+    // )
   }
   handleShare() {
     if (this.selectedOption === 'email') {

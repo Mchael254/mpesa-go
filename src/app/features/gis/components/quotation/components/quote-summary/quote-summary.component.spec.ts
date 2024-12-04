@@ -261,6 +261,9 @@ export const mockClient: ClientDTO = {
   withEffectFromDate: '2020-01-01',
   clientTypeName: 'Individual',
   clientFullName: 'Mr. John Doe',
+  mobileNumber: '',
+  state: '',
+  town: ''
 };
 
 

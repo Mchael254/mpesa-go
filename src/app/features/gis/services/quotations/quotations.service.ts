@@ -17,11 +17,11 @@ import {StringManipulation} from "../../../lms/util/string_manipulation";
 })
 export class QuotationsService {
 
-  baseUrl = this.appConfig.config.contextPath.gis_services;
-  setupsbaseurl = "setups/api/v1";
-  notificationUrl = this.appConfig.config.contextPath.notification_service;
+  // baseUrl = this.appConfig.config.contextPath.gis_services;
+  // setupsbaseurl = "setups/api/v1";
+  // notificationUrl = this.appConfig.config.contextPath.notification_service;
 
-  computationBaseUrl = this.appConfig.config.contextPath.computation_service;
+  // computationBaseUrl = this.appConfig.config.contextPath.computation_service;
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -118,35 +118,54 @@ export class QuotationsService {
   // }
   computePremium(quotationCode) {
     const params = new HttpParams().set('quotationCode', quotationCode);
-    return this.api.POST(`v1/quotation/compute-premium/${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.POST(`api/v1/premium-computation/${quotationCode}`, null,API_CONFIG.PREMIUM_COMPUTATION);
   }
-  quotationUtils(transactionCode){
-    const params = new HttpParams()
-    .set('transactionCode', transactionCode)
-    .set('transactionsType','QUOTATION')
+  quotationUtils(
+    transactionCode: number,
+    transactionsType: string = 'QUOTATION'
+    ){
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['transactionCode'] = transactionCode.toString();
+    paramsObj['transactionsType'] = transactionsType;
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
-    return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
-      headers: headers,
-      params:params
-    })
+    const params = new HttpParams({ fromObject: paramsObj });
+  
+    return this.api.GET(`/api/v1/utils/payload`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  
   }
+  // quotationUtils(transactionCode){
+  //   const params = new HttpParams()
+  //   .set('transactionCode', transactionCode)
+  //   .set('transactionsType','QUOTATION')
+
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //     'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+  //   });
+
+  //   return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
+  //     headers: headers,
+  //     params:params
+  //   })
+  // }
   premiumComputationEngine(payload:PremiumComputationRequest):Observable<any>{
-   return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
+  //  return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
+   return this.api.POST<any[]>(`api/v1/premium-computation`,JSON.stringify(payload),API_CONFIG.PREMIUM_COMPUTATION, );
+
      console.log("Premium Payload after",payload)
 
   }
-  sendEmail(data){
-    return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
-  }
-  sendSms(data){
-    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
-  }
+
+
+  // sendEmail(data){
+  //   return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
+  // }
+  // sendSms(data){
+  //   return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
+  // }
   getRegexPatterns(
     subclassCode: number): Observable<RegexPattern[]> {
     // Create an object to hold parameters only if they are provided

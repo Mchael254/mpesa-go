@@ -1044,18 +1044,18 @@ export class CoverTypesDetailsComponent {
     // emailForm.cc = this.selectedEmail;
     // emailForm.bcc = this.selectedEmail;
 
-    this.quotationService.sendEmail(emailForm).subscribe(
-      {
-        next: (res) => {
-          const response = res
-          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-          console.log(res)
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendEmail(emailForm).subscribe(
+    //   {
+    //     next: (res) => {
+    //       const response = res
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+    //       console.log(res)
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
-      })
+    //     }
+    //   })
     console.log('Submitted payload:', JSON.stringify(emailForm));
   }
 
@@ -1077,18 +1077,18 @@ export class CoverTypesDetailsComponent {
 
 
     };
-    this.quotationService.sendSms(payload).subscribe(
-      {
-        next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendSms(payload).subscribe(
+    //   {
+    //     next: (res) => {
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
+    //     }
 
-      }
-    )
+    //   }
+    // )
   }
   handleShare() {
     if (this.selectedOption === 'email') {
