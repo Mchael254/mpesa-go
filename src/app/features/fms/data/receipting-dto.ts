@@ -97,11 +97,31 @@ export interface ChargesDTO{
 }
 export interface ChargeManagementDTO {
   addEdit: string;
-  receiptExpenseId: number;
+  receiptExpenseId?: number;
   receiptNo: number;
   receiptChargeId: number;
   receiptChargeAmount: number;
   suspenseRct: string;
+}
+// export interface ExistingChargesResponseDTO {
+//   msg: string;
+//   success: boolean;
+//   data: any[]; // Replace `any[]` with the specific type if known
+// }
+export interface ExistingChargesResponseDTO{
+  id: number,
+  receiptChargeId: number,
+  amount: number,
+  receiptNO: number,
+  receiptChargeName: string
+}
+export interface UploadReceiptDocsDTO {
+  originalFilename: string;
+  docDescription: string;
+  username: string;
+  receiptNumber: number;
+  userCode: number;
+  uploadedFiles: string[];
 }
 
 export interface AccountTypeDTO{
@@ -125,27 +145,7 @@ export interface AccountTypeDTO{
       actTypeShtDesc: string;
       systemName: string;
 }
-// export interface ClientsDTO{
-//   branchCode: number;
-//   userCode:number;
-//   code: number;
-//   systemCode: number;
-//   accCode: number;
-//   name: string;
-//   coaAccNumber: string;
-//   coaAccOrgCode: number;
-//   coaBranchCode: number;
-//   receiptBank: number;
-//   chequeBank: number;
-//   subClass: string;
-//   active: string;
-//   receiptAccount:string;
-//   restrictGrossDebitRcpt: string;
-//   vatApplicable: string;
-//   rateApplicable: number;
-//   actTypeShtDesc: string;
-//   systemName: string;
-// }
+
 export interface ClientsDTO{
   tableUsed: string;
   code: number;
@@ -195,6 +195,43 @@ systemShortDescription: string;
       paidToDate: Date;
       transmissionReferenceNumber: string;
 }
+export interface AllocationDTO {
+  receiptParticulars: ReceiptParticular[];
+}
+
+export interface ReceiptParticular {
+  receiptNumber: number;
+  capturedBy: number;
+  systemCode: number;
+  branchCode: number;
+  clientCode: number;
+  clientShortDescription: string;
+  receiptType: string;
+  clientName: string;
+  sslAccountCode: number;
+  accountTypeId: string;
+  referenceNumber: string;
+  receiptParticularDetails: ReceiptParticularDetail[];
+}
+
+export interface ReceiptParticularDetail {
+  policyNumber: string;
+  referenceNumber: string;
+  transactionNumber: number;
+  batchNumber: number;
+  premiumAmount: number;
+  loanAmount: number;
+  pensionAmount: number;
+  miscAmount: number;
+  endorsementCode: number;
+  endorsementDrCrNumber: string;
+  includeCommission: string;
+  commissionAmount: number;
+  overAllocated: number;
+  includeVat: string;
+  clientPolicyNumber: string;
+}
+
 export interface GroupBusinessAccount {
     accountNumber: string; // Primary key for this data type
     accountName: string; 
