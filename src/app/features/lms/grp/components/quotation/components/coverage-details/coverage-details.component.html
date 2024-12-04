@@ -9,7 +9,7 @@
       </div>
       <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, used more than once -->
     <div id="container">
-        <h5 class="mt-1">Cover details</h5>
+        <h5 class="mt-1">{{ "lms.grp.quotation.coverage.cover_details" | translate }}</h5>
         <!-- <div class="add-client-button-container">
             <button class="btn btn-success m-2 rounded-circle" (click)="showAggregateCoverDetailsModal()">&plus;</button>
           </div> -->
@@ -25,7 +25,7 @@
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="detailedModalLabel">Capture detailed Cover type details</h5>
+                      <h5 class="modal-title" id="detailedModalLabel">{{ "lms.grp.quotation.coverage.capture_detailed_cover_type_details" | translate }}</h5>
                       <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close" (click)="closeDetailedModal()"></button>
                     </div>
                     <div class="modal-body">
@@ -34,7 +34,7 @@
                             <div class="col-md-6">
                             
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <label for="clientType">Cover types</label>
+                                    <label for="clientType">{{ "lms.grp.quotation.coverage.cover_types" | translate }}</label>
                                     <select class="form-select" [id]="'detailedCoverType'" formControlName="detailedCoverType"
                                     (change)="onCoverTypeSelected($event)">
                                         <ng-container *ngFor="let cover of coverTypePerProd">
@@ -60,7 +60,7 @@
                                 </div> -->
                                 <div class="mt-3">
                                     <div>
-                                        <label for="premiumMask">% of Main/yr SA</label>
+                                        <label for="premiumMask">{{ "lms.grp.quotation.coverage.percentage_of_main_sa" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="mt-3" *ngIf="selectedRateType === 'C' ">
                                     <div>
-                                        <label for="rate">Rate division factor</label>
+                                        <label for="rate">{{ "lms.grp.quotation.coverage.rate_division_factor" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
@@ -84,7 +84,7 @@
                                                 type="number"
                                                 pInputText
                                                 class="form-control"
-                                                id="sumAssured" 
+                                                id="rateDivFactor" 
                                                 [style]="{ width: '100%' }"
                                                 formControlName="rateDivFactor">
                                         </div>
@@ -94,7 +94,7 @@
                             <div class="col-md-6">
                                 
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <label for="clientType">Select rate</label>
+                                    <label for="clientType">{{ "lms.grp.quotation.coverage.select_rate" | translate }}</label>
                                     <select class="form-select" [id]="'selectRate'" formControlName="selectRate">
                                         <ng-container *ngFor="let cover of SelectRateType">
                                             <option [value]="cover['name']">{{ cover['value'] | titlecase }}</option>
@@ -105,7 +105,7 @@
                                 <div class="mt-3">
                                     
                                     <div class="col-lg-12 col-md-12 col-sm-12" *ngIf="selectedRateType !== 'C' ">
-                                        <label for="overridePremiums">Premium mask</label>
+                                        <label for="overridePremiums">{{ "lms.grp.quotation.coverage.premium_mask" | translate }}</label>
                                         <select class="form-select" [id]="'premiumMask'" formControlName="premiumMask"
                                         (change)="getSelectedPmasCode($event)">
                                             <ng-container *ngFor="let mask of premiumMask">
@@ -117,7 +117,7 @@
                                 </div>
                                 <div class="mt-3" *ngIf="selectedRateType === 'C' ">
                                     <div>
-                                        <label for="rateDivFactor">Rate</label>
+                                        <label for="rateDivFactor">{{ "lms.grp.quotation.coverage.rate" | translate }}</label>
                                     </div>
                                     <div>
                                         <input 
@@ -134,8 +134,8 @@
                     </form>
                     </div>
                     <div class="modal-footer pull-center">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="detailedModal" (click)="closeDetailedModal()">Close</button>
-                      <button type="button" class="btn btn-primary" (click)="isEditMode ? saveEditedCoverDetails() : saveCoverDetails()">Save</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="detailedModal" (click)="closeDetailedModal()">{{ "lms.grp.quotation.coverage.close" | translate }}</button>
+                      <button type="button" class="btn btn-primary" (click)="isEditMode ? saveEditedCoverDetails() : saveCoverDetails()">{{ "lms.grp.quotation.coverage.submit" | translate }}</button>
                     </div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@
                 <div class="modal-dialog modal-xl">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="aggregateModalLabel">Capture cover type details</h5>
+                      <h5 class="modal-title" id="aggregateModalLabel">{{ "lms.grp.quotation.coverage.capture_cover_type_details" | translate }}</h5>
                       <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                       (click)="closeAggregateCoverDetailsModal()"></button>
                     </div>
@@ -158,7 +158,7 @@
                             <div class="col-md-4">
                                 
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <label for="aggregateMainCover">Cover types</label>
+                                    <label for="aggregateMainCover">{{ "lms.grp.quotation.coverage.cover_types" | translate }}</label>
                                     <select class="form-select" [id]="'aggregateCoverType'" formControlName="aggregateCoverType"
                                     (change)="onCoverTypeSelected($event)">
                                         <ng-container *ngFor="let cover of coverTypePerProd">
@@ -170,7 +170,7 @@
                                 <div class="mt-3">
                                     
                                     <div class="col-lg-12 col-md-12 col-sm-12" *ngIf="selectedRateType !== 'C' ">
-                                        <label for="aggregateOverridePremiums">Premium mask</label>
+                                        <label for="aggregateOverridePremiums">{{ "lms.grp.quotation.coverage.premium_mask" | translate }}</label>
                                         <select class="form-select" [id]="'aggrgatePremiumMask'" formControlName="aggrgatePremiumMask"
                                         (change)="getSelectedPmasCode($event)">
                                             <ng-container *ngFor="let mask of premiumMask">
@@ -198,7 +198,7 @@
                                 </div> -->
                                 <div class="mt-3">
                                     <div>
-                                        <label for="category">Category</label>
+                                        <label for="category">{{ "lms.grp.quotation.coverage.category" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
@@ -214,7 +214,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div>
-                                        <label for="aggregatePremiumMask">Multiple of earnings</label>
+                                        <label for="aggregatePremiumMask">{{ "lms.grp.quotation.coverage.multiples_of_earnings" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-group">
@@ -231,7 +231,7 @@
                                 </div>
                                 <div class="mt-3" *ngIf="selectedRateType === 'C' ">
                                     <div>
-                                        <label for="aggregatePremiumMask">Rate</label>
+                                        <label for="aggregatePremiumMask">{{ "lms.grp.quotation.coverage.rate" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-group">
@@ -250,7 +250,7 @@
                             <div class="col-md-4">
                                
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <label for="aggregateCoverTypes">Select rate</label>
+                                    <label for="aggregateCoverTypes">{{ "lms.grp.quotation.coverage.select_rate" | translate }}</label>
                                     <select class="form-select" [id]="'aggregateSelectRate'" formControlName="aggregateSelectRate">
                                         <ng-container *ngFor="let rate of SelectRateType">
                                             <option [value]="rate['name']">{{ rate['value'] | titlecase }}</option>
@@ -259,7 +259,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <label for="dependantType">Dependant type</label>
+                                        <label for="dependantType">{{ "lms.grp.quotation.coverage.dependant_type" | translate }}</label>
                                         <select class="form-select" [id]="'dependantType'" formControlName="dependantType">
                                                 <option>Self</option>
                                         </select>
@@ -268,7 +268,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div>
-                                        <label for="noOfMembers">Average earning per member</label>
+                                        <label for="noOfMembers">{{ "lms.grp.quotation.coverage.average_earning_per_member" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <input 
@@ -282,7 +282,7 @@
                                 </div> 
                                 <div class="mt-3" *ngIf="selectedRateType === 'C' ">
                                     <div>
-                                        <label for="rate">Rate division factor</label>
+                                        <label for="rate">{{ "lms.grp.quotation.coverage.rate_division_factor" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-group">
@@ -301,7 +301,7 @@
                             <div class="col-md-4">
                                 <div>
                                     <div>
-                                        <label for="aggregateSelectRate">Override premium</label>
+                                        <label for="aggregateSelectRate">{{ "lms.grp.quotation.coverage.override_premiums" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                             <div>
@@ -317,7 +317,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div>
-                                        <label for="dependantType">Average ANB</label>
+                                        <label for="dependantType">{{ "lms.grp.quotation.coverage.average_anb" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
@@ -336,7 +336,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div>
-                                        <label for="noOfMembers">No of members</label>
+                                        <label for="noOfMembers">{{ "lms.grp.quotation.coverage.no_of_members" | translate }}</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
@@ -372,7 +372,7 @@
                     </div>
                     <div class="modal-footer">
                       <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeAggregateCoverDetailsModal()">Close</button> -->
-                      <button type="button" class="btn btn-primary" (click)="isEditMode ? saveEditedCoverDetails() : saveCoverDetails()">Save</button>
+                      <button type="button" class="btn btn-primary" (click)="isEditMode ? saveEditedCoverDetails() : saveCoverDetails()">{{ "lms.grp.quotation.coverage.save" | translate }}</button>
                     </div>
                   </div>
                 </div>
@@ -384,14 +384,14 @@
     <p-table [value]="coverTypes" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template pTemplate="header" styleClass="p-datatable-striped">
           <tr>
-            <th>Cover type</th>
-            <th>Dependant type</th>
-            <th>Select Rate</th>
-            <th>Premium mask</th>
-            <th>Rate</th>
-            <th>Rate division factor</th>
-            <th>% of main/yr SA</th>
-            <th>Action</th>
+            <th>{{ "lms.grp.quotation.coverage.cover_type" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.dependant_type" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.select_rate" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.premium_mask" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.rate" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.rate_division_factor" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.percentage_of_main_sa" | translate }}</th>
+            <th>{{ "lms.grp.quotation.coverage.action" | translate }}</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-coverTypes >
@@ -409,13 +409,13 @@
                         <div class="action-buttons">
                             <!-- Edit button -->
                             <div class="button-wrapper">
-                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditDetailedCoverDetailsModal(coverTypes)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.edit" | translate }}' icon="pi pi-pencil" (click)="showEditDetailedCoverDetailsModal(coverTypes)"
                                     styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
                             </div>
                         
                             <!-- Delete button -->
                             <div class="button-wrapper">
-                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.delete" | translate }}' icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
                                     styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
                             </div>
                         </div>
@@ -450,21 +450,21 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('cvt_desc')">Cover type</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('dty_description')">Dependant type</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('cvt_desc')">{{ "lms.grp.quotation.coverage.cover_type" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('dty_description')">{{ "lms.grp.quotation.coverage.dependant_type" | translate }}</th>
           <!-- <th>Rate type</th> -->
-          <th *ngIf="selectedColumnsAggregateCvt.includes('use_cvr_rate')">Select Rate</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_mask_short_description')">Premium mask</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_rate')">Premium rate</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('rate_division_factor')">Rate div factor</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('main_sumassured_percentage')">% of main/yr SA</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('total_members')">No of Members</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('average_earning_per_member')">Average Earnings per member</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('total_member_earnings')">Total member earnings</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('average_anb')">Average ANB</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('but_charge_premium')">Override Premium</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('sum_assured')">Sum Assured</th>
-          <th *ngIf="selectedColumnsAggregateCvt.includes('action')">Action</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('use_cvr_rate')">{{ "lms.grp.quotation.coverage.select_rate" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_mask_short_description')">{{ "lms.grp.quotation.coverage.premium_mask" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_rate')">{{ "lms.grp.quotation.coverage.premium_rate" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('rate_division_factor')">{{ "lms.grp.quotation.coverage.rate_division_factor" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('main_sumassured_percentage')">{{ "lms.grp.quotation.coverage.percentage_of_main_sa" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('total_members')">{{ "lms.grp.quotation.coverage.number_of_members" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('average_earning_per_member')">{{ "lms.grp.quotation.coverage.average_earning_per_member" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('total_member_earnings')">{{ "lms.grp.quotation.coverage.total_member_earnings" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('average_anb')">{{ "lms.grp.quotation.coverage.average_anb" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('but_charge_premium')">{{ "lms.grp.quotation.coverage.override_premium" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('sum_assured')">{{ "lms.grp.quotation.coverage.sum_assured" | translate }}</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('action')">{{ "lms.grp.quotation.coverage.action" | translate }}</th>
         </tr>
       </ng-template>
   
@@ -499,13 +499,13 @@
                         <div class="action-buttons">
                             <!-- Edit button -->
                             <div class="button-wrapper">
-                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditAggregateCoverDetailsModal(coverTypes)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.edit" | translate }}' icon="pi pi-pencil" (click)="showEditAggregateCoverDetailsModal(coverTypes)"
                                     styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
                             </div>
                         
                             <!-- Delete button -->
                             <div class="button-wrapper">
-                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.delete" | translate }}' icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
                                     styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
                             </div>
                         </div>
@@ -527,7 +527,7 @@
 <!-- aggregate -->
 
 <ng-container *ngIf="quatationCalType === 'D' "> 
-        <h5 class="mt-5 mb-1">Category details</h5>
+        <h5 class="mt-5 mb-1">{{ "lms.grp.quotation.coverage.category_details" | translate }}</h5>
         <div style="max-width: 40rem;">
           <div class="add-client-button-container">
             <button class="btn btn-success m-1 rounded-circle" (click)="showCategoryDetstModal()">&plus;</button>
@@ -538,7 +538,7 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="categoryDetsModal">Capture category details</h5>
+                  <h5 class="modal-title" id="categoryDetsModal">{{ "lms.grp.quotation.coverage.capture_category_details" | translate }}</h5>
                   <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                   (click)="closeCategoryDetstModal()"></button>
                 </div>
@@ -549,7 +549,7 @@
                             <!-- Content A (left side) -->
                             <div>
                                 <div>
-                                    <label class="label" for="description">Description<span class="required"></span></label>
+                                    <label class="label" for="description">{{ "lms.grp.quotation.coverage.description" | translate }}<span class="required"></span></label>
                                 </div>
                                 <div class="form-group">
                                             <input 
@@ -561,7 +561,7 @@
                             </div>
                             <div class="mt-3">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <label class="label" for="premiumMask">Premium mask<span class="required"></span></label>
+                                    <label class="label" for="premiumMask">{{ "lms.grp.quotation.coverage.premium_mask" | translate }}<span class="required"></span></label>
                                     <select class="form-select" id="premium_mask_short_description" formControlName="premiumMask">
                                         <ng-container *ngFor="let mask of premiumMask">
                                             <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] | titlecase }}</option>
@@ -575,7 +575,7 @@
                             <!-- Content B (right side) -->
                             <div>
                                 <div>
-                                    <label class="label" for="shortDescription">Short description<span class="required"></span></label>
+                                    <label class="label" for="shortDescription">{{ "lms.grp.quotation.coverage.short_description" | translate }}<span class="required"></span></label>
                                 </div>
                                 <div class="form-group">
                                     <div class="form-group">
@@ -590,7 +590,7 @@
                             </div>
                             <div class="mt-3">
                                 <div>
-                                    <label class="label" for="multiplesOfEarnings">Multiple of earnings<span class="required"></span></label>
+                                    <label class="label" for="multiplesOfEarnings">{{ "lms.grp.quotation.coverage.multiples_of_earnings" | translate }}<span class="required"></span></label>
                                 </div>
                                 <div class="form-group">
                                         <input 
@@ -607,7 +607,7 @@
                 <div class="modal-footer">
                   <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeCategoryDetstModal()">Close</button> -->
                   <!-- <button type="button" class="btn btn-primary" (click)="onSaveCatDets()">Save</button> -->
-                  <button type="button" class="btn btn-primary" (click)="isEditMode ? onSaveEditCatDets() : onSaveCatDets()">Save</button>
+                  <button type="button" class="btn btn-primary" (click)="isEditMode ? onSaveEditCatDets() : onSaveCatDets()">{{ "lms.grp.quotation.coverage.save" | translate }}</button>
                 </div>
               </div>
             </div>
@@ -619,10 +619,10 @@
          styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width:12.5%">Short description</th>
-            <th style="width:12.5%">Description</th>
-            <th style="width:12.5%">Multiple of earnings</th>
-            <th style="width:12.5%">Premium mask</th>
+            <th style="width:12.5%">{{ "lms.grp.quotation.coverage.short_description" | translate }}</th>
+            <th style="width:12.5%">{{ "lms.grp.quotation.coverage.description" | translate }}</th>
+            <th style="width:12.5%">{{ "lms.grp.quotation.coverage.multiples_of_earnings" | translate }}</th>
+            <th style="width:12.5%">{{ "lms.grp.quotation.coverage.premium_mask" | translate }}</th>
             <th>Action</th>
         </tr>
     </ng-template>
@@ -638,13 +638,13 @@
                         <div class="action-buttons">
                             <!-- Edit button -->
                             <div class="button-wrapper">
-                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditCategoryDetstModal(categoryDetails)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.edit" | translate }}' icon="pi pi-pencil" (click)="showEditCategoryDetstModal(categoryDetails)"
                                     styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
                             </div>
                         
                             <!-- Delete button -->
                             <div class="button-wrapper">
-                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCategoryDets(categoryDetails, $event)"
+                                <p-button label='{{ "lms.grp.quotation.coverage.delete" | translate }}' icon="pi pi-trash" (click)="deleteCategoryDets(categoryDetails, $event)"
                                     styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
                             </div>
                         </div>
@@ -665,7 +665,7 @@
         <tr>
             <td></td>
             <td *ngIf="categoryDetails && categoryDetails.length === 0" colspan="4">
-                    <span style="color: black;">No record captured. Click on + icon to add.</span>
+                    <span style="color: black;">{{ "lms.grp.quotation.coverage.no_record_captured_click_on_icon_to_add" | translate }}</span>
             </td>
         </tr>
     </ng-template>
@@ -676,11 +676,11 @@
 
         <ng-container *ngIf="quatationCalType === 'D' ">    
         <div>
-                <h5 class="mt-5 member-dets">Member details</h5>
-                <h6 class="add-member" style="margin-top: 22px;">Add members</h6>
+                <h5 class="mt-5 member-dets">{{ "lms.grp.quotation.coverage.member_details" | translate }}</h5>
+                <h6 class="add-member" style="margin-top: 22px;">{{ "lms.grp.quotation.coverage.add_members" | translate }}</h6>
                       <h6 class="download-member" style="margin-top: 12px;">
-                        Download member upload template
-                        <a style="text-decoration: underline; cursor: pointer;" (click)="downloadMemberUploadTemplate()" class="link">here</a>
+                        {{ "lms.grp.quotation.coverage.download_member_upload_template" | translate }}
+                        <a style="text-decoration: underline; cursor: pointer;" (click)="downloadMemberUploadTemplate()" class="link">{{ "lms.grp.quotation.coverage.here" | translate }}</a>
                       </h6>
                 <div class="p-col-3" style="margin-top: 24px;">
                     <!-- <h6 style="color: rgb(44, 43, 43);">Upload member details template</h6> -->
@@ -693,13 +693,13 @@
 
                     <input type="file" #fileInput style="display: none;" accept=".csv" (change)="handleFileChange($event)">
                     <button class="choose-file" (click)="fileInput.click()">
-                        <span class="file-text">Choose file</span>
+                        <span class="file-text">{{"lms.grp.quotation.coverage.choose_file" | translate }}</span>
                     </button>
                     <div style="margin-top: 25px;" *ngIf="fileInput.files && fileInput.files.length > 0">
                         <div style="width: 30%;">
                             <span class="file-name">{{ fileInput.files[0].name }}</span>
                             <span *ngIf="uploadProgress === 100" class="file-name">(100%)</span>
-                            <span class="completed" *ngIf="uploadProgress === 100">Completed</span>
+                            <span class="completed" *ngIf="uploadProgress === 100">{{ "lms.grp.quotation.coverage.completed" | translate }}</span>
                         </div>
                     <p-progressBar [value]="uploadProgress">
                         <ng-template pTemplate="content" let-value>
@@ -805,7 +805,7 @@
                      <div class="modal-dialog modal-lg">
                        <div class="modal-content">
                          <div class="modal-header">
-                           <h5 class="modal-title" id="addMemberModalLabel">Member details</h5>
+                           <h5 class="modal-title" id="addMemberModalLabel">{{ "lms.grp.quotation.coverage.member_details" | translate }}</h5>
                            <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                            (click)="closeAddMemberDetailsModal()"></button>
                          </div>
@@ -816,7 +816,7 @@
                                      <!-- Content A (left side) -->
                                      <div>
                                          <div>
-                                             <label for="surname">Surname</label>
+                                             <label for="surname">{{ "lms.grp.quotation.coverage.surname" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <input type="text"
@@ -830,7 +830,7 @@
                                      </div>
                                      <div class="mt-3">
                                          <div>
-                                             <label for="dateOfBirth">Date of birth</label>
+                                             <label for="dateOfBirth">{{ "lms.grp.quotation.coverage.date_of_birth" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <p-calendar formControlName="dateOfBirth" 
@@ -845,7 +845,7 @@
                                      </div>
                                      <div class="mt-3">
                                          <div>
-                                             <label for="mainMemberNumber">Main member number</label>
+                                             <label for="mainMemberNumber">{{ "lms.grp.quotation.coverage.main_member_number" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <input type="text"
@@ -860,7 +860,7 @@
                                      <div class="mt-3">
                                          <div class="form-group">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <label for="overridePremiums">Category</label>
+                                                <label for="overridePremiums">{{ "lms.grp.quotation.coverage.category" | translate }}</label>
                                                 <select class="form-select" [id]="'category'" formControlName="category">
                                                     <ng-container *ngFor="let cat of categoryDetails">
                                                         <option [value]="cat['category_category']">{{ cat['category_category'] | titlecase }}</option>
@@ -871,7 +871,7 @@
                                      </div>
                                      <div class="mt-3">
                                          <div>
-                                             <label for="monthlyEarning">Monthly earning</label>
+                                             <label for="monthlyEarning">{{ "lms.grp.quotation.coverage.monthly_earning" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <input type="number"
@@ -885,7 +885,7 @@
                                      </div>
                                      <div class="mt-3">
                                         <div>
-                                            <label for="joiningDate">Joining date</label>
+                                            <label for="joiningDate">{{ "lms.grp.quotation.coverage.joining_date" | translate }}</label>
                                         </div>
                                         <div class="form-group" style="border-radius: 6px;">
                                             <p-calendar formControlName="joiningDate" 
@@ -903,7 +903,7 @@
                                      <!-- Content B (right side) -->
                                      <div>
                                          <div>
-                                             <label for="otherNames">Other names</label>
+                                             <label for="otherNames">{{ "lms.grp.quotation.coverage.other_names" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <input type="text"
@@ -917,7 +917,7 @@
                                      </div>
                                      <div class="mt-4">
                                          <div>
-                                             <label for="gender">Gender</label>
+                                             <label for="gender">{{ "lms.grp.quotation.coverage.gender" | translate }}</label>
                                          </div>
                                          <div class="form-check radio-group" id="inline">
                                              <input
@@ -929,7 +929,7 @@
                                                formControlName="gender"
                                              >
                                              <label class="form-check-label pl-2" for="male">
-                                                 Male
+                                                {{ "lms.grp.quotation.coverage.male" | translate }}
                                              </label>
                                            </div>
                                            <div class="form-check radio-group" id="inline">
@@ -942,13 +942,13 @@
                                                formControlName="gender"
                                              >
                                              <label class="form-check-label pl-2" for="female">
-                                                 Female
+                                                {{ "lms.grp.quotation.coverage.female" | translate }}
                                              </label>
                                            </div>
                                      </div>
                                      <div class="mt-3" style="padding-top: 5px;">
                                          <div>
-                                             <label for="payrollNumber">Payroll/Member number</label>
+                                             <label for="payrollNumber">{{ "lms.grp.quotation.coverage.payroll_or_member_number" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <input type="text"
@@ -963,7 +963,7 @@
                                      <div class="mt-3">
                                         <div class="form-group">
                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                               <label for="occupation">Occupation</label>
+                                               <label for="occupation">{{ "lms.grp.quotation.coverage.occupation" | translate }}</label>
                                                <select class="form-select" [id]="'occupation'" formControlName="occupation">
                                                    <ng-container *ngFor="let occupation of occupation">
                                                        <option [value]="occupation['occupation_code']">{{ occupation['occupation_desc'] | titlecase }}</option>
@@ -974,7 +974,7 @@
                                     </div>
                                      <div class="mt-3">
                                          <div>
-                                             <label for="dependantType">Dependant type</label>
+                                             <label for="dependantType">{{ "lms.grp.quotation.coverage.dependant_type" | translate }}</label>
                                          </div>
                                          <div class="form-group">
                                              <div>
@@ -994,8 +994,8 @@
                          </form>
                          </div>
                          <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeAddMemberDetailsModal()">Close</button>
-                           <button type="submit" class="btn btn-primary" (click)="addMember()">Submit</button>
+                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeAddMemberDetailsModal()">{{ "lms.grp.quotation.coverage.close" | translate }}</button>
+                           <button type="submit" class="btn btn-primary" (click)="addMember()">{{ "lms.grp.quotation.coverage.submit" | translate }}</button>
                          </div>
                        </div>
                      </div>
@@ -1008,17 +1008,17 @@
                 [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th *ngIf="selectedColumnsMembers.includes('surname')" pSortableColumn="surname" style="width:auto">Surname <p-sortIcon field="surname"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('other_names')" pSortableColumn="other_names" style="width:auto">Other name <p-sortIcon field="other_names"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('date_of_birth')" pSortableColumn="date_of_birth" style="width:auto">Date of birth <p-sortIcon field="date_of_birth"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('gender')" pSortableColumn="gender" style="width:auto">Gender <p-sortIcon field="gender"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:auto">Payroll/Member no <p-sortIcon field="member_number"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('description')" pSortableColumn="description" style="width:auto">Category <p-sortIcon field="description"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('dty_description')" pSortableColumn="dty_description" style="width:auto">Dependant type <p-sortIcon field="dty_description"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('monthly_earnings')" pSortableColumn="monthly_earnings" style="width:auto">Monthly earnings <p-sortIcon field="monthly_earnings"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('date_joined')" pSortableColumn="date_joined" style="width:auto">Joining date<p-sortIcon field="date_joined"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:10%">Main member no<p-sortIcon field="member_number"></p-sortIcon></th>
-                            <th *ngIf="selectedColumnsMembers.includes('action')" style="width:auto">Action</th>
+                            <th *ngIf="selectedColumnsMembers.includes('surname')" pSortableColumn="surname" style="width:auto">{{ "lms.grp.quotation.coverage.surname" | translate }} <p-sortIcon field="surname"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('other_names')" pSortableColumn="other_names" style="width:auto">{{ "lms.grp.quotation.coverage.other_name" | translate }}<p-sortIcon field="other_names"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('date_of_birth')" pSortableColumn="date_of_birth" style="width:auto">{{ "lms.grp.quotation.coverage.date_of_birth" | translate }}<p-sortIcon field="date_of_birth"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('gender')" pSortableColumn="gender" style="width:auto">{{ "lms.grp.quotation.coverage.gender" | translate }} <p-sortIcon field="gender"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:auto">{{ "lms.grp.quotation.coverage.payroll_or_member_number" | translate }}<p-sortIcon field="member_number"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('description')" pSortableColumn="description" style="width:auto">{{ "lms.grp.quotation.coverage.category" | translate }} <p-sortIcon field="description"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('dty_description')" pSortableColumn="dty_description" style="width:auto">{{ "lms.grp.quotation.coverage.dependant_type" | translate }}<p-sortIcon field="dty_description"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('monthly_earnings')" pSortableColumn="monthly_earnings" style="width:auto">{{ "lms.grp.quotation.coverage.monthly_earnings" | translate }}<p-sortIcon field="monthly_earnings"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('date_joined')" pSortableColumn="date_joined" style="width:auto">{{ "lms.grp.quotation.coverage.joining_date" | translate }}<p-sortIcon field="date_joined"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:10%">{{ "lms.grp.quotation.coverage.main_member_number" | translate }}<p-sortIcon field="member_number"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('action')" style="width:auto">{{ "lms.grp.quotation.coverage.action" | translate }}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-membersDetails>
@@ -1040,7 +1040,7 @@
                                     <div class="action-buttons">
                                         <!-- Delete button -->
                                         <div class="button-wrapper">
-                                            <p-button label="Delete" icon="pi pi-trash" (click)="deleteMember(membersDetails, $event)"
+                                            <p-button label='{{ "lms.grp.quotation.coverage.delete" | translate }}' icon="pi pi-trash" (click)="deleteMember(membersDetails, $event)"
                                                 styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
                                         </div>
                                     </div>
@@ -1061,7 +1061,7 @@
                             <td></td>
                             <td></td>
                             <td *ngIf="membersDetails && membersDetails.length === 0" colspan="5">
-                                    No record captured. Click on + icon to add.
+                                {{ "lms.grp.quotation.coverage.no_record_captured_click_on_icon_to_add" | translate }}
                             </td>
                         </tr>
                     </ng-template>
@@ -1077,14 +1077,14 @@
       type="button"
       class="btn btn-primary back-button"
       (click)="onBack()"
-    >Back
+    >{{ "lms.grp.quotation.coverage.back" | translate }}
     </button>
 
     <button
       type="button"
       class="btn btn-primary button"
       (click)="onProceed()"
-    >Compute
+    >{{ "lms.grp.quotation.coverage.compute" | translate }}
     </button>
     <ngx-spinner
       name="download_view"
