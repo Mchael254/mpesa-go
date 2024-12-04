@@ -1,3 +1,42 @@
+<div class="container ms-4 " >
+<div class="card mb-2 " style="box-shadow:none;height:40px;margin-right: 38px;">
+  <div class="row px-3 d-flex justify-content-center ">
+    <div class="col-lg-3 d-flex ms-2">
+      <label  class="form-label text-black align-content-center m-0" style="width: 50%;font-size: 16px;text-align:center">{{'fms.org' | translate }}:</label>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;"  id="organization" style="width: 67%;">
+        <option value="" disabled >Select option</option>
+        <option value="" selected>Turnkey Africa LTD</option>
+      </select>
+    </div>
+    <div class="col-lg-3 d-flex">
+      <label  class="form-label text-black text-end align-content-center m-0" style="width: 50%;font-size: 16px;">{{'fms.branch' | translate }}:</label>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;">
+        <option value="" disabled >Select option</option>
+        <option value="" selected>Head Office</option>
+      </select>
+    </div>
+    <div class="col-lg-2 d-flex">
+      <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;font-size: 16px;">{{'fms.yr' | translate }}:</label>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="year" style="width: 50%;">
+        <option value="" disabled >Select option</option>
+        <option value="" selected>2022</option>
+        <option value="" selected>2023</option>
+        <option value="" selected>2024</option>
+      </select>
+    </div>
+    <div class="col-lg-2 d-flex">
+      <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;font-size: 16px;">{{'fms.period' | translate }}:</label>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="period" style="width: 50%;">
+        <option value="" disabled >Select option</option>
+        <option value="" selected>APR</option>
+        <option value="" selected>MAY</option>
+        <option value="" selected>JUN</option>
+      </select>
+    </div>
+  </div>
+</div>
+</div>
+
 <div class="base-content-section">
   <div class="row me-4">
     <div class="col-8">
@@ -43,84 +82,8 @@
             </div>
           </div>
 
-          <!-- Exchange Rate Modal -->
-          <!-- <div class="modal fade" id="exchangeRateModal" tabindex="-1" role="dialog" aria-labelledby="exchangeRateLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div *ngIf="useDefaultExchangeRate" >
-                    <p> 1 {{ selectedCurrency }} = {{ exchangeRate }} </p>
-                  </div>
-                  <div *ngIf="!useDefaultExchangeRate">
-                    <label for="exchangeRateInput">Enter Exchange Rate:</label>
-                    <p>1 {{ selectedCurrency }} =</p>
-                    <input type="number" id="exchangeRateInput" placeholder="value in KES" class="form-control" formControlName="exchangeRate" />
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-primary" (click)="confirmExchangeRate()">OK</button>
-                </div>
-              </div>
-            </div>
-          </div> -->
-          <!-- Exchange Rate Modal -->
-<!-- <div
-class="modal fade"
-id="exchangeRateModal"
-tabindex="-1"
-role="dialog"
-aria-labelledby="exchangeRateLabel"
-aria-hidden="true"
->
-<div class="modal-dialog" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
-      <button
-        type="button"
-        class="close"
-        data-dismiss="modal"
-        aria-label="Close"
-      >
-        <span aria-hidden="true">×</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div *ngIf="useDefaultExchangeRate">
-        <p>1 {{ currencySymbolGlobal }} = {{ exchangeRates }}</p>
-      </div>
-      <div *ngIf="dontUseDefaultExchangeRate">
-        <label for="exchangeRateInput">Enter Exchange Rate:</label>
-        <p>1 {{ currencySymbolGlobal }} =</p>
-        <input
-          type="number"
-          id="exchangeRateInput"
-          placeholder="value in KES"
-          class="form-control"
-          formControlName="exchangeRate"
-        />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="confirmExchangeRate()">OK</button>
-    </div>
-  </div>
-</div>
-</div> -->
-<div
-class="modal fade"
-id="exchangeRateModal2"
-tabindex="-1"
-role="dialog"
-aria-labelledby="exchangeRateLabel"
-aria-hidden="true"
->
+         
+<div class="modal fade" id="exchangeRateModal2" tabindex="-1" role="dialog" aria-labelledby="exchangeRateLabel" aria-hidden="true" >
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
@@ -142,7 +105,7 @@ aria-hidden="true"
         <input
           type="number"
           id="exchangeRateInput"
-          placeholder="value in KES"
+          placeholder="value in base currency"
           class="form-control"
           formControlName="exchangeRate"
         />
@@ -220,7 +183,7 @@ aria-hidden="true"
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Select Cheque Type</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
                 <div class="modal-body">
                   <div class="dropdown-container">
@@ -242,7 +205,7 @@ aria-hidden="true"
             <div class="form-group position-relative">
               <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }}</label>
               <div class="dropdown-container">
-                <select id="bankAccount" class="form-control" formControlName="bankAccount" >
+                <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBank($event)" >
                 <!-- <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()"> -->
                    <option *ngFor="let bank of bankAccounts" [value]="bank.name">{{bank.name}} - {{bank.name}}</option> 
                 </select>
@@ -264,7 +227,7 @@ aria-hidden="true"
                 class="form-control"
                 id="receiptingPoint"
                 formControlName="receiptingPoint"
-                
+                readonly
               ></div>
           </div>
 
@@ -276,7 +239,7 @@ aria-hidden="true"
                 class="form-control"
                 id="receiptNumber"
                 formControlName="receiptNumber"
-                
+                readonly
               >
             </div>
           </div>
@@ -394,6 +357,7 @@ aria-hidden="true"
                     value="yes"
                     formControlName="charges"
                     (change)="onChargesChange('yes')"
+                    (click)="showChargesModal()"
                   />
                   <label class="form-check-label" for="chargesYes">Yes</label>
                 </div>
@@ -422,79 +386,21 @@ aria-hidden="true"
                 class="form-control"
                 id="chargeAmount"
                 formControlName="chargeAmount"
-                [disabled]="!chargesEnabled"
+                
+                readonly
               />
             </div>
           </div>
 
      
-          <!-- <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="chargesModalLabel">Charges Details</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  <form [formGroup]="receiptingDetailsForm">
-                   =
-                    <div class="form-group mb-3">
-                      <label for="chargeType">Type</label>
-                      <div class="dropdown-container">
-                        <select class="form-control" id="chargeType" formControlName="selectedChargeType">
-                      
-                          <option *ngFor="let charge of charges" value="bankCharges" value="charge.name">{{charge.name}} </option>
-                        </select>
-                        <i class="pi pi-chevron-down dropdown-icon"></i>
-                      </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label for="modalChargeAmount">Amount</label>
-                      <input
-                        type="number"
-                        class="form-control"
-                        id="modalChargeAmount"
-                        formControlName="modalChargeAmount"
-                      />
-                    </div>
-                  </form>
-
-                  
-                  <div *ngIf="chargeList.length > 0" class="mt-4">
-                    <h6>Existing Charges</h6>
-                    <ul class="list-group">
-                      <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
-                        *ngFor="let charge of chargeList; let i = index"
-                      >
-                        <span>{{ charge.type }} - {{ charge.amount | currency:selectedCurrency }}</span>
-                        <div>
-                          <button class="btn btn-sm btn-warning me-2" (click)="editCharge(i)">Edit</button>
-                          <button class="btn btn-sm btn-danger" (click)="deleteCharge(i)">Delete</button>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" (click)="saveCharges()">Save</button>
-                </div>
-              </div>
-            </div>
-          </div> -->
-
-
+          
            <!-- Charges Modal -->
            <div class="modal fade" id="chargesModal" tabindex="-1" aria-labelledby="chargesModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="chargesModalLabel">Charges Details</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
 
                 <div class="modal-body">
@@ -503,9 +409,9 @@ aria-hidden="true"
                     <div class="form-group mb-3">
                       <label for="chargeType">Type</label>
                       <div class="dropdown-container">
-                        <select class="form-control" id="chargeType" formControlName="selectedChargeType">
+                        <select class="form-control" id="chargeType" formControlName="selectedChargeType" >
                       
-                          <option *ngFor="let charge of charges" value="bankCharges" value="charge.name">{{charge.name}} </option>
+                          <option *ngFor="let charge of charges"  [value]="charge.name">{{charge.name}} </option>
                         </select>
                         <i class="pi pi-chevron-down dropdown-icon"></i>
                       </div>
@@ -517,8 +423,9 @@ aria-hidden="true"
                       <input
                         type="number"
                         class="form-control"
-                        id="modalChargeAmount"
-                        formControlName="modalChargeAmount"
+                        id="chargeAmount"
+                        formControlName="chargeAmount"
+                       
                       />
                     </div>
                   </form>
@@ -531,7 +438,9 @@ aria-hidden="true"
                         class="list-group-item d-flex justify-content-between align-items-center"
                         *ngFor="let charge of chargeList; let i = index"
                       >
-                        <span>{{ charge.type }} - {{ charge.amount | currency:selectedCurrency }}</span>
+                     
+                        <span>{{ charge.receiptChargeName }} - {{ charge.amount  }}</span>
+                     
                         <div>
                           <button class="btn btn-sm btn-warning me-2" (click)="editCharge(i)">Edit</button>
                           <button class="btn btn-sm btn-danger" (click)="deleteCharge(i)">Delete</button>
@@ -542,8 +451,12 @@ aria-hidden="true"
                 </div>
 
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" (click)="saveCharges()">Save</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                  <button type="button" class="btn btn-primary" (click)="saveCharges()" *ngIf="isSaveBtnActive">Save</button>
+                 
+
+                  <button type="button" class="btn btn-primary" (click)="onEditSubmit()"  *ngIf="isSubmitButtonVisible" >Submit</button>
+                
                 </div>
               </div>
             </div>
@@ -588,64 +501,26 @@ aria-hidden="true"
           </div>
           
 
-          <div class="col-md-4">
-            <!-- Hidden file input -->
-            <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
-
-            <!-- Upload File button -->
-            <button type="button" class="btn btn-primary" (click)="fileInput.click()">{{ 'fms.receipting.uploadFiles' | translate
-              }}</button>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <ul>
-                <li *ngFor="let file of uploadedFiles; let i = index">
-                  {{file.name}}
-                  <button type="button" class="btn btn-danger remove-document-button" (click)="onRemoveFile(i)" *ngIf="i !== -1">Remove</button>
-                </li>
-              </ul>
-            </div>
-          </div>
-<!-- modal to allow user enter file description -->
-<div class="modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">file description</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Enter file description</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 
+<!-- Upload Button and Hidden File Input -->
 <div class="col-md-4">
-  <!-- Hidden file input -->
   <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
-
-  <!-- Upload File button -->
   <button type="button" class="btn btn-primary" (click)="fileInput.click()">
     {{ 'fms.receipting.uploadFiles' | translate }}
   </button>
 </div>
 
-<div class="col-md-4">
+<!-- File List with Description -->
+<div class="col-md-4 mt-2">
   <div class="form-group">
     <ul>
-      <li *ngFor="let file of uploadedFiles; let i = index">
-        {{ file.name }}
+      <li *ngFor="let file of fileDescriptions; let i = index">
+        <span>{{ file.file.name }}</span> - 
+        <span>{{ file.description || 'No description' }}</span>
         <button type="button" class="btn btn-danger remove-document-button" 
-                (click)="onRemoveFile(i)" *ngIf="i !== -1">
+                (click)="onRemoveFile(i)">
           Remove
         </button>
       </li>
@@ -653,21 +528,18 @@ aria-hidden="true"
   </div>
 </div>
 
-<div id="fileDescriptionModal" #fileDescriptionModal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Modal for File Description -->
+<div id="fileDescriptionModal"  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">File Description</h5>
-        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
         <form [formGroup]="receiptingDetailsForm">
           <div class="form-group">
             <label for="description">Enter File Description</label>
             <input id="description" type="text" class="form-control" formControlName="description" />
-            
             <div *ngIf="receiptingDetailsForm.get('description')?.invalid && receiptingDetailsForm.get('description')?.touched" class="text-danger">
               Description is required
             </div>
@@ -675,12 +547,13 @@ aria-hidden="true"
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary"  (click)="saveFileDescription()">Save changes</button>
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveFileDescription()">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="closeFileModal()">Cancel</button>
       </div>
     </div>
   </div>
 </div>
+
 
 
           <div class="col-md-4 p-0" *ngIf="orgCode === 'A=='">
@@ -744,9 +617,9 @@ aria-hidden="true"
           </div>
         </div>
       </div>
-      <div *ngIf="loading" class="spinner-border text-primary" role="status">
+      <!-- <div *ngIf="loading" class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
-      </div>
+      </div> -->
       
           <!-- Search Query Input -->
           <div class="col-md-4">
@@ -781,7 +654,7 @@ aria-hidden="true"
             [(selection)]="selectedClient"
              dataKey="code">
               <ng-template pTemplate="header">
-                <tr>
+                <tr >
                   <th>desc</th>
                   <th>Name</th>
                   <th>Type</th>
@@ -808,24 +681,45 @@ aria-hidden="true"
        
         <div class="row mt-3"  >
           <div class="col-md-12">
-            <p-table [value]="transactions" responsiveLayout="scroll" class="table-striped"
+            <p-table [value]="transactions" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+            [rows]="5"
+            
+            [rowsPerPageOptions]="[5, 10, 20]"
+        >
            >
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>narrations</th>
+              <ng-template pTemplate="header" style="background-color:#89A8B2">
+                <tr >
+                  <th scope="col" class="checkbox-column custom-header" >
+                    </th>
+                  <th>Client Name</th>
+                  
+                  <th>Policy Number</th>
+                  
                   <th>amount</th>
-                  <th>referenceNumber</th>
+                
+                  <th>Balance</th>
                   <th>Allocated Amount</th>
                 
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-transaction let-i="rowIndex">
                 <tr [pSelectableRow]="transaction" >
-                   
-                  <td>{{ transaction.narrations
+                  <!-- <td scope="row"><input type="checkbox"  class="form-check-input custom-checkbox"></td> -->
+                  <td scope="row">
+                    <input
+                      type="checkbox"
+                      class="form-check-input custom-checkbox"
+                      (change)="calculateTotalAllocated()"
+                    />
+                  </td>
+                 <td>{{ transaction.clientName
                      }}</td>
+                     
+                 
+                  <td>{{ transaction.clientPolicyNumber }}</td>
                   <td>{{ transaction.amount}}</td>
-                  <td>{{ transaction.referenceNumber }}</td>
+                  <td>{{transaction.
+balance}}</td>
  <td>
                     
                       <input
@@ -833,114 +727,33 @@ aria-hidden="true"
                         formControlName="allocatedAmount"
                         class="form-control"
                         placeholder="Enter amount"
+                        
+    (input)="onAllocatedAmountChanged(i,transaction)" [value]="receiptingDetailsForm.get('allocatedAmount')?.value[i]"
                       />
                     
                   </td>
-                  <!-- <td>
-                    <button
-                      class="btn btn-primary"
-                      (click)="addAllocation(client, i)"
-                      [disabled]="!getAllocationGroup(i).valid"
-                    >
-                      Allocate
-                    </button>
-                  </td>  -->
+                
                 </tr>
               </ng-template>
             </p-table>
           </div>
         </div>
-
-        <!-- Allocated Clients Table -->
-        <!-- <div class="row mt-3">
-          <div class="col-md-12">
-            <p-table [value]="allocatedClients" responsiveLayout="scroll" class="table-striped">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Client Name</th>
-                  <th>Allocated Amount</th>
-                  <th>Actions</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-client>
-                <tr>
-                  <td>{{ client.clientName }}</td>
-                  <td>{{ client.allocatedAmount | currency }}</td>
-                  <td>
-                    <button class="btn btn-danger" (click)="removeAllocation(client)">
-                      <i class="fa fa-trash"></i> Remove
-                    </button>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
-        </div> -->
-
-        <!-- Save Allocations Button -->
-        <!-- <div class="row mt-3">
-          <div class="col-md-12">
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="onAddAllocationClick()"
-              [disabled]="!canAddAllocation"
-            >
-              Save Allocations
-            </button>
-          </div>
-        </div> -->
-        <!-- Receipt Preview Modal -->
-        <div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-labelledby="receiptPreviewModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <!-- Changes in HTML based on console output data.
-              - Added missing  conditions inside *ngIf: `receipt.amountIssued`
-              -  Made conditional check for `transactions.length` inside *ngFor: to ensure data is only rendered if a transaction array is available
-              -->
-              <div class="modal-body">
-                <div *ngIf="receipt.amountIssued && receipt.receiptNumber && receipt.receivedFrom && receipt.receiptDate && receipt.currency;">
-                  <div>Receipt Number: {{receipt.receiptNumber}}</div>
-                  <div>Amount Issued: {{receipt.amountIssued}}</div>
-                  <div>Received From: {{receipt.receivedFrom}}</div>
-                  <div>Date: {{receipt.receiptDate | date: 'mediumDate'}}</div>
-                  <div>Currency: {{receipt.currency}}</div>
-                  <div *ngIf="receipt.transactions.length > 0">
-                    <p-table [value]="receipt.transactions" ...>
-                      <!-- PrimeNG table code for your receipt.transactions -->
-                    </p-table>
-                  </div>
-                  <div *ngIf="receipt.transactions.length === 0">
-                    <p>No transactions found.</p>
-                  </div>
-                </div>
-                <div *ngIf="!(receipt.amountIssued && receipt.receiptNumber && receipt.receivedFrom && receipt.receiptDate && receipt.currency)">
-                  <p *ngIf="previewError">An error occurred: {{ previewError.message }}</p>
-                  <p>No receipt data available.</p>
-                </div>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <!-- Add a button to send to printer, for example: -->
-                <button type="button" class="btn btn-primary" (click)="onPrintActualReceipt()">Print to Printer</button>
-              </div>
-            </div>
-          </div>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-primary" (click)="onAllocate()">Allocate</button>
         </div>
+        
+       
+
+        
+       
 
         <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
           <button type="button" class="btn btn-primary me-3" id="saveReceipt"
-            (click)="handleReceiptAction('save', searchClients)">Save Receipt</button>
+          >Save Receipt</button>
           <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt"
-            (click)="showReceiptPreview()">Print Receipt
+            >Print Receipt
           </button>
-          <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" (click)="onCancelReceipt()">Cancel</button>
+          <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" >Cancel</button>
         </div>
 
         <script>
