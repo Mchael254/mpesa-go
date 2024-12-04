@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { Logger } from '../../../../../../shared/shared.module';
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ClientService } from '../../../../../entities/services/client/client.service';
@@ -17,7 +17,7 @@ import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, LimitsOfLiability } from '../../data/quotationsDTO';
+import { Clause, Excesses, LimitsOfLiability } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -76,6 +76,9 @@ export class QuoteSummaryComponent {
   limitsOfLiabilityList:LimitsOfLiability[]=[] ;
   totalTaxes: number = 0;
   taxList: { description: string; amount: number }[] = [];
+  selectedSubclassCode: any;
+  excessesList:Excesses[] = []
+  selectedExcess:any;
 
   constructor(
     public fb: FormBuilder,
@@ -140,6 +143,9 @@ export class QuoteSummaryComponent {
     this.getuser();
     this.createEmailForm();
     this.createSmsForm();
+    const selectedSubclassCodeString = sessionStorage.getItem('selectedSubclassCode');
+    this.selectedSubclassCode = JSON.parse(selectedSubclassCodeString);
+    log.debug("Selected subclass code", this.selectedSubclassCode)
   }
 
   loadClientQuotation() {
@@ -351,18 +357,18 @@ export class QuoteSummaryComponent {
     // emailForm.cc = this.selectedEmail;
     // emailForm.bcc = this.selectedEmail;
 
-    this.quotationService.sendEmail(emailForm).subscribe(
-      {
-        next: (res) => {
-          const response = res
-          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-          log.debug(res)
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendEmail(emailForm).subscribe(
+    //   {
+    //     next: (res) => {
+    //       const response = res
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+    //       log.debug(res)
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
-      })
+    //     }
+    //   })
     log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
@@ -384,18 +390,18 @@ export class QuoteSummaryComponent {
 
 
     };
-    this.quotationService.sendSms(payload).subscribe(
-      {
-        next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-        }, error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+    // this.quotationService.sendSms(payload).subscribe(
+    //   {
+    //     next: (res) => {
+    //       this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+    //     }, error: (error: HttpErrorResponse) => {
+    //       log.info(error);
+    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-        }
+    //     }
 
-      }
-    )
+    //   }
+    // )
   }
   handleShare() {
     if (this.selectedOption === 'email') {
@@ -449,4 +455,38 @@ calculateTaxes() {
 getTaxTooltip(): string {
   return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
 }
+fetchClauses(){
+  this.quotationService
+  .getClauses(this.selectedRisk.covertypecode,this.selectedSubclassCode)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+
+      this.clauseList=  response._embedded
+      log.debug("Clause List ", this.clauseList);
+     
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
+    }
+  });
+ }
+ fetchExcesses(){
+  this.quotationService
+  .getExcesses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+
+      this.excessesList=  response._embedded
+      log.debug("Excesses List ", this.excessesList);
+     
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
+    }
+  });
+ }
 }

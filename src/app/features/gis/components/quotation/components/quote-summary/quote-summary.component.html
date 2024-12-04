@@ -238,65 +238,73 @@
                     <div class="tab-pane fade mt-4" id="pills-clauses" role="tabpanel"
                         aria-labelledby="pills-profile-tab">
 
+                        
                         <p-table [value]="clauseList" dataKey="code" selectionMode="single"
-                            [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
-                            responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5"
-                            [showCurrentPageReport]="true"
-                            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                            class='ui-datatable'>
+                        [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
+                         responsiveLayout="scroll" [autoLayout]="true"
+                         [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                         currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                         [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm">
 
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
-                                    <th class="flexible-header">Heading</th>
-                                    <th class="flexible-header">Description</th>
-                                    <th class="flexible-header"></th>
-                                    <th class="flexible-header">Mandatory</th>
+                         <ng-template pTemplate="header">
+                             <tr>
+                                 <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
+                                 <th class="flexible-header" >Heading</th>
+                                 <th class="flexible-header" >Description</th>
+                                 <th class="flexible-header"></th>
+                                 <th class="flexible-header" >Mandatory</th>
 
+                                
 
+                             </tr>
+                         </ng-template>
+                         <ng-template pTemplate="body" let-clauseList 
+                             let-ri="rowIndex">
+                             <tr  [pSelectableRow]="clauseList"
+                             [class.p-highlight]="clauseList === selectedClause"
+                             class="custom-row">
+                               
 
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
-                                <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause"
-                                    class="custom-row">
-
-
-                                    <td class="flexible-header" style=" white-space: nowrap;
+                                 <td class="flexible-header"  style=" white-space: nowrap;
                            overflow: hidden;
                            text-overflow: ellipsis;
                            overflow-y: auto;
-                           max-width: 250px;" pTooltip="{{clauseList.heading }}" tooltipPosition="top">
-                                        {{clauseList.heading}}
-                                    </td>
-                                    <td class="flexible-header"
-                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                                        {{clauseList.heading}}
-                                    </td>
-                                    <td class="flexible-header">
-                                        <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
-                                            icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                                    </td>
-                                    <td class="flexible-header">{{clauseList.isMandatory}}</td>
+                           max-width: 250px;" pTooltip="{{clauseList.heading }}"
+                                     tooltipPosition="top">
+                                    {{clauseList.heading}}
+                                 </td>
+                                 <td class="flexible-header"
+                                     style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
+                                     >
+                                     {{clauseList.wording}}
+                                 </td>
+                                 <td class="flexible-header">
+                                   <button pButton pRipple type="button"
+                                       (click)="openHelperModal(clauseList)"
+                                       icon="pi pi-info-circle"
+                                       class="p-button-rounded p-button-text"></button>
+                               </td>
+                                 <td class="flexible-header">{{clauseList.isMandatory}}</td>
 
+                               
 
+                                
+                             
 
-
-
-
-                                </tr>
-                                <!-- Modal for each row -->
-                                <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
-                                    [style]="{ 'width': '700px'}">
-                                    <ng-container *ngIf="clauseList">
-                                        <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
-                                            (onResize)="onResize($event)">
-                                            <p>{{ clauseList.heading }}</p>
-                                        </div>
-                                    </ng-container>
-                                </p-dialog>
-                            </ng-template>
-                        </p-table>
+                             </tr>
+                             <!-- Modal for each row -->
+                             <p-dialog [(visible)]="clauseList.showHelperModal"
+                                 [modal]="false" [style]="{ 'width': '700px'}">
+                                 <ng-container *ngIf="clauseList">
+                                     <div pResizable
+                                         [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                         (onResize)="onResize($event)">
+                                         <p>{{ clauseList.wording }}</p>
+                                     </div>
+                                 </ng-container>
+                             </p-dialog>
+                         </ng-template>
+                     </p-table>
 
                     </div>
                     <!-- LIMTS OF LIABILITY TAB CONTENT -->
@@ -339,21 +347,72 @@
                     <!-- EXCESSES TAB CONTENT -->
                     <div class="tab-pane fade mt-4 " id="pills-excesses" role="tabpanel"
                         aria-labelledby="pills-home-tab">
-                        <p-table #dt1 [value]="" dataKey="code" selectionMode="single"
-                            [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [autoLayout]="true">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th>Narration</th>
-                                    <th>Value</th>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-filteredRemarks let-ri="rowIndex">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+                        <p-table [value]="excessesList" dataKey="code" selectionMode="single"
+                            [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedExcess"
+                             responsiveLayout="scroll" [autoLayout]="true"
+                             [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                             currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                             [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm">
+ 
+                             <ng-template pTemplate="header">
+                                 <tr>
+                                     <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
+                                     <th class="flexible-header" >Heading</th>
+                                     <th class="flexible-header" >Description</th>
+                                     <th class="flexible-header"></th>
+                                     <th class="flexible-header" >Mandatory</th>
+ 
+                                    
+ 
+                                 </tr>
+                             </ng-template>
+                             <ng-template pTemplate="body" let-excessesList 
+                                 let-ri="rowIndex">
+                                 <tr  [pSelectableRow]="excessesList"
+                                 [class.p-highlight]="excessesList === selectedExcess"
+                                 class="custom-row">
+                                   
+ 
+                                     <td class="flexible-header"  style=" white-space: nowrap;
+                               overflow: hidden;
+                               text-overflow: ellipsis;
+                               overflow-y: auto;
+                               max-width: 250px;" pTooltip="{{excessesList.heading }}"
+                                         tooltipPosition="top">
+                                        {{excessesList.heading}}
+                                     </td>
+                                     <td class="flexible-header"
+                                         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
+                                         >
+                                         {{excessesList.wording}}
+                                     </td>
+                                     <td class="flexible-header">
+                                       <button pButton pRipple type="button"
+                                           (click)="openHelperModal(excessesList)"
+                                           icon="pi pi-info-circle"
+                                           class="p-button-rounded p-button-text"></button>
+                                   </td>
+                                     <td class="flexible-header">{{excessesList.isMandatory}}</td>
+ 
+                                   
+ 
+                                    
+                                 
+ 
+                                 </tr>
+                                 <!-- Modal for each row -->
+                                 <p-dialog [(visible)]="excessesList.showHelperModal"
+                                     [modal]="false" [style]="{ 'width': '700px'}">
+                                     <ng-container *ngIf="excessesList">
+                                         <div pResizable
+                                             [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                             (onResize)="onResize($event)">
+                                             <p>{{ excessesList.wording }}</p>
+                                         </div>
+                                     </ng-container>
+                                 </p-dialog>
+                             </ng-template>
+                         </p-table>
 
                     </div>
                 </div>

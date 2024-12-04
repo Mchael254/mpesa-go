@@ -132,7 +132,7 @@ export class QuickQuoteFormComponent {
   userDetails: any
   userBranchId: any;
   userBranchName: any;
-  dateFormat:any;
+  dateFormat: any;
   branchList: OrganizationBranchDto[];
   selectedBranchCode: any;
   selectedBranchDescription: any;
@@ -188,6 +188,8 @@ export class QuickQuoteFormComponent {
   currencyDelimiter: any;
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
+  formattedCoverFromDate: any;
+  coverFrom: any;
 
 
   constructor(
@@ -213,10 +215,10 @@ export class QuickQuoteFormComponent {
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
     private datePipe: DatePipe
-    
+
   ) {
-    
-   }
+
+  }
 
   ngOnInit(): void {
     this.minDate = new Date();
@@ -224,7 +226,7 @@ export class QuickQuoteFormComponent {
     this.loadAllClients();
     this.getCountries();
 
-     
+
 
 
     this.loadAllQoutationSources();
@@ -233,7 +235,7 @@ export class QuickQuoteFormComponent {
     this.createPersonalDetailsForm();
     this.createForm();
     this.getuser();
-  
+
     this.loadAllSubclass();
     this.populateYears();
 
@@ -361,7 +363,7 @@ export class QuickQuoteFormComponent {
         this.userBranchName = this.parsedBranchDesc
       }, 1000);
       /**PRODUCT */
-      log.debug('product code', parsedPersonalDetailsData.productCode)
+      log.debug('product code', parsedPersonalDetailsData?.productCode)
       log.debug('parsedPersonalDetailsData', parsedPersonalDetailsData)
       log.debug("PRODUCT ARRAY", this.ProductDescriptionArray)
       if (this.ProductDescriptionArray) {
@@ -436,7 +438,7 @@ export class QuickQuoteFormComponent {
             log.debug("Selected Product Code:", this.selectedProductCode);
             log.debug("Selected Subclass:", this.selectedSubclassCode);
             log.debug("Selected Binder:", this.selectedBinderCode);
-        
+
             if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
               this.getCoverToDate();
             }
@@ -444,8 +446,8 @@ export class QuickQuoteFormComponent {
         }).catch(error => {
           log.error("Error in loading subclass section cover type:", error);
         });
-        
-        
+
+
       }
 
     }
@@ -551,19 +553,20 @@ export class QuickQuoteFormComponent {
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails?.branchId;
     log.debug("User Branch Id", this.userBranchId);
-    this.dateFormat= this.userDetails?.orgDateFormat
-    log.debug("Organization Date Format:",this.dateFormat)
-     // Get today's date in yyyy-MM-dd format
-     const today = new Date();
-     // Format today's date to the format specified in myFormat
-   this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
+    this.dateFormat = this.userDetails?.orgDateFormat
+    log.debug("Organization Date Format:", this.dateFormat)
+    // Get today's date in yyyy-MM-dd format
+    const today = new Date();
+    // Format today's date to the format specified in myFormat
+    this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
+    this.coverFrom = this.coverFromDate
     // this.coverFromDate = today.toISOString().split('T')[0]; 
-    log.debug(" Date format",this.dateFormat)
+    log.debug(" Date format", this.dateFormat)
 
-    log.debug("Effective Date",this.coverFromDate)
+    log.debug("Effective Date", this.coverFromDate)
 
-    this.currencyDelimiter= this.userDetails?.currencyDelimiter
-    log.debug("Organization currency delimeter",this.currencyDelimiter)
+    this.currencyDelimiter = this.userDetails?.currencyDelimiter
+    log.debug("Organization currency delimeter", this.currencyDelimiter)
     sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
 
     this.fetchBranches();
@@ -606,7 +609,7 @@ export class QuickQuoteFormComponent {
         log.info('Fetched Branches', this.branchList);
         const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
         log.debug("branch", branch);
-        this.selectedBranchCode=this.branchList[0].id; 
+        this.selectedBranchCode = this.branchList[0].id;
         this.userBranchName = branch[0]?.name;
         this.branchList.forEach(branch => {
           // Access each product inside the callback function
@@ -728,7 +731,7 @@ export class QuickQuoteFormComponent {
       agentCode: [''],
       agentShortDescription: [''],
       bdivCode: [''],
-      bindCode: ['', ],
+      bindCode: ['',],
       branchCode: ['',],
       clientCode: [''],
       clientType: [''],
@@ -741,7 +744,7 @@ export class QuickQuoteFormComponent {
       paymentMode: [''],
       proInterfaceType: [''],
       productCode: ['', Validators.required],
-      source: ['', ],
+      source: ['',],
       withEffectiveFromDate: ['', Validators.required],
       withEffectiveToDate: ['',],
       multiUser: [''],
@@ -824,7 +827,25 @@ export class QuickQuoteFormComponent {
     log.debug("Selected Product Code-coverdate method", this.selectedProductCode)
     log.debug("Selected Covercoverdate method", this.coverFromDate)
     if (this.coverFromDate) {
-      this.productService.getCoverToDate(this.coverFromDate, this.selectedProductCode).subscribe(data => {
+      let date: Date;
+
+      // Check if the value is already a Date or a string
+      if (typeof this.coverFromDate === 'string') {
+        // Parse the string to a Date object
+        date = new Date(this.coverFromDate);
+      } else {
+        date = this.coverFromDate; // It's already a Date object
+        const stringRepresentation = JSON.stringify(date);
+
+      }
+
+      const formattedCoverFromDate = this.formatDate(date);
+      log.debug("FORMATTED DATE:",formattedCoverFromDate)
+
+      this.coverFrom =formattedCoverFromDate
+      log.debug("COVER FROM",this.coverFrom)
+
+      this.productService.getCoverToDate(formattedCoverFromDate, this.selectedProductCode).subscribe(data => {
         log.debug("DATA FROM COVERFROM:", data)
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
@@ -833,6 +854,12 @@ export class QuickQuoteFormComponent {
 
       })
     }
+  }
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // getProductExpiryPeriod() {
@@ -932,6 +959,9 @@ export class QuickQuoteFormComponent {
     // Perform your action based on the selected value
     log.debug(`Selected value: ${selectedValue}`);
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
+    const selectedSubclassCodeString = JSON.stringify(this.selectedSubclassCode);
+    sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
+
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders(this.selectedSubclassCode);
@@ -950,12 +980,12 @@ export class QuickQuoteFormComponent {
     this.binderService.getAllBindersQuick(code).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      log.debug("All Binders Details:", this.binderListDetails); 
+      log.debug("All Binders Details:", this.binderListDetails);
       if (this.binderListDetails && this.binderListDetails.length > 0) {
         this.selectedBinder = this.binderListDetails[0]; // Set the first binder as the selected one
         log.debug("Selected Binder:", this.selectedBinder);
-        this.selectedBinderCode= this.selectedBinder.code
-        this.currencyCode= this.selectedBinder.currency_code;
+        this.selectedBinderCode = this.selectedBinder.code
+        this.currencyCode = this.selectedBinder.currency_code;
         log.debug("Selected Currency Code:", this.currencyCode);
       } else {
         console.error("Binder list is empty or undefined");
@@ -1001,18 +1031,18 @@ export class QuickQuoteFormComponent {
       this.currencyList = data;
       log.info(this.currencyList, "this is a currency list");
       // const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
-      const defaultCurrency =this.currencyList.find(currency => currency.currencyDefault == "Y")
+      const defaultCurrency = this.currencyList.find(currency => currency.currencyDefault == "Y")
       if (defaultCurrency) {
-        log.debug("DEFAULT CURRENCY",defaultCurrency)
-        this.defaultCurrencyName= defaultCurrency.name
-        log.debug("DEFAULT CURRENCY Name",this.defaultCurrencyName)
-        this.defaultCurrencySymbol= defaultCurrency.symbol
-        log.debug("DEFAULT CURRENCY Symbol",this.defaultCurrencySymbol)
+        log.debug("DEFAULT CURRENCY", defaultCurrency)
+        this.defaultCurrencyName = defaultCurrency.name
+        log.debug("DEFAULT CURRENCY Name", this.defaultCurrencyName)
+        this.defaultCurrencySymbol = defaultCurrency.symbol
+        log.debug("DEFAULT CURRENCY Symbol", this.defaultCurrencySymbol)
 
         // Set the default value in the form control
         this.personalDetailsForm.get('currencyCode')?.setValue(this.defaultCurrencyName);
         this.currencyObj = {
-          prefix: this.defaultCurrencySymbol ,
+          prefix: this.defaultCurrencySymbol,
           allowNegative: false,
           allowZero: false,
           decimal: '.',
@@ -1021,10 +1051,10 @@ export class QuickQuoteFormComponent {
           suffix: '',
           nullable: true,
           align: 'left',
-    
+
         };
       }
-    
+
 
       // this.selectedCurrency = curr[0].name
       // log.debug("Selected Currency:", this.selectedCurrency);
@@ -1036,15 +1066,15 @@ export class QuickQuoteFormComponent {
 
     })
   }
-  onCurrencySelected(selectedValue: any){
+  onCurrencySelected(selectedValue: any) {
     this.selectedCurrencyCode = selectedValue.id;
-    log.debug("Selecetd currency from the dropdown:",this.selectedCurrencyCode)
-    const selectedCurrency =this.currencyList.find(currency => currency.id == this.selectedCurrencyCode)
-    log.debug("Selected Currency",selectedCurrency)
+    log.debug("Selecetd currency from the dropdown:", this.selectedCurrencyCode)
+    const selectedCurrency = this.currencyList.find(currency => currency.id == this.selectedCurrencyCode)
+    log.debug("Selected Currency", selectedCurrency)
     this.selectedCurrencySymbol = selectedCurrency.symbol
-    log.debug("Selected Currency symbol",this.selectedCurrencySymbol)
+    log.debug("Selected Currency symbol", this.selectedCurrencySymbol)
     this.currencyObj = {
-      prefix: this.selectedCurrencySymbol ,
+      prefix: this.selectedCurrencySymbol,
       allowNegative: false,
       allowZero: false,
       decimal: '.',
@@ -1242,12 +1272,12 @@ export class QuickQuoteFormComponent {
           section => section.subClassCode == code && section.isMandatory == null
         );
         log.debug("NOT MANDATORY", notMandatorySections);
-        
+
         if (this.mandatorySections.length > 0) {
           this.selectedSectionList = this.mandatorySections[0];
           log.debug("Selected Section", this.selectedSectionList);
         }
-  
+
         const mandatorySectionsString = JSON.stringify(this.mandatorySections);
         sessionStorage.setItem('mandatorySections', mandatorySectionsString);
         this.getSectionByCode();
@@ -1294,17 +1324,17 @@ export class QuickQuoteFormComponent {
     log.debug("MANDA SEC", this.mandatorySections)
     for (let i = 0; i < this.mandatorySections.length; i++) {
       this.selectedSectionList = this.mandatorySections[i];
-      log.debug("SELECTED SECTIONS",this.selectedSectionList)
+      log.debug("SELECTED SECTIONS", this.selectedSectionList)
       const selectedSectionCode = this.selectedSectionList.sectionCode;
       this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
         this.premiumList = data;
         log.debug("data ", data)
         this.allPremiumRate.push(...this.premiumList)
-        log.debug( "premium List",this.premiumList);
+        log.debug("premium List", this.premiumList);
 
         // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
       });
-      log.debug("all quick quote premium List",this.allPremiumRate);
+      log.debug("all quick quote premium List", this.allPremiumRate);
 
     }
 
@@ -1313,12 +1343,12 @@ export class QuickQuoteFormComponent {
 
   setRiskPremiumDto(): Risk[] {
     log.debug("subclass cover type", this.subclassCoverType)
-    log.debug("Car Reg no:",this.carRegNoValue)
+    log.debug("Car Reg no:", this.carRegNoValue)
 
     return this.subclassCoverType.map(item => {
       let risk: Risk = {
         propertyId: this.carRegNoValue,
-        withEffectFrom: this.coverFromDate,
+        withEffectFrom: this.coverFrom,
         withEffectTo: this.passedCoverToDate,
         prorata: "F",
         subclassSection: {
@@ -1353,9 +1383,14 @@ export class QuickQuoteFormComponent {
 
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
     log.debug("Current form structure:", this.dynamicForm.controls);
-    const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
+
+
+
+    const sumInsured = this.dynamicForm.get('selfDeclaredValue').value;
     log.debug("SUM INSURED", sumInsured)
+
     sessionStorage.setItem('sumInsuredValue', sumInsured);
+
     log.debug("Mandatory Sections", this.mandatorySections)
 
 
@@ -1488,7 +1523,7 @@ export class QuickQuoteFormComponent {
     sessionStorage.setItem('product', this.selectedProductCode);
 
     this.premiumComputationRequest = {
-      dateWithEffectFrom: this.coverFromDate,
+      dateWithEffectFrom: this.coverFrom,
       dateWithEffectTo: this.passedCoverToDate,
       underwritingYear: new Date().getFullYear(),
       age: null,
@@ -1598,7 +1633,7 @@ export class QuickQuoteFormComponent {
     // sessionStorage.setItem('yearOfManufacture', JSON.stringify(this.dynamicForm.get('yearOfManufacture').value));
     // sessionStorage.setItem('carRegNo', JSON.stringify(this.dynamicForm.get('carRegNo').value));
 
-    const selfDeclaredValue = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
+    const selfDeclaredValue = this.dynamicForm.get('selfDeclaredValue').value;
     const yearOfManufacture = this.dynamicForm.get('yearOfManufacture').value;
     const carRegNo = this.carRegNoValue;
 
@@ -1615,24 +1650,24 @@ export class QuickQuoteFormComponent {
     // const formData = this.personalDetailsForm.value;
     // sessionStorage.setItem('formState', JSON.stringify(formData));
   }
- fetchRegexPattern(){
-  this.quotationService
-  .getRegexPatterns(this.selectedSubclassCode)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
+  fetchRegexPattern() {
+    this.quotationService
+      .getRegexPatterns(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
 
-      this.regexPattern=  response._embedded.riskIdFormat
-      log.debug("New Regex Pattern", this.regexPattern);
-      this.dynamicRegexPattern= this.regexPattern
-     
-    },
-    error: (error) => {
+          this.regexPattern = response._embedded.riskIdFormat
+          log.debug("New Regex Pattern", this.regexPattern);
+          this.dynamicRegexPattern = this.regexPattern
 
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch regex patterns. Try again later');
-    }
-  });
- }
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch regex patterns. Try again later');
+        }
+      });
+  }
 
 
 }

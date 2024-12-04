@@ -110,6 +110,7 @@
                                 optionLabel="description" dataKey="code" (onChange)="onProductSelected($event.value)"
                                 placeholder=" " [filterBy]="'description'" [placeholder]="parsedProductDesc"
                                 [filter]="true"></p-dropdown>
+                                
 
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
@@ -202,10 +203,14 @@
                                             <!-- <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
                                                 appCommaFormat [ngModel]="parsedSumInsured"> -->
-                                                <input type="text" id="quote-input"
+                                            <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                 [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
-                                          
+                                                [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
+
+                                            <!-- <input type="text" id="quote-input"
+                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
+                                                currencyMask [options]='currencyObj' (input)="handleInput($event)"> -->
+
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>
