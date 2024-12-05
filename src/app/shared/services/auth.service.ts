@@ -466,7 +466,7 @@ export class AuthService implements OnDestroy {
     //   user_name = user.username;
     // }
     // return user_name;
-    return user.userName
+    return user?.userName
   }
 
   // Update the user on the server
