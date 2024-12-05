@@ -758,6 +758,7 @@
       "car_reg_no": "Car reg no",
       "source_is_required": "Source is required",
       "product_is_required": "Product is required",
+      "invalid_phone_format": "Please provide a valid phone number.",
       "branch_is_required": "Branch is required",
       "binder_is_required": "Binder is required",
       "cover_from_is_required": " Cover From date is required",

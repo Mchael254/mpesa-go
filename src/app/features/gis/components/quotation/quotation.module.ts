@@ -22,12 +22,13 @@ import { QuotationSummaryComponent } from './components/quotation-summary/quotat
 import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
-import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
+import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 import { NgxCurrencyDirective } from 'ngx-currency';
+import {NgxIntlTelInputModule} from "ngx-intl-tel-input-gg";
 
 
 @NgModule({
@@ -62,9 +63,12 @@ import { NgxCurrencyDirective } from 'ngx-currency';
     FileUploadModule,
     BadgeModule,
     RadioButtonModule,
-    NgxCurrencyDirective
+    NgxCurrencyDirective,
+    RadioButtonModule,
+    NgxIntlTelInputModule
   ],
   providers: [DatePipe],
+
 
 })
 export class QuotationModule { }
