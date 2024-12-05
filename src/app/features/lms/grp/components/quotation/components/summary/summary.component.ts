@@ -20,9 +20,9 @@ import {SessionStorageService} from "../../../../../../../shared/services/sessio
   styleUrls: ['./summary.component.css']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
-  getPayFrequencies() {
-    throw new Error('Method not implemented.');
-  }
+  // getPayFrequencies() {
+  //   throw new Error('Method not implemented.');
+  // }
   quotationCode: number;
   quatationCalType: string;
   quotationNumber: string;
@@ -129,25 +129,20 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const storedQuoteDetails = sessionStorage.getItem('quotationResponse');
     const parsedQuoteDetails = JSON.parse(storedQuoteDetails);
 
-    this.quotationCode = parsedQuoteDetails.quotation_code;
-    console.log("quotation code", this.quotationCode)
-    this.quotationNumber = parsedQuoteDetails.quotation_number;
-    console.log("quotation number", this.quotationNumber)
+    this.quotationCode = parsedQuoteDetails?.quotation_code;
+    this.quotationNumber = parsedQuoteDetails?.quotation_number;
 
 
 
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
       const formData = quoteData.formData;
-      console.log("formData", formData)
       this.productCode = formData.products.value;
       this.productSelected = formData.products.label;
       this.productType = formData.products.type;
       this.currency = formData.currency.label;
       this.currency_symbol = formData.currency.label.split('(')[1].replace(')', '');
-      console.log("this.productCode", this.productCode, this.productSelected, this.productType, this.currency, this.currency_symbol)
       this.quatationCalType = formData.quotationCalcType
-      console.log("this.quatationCalType", this.quatationCalType)
     }
   }
 
@@ -270,14 +265,12 @@ getDurationTypeDescription(durationType: string): string {
 
   getQuotationDetailsSummary() {
     this.summaryService.quotationSummaryDetails(this.quotationCode).subscribe((quote: QuoteSummaryDTO) => {
-      console.log("quoteSummary", quote)
       this.quoteSummary = quote;
     });
   }
 
   getMembersSummary() {
     this.summaryService.membersSummaryDetails(this.productCode, this.quotationCode).subscribe((memberSummary: MemberSummaryDTO[]) => {
-      console.log("memberSummary", memberSummary);
       this.memberSummary = memberSummary;
     });
   }
@@ -285,20 +278,17 @@ getDurationTypeDescription(durationType: string): string {
   getMemberCoverTypes() {
     this.coverageService.getCoverTypes(this.quotationCode).subscribe((coverTypes: CoverTypesDto[]) => {
       this.coverTypes = coverTypes
-      console.log("coverTypesSummary", this.coverTypes)
     });
   }
 
   getDependantLimits() {
     this.summaryService.getDependantLimits(this.quotationCode).subscribe((dLimits: CategoryDTO[]) => {
-      console.log("dLimits", dLimits)
       this.categorySummary = dLimits;
     });
   }
 
   getMembers() {
     this.coverageService.getMembers(this.quotationCode).subscribe((members: MembersDTO[]) => {
-      console.log("members", members)
       this.membersDetails = members;
     })
   }
@@ -306,7 +296,6 @@ getDurationTypeDescription(durationType: string): string {
   getCategoryDets() {
     this.coverageService.getCategoryDetails(this.quotationCode).subscribe((categoryDets: CategoryDetailsDto[]) =>{
     this.categoryDetailsSummary = categoryDets;
-    console.log("categoryDetailsSummary", categoryDets)
   });
 }
 
@@ -314,9 +303,7 @@ onMemberTableRowClick(membersDetails, index: number) {
   this.selectedRowIndex = index;
   if(membersDetails){
     this.memberCode = membersDetails.member_code;
-    console.log("this.memberCode", this.memberCode)
     this.summaryService.memberCoverSummary(this.quotationCode, this.memberCode).subscribe((memCvtTypes: MemberCoverTypeSummaryDto[]) => {
-      console.log("memCvtTypes", memCvtTypes)
       this.memberCoverTypeSummaryDto = memCvtTypes;
 
     });
