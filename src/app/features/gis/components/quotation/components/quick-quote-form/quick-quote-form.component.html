@@ -63,13 +63,26 @@
                             translate}}</label>
 
                         <div class="input-group">
-                            <select id="zipDropdown" (change)="onZipCodeSelected($event)" [(ngModel)]="selectedZipCode">
-                                <option *ngFor="let country of countryList" [value]="country.zipCodeString">{{
-                                    country.zipCodeString }}</option>
-                            </select>
-
-                            <input type="tel" id="quote-input" class="form-control form-control-sm mb-1"
-                                [(ngModel)]="newClientData.inputClientPhone" (blur)="onInputChange()">
+                          <div class="input-group">
+                            <ngx-intl-tel-input
+                              [cssClass]="'form-control form-control-sm mb-1'"
+                              [preferredCountries]="preferredCountries"
+                              [enableAutoCountrySelect]="true"
+                              [enablePlaceholder]="true"
+                              [searchCountryFlag]="true"
+                              [selectFirstCountry]="true"
+                              [selectedCountryISO]="CountryISO.Nigeria"
+                              [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                              [phoneValidation]="true"
+                              [(ngModel)]="newClientData.inputClientPhone"
+                              [numberFormat]="PhoneNumberFormat.National"
+                              #newClientPhoneInput="ngModel"
+                            >
+                            </ngx-intl-tel-input>
+                            <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false" class="form-text text-danger">
+                              {{'gis.quotation.invalid_phone_format' | translate}}
+                            </div>
+                          </div>
                         </div>
 
 
@@ -80,14 +93,24 @@
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
                         <div class="input-group">
-
-                            <input type="text" id="zip-quote-input"
-                                class="form-control form-control-sm mb-1 custom-width-20" [(ngModel)]="mobilePrefix"
-                                disabled>
-
-                            <input type="number" id="zip-quote-input"
-                                class="form-control form-control-sm mb-1 custom-width-80" [(ngModel)]="clientPhone"
-                                disabled>
+                          <ngx-intl-tel-input
+                            [cssClass]="'form-control form-control-sm mb-1'"
+                            [preferredCountries]="preferredCountries"
+                            [enableAutoCountrySelect]="true"
+                            [enablePlaceholder]="true"
+                            [searchCountryFlag]="true"
+                            [selectFirstCountry]="true"
+                            [selectedCountryISO]="CountryISO.Nigeria"
+                            [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                            [phoneValidation]="true"
+                            [(ngModel)]="clientPhone"
+                            #clientPhoneInput="ngModel"
+                            [numberFormat]="PhoneNumberFormat.National"
+                          >
+                          </ngx-intl-tel-input>
+                          <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false" class="form-text text-danger">
+                            {{'gis.quotation.invalid_phone_format' | translate}}
+                          </div>
                         </div>
 
 
@@ -205,7 +228,7 @@
                                                 <input type="text" id="quote-input"
                                                 class="form-control form-control-sm mb-1" [formControlName]="field.name"
                                                  [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
-                                          
+
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>

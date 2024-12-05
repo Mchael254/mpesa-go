@@ -35,6 +35,7 @@ import { untilDestroyed } from '../../../../../../shared/services/until-destroye
 import { firstValueFrom, Observable, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input-gg';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -188,7 +189,10 @@ export class QuickQuoteFormComponent {
   currencyDelimiter: any;
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
-
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [ CountryISO.Kenya, CountryISO.Nigeria, CountryISO.UnitedStates, CountryISO.UnitedKingdom];
 
   constructor(
     public fb: FormBuilder,
@@ -213,9 +217,9 @@ export class QuickQuoteFormComponent {
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
     private datePipe: DatePipe
-    
+
   ) {
-    
+
    }
 
   ngOnInit(): void {
@@ -224,7 +228,7 @@ export class QuickQuoteFormComponent {
     this.loadAllClients();
     this.getCountries();
 
-     
+
 
 
     this.loadAllQoutationSources();
@@ -233,7 +237,7 @@ export class QuickQuoteFormComponent {
     this.createPersonalDetailsForm();
     this.createForm();
     this.getuser();
-  
+
     this.loadAllSubclass();
     this.populateYears();
 
@@ -288,7 +292,7 @@ export class QuickQuoteFormComponent {
         log.debug("NEW CLIENT ADD ANOTHER RISK")
         this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
       }
@@ -421,22 +425,13 @@ export class QuickQuoteFormComponent {
 
           log.debug("Selected Currency:", this.selectedCurrency);
         }, 1000);
-        // setTimeout(() => {
-        //   log.debug("Selected Product Code:", this.selectedProductCode);
-        //   log.debug("Selected Subclass:", this.selectedSubclassCode);
-        //   log.debug("Selected Binder:", this.selectedBinderCode);
-
-        //   if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
-        //     this.getCoverToDate()
-        //   }
-        // }, 1000);
         this.loadSubclassSectionCovertype(filteredSubclassCodeNumber).then(() => {
           // Now execute this code after loadSubclassSectionCovertype finishes
           setTimeout(() => {
             log.debug("Selected Product Code:", this.selectedProductCode);
             log.debug("Selected Subclass:", this.selectedSubclassCode);
             log.debug("Selected Binder:", this.selectedBinderCode);
-        
+
             if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
               this.getCoverToDate();
             }
@@ -444,8 +439,8 @@ export class QuickQuoteFormComponent {
         }).catch(error => {
           log.error("Error in loading subclass section cover type:", error);
         });
-        
-        
+
+
       }
 
     }
@@ -465,7 +460,7 @@ export class QuickQuoteFormComponent {
       log.debug("NEW CLIENT ADD ANOTHER RISK")
       this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
       this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-      this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+      this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
       this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
       this.isNewClient = true;
     }
@@ -557,7 +552,7 @@ export class QuickQuoteFormComponent {
      const today = new Date();
      // Format today's date to the format specified in myFormat
    this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
-    // this.coverFromDate = today.toISOString().split('T')[0]; 
+    // this.coverFromDate = today.toISOString().split('T')[0];
     log.debug(" Date format",this.dateFormat)
 
     log.debug("Effective Date",this.coverFromDate)
@@ -606,7 +601,7 @@ export class QuickQuoteFormComponent {
         log.info('Fetched Branches', this.branchList);
         const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
         log.debug("branch", branch);
-        this.selectedBranchCode=this.branchList[0].id; 
+        this.selectedBranchCode=this.branchList[0].id;
         this.userBranchName = branch[0]?.name;
         this.branchList.forEach(branch => {
           // Access each product inside the callback function
@@ -950,7 +945,7 @@ export class QuickQuoteFormComponent {
     this.binderService.getAllBindersQuick(code).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      log.debug("All Binders Details:", this.binderListDetails); 
+      log.debug("All Binders Details:", this.binderListDetails);
       if (this.binderListDetails && this.binderListDetails.length > 0) {
         this.selectedBinder = this.binderListDetails[0]; // Set the first binder as the selected one
         log.debug("Selected Binder:", this.selectedBinder);
@@ -1021,10 +1016,10 @@ export class QuickQuoteFormComponent {
           suffix: '',
           nullable: true,
           align: 'left',
-    
+
         };
       }
-    
+
 
       // this.selectedCurrency = curr[0].name
       // log.debug("Selected Currency:", this.selectedCurrency);
@@ -1242,12 +1237,12 @@ export class QuickQuoteFormComponent {
           section => section.subClassCode == code && section.isMandatory == null
         );
         log.debug("NOT MANDATORY", notMandatorySections);
-        
+
         if (this.mandatorySections.length > 0) {
           this.selectedSectionList = this.mandatorySections[0];
           log.debug("Selected Section", this.selectedSectionList);
         }
-  
+
         const mandatorySectionsString = JSON.stringify(this.mandatorySections);
         sessionStorage.setItem('mandatorySections', mandatorySectionsString);
         this.getSectionByCode();
@@ -1625,7 +1620,7 @@ export class QuickQuoteFormComponent {
       this.regexPattern=  response._embedded.riskIdFormat
       log.debug("New Regex Pattern", this.regexPattern);
       this.dynamicRegexPattern= this.regexPattern
-     
+
     },
     error: (error) => {
 
