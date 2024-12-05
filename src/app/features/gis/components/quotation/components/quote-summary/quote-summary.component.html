@@ -18,12 +18,12 @@
                         </div>
 
                     </div>
-                    <div class="col-lg-4 col-12">
+                    <div class="col-lg-5 col-12">
                         <div class="row" style="display: flex; align-items:flex-start;">
                             <div style="flex: 2;">
                                 <p class="summary-label">Contact Information:</p>
                             </div>
-                            <div style="flex: 2; margin-left: -60px">
+                            <div style="flex: 3; margin-left: -60px">
                                 <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
                                 <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}
                                 </p>
@@ -33,7 +33,7 @@
                         </div>
 
                     </div>
-                    <div class="col-lg-4 col-12">
+                    <div class="col-lg-3 col-12">
 
                         <div class="row" *ngIf="selectedClientName" style="display: flex; align-items: center;">
                             <div style="flex: 1;">
@@ -82,10 +82,8 @@
                             <td>{{ productDesc}}</td>
                             <td class="text-end"> {{quotationDetails.quotationProduct[0].totalSumInsured |
                                 number }}</td>
-                                <td class="" 
-                                pTooltip="{{ getTaxTooltip() }}" 
-                                tooltipPosition="bottom">
-                              {{ totalTaxes | number }}
+                            <td class="" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
+                                {{ totalTaxes | number }}
                             </td>
                             <td class="text-end">{{passedPremium | number}}</td>
                             <td class="text-end">{{ quotationDetails.quotationProduct[0].premium |
@@ -112,7 +110,7 @@
                         <div class="row  mb-2">
 
                             <!-- <div class="col-sm-3"></div> -->
-                            <div class="col-3">
+                            <div class="col-2">
 
                             </div>
                             <div class="col-sm-3 ">
@@ -146,38 +144,38 @@
 
                     </div>
                 </div>
-                <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
+
+                <p-table [value]="quotationDetails?.riskInformation" dataKey="code" selectionMode="single"
+                    [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedRisk" responsiveLayout="scroll"
+                    [autoLayout]="true" [paginator]="true" [rows]="4" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable">
+
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>{{'gis.quotation.description' | translate}}</th>
-                            <th> {{'gis.quotation.risk_id' | translate}}</th>
-                            <th> Sum insured</th>
-                            <th>{{'gis.quotation.cover_type' | translate}}</th>
-
-                            <!-- <th style="width: 10px"></th> -->
+                            <th>Property ID</th>
+                            <th>Cover Type</th>
+                            <th>Sum Insured</th>
+                            <th>Description</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-item let-i="index">
 
-                        <ng-container *ngFor="let riskItem of item.riskInformation; let i = index">
-                            <tr [class.selected-row]="riskItem === selectedRisk" (click)="onRiskSelect(riskItem)">
-                                <td>{{ productDesc}}</td>
-                                <td>{{ riskItem.propertyId }}</td>
-                                <td>{{ getSumInsuredForSection(riskItem.sectionsDetails, 'SI') }}</td>
-                                <td>{{ riskItem.covertypeShortDescription }}</td>
-
-                            </tr>
-                        </ng-container>
+                    <ng-template pTemplate="body" let-risk>
+                        <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
+                            <td>{{ risk.propertyId }}</td>
+                            <td>{{ risk.covertypeShortDescription }}</td>
+                            <td>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                            <td>{{ risk.sectionsDetails[0]?.description }}</td>
+                        </tr>
                     </ng-template>
+
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="1"></td>
-                            <td colspan="10" style="padding: 20px; padding-left: 200px;" id="empty">No data to display.
-                            </td>
+                            <td colspan="4" style="text-align: center;">No data to display.</td>
                         </tr>
                     </ng-template>
                 </p-table>
-                
+
+
                 <!-- TABS  -->
 
                 <ul class="nav  mt-5">
@@ -238,12 +236,13 @@
                     <div class="tab-pane fade mt-4" id="pills-clauses" role="tabpanel"
                         aria-labelledby="pills-profile-tab">
 
+
                         <p-table [value]="clauseList" dataKey="code" selectionMode="single"
                             [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
                             responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5"
                             [showCurrentPageReport]="true"
                             currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                            class='ui-datatable'>
+                            class='ui-datatable' styleClass="p-datatable-sm">
 
                             <ng-template pTemplate="header">
                                 <tr>
@@ -271,7 +270,7 @@
                                     </td>
                                     <td class="flexible-header"
                                         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                                        {{clauseList.heading}}
+                                        {{clauseList.wording}}
                                     </td>
                                     <td class="flexible-header">
                                         <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
@@ -291,7 +290,7 @@
                                     <ng-container *ngIf="clauseList">
                                         <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
                                             (onResize)="onResize($event)">
-                                            <p>{{ clauseList.heading }}</p>
+                                            <p>{{ clauseList.wording }}</p>
                                         </div>
                                     </ng-container>
                                 </p-dialog>
@@ -306,22 +305,22 @@
                             [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="true"
                             [rows]="5" [showCurrentPageReport]="true"
                             currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                            class='ui-datatable'>
+                            class='ui-datatable' styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th class="flexible-header">Narration</th>
-                                    <th class="flexible-header">Value</th>
+                                    <th>Narration</th>
+                                    <th>Value</th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-limits let-ri="rowIndex">
                                 <tr>
-                                    <td class="flexible-header" class="flexible-header" style=" white-space: nowrap;
-                                  overflow: hidden;
-                                  text-overflow: ellipsis;
-                                  overflow-y: auto;
-                                  max-width: 250px;" pTooltip="{{limits.narration }}" tooltipPosition="top">
+                                    <td style=" white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            overflow-y: auto;
+                            max-width: 250px;" pTooltip="{{limits.narration }}" tooltipPosition="top">
                                         {{limits.narration}}</td>
-                                    <td class="flexible-header">{{limits.value}}</td>
+                                    <td>{{limits.value |number}} </td>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="emptymessage">
@@ -334,24 +333,67 @@
 
                             </ng-template>
                         </p-table>
-
                     </div>
                     <!-- EXCESSES TAB CONTENT -->
                     <div class="tab-pane fade mt-4 " id="pills-excesses" role="tabpanel"
                         aria-labelledby="pills-home-tab">
-                        <p-table #dt1 [value]="" dataKey="code" selectionMode="single"
-                            [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [autoLayout]="true">
+                        <p-table [value]="excessesList" dataKey="code" selectionMode="single"
+                            [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedExcess"
+                            responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5"
+                            [showCurrentPageReport]="true"
+                            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
+                            class='ui-datatable' styleClass="p-datatable-sm">
+
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th>Narration</th>
-                                    <th>Value</th>
+                                    <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
+                                    <th class="flexible-header">Heading</th>
+                                    <th class="flexible-header">Description</th>
+                                    <th class="flexible-header"></th>
+                                    <th class="flexible-header">Mandatory</th>
+
+
+
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-filteredRemarks let-ri="rowIndex">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
+                            <ng-template pTemplate="body" let-excessesList let-ri="rowIndex">
+                                <tr [pSelectableRow]="excessesList"
+                                    [class.p-highlight]="excessesList === selectedExcess" class="custom-row">
+
+
+                                    <td class="flexible-header" style=" white-space: nowrap;
+                               overflow: hidden;
+                               text-overflow: ellipsis;
+                               overflow-y: auto;
+                               max-width: 250px;" pTooltip="{{excessesList.heading }}" tooltipPosition="top">
+                                        {{excessesList.heading}}
+                                    </td>
+                                    <td class="flexible-header"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
+                                        {{excessesList.wording}}
+                                    </td>
+                                    <td class="flexible-header">
+                                        <button pButton pRipple type="button" (click)="openHelperModal(excessesList)"
+                                            icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+                                    </td>
+                                    <td class="flexible-header">{{excessesList.isMandatory}}</td>
+
+
+
+
+
+
                                 </tr>
+                                <!-- Modal for each row -->
+                                <p-dialog [(visible)]="excessesList.showHelperModal" [modal]="false"
+                                    [style]="{ 'width': '700px'}">
+                                    <ng-container *ngIf="excessesList">
+                                        <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                            (onResize)="onResize($event)">
+                                            <p>{{ excessesList.wording }}</p>
+                                        </div>
+                                    </ng-container>
+                                </p-dialog>
                             </ng-template>
                         </p-table>
 
