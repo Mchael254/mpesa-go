@@ -171,19 +171,19 @@
                             >
                               <ng-template pTemplate="header">
                                 <tr>
-                                  <th class="flexible-header">Narration</th>
-                                  <th class="flexible-header">Value</th>
+                                  <th >Narration</th>
+                                  <th >Value</th>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="body" let-limits let-ri="rowIndex">
                                 <tr>
-                                  <td class="flexible-header" class="flexible-header"  style=" white-space: nowrap;
+                                  <td   style=" white-space: nowrap;
                                   overflow: hidden;
                                   text-overflow: ellipsis;
                                   overflow-y: auto;
                                   max-width: 250px;" pTooltip="{{limits.narration }}"
                                             tooltipPosition="top">{{limits.narration}}</td>
-                                  <td class="flexible-header">{{limits.value}}</td>
+                                  <td >{{limits.value |number}}  </td>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="emptymessage">

@@ -1042,7 +1042,7 @@ export class QuickQuoteFormComponent {
         // Set the default value in the form control
         this.personalDetailsForm.get('currencyCode')?.setValue(this.defaultCurrencyName);
         this.currencyObj = {
-          prefix: this.defaultCurrencySymbol,
+          prefix: this.defaultCurrencySymbol + ' ' ,
           allowNegative: false,
           allowZero: false,
           decimal: '.',

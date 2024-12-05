@@ -80,6 +80,7 @@ export class QuoteSummaryComponent {
   excessesList:Excesses[] = []
   selectedExcess:any;
 
+
   constructor(
     public fb: FormBuilder,
     public productService: ProductsService,
@@ -147,6 +148,7 @@ export class QuoteSummaryComponent {
     this.selectedSubclassCode = JSON.parse(selectedSubclassCodeString);
     log.debug("Selected subclass code", this.selectedSubclassCode)
   }
+  ngOnDestroy(): void { }
 
   loadClientQuotation() {
     log.debug("Load CLient quotation has been called")
@@ -436,7 +438,13 @@ export class QuoteSummaryComponent {
 onRiskSelect(riskItem: any): void {
   this.selectedRisk = riskItem;
   log.debug('Selected Risk:', riskItem);
-}
+  if(this.selectedRisk){
+    this.fetchClauses();
+    this.fetchExcesses();
+    this.fetchLimitsOfLiability()
+  }
+  }
+
 calculateTaxes() {
   this.totalTaxes = 0;
   this.taxList = [];
@@ -486,6 +494,23 @@ fetchClauses(){
     error: (error) => {
 
       this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
+    }
+  });
+ }
+ fetchLimitsOfLiability(){
+  this.quotationService
+  .getLimitsOfLiability( this.selectedSubclassCode)
+  .pipe(untilDestroyed(this))
+  .subscribe({
+    next: (response: any) => {
+
+      this.limitsOfLiabilityList=  response._embedded
+      log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+     
+    },
+    error: (error) => {
+
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
     }
   });
  }

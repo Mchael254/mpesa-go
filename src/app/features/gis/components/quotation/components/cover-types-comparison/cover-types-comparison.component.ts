@@ -139,15 +139,16 @@ export class CoverTypesComparisonComponent {
   @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   isModalOpen: boolean = false;
 
-  clauseList:Clause[] = []
-  selectedClause:any;
+  clauseList: Clause[] = []
+  selectedClause: any;
   modalHeight: number = 200; // Initial height
-  limitsOfLiabilityList:LimitsOfLiability[]=[] ;
-  excessesList:Excesses[] = []
-  selectedExcess:any;
+  limitsOfLiabilityList: LimitsOfLiability[] = [];
+  excessesList: Excesses[] = []
+  selectedExcess: any;
+  limitsOfLiabiltyDetailsForm: FormGroup;
 
 
-  
+
 
 
 
@@ -204,7 +205,7 @@ export class CoverTypesComparisonComponent {
     this.riskLevelPremiums = this.premiumResponse?.riskLevelPremiums;
     // this.sumInsuredValue = this.premiumPayload?.risks[0].limits[0].limitAmount;
     this.sumInsuredValue = sessionStorage.getItem('sumInsuredValue');
-   
+
     log.debug("Quick Quote Quotation SUM INSURED VALUE:", this.sumInsuredValue);
     // this.selectedSectionCode = this.premiumPayload?.risks[0].limits[0].section.code
 
@@ -260,6 +261,7 @@ export class CoverTypesComparisonComponent {
     this.createRiskDetailsForm();
     this.createEmailForm();
     this.createSmsForm();
+    this.createLimitsOfLiabiltyForm();
 
 
 
@@ -304,22 +306,22 @@ export class CoverTypesComparisonComponent {
   closeModal() {
     this.isModalOpen = false;
   }
-  passCovertypeDesc(selectedCoverCode:any) {
+  passCovertypeDesc(selectedCoverCode: any) {
     log.debug("data from passcovertpes", selectedCoverCode);
-    const passedCoverObject = this.riskLevelPremiums.find(coverDesc => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode); 
+    const passedCoverObject = this.riskLevelPremiums.find(coverDesc => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
     log.debug("passed covertype object:", passedCoverObject);
-   
+
     this.passedCovertypeDescription = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
     this.passedCovertypeCode = selectedCoverCode;
-    if (this.passedCovertypeCode){
+    if (this.passedCovertypeCode) {
       log.debug("Fetch Clauses function")
       this.fetchClauses()
       this.fetchExcesses()
     }
     this.fetchLimitsOfLiability()
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
-    log.debug("Passed covertype desc:",this.passedCoverTypeShortDes)
-    log.debug("Passed covertype desc:",this.passedCovertypeDescription)
+    log.debug("Passed covertype desc:", this.passedCoverTypeShortDes)
+    log.debug("Passed covertype desc:", this.passedCovertypeDescription)
     this.filteredSection = this.quickQuoteSectionList?.filter(section =>
 
       this.passedCoverTypeShortDes == "COMP" ?
@@ -734,7 +736,7 @@ export class CoverTypesComparisonComponent {
       log.debug("Quotation Number:", this.quotationNo)
       this.taxInformation = this.quotationDetails.taxInformation
       log.debug("Tax information", this.taxInformation)
-
+      this.addLimitsOfLiability()
     })
   }
   createQuotationRisk() {
@@ -751,8 +753,8 @@ export class CoverTypesComparisonComponent {
 
     // FROM DYNAMIC FORM
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    log.debug("Property ID",this.premiumPayload?.risks[0].propertyId)
-    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK",this.premiumPayload)
+    log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
+    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
     log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
     log.debug("quotation code:", this.quotationCode)
@@ -1184,67 +1186,105 @@ export class CoverTypesComparisonComponent {
   onResize(event: any) {
     this.modalHeight = event.height;
   }
-  fetchClauses(){
+  fetchClauses() {
     this.quotationService
-    .getClauses(this.passedCovertypeCode, this.selectedSubclassCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-  
-        this.clauseList=  response._embedded
-        log.debug("Clause List ", this.clauseList);
-       
-      },
-      error: (error) => {
-  
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
-      }
-    });
-   }
-   onCoverTypeChange() {
-log.info("On cover type change called")
+      .getClauses(this.passedCovertypeCode, this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.clauseList = response._embedded
+          log.debug("Clause List ", this.clauseList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
+        }
+      });
+  }
+  onCoverTypeChange() {
+    log.info("On cover type change called")
     // Collapse all expanded sections
     this.isClauseDetailsOpen = false;
     this.isLimitsDetailsOpen = false;
     this.isExcessDetailsOpen = false;
     this.isBenefitsDetailsOpen = false;
   }
-  fetchLimitsOfLiability(){
-    const productCode =this.premiumPayload?.product.code
-    log.debug("Product Code:",productCode)
+  fetchLimitsOfLiability() {
+    const productCode = this.premiumPayload?.product.code
+    log.debug("Product Code:", productCode)
     this.quotationService
-    .getLimitsOfLiability(productCode, this.selectedSubclassCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
+      .getLimitsOfLiability(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.limitsOfLiabilityList = response._embedded
+          log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+        }
+      });
+  }
+
+  fetchExcesses() {
+    this.quotationService
+      .getExcesses(this.passedCovertypeCode, this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.excessesList = response._embedded
+          log.debug("Excesses List ", this.excessesList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
+        }
+      });
+  }
+  createLimitsOfLiabiltyForm() {
+    this.limitsOfLiabiltyDetailsForm = this.fb.group({
+      code:  [''],
+      scheduleValueCode: [''],
+      quotationProductCode: [''],
+      value: [''],
+      narration: [''],
+      type: ['']
+    });
+  }
+
+  addLimitsOfLiability() {
+    const productCode = this.quotationDetails?.quotationProduct[0].code
+    log.debug("Product Code",productCode)
+    // Transform the list to match the expected structure
+    const transformedList = this.limitsOfLiabilityList.map(item => ({
+      code: item.code,
+      scheduleValueCode: item.quotationValueCode, 
+      quotationProductCode: productCode, 
+      value: item.value,
+      narration: item.narration,
+      type: "L"  // For Limit of Liability
+    }));
+    log.debug("Transformed limits liability list",transformedList)
   
-        this.limitsOfLiabilityList=  response._embedded
-        log.debug("Limits of Liability List ", this.clauseList);
-       
+    // Call the service to add the transformed limits of liability
+    this.quotationService.addLimitsOfLiability(transformedList).pipe(untilDestroyed(this)).subscribe({
+      next: (response: any) => {
+        const result = response._embedded;
+        log.debug("RESPONSE AFTER ADDING LIST ", result);
       },
       error: (error) => {
-  
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add limits of liability. Try again later');
       }
     });
-   }
-
-   fetchExcesses(){
-    this.quotationService
-    .getExcesses(this.passedCovertypeCode, this.selectedSubclassCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
+  }
   
-        this.excessesList=  response._embedded
-        log.debug("Excesses List ", this.excessesList);
-       
-      },
-      error: (error) => {
   
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
-      }
-    });
-   }
-
+  
 }
