@@ -63,13 +63,13 @@ steps = stepData;
     private fb: FormBuilder,
     private router: Router,
     private confirmationService: ConfirmationService,
-    private activatedRoute: ActivatedRoute,
+    // private activatedRoute: ActivatedRoute,
     private coverageService: CoverageService,
     private cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
     private spinner_Service: NgxSpinnerService,
     private messageService: MessageService,
-    private http: HttpClient
+    // private http: HttpClient
     ) {}
 
 ngOnInit() {
@@ -142,9 +142,9 @@ retrievQuoteDets() {
   const storedQuoteDetails = sessionStorage.getItem('quotationResponse');
   const parsedQuoteDetails = JSON.parse(storedQuoteDetails);
 
-  this.quotationCode = parsedQuoteDetails.quotation_code;
+  this.quotationCode = parsedQuoteDetails?.quotation_code;
   console.log("quotation code", this.quotationCode)
-  this.quotationNumber = parsedQuoteDetails.quotation_number;
+  this.quotationNumber = parsedQuoteDetails?.quotation_number;
   console.log("quotation number", this.quotationNumber)
 
   if (storedQuoteData) {
@@ -310,7 +310,6 @@ memberDetsForm() {
 
   showEditAggregateCoverDetailsModal(coverTypes: CoverTypesDto) {
     this.isEditMode = true;
-    console.log("aggregateEdit", this.isEditMode)
     const modal = document.getElementById('aggregateModal');
     if (modal) {
       modal.classList.add('show');
@@ -318,11 +317,8 @@ memberDetsForm() {
     }
 
     if (coverTypes) {
-      this.coverTypeUniqueCode = coverTypes.cover_type_unique_code
+      this.coverTypeUniqueCode = coverTypes.cover_type_unique_code;
       this.coverTypeCodeToEdit = coverTypes.cover_type_code;
-      // this.selectedPmasCode = coverTypes.premium_mask_code;
-      console.log("this.selectedPmasCodeToEdit", this.selectedPmasCode)
-      console.log("this.coverTypeCodeToEdit", this.coverTypeCodeToEdit, coverTypes.cover_type_unique_code, this.selectedPmasCode)
       this.aggregateForm.patchValue({
         aggregateCoverType: coverTypes.cvt_desc.toLowerCase(),
         rate: coverTypes.premium_rate,
@@ -335,8 +331,10 @@ memberDetsForm() {
         averageAnb: coverTypes.average_anb,
         overridePremiums: coverTypes.but_charge_premium,
         sumAssured: coverTypes.sum_assured,
+        category: null,
+        dependantType: null,
+        multiplesOfEarnings: null,
       });
-      console.log("After patchValueAggregate:", this.aggregateForm.value, this.coverTypeUniqueCode);
     }
   }
 

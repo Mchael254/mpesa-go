@@ -1935,7 +1935,58 @@
     "genOtp": "生成OTP",
     "signSelect": "签署选择",
     "correction": "发送以更正",
-    "reject": "拒绝"
+    "reject": "拒绝",
+    "receipting":{
+      "capture_receipt": "捕获收据",
+      "saveReceipt": "保存收据",
+     "printReceipt": "打印收据",
+     "cancel": "取消",
+     "captureReceipt": "捕获收据",
+     "chargesYesNo": "费用",
+     "capitalInjection": "资本注入",
+     "deductions": "扣除",
+     "chargeAmount": "费用金额",
+     "uploadFiles": "上传文件"
+   },
+   "allocation": {
+     "add_allocation": "添加分配",
+     "allocation_type": "分配类型",
+     "allocatedAmount": "已分配金额"
+   },
+     "client": {
+       "name": "客户姓名",
+       "date": "日期",
+       "narration": "说明",
+       "amount": "金额",
+       "allocationType": "分配类型",
+       "allocatedAmount": "已分配金额"
+   },
+     
+       "receipt_authorization": {
+         "title": "Autorisation de reçus",
+         "normal_tab": "Reçus normaux",
+         "batch_tab": "Reçus en lot",
+         "select_all": "Sélectionner tout",
+         "authorize_all": "Autoriser tout",
+         "reject_all": "Rejeter tout",
+         "search":"搜索",
+         "receipt_no": "Numéro de reçu",
+         "policy_no": "Numéro de police",
+         "payment_memo": "Mémo de paiement",
+         "amount": "Montant",
+         "capture_date": "Date de capture",
+         "authorization_date":"授权日期",
+         "status": "Statut",
+         "actions":"操作",
+         "authorize": "Autoriser",
+         "reject": "Rejeter",
+         "rejection_remarks": "Remarques de rejet",
+         "close": "Fermer",
+         "statement_no": "Numéro de relevé",
+         "total_amount": "Montant total",
+         "send_sms_alerts": "Envoyer des alertes SMS"
+       }
+     
   },
   "campaignMngmt": {
     "campaigns": "活动",

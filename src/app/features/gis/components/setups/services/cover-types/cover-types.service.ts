@@ -10,9 +10,9 @@ import { API_CONFIG } from 'src/environments/api_service_config';
   providedIn: 'root'
 })
 export class CoverTypesService {
-  baseurl = this.appConfig.config.contextPath.gis_services;
-  crmurl = this.appConfig.config.contextPath.setup_services;
-  setupsbaseurl = "setups/api/v1"
+  // baseurl = this.appConfig.config.contextPath.gis_services;
+  // crmurl = this.appConfig.config.contextPath.setup_services;
+  // setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
               public appConfig : AppConfigService,
