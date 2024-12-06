@@ -11,8 +11,8 @@ import {API_CONFIG} from "../../../../../../../environments/api_service_config";
 })
 export class CoverTypeService {
 
-  baseurl = this.appConfig.config.contextPath.gis_services;
-  setupsbaseurl = "setups/api/v1"
+  // baseurl = this.appConfig.config.contextPath.gis_services;
+  // setupsbaseurl = "setups/api/v1"
 
   constructor(
     private http: HttpClient,

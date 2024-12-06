@@ -22,6 +22,8 @@
               "cubejs-client",
               "cross-fetch",
               "dayjs",
+              "google-libphonenumber",
+              "papaparse",
               "url-search-params-polyfill"
             ],
             "polyfills": [
