@@ -4,7 +4,7 @@ import {APP_CONFIG, AppConfigService} from '../../../../core/config/app-config-s
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {ApiService} from "../../../../shared/services/api/api.service";
@@ -17,11 +17,11 @@ import {StringManipulation} from "../../../lms/util/string_manipulation";
 })
 export class QuotationsService {
 
-  baseUrl = this.appConfig.config.contextPath.gis_services;
-  setupsbaseurl = "setups/api/v1";
-  notificationUrl = this.appConfig.config.contextPath.notification_service;
+  // baseUrl = this.appConfig.config.contextPath.gis_services;
+  // setupsbaseurl = "setups/api/v1";
+  // notificationUrl = this.appConfig.config.contextPath.notification_service;
 
-  computationBaseUrl = this.appConfig.config.contextPath.computation_service;
+  // computationBaseUrl = this.appConfig.config.contextPath.computation_service;
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -118,35 +118,54 @@ export class QuotationsService {
   // }
   computePremium(quotationCode) {
     const params = new HttpParams().set('quotationCode', quotationCode);
-    return this.api.POST(`v1/quotation/compute-premium/${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.POST(`api/v1/premium-computation/${quotationCode}`, null,API_CONFIG.PREMIUM_COMPUTATION);
   }
-  quotationUtils(transactionCode){
-    const params = new HttpParams()
-    .set('transactionCode', transactionCode)
-    .set('transactionsType','QUOTATION')
+  quotationUtils(
+    transactionCode: number,
+    transactionsType: string = 'QUOTATION'
+    ){
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['transactionCode'] = transactionCode.toString();
+    paramsObj['transactionsType'] = transactionsType;
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
-    return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
-      headers: headers,
-      params:params
-    })
+    const params = new HttpParams({ fromObject: paramsObj });
+  
+    return this.api.GET(`api/v1/utils/payload`, API_CONFIG.PREMIUM_COMPUTATION, params);
+  
   }
+  // quotationUtils(transactionCode){
+  //   const params = new HttpParams()
+  //   .set('transactionCode', transactionCode)
+  //   .set('transactionsType','QUOTATION')
+
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //     'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+  //   });
+
+  //   return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
+  //     headers: headers,
+  //     params:params
+  //   })
+  // }
   premiumComputationEngine(payload:PremiumComputationRequest):Observable<any>{
-   return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
+  //  return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
+   return this.api.POST<any[]>(`api/v1/premium-computation`,JSON.stringify(payload),API_CONFIG.PREMIUM_COMPUTATION, );
+
      console.log("Premium Payload after",payload)
 
   }
-  sendEmail(data){
-    return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
-  }
-  sendSms(data){
-    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
-  }
+
+
+  // sendEmail(data){
+  //   return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
+  // }
+  // sendSms(data){
+  //   return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
+  // }
   getRegexPatterns(
     subclassCode: number): Observable<RegexPattern[]> {
     // Create an object to hold parameters only if they are provided
@@ -156,7 +175,7 @@ export class QuotationsService {
   
     const params = new HttpParams({ fromObject: paramsObj });
   
-    return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   
   }
   getClauses(
@@ -174,17 +193,16 @@ export class QuotationsService {
 
   }
   getLimitsOfLiability(
-    quotationProductCode: number,
     subclassCode: number,): Observable<LimitsOfLiability[]> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['quotationProductCode'] = quotationProductCode.toString();
+    
     paramsObj['subclassCode'] = subclassCode.toString();
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
   getExcesses(
@@ -199,6 +217,10 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<Excesses[]>(`/v2/excesses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+
+  }
+  addLimitsOfLiability(data:CreateLimitsOfLiability[]){
+    return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 

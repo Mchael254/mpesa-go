@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO } from '../data/receipting-dto';
+import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO } from '../data/receipting-dto';
+
 import { ApiService } from '../../../shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+
+import {API_CONFIG} from '../../../../environments/api_service_config';
 import { HttpParams } from '@angular/common/http';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
 @Injectable({
@@ -68,28 +70,17 @@ getPaymentModes():Observable< {data: PaymentModesDTO[]}> {
         params
       );
     }
-    // getManualExchangeRate(): Observable<GenericResponse<ManualExchangeRateDTO[]>> {
-    //   return this.api.GET<GenericResponse<ManualExchangeRateDTO[]>>(
-    //     `parameters/manual-exchange-rate-setup`,
-    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-    //   );
-    // }
-    getManualExchangeRateParameter(): Observable<GenericResponse<string>> {
+  
+    getManualExchangeRateParameter(paramName:string): Observable<GenericResponse<string>> {
+      const params=new HttpParams().set('paramName',`${paramName}`);
       return this.api.GET<GenericResponse<string>>(
-        `parameters/manual-exchange-rate-setup`,
-        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+        `parameters/get-param-status`,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+        params
       );
     }
     
-//     getExchangeRate(selectedCurrency:number,orgCode:number):Observable<GenericResponseFMS<ExchangeRateDTO[]>>{
-// const params = new HttpParams().set( 'selectedCurrency',`${selectedCurrency}`).set('orgCode',`${orgCode}`);
-// return this.api.GET<GenericResponseFMS<ExchangeRateDTO[]>>(
-//   'currencies/get-exchange-rate',
-//   API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-//   params
-// );
 
-//     }
 getExchangeRate(selectedCurrency: number, orgCode: number): Observable<GenericResponse<string>> {
   const params = new HttpParams()
     .set('selectedCurrency', `${selectedCurrency}`)
@@ -128,6 +119,16 @@ postManualExchangeRate( selectedCurrency: number,
 
     }
 
+getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseDTO[]}> {
+  const params = new HttpParams().set('receiptNo', receiptNo);
+  return this.api.GET<{data:ExistingChargesResponseDTO[]}>(
+    `charges/expenses`,
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    params
+  );
+}
+
+
     postChargeManagement(data: ChargeManagementDTO): Observable<any> {
       return this.api.POST<any>(
         'charges/manage',
@@ -135,6 +136,31 @@ postManualExchangeRate( selectedCurrency: number,
           API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
     }
 
+    // uploadReceiptDocs(
+    //   originalFilename: string,
+    //   docDescription: string,
+    //   username: string,
+    //   receiptNumber: number,
+    //   userCode: number,
+    //   uploadedFiles: string[]
+    // ): Observable<{ message: string }> {
+    //   const params = new HttpParams()
+    //     .set('originalFilename', originalFilename)
+    //     .set('docDescription', docDescription)
+    //     .set('username', username)
+    //     .set('receiptNumber', `${receiptNumber}`)
+    //     .set('userCode', `${userCode}`);
+  
+    //   const requestBody = { uploadedFiles };
+  
+    //   return this.api.POST<{ message: string }>(
+    //     `dms/upload-receipt-docs`,
+    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    //      params,
+    //     requestBody
+    //   );
+    // }
+    
     
     getAccountTypes(orgCode:number,userCode:number,branchCode:number):Observable<{data:AccountTypeDTO[]}>{
       const params = new HttpParams().set('orgCode',`${orgCode}`).set('usrCode',`${userCode}`).set('branchCode',`${branchCode}`)
@@ -145,15 +171,7 @@ postManualExchangeRate( selectedCurrency: number,
       )
 
     }
-    // getClients(systemCode:number,acctCode:number,searchCriteria?:string):Observable<{data:ClientsDTO[]}>{
-    //   const params = new HttpParams().set('systemCode',`${systemCode}`).set('acctCode',`${acctCode}`).set('searchCriteria',`${searchCriteria}`);
-    //   return this.api.GET<{data:ClientsDTO[]}>(
-    //     `clients`,
-    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-    //     params
-    //   )
-
-    // }
+   
     getClients(
       systemCode: number,
       acctCode: number,
@@ -190,6 +208,10 @@ postManualExchangeRate( selectedCurrency: number,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
       )
+    }
+    postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
+      const endpoint = `allocations/save?userCode=${userCode}`;
+      return this.api.POST<any>(endpoint, data, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
     }
     
      }

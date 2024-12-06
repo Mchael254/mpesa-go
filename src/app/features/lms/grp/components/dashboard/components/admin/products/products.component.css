@@ -90,7 +90,7 @@ button.get-quote:hover {
 /* CSS for X button, to close modal */
 .modal-header {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
 }
 
