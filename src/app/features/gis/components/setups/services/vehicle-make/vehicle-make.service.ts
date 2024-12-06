@@ -15,9 +15,9 @@ import { ApiService } from '../../../../../../../app/shared/services/api/api.ser
   providedIn: 'root'
 })
 export class VehicleMakeService {
-  baseurl = this.appConfig.config.contextPath.gis_services;
-  crmurl = this.appConfig.config.contextPath.setup_services;
-  setupsbaseurl = "setups/api/v1"
+  // baseurl = this.appConfig.config.contextPath.gis_services;
+  // crmurl = this.appConfig.config.contextPath.setup_services;
+  // setupsbaseurl = "setups/api/v1"
   
   constructor(
     private http: HttpClient,

@@ -14,9 +14,9 @@ import {API_CONFIG} from "../../../../../environments/api_service_config";
 })
 export class ProductService {
 
-  baseurl = this.appConfig.config.contextPath.gis_services;
-  crmurl = this.appConfig.config.contextPath.setup_services;
-  setupsbaseurl = "setups/api/v1"
+  // baseurl = this.appConfig.config.contextPath.gis_services;
+  // crmurl = this.appConfig.config.contextPath.setup_services;
+  // setupsbaseurl = "setups/api/v1"
 
   constructor(
     private http: HttpClient,
