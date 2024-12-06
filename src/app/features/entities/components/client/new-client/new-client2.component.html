@@ -426,6 +426,14 @@
                                   [filter]="true" filterBy="name" [showClear]="true" appendTo="body"
                                   (onChange)="onCountryChange()"
                                   [ngClass]="{ 'is-invalid': f['address']['controls']['country']['invalid'] && (f['address']['controls']['country']['dirty'] || f['address']['controls']['country']['touched']) }">
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-country pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ country?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['address']['controls']['country']['invalid'] && (f['address']['controls']['country']['dirty'] || f['address']['controls']['country']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['address']['controls']['country']['errors']['required']">
@@ -444,6 +452,14 @@
                                   placeholder="County"
                                   appendTo="body" (onChange)="onCityChange()"
                                   [ngClass]="{ 'is-invalid': f['address']['controls']['county']['invalid'] && (f['address']['controls']['county']['dirty'] || f['address']['controls']['county']['touched']) }">
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-county pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ county?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['address']['controls']['county']['invalid'] && (f['address']['controls']['county']['dirty'] || f['address']['controls']['county']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['address']['controls']['county']['errors']['required']">County is required</div>
@@ -459,6 +475,14 @@
                                   placeholder="Town" name="townCode" id="town" appendTo="body"
                                   [filter]="true" filterBy="name" [showClear]="true"
                                   [ngClass]="{ 'is-invalid': f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched']) }">
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-town pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ town?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['address']['controls']['town']['errors']['required']">
@@ -501,6 +525,14 @@
                                   placeholder="Town" name="townCode" id="town" appendTo="body"
                                   [filter]="true" filterBy="name" [showClear]="true"
                                   [ngClass]="{ 'is-invalid': f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched']) }">
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-town pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ town?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['address']['controls']['town']['errors']['required']">
@@ -609,6 +641,14 @@
                                   (onChange)="onBankSelection()"
                                   [ngClass]="{ 'is-invalid': f['payment_details']['controls']['bank']['invalid']
                               && (f['payment_details']['controls']['bank']['dirty'] || f['payment_details']['controls']['bank']['touched']) }">
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-bank pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ bank?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['payment_details']['controls']['bank']['invalid'] && (f['payment_details']['controls']['bank']['dirty'] || f['payment_details']['controls']['bank']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['payment_details']['controls']['bank']['errors']['required']">
@@ -628,7 +668,14 @@
                                   [filter]="true" filterBy="name" [showClear]="true"
                                   [ngClass]="{ 'is-invalid': f['paymentDetails']?.['controls']?.['branch']?.invalid
                               && (f['paymentDetails']?.['controls']?.['branch']?.dirty || f['paymentDetails']?.['controls']?.['branch']?.touched) }">
-
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div>{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-branch pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                            <div>{{ branch?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
                       </p-dropdown>
                       <div *ngIf="f['payment_details']['controls']['branch']['invalid']
                     && (f['payment_details']['controls']['branch']['dirty'] || f['payment_details']['controls']['branch']['touched'])" class="form-text text-danger">
@@ -661,7 +708,7 @@
                               [ngClass]="{ 'form-control': true, 'is-invalid': f['payment_details']['controls']['currency']['invalid']
                   && (f['payment_details']['controls']['currency']['dirty'] || f['payment_details']['controls']['currency']['touched']) }">
                         <option value="" disabled selected>{{ 'entities.select_currency' | translate }}</option>
-                        <option *ngFor="let currencies of currenciesData" value="{{ currencies.id }}">{{ currencies.name | titlecase}}</option>
+                        <option *ngFor="let currencies of currenciesData" value="{{ currencies.id }}">{{ currencies.nameAndSymbol | titlecase}}</option>
                       </select>
                       <div *ngIf="f['payment_details']['controls']['currency']['invalid']
                         && (f['payment_details']['controls']['currency']['dirty'] || f['payment_details']['controls']['currency']['touched'])" class="form-text text-danger">
