@@ -35,6 +35,7 @@ import { untilDestroyed } from '../../../../../../shared/services/until-destroye
 import { firstValueFrom, Observable, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input-gg';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -191,6 +192,10 @@ export class QuickQuoteFormComponent {
   formattedCoverFromDate: any;
   coverFrom: any;
 
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [ CountryISO.Kenya, CountryISO.Nigeria, CountryISO.UnitedStates, CountryISO.UnitedKingdom];
 
   constructor(
     public fb: FormBuilder,
@@ -290,7 +295,7 @@ export class QuickQuoteFormComponent {
         log.debug("NEW CLIENT ADD ANOTHER RISK")
         this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
       }
@@ -423,15 +428,6 @@ export class QuickQuoteFormComponent {
 
           log.debug("Selected Currency:", this.selectedCurrency);
         }, 1000);
-        // setTimeout(() => {
-        //   log.debug("Selected Product Code:", this.selectedProductCode);
-        //   log.debug("Selected Subclass:", this.selectedSubclassCode);
-        //   log.debug("Selected Binder:", this.selectedBinderCode);
-
-        //   if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
-        //     this.getCoverToDate()
-        //   }
-        // }, 1000);
         this.loadSubclassSectionCovertype(filteredSubclassCodeNumber).then(() => {
           // Now execute this code after loadSubclassSectionCovertype finishes
           setTimeout(() => {
@@ -467,7 +463,7 @@ export class QuickQuoteFormComponent {
       log.debug("NEW CLIENT ADD ANOTHER RISK")
       this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
       this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-      this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+      this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
       this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
       this.isNewClient = true;
     }
@@ -560,7 +556,7 @@ export class QuickQuoteFormComponent {
     // Format today's date to the format specified in myFormat
     this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
     this.coverFrom = this.coverFromDate
-    // this.coverFromDate = today.toISOString().split('T')[0]; 
+    // this.coverFromDate = today.toISOString().split('T')[0];
     log.debug(" Date format", this.dateFormat)
 
     log.debug("Effective Date", this.coverFromDate)
