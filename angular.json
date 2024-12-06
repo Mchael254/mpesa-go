@@ -22,15 +22,16 @@
               "cubejs-client",
               "cross-fetch",
               "dayjs",
+              "google-libphonenumber",
+              "papaparse",
               "url-search-params-polyfill"
-           ],
+            ],
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-
               "src/assets"
             ],
             "styles": [
@@ -41,6 +42,8 @@
               "./node_modules/primeng/resources/themes/lara-light-blue/theme.css",
               "./node_modules/primeng/resources/primeng.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "./node_modules/intl-tel-input/build/css/intlTelInput.css",
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.scss",
               "src/styles.css",
               "src/assets/css/lms-base.scss",
               "src/assets/css/gis-base.scss",
@@ -87,7 +90,6 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
-
             }
           },
           "defaultConfiguration": "production"
