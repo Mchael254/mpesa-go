@@ -1743,10 +1743,11 @@ export class QuickQuoteFormComponent {
     }
   }
   isEmailOrPhoneValid(): boolean {
-    const emailValid = this.validateEmail(this.newClientData.inputClientEmail);
+    const email1Valid = this.validateEmail(this.newClientData.inputClientEmail); //new client email input
+    const email2Valid = this.validateEmail(this.clientEmail); // existing client email input
     const phoneValid = this.newClientPhoneInput?.valid; // From ngx-intl-tel-input
-    return emailValid || phoneValid;
-  }
+    
+    return email1Valid || email2Valid || phoneValid;  }
 
   validateEmail(email: string): boolean {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
