@@ -732,7 +732,7 @@ export class CoverTypesComparisonComponent {
 
     this.quotationService.getClientQuotations(defaultCode).subscribe(data => {
       this.quotationDetails = data;
-      log.debug("Quotation Details:", this.quotationDetails)
+      log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.no;
       log.debug("Quotation Number:", this.quotationNo)
       this.taxInformation = this.quotationDetails.taxInformation
