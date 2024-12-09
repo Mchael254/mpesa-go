@@ -317,10 +317,9 @@ export interface CreateLimitsOfLiability {
 }
 export interface Excesses {
   code: number;
-  coverTypeCode: number;
+  narration: string | null;
+  value: string;
   subclassCode: number;
-  shortDescription: string;
-  heading: string;
-  isMandatory: string;
+  quotationValueCode: number;
 }
   
