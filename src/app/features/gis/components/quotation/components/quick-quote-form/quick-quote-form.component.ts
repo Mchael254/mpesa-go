@@ -191,11 +191,19 @@ export class QuickQuoteFormComponent {
   selectedCurrencySymbol: any;
   formattedCoverFromDate: any;
   coverFrom: any;
+  passedClientDetailsString: string;
 
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [ CountryISO.Kenya, CountryISO.Nigeria, CountryISO.UnitedStates, CountryISO.UnitedKingdom];
+  preferredCountries: CountryISO[] = [CountryISO.Kenya, CountryISO.Nigeria, CountryISO.UnitedStates, CountryISO.UnitedKingdom];
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  newClientPhoneInput: any;
+  selectedEffectiveDate: any;
+  effectiveFromDate: string;
+  todaysDate: string;
+
+
 
   constructor(
     public fb: FormBuilder,
@@ -249,9 +257,9 @@ export class QuickQuoteFormComponent {
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
     const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
-    const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
+    this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
-    if (passedClientDetailsString == undefined) {
+    if (this.passedClientDetailsString == undefined) {
       log.debug("New Client has been passed")
 
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
@@ -260,7 +268,7 @@ export class QuickQuoteFormComponent {
 
     } else {
       log.debug("Existing Client has been passed")
-      this.PassedClientDetails = JSON.parse(passedClientDetailsString);
+      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
 
 
     }
@@ -271,12 +279,14 @@ export class QuickQuoteFormComponent {
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
     if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
+      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(risk => risk.propertyId);
       log.debug("existing property id", this.existingPropertyIds);
     }
 
 
-    this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
+    // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
+
+    this.passedQuotationCode = this.passedQuotation?.quotationProduct?.[0]?.quotCode ?? null
     log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
@@ -318,7 +328,7 @@ export class QuickQuoteFormComponent {
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
       log.debug(parsedData)
-      this.personalDetailsForm.setValue(parsedData);
+      this.personalDetailsForm.patchValue(parsedData);
 
     }
     this.premiumComputationRequest;
@@ -375,7 +385,7 @@ export class QuickQuoteFormComponent {
         const filteredProductCode = parsedPersonalDetailsData.productCode
         const filteredProduct = this.ProductDescriptionArray.find(product => product.code === filteredProductCode);
         log.debug("Filtered Product", filteredProduct)
-        this.parsedProductDesc = filteredProduct.description
+        this.parsedProductDesc = filteredProduct?.description
         log.debug("Filtered Product description", this.parsedProductDesc)
         this.selectedProductCode = filteredProductCode
         // if(this.selectedProductCode){
@@ -436,7 +446,25 @@ export class QuickQuoteFormComponent {
             log.debug("Selected Binder:", this.selectedBinderCode);
 
             if (this.selectedBinderCode && this.selectedSubclassCode && this.selectedProductCode) {
-              this.getCoverToDate();
+              // this.getCoverToDate();
+              const selctedDate = JSON.parse(sessionStorage.getItem('selectedDate'));
+              log.debug("NOW CHECK WHICH DATE WILL BE DISPLAYED before the formatting", selctedDate)
+
+              const selectedDate = new Date(selctedDate);
+
+              // Extract the day, month, and year
+              const day = selectedDate.getDate();
+              const month = selectedDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+              const year = selectedDate.getFullYear();
+
+              // Format the date in 'dd-Month-yyyy' format
+              const formattedDate = `${day}-${month}-${year}`;
+
+
+
+              this.coverFrom = formattedDate
+              log.debug("NOW CHECK WHICH DATE WILL BE DISPLAYED", this.coverFrom)
+
             }
           }, 1000);
         }).catch(error => {
@@ -468,6 +496,8 @@ export class QuickQuoteFormComponent {
       this.isNewClient = true;
     }
   }
+
+
   /**
   * Loads all products by making an HTTP GET request to the ProductService.
   * Retrieves a list of products and updates the component's productList property.
@@ -553,12 +583,25 @@ export class QuickQuoteFormComponent {
     log.debug("Organization Date Format:", this.dateFormat)
     // Get today's date in yyyy-MM-dd format
     const today = new Date();
+    log.debug("today date raaaw",today)
     // Format today's date to the format specified in myFormat
     this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
-    this.coverFrom = this.coverFromDate
+    // this.coverFrom = this.coverFromDate
     // this.coverFromDate = today.toISOString().split('T')[0];
     log.debug(" Date format", this.dateFormat)
 
+    const todaysDate = new Date(today);
+
+    // Extract the day, month, and year
+    const day = todaysDate.getDate();
+    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = todaysDate.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    this.todaysDate = formattedDate
+    log.debug("Todays  Date", this.todaysDate)
     log.debug("Effective Date", this.coverFromDate)
 
     this.currencyDelimiter = this.userDetails?.currencyDelimiter
@@ -625,14 +668,14 @@ export class QuickQuoteFormComponent {
 
       });
   }
-  onBranchSelected(selectedValue: any) {
-    this.selectedBranchCode = selectedValue.code;
-    log.debug("Branch Code:", this.selectedBranchCode)
-    this.selectedBranchDescription = selectedValue.description;
-    log.debug("Branch Description:", this.selectedBranchDescription)
+  // onBranchSelected(selectedValue: any) {
+  //   this.selectedBranchCode = selectedValue.code;
+  //   log.debug("Branch Code:", this.selectedBranchCode)
+  //   this.selectedBranchDescription = selectedValue.description;
+  //   log.debug("Branch Description:", this.selectedBranchDescription)
 
 
-  }
+  // }
 
   /**
    * Fetches client data via HTTP GET from ClientService.
@@ -822,6 +865,7 @@ export class QuickQuoteFormComponent {
   getCoverToDate() {
     log.debug("Selected Product Code-coverdate method", this.selectedProductCode)
     log.debug("Selected Covercoverdate method", this.coverFromDate)
+    log.debug("selected Effective date", this.selectedEffectiveDate)
     if (this.coverFromDate) {
       let date: Date;
 
@@ -836,12 +880,27 @@ export class QuickQuoteFormComponent {
       }
 
       const formattedCoverFromDate = this.formatDate(date);
-      log.debug("FORMATTED DATE:",formattedCoverFromDate)
+      log.debug("FORMATTED DATE:", formattedCoverFromDate)
 
-      this.coverFrom =formattedCoverFromDate
-      log.debug("COVER FROM",this.coverFrom)
+      const SelectedFormatedDate = this.formatDate(this.selectedEffectiveDate)
+      log.debug(" SELECTED FORMATTED DATE:", formattedCoverFromDate)
 
-      this.productService.getCoverToDate(formattedCoverFromDate, this.selectedProductCode).subscribe(data => {
+
+
+      if (SelectedFormatedDate) {
+        this.effectiveFromDate = SelectedFormatedDate
+        this.coverFrom = SelectedFormatedDate
+        log.debug("COVER FROM selected date", this.coverFrom)
+      } else {
+        this.effectiveFromDate = formattedCoverFromDate
+        this.coverFrom = formattedCoverFromDate
+        log.debug("COVER FROM todays date", this.coverFrom)
+      }
+      log.debug("selected Effective date raw format", this.selectedEffectiveDate)
+      const selectedDateString = JSON.stringify(this.effectiveFromDate);
+      sessionStorage.setItem('selectedDate', selectedDateString);
+
+      this.productService.getCoverToDate(this.effectiveFromDate, this.selectedProductCode).subscribe(data => {
         log.debug("DATA FROM COVERFROM:", data)
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
@@ -1038,7 +1097,7 @@ export class QuickQuoteFormComponent {
         // Set the default value in the form control
         this.personalDetailsForm.get('currencyCode')?.setValue(this.defaultCurrencyName);
         this.currencyObj = {
-          prefix: this.defaultCurrencySymbol + ' ' ,
+          prefix: this.defaultCurrencySymbol + ' ',
           allowNegative: false,
           allowZero: false,
           decimal: '.',
@@ -1498,6 +1557,19 @@ export class QuickQuoteFormComponent {
     this.personalDetailsForm.markAllAsTouched();
     this.personalDetailsForm.updateValueAndValidity();
 
+
+    // Log 
+    log.debug('Email:', this.newClientData.inputClientEmail);
+    log.debug('Phone:', this.newClientData.inputClientPhone);
+    // Custom validation for email and phone number
+    if (!this.isEmailOrPhoneValid()) {
+      this.ngxSpinner.hide();
+      this.globalMessagingService.displayErrorMessage('Error', 'Provide either a valid phone number or email to proceed.');
+
+      return;
+    }
+
+
     // Log form validity for debugging
     log.debug('Form Valid:', this.personalDetailsForm.valid);
     log.debug('Form Values:', this.personalDetailsForm.value);
@@ -1664,6 +1736,26 @@ export class QuickQuoteFormComponent {
         }
       });
   }
+  onEmailInputChange() {
+    if (!this.emailPattern.test(this.newClientData.inputClientEmail)) {
+      console.error('Invalid email format');
+      // You can also set a custom error state here if needed
+    }
+  }
+  isEmailOrPhoneValid(): boolean {
+    const emailValid = this.validateEmail(this.newClientData.inputClientEmail);
+    const phoneValid = this.newClientPhoneInput?.valid; // From ngx-intl-tel-input
+    return emailValid || phoneValid;
+  }
 
+  validateEmail(email: string): boolean {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  }
+  onDateInputChange(date: any) {
+    log.debug("selected Effective date raaaaaw", date)
+    this.selectedEffectiveDate = date
+    log.debug("selected Effective date", this.selectedEffectiveDate)
 
+  }
 }

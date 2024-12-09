@@ -316,8 +316,9 @@ export class CoverTypesComparisonComponent {
     if (this.passedCovertypeCode) {
       log.debug("Fetch Clauses function")
       this.fetchClauses()
-      this.fetchExcesses()
     }
+    this.fetchExcesses()
+
     this.fetchLimitsOfLiability()
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
     log.debug("Passed covertype desc:", this.passedCoverTypeShortDes)
@@ -737,6 +738,7 @@ export class CoverTypesComparisonComponent {
       this.taxInformation = this.quotationDetails.taxInformation
       log.debug("Tax information", this.taxInformation)
       this.addLimitsOfLiability()
+      this.addExcesses()
     })
   }
   createQuotationRisk() {
@@ -1233,7 +1235,7 @@ export class CoverTypesComparisonComponent {
 
   fetchExcesses() {
     this.quotationService
-      .getExcesses(this.passedCovertypeCode, this.selectedSubclassCode)
+      .getExcesses(this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -1284,7 +1286,31 @@ export class CoverTypesComparisonComponent {
       }
     });
   }
+  addExcesses() {
+    const productCode = this.quotationDetails?.quotationProduct[0].code
+    log.debug("Product Code",productCode)
+    // Transform the list to match the expected structure
+    const transformedList = this.excessesList.map(item => ({
+      code: item.code,
+      scheduleValueCode: item.quotationValueCode, 
+      quotationProductCode: productCode, 
+      value: item.value,
+      narration: item.narration,
+      type: "E"  // For Limit of Liability
+    }));
+    log.debug("Transformed limits liability list",transformedList)
   
+    // Call the service to add the transformed limits of liability
+    this.quotationService.addLimitsOfLiability(transformedList).pipe(untilDestroyed(this)).subscribe({
+      next: (response: any) => {
+        const result = response._embedded;
+        log.debug("RESPONSE AFTER ADDING LIST ", result);
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add excesses. Try again later');
+      }
+    });
+  }
   
   
 }
