@@ -191,6 +191,7 @@ export class QuickQuoteFormComponent {
   selectedCurrencySymbol: any;
   formattedCoverFromDate: any;
   coverFrom: any;
+  passedClientDetailsString: string;
 
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
@@ -249,9 +250,9 @@ export class QuickQuoteFormComponent {
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
     const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
-    const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
+    this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
-    if (passedClientDetailsString == undefined) {
+    if (this.passedClientDetailsString == undefined) {
       log.debug("New Client has been passed")
 
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
@@ -260,7 +261,7 @@ export class QuickQuoteFormComponent {
 
     } else {
       log.debug("Existing Client has been passed")
-      this.PassedClientDetails = JSON.parse(passedClientDetailsString);
+      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
 
 
     }
@@ -271,12 +272,14 @@ export class QuickQuoteFormComponent {
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
     if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.riskInformation.map(risk => risk.propertyId);
+      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(risk => risk.propertyId);
       log.debug("existing property id", this.existingPropertyIds);
     }
 
 
-    this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
+    // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
+    
+    this.passedQuotationCode = this.passedQuotation?.quotationProduct?.[0]?.quotCode ?? null
     log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
@@ -318,7 +321,7 @@ export class QuickQuoteFormComponent {
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
       log.debug(parsedData)
-      this.personalDetailsForm.setValue(parsedData);
+      this.personalDetailsForm.patchValue(parsedData);
 
     }
     this.premiumComputationRequest;
@@ -375,7 +378,7 @@ export class QuickQuoteFormComponent {
         const filteredProductCode = parsedPersonalDetailsData.productCode
         const filteredProduct = this.ProductDescriptionArray.find(product => product.code === filteredProductCode);
         log.debug("Filtered Product", filteredProduct)
-        this.parsedProductDesc = filteredProduct.description
+        this.parsedProductDesc = filteredProduct?.description
         log.debug("Filtered Product description", this.parsedProductDesc)
         this.selectedProductCode = filteredProductCode
         // if(this.selectedProductCode){
@@ -625,14 +628,14 @@ export class QuickQuoteFormComponent {
 
       });
   }
-  onBranchSelected(selectedValue: any) {
-    this.selectedBranchCode = selectedValue.code;
-    log.debug("Branch Code:", this.selectedBranchCode)
-    this.selectedBranchDescription = selectedValue.description;
-    log.debug("Branch Description:", this.selectedBranchDescription)
+  // onBranchSelected(selectedValue: any) {
+  //   this.selectedBranchCode = selectedValue.code;
+  //   log.debug("Branch Code:", this.selectedBranchCode)
+  //   this.selectedBranchDescription = selectedValue.description;
+  //   log.debug("Branch Description:", this.selectedBranchDescription)
 
 
-  }
+  // }
 
   /**
    * Fetches client data via HTTP GET from ClientService.
