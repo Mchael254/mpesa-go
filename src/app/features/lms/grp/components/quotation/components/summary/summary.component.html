@@ -9,19 +9,19 @@
       </div>
     <div id="container">
         <div class="col-md-12 text-center">
-            <h4>Group quote summary</h4>
-            <h6 class="mt-4" style="color: gray;">Here is the quote summary for the <b style="color: black;">{{ productSelected }}</b></h6>
+            <h4>{{ "lms.grp.quotation.summary.group_quote_summary" | translate }}</h4>
+            <h6 class="mt-4" style="color: gray;">{{ "lms.grp.quotation.summary.here_is_the_quote_summary_for_the" | translate }}<b style="color: black;">{{ productSelected }}</b></h6>
            </div>
 
            <div style="display: flex; justify-content: center;">
             <table>
               <tr>
-                <td><span class="s3Label">Premium</span></td>
+                <td><span class="s3Label">{{ "lms.grp.quotation.summary.premium" | translate }}</span></td>
                 <!-- <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.[0]?.currency_symbol }} {{quoteSummary?.[0]?.total_premium | number}}</span></td> -->
                 <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ currency_symbol }} {{quoteSummary?.[0]?.total_premium | number}}</span></td>
               </tr>
               <tr>
-                <td><span class="s3Label">Sum assured</span></td>
+                <td><span class="s3Label">{{ "lms.grp.quotation.summary.sum_assured" | translate }}</span></td>
                 <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ currency_symbol }} {{quoteSummary?.[0]?.sum_assured | number}}</span></td>
               </tr>
             </table>
@@ -35,24 +35,24 @@
             <div class="col-md-4 col-xs-12">
                 <table style="width: 100%; min-height: 133px;">
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.quotation_number" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.quotation_number }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Product: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.product" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.product | titlecase }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Currency: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.currency" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ currency }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Commission amount: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.commission_amount" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">
                             <ng-container *ngIf="quoteSummary?.[0]?.commission_amount !== null; else notSpecified">
                               {{ quoteSummary?.[0]?.commission_amount | number }}
                             </ng-container>
-                            <ng-template #notSpecified>Not specified</ng-template>
+                            <ng-template #notSpecified>{{ "lms.grp.quotation.summary.not_specified" | translate }}</ng-template>
                           </td>
                           
                     </tr>
@@ -61,19 +61,19 @@
             <div class="col-md-4 col-xs-12">
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Quotation status: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.quotation_status" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.status }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Frequency of Payment: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.frequency_of_payment" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ getPayFrequencyDescription(quoteSummary?.[0]?.frequency_of_payment) | titlecase }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.duration_type" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ getDurationTypeDescription(quoteSummary?.[0]?.duration_type) | titlecase }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Agent: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.agent" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.agent | titlecase }}</td>
                     </tr>
                 </table>
@@ -81,15 +81,15 @@
             <div class="col-md-4 col-xs-12">
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.effective_date" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.effective_date }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Inception date: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.inception_date" | translate }}: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.date }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 50%; align-items: left; color: grey;">Client Name: </td>
+                        <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.client_name" | translate }}: </td>
                         <!-- <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '' | titlecase }} -->
                             <td style="width: 50%; align-items: right;">{{ (quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '') | titlecase }}
                         </td>
@@ -101,17 +101,17 @@
         <div class="summary-container col-12 mt-5" style="padding-right: 50px;">
             <!-- <div class="sub-summary col-md-4 col-sm-12 col-xs-12"> -->
                 <div class="sub-summary col-md-4 col-sm-12 col-xs-12" [ngClass]="{'col-md-4': quatationCalType === 'D', 'col-md-6': quatationCalType !== 'D'}">
-                <h5 class="summary-label">Cover summary</h5>
+                <h5 class="summary-label">{{ "lms.grp.quotation.summary.cover_summary" | translate }}</h5>
                 <div class="summary" style="width: 100%; min-height: 170px; position: relative;">
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
                         <h6 style="color: black;">{{ coverTypes?.[0]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
+                                <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.sum_assured" | translate }}: </td>
                                 <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.sum_assured | number }}</td>
                             </tr>
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
+                                <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.premium" | translate }}: </td>
                                 <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.premium | number }}</td>
                             </tr>
                             <!-- <tr>
@@ -125,11 +125,11 @@
                         <h6 style="color: black;">{{ coverTypes?.[1]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
+                                <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.sum_assured" | translate }}: </td>
                                 <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[1]?.sum_assured }}</td>
                             </tr>
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
+                                <td style="width: 50%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.premium| translate }}: </td>
                                 <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[1]?.premium  }}</td>
                             </tr>
                             <!-- <tr>
@@ -141,14 +141,14 @@
                     <div class="col-12 text-center view-more">
                         <a href="#" style="text-decoration: underline;"
                             (click)="showCoverSummary(); $event.preventDefault();">
-                            view more <i class="fas fa-plus-circle"></i>
+                            {{ "lms.grp.quotation.summary.view_more" | translate }} <i class="fas fa-plus-circle"></i>
                         </a>
                     </div>
                 </div>
             </div>
             <!-- <div class="sub-summary col-md-4 col-sm-12 col-xs-12"> -->
                 <div class="sub-summary col-md-4 col-sm-12 col-xs-12" [ngClass]="{'col-md-4': quatationCalType === 'D', 'col-md-6': quatationCalType !== 'D'}">
-                <h5 class="summary-label">Category summary</h5>
+                <h5 class="summary-label">{{ "lms.grp.quotation.summary.category_summary" | translate }}</h5>
                 <div class="summary" style="width: 100%; height: 100%; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
                     <h6 style="color: black;">{{ categoryDetailsSummary?.[0]?.category_category | titlecase }}</h6>
@@ -158,7 +158,7 @@
                             <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary[0].category_category | titlecase }}</td>
                         </tr> -->
                         <tr>
-                            <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
+                            <td style="width: 60%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.multiple_of_earnings" | translate }}: </td>
                             <td style="width: 40%; align-items: right; color: #000;">{{ categoryDetailsSummary?.[0]?.period }}</td>
                         </tr>
                     </table>
@@ -172,7 +172,7 @@
                             <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary[1]?.category_category | titlecase }}</td>
                         </tr> -->
                         <tr>
-                            <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
+                            <td style="width: 60%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.multiple_of_earnings" | translate }}: </td>
                             <td style="width: 40%; align-items: right; color: #000;">{{ categoryDetailsSummary?.[1]?.period }}</td>
                         </tr>
                     </table>
@@ -180,35 +180,35 @@
                 <div class="col-12 col-sm-12 col-xs-12 text-center view-more">
                     <a href="#" style="text-decoration: underline;"
                         (click)="showCategorySummary(); $event.preventDefault();">
-                        view more <i class="fas fa-plus-circle"></i>
+                        {{ "lms.grp.quotation.summary.view_more" | translate }} <i class="fas fa-plus-circle"></i>
                     </a>
                 </div>
             </div>
             </div>
             <ng-container *ngIf="quatationCalType === 'D' ">
             <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
-                <h5 class="summary-label">Members summary</h5>
+                <h5 class="summary-label">{{ "lms.grp.quotation.summary.members_summary" | translate }}</h5>
                 <div class="summary" style="width: 100%; min-height: 170px; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
                     <table style="width: 100%;" *ngIf="memberSummary">
                         <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Members Covered: </td>
+                            <td style="width: 70%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.members_covered" | translate }}: </td>
                             <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.members }}</td>
                         </tr>
                         <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Computed FCL: </td>
+                            <td style="width: 70%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.computed_free_cover_limit" | translate }}: </td>
                             <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.fcl_amount }}</td>
                         </tr>
                         <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Members above Computed FCL: </td>
+                            <td style="width: 70%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.members_above_computed_FCL" | translate }}: </td>
                             <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.mem_above_fcl }}</td>
                         </tr>
                         <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">FCL override: </td>
+                            <td style="width: 70%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.fcl_override" | translate }}: </td>
                             <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.quotation_override_fcl_amt }}</td>
                         </tr>
                         <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Members above Override FCL: </td>
+                            <td style="width: 70%; align-items: left; color: grey;">{{ "lms.grp.quotation.summary.members_above_override_fcl" | translate }}: </td>
                             <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.mem_above_override_fcl }}</td>
                         </tr>
                         
@@ -218,7 +218,7 @@
                 <div class="col-12 text-center view-more">
                     <a href="#" style="text-decoration: underline;"
                         (click)="showMembersSummary(); $event.preventDefault();">
-                        view members list
+                        {{ "lms.grp.quotation.summary.view_members_list" | translate }}
                     </a>
                 </div>
             </div>
@@ -233,7 +233,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="memberSummaryModalLabel">Member details</h5>
+                        <h5 class="modal-title" id="memberSummaryModalLabel">{{ "lms.grp.quotation.summary.member_details" | translate }}</h5>
                     </div>
  
                     <div class="modal-body">
@@ -305,7 +305,7 @@
 
                         <div class="form">
                             <i class="fa fa-search"></i>
-                            <input type="text" class="form-control form-input" placeholder="Search">
+                            <input type="text" class="form-control form-input" placeholder='{{ "lms.grp.quotation.summary.search" | translate }}'>
                 
                             <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
                             </p-multiSelect>
@@ -347,14 +347,14 @@
     [rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
-            <th *ngIf="selectedColumnsMemberDets.includes('surname')">Surname</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('other_names')">Other names</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Sum Assured</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">Date of birth</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('gender')">Gender</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('member_number')">Payroll/Member no.</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('description')">Category</th>
-            <th *ngIf="selectedColumnsMemberDets.includes('dty_description')">Dependant type</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('surname')">{{ "lms.grp.quotation.summary.surname" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('other_names')">{{ "lms.grp.quotation.summary.other_names" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">{{ "lms.grp.quotation.summary.sum_assured" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">{{ "lms.grp.quotation.summary.date_of_birth" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('gender')">{{ "lms.grp.quotation.summary.gender" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('member_number')">{{ "lms.grp.quotation.summary.payroll_or_member_no" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('description')">{{ "lms.grp.quotation.summary.category" | translate }}</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('dty_description')">{{ "lms.grp.quotation.summary.dependant_type" | translate }}</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
@@ -374,15 +374,15 @@
                         </div>
 
                         <div class="mt-5">
-                            <h6 style="color: black;">Member Cover types summary</h6>
+                            <h6 style="color: black;">{{ "lms.grp.quotation.summary.member_cover_types_summary" | translate }}</h6>
                             <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Cover type</th>
-                                        <th>Cover effect from</th>
-                                        <th>Cover effect to</th>
-                                        <th style="text-align: right;">Sum assured</th>
-                                        <th style="text-align: right;">Premium</th>
+                                        <th>{{ "lms.grp.quotation.summary.cover_type" | translate }}</th>
+                                        <th>{{ "lms.grp.quotation.summary.cover_effect_from" | translate }}</th>
+                                        <th>{{ "lms.grp.quotation.summary.cover_effect_to" | translate }}</th>
+                                        <th style="text-align: right;">{{ "lms.grp.quotation.summary.sum_assured" | translate }}</th>
+                                        <th style="text-align: right;">{{ "lms.grp.quotation.summary.premium" | translate }}</th>
     
                                     </tr>
                                 </ng-template>
@@ -401,7 +401,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        (click)="closeMembersSummary()">Back to summary</button>
+                        (click)="closeMembersSummary()">{{ "lms.grp.quotation.summary.back_to_summary" | translate }}</button>
                     </div>
                 </div>
             </div>
@@ -414,7 +414,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
+                        <h5 class="modal-title" id="categorySummaryModalLabel">{{ "lms.grp.quotation.summary.category_details" | translate }}</h5>
                         <!-- <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                             (click)="closeCategorySummary()" (blur)="closeCategorySummary()"></button> -->
                     </div>
@@ -424,11 +424,11 @@
                                 [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Category description</th>
-                                        <th>Multiple of earning</th>
+                                        <th>{{ "lms.grp.quotation.summary.category_description" | translate }}</th>
+                                        <th>{{ "lms.grp.quotation.summary.multiple_of_earnings | translate }}</th>
                                         <!-- <th>Access group</th> -->
-                                        <th>Select rate</th>
-                                        <th>Premium mask</th>
+                                        <th>{{ "lms.grp.quotation.summary.select_rate" | translate }}</th>
+                                        <th>{{ "lms.grp.quotation.summary.premium_mask" | translate }}</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-categoryDetailsSummary>
@@ -443,7 +443,7 @@
                             </p-table>
                         </div>
                         <!-- beginning of dependant limits table -->
-                        <h5 class="modal-title mt-5" id="categorySummaryModalLabel">Dependant limit</h5>
+                        <h5 class="modal-title mt-5" id="categorySummaryModalLabel">{{ "lms.grp.quotation.summary.dependant_limit" | translate }}</h5>
                         <div style="text-align: right;">
                             <div style="display: inline-block; margin-bottom: 10px;">
                                 <p-multiSelect [options]="columnOptionsDepLimits" [(ngModel)]="selectedColumnsDependantLimits"></p-multiSelect>
@@ -453,17 +453,17 @@
                                 [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')" style="text-align: left;">Cover Type</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')">Dependant type</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')">Lives covered</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')">Minimum amount</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('limit_amount')">Maximum limit amount</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('rate')">Rate</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('category_rate_division_factor')">Division factor</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('sum_assured_percentage')">% of main/yr SA</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('cover_inbuilt')">Inbuilt</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('accelerator')">Accelerated</th>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('main_cover')">Main cover rider</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')" style="text-align: left;">{{ "lms.grp.quotation.summary.cover_type" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')">{{ "lms.grp.quotation.summary.dependant_type translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')">{{ "lms.grp.quotation.summary.lives_covered" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')">{{ "lms.grp.quotation.summary.minimum_amount" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('limit_amount')">{{ "lms.grp.quotation.summary.maimum_limit_amount" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('rate')">{{ "lms.grp.quotation.summary.rate" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('category_rate_division_factor')">{{ "lms.grp.quotation.summary.division_factor" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('sum_assured_percentage')">{{ "lms.grp.quotation.summary.percentage_of_main_sa" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('cover_inbuilt')">{{ "lms.grp.quotation.summary.inbuilt" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('accelerator')">{{ "lms.grp.quotation.summary.accelerated" | translate }}</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('main_cover')">{{ "lms.grp.quotation.summary.main_cover_rider" | translate }}</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-categorySummary>
@@ -489,7 +489,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        (click)="closeCategorySummary()">Back to summary</button>
+                        (click)="closeCategorySummary()">{{ "lms.grp.quotation.summary.back_to_summary| translate }}</button>
                     </div>
                 </div>
             </div>
@@ -502,7 +502,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="coverSummaryModalLabel">Cover details</h5>
+                        <h5 class="modal-title" id="coverSummaryModalLabel">{{ "lms.grp.quotation.summary.cover_details" | translate }}</h5>
                         <!-- <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                             (click)="closeCoverSummary()"></button> -->
                     </div>
@@ -516,16 +516,16 @@
                                 [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_desc')" style="text-align: left;">Cover types</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('sum_assured')">Sum assured</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('premium')">Premium</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')" style="text-align: left;">Select rate</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('but_charge_premium')">Override premiums</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')">Premium mask</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('premium_rate')">Rate</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('rate_division_factor')">Rate division factor</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('main_sumassured_percentage')">% of main/yr SA</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_main_cover')">Main cover</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_desc')" style="text-align: left;">{{ "lms.grp.quotation.summary.cover_types" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('sum_assured')">{{ "lms.grp.quotation.summary.sum_assured" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium')">{{ "lms.grp.quotation.summary.premium" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')" style="text-align: left;">{{ "lms.grp.quotation.summary.select_rate" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('but_charge_premium')">{{ "lms.grp.quotation.summary.override_premiums" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')">{{ "lms.grp.quotation.summary.premium_mask | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium_rate')">{{ "lms.grp.quotation.summary.rate" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('rate_division_factor')">{{ "lms.grp.quotation.summary.rate_division_factor" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('main_sumassured_percentage')">{{ "lms.grp.quotation.summary.percentage_of_main_sa" | translate }}</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_main_cover')">{{ "lms.grp.quotation.summary.main_cover" | translate }}</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-coverTypes>
@@ -550,7 +550,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        (click)="closeCoverSummary()">Back to summary</button>
+                        (click)="closeCoverSummary()">{{ "lms.grp.quotation.summary.back_to_summary" | translate }}</button>
                     </div>
                 </div>
             </div>
@@ -561,13 +561,13 @@
 
     </div>
     <div>
-        <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
+        <button type="button" class="btn btn-primary back-button" (click)="onBack()">{{ "lms.grp.quotation.summary.back" | translate }}
         </button>
       <div class="button-container">
-        <button type="button" class="btn btn-primary report-button" (click)="downloadReports()">Reports
+        <button type="button" class="btn btn-primary report-button" (click)="downloadReports()">{{ "lms.grp.quotation.summary.reports" | translate }}
         </button>
-        <button type="button" class="btn btn-info buttonS" (click)="onProceed()">Share</button>
-        <button type="button" class="btn btn-primary buttonP" (click)="onProceed()">Finish</button>
+        <button type="button" class="btn btn-info buttonS" (click)="onProceed()">{{ "lms.grp.quotation.summary.share" | translate }}</button>
+        <button type="button" class="btn btn-primary buttonP" (click)="onProceed()">{{ "lms.grp.quotation.summary.finish" | translate }}</button>
     </div>
 </div>
 </div>
