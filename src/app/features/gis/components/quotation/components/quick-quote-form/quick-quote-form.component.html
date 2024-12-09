@@ -49,19 +49,7 @@
 
                         <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
-                        <!-- <input 
-                            type="text" 
-                            id="quote-input" 
-                            class="form-control form-control-sm mb-1" 
-                            [(ngModel)]="newClientData.inputClientEmail" 
-                            (blur)="onInputChange();onEmailInputChange()" 
-                            #emailInput="ngModel"
-                            [pattern]="emailPattern"
-                            required>
-                        <div *ngIf="emailInput.invalid && emailInput.touched" class="form-text text-danger">
-                            <span *ngIf="emailInput.errors?.['required']">Email is required.</span>
-                            <span *ngIf="emailInput.errors?.['pattern']">Invalid email format.</span>
-                        </div> -->
+
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="newClientData.inputClientEmail" #emailInput="ngModel" [pattern]="emailPattern"
                             required>
@@ -79,12 +67,11 @@
                         <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="clientEmail" disabled> -->
 
-                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail" #emailInput="ngModel" [pattern]="emailPattern"
-                            required disabled>
-                        <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
-                            <span *ngIf="emailInput.errors?.['required']">Email is required.</span>
-                            <span *ngIf="emailInput.errors?.['pattern']">Invalid email format.</span>
+                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="clientEmail" #clientEmailInput="ngModel" disabled>
+                        <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
+                            <span *ngIf="clientEmailInput.errors?.['required']">Email is required.</span>
+                            <span *ngIf="!validateEmail(clientEmail)">Invalid email format.</span>
                         </div>
                     </div>
                     <div class="col-sm-4 col-6" *ngIf="!new">
@@ -184,8 +171,10 @@
 
 
                             <p-calendar formControlName="withEffectiveFromDate" [dateFormat]="dateFormat"
-                                [showIcon]="true" [showButtonBar]="true"  [placeholder]="coverFrom ? coverFrom : todaysDate"
-                                [minDate]="minDate" [(ngModel)]="selectedEffectiveDate" (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
+                                [showIcon]="true" [showButtonBar]="true"
+                                [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
+                                [(ngModel)]="selectedEffectiveDate"
+                                (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
                             </p-calendar>
 
 
