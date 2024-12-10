@@ -3,7 +3,11 @@ export interface GenericResponse<F> {
   msg: string;
   success: boolean;
 }
-
+export interface DeleteAllocationResponseDTO {
+  msg: string;
+  success: boolean;
+  data: any; // Adjust the type if you have a specific structure for the data
+}
 export interface CurrencyDTO{
   code: number;
   symbol: string;
@@ -195,9 +199,7 @@ systemShortDescription: string;
       paidToDate: Date;
       transmissionReferenceNumber: string;
 }
-export interface AllocationDTO {
-  receiptParticulars: ReceiptParticular[];
-}
+
 
 export interface ReceiptParticular {
   receiptNumber: number;
@@ -295,4 +297,148 @@ export interface Receipt {
   capitalInjection: string;
   receiptNumber?: string;
   transactions: Transaction[]; 
+}
+export interface ReceiptSaveDTO {
+  receiptNo: number;
+  receiptCode: string;
+  receiptDate: string;
+  amount: number;
+  paidBy: string;
+  currencyCode: number;
+  branchCode: number;
+  paymentMode: string;
+  paymentMemo: string;
+  docDate: string;
+  drawerBank: string;
+  userCode: number;
+  narration: string;
+  insurerAccount: string;
+  receivedFrom: string;
+  grossOrNet: string;
+  sysShtDesc: string;
+  receiptingPointId: number;
+  receiptingPointAutoManual: string;
+  capitalInjection: string;
+  chequeNo: number;
+  ipfFinancier: string;
+  receiptSms: string;
+  receiptChequeType: string;
+  vatInclusive: string;
+  rctbbrCode: string;
+  directType: string;
+  pmBnkCode: number;
+  dmsKey: string;
+  currencyRate: number;
+  internalRemarks: string;
+  manualRef: string;
+  bankAccountCode: number;
+  grossOrNetAdminCharge: string;
+  insurerAcc: number;
+  grossOrNetWhtax: string;
+  grossOrNetVat: string;
+  sysCode: number;
+  bankAccountType: string;
+  receiptParticularDetailUpdateRequests: {
+    receiptParticularDetailCode: number;
+    premium: number;
+    loan: number;
+    pension: number;
+  }[];
+
+  
+}
+export interface ReceiptParticularDetailsDTO {
+  policyNumber: string;
+  referenceNumber: string;
+  transactionNumber: number;
+  batchNumber?: number;
+  premiumAmount?: number;
+  loanAmount?: number;
+  pensionAmount?: number;
+  miscAmount?: number;
+  endorsementCode?: number;
+  endorsementDrCrNumber?: string;
+  includeCommission: string; // 'Y' or 'N'
+  commissionAmount: number;
+  overAllocated: number;
+  includeVat: string; // 'Y' or 'N'
+  clientPolicyNumber: string;
+}
+
+export interface ReceiptParticularDTO {
+  receiptNumber: number;
+  capturedBy: number;
+  systemCode: number;
+  branchCode: number;
+  clientCode: number;
+  clientShortDescription: string;
+  receiptType: string;
+  clientName: string;
+  sslAccountCode: number;
+  accountTypeId: string;
+  referenceNumber: string;
+  receiptParticularDetails: ReceiptParticularDetailsDTO[];
+}
+
+export interface AllocationDTO {
+  receiptParticulars: ReceiptParticularDTO[];
+}
+export interface GetReceiptParticularDetailDTO {
+  code: number;
+  rctpCode: number;
+  policyNumber: string;
+  referenceNumber: string;
+  transactionNumber: number;
+  batchNumber: number;
+  premiumAmount: number;
+  loanAmount: number;
+  pensionAmount: number;
+  miscAmount: number;
+  endorsementCode: number;
+  endorsementDrCrNumber: string;
+  includeCommission: string; // 'Y' or 'N'
+  commissionAmount: number;
+  overAllocated: number;
+  includeVat: string; // 'Y' or 'N'
+  policyType: string;
+  accountNumber: string;
+  narration: string;
+  side: string;
+  currencyCode: number;
+  currencyRate: number;
+  clientPolicyNumber: string;
+  directType: string;
+}
+
+export interface GetAllocationDTO {
+  code: number;
+  receiptNumber: number;
+  date: string;
+  captureDate: string;
+  capturedBy: number;
+  amount: number;
+  applicationId: number;
+  branchCode: number;
+  clientCode: number;
+  clientShortDescription: string;
+  receiptType: string;
+  accountTypeId: string;
+  sslAccountCode: number;
+  receiptPrimaryKey: number;
+  receiptMasterCode: number;
+  clientDescription: string;
+  referenceNumber: string;
+  exceptionRaised: string; // 'Y' or 'N'
+  exceptionRemarks: string;
+  source: string; // 'Y' or 'N'
+  sourceChannel: string;
+  previousReceiptNumber: number;
+  transactionCharge: number;
+  receiptParticularDetails: GetReceiptParticularDetailDTO[];
+}
+
+export interface GetAllocationResponseDTO {
+  msg: string;
+  success: boolean;
+  data: AllocationDTO[];
 }
