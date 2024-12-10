@@ -47,42 +47,52 @@
                         <label for="Email" class="quote-label" id="Email"> {{'gis.quotation.email_address' |
                             translate}}</label>
 
+                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
+
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()">
+                            [(ngModel)]="newClientData.inputClientEmail" #emailInput="ngModel" [pattern]="emailPattern"
+                            required>
+                        <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
+                            <span *ngIf="emailInput.errors?.['required']">Email is required.</span>
+                            <span *ngIf="emailInput.errors?.['pattern']">Invalid email format.</span>
+                        </div>
+
                     </div>
 
 
                     <div class="col-sm-4 col-6 " *ngIf="new">
                         <label for=">Email" class="quote-label" id=">Email"> {{'gis.quotation.email_address' |
                             translate}}</label>
+                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="clientEmail" disabled> -->
+
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail" disabled>
+                            [(ngModel)]="clientEmail" #clientEmailInput="ngModel" disabled>
+                        <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
+                            <span *ngIf="clientEmailInput.errors?.['required']">Email is required.</span>
+                            <span *ngIf="!validateEmail(clientEmail)">Invalid email format.</span>
+                        </div>
                     </div>
                     <div class="col-sm-4 col-6" *ngIf="!new">
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
 
                         <div class="input-group">
-                          <div class="input-group">
-                            <ngx-intl-tel-input
-                              [cssClass]="'form-control form-control-sm mb-1'"
-                              [preferredCountries]="preferredCountries"
-                              [enableAutoCountrySelect]="true"
-                              [enablePlaceholder]="true"
-                              [searchCountryFlag]="true"
-                              [selectFirstCountry]="true"
-                              [selectedCountryISO]="CountryISO.Nigeria"
-                              [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                              [phoneValidation]="true"
-                              [(ngModel)]="newClientData.inputClientPhone"
-                              [numberFormat]="PhoneNumberFormat.National"
-                              #newClientPhoneInput="ngModel"
-                            >
-                            </ngx-intl-tel-input>
-                            <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false" class="form-text text-danger">
-                              {{'gis.quotation.invalid_phone_format' | translate}}
+                            <div class="input-group">
+                                <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
+                                    [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true"
+                                    [enablePlaceholder]="true" [searchCountryFlag]="true" [selectFirstCountry]="true"
+                                    [selectedCountryISO]="CountryISO.Nigeria"
+                                    [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                    [phoneValidation]="true" [(ngModel)]="newClientData.inputClientPhone"
+                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel">
+                                </ngx-intl-tel-input>
+                                <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
+                                    class="form-text text-danger">
+                                    {{'gis.quotation.invalid_phone_format' | translate}}
+                                </div>
                             </div>
-                          </div>
                         </div>
 
 
@@ -93,24 +103,18 @@
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
                         <div class="input-group">
-                          <ngx-intl-tel-input
-                            [cssClass]="'form-control form-control-sm mb-1'"
-                            [preferredCountries]="preferredCountries"
-                            [enableAutoCountrySelect]="true"
-                            [enablePlaceholder]="true"
-                            [searchCountryFlag]="true"
-                            [selectFirstCountry]="true"
-                            [selectedCountryISO]="CountryISO.Nigeria"
-                            [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                            [phoneValidation]="true"
-                            [(ngModel)]="clientPhone"
-                            #clientPhoneInput="ngModel"
-                            [numberFormat]="PhoneNumberFormat.National"
-                          >
-                          </ngx-intl-tel-input>
-                          <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false" class="form-text text-danger">
-                            {{'gis.quotation.invalid_phone_format' | translate}}
-                          </div>
+                            <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
+                                [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true"
+                                [enablePlaceholder]="true" [searchCountryFlag]="true" [selectFirstCountry]="true"
+                                [selectedCountryISO]="CountryISO.Nigeria"
+                                [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                [phoneValidation]="true" [(ngModel)]="clientPhone" #clientPhoneInput="ngModel"
+                                [numberFormat]="PhoneNumberFormat.National">
+                            </ngx-intl-tel-input>
+                            <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
+                                class="form-text text-danger">
+                                {{'gis.quotation.invalid_phone_format' | translate}}
+                            </div>
                         </div>
 
 
@@ -144,7 +148,7 @@
                         <div class="col-sm-4 col-6">
                             <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
-                            <select class="form-select form-control-sm " id="quote-input"
+                            <select class="form-select form-control-sm " id="quote-select"
                                 (change)="onSubclassSelected($event)" formControlName="subclassCode"
                                 placeholder="parsedSubclassDesc">
                                 <option value=""></option>
@@ -167,8 +171,10 @@
 
 
                             <p-calendar formControlName="withEffectiveFromDate" [dateFormat]="dateFormat"
-                                [showIcon]="true" [showButtonBar]="true" [placeholder]="coverFromDate"
-                                [minDate]="minDate" [(ngModel)]="coverFromDate" (ngModelChange)="getCoverToDate()">
+                                [showIcon]="true" [showButtonBar]="true"
+                                [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
+                                [(ngModel)]="selectedEffectiveDate"
+                                (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
                             </p-calendar>
 
 

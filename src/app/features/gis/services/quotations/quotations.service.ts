@@ -193,32 +193,50 @@ export class QuotationsService {
 
   }
   getLimitsOfLiability(
-    subclassCode: number,): Observable<LimitsOfLiability[]> {
+  //   scheduleType:string= 'L',
+  //   subclassCode: number
+  // ): Observable<LimitsOfLiability[]> {
+  //   // Create an object to hold parameters only if they are provided
+  //   const paramsObj: { [param: string]: string } = {};
+  //   // Add the mandatory parameter
+    
+  //   paramsObj['scheduleType'] = scheduleType
+  //   paramsObj['subclassCode'] = subclassCode.toString();
+
+  //   const params = new HttpParams({ fromObject: paramsObj });
+
+  //   return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+
+
+
+    subclassCode: number,
+    scheduleType: string = 'L'
+    ){
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    
     paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-
-    return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-
+  
+    return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
   getExcesses(
-    covertypeCode: number,
-    subclassCode: number,): Observable<Excesses[]> {
+    subclassCode: number,
+    scheduleType: string = 'E'
+    ){
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['coverTypeCode'] = covertypeCode.toString();
     paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-
-    return this.api.GET<Excesses[]>(`/v2/excesses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-
+  
+    return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
+
   addLimitsOfLiability(data:CreateLimitsOfLiability[]){
     return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 

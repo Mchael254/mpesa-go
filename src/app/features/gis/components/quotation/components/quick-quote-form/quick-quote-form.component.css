@@ -37,6 +37,18 @@
     font-weight: 400;
     line-height: normal; 
 }
+#quote-select{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+ /* background: #FFF; */
+ color: #000;
+ font-family: Roboto;
+ font-size: 14px;
+ font-style: normal;
+ font-weight: 400;
+ line-height: normal; 
+ height: 35px;
+}
 #productSpecificLabel{
     color: #000;
     font-family: Roboto;
@@ -65,7 +77,7 @@ select#quote-input option {
     font-weight: 400;
 }
 ::ng-deep .p-calendar{
-    height: 32px;
+    height: 35px !important;
     width: 350px;
     
   }
@@ -196,5 +208,11 @@ select#quote-input option {
   .custom-width-80 {
       width: 82%;
   }
+  /* Error message styling */
+.error-message {
+  font-size: 12px;
+  color: #dc3545;
+  margin-top: 4px;
+}
   
     
