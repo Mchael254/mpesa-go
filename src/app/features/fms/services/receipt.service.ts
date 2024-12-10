@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO } from '../data/receipting-dto';
+import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, GetAllocationDTO, DeleteAllocationResponseDTO } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
 
@@ -209,10 +209,103 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
         params
       )
     }
+    // postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
+    //   const endpoint = `allocations/save?userCode=${userCode}`;
+    //   return this.api.POST<any>(endpoint, data, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
+    // }
+    
+    
+    // uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<UploadReceiptDocsDTO[]> {
+    //   // Construct the query parameters directly in the URL
+    //   const endpoint = `upload-receipt-docs?username=${requestBody.username}&receiptNumber=${requestBody.receiptNumber}&userCode=${requestBody.userCode}`;
+    
+    //   // Use the POST method, passing the endpoint and base URL
+    //   return this.api.POST<UploadReceiptDocsDTO[]>(
+    //     `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}/${endpoint}`,
+    //     formData,
+    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    //   );
+    // }
+    uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<any> {
+      // Construct the full endpoint URL
+      const fullUrl = `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}/dms/upload-receipt-docs`;
+    
+      // Add data to the FormData object
+      formData.append('originalFilename', requestBody.originalFilename);
+      formData.append('docDescription', requestBody.docDescription);
+      formData.append('username', requestBody.username);
+      formData.append('receiptNumber', requestBody.receiptNumber.toString());
+      formData.append('userCode', requestBody.userCode.toString());
+    
+      // Use the POST method to send the data
+      return this.api.POST<any>
+    (
+     
+     
+      `dms/upload-receipt-docs`,
+      formData,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+      );
+    }
+    
+    // uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<any> {
+    //   // Construct the endpoint
+    //   const endpoint = `dms/upload-receipt-docs`;
+    
+    //   // Append the endpoint to the base URL
+    //   const fullUrl = `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}`;
+    
+    //   // Add query parameters to the FormData
+    //   formData.append('originalFilename', requestBody.originalFilename);
+    //   formData.append('docDescription', requestBody.docDescription);
+    //   formData.append('username', requestBody.username);
+    //   formData.append('receiptNumber', requestBody.receiptNumber.toString());
+    //   formData.append('userCode', requestBody.userCode.toString());
+    
+    //   // Use the POST method to upload the file
+    //   return this.api.POST<any>(
+        
+    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    //     `dms/upload-receipt-docs`,
+    //      formData
+    //     );
+    // }
     postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
       const endpoint = `allocations/save?userCode=${userCode}`;
       return this.api.POST<any>(endpoint, data, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
     }
+    
+    saveReceipt( data: ReceiptSaveDTO): Observable<any> {
+      const endpoint = `receipts/save`;
+      const fullUrl=`${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}${endpoint}`
+      return this.api.POST<any>(
+        endpoint, 
+        data,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+      );
+    }
+    getAllocations(receiptNumber: number, userCode: number): Observable<{ data: GetAllocationDTO[] }> {
+      const params = new HttpParams()
+        .set('receiptNumber', receiptNumber.toString())
+        .set('userCode', userCode.toString());
+    
+      return this.api.GET<{ data: GetAllocationDTO[] }>(
+        `allocations`,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+        params
+      );
+    }
+    
+  deleteAllocation(receiptDetailCode: number): Observable<DeleteAllocationResponseDTO> {
+    
+    const params = new HttpParams().set('receiptDetailCode', `${receiptDetailCode}`);
+    return this.api.DELETE<DeleteAllocationResponseDTO>(
+     `allocations/delete`,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+      params
+    );
+  }
+    
     
      }
       
