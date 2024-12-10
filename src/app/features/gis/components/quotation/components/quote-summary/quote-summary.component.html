@@ -257,33 +257,34 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
-                                <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause"
-                                    class="custom-row">
+                              <tr  [pSelectableRow]="clauseList"
+                              [class.p-highlight]="clauseList === selectedClause"
+                              class="custom-row">
 
 
-                                    <td class="flexible-header" style=" white-space: nowrap;
-                           overflow: hidden;
-                           text-overflow: ellipsis;
-                           overflow-y: auto;
-                           max-width: 250px;" pTooltip="{{clauseList.heading }}" tooltipPosition="top">
-                                        {{clauseList.heading}}
-                                    </td>
-                                    <td class="flexible-header"
-                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                                        {{clauseList.wording}}
-                                    </td>
-                                    <td class="flexible-header">
-                                        <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
-                                            icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                                    </td>
-                                    <td class="flexible-header">{{clauseList.isMandatory}}</td>
+                                  <td class="flexible-header"  style=" white-space: nowrap;
+                                      overflow: hidden;
+                                      text-overflow: ellipsis;
+                                      overflow-y: auto;
+                                      max-width: 250px;" pTooltip="{{clauseList.heading }}"
+                                      tooltipPosition="top"
+                                    >
+                                     {{clauseList.heading}}
+                                  </td>
+                                  <td class="flexible-header"
+                                      style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
+                                      >
+                                      {{clauseList.wording}}
+                                  </td>
+                                  <td class="flexible-header">
+                                    <button pButton pRipple type="button"
+                                        (click)="openHelperModal(clauseList)"
+                                        icon="pi pi-info-circle"
+                                        class="p-button-rounded p-button-text"></button>
+                                </td>
+                                  <td class="flexible-header">{{clauseList.isMandatory}}</td>
 
-
-
-
-
-
-                                </tr>
+                              </tr>
                                 <!-- Modal for each row -->
                                 <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
                                     [style]="{ 'width': '700px'}">
@@ -360,12 +361,12 @@
                                 <tr [pSelectableRow]="excessesList"
                                     [class.p-highlight]="excessesList === selectedExcess" class="custom-row">
 
-
                                     <td class="flexible-header" style=" white-space: nowrap;
-                               overflow: hidden;
-                               text-overflow: ellipsis;
-                               overflow-y: auto;
-                               max-width: 250px;" pTooltip="{{excessesList.heading }}" tooltipPosition="top">
+                                      overflow: hidden;
+                                      text-overflow: ellipsis;
+                                      overflow-y: auto;
+                                      max-width: 250px;" pTooltip="{{excessesList.heading }}" tooltipPosition="top"
+                                    >
                                         {{excessesList.heading}}
                                     </td>
                                     <td class="flexible-header"
@@ -377,11 +378,6 @@
                                             icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
                                     </td>
                                     <td class="flexible-header">{{excessesList.isMandatory}}</td>
-
-
-
-
-
 
                                 </tr>
                                 <!-- Modal for each row -->
