@@ -186,6 +186,8 @@ export class QuoteSummaryComponent {
 
       this.getClient();
       this.getQuotationProduct();
+      this.fetchClauses();
+      // this.fetchExcesses();
 
 
     })
@@ -276,7 +278,7 @@ export class QuoteSummaryComponent {
   cancelQuote() {
 
     log.debug("Starting cancelQuote method");
-  
+
     // Remove specific items from session storage
     sessionStorage.removeItem('clientCode');
     sessionStorage.removeItem('clientDetails');
@@ -293,22 +295,22 @@ export class QuoteSummaryComponent {
     sessionStorage.removeItem('riskLevelPremium');
     sessionStorage.removeItem('subclassCoverType');
     sessionStorage.removeItem('sumInsuredValue');
-  
+
     log.debug("Session storage items removed");
-  
+
     // Use NgZone.run to execute the navigation code inside the Angular zone
     this.ngZone.run(() => {
       log.debug("Navigating to quick-quote screen");
       this.router.navigate(['/home/gis/quotation/quick-quote']);
 
     });
-    
- 
-  
+
+
+
     log.debug("Navigation code executed");
   }
-  
- 
+
+
 
   getuser() {
     this.user = this.authService.getCurrentUserName()
@@ -437,13 +439,13 @@ export class QuoteSummaryComponent {
 }
 onRiskSelect(riskItem: any): void {
   this.selectedRisk = riskItem;
-  log.debug('Selected Risk:', riskItem);
+  log.debug('Selected Risk Item:', riskItem);
   if(this.selectedRisk){
     this.fetchClauses();
     this.fetchExcesses();
     this.fetchLimitsOfLiability()
   }
-  }
+}
 
 calculateTaxes() {
   this.totalTaxes = 0;
@@ -464,15 +466,19 @@ getTaxTooltip(): string {
   return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
 }
 fetchClauses(){
+
+  const coverTypeCode = this.quotationDetails.riskInformation[0].covertypecode
+  log.debug('Cover type code x-men', coverTypeCode)
+
   this.quotationService
-  .getClauses(this.selectedRisk.covertypecode,this.selectedSubclassCode)
+  .getClauses(coverTypeCode, this.selectedSubclassCode)
   .pipe(untilDestroyed(this))
   .subscribe({
     next: (response: any) => {
 
       this.clauseList=  response._embedded
-      log.debug("Clause List ", this.clauseList);
-     
+      log.debug("Clause List clauses ", this.clauseList);
+
     },
     error: (error) => {
 
@@ -481,15 +487,18 @@ fetchClauses(){
   });
  }
  fetchExcesses(){
+
+  // const coverTypeCode = this.quotationDetails.riskInformation[0].covertypecode
+
   this.quotationService
-  .getExcesses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+  .getExcesses(this.selectedRisk.coverTypeCode, this.selectedSubclassCode)
   .pipe(untilDestroyed(this))
   .subscribe({
     next: (response: any) => {
 
       this.excessesList=  response._embedded
       log.debug("Excesses List ", this.excessesList);
-     
+
     },
     error: (error) => {
 
@@ -506,7 +515,7 @@ fetchClauses(){
 
       this.limitsOfLiabilityList=  response._embedded
       log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
-     
+
     },
     error: (error) => {
 

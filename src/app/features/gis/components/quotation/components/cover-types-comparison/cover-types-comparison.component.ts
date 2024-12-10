@@ -146,6 +146,7 @@ export class CoverTypesComparisonComponent {
   excessesList: Excesses[] = []
   selectedExcess: any;
   limitsOfLiabiltyDetailsForm: FormGroup;
+  selectedRisk: any;
 
 
 
@@ -738,7 +739,11 @@ export class CoverTypesComparisonComponent {
       this.taxInformation = this.quotationDetails.taxInformation
       log.debug("Tax information", this.taxInformation)
       this.addLimitsOfLiability()
-      this.addExcesses()
+      this.selectedRisk = this.quotationDetails.riskInformation
+      log.debug("Selected Risk", this.selectedRisk)
+      if(this.selectedRisk) {
+        this.addClauses()
+      }
     })
   }
   createQuotationRisk() {
@@ -1267,14 +1272,14 @@ export class CoverTypesComparisonComponent {
     // Transform the list to match the expected structure
     const transformedList = this.limitsOfLiabilityList.map(item => ({
       code: item.code,
-      scheduleValueCode: item.quotationValueCode, 
-      quotationProductCode: productCode, 
+      scheduleValueCode: item.quotationValueCode,
+      quotationProductCode: productCode,
       value: item.value,
       narration: item.narration,
       type: "L"  // For Limit of Liability
     }));
     log.debug("Transformed limits liability list",transformedList)
-  
+
     // Call the service to add the transformed limits of liability
     this.quotationService.addLimitsOfLiability(transformedList).pipe(untilDestroyed(this)).subscribe({
       next: (response: any) => {
@@ -1292,14 +1297,14 @@ export class CoverTypesComparisonComponent {
     // Transform the list to match the expected structure
     const transformedList = this.excessesList.map(item => ({
       code: item.code,
-      scheduleValueCode: item.quotationValueCode, 
-      quotationProductCode: productCode, 
+      scheduleValueCode: item.quotationValueCode,
+      quotationProductCode: productCode,
       value: item.value,
       narration: item.narration,
       type: "E"  // For Limit of Liability
     }));
     log.debug("Transformed limits liability list",transformedList)
-  
+
     // Call the service to add the transformed limits of liability
     this.quotationService.addLimitsOfLiability(transformedList).pipe(untilDestroyed(this)).subscribe({
       next: (response: any) => {
@@ -1311,6 +1316,41 @@ export class CoverTypesComparisonComponent {
       }
     });
   }
-  
-  
+
+  addClauses() {
+    const productCode = this.quotationDetails?.quotationProduct[0].code
+    log.debug("Product Code",productCode)
+    const riskCode = this.quotationDetails?.riskInformation[0].code
+    log.debug("Risk Code",riskCode)
+    const quotCode = this.quotationDetails?.quotationProduct[0].quotCode
+    log.debug("Quote Code",quotCode)
+
+    const clausesPayload = this.clauseList.map((clause) => ({
+      clauseCode: clause.code, // Assuming clause.code contains the clause code
+      productCode,
+      quotCode,
+      riskCode
+    }));
+
+    log.debug("Clauses Payload", clausesPayload);
+
+    // Call the service to add the transformed limits of liability
+    this.clauseList.forEach((clause) => {
+      const clauseCode = clause.code; // Assuming clause.code contains the clause code
+      log.debug("Clause Code",clauseCode)
+      this.quotationService.addClauses( clauseCode, productCode, quotCode, riskCode )
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          const result = response._embedded;
+          log.debug("RESPONSE AFTER ADDING CLAUSE ", result);
+        },
+        error: (error) => {
+          log.error(`Failed to add clause with code ${clauseCode}:`, error);
+          this.globalMessagingService.displayErrorMessage('Error',`Failed to add clause with code ${clauseCode}. Try again later.`);
+        }
+      });
+    })
+  }
+
 }

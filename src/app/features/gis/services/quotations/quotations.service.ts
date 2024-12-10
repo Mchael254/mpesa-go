@@ -131,9 +131,9 @@ export class QuotationsService {
     paramsObj['transactionsType'] = transactionsType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`api/v1/utils/payload`, API_CONFIG.PREMIUM_COMPUTATION, params);
-  
+
   }
   // quotationUtils(transactionCode){
   //   const params = new HttpParams()
@@ -172,11 +172,11 @@ export class QuotationsService {
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
     paramsObj['subclassCode'] = subclassCode.toString();
-  
+
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-  
+
   }
   getClauses(
     covertypeCode: number,
@@ -199,7 +199,7 @@ export class QuotationsService {
   //   // Create an object to hold parameters only if they are provided
   //   const paramsObj: { [param: string]: string } = {};
   //   // Add the mandatory parameter
-    
+
   //   paramsObj['scheduleType'] = scheduleType
   //   paramsObj['subclassCode'] = subclassCode.toString();
 
@@ -219,7 +219,7 @@ export class QuotationsService {
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
   getExcesses(
@@ -233,7 +233,7 @@ export class QuotationsService {
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
@@ -241,5 +241,40 @@ export class QuotationsService {
     return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
+
+  addClauses(
+    clauseCode: number,
+    productCode : number,
+    quotCode : number,
+    riskCode: number,) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['clauseCode'] = clauseCode.toString();
+    paramsObj['productCode'] = productCode.toString();
+    paramsObj['quotCode'] = quotCode.toString();
+    paramsObj['riskCode'] = riskCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.POST(`/v2/clauses?${params}`, "placeholder data",  API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+  }
+
+
+  // addClauses(clauses: Array<{ clauseCode: number, productCode: number, quotCode: number, riskCode: number }>) {
+  //   // Prepare the request payload
+  //   const payload = {
+  //     clauses: clauses.map(clause => ({
+  //         clauseCode: clause.clauseCode.toString(),
+  //         productCode: clause.productCode.toString(),
+  //         quotCode: clause.quotCode.toString(),
+  //         riskCode: clause.riskCode.toString(),
+  //     }))
+  //   };
+
+  //   // Send the API request with the payload
+  //   return this.api.POST(`/v2/clauses?${payload}`, "placeholder data", API_CONFIG.GIS_QUOTATION_BASE_URL);
+  // }
 
 }
