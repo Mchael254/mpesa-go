@@ -86,7 +86,8 @@
                                     [selectedCountryISO]="CountryISO.Kenya"
                                     [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                     [phoneValidation]="true" [(ngModel)]="newClientData.inputClientPhone"
-                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel">
+                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
+                                    (ngModelChange)="onPhoneInputChange()">
                                 </ngx-intl-tel-input>
                                 <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                     class="form-text text-danger">
@@ -109,7 +110,8 @@
                                 [selectedCountryISO]="CountryISO.Kenya"
                                 [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                 [phoneValidation]="true" [(ngModel)]="clientPhone" #clientPhoneInput="ngModel"
-                                [numberFormat]="PhoneNumberFormat.National">
+                                [numberFormat]="PhoneNumberFormat.National"
+                                (ngModelChange)="onPhoneInputChange()">
                             </ngx-intl-tel-input>
                             <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                 class="form-text text-danger">
@@ -133,7 +135,7 @@
                         <div class="col-sm-4 col-6">
                             <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
                                 translate}}</label><br>
-                            <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
+                            <p-dropdown formControlName="productCode" name="productCode" [options]="ProductDescriptionArray"
                                 optionLabel="description" dataKey="code" (onChange)="onProductSelected($event.value)"
                                 placeholder=" " [filterBy]="'description'" [placeholder]="parsedProductDesc"
                                 [filter]="true"></p-dropdown>
@@ -149,7 +151,7 @@
                             <label for="use-of-property" class="quote-label required" id="use-of-property">
                                 {{'gis.quotation.use_of_property' | translate}}</label>
                             <select class="form-select form-control-sm " id="quote-select"
-                                (change)="onSubclassSelected($event)" formControlName="subclassCode"
+                                (change)="onSubclassSelected($event)" formControlName="subclassCode" name="subclassCode"
                                 placeholder="parsedSubclassDesc">
                                 <option value=""></option>
                                 <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
@@ -170,7 +172,7 @@
                                 (ngModelChange)="getCoverToDate()"> -->
 
 
-                            <p-calendar formControlName="withEffectiveFromDate" [dateFormat]="dateFormat"
+                            <p-calendar formControlName="withEffectiveFromDate" name="withEffectiveFromDate" [dateFormat]="dateFormat"
                                 [showIcon]="true" [showButtonBar]="true"
                                 [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
                                 [(ngModel)]="selectedEffectiveDate"
@@ -192,7 +194,7 @@
                                 | translate}}</label>
 
 
-                            <p-dropdown formControlName="currencyCode" [options]="currencyList" optionLabel="name"
+                            <p-dropdown formControlName="currencyCode" name="currencyCode" [options]="currencyList" optionLabel="name"
                                 dataKey="id" (onChange)="onCurrencySelected($event.value)" [filterBy]="'name'"
                                 [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
                             <!-- Display error message under the field -->
@@ -245,13 +247,10 @@
                                             <label class="quote-label " [for]="field.name">{{ field.label }}</label>
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
                                                 [formControlName]="field.name"
-                                                (input)="updateCarRegNoValue($event); validateCarRegNo()"
+                                                (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
                                                 placeholder="e.g KCA 345R" [ngModel]="parsedCarRegNo">
 
-                                            <!-- <div *ngIf="carRegNoHasError" class="form-text text-danger">
-                                                {{'gis.quotation.please_enter_valid_reg_no' | translate}}
-                                            </div>
-                                            -->
+                                            
                                             <div *ngIf="carRegNoHasError" class="form-text text-danger">
                                                 <div *ngIf="!carRegNoValue.match(dynamicRegexPattern)">
                                                     {{'gis.quotation.please_enter_valid_reg_no' | translate}}
