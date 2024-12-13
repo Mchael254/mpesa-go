@@ -108,7 +108,7 @@ border: 1px solid #00529B;
     display: inline-block;
     ;
   }
-  
+
   /* .options button {
     background: none;
     border: none;
@@ -119,8 +119,8 @@ border: 1px solid #00529B;
   #ellipsis{
     border:none;
   }
-  
-  
+
+
   .options-content {
     position: absolute;
     top: 0;
@@ -137,7 +137,7 @@ border: 1px solid #00529B;
     padding-left: 5px;
 
   }
-  
+
   .options-content button {
     padding: 3px;
     padding-right: 5px;
@@ -145,12 +145,12 @@ border: 1px solid #00529B;
     background: none;
     cursor: pointer;
   }
-  
+
   .options:hover .options-content {
     display:block;
   }
-  
-  
+
+
   #optionsButton{
     background-color: white;
     border: none;
@@ -161,8 +161,8 @@ border: 1px solid #00529B;
   }
   /* #optionsButton:active,
   #optionsButton:focus {
-    border-color: purple; 
-    outline: none; 
+    border-color: purple;
+    outline: none;
   } */
   #optionsButton-delete{
     background-color: white;
@@ -172,7 +172,7 @@ border: 1px solid #00529B;
     text-align: left;
   }
   .dropdown-item.active, .dropdown-item:active {
-  
+
     background-color: #00529B;
 }
 #shareQuoteLabel{
@@ -209,22 +209,23 @@ border: 1px solid #00529B;
   display: inline-block;  /* Keeps the link inline but allows for width control */
   position: relative;  /* Allows positioning of the line */
   padding-bottom: 0px;
+  cursor: pointer;
 }
 
 .nav-link::after {
   content: '';  /* Creates an empty element */
   position: absolute;
-  left: 13%;  
-  right: 13%;  
-  bottom: 0;  
-  height: 2px;  
+  left: 13%;
+  right: 13%;
+  bottom: 0;
+  height: 2px;
 }
 .nav-link.active::after {
   background-color: #00529B;  /* Optional: Change the line color when the link is active */
 }
 
 .nav-item {
-  margin-right: 20px;  
+  margin-right: 20px;
   margin-left:-20px;
 }
 
