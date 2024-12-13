@@ -1,4 +1,6 @@
-<div class="container ms-4 " >
+
+
+<div class="container ms-4 mt-7" >
 <div class="card mb-2 " style="box-shadow:none;height:40px;margin-right: 38px;">
   <div class="row px-3 d-flex justify-content-center ">
     <div class="col-lg-3 d-flex ms-2">
@@ -35,10 +37,10 @@
     </div>
   </div>
 </div>
-</div>
+</div> 
 
 <div class="base-content-section">
-  <div class="row me-4">
+  <div class="row me-4 ms-2">
     <div class="col-8">
       <app-dynamic-breadcrumb
         [breadCrumbItems]="[
@@ -61,6 +63,42 @@
   </div>
 
   
+    <!-- <div class="card mb-2" style="box-shadow:none">
+      <div class="row px-3 d-flex justify-content-center">
+        <div class="col-lg-3 d-flex">
+          <label  class="form-label text-black align-content-center m-0" style="width: 35%;">{{'fms.org' | translate }}:</label>
+          <select class="form-control form-select text-black border-0 fw-medium" id="organization" style="width: 67%;">
+            <option value="" disabled >Select option</option>
+            <option value="" selected>Turnkey Africa LTD</option>
+          </select>
+        </div>
+        <div class="col-lg-3 d-flex">
+          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.branch' | translate }}:</label>
+          <select class="form-control form-select text-black border-0 fw-medium" id="branch" style="width: 62%;">
+            <option value="" disabled >Select option</option>
+            <option value="" selected>Head Office</option>
+          </select>
+        </div>
+        <div class="col-lg-2 d-flex">
+          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.yr' | translate }}:</label>
+          <select class="form-control form-select text-black border-0 fw-medium" id="year" style="width: 50%;">
+            <option value="" disabled >Select option</option>
+            <option value="" selected>2022</option>
+            <option value="" selected>2023</option>
+            <option value="" selected>2024</option>
+          </select>
+        </div>
+        <div class="col-lg-2 d-flex">
+          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.period' | translate }}:</label>
+          <select class="form-control form-select text-black border-0 fw-medium" id="period" style="width: 50%;">
+            <option value="" disabled >Select option</option>
+            <option value="" selected>APR</option>
+            <option value="" selected>MAY</option>
+            <option value="" selected>JUN</option>
+          </select>
+        </div>
+      </div>
+    </div>  -->
 
   <div class="container drop">
     <div class="scroll-container bg-white">
@@ -431,7 +469,8 @@ aria-hidden="true"
                   </form>
 
                   <!-- List of Existing Charges -->
-                  <div *ngIf="chargeList.length > 0" class="mt-4">
+                  <!-- <div *ngIf="chargeList.length > 0" class="mt-4"> -->
+                    <div class="mt-4">
                     <h6>Existing Charges</h6>
                     <ul class="list-group">
                       <li
@@ -500,16 +539,38 @@ aria-hidden="true"
             </div>
           </div>
           
-
+          <div class="row mt-3">
+            <div class="col-md-4 p-0" *ngIf="orgCode === 'A=='">
+              <div class="form-group position-relative">
+                <div class="h-100 d-flex flex-column"></div>
+                <label for="capitalInjection" class="text-dark">{{'fms.receipting.capitalInjection' | translate}}</label>
+                <div class="dropdown-container">
+                  <select id="capitalInjection" class="form-control" formControlName="capitalInjection">
+                    <option value="NORMAL">Normal charges</option>
+                    <option value="MISCELLANEOUS">Miscellaneous charges</option>
+                    <option value="OTHER">Other charges</option>
+                  </select>
+                  <i class="pi pi-chevron-down dropdown-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+  
 
 
 
 <!-- Upload Button and Hidden File Input -->
+ <div class="row mt-3">
 <div class="col-md-4">
   <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
   <button type="button" class="btn btn-primary" (click)="fileInput.click()">
     {{ 'fms.receipting.uploadFiles' | translate }}
   </button>
+ 
+  
+  
 </div>
 
 <!-- File List with Description -->
@@ -527,7 +588,10 @@ aria-hidden="true"
     </ul>
   </div>
 </div>
-
+<div class="col-md-4 mt-2"  *ngIf="fileDescriptions.length > 0">
+  <button type="button" class="btn btn-success" (click)="uploadFiles()">post File</button>
+</div>
+</div>
 <!-- Modal for File Description -->
 <div id="fileDescriptionModal"  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -553,24 +617,6 @@ aria-hidden="true"
     </div>
   </div>
 </div>
-
-
-
-          <div class="col-md-4 p-0" *ngIf="orgCode === 'A=='">
-            <div class="form-group position-relative">
-              <div class="h-100 d-flex flex-column"></div>
-              <label for="capitalInjection" class="text-dark">{{'fms.receipting.capitalInjection' | translate}}</label>
-              <div class="dropdown-container">
-                <select id="capitalInjection" class="form-control" formControlName="capitalInjection">
-                  <option value="NORMAL">Normal charges</option>
-                  <option value="MISCELLANEOUS">Miscellaneous charges</option>
-                  <option value="OTHER">Other charges</option>
-                </select>
-                <i class="pi pi-chevron-down dropdown-icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
 
 
 
@@ -679,9 +725,9 @@ aria-hidden="true"
         </div>
 
        
-        <div class="row mt-3"  >
+        <div class="row mt-3"  id="allocationTable">
           <div class="col-md-12">
-            <p-table [value]="transactions" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+            <p-table  *ngIf="allocatedAmountControls.length > 0 && allocation" [value]="transactions" responsiveLayout="scroll" class="table-striped" [paginator]="true"
             [rows]="5"
             
             [rowsPerPageOptions]="[5, 10, 20]"
@@ -689,8 +735,7 @@ aria-hidden="true"
            >
               <ng-template pTemplate="header" style="background-color:#89A8B2">
                 <tr >
-                  <th scope="col" class="checkbox-column custom-header" >
-                    </th>
+                
                   <th>Client Name</th>
                   
                   <th>Policy Number</th>
@@ -699,19 +744,16 @@ aria-hidden="true"
                 
                   <th>Balance</th>
                   <th>Allocated Amount</th>
-                
+                  <th>Commission</th>
+                  <th>Comm?</th>
+                 
+                  
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-transaction let-i="rowIndex">
+              <ng-template pTemplate="body" let-transaction let-i="rowIndex" >
                 <tr [pSelectableRow]="transaction" >
-                  <!-- <td scope="row"><input type="checkbox"  class="form-check-input custom-checkbox"></td> -->
-                  <td scope="row">
-                    <input
-                      type="checkbox"
-                      class="form-check-input custom-checkbox"
-                      (change)="calculateTotalAllocated()"
-                    />
-                  </td>
+                
+               
                  <td>{{ transaction.clientName
                      }}</td>
                      
@@ -720,35 +762,80 @@ aria-hidden="true"
                   <td>{{ transaction.amount}}</td>
                   <td>{{transaction.
 balance}}</td>
- <td>
-                    
-                      <input
-                        type="number"
-                        formControlName="allocatedAmount"
-                        class="form-control"
-                        placeholder="Enter amount"
-                        
-    (input)="onAllocatedAmountChanged(i,transaction)" [value]="receiptingDetailsForm.get('allocatedAmount')?.value[i]"
-                      />
-                    
-                  </td>
-                
+<td>
+  <ng-container *ngIf="getFormControl(i,'allocatedAmount') as control">
+    <input type="number" [formControl]="control" class="form-control" placeholder="Enter amount" (input)="calculateTotalAllocatedAmount()" />
+  </ng-container>
+  </td>
+<td>{{transaction.commission}}</td>
+<td scope="row">
+  <input
+    type="checkbox"
+    class="form-check-input custom-checkbox"
+    [checked]="getFormControl(i, 'commissionChecked')?.value === 'Y'"
+  
+    (change)="onCommissionCheckedChange(i, $event)"
+  />
+</td>
                 </tr>
               </ng-template>
             </p-table>
+           
           </div>
         </div>
-        <div class="d-flex justify-content-end">
-          <button class="btn btn-primary" (click)="onAllocate()">Allocate</button>
+        <div *ngIf="allocatedAmountControls.length > 0 && allocation" class="d-flex justify-content-end">
+          <div style="margin-right:20px;text-align: center; justify-content:center;align-items: center;">Total Allocated Amount: {{ totalAllocatedAmount }}</div>
+          <button class="btn btn-primary" (click)="allocate()">Allocate</button>
         </div>
         
        
+<!-- Allocated Amounts Table -->
+<div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-3">
+  <div class="col-md-12">
+    <p-table 
+      [value]="getAllocation"
+      responsiveLayout="scroll"
+      class="table-striped"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20]"
+    >
+      <ng-template pTemplate="header" style="background-color:#89A8B2">
+        <tr>
+          <th>Policy Number</th>
+          <th>Allocated Amount</th>
+          <th>DrCr Number</th>
+          <!-- <th>Date</th> -->
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-allocation>
+        <tr>
+          <td>{{ allocation.clientPolicyNumber
+ }}</td>
+          <td>{{ allocation.premiumAmount }}</td>
+          <td>{{ allocation.endorsementDrCrNumber}}</td>
+          <!-- <td>allocation.captureDate
+          </td> -->
+          <td>
+            <button 
+              class="btn btn-danger btn-sm" 
+              (click)="deleteAllocation(allocation.code)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
 
         
        
 
         <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
-          <button type="button" class="btn btn-primary me-3" id="saveReceipt"
+          <button type="button" class="btn btn-primary me-3" id="saveReceipt" (click)="submitReceipt()"
           >Save Receipt</button>
           <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt"
             >Print Receipt
