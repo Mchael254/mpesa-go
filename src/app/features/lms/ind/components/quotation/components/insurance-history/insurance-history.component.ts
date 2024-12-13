@@ -11,43 +11,43 @@ import {Utils} from "../../../../../util/util";
 import {ClientHistoryService} from "../../../../../service/client-history/client-history.service";
 import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
+/**
+ * Component for displaying and editing insurance history details in the quotation module.
+ */
 @Component({
   selector: 'app-insurance-history',
   templateUrl: './insurance-history.component.html',
   styleUrls: ['./insurance-history.component.css'],
 })
+
 @AutoUnsubscribe
+
 export class InsuranceHistoryComponent implements OnInit, OnDestroy {
-  steps = stepData;
-  products = [];
-  insuranceHistoryForm: FormGroup;
-  insuranceHistoryFormOne: FormGroup;
-  insuranceHistoryFormTwo: FormGroup;
   breadCrumbItems: BreadCrumbItem[] = [
-    {
-      label: 'Home',
-      url: '/home/dashboard',
-    },
-    {
-      label: 'Quotation',
-      url: '/home/lms/quotation/list',
-    },
+    { label: 'Home', url: '/home/dashboard', },
+    { label: 'Quotation', url: '/home/lms/quotation/list', },
     {
       label: 'Insurance History(Data Entry)',
       url: '/home/lms/ind/quotation/insurance-history',
     },
   ];
-
-  policyListTwo: any[] = [];
+  steps = stepData;
+  products = [];
+  insuranceHistoryForm: FormGroup;
+  insuranceHistoryFormOne: FormGroup;
+  insuranceHistoryFormTwo: FormGroup;
   policyListOne: any[] = [];
+  policyListTwo: any[] = [];
   editEntity: boolean;
   coverStatusTypeList: any[] = [];
   coverStatusTypeListOne: any[] = [];
   coverStatusTypeListTwo: any[] = [];
-
   util: Utils;
   editFirstForm: boolean;
   // insuranceHistoryForm: FormGroup;
+  showPolicyTwoModal: boolean = false; // Tracks if the modal is visible
+  editingPolicyTwo: boolean = false; // Tracks if editing mode is active
+  editingIndexTwo: number | null = null; // Tracks the index being edited in policyListTwo
 
   constructor(
     private fb: FormBuilder,
@@ -214,6 +214,44 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     policyListOne.push({ isEdit: true });
   }
 
+  openAddPolicyTwoModal() {
+    this.editingPolicyTwo = false;
+    this.editingIndexTwo = null;
+    this.insuranceHistoryFormTwo.reset();
+    this.showPolicyTwoModal = true; 
+  }
+
+  closePolicyModalTwo(): void {
+    this.showPolicyTwoModal = false;
+  }
+
+  savePolicyTwo(): void {
+    if (this.insuranceHistoryFormTwo.invalid) {
+      this.toast.danger('Please fill all required fields.', 'Policy Details');
+      return;
+    }
+
+    const policyData = this.insuranceHistoryFormTwo.value;
+
+    if (this.editingPolicyTwo && this.editingIndexTwo !== null) {
+      // Update the existing policy
+      const updatedList = [...this.policyListTwo];
+      updatedList[this.editingIndexTwo] = { ...policyData, isEdit: false };
+      this.policyListTwo = updatedList;
+    } else {
+      // Add a new policy
+      this.policyListTwo = [...this.policyListTwo, { ...policyData, isEdit: false }];
+    }
+
+    this.closePolicyModalTwo();
+  }
+
+  /**
+   * Retrieves the value of a specified control from the `insuranceHistoryForm`.
+   * 
+   * @param name - The name of the form control. Defaults to 'question1'.
+   * @returns The value of the specified form control.
+   */
   getValue(name: string = 'question1') {
     return this.insuranceHistoryForm.get(name).value;
   }
@@ -246,6 +284,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   deletepolicyListTwo(i: number) {
     this.spinner_service.show('ins_view');
+    
     let deleted_pol = this.policyListTwo.find((data, x) => {return i === x});
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
@@ -285,6 +324,16 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
     this.policyListTwo.indexOf(pol, x);
     this.insuranceHistoryFormTwo.patchValue(pol.length > 0 ? pol[0] : {});
+  }
+
+  openEditPolicyModalTwo (index: number): void {
+    this.editingPolicyTwo = true;
+    this.editingIndexTwo = index;
+
+    // Populate the form with the selected policy's data
+    const policy = this.policyListTwo[index];
+    this.insuranceHistoryFormTwo.patchValue(policy);
+    this.showPolicyTwoModal = true;
   }
 
   getLmsInsHistList() {
@@ -381,13 +430,11 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   selectSecondQuestion(){
-    if(this.policyListTwo.length>0){
-
-    this.policyListTwo.forEach((m, i)=>{
-      this.deletepolicyListTwo(i)
-
-    });
-  }
+    if(this.policyListTwo.length>0) {
+      this.policyListTwo.forEach((m, i) => {
+        this.deletepolicyListTwo(i)
+      });
+    }
   }
 
   // private addEntity(d: FormGroup) {
