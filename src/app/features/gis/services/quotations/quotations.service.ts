@@ -242,26 +242,6 @@ export class QuotationsService {
 
   }
 
-  // addClauses(
-  //   clauseCode: number,
-  //   productCode : number,
-  //   quotCode : number,
-  //   riskCode: number,) {
-  //   // Create an object to hold parameters only if they are provided
-  //   const paramsObj: { [param: string]: string } = {};
-  //   // Add the mandatory parameter
-  //   paramsObj['clauseCode'] = clauseCode.toString();
-  //   paramsObj['productCode'] = productCode.toString();
-  //   paramsObj['quotCode'] = quotCode.toString();
-  //   paramsObj['riskCode'] = riskCode.toString();
-
-  //   const params = new HttpParams({ fromObject: paramsObj });
-
-  //   return this.api.POST(`/v2/clauses?${params}`, "placeholder data",  API_CONFIG.GIS_QUOTATION_BASE_URL);
-
-  // }
-
-
   addClauses(
     clauseCodes: number[], // Accept an array of clause codes
     productCode: number,
