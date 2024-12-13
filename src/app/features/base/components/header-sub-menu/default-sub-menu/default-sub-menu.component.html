@@ -492,29 +492,18 @@
               </ng-container>
             </ul>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item">
             <a
-              class="nav-link dropdown-toggle"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              (click)="dynamicSideBarMenu(fmsSubMenuList[0])"
+              class="nav-link"
+              routerLink="/home/fms"
               style="font-size: 12px"
+            ><i
+              class="fa-solid fa-money-bill-transfer"
+              style="padding-right: 6px"
+            ></i
+            >{{ "base.FMS" | translate | uppercase }}</a
             >
-              <i
-                class="fa-solid fa-money-bill-transfer"
-                style="padding-right: 6px; font-size: 16px"
-              ></i
-              >{{ "base.FMS" | translate | uppercase }}
-            </a>
-            <ul class="dropdown-menu">
-              <ng-container *ngFor="let fms of fmsSubMenuList">
-                <li>
-                  <a class="dropdown-item" (click)="dynamicSideBarMenu(fms)">
-                    {{ "base." + fms["name"] | translate }}
-                  </a>
-                </li>
-              </ng-container>
-            </ul>
           </li>
           <li class="nav-item dropdown">
             <a

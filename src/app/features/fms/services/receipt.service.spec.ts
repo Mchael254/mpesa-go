@@ -16,8 +16,12 @@ import {
   ChargesDTO,
   ExistingChargesResponseDTO,
   ChargeManagementDTO,
+  AllocationDTO,
+  ReceiptParticularDetailsDTO,
+  ReceiptParticularDTO,
 } from '../data/receipting-dto';
 import { environment } from '../../../../environments/environment';
+import { MockApiService } from '../../crm/services/messaging.service.spec';
 
 describe('ReceiptService', () => {
   let service: ReceiptService;
@@ -774,6 +778,57 @@ it('should fetch client transactions based on given parameters', () => {
     `${environment.API_URLS.get(API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)}/clients/transactions?systemShortDesc=${systemShortDesc}&clientCode=${clientCode}&accountCode=${accountCode}&receiptType=${receiptType}&clientShtDesc=${clientShtDesc}`
   );
   expect(req.request.method).toBe('GET');
+  req.flush(mockResponse);
+});
+it('should post an allocation', () => {
+ 
+  const mockReceiptParticularDetails: ReceiptParticularDetailsDTO = {
+    policyNumber: 'POL123',
+    referenceNumber: 'REF456',
+    transactionNumber: 789,
+    batchNumber: 1,
+    premiumAmount: 1000.5,
+    loanAmount: 500.75,
+    pensionAmount: 200,
+    miscAmount: 50,
+    endorsementCode: 1234,
+    endorsementDrCrNumber: 'EDCR567',
+    includeCommission: 'Y',
+    commissionAmount: 250.75,
+    overAllocated: 0,
+    includeVat: 'N',
+    clientPolicyNumber: 'CPL789',
+  };
+  const mockReceiptParticular: ReceiptParticularDTO = {
+    receiptNumber: 101,
+    capturedBy: 202,
+    systemCode: 303,
+    branchCode: 404,
+    clientCode: 505,
+    clientShortDescription: 'Short Desc',
+    receiptType: 'Normal',
+    clientName: 'Client A',
+    sslAccountCode: 606,
+    accountTypeId: 'AT001',
+    referenceNumber: 'REF001',
+    receiptParticularDetails: [mockReceiptParticularDetails],
+  };
+  const userCode = 123;
+  const mockAllocation: AllocationDTO = {
+    receiptParticulars: [mockReceiptParticular],
+  };
+  
+  const mockResponse = { success: true, message: 'Allocation posted successfully' };
+
+  service.postAllocation(userCode, mockAllocation).subscribe((res) => {
+    expect(res).toEqual(mockResponse);
+  });
+
+  const req = httpTestingController.expectOne(
+    `${environment.API_URLS.get(API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL)}/allocations/save?userCode=${userCode}`
+  );
+  expect(req.request.method).toBe('POST');
+  expect(req.request.body).toEqual(mockAllocation);
   req.flush(mockResponse);
 });
 

@@ -11,13 +11,15 @@ import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../../shared/shared.module";
 import { ReceiptComponent } from './components/receipt/receipt.component';
 import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
+import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 
 
 @NgModule({
   declarations: [
     ChequeAuthorizationComponent,
     ReceiptComponent,
-    ReceiptAuthorizationComponent
+    ReceiptAuthorizationComponent,
+    BaseFmsComponent
   ],
     imports: [
         CommonModule,
