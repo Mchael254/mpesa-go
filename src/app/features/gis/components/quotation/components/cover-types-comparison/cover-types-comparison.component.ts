@@ -1318,39 +1318,34 @@ export class CoverTypesComparisonComponent {
   }
 
   addClauses() {
-    const productCode = this.quotationDetails?.quotationProduct[0].code
-    log.debug("Product Code",productCode)
-    const riskCode = this.quotationDetails?.riskInformation[0].code
-    log.debug("Risk Code",riskCode)
-    const quotCode = this.quotationDetails?.quotationProduct[0].quotCode
-    log.debug("Quote Code",quotCode)
+    const productCode = this.quotationDetails?.quotationProduct[0].code;
+    log.debug("Product Code", productCode);
+    const riskCode = this.quotationDetails?.riskInformation[0].code;
+    log.debug("Risk Code", riskCode);
+    const quotCode = this.quotationDetails?.quotationProduct[0].quotCode;
+    log.debug("Quote Code", quotCode);
 
-    const clausesPayload = this.clauseList.map((clause) => ({
-      clauseCode: clause.code, // Assuming clause.code contains the clause code
-      productCode,
-      quotCode,
-      riskCode
-    }));
+    // Collect all clause codes into an array
+    const clauseCodes = this.clauseList.map((clause) => clause.code); // Assuming clause.code contains the clause code
+    log.debug("Clause Codes", clauseCodes);
 
-    log.debug("Clauses Payload", clausesPayload);
-
-    // Call the service to add the transformed limits of liability
-    this.clauseList.forEach((clause) => {
-      const clauseCode = clause.code; // Assuming clause.code contains the clause code
-      log.debug("Clause Code",clauseCode)
-      this.quotationService.addClauses( clauseCode, productCode, quotCode, riskCode )
+    // Call the service to add all clauses at once
+    this.quotationService.addClauses(clauseCodes, productCode, quotCode, riskCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
           const result = response._embedded;
-          log.debug("RESPONSE AFTER ADDING CLAUSE ", result);
+          log.debug("RESPONSE AFTER ADDING CLAUSES", result);
         },
         error: (error) => {
-          log.error(`Failed to add clause with code ${clauseCode}:`, error);
-          this.globalMessagingService.displayErrorMessage('Error',`Failed to add clause with code ${clauseCode}. Try again later.`);
+          log.error("Failed to add clauses:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to add clauses. Try again later.'
+          );
         }
       });
-    })
   }
+
 
 }
