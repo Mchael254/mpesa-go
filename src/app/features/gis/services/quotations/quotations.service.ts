@@ -131,9 +131,9 @@ export class QuotationsService {
     paramsObj['transactionsType'] = transactionsType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`api/v1/utils/payload`, API_CONFIG.PREMIUM_COMPUTATION, params);
-  
+
   }
   // quotationUtils(transactionCode){
   //   const params = new HttpParams()
@@ -172,11 +172,11 @@ export class QuotationsService {
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
     paramsObj['subclassCode'] = subclassCode.toString();
-  
+
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-  
+
   }
   getClauses(
     covertypeCode: number,
@@ -199,7 +199,7 @@ export class QuotationsService {
   //   // Create an object to hold parameters only if they are provided
   //   const paramsObj: { [param: string]: string } = {};
   //   // Add the mandatory parameter
-    
+
   //   paramsObj['scheduleType'] = scheduleType
   //   paramsObj['subclassCode'] = subclassCode.toString();
 
@@ -219,7 +219,7 @@ export class QuotationsService {
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
   getExcesses(
@@ -233,13 +233,34 @@ export class QuotationsService {
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
-  
+
     return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
   addLimitsOfLiability(data:CreateLimitsOfLiability[]){
     return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 
+  }
+
+  addClauses(
+    clauseCodes: number[], // Accept an array of clause codes
+    productCode: number,
+    quotCode: number,
+    riskCode: number
+  ) {
+    // Construct the payload
+    const payload = {
+      clauseCodes, // Send all clause codes in a single object
+    };
+
+    // Construct query parameters for the other mandatory parameters
+    const params = new HttpParams()
+      .set('productCode', productCode.toString())
+      .set('quotCode', quotCode.toString())
+      .set('riskCode', riskCode.toString());
+
+    // Call the API with the payload and query parameters
+    return this.api.POST(`/v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL );
   }
 
 }
