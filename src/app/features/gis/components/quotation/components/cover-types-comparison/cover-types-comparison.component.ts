@@ -1345,7 +1345,7 @@ export class CoverTypesComparisonComponent {
           );
         }
       });
-  }
+    }
 
 
 }
