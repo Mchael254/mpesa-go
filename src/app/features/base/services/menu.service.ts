@@ -556,7 +556,7 @@ export class MenuService {
       {
         name: 'Actions',
         nameSlug: 'actions',
-        icon: 'fa-solid fa-gears',
+        // icon: 'fa-solid fa-gears',
         menuItems: [
           {
             name: 'Create Report',
@@ -573,19 +573,97 @@ export class MenuService {
     ],
     FMS: [
       {
-        name: 'Cheques',
-        nameSlug: 'cheques',
-        icon: 'fa-solid fa-money-check',
-        link: 'home/fms/cheque-authorization',
-        collapsed: true,
+        name: 'General Ledger',
+        nameSlug: 'general-ledger',
+        // icon: 'fa-solid fa-money-check',
+        menuItems: [
+          { name:'Paramaters', nameSlug:'parameters',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Gl-Transactions', nameSlug:'transactions',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Gl-Inquiries', nameSlug:'gl-inquires',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Gl-Final Reports', nameSlug:'final-reports',subList:[
+            {name:'',link:''}
+                          ] },
+                        ],
+                        collapsed: true,
       },
       {
-        name: 'Actions',
-        nameSlug: 'actions',
-        icon: 'fa-solid fa-gears',
-        menuItems: [{ name: 'Cheque signing', link: '' }],
+        name: 'Cashbook',
+        
+
+        nameSlug: 'cashbook',
+        // icon: 'fa-solid fa-gears',
+        menuItems: [
+          { name:'Paramaters', nameSlug:'parameters',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Transactions', nameSlug:'transactions',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Requistions', nameSlug:'requistions',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Cheques', nameSlug:'cheques',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Petty cash', nameSlug:'pettycash',subList:[
+        {name:'',link:''}
+                      ] },
+          { name:'Receipts', nameSlug:'receipting',subList:[
+{name:'Receipting',link:'/home/fms/receipt'}
+          ] },
+          
+        ],
         collapsed: true,
+        
       },
+    
+      {
+        name: 'Debtors',
+        nameSlug: 'debtors',
+        // icon: 'fa-solid fa-money-check',
+        menuItems: [
+          { name:'Paramaters', nameSlug:'parameters',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Transactions', nameSlug:'transactions',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Invoices/Cr Notes', nameSlug:'invoices-cr',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Inquires', nameSlug:'inquires',subList:[
+            {name:'',link:''}
+                          ] },
+                        ],
+                        collapsed: true,
+      },
+      {
+        name: 'Creditors',
+        nameSlug: 'creditors',
+        // icon: 'fa-solid fa-money-check',
+        menuItems: [
+          { name:'Paramaters', nameSlug:'parameters',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Transactions', nameSlug:'transactions',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Invoices/DR Notes', nameSlug:'invoices-dr',subList:[
+            {name:'',link:''}
+                          ] },
+          { name:'Inquires', nameSlug:'inquires',subList:[
+            {name:'',link:''}
+                          ] },
+                        ],
+                        collapsed: true,
+      },
+  
     ],
   };
 
@@ -753,19 +831,19 @@ export class MenuService {
   fmsSubMenuList(): SidebarMenu[] {
     return [
       {
-        name: 'General ledger',
-        link: '/home/fms/cheque-authorization',
+        name: '',
+        link: '/home/fms/',
         value: 'FMS',
-        menuItems: [
-          { name: 'Parameters', link: '' },
-          { name: 'Transactions', link: '' },
-          { name: 'Inquiries', link: '' },
-          { name: 'Reports', link: '' },
-        ],
+        // menuItems: [
+        //   { name: 'Parameters', link: '' },
+        //   { name: 'Transactions', link: '' },
+        //   { name: 'Inquiries', link: '' },
+        //   { name: 'Reports', link: '' },
+        // ],
       },
       {
         name: 'Cashbook',
-        link: '',
+        link: '/home/fms/receipt',
         value: 'FMS',
         menuItems: [
           { name: 'Parameters', link: '' },
