@@ -51,6 +51,7 @@
     "Summary": "Summary",
     "team": "Team",
     "tickets": "Tickets",
+    
     "view_all": "VIEW ALL",
     "dispatch": "MASS DISPATCH",
     "more": "more",
@@ -184,9 +185,27 @@
     "Required Documents": "Required Documents",
     "Service Provider Type": "Service Provider Type",
     "FMS": "FMS",
-    "General ledger": "General ledger",
+    "General Ledger": "General ledger",
     "Cashbook": "Cashbook",
-    "Cheques": "Cheques",
+    "Debtors":"Debtors",
+    "Creditors":"Creditors",
+    "Paramaters":"Parameters",
+   "Gl-Inquiries":"Gl-Inquiries",
+    "Gl-Transactions":"Gl-Transactions",
+    "Transactions":"Transactions",
+    "Requistions":"Requistions",
+    "Receipting":"Receipting",
+    "Cheques":"Cheques",
+
+"Receipts":"Receipts",
+"Invoices/Cr Notes":"Invoices/Cr Notes",
+"Inquires":"Inquires",
+"Invoices/DR Notes":"Invoices/DR Notes",
+"Requisitions": "Requistions",
+        
+"Petty cash": "Petty cash",
+"Gl-Final Reports":"Gl-Final Reports",
+   
     "Cheque signing": "Cheque signing",
     "Campaigns": "Campaigns",
     "Client Attributes": "Client Attributes",
@@ -214,6 +233,8 @@
     "Request Categories": "Request Categories",
     "Request Status": "Request Status",
     "Hierarchy": "Hierarchy"
+   
+   
   },
   "shared": {
     "quotation_landing_screen": {
@@ -2537,6 +2558,7 @@
     "signSelect": "Sign selected",
     "correction": "Send for correction",
     "reject": "Reject",
+    
     "receipting": {
       "capture_receipt": "Capture receipt",
       "receipt_details": "Receipt Details",
