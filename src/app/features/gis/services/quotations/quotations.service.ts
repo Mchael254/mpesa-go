@@ -242,39 +242,45 @@ export class QuotationsService {
 
   }
 
-  addClauses(
-    clauseCode: number,
-    productCode : number,
-    quotCode : number,
-    riskCode: number,) {
-    // Create an object to hold parameters only if they are provided
-    const paramsObj: { [param: string]: string } = {};
-    // Add the mandatory parameter
-    paramsObj['clauseCode'] = clauseCode.toString();
-    paramsObj['productCode'] = productCode.toString();
-    paramsObj['quotCode'] = quotCode.toString();
-    paramsObj['riskCode'] = riskCode.toString();
+  // addClauses(
+  //   clauseCode: number,
+  //   productCode : number,
+  //   quotCode : number,
+  //   riskCode: number,) {
+  //   // Create an object to hold parameters only if they are provided
+  //   const paramsObj: { [param: string]: string } = {};
+  //   // Add the mandatory parameter
+  //   paramsObj['clauseCode'] = clauseCode.toString();
+  //   paramsObj['productCode'] = productCode.toString();
+  //   paramsObj['quotCode'] = quotCode.toString();
+  //   paramsObj['riskCode'] = riskCode.toString();
 
-    const params = new HttpParams({ fromObject: paramsObj });
+  //   const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.POST(`/v2/clauses?${params}`, "placeholder data",  API_CONFIG.GIS_QUOTATION_BASE_URL);
+  //   return this.api.POST(`/v2/clauses?${params}`, "placeholder data",  API_CONFIG.GIS_QUOTATION_BASE_URL);
 
-  }
-
-
-  // addClauses(clauses: Array<{ clauseCode: number, productCode: number, quotCode: number, riskCode: number }>) {
-  //   // Prepare the request payload
-  //   const payload = {
-  //     clauses: clauses.map(clause => ({
-  //         clauseCode: clause.clauseCode.toString(),
-  //         productCode: clause.productCode.toString(),
-  //         quotCode: clause.quotCode.toString(),
-  //         riskCode: clause.riskCode.toString(),
-  //     }))
-  //   };
-
-  //   // Send the API request with the payload
-  //   return this.api.POST(`/v2/clauses?${payload}`, "placeholder data", API_CONFIG.GIS_QUOTATION_BASE_URL);
   // }
+
+
+  addClauses(
+    clauseCodes: number[], // Accept an array of clause codes
+    productCode: number,
+    quotCode: number,
+    riskCode: number
+  ) {
+    // Construct the payload
+    const payload = {
+      clauseCodes, // Send all clause codes in a single object
+    };
+
+    // Construct query parameters for the other mandatory parameters
+    const params = new HttpParams()
+      .set('productCode', productCode.toString())
+      .set('quotCode', quotCode.toString())
+      .set('riskCode', riskCode.toString());
+
+    // Call the API with the payload and query parameters
+    return this.api.POST(`/v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL );
+  }
 
 }
