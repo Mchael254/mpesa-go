@@ -3,6 +3,7 @@ import { ApiService } from '../../../shared/services/api/api.service';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 import {
+  LeadActivityDto,
   LeadCommentDto,
   LeadSourceDto,
   LeadStatusDto,
@@ -190,6 +191,22 @@ export class LeadsService {
     return this.api.DELETE<LeadCommentDto>(
       `lead-comments/${leadCommentId}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  assignLeadActivity(
+    data: LeadActivityDto,
+    leadCode: number
+  ): Observable<LeadActivityDto> {
+    const paramsObj: { [param: string]: string } = {};
+    paramsObj['leadCode'] = leadCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.POST<LeadActivityDto>(
+      'lead-activities',
+      data,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
     );
   }
 }

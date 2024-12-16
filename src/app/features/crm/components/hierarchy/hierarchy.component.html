@@ -92,7 +92,8 @@
             </span>
             <span class="icon-circle">
               <i
-                class="fa-regular fa-trash-can" id="deleteHierarchyType"
+                class="fa-regular fa-trash-can"
+                id="deleteHierarchyType"
                 (click)="deleteHierarchyLevelType()"
               >
               </i>
@@ -199,7 +200,8 @@
             </span>
             <span class="icon-circle">
               <i
-                class="fa-regular fa-trash-can" id="deleteHierarchyLevel"
+                class="fa-regular fa-trash-can"
+                id="deleteHierarchyLevel"
                 (click)="deleteHierarchyLevel()"
               >
               </i>
@@ -433,8 +435,8 @@
                     class="form-control"
                     id="divisionHead"
                     formControlName="divisionHead"
-                    (click)="openAllUsersModal()"
-                    value="{{ selectedMainUser?.name }}"
+                    (click)="openAllUsersModal('orgSubDivForm')"
+                    value="{{ selectedOrgSubDivUser?.name }}"
                     readonly
                   />
                 </div>
@@ -545,14 +547,21 @@
               <i class="pi pi-pencil"></i>
             </span>
             <span class="icon-circle">
-              <i class="fa-regular fa-trash-can" id="deleteHierarchyPrevHead"
-              (click)="deleteHierarchyHeadHistory()"></i>
+              <i
+                class="fa-regular fa-trash-can"
+                id="deleteHierarchyPrevHead"
+                (click)="deleteHierarchyHeadHistory()"
+              ></i>
             </span>
           </div>
         </div>
         <div class="col-sm-6">
-          <input type="text" class="form-control" placeholder="Search"
-                 (input)="filterPreviousHeads($event)"/>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search"
+            (input)="filterPreviousHeads($event)"
+          />
         </div>
       </div>
       <p-table
@@ -608,7 +617,6 @@
       </p-table>
     </div>
   </div>
-
 
   <!--Create Hierarchy Type modal-->
   <div
@@ -760,8 +768,8 @@
                     class="form-control"
                     id="intermediary"
                     formControlName="intermediary"
-                    (click)="openAllUsersModal()"
-                    value="{{ selectedMainUser?.name }}"
+                    (click)="openAllUsersModal('hierarchyTypeForm')"
+                    value="{{ selectedHierarchyTypeUser?.name }}"
                     readonly
                   />
                 </div>
@@ -789,7 +797,7 @@
             type="button"
             class="btn btn-primary"
             id="saveHierarchyType"
-          (click)="saveHierarchyType()"
+            (click)="saveHierarchyType()"
           >
             Save details
           </button>
@@ -860,35 +868,65 @@
                         [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
                   <option value=""></option>
                 </select>-->
-                <input type="number" class="form-control" id="ranking" formControlName="ranking"
-                       [ngClass]="{ 'is-invalid': g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched) }">
-                <div *ngIf="g['ranking']?.invalid && (g['ranking']?.dirty || g['ranking']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['ranking']?.errors['required']">Ranking is required</div>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="ranking"
+                    formControlName="ranking"
+                    [ngClass]="{
+                      'is-invalid':
+                        g['ranking']?.invalid &&
+                        (g['ranking']?.dirty || g['ranking']?.touched)
+                    }"
+                  />
+                  <div
+                    *ngIf="
+                      g['ranking']?.invalid &&
+                      (g['ranking']?.dirty || g['ranking']?.touched)
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div *ngIf="g['ranking']?.errors['required']">
+                      Ranking is required
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="visibleStatus.type === 'Y'">
-              <div class="col-md-12">
-                <label class="form-label w-100" for="levelType">{{'crm.type' | translate}}</label>
-                <select class="form-select" id="levelType" formControlName="type">
-                  <option value="{{ type.value }}" *ngFor="let type of hierarchyLevelsEnumData">{{ type.name }}</option>
-                </select>
-              </div>
-            </ng-container>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-top-0">
-        <button
-          type="button"
-          class="btn btn-primary"
-          id="saveHierarchyLevel"
-          (click)="saveHierarchyLevel()">Save details
-        </button>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus.type === 'Y'">
+                <div class="col-md-12">
+                  <label class="form-label w-100" for="levelType">{{
+                    "crm.type" | translate
+                  }}</label>
+                  <select
+                    class="form-select"
+                    id="levelType"
+                    formControlName="type"
+                  >
+                    <option
+                      value="{{ type.value }}"
+                      *ngFor="let type of hierarchyLevelsEnumData"
+                    >
+                      {{ type.name }}
+                    </option>
+                  </select>
+                </div>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top-0">
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="saveHierarchyLevel"
+            (click)="saveHierarchyLevel()"
+          >
+            Save details
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <!--Create Hierarchy head history modal-->
   <div
@@ -924,7 +962,9 @@
                     class="form-control"
                     id="agentName"
                     formControlName="agentName"
-                    (click)="openAllUsersModal()" value="{{selectedMainUser?.name}}" readonly
+                    (click)="openAllUsersModal('hierarchyHeadHistoryForm')"
+                    value="{{ selectedHierarchyHeadHistoryUser?.name }}"
+                    readonly
                   />
                 </div>
               </ng-container>
@@ -966,7 +1006,7 @@
             type="button"
             class="btn btn-primary"
             id="saveHierarchyHead"
-          (click)="saveHierarchyHeadHistory()"
+            (click)="saveHierarchyHeadHistory()"
           >
             Save details
           </button>
@@ -984,8 +1024,8 @@
     [modalTitle]="'Intermediaries'"
     [zIndex]="1"
     (actionEmitter)="processSelectedUser($event)"
-
-  id="process-selected-user">
+    id="process-selected-user"
+  >
     <div modal-body-content>
       <app-staff-modal
         (userSelected)="getSelectedUser($event)"

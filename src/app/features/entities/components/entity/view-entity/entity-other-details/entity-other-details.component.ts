@@ -28,7 +28,10 @@ import { EditOrganizationFormComponent } from './edit-organization-form/edit-org
 import { EditCommentFormComponent } from './edit-comment-form/edit-comment-form.component';
 import { EditOtherDetailsFormComponent } from './edit-other-details-form/edit-other-details-form.component';
 import { EditActivityFormComponent } from './edit-activity-form/edit-activity-form.component';
-import {ReqPartyById} from "../../../../data/entityDto";
+import { ReqPartyById } from '../../../../data/entityDto';
+import { ActivityService } from '../../../../../../features/crm/services/activity.service';
+import { forkJoin } from 'rxjs';
+import { LeadActivityDto } from 'src/app/features/crm/data/leads';
 
 const log = new Logger('EntityOtherDetails');
 
@@ -107,9 +110,12 @@ export class EntityOtherDetailsComponent implements OnInit {
   isFormDetailsReady: boolean = false;
   public selectedComment: any;
   public selectedActivity: any;
+  public errorOccurred = false;
+  public errorMessage: string = '';
 
   constructor(
     private sectorService: SectorService,
+    private activityService: ActivityService,
     private cdr: ChangeDetectorRef,
     private globalMessagingService: GlobalMessagingService
   ) {}
@@ -126,6 +132,13 @@ export class EntityOtherDetailsComponent implements OnInit {
   onCommentUpdated(isUpdated: boolean): void {
     if (isUpdated) {
       this.getCommentList();
+      this.cdr.detectChanges();
+    }
+  }
+
+  onActivityAssigned(isUpdated: boolean): void {
+    if (isUpdated) {
+      this.getActivityList();
       this.cdr.detectChanges();
     }
   }
@@ -162,20 +175,56 @@ export class EntityOtherDetailsComponent implements OnInit {
   }
 
   getActivityList(): void {
-    if (this.partyAccountDetails?.leadDto?.leadActivities) {
-      this.activitiesData = this.partyAccountDetails?.leadDto?.leadActivities;
+    const leadActivities = this.partyAccountDetails?.leadDto?.leadActivities;
+    if (leadActivities && leadActivities.length) {
+      // Extract activity codes from lead activities
+      const activityCodes = leadActivities.map(
+        (activity) => activity.activityCode
+      );
+      log.info(`ActivityCodes`, activityCodes);
+      this.fetchActivityDetails(activityCodes);
     }
+  }
+
+  fetchActivityDetails(activityCodes: number[]): void {
+    // Map each activity code to an observable that calls the API
+    const activityRequests = activityCodes.map((code) =>
+      this.activityService.getActivityById(code)
+    );
+
+    // Use forkJoin to execute all requests in parallel and wait for all to complete
+    forkJoin(activityRequests).subscribe({
+      next: (activities) => {
+        if (activities) {
+          // this.activitiesData = activities;
+          this.activitiesData = [...activities];
+          this.cdr.detectChanges();
+          log.info('Fetched Activities', this.activitiesData);
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+        }
+      },
+      error: (err) => {
+        this.errorOccurred = true;
+        this.errorMessage = err?.message || 'An error occurred';
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
   }
 
   /**
    * Set the selected tab as active for edit purpose
    * @param event
    */
-  // setActiveTab(event): void {
-  //   const index = event.index;
-  //   this.activeTab = this.additionalInfoTabs[index].tabName;
-  // }
-
   setInitialTab(): void {
     this.activeTabIndex =
       this.partyAccountDetails?.partyType?.partyTypeName === 'Lead' ? 0 : 6;
@@ -310,12 +359,12 @@ export class EntityOtherDetailsComponent implements OnInit {
           extras
         );
         break;
-      case 'activity':
-        this.editActivityFormComponent.prepareUpdateDetails(
-          this.selectedActivity,
-          extras
-        );
-        break;
+      // case 'activity':
+      //   this.editActivityFormComponent.prepareUpdateDetails(
+      //     this.selectedActivity,
+      //     extras
+      //   );
+      //   break;
       default:
         log.warn(`No form found for tab: ${this.activeTab}`);
     }
@@ -369,12 +418,20 @@ export class EntityOtherDetailsComponent implements OnInit {
   addItem(): void {
     const extras: Extras = {
       partyAccountId: this.partyAccountDetails.id,
-      countryId: this.partyAccountDetails?.address?.country_id,
       leadId: this.partyAccountDetails?.leadDto?.code,
       userCode: this.partyAccountDetails?.leadDto?.userCode,
+      leadActivities: this.partyAccountDetails?.leadDto?.leadActivities,
     };
 
-    if (this.activeTab === 'comment') {
+    // if (this.activeTab === 'comment') {
+    //   this.editCommentFormComponent.initializeNewComment(extras);
+    // } else {
+    //   log.warn('Add operation not supported for this tab.');
+    // }
+
+    if (this.activeTab === 'activity') {
+      this.editActivityFormComponent.initializeNewActivity(extras);
+    } else if (this.activeTab === 'comment') {
       this.editCommentFormComponent.initializeNewComment(extras);
     } else {
       log.warn('Add operation not supported for this tab.');
@@ -391,4 +448,5 @@ export interface Extras {
   countryId?: number;
   leadId?: number;
   userCode?: number;
+  leadActivities?: LeadActivityDto[];
 }

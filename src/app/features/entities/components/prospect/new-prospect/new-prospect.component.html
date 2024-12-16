@@ -1,0 +1,901 @@
+<div class="d-flex justify-content-between mx-4 my-4">
+  <div class="mr-auto p-2">
+    <h4 class="htxt page-header">
+      {{ "entities.new_prospect" | translate | titlecase }}
+    </h4>
+  </div>
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="prospectBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+</div>
+<div class="my-4 mx-4">
+  <form [formGroup]="createProspectForm" novalidate>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-3">
+          <div class="card-header bg-transparent">
+            {{ "entities.prime_identity" | translate }}
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="userType"
+                  id="individual"
+                  value="I"
+                  checked
+                  (click)="selectUserType($event)"
+                />
+                <label class="form-check-label" for="individual">{{
+                  "entities.individual" | translate
+                }}</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="userType"
+                  id="corporate"
+                  value="C"
+                  (click)="selectUserType($event)"
+                />
+                <label class="form-check-label" for="corporate">{{
+                  "entities.corporate" | translate
+                }}</label>
+              </div>
+            </div>
+            <div class="row">
+              <ng-container *ngIf="visibleStatus?.clientType === 'Y'">
+                <div class="form-group col-md-4 mb-3">
+                  <label for="clientType">{{
+                    "entities.client_type" | translate
+                  }}</label>
+                  <select
+                    id="clientType"
+                    class="form-select"
+                    formControlName="clientType"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['clientType']?.invalid &&
+                        (f['clientType']?.dirty || f['clientType']?.touched)
+                    }"
+                  >
+                    <option value="" selected>
+                      {{ "entities.client_type" | translate }}
+                    </option>
+                    <option
+                      *ngFor="let type of clientsTypeData"
+                      [value]="type.description"
+                    >
+                      {{ type.clientTypeName }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      f['clientType']?.invalid &&
+                      (f['clientType']?.dirty || f['clientType']?.touched)
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div *ngIf="f['clientType']?.errors['required']">
+                      {{ "entities.client_type_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.identityType === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="identityType">{{
+                    "entities.identity_type" | translate
+                  }}</label>
+                  <select
+                    id="identityType"
+                    class="form-select"
+                    formControlName="identityType"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['identityType']?.invalid &&
+                        (f['identityType']?.dirty || f['identityType']?.touched)
+                    }"
+                  >
+                    <option value="" selected>
+                      {{ "entities.identity_type" | translate }}
+                    </option>
+                    <option
+                      *ngFor="let type of modeIdentityType"
+                      [value]="type.id"
+                    >
+                      {{ type.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      f['identityType']?.invalid &&
+                      (f['identityType']?.dirty || f['identityType']?.touched)
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div *ngIf="f['identityType']?.errors['required']">
+                      {{ "entities.identity_type_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="prospectType === 'I'">
+                <ng-container *ngIf="visibleStatus?.surname === 'Y'">
+                  <div class="form-group col-md-4 mb-3">
+                    <label for="surname">{{
+                      "entities.surname" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="surname"
+                      formControlName="surname"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['surname']?.invalid &&
+                          (f['surname']?.dirty || f['surname']?.touched)
+                      }"
+                    />
+                    <div
+                      *ngIf="
+                        f['surname']?.invalid &&
+                        (f['surname']?.dirty || f['surname']?.touched)
+                      "
+                      class="form-text text-danger"
+                    >
+                      <div *ngIf="f['surname']?.errors['required']">
+                        {{ "entities.surname_required" | translate }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="visibleStatus?.otherName === 'Y'">
+                  <div class="form-group col-md-4">
+                    <label for="otherName">{{
+                      "entities.other_name" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="otherName"
+                      formControlName="otherName"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['otherName']?.invalid &&
+                          (f['otherName']?.dirty || f['otherName']?.touched)
+                      }"
+                    />
+                    <div
+                      *ngIf="
+                        f['otherName']?.invalid &&
+                        (f['otherName']?.dirty || f['otherName']?.touched)
+                      "
+                      class="form-text text-danger"
+                    >
+                      <div *ngIf="f['otherName']?.errors['required']">
+                        {{ "entities.other_name_required" | translate }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="visibleStatus?.dateOfBirth === 'Y'">
+                  <div class="form-group col-md-4">
+                    <label for="dateOfBirth">{{
+                      "entities.dob" | translate
+                    }}</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      onfocus="(this.type='date')"
+                      onblur="(this.type='text')"
+                      id="dateOfBirth"
+                      formControlName="dateOfBirth"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['dateOfBirth']?.invalid &&
+                          (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched)
+                      }"
+                    />
+                    <div
+                      *ngIf="
+                        f['dateOfBirth']?.invalid &&
+                        (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched)
+                      "
+                      class="form-text text-danger"
+                    >
+                      <div *ngIf="f['dateOfBirth']?.errors['required']">
+                        {{ "entities.dob_required" | translate }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="prospectType === 'C'">
+                <p class="lead">
+                  {{ "entities.corporate_details_here" | translate }}
+                </p>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.idNumber === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="idNumber">{{
+                    "entities.id_number" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="idNumber"
+                    placeholder="30567890"
+                    formControlName="idNumber"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['idNumber']?.invalid &&
+                        (f['idNumber']?.dirty || f['idNumber']?.touched)
+                    }"
+                  />
+                  <div
+                    *ngIf="
+                      f['idNumber']?.invalid &&
+                      (f['idNumber']?.dirty || f['idNumber']?.touched)
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div *ngIf="f['idNumber']?.errors['required']">
+                      {{ "entities.id_number_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.pinNumber === 'Y'">
+                <div class="form-group col-md-4 mt-3">
+                  <label for="pinNumber">{{
+                    "entities.pin_number" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="pinNumber"
+                    placeholder="A12345678Y"
+                    formControlName="pinNumber"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['pinNumber']?.invalid &&
+                        (f['pinNumber']?.dirty || f['pinNumber']?.touched)
+                    }"
+                  />
+                  <div
+                    *ngIf="
+                      f['pinNumber']?.invalid &&
+                      (f['pinNumber']?.dirty || f['pinNumber']?.touched)
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div *ngIf="f['pinNumber']?.errors['required']">
+                      {{ "entities.pin_number_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="prospectType === 'I'">
+                <ng-container *ngIf="visibleStatus?.gender === 'Y'">
+                  <div class="form-group col-md-4 mt-3">
+                    <label for="gender">{{
+                      "entities.gender" | translate
+                    }}</label>
+                    <select
+                      id="gender"
+                      class="form-select"
+                      formControlName="gender"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['gender']?.invalid &&
+                          (f['gender']?.dirty || f['gender']?.touched)
+                      }"
+                    >
+                      <option value="" selected>
+                        {{ "entities.select_gender" | translate }}
+                      </option>
+                      <option value="M">
+                        {{ "entities.male" | translate }}
+                      </option>
+                      <option value="F">
+                        {{ "entities.female" | translate }}
+                      </option>
+                    </select>
+                    <div
+                      *ngIf="
+                        f['gender']?.invalid &&
+                        (f['gender']?.dirty || f['gender']?.touched)
+                      "
+                      class="form-text text-danger"
+                    >
+                      <div *ngIf="f['gender']?.errors['required']">
+                        {{ "entities.gender_required" | translate }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-3">
+          <div
+            class="bg-transparent"
+            [ngClass]="{
+              'card-header': isCardOpen[1],
+              'local-card-header': !isCardOpen[1]
+            }"
+          >
+            {{ "entities.contact_address_details" | translate }}
+            <div class="float-end">
+              <button
+                type="button"
+                id="icon"
+                class="btn btn-primary"
+                [attr.aria-expanded]="isCardOpen[1]"
+                (click)="toggleCard(1)"
+              >
+                <i
+                  [ngClass]="{
+                    'fa-chevron-down': !isCardOpen[1],
+                    'fa-chevron-up': isCardOpen[1]
+                  }"
+                  class="fa-solid"
+                ></i>
+              </button>
+            </div>
+          </div>
+          <div
+            id="addressDetails"
+            class="collapse card-body"
+            [ngClass]="{ show: isCardOpen[1] }"
+            formGroupName="addressDetails"
+          >
+            <div class="row">
+              <ng-container *ngIf="visibleStatus?.country === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="country">{{
+                    "entities.country" | translate
+                  }}</label>
+                  <p-dropdown
+                    [options]="countryData"
+                    [(ngModel)]="selectedCountry"
+                    optionLabel="name"
+                    optionValue="id"
+                    [style]="{ width: '100%', height: '50%' }"
+                    placeholder="Country"
+                    formControlName="country"
+                    id="country"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    appendTo="body"
+                    class="center-placeholder"
+                    (onChange)="onCountryChange()"
+                    ngDefaultControl
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['country']['invalid'] &&
+                        (f['addressDetails']['controls']['country']['dirty'] ||
+                          f['addressDetails']['controls']['country']['touched'])
+                    }"
+                  >
+                  </p-dropdown>
+                  <div
+                    *ngIf="f?.['addressDetails']['controls']['country']['invalid'] && (f['addressDetails']['controls']['country']['dirty'] || f['addressDetails']['controls']['country']['touched'])"
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="f?.['addressDetails']['controls']['country']['errors']['required']"
+                    >
+                      {{ "entities.country_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.state === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="state">{{ "entities.state" | translate }}</label>
+                  <p-dropdown
+                    [options]="statesData"
+                    [(ngModel)]="selectedState"
+                    optionLabel="name"
+                    optionValue="id"
+                    formControlName="state"
+                    [style]="{ width: '100%', height: '50%' }"
+                    name="city"
+                    id="state"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    placeholder="state"
+                    appendTo="body"
+                    (onChange)="onCityChange()"
+                    ngDefaultControl
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['state']['invalid'] &&
+                        (f['addressDetails']['controls']['state']['dirty'] ||
+                          f['addressDetails']['controls']['state']['touched'])
+                    }"
+                  >
+                  </p-dropdown>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['state']['invalid'] &&
+                      (f['addressDetails']['controls']['state']['dirty'] ||
+                        f['addressDetails']['controls']['state']['touched'])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['state']['errors'][
+                          'required'
+                        ]
+                      "
+                    >
+                      {{ "entities.state_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.town === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="town">{{ "entities.town" | translate }}</label>
+                  <p-dropdown
+                    [options]="townData"
+                    optionLabel="name"
+                    optionValue="id"
+                    formControlName="town"
+                    [style]="{ width: '100%', height: '50%' }"
+                    placeholder="Town"
+                    name="townCode"
+                    id="town"
+                    appendTo="body"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    ngDefaultControl
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['town']['invalid'] &&
+                        (f['addressDetails']['controls']['town']['dirty'] ||
+                          f['addressDetails']['controls']['town']['touched'])
+                    }"
+                  >
+                  </p-dropdown>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['town']['invalid'] &&
+                      (f['addressDetails']['controls']['town']['dirty'] ||
+                        f['addressDetails']['controls']['town']['touched'])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['town']['errors'][
+                          'required'
+                        ]
+                      "
+                    >
+                      {{ "entities.town_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.postalAddress === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="postalAddress">{{
+                    "entities.postal_address" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="postalAddress"
+                    formControlName="postalAddress"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['postalAddress'][
+                          'invalid'
+                        ] &&
+                        (f['addressDetails']['controls']['postalAddress'][
+                          'dirty'
+                        ] ||
+                          f['addressDetails']['controls']['postalAddress'][
+                            'touched'
+                          ])
+                    }"
+                  />
+                  <div
+                    *ngIf="f?.['addressDetails']['controls']['postalAddress']['invalid'] && (f['addressDetails']['controls']['postalAddress']['dirty'] || f['addressDetails']['controls']['postalAddress']['touched'])"
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="f?.['addressDetails']['controls']['postalAddress']['errors']['required']"
+                    >
+                      {{ "entities.postal_address_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.postalCode === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="postalCode">{{
+                    "entities.postal_code" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="postalCode"
+                    formControlName="postalCode"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['postalCode'][
+                          'invalid'
+                        ] &&
+                        (f['addressDetails']['controls']['postalCode'][
+                          'dirty'
+                        ] ||
+                          f['addressDetails']['controls']['postalCode'][
+                            'touched'
+                          ])
+                    }"
+                  />
+                  <div
+                    *ngIf="f?.['addressDetails']['controls']['postalCode']['invalid'] && (f['addressDetails']['controls']['postalCode']['dirty'] || f['addressDetails']['controls']['postalCode']['touched'])"
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="f?.['addressDetails']['controls']['postalCode']['errors']['required']"
+                    >
+                      {{ "entities.postal_code_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.physicalAddress === 'Y'">
+                <div class="form-group col-md-4">
+                  <label for="physicalAddress">{{
+                    "entities.physical_address" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="physicalAddress"
+                    formControlName="physicalAddress"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['physicalAddress'][
+                          'invalid'
+                        ] &&
+                        (f['addressDetails']['controls']['physicalAddress'][
+                          'dirty'
+                        ] ||
+                          f['addressDetails']['controls']['physicalAddress'][
+                            'touched'
+                          ])
+                    }"
+                  />
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['physicalAddress'][
+                        'invalid'
+                      ] &&
+                      (f['addressDetails']['controls']['physicalAddress'][
+                        'dirty'
+                      ] ||
+                        f['addressDetails']['controls']['physicalAddress'][
+                          'touched'
+                        ])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['physicalAddress'][
+                          'errors'
+                        ]['required']
+                      "
+                    >
+                      {{ "entities.physical_address_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.telNumber === 'Y'">
+                <div class="form-group col-md-4 mt-3">
+                  <label for="telNumber">{{
+                    "entities.tel_number" | translate
+                  }}</label>
+                  <div class="input-group">
+                    <select
+                      class="form-select"
+                      id="countryCodeTel"
+                      formControlName="countryCodeTel"
+                      style="max-width: 25%"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['addressDetails']['controls']['countryCodeTel'][
+                            'invalid'
+                          ] &&
+                          (f['addressDetails']['controls']['countryCodeTel'][
+                            'dirty'
+                          ] ||
+                            f['addressDetails']['controls']['countryCodeTel'][
+                              'touched'
+                            ])
+                      }"
+                    >
+                      <option
+                        *ngFor="let value of countryData"
+                        [value]="'+' + value?.zipCode"
+                      >
+                        {{ "+" + value?.zipCode }}
+                      </option>
+                    </select>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="telNumber"
+                      formControlName="telNumber"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['addressDetails']['controls']['telNumber'][
+                            'invalid'
+                          ] &&
+                          (f['addressDetails']['controls']['telNumber'][
+                            'dirty'
+                          ] ||
+                            f['addressDetails']['controls']['telNumber'][
+                              'touched'
+                            ])
+                      }"
+                    />
+                  </div>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['countryCodeTel'][
+                        'invalid'
+                      ] &&
+                      (f['addressDetails']['controls']['countryCodeTel'][
+                        'dirty'
+                      ] ||
+                        f['addressDetails']['controls']['countryCodeTel'][
+                          'touched'
+                        ])
+                    "
+                    class="form-text text-danger"
+                    [ngClass]="{
+                      'is-invalid':
+                        submitted &&
+                        f['addressDetails']['controls']['countryCodeTel']
+                          ?.errors
+                    }"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['countryCodeTel']
+                          ?.errors['required']
+                      "
+                    >
+                      Country code is required
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['telNumber']['invalid'] &&
+                      (f['addressDetails']['controls']['telNumber']['dirty'] ||
+                        f['addressDetails']['controls']['telNumber']['touched'])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['telNumber']['errors'][
+                          'required'
+                        ]
+                      "
+                    >
+                      {{ "entities.tel_no_required" | translate }}
+                    </div>
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['telNumber']['errors'][
+                          'pattern'
+                        ]
+                      "
+                    >
+                      {{ "entities.tel_number_format" | translate }} 715123456
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.mobileNumber === 'Y'">
+                <div class="form-group col-md-4 mt-3">
+                  <label for="mobileNumber">{{
+                    "entities.mobile_number" | translate
+                  }}</label>
+                  <div class="input-group">
+                    <select
+                      class="form-select"
+                      id="countryCodeTel"
+                      formControlName="countryCodeTel"
+                      style="max-width: 25%"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['addressDetails']['controls']['countryCodeTel'][
+                            'invalid'
+                          ] &&
+                          (f['addressDetails']['controls']['countryCodeTel'][
+                            'dirty'
+                          ] ||
+                            f['addressDetails']['controls']['countryCodeTel'][
+                              'touched'
+                            ])
+                      }"
+                    >
+                      <option
+                        *ngFor="let value of countryData"
+                        [value]="'+' + value?.zipCode"
+                      >
+                        {{ "+" + value?.zipCode }}
+                      </option>
+                    </select>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="mobileNumber"
+                      formControlName="mobileNumber"
+                      [ngClass]="{
+                        'is-invalid':
+                          f['addressDetails']['controls']['mobileNumber'][
+                            'invalid'
+                          ] &&
+                          (f['addressDetails']['controls']['mobileNumber'][
+                            'dirty'
+                          ] ||
+                            f['addressDetails']['controls']['mobileNumber'][
+                              'touched'
+                            ])
+                      }"
+                    />
+                  </div>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['countryCodeTel'][
+                        'invalid'
+                      ] &&
+                      (f['addressDetails']['controls']['countryCodeTel'][
+                        'dirty'
+                      ] ||
+                        f['addressDetails']['controls']['countryCodeTel'][
+                          'touched'
+                        ])
+                    "
+                    class="form-text text-danger"
+                    [ngClass]="{
+                      'is-invalid':
+                        submitted &&
+                        f['addressDetails']['controls']['countryCodeTel']
+                          ?.errors
+                    }"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['countryCodeTel']
+                          ?.errors['required']
+                      "
+                    >
+                      Country code is required
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['mobileNumber'][
+                        'invalid'
+                      ] &&
+                      (f['addressDetails']['controls']['mobileNumber'][
+                        'dirty'
+                      ] ||
+                        f['addressDetails']['controls']['mobileNumber'][
+                          'touched'
+                        ])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['mobileNumber'][
+                          'errors'
+                        ]['required']
+                      "
+                    >
+                      {{ "entities.tel_no_required" | translate }}
+                    </div>
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['mobileNumber'][
+                          'errors'
+                        ]['pattern']
+                      "
+                    >
+                      {{ "entities.tel_number_format" | translate }} 715123456
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="visibleStatus?.emailAddress === 'Y'">
+                <div class="form-group col-md-4 mt-3">
+                  <label for="emailAddress">{{
+                    "entities.email" | translate
+                  }}</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="emailAddress"
+                    placeholder="joe@turnkeyafrica.com"
+                    formControlName="emailAddress"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['emailAddress'][
+                          'invalid'
+                        ] &&
+                        (f['addressDetails']['controls']['emailAddress'][
+                          'dirty'
+                        ] ||
+                          f['addressDetails']['controls']['emailAddress'][
+                            'touched'
+                          ])
+                    }"
+                  />
+                  <div
+                    *ngIf="
+                      f['addressDetails']['controls']['emailAddress'][
+                        'invalid'
+                      ] &&
+                      (f['addressDetails']['controls']['emailAddress'][
+                        'dirty'
+                      ] ||
+                        f['addressDetails']['controls']['emailAddress'][
+                          'touched'
+                        ])
+                    "
+                    class="form-text text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        f['addressDetails']['controls']['emailAddress'][
+                          'errors'
+                        ]['required']
+                      "
+                    >
+                      {{ "entities.email_required" | translate }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      id="saveProspectBtn"
+      class="btn float-end rounded-1 px-3 mb-2 btn-primary"
+      (click)="saveProspect()"
+    >
+      {{ "entities.save" | translate }}
+    </button>
+  </form>
+</div>

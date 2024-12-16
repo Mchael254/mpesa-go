@@ -47,6 +47,8 @@ import { EditCommentFormComponent } from './components/entity/view-entity/entity
 import { EditActivityFormComponent } from './components/entity/view-entity/entity-other-details/edit-activity-form/edit-activity-form.component';
 import { EditLeadContactFormComponent } from './components/entity/view-entity/entity-other-details/edit-lead-contact-form/edit-lead-contact-form.component';
 import { EntityDocsComponent } from './components/entity/view-entity/entity-docs/entity-docs.component';
+import { ListProspectComponent } from './components/prospect/list-prospect/list-prospect.component';
+import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -84,6 +86,8 @@ import { EntityDocsComponent } from './components/entity/view-entity/entity-docs
     EditActivityFormComponent,
     EditLeadContactFormComponent,
     EntityDocsComponent,
+    ListProspectComponent,
+    NewProspectComponent,
   ],
   imports: [
     CommonModule,
