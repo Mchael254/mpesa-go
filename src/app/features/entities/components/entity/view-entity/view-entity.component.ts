@@ -190,7 +190,7 @@ export class ViewEntityComponent implements OnInit {
     this.accountService.currentAccount$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((currentEntityAccount) => {
-        this.selectedAccount = this.entityAccountIdDetails.filter(
+        this.selectedAccount = this.entityAccountIdDetails?.filter(
           (entity) => entity?.id == currentEntityAccount?.id
         )[0];
         if (this.selectedAccount == null)
@@ -228,7 +228,7 @@ export class ViewEntityComponent implements OnInit {
     this.accountService.setCurrentAccounts(partyAccountDetails);
     this.getPaymentDetails(partyAccountDetails);
     this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
-    this.nokDetails = partyAccountDetails.nextOfKinDetailsList;
+    this.nokDetails = partyAccountDetails?.nextOfKinDetailsList;
     this.fetchTransactions(partyAccountDetails);
     this.cdr.detectChanges();
   }

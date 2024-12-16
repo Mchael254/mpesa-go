@@ -1,4 +1,18 @@
-<!-- <form [formGroup]="activityDetailForm"></form>
+<form [formGroup]="activityDetailForm">
+  <div class="col-12">
+    <label for="leadActivity">{{ "entities.lead_activity" | translate }}</label>
+    <p-multiSelect
+      [options]="unassignedActivities"
+      optionValue="id"
+      [filter]="true"
+      optionLabel="subject"
+      id="activity"
+      formControlName="activity"
+      [style]="{ width: '100%', height: '55%' }"
+      placeholder="Lead Activity"
+    ></p-multiSelect>
+  </div>
+</form>
 <div class="modal-footer border-0 mt-1">
   <button
     type="button"
@@ -8,4 +22,4 @@
   >
     {{ "entities.update_details" | translate }}
   </button>
-</div> -->
+</div>
