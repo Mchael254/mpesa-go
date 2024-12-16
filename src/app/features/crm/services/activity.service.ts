@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Activity,
   ActivityNote,
@@ -8,9 +8,9 @@ import {
   ActivityType,
   PriorityLevel,
 } from '../data/activity';
-import {Observable} from 'rxjs';
-import {ApiService} from "../../../shared/services/api/api.service";
-import {API_CONFIG} from "../../../../environments/api_service_config";
+import { Observable } from 'rxjs';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root',
@@ -25,12 +25,12 @@ export class ActivityService {
     );
   }
 
-  /*getActivityById(id: number): Observable<Activity> {
+  getActivityById(id: number): Observable<Activity> {
     return this.apiService.GET<Activity>(
       `activities/${id}`,
       API_CONFIG.CRM_CAMPAIGNS_SERVICE_BASE_URL
     );
-  }*/
+  }
 
   createActivity(activity: Activity): Observable<Activity> {
     return this.apiService.POST<Activity>(
