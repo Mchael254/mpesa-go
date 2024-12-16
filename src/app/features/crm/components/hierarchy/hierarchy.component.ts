@@ -19,7 +19,7 @@ import {
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
-import {Table} from "primeng/table";
+import { Table } from 'primeng/table';
 
 const log = new Logger('HierarchyComponent');
 
@@ -61,6 +61,15 @@ export class HierarchyComponent implements OnInit {
   public subDivisionData: SubDivisionUI[] = [];
   public selectedDivision: SubDivisionUI | null = null;
   public isEditMode: boolean = false;
+  private isPatchingSubDivision: boolean = false;
+  public selectedHierarchyTypeUser: any = null;
+  public selectedOrgSubDivUser: any = null;
+  public selectedHierarchyHeadHistoryUser: any = null;
+  public activeForm:
+    | 'hierarchyTypeForm'
+    | 'orgSubDivForm'
+    | 'hierarchyHeadHistoryForm'
+    | null = null;
 
   public errorOccurred = false;
   public errorMessage: string = '';
@@ -99,9 +108,12 @@ export class HierarchyComponent implements OnInit {
   hierarchyLevelsEnumData: any;
   patchHierarchyTypeUser: boolean = false;
 
-  @ViewChild('hierarchyTypeConfirmationModal') hierarchyTypeConfirmationModal: ReusableInputComponent;
-  @ViewChild('hierarchyLevelConfirmationModal') hierarchyLevelConfirmationModal: ReusableInputComponent;
-  @ViewChild('hierarchyPrevHeadsConfirmationModal') hierarchyPrevHeadsConfirmationModal: ReusableInputComponent;
+  @ViewChild('hierarchyTypeConfirmationModal')
+  hierarchyTypeConfirmationModal: ReusableInputComponent;
+  @ViewChild('hierarchyLevelConfirmationModal')
+  hierarchyLevelConfirmationModal: ReusableInputComponent;
+  @ViewChild('hierarchyPrevHeadsConfirmationModal')
+  hierarchyPrevHeadsConfirmationModal: ReusableInputComponent;
   @ViewChild('previousSubDivHeadsTable') previousSubDivHeadsTable: Table;
 
   constructor(
@@ -129,7 +141,7 @@ export class HierarchyComponent implements OnInit {
 
   orgSubDivCreateForm() {
     this.orgSubDivForm = this.fb.group({
-      parentDivision: [''],
+      parentDivision: [{ value: '', disabled: true }],
       code: [''],
       divisionLevelType: [''],
       divisionLevel: [''],
@@ -414,15 +426,13 @@ export class HierarchyComponent implements OnInit {
       this.hierarchyHeadHistoryForm.patchValue({
         agentName: this.selectedPreviousSubDivHeads.agentCode,
         wef: this.selectedPreviousSubDivHeads.wef,
-        wet: this.selectedPreviousSubDivHeads.wet
-
-      })
-    }
-    else {
+        wet: this.selectedPreviousSubDivHeads.wet,
+      });
+    } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No hierarchy type is selected.'
-      )
+      );
     }
   }
 
@@ -687,6 +697,13 @@ export class HierarchyComponent implements OnInit {
       });
   }
 
+  /**
+   * The function `onHierachyTypeRowSelect` takes a hierarchy type as input, extracts its code, and
+   * then fetches hierarchy levels and organization sub-divisions based on that code.
+   * @param hierarchyType - The `hierarchyType` parameter seems to be an object with a `code` property.
+   * In the `onHierachyTypeRowSelect` function, the `hierarchyTypeCode` is extracted from the `code`
+   * property of the `hierarchyType` object. Then, two functions
+   */
   onHierachyTypeRowSelect(hierarchyType) {
     const hierarchyTypeCode = hierarchyType.code;
     this.fetchHierarchyLevels(hierarchyTypeCode);
@@ -769,17 +786,22 @@ export class HierarchyComponent implements OnInit {
    */
   fetchPreviousSubDivisionHeads(selectedDivision: any): void {
     this.spinner.show();
-    this.organizationService.getOrgPrevSubDivisionHeads(selectedDivision?.code).subscribe({
-      next: (res: OrgPreviousSubDivHeadsDTO[]) => {
-        this.previousSubDivHeadsData = res;
-        this.spinner.hide();
-      },
-      error: (err) => {
-        let errorMessage = err?.error?.message ?? err.message;
-        this.spinner.hide();
-        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-      },
-    });
+    this.organizationService
+      .getOrgPrevSubDivisionHeads(selectedDivision?.code)
+      .subscribe({
+        next: (res: OrgPreviousSubDivHeadsDTO[]) => {
+          this.previousSubDivHeadsData = res;
+          this.spinner.hide();
+        },
+        error: (err) => {
+          let errorMessage = err?.error?.message ?? err.message;
+          this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            errorMessage
+          );
+        },
+      });
   }
 
   /**
@@ -797,25 +819,45 @@ export class HierarchyComponent implements OnInit {
   processSelectedUser($event: void) {
     this.toggleAllUsersModal(false);
     this.zIndex = 1;
+    this.activeForm = null;
   }
 
   /**
-   * Gets the selected user and patches the create hierarchy type form with the user's id.
-   * @param event - The selected user.
+   * The function `getSelectedUser` assigns the selected user based on the active form and patches the
+   * form values accordingly.
+   * @param {any} event - The `getSelectedUser` function takes an `event` parameter of type `any`. This
+   * function is used to handle the selection of a user in different forms based on the `activeForm`
+   * value. Depending on the value of `activeForm`, the selected user is stored in different variables
+   * (`selected
    */
   getSelectedUser(event: any) {
-    this.selectedMainUser = event;
-    log.info(this.selectedMainUser);
-    if (this.patchHierarchyTypeUser === false) {
-      this.patchPreviousSubDivFormValues(this.selectedMainUser);
-    } else {
-      this.patchHierarchyTypeFormValues(this.selectedMainUser);
+    switch (this.activeForm) {
+      case 'hierarchyTypeForm':
+        this.selectedHierarchyTypeUser = event;
+        this.patchHierarchyTypeFormValues(this.selectedHierarchyTypeUser);
+        break;
+      case 'orgSubDivForm':
+        this.selectedOrgSubDivUser = event;
+        this.patchSubDivisionFormValues(this.selectedOrgSubDivUser);
+        break;
+      case 'hierarchyHeadHistoryForm':
+        this.selectedHierarchyHeadHistoryUser = event;
+        this.patchPreviousSubDivFormValues(
+          this.selectedHierarchyHeadHistoryUser
+        );
+        break;
+      default:
+        log.warn('No active form set for patching.');
     }
+    this.activeForm = null;
   }
 
   /**
-   * Patches the hierarchy type form with the selected user's id.
-   * @param user - The selected user.
+   * The function `patchHierarchyTypeFormValues` updates the intermediary value in the
+   * hierarchyTypeForm using the agent's id.
+   * @param {any} agent - The `agent` parameter in the `patchHierarchyTypeFormValues` function is an
+   * object that represents an intermediary agent. It is used to set the value of the `intermediary`
+   * field in the `hierarchyTypeForm` form.
    */
   patchHierarchyTypeFormValues(agent: any) {
     this.hierarchyTypeForm.patchValue({
@@ -823,6 +865,12 @@ export class HierarchyComponent implements OnInit {
     });
   }
 
+  /**
+   * The function `patchPreviousSubDivFormValues` updates the `agentName` field in a form with the `id`
+   * of an agent.
+   * @param {any} agent - The `agent` parameter in the `patchPreviousSubDivFormValues` function is an
+   * object that likely contains information about an agent, such as their ID.
+   */
   patchPreviousSubDivFormValues(agent: any) {
     this.hierarchyHeadHistoryForm.patchValue({
       agentName: agent?.id,
@@ -830,14 +878,42 @@ export class HierarchyComponent implements OnInit {
   }
 
   /**
-   * Patches the hierarchy type form with the selected agent's id.
-   * @param agent - The selected agent.
+   * The function `patchSubDivisionFormValues` updates the `divisionHead` field in a form with the `id`
+   * of an agent.
+   * @param {any} agent - The `agent` parameter in the `patchSubDivisionFormValues` function is an
+   * object that likely represents a division head. It is used to set the `divisionHead` field in the
+   * `orgSubDivForm` form to the `id` of the agent object.
    */
-  openAllUsersModal() {
+  patchSubDivisionFormValues(agent: any) {
+    this.orgSubDivForm.patchValue({
+      divisionHead: agent?.id,
+    });
+  }
+
+  /**
+   * The function `openAllUsersModal` sets the active form, logs the active form, sets the z-index, and
+   * toggles the all users modal.
+   * @param {'hierarchyTypeForm' | 'orgSubDivForm' | 'hierarchyHeadHistoryForm'} formType - The
+   * `formType` parameter in the `openAllUsersModal` function can have one of the following values:
+   * 'hierarchyTypeForm', 'orgSubDivForm', or 'hierarchyHeadHistoryForm'.
+   */
+  openAllUsersModal(
+    formType: 'hierarchyTypeForm' | 'orgSubDivForm' | 'hierarchyHeadHistoryForm'
+  ) {
+    this.activeForm = formType;
+    log.info('Activie form', this.activeForm);
     this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
 
+  /**
+   * The function `selectDivision` toggles the selection state of a division and performs additional
+   * actions related to editing and fetching data.
+   * @param {SubDivisionUI} division - The `selectDivision` function takes a parameter `division` of
+   * type `SubDivisionUI`. This parameter represents a subdivision user interface element. The function
+   * toggles the selection state of the division - if it is selected, it will be deselected, and vice
+   * versa. It also updates the `selected
+   */
   selectDivision(division: SubDivisionUI) {
     if (division.selected) {
       division.selected = false;
@@ -856,7 +932,12 @@ export class HierarchyComponent implements OnInit {
     this.fetchPreviousSubDivisionHeads(this.selectedDivision);
   }
 
+  /**
+   * The function `createSubDivision` resets a form, sets a value, and logs a message when creating a
+   * new SubDivision.
+   */
   createSubDivision() {
+    this.isPatchingSubDivision = true;
     this.isEditMode = false;
     this.orgSubDivForm.reset();
     this.orgSubDivForm.patchValue({
@@ -930,6 +1011,8 @@ export class HierarchyComponent implements OnInit {
       wet: formValues.wet,
     };
 
+    log.info(`Sub division data to save`, subDivisionDto);
+
     // Call the appropriate service based on mode
     const serviceCall = this.isEditMode
       ? this.organizationService.updateOrganizationSubDivision(
@@ -949,6 +1032,7 @@ export class HierarchyComponent implements OnInit {
             successMessage
           );
           this.fetchOrganizationSubDivision(this.selectedHierarchyType.code);
+          this.isPatchingSubDivision = false;
         } else {
           this.handleError();
         }
@@ -966,6 +1050,7 @@ export class HierarchyComponent implements OnInit {
   }
 
   editSubDivision(selectedDivision: SubDivisionDto) {
+    this.isPatchingSubDivision = true;
     const divisionLevelTypeCode = this.hierarchyTypeData.find(
       (item) => item.code.toString() === selectedDivision.divisionLevelTypeCode
     )?.code;
@@ -1032,26 +1117,38 @@ export class HierarchyComponent implements OnInit {
   }
 
   saveHierarchyHeadHistory() {
-    const hierarchyHeadHistoryFormValues = this.hierarchyHeadHistoryForm.getRawValue();
-    const hierarchyHeadHistoryCode = this.selectedPreviousSubDivHeads?.code ? this.selectedPreviousSubDivHeads?.code : null;
+    const hierarchyHeadHistoryFormValues =
+      this.hierarchyHeadHistoryForm.getRawValue();
+    const hierarchyHeadHistoryCode = this.selectedPreviousSubDivHeads?.code
+      ? this.selectedPreviousSubDivHeads?.code
+      : null;
 
     const saveHierarchyHeadHistoryPayload: OrgPreviousSubDivHeadsDTO = {
       agentCode: hierarchyHeadHistoryFormValues.agentName,
       code: hierarchyHeadHistoryCode,
       subdivisionCode: this.selectedDivision?.code,
       wef: hierarchyHeadHistoryFormValues.wef,
-      wet: hierarchyHeadHistoryFormValues.wet
-    }
-    log.info("save previous subdiv heads>>>", saveHierarchyHeadHistoryPayload);
+      wet: hierarchyHeadHistoryFormValues.wet,
+    };
+    log.info('save previous subdiv heads>>>', saveHierarchyHeadHistoryPayload);
 
     const orgServiceCall = this.selectedPreviousSubDivHeads
-      ? this.organizationService.updateOrgPrevSubDivisionHead(hierarchyHeadHistoryCode, saveHierarchyHeadHistoryPayload)
-      : this.organizationService.createOrgPrevSubDivisionHead(saveHierarchyHeadHistoryPayload);
+      ? this.organizationService.updateOrgPrevSubDivisionHead(
+          hierarchyHeadHistoryCode,
+          saveHierarchyHeadHistoryPayload
+        )
+      : this.organizationService.createOrgPrevSubDivisionHead(
+          saveHierarchyHeadHistoryPayload
+        );
 
     return orgServiceCall.subscribe({
       next: (data) => {
-        this.globalMessagingService.displaySuccessMessage('Success',
-          `Successfully ${this.selectedPreviousSubDivHeads ? 'updated' : 'created'} a hierarchy previous subdivision head`);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          `Successfully ${
+            this.selectedPreviousSubDivHeads ? 'updated' : 'created'
+          } a hierarchy previous subdivision head`
+        );
 
         this.hierarchyHeadHistoryForm.reset();
         this.closeDefinePreviousSubDivHeadsModal();
@@ -1060,9 +1157,12 @@ export class HierarchyComponent implements OnInit {
         this.selectedMainUser = null;
       },
       error: (err) => {
-        log.info('>>>>>>>>>', err.error.message)
-        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-      }
+        log.info('>>>>>>>>>', err.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.message
+        );
+      },
     });
   }
 
@@ -1071,19 +1171,24 @@ export class HierarchyComponent implements OnInit {
   confirmHierarchyTypeDelete() {
     if (this.selectedHierarchyType) {
       const hierarchyLevelTypeId = this.selectedHierarchyType?.code;
-      this.organizationService.deleteOrgDivisionLevelType(hierarchyLevelTypeId).subscribe( {
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a hierarchy type'
-          );
-          this.selectedHierarchyType = null;
-          this.fetchHierarchyLevelType();
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        },
-      });
+      this.organizationService
+        .deleteOrgDivisionLevelType(hierarchyLevelTypeId)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a hierarchy type'
+            );
+            this.selectedHierarchyType = null;
+            this.fetchHierarchyLevelType();
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err.error.message
+            );
+          },
+        });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1095,19 +1200,24 @@ export class HierarchyComponent implements OnInit {
   confirmHierarchyLevelDelete() {
     if (this.selectedHierarchyLevel) {
       const hierarchyLevelId = this.selectedHierarchyLevel?.code;
-      this.organizationService.deleteOrgDivisionLevel(hierarchyLevelId).subscribe( {
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a hierarchy level'
-          );
-          this.fetchHierarchyLevels(this.selectedHierarchyType);
-          this.selectedHierarchyType = null;
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        },
-      });
+      this.organizationService
+        .deleteOrgDivisionLevel(hierarchyLevelId)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a hierarchy level'
+            );
+            this.fetchHierarchyLevels(this.selectedHierarchyType);
+            this.selectedHierarchyType = null;
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err.error.message
+            );
+          },
+        });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1126,19 +1236,24 @@ export class HierarchyComponent implements OnInit {
   confirmHierarchyPrevHeadsDelete() {
     if (this.selectedPreviousSubDivHeads) {
       const hierarchyPreviousSubDivId = this.selectedPreviousSubDivHeads?.code;
-      this.organizationService.deleteOrgPrevSubDivisionHead(hierarchyPreviousSubDivId).subscribe( {
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a hierarchy previous subdivision head'
-          );
-          this.fetchPreviousSubDivisionHeads(this.selectedDivision);
-          this.selectedPreviousSubDivHeads = null;
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        },
-      });
+      this.organizationService
+        .deleteOrgPrevSubDivisionHead(hierarchyPreviousSubDivId)
+        .subscribe({
+          next: (data) => {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a hierarchy previous subdivision head'
+            );
+            this.fetchPreviousSubDivisionHeads(this.selectedDivision);
+            this.selectedPreviousSubDivHeads = null;
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err.error.message
+            );
+          },
+        });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
