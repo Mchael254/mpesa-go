@@ -34,6 +34,7 @@ export class MenuService {
           { name: 'Clients', link: '/home/entity/client/list' },
           { name: 'Agents', link: '/home/entity/intermediary/list' },
           { name: 'Leads', link: '/home/entity/lead/list' },
+          { name: 'Prospects', link: '/home/entity/prospect/list' },
           {
             name: 'Service Providers',
             link: '/home/entity/service-provider/list',
@@ -154,7 +155,7 @@ export class MenuService {
               {
                 name: 'Hierarchy',
                 link: '/home/crm/hierarchy',
-              }
+              },
             ],
             collapsed: true,
           },

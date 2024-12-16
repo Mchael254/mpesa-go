@@ -15,6 +15,8 @@ import { ViewEntityComponent } from './components/entity/view-entity/view-entity
 import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
 import { ListLeadComponent } from './components/lead/list-lead/list-lead.component';
 import { NewLeadComponent } from './components/lead/new-lead/new-lead.component';
+import { ListProspectComponent } from './components/prospect/list-prospect/list-prospect.component';
+import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
 
 const routes: Routes = [
   {
@@ -99,6 +101,19 @@ const routes: Routes = [
       {
         path: 'new',
         component: NewLeadComponent,
+      },
+    ],
+  },
+  {
+    path: 'prospect',
+    children: [
+      {
+        path: 'list',
+        component: ListProspectComponent,
+      },
+      {
+        path: 'new',
+        component: NewProspectComponent,
       },
     ],
   },

@@ -45,8 +45,8 @@ export class EntityTransactionsComponent implements OnInit {
   ): void {
     this.partyTypeShtDesc = partyTypeShtDesc;
 
-    const partyShtDesc = partyTypes.filter(
-      (partyType) => partyType.partyTypeShtDesc === partyTypeShtDesc
+    const partyShtDesc = partyTypes?.filter(
+      (partyType) => partyType?.partyTypeShtDesc === partyTypeShtDesc
     )[0].partyTypeShtDesc;
 
     switch (partyShtDesc) {

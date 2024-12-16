@@ -4,7 +4,7 @@
       Additional Information
 
       <!-- Conditionally render the icons for tables (nok, Comments, Activities) -->
-      <ng-container *ngIf="['nok', 'comment', 'activity'].includes(activeTab)">
+      <ng-container *ngIf="['nok', 'comment'].includes(activeTab)">
         <button
           class="btn btn-light btn-sm ms-4"
           style="border-radius: 100%"
@@ -22,6 +22,26 @@
           (click)="prepareDetailsForEdit(); confirmFormReadyStatus(false)"
         >
           <i class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
+        </button>
+        <button
+          class="btn btn-light btn-sm ms-2"
+          style="border-radius: 100%"
+          (click)="deleteItem()"
+        >
+          <i class="fa fa-trash" style="color: #00529b; font-size: 0.8em"></i>
+        </button>
+      </ng-container>
+
+      <!-- Conditionally render the icons for tables (Activities) -->
+      <ng-container *ngIf="['activity'].includes(activeTab)">
+        <button
+          class="btn btn-light btn-sm ms-4"
+          style="border-radius: 100%"
+          data-bs-toggle="modal"
+          data-bs-target="#editModal"
+          (click)="addItem(); confirmFormReadyStatus(false)"
+        >
+          <i class="fa fa-plus" style="color: #00529b; font-size: 0.8em"></i>
         </button>
         <button
           class="btn btn-light btn-sm ms-2"
@@ -616,12 +636,12 @@
           </ng-template>
           <ng-template pTemplate="body" let-document>
             <tr [pSelectableRow]="document">
-              <td class="body">{{ document.comment }}</td>
+              <td class="body">{{ document.comment | titlecase }}</td>
               <td class="body">
                 {{ document.date | date : "dd/MM/yyyy" }}
               </td>
               <td class="body">{{ document.userName }}</td>
-              <td class="body">{{ document.disposition }}</td>
+              <td class="body">{{ document.disposition | titlecase }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -645,22 +665,22 @@
           class="ui-datatable"
           [selectionMode]="'single'"
           [(selection)]="selectedActivity"
-          [globalFilterFields]="['activityCode']"
+          [globalFilterFields]="['subject']"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th class="head" pSortableColumn="code">
-                Subject<p-sortIcon field="code"></p-sortIcon>
+              <th class="head" pSortableColumn="subject">
+                Subject<p-sortIcon field="subject"></p-sortIcon>
               </th>
-              <th class="head" pSortableColumn="activityCode">
-                Venue<p-sortIcon field="activityCode"></p-sortIcon>
+              <th class="head" pSortableColumn="location">
+                Venue<p-sortIcon field="location"></p-sortIcon>
               </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-activity>
             <tr [pSelectableRow]="activity">
-              <td class="body">{{ activity.code }}</td>
-              <td class="body">{{ activity.activityCode }}</td>
+              <td class="body">{{ activity.subject | titlecase }}</td>
+              <td class="body">{{ activity.location | titlecase }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -786,6 +806,7 @@
           <app-edit-activity-form
             (closeEditModal)="closeEditModal()"
             (isFormDetailsReady)="confirmFormReadyStatus($event)"
+            (activityAssigned)="onActivityAssigned($event)"
           ></app-edit-activity-form>
         </ng-container>
       </div>
