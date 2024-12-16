@@ -51,7 +51,7 @@
     "Summary": "Summary",
     "team": "Team",
     "tickets": "Tickets",
-    
+
     "view_all": "VIEW ALL",
     "dispatch": "MASS DISPATCH",
     "more": "more",
@@ -187,25 +187,25 @@
     "FMS": "FMS",
     "General Ledger": "General ledger",
     "Cashbook": "Cashbook",
-    "Debtors":"Debtors",
-    "Creditors":"Creditors",
-    "Paramaters":"Parameters",
-   "Gl-Inquiries":"Gl-Inquiries",
-    "Gl-Transactions":"Gl-Transactions",
-    "Transactions":"Transactions",
-    "Requistions":"Requistions",
-    "Receipting":"Receipting",
-    "Cheques":"Cheques",
+    "Debtors": "Debtors",
+    "Creditors": "Creditors",
+    "Paramaters": "Parameters",
+    "Gl-Inquiries": "Gl-Inquiries",
+    "Gl-Transactions": "Gl-Transactions",
+    "Transactions": "Transactions",
+    "Requistions": "Requistions",
+    "Receipting": "Receipting",
+    "Cheques": "Cheques",
 
-"Receipts":"Receipts",
-"Invoices/Cr Notes":"Invoices/Cr Notes",
-"Inquires":"Inquires",
-"Invoices/DR Notes":"Invoices/DR Notes",
-"Requisitions": "Requistions",
-        
-"Petty cash": "Petty cash",
-"Gl-Final Reports":"Gl-Final Reports",
-   
+    "Receipts": "Receipts",
+    "Invoices/Cr Notes": "Invoices/Cr Notes",
+    "Inquires": "Inquires",
+    "Invoices/DR Notes": "Invoices/DR Notes",
+    "Requisitions": "Requistions",
+
+    "Petty cash": "Petty cash",
+    "Gl-Final Reports": "Gl-Final Reports",
+
     "Cheque signing": "Cheque signing",
     "Campaigns": "Campaigns",
     "Client Attributes": "Client Attributes",
@@ -232,9 +232,8 @@
     "Escalations": "Escalations",
     "Request Categories": "Request Categories",
     "Request Status": "Request Status",
-    "Hierarchy": "Hierarchy"
-   
-   
+    "Hierarchy": "Hierarchy",
+    "Prospects": "Prospects"
   },
   "shared": {
     "quotation_landing_screen": {
@@ -753,7 +752,13 @@
     "documentsAttached": "Documents Attached",
     "selectUpload": "Select a file to upload",
     "documents": "Documents",
-    "preview": "Preview"
+    "preview": "Preview",
+    "prospect": "Prospect",
+    "new_prospect": "New Prospect",
+    "import_prospect": "Import Prospect",
+    "download_template": "Download Template",
+    "convert_to_client": "Convert To Client",
+    "contact_address_details": "Contact and Address Details"
   },
   "gis": {
     "quotation": {
@@ -1475,7 +1480,7 @@
         "body_mass_index": "Body Mass Index (BMI)",
         "branch": "Branch",
         "branch_required": "Branch is required",
-        "cancel" : "Cancel",
+        "cancel": "Cancel",
         "choose_file": "Choose File",
         "citizenship": "Citizenship",
         "click_on_+_icon_to_add_record": "click on + icon to add record",
@@ -1517,11 +1522,11 @@
         "frequency_of_payment": "Frequency of Payment",
         "gender": "Gender",
         "guardian_details": "Guardian Details",
-        "height" : "Height (cm)",
+        "height": "Height (cm)",
         "iban": "IBAN",
         "incorrect_id_no_format": "Incorrect ID No Format",
         "insurance_company": "Insurance Company",
-        "insurance_history" : "Insurance History",
+        "insurance_history": "Insurance History",
         "last_name": "Last Name",
         "last_name_required": "Last Name is required",
         "leader_share": "Leader Share",
@@ -2558,7 +2563,7 @@
     "signSelect": "Sign selected",
     "correction": "Send for correction",
     "reject": "Reject",
-    
+
     "receipting": {
       "capture_receipt": "Capture receipt",
       "receipt_details": "Receipt Details",
