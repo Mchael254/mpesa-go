@@ -533,6 +533,9 @@ export class NewEntityComponent implements OnInit {
       case 'lead':
         url = '/home/entity/lead/new';
         break;
+      case 'prospect':
+        url = '/home/entity/prospect/new';
+        break;
       default:
         url = '/home/entity';
     }
