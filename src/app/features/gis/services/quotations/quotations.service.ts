@@ -4,7 +4,7 @@ import {APP_CONFIG, AppConfigService} from '../../../../core/config/app-config-s
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { Clause, CreateLimitsOfLiability, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, EditRisk, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {ApiService} from "../../../../shared/services/api/api.service";
@@ -263,4 +263,10 @@ export class QuotationsService {
     return this.api.POST(`/v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL );
   }
 
+  updateQuotationRisk(data:EditRisk){
+    return this.api.PUT(`v2/quotationRisks`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  deleteRisk(quotRiskCode : number,){
+    return this.api.DELETE(`v2/quotationRisks?quotRiskCode=${quotRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
 }

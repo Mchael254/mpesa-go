@@ -213,7 +213,7 @@
                                 <div class="col-sm-4 col-6" *ngFor="let field of formData">
                                     <form [formGroup]="dynamicForm">
                                         <div
-                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo'">
+                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
                                             <input [type]="field.type" [formControlName]="field.name" id="quote-input"
                                                 class="form-control form-control-sm mb-1 col-md-8">
@@ -269,7 +269,36 @@
 
 
                                         </div>
+                                        <div *ngIf="field.name == 'modeOfTransport'">
+                                            <label class="quote-label required" [for]="field.name">{{ field.label
+                                                }}</label>
+                                            <select id="modeOfTransport" id="quote-input"
+                                                class="form-select form-control-sm mb-1" [formControlName]="field.name"
+                                                [ngModel]="parsedYearOfManufacture">
+                                                <option></option>
+                                                <option value=""> {{'gis.policy.by_sea' | translate}}</option>
+                                                <option value=""> {{'gis.policy.by_air' | translate}}</option>
+                                                <option value=""> {{'gis.policy.by_road' | translate}}</option>
+                                                <option value=""> {{'gis.policy.by_sea_rail_road' | translate}}</option>
+                                                <option value=""> {{'gis.policy.by_sea_road' | translate}}</option>
+                                                <option value=""> {{'gis.policy.by_air_road' | translate}}</option>
+                                                <option value=""> {{'gis.policy.not_applicable' | translate}}</option>
+                                                <option value=""> {{'gis.policy.none' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div *ngIf="field.name == 'value'">
+                                            <label class="quote-label required" [for]="field.name">{{ field.label
+                                                }}</label>
+                                          
+                                            <input type="text" id="quote-input"
+                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
+                                                [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
 
+                                            <!-- <input type="text" id="quote-input"
+                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
+                                                currencyMask [options]='currencyObj' (input)="handleInput($event)"> -->
+
+                                        </div>
 
                                     </form>
                                 </div>

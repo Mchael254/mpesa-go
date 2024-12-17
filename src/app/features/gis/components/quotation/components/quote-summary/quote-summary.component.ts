@@ -58,7 +58,7 @@ export class QuoteSummaryComponent {
   formattedCoverFrom: string;
   formattedCoverTo: string;
 
-  isAddRisk: boolean = true;
+  isAddRisk: boolean = false;
   passedPremium: any;
   selectedEmail: any;
   selectedPhoneNo: any;
@@ -69,16 +69,17 @@ export class QuoteSummaryComponent {
   user: any;
   userDetails: any
   userBranchId: any;
-  selectedRisk:any;
-  clauseList:Clause[] = []
-  selectedClause:any;
+  selectedRisk: any;
+  clauseList: Clause[] = []
+  selectedClause: any;
   modalHeight: number = 200; // Initial height
-  limitsOfLiabilityList:LimitsOfLiability[]=[] ;
+  limitsOfLiabilityList: LimitsOfLiability[] = [];
   totalTaxes: number = 0;
   taxList: { description: string; amount: number }[] = [];
   selectedSubclassCode: any;
-  excessesList:Excesses[] = []
-  selectedExcess:any;
+  excessesList: Excesses[] = []
+  selectedExcess: any;
+  isEditRisk: boolean = false;
 
 
   constructor(
@@ -147,6 +148,12 @@ export class QuoteSummaryComponent {
     const selectedSubclassCodeString = sessionStorage.getItem('selectedSubclassCode');
     this.selectedSubclassCode = JSON.parse(selectedSubclassCodeString);
     log.debug("Selected subclass code", this.selectedSubclassCode)
+
+    this.isAddRisk=false;
+    log.debug("IS ADD RISK STATE:",this.isAddRisk)
+    this.isEditRisk=false;
+    log.debug("IS EDIT RISK STATE:",this.isEditRisk)
+
   }
   ngOnDestroy(): void { }
 
@@ -157,7 +164,7 @@ export class QuoteSummaryComponent {
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.no;
       log.debug("Quotation Number:", this.quotationNo)
-      if(this.quotationDetails){
+      if (this.quotationDetails) {
         log.info("CALCULATE TAXES XALLED")
         this.calculateTaxes()
       }
@@ -253,7 +260,7 @@ export class QuoteSummaryComponent {
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-
+    this.isAddRisk = true;
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
@@ -271,6 +278,7 @@ export class QuoteSummaryComponent {
       this.router.navigate(['/home/gis/quotation/quick-quote']);
     });
   }
+
 
   acceptQuote() {
     this.router.navigate(['/home/gis/quotation/quotations-client-details'])
@@ -432,95 +440,155 @@ export class QuoteSummaryComponent {
   }
   getSumInsuredForSection(sectionsDetails: any[], sectionDescription: string): number {
     if (!sectionsDetails) {
-        return 0; // Fallback if sectionsDetails is null or undefined
+      return 0; // Fallback if sectionsDetails is null or undefined
     }
     const section = sectionsDetails.find(sec => sec.description === sectionDescription);
     return section?.limitAmount || 0;
-}
-onRiskSelect(riskItem: any): void {
-  this.selectedRisk = riskItem;
-  log.debug('Selected Risk Item:', riskItem);
-  if(this.selectedRisk){
-    this.fetchClauses();
-    this.fetchExcesses();
-    this.fetchLimitsOfLiability()
   }
-}
+  onRiskSelect(riskItem: any): void {
+    this.selectedRisk = riskItem;
+    log.debug('Selected Risk:', riskItem);
+    if (this.selectedRisk) {
+      this.fetchClauses();
+      this.fetchExcesses();
+      this.fetchLimitsOfLiability()
+    }
+  }
 
-calculateTaxes() {
-  this.totalTaxes = 0;
-  this.taxList = [];
-  if (this.quotationDetails.taxInformation) {
-    this.quotationDetails.taxInformation.forEach((tax: any) => {
-      if (tax.quotationRate) {
-        this.totalTaxes += tax.quotationRate;
-        log.debug("Total Taxes:",this.totalTaxes)
-        this.taxList.push({ description: tax.description, amount: tax.quotationRate });
-        log.debug("Total Taxes List:",this.taxList)
+  calculateTaxes() {
+    this.totalTaxes = 0;
+    this.taxList = [];
+    if (this.quotationDetails.taxInformation) {
+      this.quotationDetails.taxInformation.forEach((tax: any) => {
+        if (tax.quotationRate) {
+          this.totalTaxes += tax.quotationRate;
+          log.debug("Total Taxes:", this.totalTaxes)
+          this.taxList.push({ description: tax.description, amount: tax.quotationRate });
+          log.debug("Total Taxes List:", this.taxList)
 
-      }
+        }
+      });
+    }
+  }
+  getTaxTooltip(): string {
+    return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
+  }
+  fetchClauses() {
+    this.quotationService
+      .getClauses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.clauseList = response._embedded
+          log.debug("Clause List ", this.clauseList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
+        }
+      });
+  }
+  fetchExcesses() {
+    this.quotationService
+      .getExcesses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.excessesList = response._embedded
+          log.debug("Excesses List ", this.excessesList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
+        }
+      });
+  }
+  fetchLimitsOfLiability() {
+    this.quotationService
+      .getLimitsOfLiability(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.limitsOfLiabilityList = response._embedded
+          log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+        }
+      });
+  }
+  deleteRisk() {
+    log.debug("Selected Risk to be deleted", this.selectedRisk)
+    this.quotationService
+      .deleteRisk(this.selectedRisk.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
+
+          // Remove the deleted risk from the riskDetails array
+          const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
+          if (index !== -1) {
+            this.quotationDetails?.riskInformation.splice(index, 1);
+          }
+          // Clear the selected risk
+          this.selectedRisk = null;
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
+        }
+      });
+  }
+  openRiskEditModal() {
+    log.debug("Selected Risk", this.selectedRisk)
+    if (!this.selectedRisk) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
+    } else {
+      this.editRisk()
+
+    }
+  }
+  editRisk() {
+    const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+    sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+
+    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
+
+    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+
+    const passedSelectedRiskDetailsString = JSON.stringify(this.selectedRisk);
+    sessionStorage.setItem('passedSelectedRiskDetails', passedSelectedRiskDetailsString);
+    this.isEditRisk = true;
+    const passedIsEditRiskString = JSON.stringify(this.isEditRisk);
+    sessionStorage.setItem('isEditRisk', passedIsEditRiskString);
+
+
+
+    log.debug("isEditRisk:", this.isEditRisk)
+    log.debug("quotation number:", this.quotationNo)
+    log.debug("Quotation Details:", this.quotationDetails)
+    log.debug("Selected Client Details", this.clientDetails);
+    log.debug("Selected New Client Details", this.passedNewClientDetails);
+
+    // this.router.navigate(['/home/gis/quotation/quick-quote'])
+    // Use NgZone.run to execute the navigation code inside the Angular zone
+    this.ngZone.run(() => {
+      this.router.navigate(['/home/gis/quotation/quick-quote']);
     });
   }
-}
-getTaxTooltip(): string {
-  return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
-}
-fetchClauses(){
 
-  const coverTypeCode = this.quotationDetails.riskInformation[0].covertypecode
-  log.debug('Cover type code x-men', coverTypeCode)
 
-  this.quotationService
-  .getClauses(coverTypeCode, this.selectedSubclassCode)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
 
-      this.clauseList=  response._embedded
-      log.debug("Clause List clauses ", this.clauseList);
-
-    },
-    error: (error) => {
-
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
-    }
-  });
- }
- fetchExcesses(){
-
-  // const coverTypeCode = this.quotationDetails.riskInformation[0].covertypecode
-
-  this.quotationService
-  .getExcesses(this.selectedRisk.coverTypeCode, this.selectedSubclassCode)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-
-      this.excessesList=  response._embedded
-      log.debug("Excesses List ", this.excessesList);
-
-    },
-    error: (error) => {
-
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
-    }
-  });
- }
- fetchLimitsOfLiability(){
-  this.quotationService
-  .getLimitsOfLiability( this.selectedSubclassCode)
-  .pipe(untilDestroyed(this))
-  .subscribe({
-    next: (response: any) => {
-
-      this.limitsOfLiabilityList=  response._embedded
-      log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
-
-    },
-    error: (error) => {
-
-      this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
-    }
-  });
- }
 }
