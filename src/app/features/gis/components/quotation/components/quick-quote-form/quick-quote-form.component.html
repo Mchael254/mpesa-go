@@ -207,13 +207,14 @@
 
 
                     <!-- ROW 5 -->
-                    <div *ngIf="formData && selectedProductCode" class="row">
+                    <div *ngIf="formData && selectedProductCode" class="row mb-4">
                         <div class="col-12 ">
-                            <div class="row">
+                            <div class="row mb-4">
                                 <div class="col-sm-4 col-6" *ngFor="let field of formData">
                                     <form [formGroup]="dynamicForm">
                                         <div
-                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value'">
+                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value' 
+                                            && field.name !== 'occupation' && field.name !== 'coverTo'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
                                             <input [type]="field.type" [formControlName]="field.name" id="quote-input"
                                                 class="form-control form-control-sm mb-1 col-md-8">
@@ -299,7 +300,27 @@
                                                 currencyMask [options]='currencyObj' (input)="handleInput($event)"> -->
 
                                         </div>
+                                        <div *ngIf="field.name == 'occupation'">
+                                            <label class="quote-label " [for]="field.name">{{ field.label
+                                                }}</label>
+                                                <p-dropdown   [options]="occupationData"
+                                                optionLabel="name" dataKey="id" (onChange)="onOccupationSelected($event.value)"
+                                                placeholder=" " [filterBy]="'name'" 
+                                                [filter]="true"></p-dropdown>
+                                        </div>
+                                        <div *ngIf="field.name == 'coverTo'">
+                                            <label class="quote-label " [for]="field.name">{{ field.label
+                                                }}</label>
+                                                <p-calendar  [dateFormat]="dateFormat"
+                                                [showIcon]="true" [showButtonBar]="true"
+                                                 [minDate]="minDate"
+                                                [(ngModel)]="selectedCoverToDate"
+                                                (ngModelChange)="onCoverToInputChange(selectedCoverToDate);">
+                                            </p-calendar>
+                
+                                           
 
+                                        </div>
                                     </form>
                                 </div>
                             </div>
