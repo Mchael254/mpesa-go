@@ -57,14 +57,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom, Observable, tap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import {
   CountryISO,
   PhoneNumberFormat,
   SearchCountryField,
-} from 'ngx-intl-tel-input-gg';
+} from 'ngx-intl-tel-input';
 
 const log = new Logger('QuickQuoteFormComponent');
 

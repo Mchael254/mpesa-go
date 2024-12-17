@@ -28,8 +28,7 @@ import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 import { NgxCurrencyDirective } from 'ngx-currency';
-import {NgxIntlTelInputModule} from "ngx-intl-tel-input-gg";
-
+import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
 
 @NgModule({
   declarations: [
