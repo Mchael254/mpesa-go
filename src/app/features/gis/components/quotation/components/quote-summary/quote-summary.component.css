@@ -228,6 +228,15 @@ border: 1px solid #00529B;
   margin-right: 20px;
   margin-left:-20px;
 }
+.deleteMessage{
+  color: #000;
+  font-size: 16px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: center;
+}
 
 .nav-item:last-child {
   margin-right: 0;  /* Remove margin on the last item to avoid extra space */

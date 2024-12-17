@@ -32,6 +32,8 @@ import { Limit } from '../../data/quotationsDTO';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Logger } from '../../../../../../shared/services';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
 
 
 class MockNgxSpinnerService {
@@ -103,9 +105,9 @@ export class mockPremiumRateService {
 // jest.mock('ng2-pdf-viewer', () => ({
 //   PdfViewerModule: jest.fn().mockImplementation(() => {}),
 // }));
-// jest.mock('ng2-pdf-viewer', () => ({
-//   PdfViewerComponent: jest.fn(),
-// }));
+jest.mock('ng2-pdf-viewer', () => ({
+  PdfViewerComponent: jest.fn(),
+}));
 const mockProducts: Products[] = [
   {
     code: 1,
@@ -580,25 +582,16 @@ describe('QuickQuoteFormComponent', () => {
 
 
   beforeEach(() => {
-    // Mock sessionStorage.getItem to return valid JSON or a valid string
-    window.sessionStorage = {
-      getItem: jest.fn().mockReturnValue('{}'), // Returns an empty object in JSON format
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-      length: 0,
-      key: jest.fn(),
-    };
-
-
     TestBed.configureTestingModule({
       declarations: [QuickQuoteFormComponent],
       imports: [
         HttpClientTestingModule,
         TranslateModule.forRoot(),
         // RouterTestingModule,
-        // FormsModule,
-        // ReactiveFormsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        DropdownModule,
+        CalendarModule,
         // SharedModule,
         // CommonModule
       ],
@@ -621,6 +614,7 @@ describe('QuickQuoteFormComponent', () => {
         { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
         { provide: MessageService },
         { provide: DatePipe },
+        
 
 
 
@@ -1694,10 +1688,7 @@ describe('QuickQuoteFormComponent', () => {
   }));
   
 
-  // afterEach(() => {
-  //   // Restore all mocks after each test
-  //   jest.restoreAllMocks();
-  // });
+  
 
 
 

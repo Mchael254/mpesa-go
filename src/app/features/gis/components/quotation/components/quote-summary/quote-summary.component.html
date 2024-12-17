@@ -120,9 +120,18 @@
                                 </button>
                             </div>
                             <div class="col-sm-3">
-                                <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                                <!-- <button type="button" id="icon" class="btn btn-primary" title="Edit"
+                                (click)="editRisk()">
                                     <i class="fa-solid fa-pencil"></i>
-                                </button>
+                                </button> -->
+
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                id="openRiskModalButtonEdit" [hidden]="true" 
+                                title="Delete">
+                            </button>
+                            <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                                <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
+                            </button>
 
                             </div>
 
@@ -163,7 +172,7 @@
                         <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
                             <td>{{ risk.propertyId }}</td>
                             <td>{{ risk.covertypeShortDescription }}</td>
-                            <td>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                            <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td>
                             <td>{{ risk.sectionsDetails[0]?.description }}</td>
                         </tr>
                     </ng-template>
@@ -174,7 +183,29 @@
                         </tr>
                     </ng-template>
                 </p-table>
+                <!-- Delete Risk Modal -->
+                <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteRisk" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content" id="deleteRisk">
+                            <div class="modal-body ">
+                                <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
+                                    translate}}</p>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <button type="button" class="btn btn-primary px-5" id="delete"
+                                        data-bs-dismiss="modal" (click)="deleteRisk()">{{'gis.policy.yes_delete'
+                                        | translate}}</button>
+                                </div>
+                                <div class="d-flex justify-content-center mb-2">
+                                    <button type="button" class="btn btn-outline-primary px-5"
+                                        data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                                </div>
 
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- TABS  -->
 
@@ -222,10 +253,10 @@
                                     <td>{{ data.rowNumber }}</td>
                                     <td>{{ data.sectionShortDescription }}</td>
                                     <td>{{ data.description }}</td>
-                                    <td>{{ data.limitAmount }}</td>
+                                    <td>{{ data.limitAmount | number }}</td>
                                     <td>{{ data.rate }}</td>
                                     <td>{{ data.rateType }}</td>
-                                    <td>{{ data.premium }}</td>
+                                    <td>{{ data.premium | number }}</td>
                                 </tr>
                             </ng-template>
                         </p-table>

@@ -322,4 +322,13 @@ export interface Excesses {
   subclassCode: number;
   quotationValueCode: number;
 }
+export interface EditRisk {
+  code: number;
+  covertypeShortDescription: string;
+  covertypecode: number;
+  propertyId: string;
+  quotationCode: number;
+  quotationRiskNo: string;
+  value: number;
+}
   
