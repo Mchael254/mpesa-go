@@ -159,20 +159,25 @@ tr.ng-star-inserted {
   font-size: 7px;
 }
 .iti-sdc-4 {
-  width: 390px;
+  width: 350px;
 }
 #country-search-box{
-  width: 390px;
+  width: 350px;
 }
 .iti__country-list{
-  width: 390px;
+  width: 350px;
 }
 .iti--allow-dropdown input, .iti--allow-dropdown input[type=text], .iti--allow-dropdown input[type=tel], .iti--separate-dial-code input, .iti--separate-dial-code input[type=text], .iti--separate-dial-code input[type=tel] {
   padding-right: 6px;
   padding-left: 52px;
-  width: 390px;
+  width: 350px;
   margin-left: 0;
 }
+.input-group span{
+   color: inherit;
+  background-color: transparent;
+}
+
 
 
 
