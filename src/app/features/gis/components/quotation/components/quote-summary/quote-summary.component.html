@@ -80,14 +80,14 @@
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td>{{ productDesc}}</td>
-                            <td class="text-end"> {{quotationDetails.quotationProduct[0].totalSumInsured |
+                            <td class="text-end" appCommaFormat> {{quotationDetails.quotationProduct[0].totalSumInsured |
                                 number }}</td>
                             <td class="" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
-                            <td class="text-end">{{passedPremium | number}}</td>
-                            <td class="text-end">{{ quotationDetails.quotationProduct[0].premium |
-                                number}}</td>
+                            <td class="text-end" appCommaFormat>{{passedPremium | number }}</td>
+                            <td class="text-end" appCommaFormat>{{ quotationDetails.quotationProduct[0].premium |
+                                number }}</td>
                         </tr>
 
                     </ng-template>
@@ -126,7 +126,7 @@
                                 </button> -->
 
                                 <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                id="openRiskModalButtonEdit" [hidden]="true" 
+                                id="openRiskModalButtonEdit" [hidden]="true"
                                 title="Delete">
                             </button>
                             <button type="button" id="icon" class="btn btn-primary" title="Delete">
@@ -172,7 +172,7 @@
                         <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
                             <td>{{ risk.propertyId }}</td>
                             <td>{{ risk.covertypeShortDescription }}</td>
-                            <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td>
+                            <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
                             <td>{{ risk.sectionsDetails[0]?.description }}</td>
                         </tr>
                     </ng-template>
@@ -253,7 +253,7 @@
                                     <td>{{ data.rowNumber }}</td>
                                     <td>{{ data.sectionShortDescription }}</td>
                                     <td>{{ data.description }}</td>
-                                    <td>{{ data.limitAmount | number }}</td>
+                                    <td appCommaFormat>{{ data.limitAmount | number }}</td>
                                     <td>{{ data.rate }}</td>
                                     <td>{{ data.rateType }}</td>
                                     <td>{{ data.premium | number }}</td>
