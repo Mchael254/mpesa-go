@@ -146,6 +146,11 @@ export class CoverTypesComparisonComponent {
   excessesList: Excesses[] = []
   selectedExcess: any;
   limitsOfLiabiltyDetailsForm: FormGroup;
+  editRiskDetailsForm: FormGroup;
+  passedSelectedRisk: any;
+  quotationUpdatedRiskData: unknown;
+  isEditRisk: boolean;
+  isAddRisk: boolean;
   selectedRisk: any;
 
 
@@ -264,9 +269,6 @@ export class CoverTypesComparisonComponent {
     this.createSmsForm();
     this.createLimitsOfLiabiltyForm();
 
-
-
-
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
 
     if (this.formData) {
@@ -275,9 +277,19 @@ export class CoverTypesComparisonComponent {
       log.debug("MY TRIAL", "No data found");
     }
 
-
-
     this.createSectionDetailsForm();
+    this.createEditRiskDetailsForm();
+
+    const passedSelectedRiskDetailsString = sessionStorage.getItem('passedSelectedRiskDetails');
+    this.passedSelectedRisk = JSON.parse(passedSelectedRiskDetailsString);
+
+    const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
+    this.isEditRisk = JSON.parse(passedIsEditRiskString);
+    log.debug("isEditRisk Details:", this.isEditRisk);
+
+    const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
+    this.isAddRisk = JSON.parse(passedIsAddRiskString);
+    log.debug("isAddRiskk Details:", this.isAddRisk);
 
   }
   ngOnDestroy(): void { }
@@ -714,7 +726,7 @@ export class CoverTypesComparisonComponent {
       if (this.quotationNo) {
         // this.loadClientQuotation()
       }
-      this.createQuotationRisk()
+      this.createQuotationRisk();
 
     })
   }
@@ -815,6 +827,9 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
+    
+   
+    log.debug("")
 
     // Check if passedNumber exists (not null, empty, or 'null')
     if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
@@ -832,7 +847,16 @@ export class CoverTypesComparisonComponent {
         } else {
           // If updateQuote() was NOT called, call createQuotationRisk and then navigate
           log.debug("updateQuote() WAS NOT CALLED, CREATING QUOTATION RISK");
-          this.createQuotationRisk();
+          if(this.isEditRisk){
+
+            log.debug(" Updating QUOTATION RISK");
+            this.UpdateQuotationRisk();
+          }else if(this.isAddRisk){
+
+            log.debug(" Adding QUOTATION RISK");
+            this.createQuotationRisk();
+
+          }
 
           const quotationNumberString = JSON.stringify(this.passedNumber);
           sessionStorage.setItem('quotationNumber', quotationNumberString);
@@ -850,7 +874,24 @@ export class CoverTypesComparisonComponent {
       } else {
         // If updateQuote() was NOT called, call createQuotationRisk and then navigate
         log.debug("updateQuote() WAS NOT CALLED, CREATING QUOTATION RISK");
-        this.createQuotationRisk();
+        log.debug("add risk value",this.isAddRisk)
+        log.debug("Edit risk value",this.isEditRisk)
+
+      if(this.isEditRisk){
+            
+            log.debug(" Updating QUOTATION RISK");
+            this.UpdateQuotationRisk();
+            sessionStorage.removeItem('isEditRisk');
+            // this.isEditRisk =false
+            // log.debug("Edit risk value after removing from session storage",this.isEditRisk)
+
+          }else if(this.isAddRisk){
+
+            log.debug(" Adding QUOTATION RISK");
+            this.createQuotationRisk();
+            sessionStorage.removeItem('isAddRisk');
+
+          }
 
         const quotationNumberString = JSON.stringify(this.passedNumber);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
@@ -1257,7 +1298,7 @@ export class CoverTypesComparisonComponent {
   }
   createLimitsOfLiabiltyForm() {
     this.limitsOfLiabiltyDetailsForm = this.fb.group({
-      code:  [''],
+      code: [''],
       scheduleValueCode: [''],
       quotationProductCode: [''],
       value: [''],
@@ -1268,7 +1309,7 @@ export class CoverTypesComparisonComponent {
 
   addLimitsOfLiability() {
     const productCode = this.quotationDetails?.quotationProduct[0].code
-    log.debug("Product Code",productCode)
+    log.debug("Product Code", productCode)
     // Transform the list to match the expected structure
     const transformedList = this.limitsOfLiabilityList.map(item => ({
       code: item.code,
@@ -1293,7 +1334,7 @@ export class CoverTypesComparisonComponent {
   }
   addExcesses() {
     const productCode = this.quotationDetails?.quotationProduct[0].code
-    log.debug("Product Code",productCode)
+    log.debug("Product Code", productCode)
     // Transform the list to match the expected structure
     const transformedList = this.excessesList.map(item => ({
       code: item.code,
@@ -1348,4 +1389,65 @@ export class CoverTypesComparisonComponent {
     }
 
 
+  createEditRiskDetailsForm() {
+    this.editRiskDetailsForm = this.fb.group({
+      code: [''],
+      covertypeShortDescription: [''],
+      covertypecode: [''],
+      propertyId: [''],
+      quotationCode: [''],
+      quotationRiskNo: [''],
+      value: [''],
+    });
+  }
+  UpdateQuotationRisk() {
+    const risk = this.editRiskDetailsForm.value;
+    risk.code = this.passedSelectedRisk?.code;
+    risk.covertypecode = this.passedCovertypeCode;
+    risk.covertypeShortDescription = this.passedCovertypeDescription;
+    risk.quotationCode = this.passedQuotationCode;
+    risk.quotationRiskNo = this.passedSelectedRisk?.quotationRiskNo;
+    risk.value = this.sumInsuredValue;
+    // FROM DYNAMIC FORM
+    risk.propertyId = this.premiumPayload?.risks[0].propertyId;
+    log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
+    log.debug("PREMIUM PAYLOAD WHEN EDITING A  RISK", this.premiumPayload)
+    log.debug('EDIT Risk', risk);
+    const riskArray = [risk];
+    log.debug("quotation code:", this.quotationCode)
+    log.debug("passed quotation code:", this.passedQuotationCode)
+    // let defaultCode
+    // if (this.quotationCode) {
+    //   defaultCode = this.quotationCode;
+    //   log.debug("IF STATEMENT QUOTE CODE", defaultCode)
+    // } else {
+    //   defaultCode = this.passedQuotationCode
+    //   log.debug("IF STATEMENT PASSED QUOTE CODE", defaultCode)
+
+    // }
+    // log.debug("default code:", defaultCode)
+
+    return this.quotationService.updateQuotationRisk(risk).subscribe(data => {
+      
+      log.debug("This is the quotation risk data", data)
+      // const quotationRiskCode = this.quotationRiskData._embedded[0];
+      // if (quotationRiskCode) {
+      //   for (const key in quotationRiskCode) {
+      //     if (quotationRiskCode.hasOwnProperty(key)) {
+      //       const value = quotationRiskCode[key];
+      //       log.debug(`${value}`);
+      //       this.riskCode = value;
+      //     }
+      //   }
+      // } else {
+      //   log.debug("The quotationRiskCode object is not defined.");
+      // }
+      this.riskCode= this.passedSelectedRisk.code
+      log.debug("quotation risk code:",this.riskCode)
+
+      log.debug(this.quotationRiskData, "Quotation Risk Code Data");
+      this.onCreateRiskSection()
+
+    })
+  }
 }
