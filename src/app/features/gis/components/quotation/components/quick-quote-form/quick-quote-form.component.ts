@@ -23,6 +23,7 @@ import {
   Sections,
   Subclass,
   Subclasses,
+  VesselType,
   subclassCoverTypeSection,
   subclassCoverTypes,
   subclassSection,
@@ -65,6 +66,9 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
+import { OccupationService } from 'src/app/shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -239,9 +243,13 @@ export class QuickQuoteFormComponent {
   effectiveFromDate: string;
   todaysDate: string;
   clientPhoneInput: any;
-
   isEditRisk: boolean;
-
+  occupationData: OccupationDTO[];
+  selectedoccupationCode: any;
+  selectedCoverToDate: any;
+  vesselTypeList: VesselType[];
+  selectedVesselTypeCode: any;
+  loading: boolean = false;
 
 
   constructor(
@@ -266,7 +274,10 @@ export class QuickQuoteFormComponent {
     private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private occupationService: OccupationService,
+    private vesselTypesService:VesselTypesService
+
   ) {}
 
   ngOnInit(): void {
@@ -303,7 +314,10 @@ export class QuickQuoteFormComponent {
     }
     this.premiumComputationRequest;
     // this.loadFormData()
-    this.loadAllCurrencies()
+    this.loadAllCurrencies();
+    const organizationId = undefined;
+    this.getOccupation(organizationId);
+    this.getVesselTypes(organizationId)
   }
   ngOnDestroy(): void { }
   addRisk() {
@@ -2047,5 +2061,92 @@ export class QuickQuoteFormComponent {
     console.log('Client Phone:', this.clientPhone);
     console.log('New Client Phone:', this.newClientData.inputClientPhone);
   }
+ /**
+   * Fetches occupation data based on the provided organization ID and
+   *  updates the component's occupationData property.
+   * @param organizationId The organization ID used to retrieve occupation data.
+   */
+ getOccupation(organizationId: number) {
+  this.occupationService
+      .getOccupations(organizationId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.occupationData = response;
+          log.debug('Occupation List', this.occupationData);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to fetch occupation list. Try again later'
+          );
+        },
+      });
 
+}
+  /**
+   * Handles the selection of occupation.
+   * - Retrieves the selected occupation code from the event.
+   * 
+   * @method onOccupationSelected
+   * @param {any} event - The event triggered by occupation selection.
+   * @return {void}
+   */
+  onOccupationSelected(selectedValue: any) {
+    this.selectedoccupationCode = selectedValue.id;
+    log.debug('Selected occupation Code:', this.selectedoccupationCode);
+
+    
+  }
+ 
+  onCoverToInputChange(date: any) {
+    log.debug('selected Cover to date raaaaaw', date);
+    this.selectedCoverToDate = date;
+    log.debug('selected cover to date', this.selectedCoverToDate);
+  }
+   /**
+   * Fetches vessel types data based on the provided organization ID and
+   *  updates the component's vessel types property.
+   * @param organizationId The organization ID used to retrieve vessel types.
+   */
+ getVesselTypes(organizationId: number) {
+  this.vesselTypesService
+      .getVesselTypes(organizationId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.vesselTypeList = response;
+          log.debug('Vessel type List', this.vesselTypeList);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to fetch occupation list. Try again later'
+          );
+        },
+      });
+
+}
+  /**
+   * Handles the selection of vessel type.
+   * - Retrieves the selected vessel type code from the event.
+   * 
+   * @method onVesselTypeSelected
+   * @param {any} event - The event triggered by vessel type selection.
+   * @return {void}
+   */
+  onVesselTypeSelected(selectedValue: any) {
+    this.selectedVesselTypeCode = selectedValue.code;
+    log.debug('Selected vessel type Code:', this.selectedVesselTypeCode);
+ 
+  }
+  fetchClientData(filters: any = {}) {
+    this.loading = true;
+  
+  
+  }
+  onFilterChange(field: string, value: any) {
+    const filters = { [field]: value };
+    this.fetchClientData(filters);
+  }
 }
