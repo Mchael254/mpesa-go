@@ -9,11 +9,21 @@ export class CommaformatDirective {
 
    }
 
+  // For input fields: Trigger on user input
   @HostListener('input')
   onInput() {
     const value = this.el.nativeElement.value;
     const formattedValue = this.formatNumber(value);
     this.el.nativeElement.value = formattedValue;
+  }
+
+   // For static content: Format on view initialization
+  ngAfterViewInit() {
+    if (this.el.nativeElement.tagName !== 'INPUT') { // Exclude inputs here
+      const value = this.el.nativeElement.innerText;
+      const formattedValue = this.formatNumber(value);
+      this.el.nativeElement.innerText = formattedValue;
+    }
   }
   private formatNumber(value: string): string {
     // Remove existing commas and convert to number
