@@ -1103,6 +1103,13 @@ export interface RequiredDocument {
     validPeriodType: string;
     organizationCode: string 
 }
+export interface VesselType {
+    code: number;
+    name: string;
+    version: string | null;
+    organizationCode: string | null;
+}
+
 
 
 

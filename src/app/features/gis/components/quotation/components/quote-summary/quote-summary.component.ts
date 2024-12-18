@@ -492,7 +492,7 @@ export class QuoteSummaryComponent {
   }
   fetchExcesses() {
     this.quotationService
-      .getExcesses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+      .getExcesses(this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
