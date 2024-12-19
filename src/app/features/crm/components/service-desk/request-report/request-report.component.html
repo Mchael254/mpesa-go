@@ -25,7 +25,11 @@
       <h6 class="float-start my-3 fw-semibold">Service request report</h6>
     </div>
     <div class="card-body pt-0" *ngFor="let report of reportsToDisplay">
-      <label class="text-decoration-underline reportList" (click)="onReportSelect(report)">{{report.desc}}</label>
+      <label class="text-decoration-underline reportList"
+             [class.selectedReport]="report === selectedReport"
+             (click)="onReportSelect(report)">
+        {{report.desc}}
+      </label>
     </div>
   </div>
 
