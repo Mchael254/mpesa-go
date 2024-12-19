@@ -21,14 +21,14 @@
                     <div class="col-lg-5 col-12">
                         <div class="row" style="display: flex; align-items:flex-start;">
                             <div style="flex: 2;">
-                                <p class="summary-label">Contact Information:</p>
+                                <p class="summary-label">{{ 'gis.quotation.contact_information' | translate }}:</p>
                             </div>
                             <div style="flex: 3; margin-left: -60px">
                                 <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
                                 <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}
                                 </p>
-                                <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">No contact
-                                    information available.</p>
+                                <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">
+                                    {{ 'gis.quotation.no_contact_information_available' | translate }}</p>
                             </div>
                         </div>
 
@@ -37,7 +37,7 @@
 
                         <div class="row" *ngIf="selectedClientName" style="display: flex; align-items: center;">
                             <div style="flex: 1;">
-                                <p class="summary-label">Name:</p>
+                                <p class="summary-label"> {{ 'gis.quotation.name' | translate }}:</p>
                             </div>
                             <div class="clientName" style="flex: 9; margin-left: -10px;">
                                 <p class="summary-value  ">{{ selectedClientName }}</p>
@@ -50,7 +50,7 @@
                     <div class="col-lg-4 col-12">
                         <div class="row" style="display: flex; align-items:flex-start;">
                             <div style="flex: 2;">
-                                <p class="summary-label">Effective date:</p>
+                                <p class="summary-label">{{ 'gis.quotation.effective_date' | translate }}:</p>
                             </div>
                             <div style="flex: 2; margin-left: -100px">
                                 <p class="summary-value">{{ coverFrom | date: 'MMMM d, yyyy' }}</p>
@@ -71,8 +71,8 @@
                     <ng-template pTemplate="header">
                         <tr>
                             <th>{{'gis.quotation.product' | translate}}</th>
-                            <th>Total sum insured</th>
-                            <th>Total taxes</th>
+                            <th> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
+                            <th>{{ 'gis.quotation.total_taxes' | translate }}</th>
                             <th>{{'gis.quotation.premium' | translate}}</th>
                             <th>{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
@@ -161,10 +161,10 @@
 
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Property ID</th>
-                            <th>Cover Type</th>
-                            <th>Sum Insured</th>
-                            <th>Description</th>
+                            <th> {{ 'gis.policy.property_id' | translate }}</th>
+                            <th> {{ 'gis.quotation.cover_type' | translate }}</th>
+                            <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
+                            <th> {{ 'gis.quotation.description' | translate }}</th>
                         </tr>
                     </ng-template>
 
@@ -182,7 +182,7 @@
 
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="4" style="text-align: center;">No data to display.</td>
+                            <td colspan="4" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -215,19 +215,19 @@
                 <ul class="nav  mt-5">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-risk-section">Risk sections</a>
+                            data-bs-target="#pills-risk-section"> {{'gis.policy.risk_sections' | translate}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-clauses">Clauses</a>
+                            data-bs-target="#pills-clauses"> {{'gis.policy.clauses' | translate}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-limits-of-liability">Limits of liability</a>
+                            data-bs-target="#pills-limits-of-liability"> {{'gis.policy.limits_of_liability' | translate}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-excesses">Excesses</a>
+                            data-bs-target="#pills-excesses"> {{'gis.policy.excesses' | translate}}</a>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <!-- RISK SECTION TAB CONTENT -->
@@ -281,10 +281,11 @@
                             <ng-template pTemplate="header">
                                 <tr>
                                     <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
-                                    <th class="flexible-header">Heading</th>
-                                    <th class="flexible-header">Description</th>
+                                    <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
+                                    <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
                                     <th class="flexible-header"></th>
-                                    <th class="flexible-header">Mandatory</th>
+                                    <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
+        
 
 
 
@@ -343,8 +344,8 @@
                             class='ui-datatable' styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th>Narration</th>
-                                    <th>Value</th>
+                                    <th> {{'gis.quotation.narration' | translate}}</th>
+                                    <th> {{'gis.quotation.value' | translate}}</th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-limits let-ri="rowIndex">
@@ -385,8 +386,8 @@
                       >
                         <ng-template pTemplate="header">
                           <tr>
-                            <th >Narration</th>
-                            <th >Value</th>
+                            <th> {{'gis.quotation.narration' | translate}}</th>
+                            <th> {{'gis.quotation.value' | translate}}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-limits let-ri="rowIndex">
@@ -404,7 +405,7 @@
                           <tr>
                               <td colspan="1"></td>
           
-                              <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">No data to display.</td>
+                              <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display | translate}}</td>
                           </tr>
           
                       </ng-template>
