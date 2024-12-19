@@ -7,7 +7,7 @@ import {
   ValidatorFn,
   AbstractControl,
 } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { Logger } from '../../../../../../shared/services';
 import { BinderService } from '../../../setups/services/binder/binder.service';
@@ -36,7 +36,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
 import { CountryDto } from '../../../../../../shared/data/common/countryDto';
-import { Table } from 'primeng/table';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import {
   ClientBranchesDto,
@@ -58,7 +58,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import {
@@ -69,6 +69,8 @@ import {
 import { OccupationService } from 'src/app/shared/services/setups/occupation/occupation.service';
 import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
 import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from 'src/app/shared/data/common/pagination';
+import { TableDetail } from 'src/app/shared/data/table-detail';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -249,9 +251,43 @@ export class QuickQuoteFormComponent {
   selectedCoverToDate: any;
   vesselTypeList: VesselType[];
   selectedVesselTypeCode: any;
-  loading: boolean = false;
 
 
+  filterObject: {
+    name:string, idNumber:string, 
+  } = {
+    name:'',  idNumber:'', 
+  };
+  public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
+  tableDetails: TableDetail;
+  public pageSize: 5;
+  isSearching = false;
+  searchTerm = '';
+  cols = [
+    { field: 'clientFullName', header: 'Name' },
+    { field: 'emailAddress', header: 'Email' },
+    { field: 'phoneNumber', header: 'Phone number' },
+    { field: 'idNumber', header: 'ID number' },
+    { field: 'pinNumber', header: 'Pin' },
+    { field: 'id', header: 'ID' },
+  ];
+  globalFilterFields = ['idNumber', 'firstName','lastName','emailAddress'];
+  emailValue: string;
+  phoneValue: string;
+  pinValue: string;
+  idValue: string;
+
+  // headers: { key: string, translationKey: string }[] = [
+  //   { key: 'name', translationKey: 'gis.quotation.name' },
+  //   { key: 'email', translationKey: 'gis.quotation.email' },
+  //   { key: 'phoneNumber', translationKey: 'gis.quotation.phone_number' },
+  //   { key: 'id_no', translationKey: 'gis.quotation.id_no' },
+  //   { key: 'pinNumber', translationKey: 'gis.quotation.pin_number' },
+   
+
+  // ];
+
+  
   constructor(
     public fb: FormBuilder,
     public branchService: BranchService,
@@ -276,9 +312,21 @@ export class QuickQuoteFormComponent {
     public globalMessagingService: GlobalMessagingService,
     private datePipe: DatePipe,
     private occupationService: OccupationService,
-    private vesselTypesService:VesselTypesService
+    private vesselTypesService:VesselTypesService,
+    private spinner:NgxSpinnerService
 
-  ) {}
+
+  ) {
+    this.tableDetails = {
+      cols: this.cols,
+      rows: this.clientsData?.content,
+      globalFilterFields: this.globalFilterFields,
+      isLazyLoaded: true,
+      paginator: false,
+      showFilter: false,
+      showSorting: false
+    }
+  }
 
   ngOnInit(): void {
     this.minDate = new Date();
@@ -318,6 +366,20 @@ export class QuickQuoteFormComponent {
     const organizationId = undefined;
     this.getOccupation(organizationId);
     this.getVesselTypes(organizationId)
+
+    this.tableDetails = {
+      cols: this.cols,
+      rows: this.clientsData?.content,
+      globalFilterFields: this.globalFilterFields,
+      showFilter: false,
+      showSorting: true,
+      paginator: true,
+      // url: '/home/entity/view',
+      urlIdentifier: 'id',
+      viewDetailsOnView: true,
+      // viewMethod: this.viewDetailsWithId.bind(this),
+      isLazyLoaded: true
+    }
   }
   ngOnDestroy(): void { }
   addRisk() {
@@ -1860,6 +1922,7 @@ export class QuickQuoteFormComponent {
         code: this.selectedProductCode,
         expiryPeriod: this.expiryPeriod,
       },
+      
       currency: {
         rate: 1.25 /**TODO: Fetch from API */,
       },
@@ -2140,13 +2203,143 @@ export class QuickQuoteFormComponent {
     log.debug('Selected vessel type Code:', this.selectedVesselTypeCode);
  
   }
-  fetchClientData(filters: any = {}) {
-    this.loading = true;
-  
-  
+// SEARCHING CLIENT USING KYC
+getClients(pageIndex: number,
+  pageSize: number,
+  sortField: any = 'createdDate',
+  sortOrder: string = 'desc') {
+return this.clientService
+.getClients(pageIndex, pageSize, sortField, sortOrder)
+.pipe(
+untilDestroyed(this),
+);
+}
+  /**
+   * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
+   * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
+   * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
+   */
+  lazyLoadClients(event:LazyLoadEvent | TableLazyLoadEvent){
+    const pageIndex = event.first / event.rows;
+    const sortField = event.sortField;
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
+
+
+    if (this.isSearching) {
+      const searchEvent = {
+        target: {value: this.searchTerm}
+      };
+      this.filter(searchEvent, pageIndex, pageSize);
+    }
+    else {
+      this.getClients(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Clients>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<ClientDTO>) => {
+            data.content.forEach( client => {
+              client.clientTypeName = client.clientType.clientTypeName;
+              client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
+              // as the null value for lastName is handled  using the logical OR (||) operator
+            });
+            this.clientsData = data;
+            this.tableDetails.rows = this.clientsData?.content;
+            this.tableDetails.totalElements = this.clientsData?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          }
+        );
+    }
   }
-  onFilterChange(field: string, value: any) {
-    const filters = { [field]: value };
-    this.fetchClientData(filters);
-  }
+filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+  this.clientsData = null; // Initialize with an empty array or appropriate structure
+  let columnName ;
+  let columnValue;
+  /*const value = (event.target as HTMLInputElement).value.toLowerCase();
+
+  log.info('myvalue>>>', value)
+
+    this.searchTerm = value;*/
+    if(this.emailValue){
+      columnName = "emailAddress";
+      columnValue = this.emailValue
+    }else if(this.phoneValue){
+      columnName = "phoneNumber";
+      columnValue = this.phoneValue
+    }else if(this.pinValue){
+      columnName = "pinNumber";
+      columnValue = this.pinValue
+    }else if(this.idValue){
+      columnName = "id";
+      columnValue = this.idValue
+    }
+
+
+    this.isSearching = true;
+    this.spinner.show();
+    this.quotationService
+      .searchClients(
+        columnName,columnValue,
+        pageIndex, pageSize,
+        this.filterObject?.name,
+        this.filterObject?.idNumber,
+       
+      )
+      .subscribe((data) => {
+        this.clientsData = data;
+        this.spinner.hide();
+      },
+        error => {
+          this.spinner.hide();
+        });
+}
+
+inputName(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+  this.filterObject['name'] = value;
+}
+
+inputEmail(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+  this.emailValue=value
+  // this.filterObject['emailAddress'] = value;
+}
+inputPhone(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+    this.phoneValue=value
+
+  // this.filterObject['phoneNumber'] = value;
+}
+inputIdNumber(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+  this.filterObject['idNumber'] = value;
+}
+
+
+
+inputPin(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+  this.pinValue=value
+
+  // this.filterObject['pinNumber'] = value;
+}
+inputInternalId(event) {
+
+  const value = (event.target as HTMLInputElement).value;
+  this.idValue=value
+
+  // this.filterObject['id'] = value;
+}
+
 }
