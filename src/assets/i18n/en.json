@@ -768,7 +768,7 @@
       "name": "Name",
       "client": "Client",
       "select_a_client": "Select a client",
-      "id_no": "Id no",
+      "id_no": "Id number",
       "email_address": "Email Address",
       "phone_number": "Phone Number",
       "source": "Source",
@@ -920,8 +920,26 @@
       "rate_table": "Rate Table",
       "absolute_range": "Absolute Range",
       "step_ranges": "Step Ranges",
-      "effective_date": "Effective date"
-    },
+      "effective_date": "Effective date",
+
+      "pin":"Pin",
+      "internal_id": "Internal id",
+      "this_property_id_is_duplicated": "This property Id is duplicated",
+      "effective_date_is_required": "Effective date is required",
+      "no_client_found":"No client found",
+      "select_a_cover": "Select a cover",
+      "clauses":"Clauses",
+      "mandatory": "Mandatory",
+      "limits_of_liability":"Limits of liability",
+      "narration": "Narration",
+      "excesses_applicable":"Excesses applicable",
+      "add_benefits":"Add benefits",
+      "contact_information":"Contact information",
+      "no_contact_information_available": "No contact information available",
+      "total_sum_insured":"Total sum insured",
+      "total_taxes":"Total taxes",
+      "excesses": "Excesses"
+        },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
       "type_of_transaction": "Type of transaction",
@@ -1705,7 +1723,8 @@
           "country": "Country",
           "continue": "Continue",
           "occupation_is_required": "Occupation is required",
-          "email_is_required": "Email is required"
+          "invalid_email_format": "Invalid email format"
+         
         },
         "quick_quote": {
           "product_details": "Product details",

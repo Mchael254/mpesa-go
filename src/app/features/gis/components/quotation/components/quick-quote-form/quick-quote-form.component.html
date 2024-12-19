@@ -54,8 +54,10 @@
                             [(ngModel)]="newClientData.inputClientEmail" #emailInput="ngModel" [pattern]="emailPattern"
                             required>
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
-                            <span *ngIf="emailInput.errors?.['required']">Email is required.</span>
-                            <span *ngIf="emailInput.errors?.['pattern']">Invalid email format.</span>
+                            <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
+                                translate}}</span>
+                            <span *ngIf="emailInput.errors?.['pattern']">{{'gis.quotation.invalid_email_format' |
+                                translate}} </span>
                         </div>
 
                     </div>
@@ -63,15 +65,17 @@
 
                     <div class="col-sm-4 col-6 " *ngIf="new">
                         <label for=">Email" class="quote-label" id=">Email"> {{'gis.quotation.email_address' |
-                            translate}}</label>
+                            translate}} </label>
                         <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="clientEmail" disabled> -->
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             [(ngModel)]="clientEmail" #clientEmailInput="ngModel" disabled>
                         <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
-                            <span *ngIf="clientEmailInput.errors?.['required']">Email is required.</span>
-                            <span *ngIf="!validateEmail(clientEmail)">Invalid email format.</span>
+                            <span *ngIf="clientEmailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
+                                translate}}</span>
+                            <span *ngIf="!validateEmail(clientEmail)">{{'gis.quotation.invalid_email_format' |
+                                translate}} </span>
                         </div>
                     </div>
                     <div class="col-sm-4 col-6" *ngIf="!new">
@@ -182,7 +186,7 @@
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('withEffectiveFromDate').hasError('required') && personalDetailsForm.get('withEffectiveFromDate').touched"
                                 class="form-text text-danger">
-                                {{'gis.quotation.cover_from_is_required' | translate}}
+                                {{'gis.quotation.effective_date_is_required' | translate}}
                             </div>
                         </div>
                     </div>
@@ -260,7 +264,8 @@
                                                 </div> -->
                                                 <div
                                                     *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
-                                                    This property Id is duplicated
+                                                    
+                                                    {{'gis.quotation.this_property_id_is_duplicated' | translate}}
                                                 </div>
 
                                             </div>
@@ -336,7 +341,7 @@
                     <!-- Client Modal -->
                     <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-dialog modal-dialog-centered modal-lg  modal-fade" >
                             <div class="modal-content">
 
                                 <div class="modal-body">
@@ -345,7 +350,7 @@
                                     <p class="text-start" id="selectClient"> {{'gis.quotation.select_a_client' |
                                         translate}}</p>
 
-                                    <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
+                                    <!-- <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
                                         selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
                                         responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
                                         [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
@@ -391,57 +396,73 @@
                                             </tr>
                                         </ng-template>
 
-                                    </p-table>
-                                    <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
-                                        selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
-                                        responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true"
-                                        [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
-                                        [showCurrentPageReport]="true"
-                                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                                        [globalFilterFields]="['idNumber', 'emailAddress', 'lastName', 'emailAddress']">
-                                        <ng-template pTemplate="caption">
-                                            <div class="flex">
-                                                <span class="p-input-icon-left ml-auto">
-                                                    <i class="pi pi-search search-icon"></i>
-                                                    <!-- <input class="search-input" pInputText type="text"
-                                                        (input)="onGlobalSearch($event.target.value)"
-                                                        placeholder="Search" /> -->
-                                                </span>
-                                            </div>
-                                        </ng-template>
+                                    </p-table> -->
+                                    <p-table 
+                                    #dt1 
+                                    (onLazyLoad)="lazyLoadClients($event)"
+                                    [autoLayout]="true"
+                                    [lazy]="true"
+                                    [paginator]="true"
+                                    [rowHover]="true"
+                                    [resizableColumns]="true"
+                                    [showCurrentPageReport]="true"
+                                    [rows]="pageSize || 5"
+                                    [totalRecords]="clientsData?.totalElements"
+                                    [value]="clientsData?.content"
+                                   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                                   responsiveLayout="stack"
+                                   [scrollable]="true"
+                                   scrollHeight="400px"
+                                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                                    [globalFilterFields]=globalFilterFields
+                                    styleClass="p-datatable-sm">
+                                  
+                                   
+                                  
+                                    <ng-template pTemplate="header">
+                                      <tr>
+                                        <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.name' | translate}}</th>
+                                        <th pSortableColumn="emailAddress" class="flexible-header">{{'gis.quotation.email' | translate}}</th>
+                                        <th pSortableColumn="phoneNumber" class="flexible-header">{{'gis.quotation.phone_number' | translate}}</th>
+                                        <th pSortableColumn="idNumber" class="flexible-header">{{'gis.quotation.id_no' | translate}}</th>
+                                        <th pSortableColumn="pinNumber" class="flexible-header">{{'gis.quotation.pin' | translate}}</th>
+                                        <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.internal_id' | translate}}</th>
+                                       
+                                      </tr>
+                                      <tr>
+                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)"></th>
+                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputEmail($event)"></th>
+                                        <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPhone($event)"></th>
+                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputIdNumber($event)"></th>
+                                        <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPin($event)"></th>
+                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputInternalId($event)"></th>
 
-                                        <ng-template pTemplate="header">
-                                            <tr id="product">
-                                                <th>
-                                                    <p-columnFilter type="text" field="idNumber"
-                                                        placeholder="{{'gis.quotation.id_no' | translate}}"
-                                                        (filterChange)="onFilterChange('idNumber', $event)">
-                                                    </p-columnFilter>
-                                                </th>
-                                                <th>
-                                                    <p-columnFilter type="text" field="name"
-                                                        placeholder="{{'gis.quotation.name' | translate}}"
-                                                        (filterChange)="onFilterChange('name', $event)">
-                                                    </p-columnFilter>
-                                                </th>
-                                                <th>
-                                                    <p-columnFilter type="text" field="emailAddress"
-                                                        placeholder="{{'gis.quotation.email' | translate}}"
-                                                        (filterChange)="onFilterChange('emailAddress', $event)">
-                                                    </p-columnFilter>
-                                                </th>
-                                            </tr>
-                                        </ng-template>
+                                      </tr>
+                                    </ng-template>
+                                  
+                                    <ng-template pTemplate="body" let-clientData>
+                                      <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
+                                        <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
+                                        <td>{{ clientData.emailAddress }}</td>
+                                        <td>{{ clientData.phoneNumber }}</td>
+                                        <td>{{ clientData.idNumber }}</td>
+                                        <td>{{ clientData.pinNumber }}</td>
+                                        <td>{{ clientData.id }}</td>
 
-                                        <ng-template let-clientData pTemplate="body">
-                                            <tr id="productData" [pSelectableRow]="clientData"
-                                                (click)="loadClientDetails(clientData.id);">
-                                                <td>{{ clientData.idNumber }}</td>
-                                                <td>{{ clientData.firstName + " " + clientData.lastName }}</td>
-                                                <td>{{ clientData.emailAddress }}</td>
-                                            </tr>
-                                        </ng-template>
-                                    </p-table>
+                                       
+                                      </tr>
+                                    </ng-template>
+                                  
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="4">{{'gis.quotation.no_client_found' | translate}}</td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                  
+                                
+
+
 
                                     <br>
                                 </div>

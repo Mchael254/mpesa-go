@@ -214,5 +214,14 @@ select#quote-input option {
   color: #dc3545;
   margin-top: 4px;
 }
+.flexible-header {
+  white-space: nowrap;
+  width: auto;
+  text-align: left;
+}
+.ui-datatable th,
+.ui-datatable td {
+  white-space: nowrap;
+}
   
     
