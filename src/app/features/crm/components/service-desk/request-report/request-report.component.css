@@ -6,3 +6,8 @@
   color: var(--primary-color);
   cursor: pointer;
 }
+
+.selectedReport {
+  color: var(--primary-color);
+  font-weight: bold;
+}
