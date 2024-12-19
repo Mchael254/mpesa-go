@@ -128,7 +128,7 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Service Desk', link: '/home/crm/service-desk' },
         { label: 'Request Tracking', link: '/home/crm/request-tracking' },
-        { label: 'Request Report', link: '/home/crm/' },
+        { label: 'Request Report', link: '/home/crm/request-report' },
         { label: 'Request Categories', link: '/home/crm/request-categories' },
         { label: 'Request Status', link: '/home/crm/request-status' },
       ],
