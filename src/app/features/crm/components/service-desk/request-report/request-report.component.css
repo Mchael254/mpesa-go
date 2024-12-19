@@ -1,0 +1,8 @@
+.form-check-inline {
+  margin-right: 3rem;
+}
+
+.reportList:hover {
+  color: var(--primary-color);
+  cursor: pointer;
+}
