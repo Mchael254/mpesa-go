@@ -1,6 +1,23 @@
-.required {
-  padding: 0 0 0.5rem 0;
+.breadcrumb-container {
+  padding-top: 1rem;
+  justify-content: end;
 }
+
+.content-container {
+  box-shadow: none;
+  border: 1px solid #ddd;
+}
+
+.section-header {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+
+.spinner-container {
+  position: relative;
+  color: black;
+}
+
 div > label {
   margin-top: 1rem;
 }
@@ -9,18 +26,130 @@ label {
   margin-bottom: 0.5rem;
 }
 
-.text-primary {
-  font-size: 20px; 
+.add-button-container {
+  padding: 0;
+}
+
+.table-header {
+  font-weight: 400;
+  font-size: 12px;
+  border: none;
+}
+
+.action-column {
+  width: 2rem;
+}
+
+.no-record-message span {
+  color: gray;
+}
+
+.spinner-border {
+  position: relative;
+  left: 50%; 
+  right: 50%; 
+  width: 3rem; 
+  height: 3rem;
+}
+
+.navigation-buttons .back-button {
+  padding: 0.6em;
+  text-decoration: underline;
+}
+
+/* Style the table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+/* Remove borders between rows and columns */
+.table th, .table td {
+  border: none; 
+}
+
+/* Table Header Styling */
+.table thead th {
+  color: var(--primary-color); 
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 12px;
+}
+
+/* Distinguish Rows by Alternating Colors */
+.table tbody tr:nth-child(odd) {
+  background-color: #eaeaea; /* Light gray for odd rows */
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #ffffff; /* White for even rows */
+}
+
+/* Highlight row on hover */
+.table tbody tr:hover {
+  background-color: #d6eaf8; /* Subtle blue for hover */
+  transition: background-color 0.3s ease;
+}
+
+/* Table Cell Styling */
+.table tbody td {
+  padding: 10px;
+  text-align: left;
+  border: none;
+}
+
+.required {
+  padding: 0 0 0.5rem 0;
+}
+
+/* Custom Modal Dimensions */
+.modal-content {
+  border-radius: 6px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 1.5rem;
+}
+
+.modal-header {
+  border-bottom: 0px;
+  padding-bottom: 0.50rem;
+}
+
+.modal-header .modal-title {
+  font-size: 18px; 
+}
+
+.modal-custom {
+  max-width: 714px;
+  height: 387px;
+  margin: auto;
+}
+
+.modal-footer {
+  border-top: none;
+  padding-top: 0.75rem; 
+}
+
+button.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  background-color: #FFF;
+  color: #00529B; 
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .p-dropdown .p-dropdown-label .p-placeholder {
   color: #ca1b0e !important;
   transform: translateY(-4px) !important;
   font-size: 12px !important;
-}
-
-.modal-content {
-  border-radius: 0px;
 }
 
 tbody > tr > td:nth-child(1) {
