@@ -2,7 +2,7 @@
 <div class="container-fluid">
 
   <!-- Breadcrumb Navigation -->
-  <div style="display: flex; padding-top: 1rem; justify-content: end">
+  <div class="breadcrumb-container">
     <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
 
@@ -14,17 +14,16 @@
   </div>
 
   <!-- Content Section -->
-  <div class="full-border p-5" style="box-shadow: none; border: 1px solid #ddd;">
+  <div class="full-border p-5 content-container">
 
     <div>
 
       <div class="d-flex justify-content-between">
-        <!-- Section Header -->
-        <div class="text-primary" style="margin-bottom: 0;">{{ "lms.ind.quotations.insurance_history" | translate }}</div>
+        <div class="section-header">{{ "lms.ind.quotations.insurance_history" | translate }}</div>
       </div>
 
       <!-- Content Wrapper with Spinner -->
-      <div class="text-black" style="position: relative; color: black; ">
+      <div class="text-black spinner-container">
         <ngx-spinner
           name="ins_view"
           type="ball-clip-rotate-multiple"
@@ -59,89 +58,51 @@
                   <div *ngIf="getValue('question1') === 'Y'" class="text-black">
                     <div>
                       <!-- Add Button for Dynamic Rows -->
-                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                      <div class="d-flex justify-content-between add-button-container">
                         <div></div>
                         <div>
-                          <div *ngIf="!editFirstForm" (click)="addEmptyPolicyList(policyListOne)" class="b-r d-flex justify-content-center align-content-center">
+                          <div (click)="addEmptyPolicyList()" class="b-r d-flex justify-content-center align-content-center">
                             <i class="fa-solid fa-plus"></i>
                           </div>
                         </div>
                       </div>
+
                       <ng-container>
                         <!-- Table to Display/Edit Insurance Policies -->
                         <div class="table-responsive">
-                          <table formArrayName="responseOne" class="table table-bordered" style="border-collapse: collapse; border-spacing: 0;">
+                          <table class="table table-bordered">
                             <thead>
-                              <tr style="font-weight: 400; font-size: 12px; border: none;">
+                              <tr class="table-header">
                                 <th>{{ "lms.ind.quotations.insurance_company" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.policy_no" | translate }}.</th>
                                 <th>{{ "lms.ind.quotations.annual_premium" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.sum_assured" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.status" | translate }}</th>
-                                <th style="width: 2rem"></th>  
+                                <th class="action-column"></th>  
                               </tr>
                             </thead>
                             <tbody>
-                              <ng-container *ngFor="let row of policyListOne; let i = index">
-                                <tr [formGroup]="insuranceHistoryFormOne" *ngIf="row?.isEdit === true">
-                                  <td><input formControlName="provider" type="text" class="form-control" required/></td>
-                                  <td><input formControlName="policy_no" type="text" class="form-control" required/></td>
-                                  <td><input formControlName="premium" type="number" class="form-control"/></td>
-                                  <td><input formControlName="sum_assured" type="number" class="form-control"/></td>
-                                  <td>
-                                    <select class="form-select" formControlName="cover_status">
-                                      <option style="font-size: 11px" value="" disabled selected>{{ "lms.ind.quotations.status" | translate }}</option>
-                                      <ng-container *ngFor="let type of coverStatusTypeListOne">
-                                        <option [value]="type['name']">
-                                          {{ type["value"] | titlecase }}
-                                        </option>
-                                      </ng-container>
-                                    </select>
-                                  </td>
-                                  <td class="d-flex justify-content-between py-2">
-                                    <div (click)="addResponseOne(i)" class="mx-2">
-                                      <i class="fa-solid fa-check text-success"></i>
-                                    </div>
-                                    <div (click)="cancelPolicyListOne(i)" class="mx-2">
-                                      <i class="fa-solid fa-x text-danger"></i>
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr></tr>
-                                <tr *ngIf="row['isEdit'] === false">
-                                  <td>{{ row["policy_no"] }}</td>
-                                  <td>{{ row["provider"] }}</td>
-                                  <td>{{ row["premium"] }}</td>
-                                  <td>{{ row["sum_assured"] }}</td>
-                                  <td>{{ filterCoverStatusType (
-                                          row["cover_status"]
-                                        ) }}
-                                  </td>
-                                  <td class="d-flex justify-content-between py-2">
-                                    <div (click)="editPolicyOne(i)" class="mx-2">
-                                      <i class="fas fa-edit text-success"></i>
-                                      <!-- Edit Icon -->
-                                    </div>
-                                    <div (click)="deletePolicyListOne(i)" class="mx-2">
-                                      <i class="fas fa-trash-alt text-danger"></i>
-                                      <!-- Remove Icon -->
-                                    </div>
-                                  </td>
-                                </tr>
-                              </ng-container>
+                              <tr *ngFor="let row of policyListOne; let i = index">
+                                <td>{{ row.provider }}</td>
+                                <td>{{ row.policy_no }}</td>
+                                <td>{{ row.premium }}</td>
+                                <td>{{ row.sum_assured }}</td>
+                                <td>{{ filterCoverStatusType(row.cover_status) }}</td>
+                                <td class="d-flex justify-content-between py-2">
+                                  <div (click)="openEditPolicyModalOne(i)" class="mx-2">
+                                    <i class="fas fa-edit text-success"></i>
+                                  </div>
+                                  <div (click)="deletePolicyListOne(i)" class="mx-2">
+                                    <i class="fas fa-trash-alt text-danger"></i>
+                                  </div>
+                                </td>
+                              </tr>
                             </tbody>
                           </table>
-
-                          <div *ngIf="editEntity">
-                            <div class="spinner-border text-primary spinner-border" role="status"
-                                style="left: 50%; right: 50%; width: 3rem; height: 3rem; position: relative;">
-                              <span class="visually-hidden">{{ "lms.ind.quotations.loading" | translate }}...</span>
-                            </div>
-                          </div>
                         </div>
-                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center">
+                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center no-record-message">
                             {{ "lms.ind.quotations.no_record_capture" | translate }}. &nbsp;
-                          <span style="color: gray">&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
+                          <span>&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
                         </div>
                       </ng-container>
                       
@@ -170,7 +131,7 @@
                 <div class="text-black" *ngIf="getValue('question2') === 'Y'">
                   <div>
                     <div class="text-black">
-                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                      <div class="d-flex justify-content-between add-button-container">
                         <div></div>
                         <div>
                           <div (click)="openAddPolicyTwoModal()" class="b-r d-flex justify-content-center align-content-center">
@@ -182,13 +143,13 @@
                         <div class="table-responsive">
                           <table formArrayName="responseOne" class="table table-bordered">
                             <thead>
-                              <tr style="font-weight: 400; font-size: 12px">
+                              <tr class="table-header">
                                 <th>{{ "lms.ind.quotations.insurance_company" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.policy_no" | translate }}.</th>
                                 <th>{{ "lms.ind.quotations.annual_premium" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.sum_assured" | translate }}</th>
                                 <th>{{ "lms.ind.quotations.status" | translate }}</th>
-                                <th style="width: 2rem"></th>
+                                <th class="action-column"></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -211,15 +172,14 @@
                           </table>
 
                           <div *ngIf="editEntity">
-                            <div class="spinner-border text-primary spinner-border" role="status"
-                                style=" left: 50%; right: 50%; width: 3rem; height: 3rem; position: relative;">
+                            <div class="spinner-border text-primary spinner-border" role="status">
                               <span class="visually-hidden">{{ "lms.ind.quotations.loading" | translate }}...</span>
                             </div>
                           </div>
                         </div>
-                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center">
+                        <div *ngIf="policyListOne.length === 0" class="d-flex justify-content-center no-record-message">
                             {{ "lms.ind.quotations.no_record_capture" | translate }}. &nbsp;
-                          <span style="color: gray">&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
+                          <span>&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
                         </div>
                       </ng-container>
                     </div>
@@ -232,17 +192,77 @@
       </div>
     </div>
   </div>
-  <div class="d-flex justify-content-between pb-4">
-    <button routerLink="/home/lms/ind/quotation/beneficiaries-dependents" class="btn btn-sm text-primary fw-medium fs-6" type="button" 
-      style="padding: 0.6em; text-decoration: underline" type="button">
+  <div class="d-flex justify-content-between pb-4 navigation-buttons">
+    <button routerLink="/home/lms/ind/quotation/beneficiaries-dependents" class="btn btn-sm text-primary fw-medium fs-6 back-button" type="button">
         {{ "lms.ind.quotations.back" | translate }}
     </button>
-    <button routerLink="/home/lms/ind/quotation/lifestyle-details" class="btn btn-primary btn-sm" type="button"
-      style="padding: 0.6em">
+    <button routerLink="/home/lms/ind/quotation/lifestyle-details" class="btn btn-primary btn-sm next-button" type="button">
         {{ "lms.ind.quotations.next" | translate }} &nbsp;&nbsp;
     </button>
   </div>
 </div>
+
+<!-- Policy Question Modal -->
+<div class="modal fade" 
+    tabindex="-1" 
+    id="policyListModal" 
+    [ngClass]="{ show: showModal }" 
+    [style.display]="showModal ? 'block' : 'none'"
+    aria-labelledby="policyListModal" 
+    aria-hidden="!showModal">
+  <div class="modal-dialog modal-custom">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingPolicy ? 'Edit Policy Details' : 'Add Policy Details' }}</h5>
+        <button type="button" class="btn-close" (click)="closePolicyModal()"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="insuranceHistoryFormOne">
+
+          <div class="row g-5">
+
+            <div class="col-md-6">
+              <label class="form-label">{{ "lms.ind.quotations.insurance_company" | translate }}<span class="required"></span></label>
+              <input type="text" class="form-control" formControlName="provider" />
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <label class="form-label">{{ "lms.ind.quotations.policy_no" | translate }}<span class="required"></span></label>
+              <input type="text" class="form-control" formControlName="policy_no" />
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <label class="form-label">{{ "lms.ind.quotations.annual_premium" | translate }}<span class="required"></span></label>
+              <input type="number" class="form-control" formControlName="premium" />
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <label class="form-label">{{ "lms.ind.quotations.sum_assured" | translate }}<span class="required"></span></label>
+              <input type="number" class="form-control" formControlName="sum_assured" />
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <label class="form-label">{{ "lms.ind.quotations.status" | translate }}<span class="required"></span></label>
+              <select formControlName="cover_status" class="form-select">
+                <ng-container *ngFor="let type of coverStatusTypeListOne">
+                  <option [value]="type['name']">{{ type["value"] | titlecase }}</option>
+                </ng-container>
+              </select>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePolicyModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="savePolicy()">Save</button>
+      </div>
+    </div>
+  </div>
+</div> 
 
 <!-- Proposal Question Modal -->
 <div class="modal fade"
@@ -255,7 +275,7 @@
   <div class="modal-dialog modal-custom">
     <div class="modal-content p-4">
       <div class="modal-header">
-        <h5 class="modal-title">{{ editingPolicyTwo ? 'Edit Policy Details' : 'Add Policy Details' }}</h5>
+        <h5 class="modal-title">{{ editingPolicyTwo ? 'Edit Proposal Details' : 'Add Proposal Details' }}</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="closePolicyModalTwo()"></button>
       </div>
       <div class="modal-body">
@@ -265,27 +285,27 @@
           <div class="row g-3">
 
             <div class="col-md-6">
-              <label for="provider" class="form-label">{{ "lms.ind.quotations.insurance_company" | translate }}</label>
+              <label for="provider" class="form-label">{{ "lms.ind.quotations.insurance_company" | translate }}<span class="required"></span></label>
               <input formControlName="provider" type="text" class="form-control" id="provider" />
             </div>
 
             <div class="col-md-6">
-              <label for="policy_no" class="form-label">{{ "lms.ind.quotations.policy_no" | translate }}</label>
+              <label for="policy_no" class="form-label">{{ "lms.ind.quotations.policy_no" | translate }}<span class="required"></span></label>
               <input formControlName="policy_no" type="text" class="form-control" id="policy_no" />
             </div>
 
             <div class="col-md-6">
-              <label for="premium" class="form-label">{{ "lms.ind.quotations.annual_premium" | translate }}</label>
+              <label for="premium" class="form-label">{{ "lms.ind.quotations.annual_premium" | translate }}<span class="required"></span></label>
               <input formControlName="premium" type="number" class="form-control" id="premium" />
             </div>
 
             <div class="col-md-6">
-              <label for="sum_assured" class="form-label">{{ "lms.ind.quotations.sum_assured" | translate }}</label>
+              <label for="sum_assured" class="form-label">{{ "lms.ind.quotations.sum_assured" | translate }}<span class="required"></span></label>
               <input formControlName="sum_assured" type="number" class="form-control" id="sum_assured" />
             </div>
 
             <div class="col-md-6">
-              <label for="cover_status" class="form-label">{{ "lms.ind.quotations.status" | translate }}</label>
+              <label for="cover_status" class="form-label">{{ "lms.ind.quotations.status" | translate }}<span class="required"></span></label>
               <select formControlName="cover_status" class="form-select" id="cover_status">
                 <ng-container *ngFor="let type of coverStatusTypeListTwo">
                   <option [value]="type['name']">
