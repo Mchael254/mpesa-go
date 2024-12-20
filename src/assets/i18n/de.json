@@ -842,7 +842,25 @@
       "rate_table": "Tariftabelle",
       "absolute_range": "Absoluter Bereich",
       "step_ranges": "Stufenbereiche",
-      "effective_date": "Gültigkeitsdatum"
+      "effective_date": "Gültigkeitsdatum",
+      "pin": "Pin",
+      "internal_id": "Interne ID",
+      "this_property_id_is_duplicated": "Diese Eigenschafts-ID ist doppelt",
+      "effective_date_is_required": "Ein Gültigkeitsdatum ist erforderlich",
+      "no_client_found": "Kein Kunde gefunden",
+      "select_a_cover": "Wählen Sie eine Deckung",
+      "clauses": "Klauseln",
+      "mandatory": "Verpflichtend",
+      "limits_of_liability": "Haftungsgrenzen",
+      "narration": "Erzählung",
+      "excesses_applicable": "Anwendbare Selbstbehalte",
+      "add_benefits": "Vorteile hinzufügen",
+      "contact_information": "Kontaktinformationen",
+      "no_contact_information_available": "Keine Kontaktinformationen verfügbar",
+      "total_sum_insured": "Gesamtsumme versichert",
+      "total_taxes": "Gesamte Steuern",
+      "excesses": "Selbstbehalte"
+
     },
     "policy": {
       "underwriting_new_transaction": "Unterzeichnung: Neue Transaktion",
