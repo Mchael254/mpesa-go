@@ -278,7 +278,7 @@ export class MenuService {
               },
               {
                 name: 'Request Report',
-                link: '/home/crm/',
+                link: '/home/crm/request-report',
               },
               {
                 name: 'Request Categories',
