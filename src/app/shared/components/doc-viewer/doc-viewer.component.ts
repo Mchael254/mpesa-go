@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import { Logger } from '../../services/logger/logger.service';
 import { UtilService } from '../../services/util/util.service';
-// import {Logger, UtilService} from '../../shared.module';
 
 const log = new Logger('DocViewerComponent');
 
@@ -45,7 +44,7 @@ export class DocViewerComponent implements OnInit {
    * It generates the url for the document  or image to be displayed
    * @param changes
    */
-  ngOnChanges(changes: SimpleChanges){
+  ngOnChanges(changes: SimpleChanges) {
     this.cdr.detectChanges();
     this.contentType = this.utilService.checkIfImage(this.mimeType) ?
       'image' :
