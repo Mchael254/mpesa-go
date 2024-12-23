@@ -80,13 +80,13 @@
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td>{{ productDesc}}</td>
-                            <td class="text-end" appCommaFormat> {{quotationDetails.quotationProducts[0].totalSumInsured |
+                            <td class="text-start" appCommaFormat> {{quotationDetails.quotationProducts[0].totalSumInsured |
                                 number }}</td>
-                            <td class="" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
+                            <td class="text-start" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
-                            <td class="text-end" appCommaFormat>{{passedPremium | number }}</td>
-                            <td class="text-end" appCommaFormat>{{ quotationDetails.quotationProducts[0].premium |
+                            <td class="text-start" appCommaFormat>{{passedPremium | number }}</td>
+                            <td class="text-start" appCommaFormat>{{ quotationDetails.quotationProducts[0].premium |
                                 number }}</td>
                         </tr>
 
@@ -285,7 +285,7 @@
                                     <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
                                     <th class="flexible-header"></th>
                                     <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
-        
+
 
 
 
@@ -411,10 +411,10 @@
                         <ng-template pTemplate="emptymessage">
                           <tr>
                               <td colspan="1"></td>
-          
+
                               <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
                           </tr>
-          
+
                       </ng-template>
                       </p-table>
 
