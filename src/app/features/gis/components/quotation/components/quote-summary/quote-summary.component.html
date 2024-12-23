@@ -80,13 +80,13 @@
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td>{{ productDesc}}</td>
-                            <td class="text-end" appCommaFormat> {{quotationDetails.quotationProduct[0].totalSumInsured |
+                            <td class="text-end" appCommaFormat> {{quotationDetails.quotationProducts[0].totalSumInsured |
                                 number }}</td>
                             <td class="" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
                             <td class="text-end" appCommaFormat>{{passedPremium | number }}</td>
-                            <td class="text-end" appCommaFormat>{{ quotationDetails.quotationProduct[0].premium |
+                            <td class="text-end" appCommaFormat>{{ quotationDetails.quotationProducts[0].premium |
                                 number }}</td>
                         </tr>
 
@@ -171,7 +171,7 @@
                     <ng-template pTemplate="body" let-risk>
                         <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
                             <td>{{ risk.propertyId }}</td>
-                            <td>{{ risk.covertypeShortDescription }}</td>
+                            <td>{{ risk.covertypeDescription }}</td>
                             <!-- <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td> -->
 
                             <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
@@ -219,15 +219,15 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-clauses"> {{'gis.policy.clauses' | translate}}</a>
+                            data-bs-target="#pills-clauses"> {{'gis.quotation.clauses' | translate}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-limits-of-liability"> {{'gis.policy.limits_of_liability' | translate}}</a>
+                            data-bs-target="#pills-limits-of-liability"> {{'gis.quotation.limits_of_liability' | translate}}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-excesses"> {{'gis.policy.excesses' | translate}}</a>
+                            data-bs-target="#pills-excesses"> {{'gis.quotation.excesses' | translate}}</a>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <!-- RISK SECTION TAB CONTENT -->
@@ -331,6 +331,14 @@
                                     </ng-container>
                                 </p-dialog>
                             </ng-template>
+                             <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="1"></td>
+
+                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
+                                </tr>
+
+                            </ng-template>
                         </p-table>
 
                     </div>
@@ -363,8 +371,7 @@
                                 <tr>
                                     <td colspan="1"></td>
 
-                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">No data to
-                                        display.</td>
+                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
                                 </tr>
 
                             </ng-template>
@@ -405,7 +412,7 @@
                           <tr>
                               <td colspan="1"></td>
           
-                              <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display | translate}}</td>
+                              <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
                           </tr>
           
                       </ng-template>
