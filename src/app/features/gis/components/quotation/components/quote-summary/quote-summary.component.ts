@@ -162,25 +162,25 @@ export class QuoteSummaryComponent {
     this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data => {
       this.quotationDetails = data;
       log.debug("Quotation Details:", this.quotationDetails)
-      this.quotationNo = this.quotationDetails.no;
+      this.quotationNo = this.quotationDetails.quotOriginalQuotNo;
       log.debug("Quotation Number:", this.quotationNo)
       if (this.quotationDetails) {
         log.info("CALCULATE TAXES XALLED")
         this.calculateTaxes()
       }
 
-      this.insuredCode = this.quotationDetails.clientCode;
+      this.insuredCode = this.quotationDetails.quotPrpCode;
       log.debug("Insured Code:", this.insuredCode)
 
-      this.coverFrom = this.quotationDetails.coverFrom;
+      this.coverFrom = this.quotationDetails.quotCoverFrom;
       log.debug("Cover From:", this.coverFrom)
 
-      this.coverTo = this.quotationDetails.coverTo;
+      this.coverTo = this.quotationDetails.quotCoverTo;
       log.debug("Cover To:", this.coverTo)
 
 
 
-      this.productInformation = this.quotationDetails.quotationProduct;
+      this.productInformation = this.quotationDetails.quotationProducts;
       log.debug("Product Information:", this.productInformation);
       this.productCode = this.productInformation[0].proCode;
       log.debug("ProductCode:", this.productCode)

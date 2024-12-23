@@ -178,6 +178,7 @@ export interface QuotationDetails {
     transactionStatus?: any
     quotationStatus?: string
     product: Product
+    tax:Tax
     currency: Currency
     risks: Risk[]
     dateWithEffectTo: string
@@ -330,5 +331,13 @@ export interface EditRisk {
   quotationCode: number;
   quotationRiskNo: string;
   value: number;
+}
+export interface Tax {
+  taxRate: string;
+  code: string;
+  taxCode: string;
+  divisionFactor: string;
+  applicationLevel: string;
+  taxRateType: string;
 }
   
