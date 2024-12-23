@@ -36,6 +36,7 @@ import {
   ServiceDeskDetailsComponent
 } from "./components/service-desk/service-desk-details/service-desk-details.component";
 import {HierarchyComponent} from "./components/hierarchy/hierarchy.component";
+import {RequestReportComponent} from "./components/service-desk/request-report/request-report.component";
 
 const routes: Routes = [
   {
@@ -173,6 +174,10 @@ const routes: Routes = [
   {
     path: 'hierarchy',
     component: HierarchyComponent,
+  },
+  {
+    path: 'request-report',
+    component: RequestReportComponent,
   },
 ];
 
