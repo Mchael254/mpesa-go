@@ -241,4 +241,10 @@ border: 1px solid #00529B;
 .nav-item:last-child {
   margin-right: 0;  /* Remove margin on the last item to avoid extra space */
 }
+.center-message {
+  text-align: center; 
+  vertical-align: middle;
+  padding: 20px; 
+}
+
 

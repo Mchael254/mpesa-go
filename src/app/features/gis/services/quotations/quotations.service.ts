@@ -300,4 +300,18 @@ export class QuotationsService {
       paramObject
     );
   }
+  getTaxes(
+    productCode : number,
+    subClassCode: number,
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['productCode'] = productCode.toString();
+    paramsObj['subClassCode'] = subClassCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
 }
