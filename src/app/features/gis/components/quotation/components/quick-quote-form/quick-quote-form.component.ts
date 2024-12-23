@@ -51,6 +51,7 @@ import {
   Limit,
   PremiumComputationRequest,
   Risk,
+  Tax,
 } from '../../data/quotationsDTO';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
@@ -276,6 +277,7 @@ export class QuickQuoteFormComponent {
   phoneValue: string;
   pinValue: string;
   idValue: string;
+  taxList: any;
 
   // headers: { key: string, translationKey: string }[] = [
   //   { key: 'name', translationKey: 'gis.quotation.name' },
@@ -657,6 +659,7 @@ export class QuickQuoteFormComponent {
           this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
           // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
           this.selectedSubclassCode = filteredsubclassCode;
+          this.fetchTaxes();
         }, 1000);
 
         /** BINDER */
@@ -1308,6 +1311,7 @@ export class QuickQuoteFormComponent {
     this.loadAllBinders(this.selectedSubclassCode);
     this.loadSubclassSectionCovertype(this.selectedSubclassCode);
     this.fetchRegexPattern();
+    this.fetchTaxes();
   }
   /**
    * Loads binders for the selected subclass.
@@ -1922,6 +1926,8 @@ export class QuickQuoteFormComponent {
         code: this.selectedProductCode,
         expiryPeriod: this.expiryPeriod,
       },
+      /**Setting Tax Details**/
+      tax:this.setTax(),
       
       currency: {
         rate: 1.25 /**TODO: Fetch from API */,
@@ -2340,6 +2346,40 @@ inputInternalId(event) {
   this.idValue=value
 
   // this.filterObject['id'] = value;
+}
+fetchTaxes() {
+  this.quotationService
+    .getTaxes(this.selectedProductCode,this.selectedSubclassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+
+        this.taxList = response._embedded
+        log.debug("Tax List ", this.taxList);
+
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+      }
+    });
+}
+setTax() {
+  log.debug("Tax List when setting the payload", this.taxList);
+
+  return this.taxList.map((item) => {
+      let tax: Tax = {
+          taxRate: item.taxRate,  // Use item instead of this.taxList
+          code: item.code,
+          taxCode: item.taxCode,
+          divisionFactor: item.divisionFactor,
+          applicationLevel: item.applicationLevel,
+          taxRateType: item.taxRateType,
+      };
+
+      log.debug("Tax List after setting the payload", tax);
+      return tax;
+  });
 }
 
 }
