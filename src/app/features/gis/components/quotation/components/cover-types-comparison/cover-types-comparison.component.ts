@@ -155,6 +155,7 @@ export class CoverTypesComparisonComponent {
   premiums: any;
   updatePremiumPayload: premiumPayloadData;
   newRiskLevelPremiums: any;
+  quoteProductCode: any;
 
 
 
@@ -662,19 +663,23 @@ export class CoverTypesComparisonComponent {
       binderCode: ['', Validators.required],
       coverTypeCode: ['', Validators.required],
       coverTypeShortDescription: [''],
-      dateWithEffectFrom: [''],
-      dateWithEffectTo: [''],
+      wef: ['', Validators.required],
+      wet: ['', Validators.required],
       dateRange: [''],
-      insuredCode: [''],
+      prpCode: ['', Validators.required],
       isNoClaimDiscountApplicable: [''],
       itemDescription: ['', Validators.required],
       location: [''],
       noClaimDiscountLevel: [''],
-      productCode: [''],
-      propertyId: [''],
+      quotProCode: ['', Validators.required],
+      propertyId: ['', Validators.required],
+      itemDesc: [''],
       riskPremAmount: [''],
-      subClassCode: ['', Validators.required],
+      quotationCode: ['', Validators.required],
+      sclCode: ['', Validators.required],
       town: [''],
+      value: ['', [Validators.required, Validators.min(1)]],
+      coverTypeDescription: [''],
     });
   }
 
@@ -762,23 +767,7 @@ export class CoverTypesComparisonComponent {
     })
   }
   createQuotationRisk() {
-    const risk = this.riskDetailsForm.value;
-    risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
-    risk.coverTypeCode = this.passedCovertypeCode;
-    risk.coverTypeShortDescription = this.passedCovertypeDescription;
-    risk.insuredCode = this.passedClientDetails?.id
-    risk.productCode = this.premiumPayload?.product.code;
-    risk.dateWithEffectFrom = this.premiumPayload?.risks[0].withEffectFrom;
-    risk.dateWithEffectTo = this.premiumPayload?.risks[0].withEffectTo;
-    risk.subClassCode = this.premiumPayload?.risks[0].subclassSection.code;
-    risk.itemDescription = "volvo 4e";
 
-    // FROM DYNAMIC FORM
-    risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
-    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
-    log.debug('Quick Form Risk', risk);
-    const riskArray = [risk];
     log.debug("quotation code:", this.quotationCode)
     log.debug("passed quotation code:", this.passedQuotationCode)
     let defaultCode
@@ -792,24 +781,48 @@ export class CoverTypesComparisonComponent {
     }
     log.debug("default code:", defaultCode)
 
+    const risk = this.riskDetailsForm.value;
+    risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
+    risk.coverTypeCode = this.passedCovertypeCode;
+    risk.coverTypeShortDescription = this.passedCovertypeDescription;
+    risk.prpCode = this.passedClientDetails?.id
+    risk.quotProCode = this.premiumPayload?.product.code;
+    risk.wef = this.premiumPayload?.risks[0].withEffectFrom;
+    risk.wet = this.premiumPayload?.risks[0].withEffectTo;
+    risk.sclCode = this.premiumPayload?.risks[0].subclassSection.code;
+    risk.itemDesc = this.premiumPayload?.risks[0].propertyId;;
+    risk.itemDescription = this.premiumPayload?.risks[0].propertyId;;
+    risk.quotationCode = defaultCode;
+    risk.value = this.sumInsuredValue;
+
+    // FROM DYNAMIC FORM
+    risk.propertyId = this.premiumPayload?.risks[0].propertyId;
+    log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
+    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
+    log.debug('Quick Form Risk', risk);
+    const riskArray = [risk];
+   
     return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
       log.debug("This is the quotation risk data", data)
-      const quotationRiskCode = this.quotationRiskData._embedded[0];
-      if (quotationRiskCode) {
-        for (const key in quotationRiskCode) {
-          if (quotationRiskCode.hasOwnProperty(key)) {
-            const value = quotationRiskCode[key];
-            log.debug(`${value}`);
-            this.riskCode = value;
-          }
-        }
+      const quotationRiskDetails = this.quotationRiskData._embedded[0];
+      if (quotationRiskDetails) {
+        this.riskCode= quotationRiskDetails.riskCode
+        this.quoteProductCode= quotationRiskDetails.quotProductCode
+        // for (const key in quotationRiskCode) {
+        //   if (quotationRiskCode.hasOwnProperty(key)) {
+        //     const value = quotationRiskCode[key];
+        //     log.debug(`${value}`);
+        //     this.riskCode = value;
+        //   }
+        // }
       } else {
         log.debug("The quotationRiskCode object is not defined.");
       }
 
       log.debug(this.quotationRiskData, "Quotation Risk Code Data");
       log.debug(this.riskCode, "Quotation Risk Code ");
+      log.debug(this.quoteProductCode, "Quotation Product Code ");
       this.onCreateRiskSection()
 
     })
