@@ -97,10 +97,10 @@ export class QuotationsService {
     return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-  createQuotationRisk(quotationCode, data: quotationRisk[]) {
-    // console.log(JSON.stringify(data),"Data from the service")
-    return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-  }
+  // createQuotationRisk(quotationCode, data: quotationRisk[]) {
+  //   // console.log(JSON.stringify(data),"Data from the service")
+  //   return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  // }
   getRiskSection(quotationRiskCode): Observable<riskSection[]> {
     return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
@@ -318,5 +318,10 @@ export class QuotationsService {
   createQuotationDetails(quotationCode:any, data: premiumPayloadData ) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  }
+
+  createQuotationRisk(quotationCode, data: quotationRisk[]) {
+    // console.log(JSON.stringify(data),"Data from the service")
+    return this.api.POST(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 }
