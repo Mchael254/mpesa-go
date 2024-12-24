@@ -178,7 +178,7 @@ export interface QuotationDetails {
     transactionStatus?: any
     quotationStatus?: string
     product: Product
-    tax:Tax
+    taxes:Tax[]
     currency: Currency
     risks: Risk[]
     dateWithEffectTo: string
