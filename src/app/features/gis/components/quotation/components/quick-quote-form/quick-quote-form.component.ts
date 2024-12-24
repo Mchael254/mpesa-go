@@ -255,9 +255,9 @@ export class QuickQuoteFormComponent {
 
 
   filterObject: {
-    name:string, idNumber:string, 
+    name:string, idNumber:string,
   } = {
-    name:'',  idNumber:'', 
+    name:'',  idNumber:'',
   };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
@@ -285,11 +285,11 @@ export class QuickQuoteFormComponent {
   //   { key: 'phoneNumber', translationKey: 'gis.quotation.phone_number' },
   //   { key: 'id_no', translationKey: 'gis.quotation.id_no' },
   //   { key: 'pinNumber', translationKey: 'gis.quotation.pin_number' },
-   
+
 
   // ];
 
-  
+
   constructor(
     public fb: FormBuilder,
     public branchService: BranchService,
@@ -1927,8 +1927,8 @@ export class QuickQuoteFormComponent {
         expiryPeriod: this.expiryPeriod,
       },
       /**Setting Tax Details**/
-      tax:this.setTax(),
-      
+      taxes:this.setTax(),
+
       currency: {
         rate: 1.25 /**TODO: Fetch from API */,
       },
@@ -2156,7 +2156,7 @@ export class QuickQuoteFormComponent {
   /**
    * Handles the selection of occupation.
    * - Retrieves the selected occupation code from the event.
-   * 
+   *
    * @method onOccupationSelected
    * @param {any} event - The event triggered by occupation selection.
    * @return {void}
@@ -2165,9 +2165,9 @@ export class QuickQuoteFormComponent {
     this.selectedoccupationCode = selectedValue.id;
     log.debug('Selected occupation Code:', this.selectedoccupationCode);
 
-    
+
   }
- 
+
   onCoverToInputChange(date: any) {
     log.debug('selected Cover to date raaaaaw', date);
     this.selectedCoverToDate = date;
@@ -2199,7 +2199,7 @@ export class QuickQuoteFormComponent {
   /**
    * Handles the selection of vessel type.
    * - Retrieves the selected vessel type code from the event.
-   * 
+   *
    * @method onVesselTypeSelected
    * @param {any} event - The event triggered by vessel type selection.
    * @return {void}
@@ -2207,7 +2207,7 @@ export class QuickQuoteFormComponent {
   onVesselTypeSelected(selectedValue: any) {
     this.selectedVesselTypeCode = selectedValue.code;
     log.debug('Selected vessel type Code:', this.selectedVesselTypeCode);
- 
+
   }
 // SEARCHING CLIENT USING KYC
 getClients(pageIndex: number,
@@ -2295,7 +2295,7 @@ filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
         pageIndex, pageSize,
         this.filterObject?.name,
         this.filterObject?.idNumber,
-       
+
       )
       .subscribe((data) => {
         this.clientsData = data;
@@ -2364,22 +2364,25 @@ fetchTaxes() {
       }
     });
 }
-setTax() {
+
+
+setTax(): Tax[] {
   log.debug("Tax List when setting the payload", this.taxList);
 
-  return this.taxList.map((item) => {
-      let tax: Tax = {
-          taxRate: item.taxRate,  // Use item instead of this.taxList
-          code: item.code,
-          taxCode: item.taxCode,
-          divisionFactor: item.divisionFactor,
-          applicationLevel: item.applicationLevel,
-          taxRateType: item.taxRateType,
+  // Map the tax list to the desired format
+  const taxList: Tax[] = this.taxList.map((item) => {
+      return {
+          taxRate: String(item.taxRate), // Convert to string to match Tax interface
+          code: String(item.code),
+          taxCode: String(item.taxCode),
+          divisionFactor: String(item.divisionFactor),
+          applicationLevel: String(item.applicationLevel),
+          taxRateType: String(item.taxRateType),
       };
-
-      log.debug("Tax List after setting the payload", tax);
-      return tax;
   });
+
+  log.debug("Tax List after mapping the payload", taxList);
+  return taxList; // Explicitly returning the list
 }
 
 }

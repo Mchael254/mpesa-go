@@ -77,7 +77,7 @@ export interface QuotationDetails {
     status: string;
     taxInformation: TaxInformation[];
   }
-  
+
   export interface QuotationProduct {
     WEF: string;
     WET: string;
@@ -95,7 +95,7 @@ export interface QuotationDetails {
     wef: string;
     wet: string;
   }
-  
+
   export interface RiskInformation {
     code: number;
     covertypeShortDescription: string;
@@ -105,7 +105,7 @@ export interface QuotationDetails {
     sectionsDetails: SectionDetail[];
     value: number;
   }
-  
+
   export interface SectionDetail {
     description: string;
     freeLimit: number;
@@ -113,7 +113,7 @@ export interface QuotationDetails {
     premium: number;
     rate: number;
   }
-  
+
   export interface TaxInformation {
     amount: number;
     description: string;
@@ -178,7 +178,7 @@ export interface QuotationDetails {
     transactionStatus?: any
     quotationStatus?: string
     product: Product
-    tax:Tax
+    taxes:Tax[]
     currency: Currency
     risks: Risk[]
     dateWithEffectTo: string
@@ -188,16 +188,16 @@ export interface QuotationDetails {
     coinsuranceLeader: string
     coinsurancePercentage: number
   }
-  
+
   export interface Product {
     code: number
     expiryPeriod: string
   }
-  
+
   export interface Currency {
     rate: number
   }
-  
+
   export interface Risk {
     code?: number
     limits: Limit[]
@@ -220,7 +220,7 @@ export interface QuotationDetails {
     effectiveDateWithEffectTo?: any
     endorseRemove?: any
   }
-  
+
   export interface Limit {
     description: string
     code?: number
@@ -254,22 +254,22 @@ export interface QuotationDetails {
     indemFstPeriodPercentage?: any
     indemRemPeriodPercentage?: any
   }
-  
+
   export interface Section {
     code: number
   }
-  
+
   export interface BinderDto {
     code: number
     maxExposure?: any
     currencyCode: number
     currencyRate: number
   }
-  
+
   export interface Subclass {
     code: number
   }
-  
+
   export interface SubclassCoverTypeDto {
     subclassCode:number
     coverTypeCode:number
@@ -340,4 +340,28 @@ export interface Tax {
   applicationLevel: string;
   taxRateType: string;
 }
-  
+
+export interface tax {
+  code: string;
+  premium: number;
+}
+
+export interface limitPremiumDto {
+  sectCode: number;
+  premium: number;
+}
+
+export interface riskLevelPremiums {
+  code: string;
+  premium: number;
+  limitPremiumDtos: limitPremiumDto[];
+}
+
+export interface premiumPayloadData {
+  premiumAmount: number;
+  productPremium: string;
+  productCode: number;
+  quotProductCode: string;
+  taxes: tax[];
+  riskLevelPremiums: riskLevelPremiums[];
+}
