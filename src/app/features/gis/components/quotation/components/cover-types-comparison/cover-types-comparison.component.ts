@@ -14,7 +14,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
-import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData,  PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -152,6 +152,9 @@ export class CoverTypesComparisonComponent {
   isEditRisk: boolean;
   isAddRisk: boolean;
   selectedRisk: any;
+  premiums: any;
+  updatePremiumPayload: premiumPayloadData;
+  newRiskLevelPremiums: any;
 
 
 
@@ -827,8 +830,8 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
-    
-   
+
+
     log.debug("")
 
     // Check if passedNumber exists (not null, empty, or 'null')
@@ -878,7 +881,7 @@ export class CoverTypesComparisonComponent {
         log.debug("Edit risk value",this.isEditRisk)
 
       if(this.isEditRisk){
-            
+
             log.debug(" Updating QUOTATION RISK");
             this.UpdateQuotationRisk();
             sessionStorage.removeItem('isEditRisk');
@@ -1030,10 +1033,15 @@ export class CoverTypesComparisonComponent {
       {
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
-          const premiums = res;
-          log.debug(res)
+          this.premiums = res.premiumAmount;
+          log.debug('Premium computation response:',this.premiums)
           const newriskLevelPremiums = res.riskLevelPremiums;
+          this.newRiskLevelPremiums = newriskLevelPremiums;
+          log.debug('newRiskLevelPremiums:',this.newRiskLevelPremiums)
 
+          if(this.newRiskLevelPremiums) {
+            this.updateQuotationDetails()
+          }
 
           // Iterate through the cover types in the first payload
           for (let i = 0; i < this.riskLevelPremiums.length; i++) {
@@ -1428,7 +1436,7 @@ export class CoverTypesComparisonComponent {
     // log.debug("default code:", defaultCode)
 
     return this.quotationService.updateQuotationRisk(risk).subscribe(data => {
-      
+
       log.debug("This is the quotation risk data", data)
       // const quotationRiskCode = this.quotationRiskData._embedded[0];
       // if (quotationRiskCode) {
@@ -1450,4 +1458,52 @@ export class CoverTypesComparisonComponent {
 
     })
   }
+
+  updateQuotationDetails() {
+    log.debug('computation details-updateQuotationDetails', this.computationDetails )
+
+    this.quotationCode = this.quotationData._embedded[0].quotationCode;
+    let quotationCode = parseInt(this.quotationCode)
+    // if(this.quotationCode) {
+    //   quotationCode = this.quotationCode;
+    // }
+
+    this.updatePremiumPayload = {
+      premiumAmount : this.premiums,
+      productPremium : this.newRiskLevelPremiums[0].premium,
+      productCode : this.premiumPayload.product.code,
+      quotProductCode : this.quotationCode,
+      taxes: [{
+        code: this.newRiskLevelPremiums[0]?.taxComputation?.code,
+        premium: this.newRiskLevelPremiums[0]?.taxComputation?.premium,
+      }],
+      riskLevelPremiums: [{
+        code: this.newRiskLevelPremiums[0].code,
+        premium: this.newRiskLevelPremiums[0].premium,
+        limitPremiumDtos: [{
+          sectCode: this.newRiskLevelPremiums[0].limitPremiumDtos[0].sectCode,
+          premium: this.newRiskLevelPremiums[0].limitPremiumDtos[0].premium,
+        }],
+      }]
+    }
+
+    log.debug("update premium payload", this.updatePremiumPayload)
+    return this.quotationService
+      .createQuotationDetails(quotationCode, this.updatePremiumPayload )
+      .subscribe({
+        next: (response: any) => {
+          const result = response;
+          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+        },
+        error: (error) => {
+          log.error("Failed to update details:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to update details. Try again later.'
+          );
+        }
+      }
+    )
+  }
 }
+

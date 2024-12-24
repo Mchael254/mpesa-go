@@ -4,7 +4,7 @@ import { APP_CONFIG, AppConfigService } from '../../../../core/config/app-config
 import { Observable, catchError, retry, throwError } from "rxjs";
 import { Pagination } from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { Clause, CreateLimitsOfLiability, EditRisk, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, EditRisk, Excesses, LimitsOfLiability, PremiumComputationRequest, quotationDTO, quotationRisk, RegexPattern, riskSection, premiumPayloadData } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
 import { SessionStorageService } from "../../../../shared/services/session-storage/session-storage.service";
 import { ApiService } from "../../../../shared/services/api/api.service";
@@ -313,5 +313,10 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  createQuotationDetails(quotationCode:any, data: premiumPayloadData ) {
+
+    return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
 }
