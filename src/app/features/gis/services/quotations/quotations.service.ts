@@ -97,10 +97,7 @@ export class QuotationsService {
     return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-  // createQuotationRisk(quotationCode, data: quotationRisk[]) {
-  //   // console.log(JSON.stringify(data),"Data from the service")
-  //   return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-  // }
+
   getRiskSection(quotationRiskCode): Observable<riskSection[]> {
     return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
@@ -138,37 +135,14 @@ export class QuotationsService {
     return this.api.GET(`api/v1/utils/payload`, API_CONFIG.PREMIUM_COMPUTATION, params);
 
   }
-  // quotationUtils(transactionCode){
-  //   const params = new HttpParams()
-  //   .set('transactionCode', transactionCode)
-  //   .set('transactionsType','QUOTATION')
 
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json',
-  //     'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  //   });
-
-  //   return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
-  //     headers: headers,
-  //     params:params
-  //   })
-  // }
   premiumComputationEngine(payload: PremiumComputationRequest): Observable<any> {
-    //  return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
     return this.api.POST<any[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION,);
 
     console.log("Premium Payload after", payload)
 
   }
 
-
-  // sendEmail(data){
-  //   return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
-  // }
-  // sendSms(data){
-  //   return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
-  // }
   getRegexPatterns(
     subclassCode: number): Observable<RegexPattern[]> {
     // Create an object to hold parameters only if they are provided
@@ -196,21 +170,6 @@ export class QuotationsService {
 
   }
   getLimitsOfLiability(
-    //   scheduleType:string= 'L',
-    //   subclassCode: number
-    // ): Observable<LimitsOfLiability[]> {
-    //   // Create an object to hold parameters only if they are provided
-    //   const paramsObj: { [param: string]: string } = {};
-    //   // Add the mandatory parameter
-
-    //   paramsObj['scheduleType'] = scheduleType
-    //   paramsObj['subclassCode'] = subclassCode.toString();
-
-    //   const params = new HttpParams({ fromObject: paramsObj });
-
-    //   return this.api.GET<LimitsOfLiability[]>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-
-
 
     subclassCode: number,
     scheduleType: string = 'L'

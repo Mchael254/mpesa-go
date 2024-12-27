@@ -1726,8 +1726,8 @@ export class QuickQuoteFormComponent {
           coverTypeCode: item.coverTypeCode,
           minimumAnnualPremium: 0,
           minimumPremium: parseInt(item.minimumPremium, 10),
-          coverTypeShortDescription: item.coverTypeShortDescription || item.description
-
+          coverTypeShortDescription: item.coverTypeShortDescription || item.description,
+          coverTypeDescription: item.description
         },
         enforceCovertypeMinimumPremium: 'N',
         binderDto: {
@@ -1945,8 +1945,6 @@ export class QuickQuoteFormComponent {
     );
     const subclassCoverTypeString = JSON.stringify(this.subclassCoverType);
     sessionStorage.setItem('subclassCoverType', subclassCoverTypeString);
-
-    // this.sharedService.setPremiumComputationPayload(this.premiumComputationRequest, this.subclassCoverType);
 
     return this.quotationService
       .premiumComputationEngine(this.premiumComputationRequest)

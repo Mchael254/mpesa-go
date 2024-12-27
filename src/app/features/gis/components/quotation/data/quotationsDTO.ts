@@ -25,37 +25,22 @@ export interface quotationDTO{
     withEffectiveToDate:string
 }
 export interface quotationRisk{
-    // binderCode: number,
-    // coverTypeCode: number,
-    // coverTypeShortDescription: string,
-    // dateWithEffectFrom: string,
-    // dateWithEffectTo: string,
-    // insuredCode: number,
-    // isNoClaimDiscountApplicable: string,
-    // itemDescription: string,
-    // location: string,
-    // noClaimDiscountLevel: number,
-    // productCode: number,
-    // propertyId: string,
-    // riskPremAmount: number,
-    // subClassCode: number,
-    // town: string
 
     binderCode: number;
     coverTypeCode: number;
     coverTypeShortDescription: string;
-    wef: string; 
-    wet: string; 
+    wef: string;
+    wet: string;
     dateRange: string;
     prpCode: number;
-    isNoClaimDiscountApplicable: string; 
+    isNoClaimDiscountApplicable: string;
     itemDescription: string;
     location: string;
-    noClaimDiscountLevel: string; 
+    noClaimDiscountLevel: string;
     quotProCode: number;
     propertyId: string;
     itemDesc: string;
-    riskPremAmount: string; 
+    riskPremAmount: string;
     quotationCode: string;
     sclCode: string;
     town: string;
@@ -298,6 +283,7 @@ export interface QuotationDetails {
     minimumAnnualPremium: number
     minimumPremium: number
     coverTypeShortDescription:string
+    coverTypeDescription: string
 
   }
   export interface PremiumRate {
@@ -380,7 +366,6 @@ export interface riskLevelPremiums {
 }
 
 export interface premiumPayloadData {
-  premiumAmount: number;
   productPremium: string;
   productCode: number;
   quotProductCode: string;
