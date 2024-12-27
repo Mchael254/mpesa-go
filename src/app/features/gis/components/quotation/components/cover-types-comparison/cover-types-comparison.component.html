@@ -17,7 +17,7 @@
                   <input type="radio" name="cover" [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
                     [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
                     class="radio-btn" />
-                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeShortDescription
+                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription
                     }}</span><br />
                   <small class="cover-premium">
                     Basic Premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>

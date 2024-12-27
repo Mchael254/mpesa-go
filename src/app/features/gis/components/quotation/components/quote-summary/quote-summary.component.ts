@@ -75,6 +75,7 @@ export class QuoteSummaryComponent {
   modalHeight: number = 200; // Initial height
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   totalTaxes: number = 0;
+  premiumAmount: number = 0;
   taxList: { description: string; amount: number }[] = [];
   selectedSubclassCode: any;
   excessesList: Excesses[] = []
@@ -167,12 +168,13 @@ export class QuoteSummaryComponent {
       if (this.quotationDetails) {
         log.info("CALCULATE TAXES XALLED")
         this.calculateTaxes()
+        this.getPremiumAmount()
       }
 
       this.insuredCode = this.quotationDetails.quotPrpCode;
       log.debug("Insured Code:", this.insuredCode)
 
-      this.coverFrom = this.quotationDetails.quotCoverFrom;
+      this.coverFrom = this.quotationDetails.coverFrom;
       log.debug("Cover From:", this.coverFrom)
 
       this.coverTo = this.quotationDetails.quotCoverTo;
@@ -455,15 +457,39 @@ export class QuoteSummaryComponent {
     }
   }
 
+  getPremiumAmount() {
+    this.totalTaxes = 0;
+    this.premiumAmount = 0;
+    const totalPremiumAmount = this.quotationDetails.quotationProducts[0].premium;
+    // const amount1 = this.quotationDetails.taxInformation[0].taxAmount;
+    // const amount2 = this.quotationDetails.taxInformation[0].taxAmount;
+
+    // const totalTaxes = this.quotationDetails.taxInformation
+
+    // const premiumAmount = totalPremiumAmount - totalTaxes
+    if (this.quotationDetails.taxInformation) {
+      this.quotationDetails.taxInformation.forEach((tax: any) => {
+        if (tax.taxAmount) {
+          this.totalTaxes += tax.taxAmount;
+          log.debug("Total Taxes:", this.totalTaxes)
+
+        }
+      });
+    }
+
+    this.premiumAmount = totalPremiumAmount - this.totalTaxes;
+    log.debug("premium amount:", this.premiumAmount)
+  }
+
   calculateTaxes() {
     this.totalTaxes = 0;
     this.taxList = [];
     if (this.quotationDetails.taxInformation) {
       this.quotationDetails.taxInformation.forEach((tax: any) => {
-        if (tax.quotationRate) {
-          this.totalTaxes += tax.quotationRate;
+        if (tax.taxAmount) {
+          this.totalTaxes += tax.taxAmount;
           log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({ description: tax.description, amount: tax.quotationRate });
+          this.taxList.push({ description: tax.description, amount: tax.taxAmount });
           log.debug("Total Taxes List:", this.taxList)
 
         }
