@@ -736,6 +736,17 @@ export class CoverTypesComparisonComponent {
       }
       this.createQuotationRisk();
 
+      // const newriskLevelPremiums = this.riskLevelPremiums;
+      // this.newRiskLevelPremiums = newriskLevelPremiums;
+      // log.debug('newRiskLevelPremiums:',this.newRiskLevelPremiums)
+
+      // if(this.newRiskLevelPremiums) {
+      //   this.updateQuotationDetails()
+      // }
+
+
+
+
     })
   }
   loadClientQuotation() {
@@ -794,6 +805,7 @@ export class CoverTypesComparisonComponent {
     risk.itemDescription = this.premiumPayload?.risks[0].propertyId;;
     risk.quotationCode = defaultCode;
     risk.value = this.sumInsuredValue;
+    risk.coverTypeDescription = this.passedCovertypeDescription;
 
     // FROM DYNAMIC FORM
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
@@ -801,14 +813,16 @@ export class CoverTypesComparisonComponent {
     log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
     log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
-   
+
     return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
       log.debug("This is the quotation risk data", data)
       const quotationRiskDetails = this.quotationRiskData._embedded[0];
+      log.debug("quotationRiskData", quotationRiskDetails);
       if (quotationRiskDetails) {
         this.riskCode= quotationRiskDetails.riskCode
         this.quoteProductCode= quotationRiskDetails.quotProductCode
+
         // for (const key in quotationRiskCode) {
         //   if (quotationRiskCode.hasOwnProperty(key)) {
         //     const value = quotationRiskCode[key];
@@ -1048,7 +1062,7 @@ export class CoverTypesComparisonComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
           this.premiums = res.premiumAmount;
           log.debug('Premium computation response:',this.premiums)
-          const newriskLevelPremiums = res.riskLevelPremiums;
+          const newriskLevelPremiums = this.riskLevelPremiums;
           this.newRiskLevelPremiums = newriskLevelPremiums;
           log.debug('newRiskLevelPremiums:',this.newRiskLevelPremiums)
 
@@ -1473,36 +1487,62 @@ export class CoverTypesComparisonComponent {
   }
 
   updateQuotationDetails() {
-    log.debug('computation details-updateQuotationDetails', this.computationDetails )
+    log.debug('computation details-updateQuotationDetails', this.computationDetails);
 
-    this.quotationCode = this.quotationData._embedded[0].quotationCode;
-    let quotationCode = parseInt(this.quotationCode)
-    // if(this.quotationCode) {
-    //   quotationCode = this.quotationCode;
-    // }
+    // Find the selected cover type from riskLevelPremiums based on the selectedCoverType value
+    const selectedRiskLevelPremium = this.riskLevelPremiums.find(
+      (premium) => premium.coverTypeDetails.coverTypeCode === this.selectedCoverType
+    );
 
-    this.updatePremiumPayload = {
-      premiumAmount : this.premiums,
-      productPremium : this.newRiskLevelPremiums[0].premium,
-      productCode : this.premiumPayload.product.code,
-      quotProductCode : this.quotationCode,
-      taxes: [{
-        code: this.newRiskLevelPremiums[0]?.taxComputation?.code,
-        premium: this.newRiskLevelPremiums[0]?.taxComputation?.premium,
-      }],
-      riskLevelPremiums: [{
-        code: this.newRiskLevelPremiums[0].code,
-        premium: this.newRiskLevelPremiums[0].premium,
-        limitPremiumDtos: [{
-          sectCode: this.newRiskLevelPremiums[0].limitPremiumDtos[0].sectCode,
-          premium: this.newRiskLevelPremiums[0].limitPremiumDtos[0].premium,
-        }],
-      }]
+    const initialPremium = selectedRiskLevelPremium.premium;
+
+    sessionStorage.setItem("initialPremium", JSON.stringify(initialPremium));
+
+    log.debug("selectedRiskLevelPremium", this.selectedRiskLevelPremium);
+
+    if (!selectedRiskLevelPremium) {
+      log.error("No matching risk level premium found for selected cover type.");
+      this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Failed to update details. Selected cover type not found.'
+      );
+      return;
     }
 
-    log.debug("update premium payload", this.updatePremiumPayload)
+    this.quotationCode = this.quotationData._embedded[0].quotationCode;
+    let quotationCode = parseInt(this.quotationCode);
+
+    // Fetch individual tax premiums
+    const taxPremiums = selectedRiskLevelPremium.taxComputation.map((tax) => tax.premium);
+
+    // Calculate the total tax premium
+    const totalTaxPremium = taxPremiums.reduce((sum, taxPremium) => sum + taxPremium, 0);
+
+    // Add the total tax premium to the selected premium
+    const productPremium = selectedRiskLevelPremium.premium + totalTaxPremium;
+
+    this.updatePremiumPayload = {
+      productPremium: productPremium, // Sum of premium and tax premiums
+      productCode: this.premiumPayload.product.code,
+      quotProductCode: this.quoteProductCode,
+      taxes: selectedRiskLevelPremium.taxComputation.map((tax) => ({
+          code: tax.code,
+          premium: tax.premium,
+      })),
+      riskLevelPremiums: [{
+          code: this.riskCode,
+          premium: selectedRiskLevelPremium.premium,
+          limitPremiumDtos: selectedRiskLevelPremium.limitPremiumDtos.map((limit) => ({
+              sectCode: limit.sectCode,
+              premium: limit.premium,
+          })),
+      }],
+    };
+
+    log.debug("update premium payload", this.updatePremiumPayload);
+
     return this.quotationService
-      .createQuotationDetails(quotationCode, this.updatePremiumPayload )
+      .createQuotationDetails(quotationCode, this.updatePremiumPayload)
       .subscribe({
         next: (response: any) => {
           const result = response;
@@ -1511,12 +1551,13 @@ export class CoverTypesComparisonComponent {
         error: (error) => {
           log.error("Failed to update details:", error);
           this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to update details. Try again later.'
+              'Error',
+              'Failed to update details. Try again later.'
           );
         }
       }
-    )
+    );
   }
+
 }
 
