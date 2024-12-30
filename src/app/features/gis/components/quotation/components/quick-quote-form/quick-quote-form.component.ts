@@ -1726,7 +1726,7 @@ export class QuickQuoteFormComponent {
           coverTypeCode: item.coverTypeCode,
           minimumAnnualPremium: 0,
           minimumPremium: parseInt(item.minimumPremium, 10),
-          coverTypeShortDescription: item.coverTypeShortDescription || item.description,
+          coverTypeShortDescription: item.coverTypeShortDescription,
           coverTypeDescription: item.description
         },
         enforceCovertypeMinimumPremium: 'N',

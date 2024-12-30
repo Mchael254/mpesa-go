@@ -498,7 +498,7 @@ export class CoverTypesDetailsComponent {
       };
 
       // Find corresponding premium rate for the section or use default values
-      const premiumRate = premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate; 
+      const premiumRate = premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate;
 
       return {
         calcGroup: 1,
@@ -506,7 +506,7 @@ export class CoverTypesDetailsComponent {
         compute: "Y",
         description: premiumRate.sectionShortDescription || section.sectionShortDescription,
         freeLimit: 0,
-        multiplierDivisionFactor: premiumRate?.multiplierDivisionFactor, 
+        multiplierDivisionFactor: premiumRate?.multiplierDivisionFactor,
         multiplierRate: premiumRate?.multiplierRate,
         premiumAmount: 0,
         premiumRate: premiumRate?.rate || 0,
@@ -1098,21 +1098,21 @@ export class CoverTypesDetailsComponent {
     }
   }
 
-  updateQuote() { 
+  updateQuote() {
     log.debug("Passed quotation Number (raw value):", this.passedNumber);
     log.debug("Quotation Number (raw value):", this.quotationNo);
-  
+
     // Convert string 'null' or 'undefined' to actual null
     if (this.passedNumber === 'null') {
       this.passedNumber = null;
     }
-  
+
     if (this.quotationNo === 'null') {
       this.quotationNo = null;
     }
-  
+
     // Check if either passedNumber or quotationNumber is present
-    if ((this.passedNumber !== null && this.passedNumber !== undefined && this.passedNumber !== '') || 
+    if ((this.passedNumber !== null && this.passedNumber !== undefined && this.passedNumber !== '') ||
         (this.quotationNo !== null && this.quotationNo !== undefined && this.quotationNo !== '')) {
       log.debug("CREATE RISK BECAUSE THERE IS A QUOTATION");
       this.createQuotationRisk();
@@ -1121,7 +1121,7 @@ export class CoverTypesDetailsComponent {
       this.createQuotation();
     }
   }
-  
-  
+
+
 
 }
