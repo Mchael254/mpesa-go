@@ -482,6 +482,8 @@ export class QuoteSummaryComponent {
   }
 
   calculateTaxes() {
+    log.info("CALCULATE TAXES XALLED method starts")
+
     this.totalTaxes = 0;
     this.taxList = [];
     if (this.quotationDetails.taxInformation) {
@@ -489,7 +491,7 @@ export class QuoteSummaryComponent {
         if (tax.taxAmount) {
           this.totalTaxes += tax.taxAmount;
           log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({ description: tax.description, amount: tax.taxAmount });
+          this.taxList.push({ description: tax.rateDescription, amount: tax.taxAmount });
           log.debug("Total Taxes List:", this.taxList)
 
         }
