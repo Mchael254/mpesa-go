@@ -76,7 +76,7 @@ export class QuoteSummaryComponent {
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   totalTaxes: number = 0;
   premiumAmount: number = 0;
-  taxList: { description: string; amount: number }[] = [];
+  taxList: { description: string; amount: number; rate: number; rateType: string }[] = [];
   selectedSubclassCode: any;
   excessesList: Excesses[] = []
   selectedExcess: any;
@@ -195,9 +195,6 @@ export class QuoteSummaryComponent {
 
       this.getClient();
       this.getQuotationProduct();
-      this.fetchClauses();
-      // this.fetchExcesses();
-
 
     })
   }
@@ -449,7 +446,7 @@ export class QuoteSummaryComponent {
   }
   onRiskSelect(riskItem: any): void {
     this.selectedRisk = riskItem;
-    log.debug('Selected Risk:', riskItem);
+    log.debug('Selected Risk item:', riskItem);
     if (this.selectedRisk) {
       this.fetchClauses();
       this.fetchExcesses();
@@ -491,7 +488,7 @@ export class QuoteSummaryComponent {
         if (tax.taxAmount) {
           this.totalTaxes += tax.taxAmount;
           log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({ description: tax.rateDescription, amount: tax.taxAmount });
+          this.taxList.push({ description: tax.rateDescription, amount: tax.taxAmount, rate: tax.quotationRate, rateType: tax.rateType });
           log.debug("Total Taxes List:", this.taxList)
 
         }
@@ -499,11 +496,16 @@ export class QuoteSummaryComponent {
     }
   }
   getTaxTooltip(): string {
-    return this.taxList.map(tax => `${tax.description}: ${tax.amount}`).join('\n');
-  }
+    return this.taxList
+      .map(
+        tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
+      )
+      .join('\n\n');
+}
+
   fetchClauses() {
     this.quotationService
-      .getClauses(this.selectedRisk.covertypecode, this.selectedSubclassCode)
+      .getClauses(this.selectedRisk.coverTypeCode, this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {

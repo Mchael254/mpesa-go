@@ -171,7 +171,7 @@
                     <ng-template pTemplate="body" let-risk>
                         <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
                             <td>{{ risk.propertyId }}</td>
-                            <td>{{ risk.covertypeDescription || risk.coverTypeShortDescription}}</td>
+                            <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription}}</td>
                             <!-- <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td> -->
 
                             <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
