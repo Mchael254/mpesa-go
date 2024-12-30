@@ -91,9 +91,9 @@ export class CoverTypesComparisonComponent {
   userDetails: any
   userBranchId: any;
 
-  quotationCode: string;
+  quotationCode: number;
   quotationData: any;
-  quotationNo: any;
+  quotationNo: string;
   passedQuotationSource: any;
   quotationForm: FormGroup;
 
@@ -328,7 +328,7 @@ export class CoverTypesComparisonComponent {
     const passedCoverObject = this.riskLevelPremiums.find(coverDesc => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
     log.debug("passed covertype object:", passedCoverObject);
 
-    this.passedCovertypeDescription = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
+    this.passedCovertypeDescription = passedCoverObject.coverTypeDetails.coverTypeDescription;
     this.passedCovertypeCode = selectedCoverCode;
     if (this.passedCovertypeCode) {
       log.debug("Fetch Clauses function")
@@ -338,12 +338,12 @@ export class CoverTypesComparisonComponent {
 
     this.fetchLimitsOfLiability()
     this.passedCoverTypeShortDes = passedCoverObject.coverTypeDetails.coverTypeShortDescription;
-    log.debug("Passed covertype desc:", this.passedCoverTypeShortDes)
+    log.debug("Passed covertype short desc:", this.passedCoverTypeShortDes)
     log.debug("Passed covertype desc:", this.passedCovertypeDescription)
     this.filteredSection = this.quickQuoteSectionList?.filter(section =>
 
       this.passedCoverTypeShortDes == "COMP" ?
-        section.coverTypeShortDescription == "COMPREHENSIVE" :
+        section.coverTypeDescription == "COMPREHENSIVE" :
         section.coverTypeShortDescription == this.passedCoverTypeShortDes
     );
     log.debug("Filtered Section", this.filteredSection);
@@ -765,8 +765,8 @@ export class CoverTypesComparisonComponent {
     this.quotationService.getClientQuotations(defaultCode).subscribe(data => {
       this.quotationDetails = data;
       log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
-      this.quotationNo = this.quotationDetails.no;
-      log.debug("Quotation Number:", this.quotationNo)
+      this.quotationNo = this.quotationDetails.quotOriginalQuotNo;
+      log.debug("Quotation Number when quotation is loaded:", this.quotationNo)
       this.taxInformation = this.quotationDetails.taxInformation
       log.debug("Tax information", this.taxInformation)
       this.addLimitsOfLiability()
@@ -795,7 +795,7 @@ export class CoverTypesComparisonComponent {
     const risk = this.riskDetailsForm.value;
     risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
     risk.coverTypeCode = this.passedCovertypeCode;
-    risk.coverTypeShortDescription = this.passedCovertypeDescription;
+    risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
     risk.prpCode = this.passedClientDetails?.id
     risk.quotProCode = this.premiumPayload?.product.code;
     risk.wef = this.premiumPayload?.risks[0].withEffectFrom;
@@ -848,7 +848,8 @@ export class CoverTypesComparisonComponent {
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
 
-    this.selectedQuotationNo = this.quotationNo;
+    // this.selectedQuotationNo = this.quotationNo;
+    // log.debug("selectedQuotationNo", this.selectedQuotationNo)
   }
 
   selectCover() {
@@ -947,7 +948,8 @@ export class CoverTypesComparisonComponent {
         const quotationNumberString = JSON.stringify(this.quotationNo);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
         sessionStorage.setItem('quickQuotationNum', this.quotationNo);
-        sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
+
 
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       } else {
@@ -986,7 +988,7 @@ export class CoverTypesComparisonComponent {
             sessionStorage.setItem('quotationNumber', quotationNumberString);
 
             sessionStorage.setItem('quickQuotationNum', this.quotationNo);
-            sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+            sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
             this.router.navigate(['/home/gis/quotation/quote-summary']);
           }
         } else {
@@ -1343,7 +1345,7 @@ export class CoverTypesComparisonComponent {
   }
 
   addLimitsOfLiability() {
-    const productCode = this.quotationDetails?.quotationProduct[0].code
+    const productCode = this.quotationDetails?.quotationProducts[0].code
     log.debug("Product Code", productCode)
     // Transform the list to match the expected structure
     const transformedList = this.limitsOfLiabilityList.map(item => ({
@@ -1368,7 +1370,7 @@ export class CoverTypesComparisonComponent {
     });
   }
   addExcesses() {
-    const productCode = this.quotationDetails?.quotationProduct[0].code
+    const productCode = this.quotationDetails?.quotationProducts[0].code
     log.debug("Product Code", productCode)
     // Transform the list to match the expected structure
     const transformedList = this.excessesList.map(item => ({
@@ -1394,11 +1396,11 @@ export class CoverTypesComparisonComponent {
   }
 
   addClauses() {
-    const productCode = this.quotationDetails?.quotationProduct[0].code;
+    const productCode = this.quotationDetails?.quotationProducts[0].code;
     log.debug("Product Code", productCode);
     const riskCode = this.quotationDetails?.riskInformation[0].code;
     log.debug("Risk Code", riskCode);
-    const quotCode = this.quotationDetails?.quotationProduct[0].quotCode;
+    const quotCode = this.quotationDetails?.quotationProducts[0].quotCode;
     log.debug("Quote Code", quotCode);
 
     // Collect all clause codes into an array
@@ -1510,7 +1512,7 @@ export class CoverTypesComparisonComponent {
     }
 
     this.quotationCode = this.quotationData._embedded[0].quotationCode;
-    let quotationCode = parseInt(this.quotationCode);
+    let quotationCode = Number(this.quotationCode);
 
     // Fetch individual tax premiums
     const taxPremiums = selectedRiskLevelPremium.taxComputation.map((tax) => tax.premium);

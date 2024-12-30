@@ -56,8 +56,7 @@
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
                             <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
-                            <span *ngIf="emailInput.errors?.['pattern']">{{'gis.quotation.invalid_email_format' |
-                                translate}} </span>
+                            <span *ngIf="emailInput.errors?.['pattern']">{{'gis.quotation.invalid_email_format' | translate}} </span>
                         </div>
 
                     </div>
@@ -74,8 +73,7 @@
                         <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
                             <span *ngIf="clientEmailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
-                            <span *ngIf="!validateEmail(clientEmail)">{{'gis.quotation.invalid_email_format' |
-                                translate}} </span>
+                            <span *ngIf="!validateEmail(clientEmail)">{{'gis.quotation.invalid_email_format' | translate}} </span>
                         </div>
                     </div>
                     <div class="col-sm-4 col-6" *ngIf="!new">
@@ -216,7 +214,7 @@
                                 <div class="col-sm-4 col-6" *ngFor="let field of formData">
                                     <form [formGroup]="dynamicForm">
                                         <div
-                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value' 
+                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value'
                                             && field.name !== 'occupation' && field.name !== 'coverTo' && field.name !== 'vesselType'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
                                             <input [type]="field.type" [formControlName]="field.name" id="quote-input"
@@ -264,7 +262,7 @@
                                                 </div> -->
                                                 <div
                                                     *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
-                                                    
+
                                                     {{'gis.quotation.this_property_id_is_duplicated' | translate}}
                                                 </div>
 
@@ -397,8 +395,8 @@
                                         </ng-template>
 
                                     </p-table> -->
-                                    <p-table 
-                                    #dt1 
+                                    <p-table
+                                    #dt1
                                     (onLazyLoad)="lazyLoadClients($event)"
                                     [autoLayout]="true"
                                     [lazy]="true"
@@ -416,9 +414,9 @@
                                     currentPageReportTemplate="{first} - {last} of {totalRecords}"
                                     [globalFilterFields]=globalFilterFields
                                     styleClass="p-datatable-sm">
-                                  
-                                   
-                                  
+
+
+
                                     <ng-template pTemplate="header">
                                       <tr>
                                         <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.name' | translate}}</th>
@@ -427,7 +425,7 @@
                                         <th pSortableColumn="idNumber" class="flexible-header">{{'gis.quotation.id_no' | translate}}</th>
                                         <th pSortableColumn="pinNumber" class="flexible-header">{{'gis.quotation.pin' | translate}}</th>
                                         <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.internal_id' | translate}}</th>
-                                       
+
                                       </tr>
                                       <tr>
                                         <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)"></th>
@@ -439,7 +437,7 @@
 
                                       </tr>
                                     </ng-template>
-                                  
+
                                     <ng-template pTemplate="body" let-clientData>
                                       <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
                                         <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
@@ -449,18 +447,18 @@
                                         <td>{{ clientData.pinNumber }}</td>
                                         <td>{{ clientData.id }}</td>
 
-                                       
+
                                       </tr>
                                     </ng-template>
-                                  
+
                                     <ng-template pTemplate="emptymessage">
                                       <tr>
                                         <td colspan="4">{{'gis.quotation.no_client_found' | translate}}</td>
                                       </tr>
                                     </ng-template>
                                   </p-table>
-                                  
-                                
+
+
 
 
 
