@@ -263,8 +263,6 @@ export class QuoteSummaryComponent {
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
-
-
     log.debug("isAddRisk:", this.isAddRisk)
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)

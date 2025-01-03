@@ -410,7 +410,7 @@ export class QuickQuoteFormComponent {
     }
 
     log.debug('Quotation Details:', this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.no ?? null;
+    this.passedQuotationNo = this.passedQuotation?.quotOriginalQuotNo ?? null;
     log.debug('passed QUOYTATION number', this.passedQuotationNo);
     if (this.passedQuotation) {
       this.existingPropertyIds = this.passedQuotation.riskInformation?.map(
@@ -422,7 +422,8 @@ export class QuickQuoteFormComponent {
     // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
 
     this.passedQuotationCode =
-      this.passedQuotation?.quotationProduct?.[0]?.quotCode ?? null;
+      this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+
     log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
@@ -470,7 +471,7 @@ export class QuickQuoteFormComponent {
 
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
-      log.debug(parsedData);
+      log.debug(parsedData, "pARSED dATA");
       this.personalDetailsForm.patchValue(parsedData);
     }
     this.premiumComputationRequest;
@@ -2370,12 +2371,12 @@ setTax(): Tax[] {
   // Map the tax list to the desired format
   const taxList: Tax[] = this.taxList.map((item) => {
       return {
-          taxRate: String(item.taxRate), // Convert to string to match Tax interface
-          code: String(item.code),
-          taxCode: String(item.taxCode),
-          divisionFactor: String(item.divisionFactor),
-          applicationLevel: String(item.applicationLevel),
-          taxRateType: String(item.taxRateType),
+        taxRate: String(item.taxRate), // Convert to string to match Tax interface
+        code: String(item.code),
+        taxCode: String(item.taxCode),
+        divisionFactor: String(item.divisionFactor),
+        applicationLevel: String(item.applicationLevel),
+        taxRateType: String(item.taxRateType),
       };
   });
 
