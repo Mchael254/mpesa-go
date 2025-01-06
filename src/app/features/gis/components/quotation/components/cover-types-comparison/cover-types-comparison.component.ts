@@ -124,7 +124,7 @@ export class CoverTypesComparisonComponent {
   temporaryPremiumList: Premiums[] = [];
 
   passedNumber: string;
-  passedQuotationCode: string;
+  passedQuotationCode: number;
   passedQuotationDetails: any;
   emailForm: FormGroup;
   smsForm: FormGroup;
@@ -192,7 +192,8 @@ export class CoverTypesComparisonComponent {
   ngOnInit(): void {
     this.passedNumber = sessionStorage.getItem('passedQuotationNumber');
     log.debug("Passed Quotation Number:", this.passedNumber);
-    this.passedQuotationCode = sessionStorage.getItem('passedQuotationCode');
+    this.passedQuotationCode = Number(sessionStorage.getItem('passedQuotationCode'));
+
     log.debug("Passed Quotation code:", this.passedQuotationCode);
 
 
@@ -792,7 +793,22 @@ export class CoverTypesComparisonComponent {
     }
     log.debug("default code:", defaultCode)
 
+    // Find the selected risk from premiumPayload.risks based on the selectedCoverType value
+    const selectedRisk = this.premiumPayload?.risks.find(
+      (risk) => risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType
+    );
+
+
     const risk = this.riskDetailsForm.value;
+
+    if (selectedRisk) {
+      // Populate the risk object with details from the selected risk
+      risk.itemDesc = selectedRisk.subclassCoverTypeDto.coverTypeShortDescription;
+      risk.itemDescription = selectedRisk.subclassCoverTypeDto.coverTypeDescription;
+
+      // From dynamic form
+      risk.propertyId = selectedRisk.propertyId;
+    }
     risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
     risk.coverTypeCode = this.passedCovertypeCode;
     risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
@@ -801,15 +817,15 @@ export class CoverTypesComparisonComponent {
     risk.wef = this.premiumPayload?.risks[0].withEffectFrom;
     risk.wet = this.premiumPayload?.risks[0].withEffectTo;
     risk.sclCode = this.premiumPayload?.risks[0].subclassSection.code;
-    risk.itemDesc = this.premiumPayload?.risks[0].propertyId;;
-    risk.itemDescription = this.premiumPayload?.risks[0].propertyId;;
+    // risk.itemDesc = this.premiumPayload?.risks[0].propertyId;
+    // risk.itemDescription = this.premiumPayload?.risks[0].propertyId;
     risk.quotationCode = defaultCode;
     risk.value = this.sumInsuredValue;
     risk.coverTypeDescription = this.passedCovertypeDescription;
 
     // FROM DYNAMIC FORM
-    risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
+    // risk.propertyId = this.premiumPayload?.risks[0].propertyId;
+    // log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
     log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
     log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
@@ -823,13 +839,6 @@ export class CoverTypesComparisonComponent {
         this.riskCode= quotationRiskDetails.riskCode
         this.quoteProductCode= quotationRiskDetails.quotProductCode
 
-        // for (const key in quotationRiskCode) {
-        //   if (quotationRiskCode.hasOwnProperty(key)) {
-        //     const value = quotationRiskCode[key];
-        //     log.debug(`${value}`);
-        //     this.riskCode = value;
-        //   }
-        // }
       } else {
         log.debug("The quotationRiskCode object is not defined.");
       }

@@ -112,7 +112,9 @@
                                 [selectedCountryISO]="CountryISO.Kenya"
                                 [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                 [phoneValidation]="true" [(ngModel)]="clientPhone" #clientPhoneInput="ngModel"
-                                [numberFormat]="PhoneNumberFormat.National" (ngModelChange)="onPhoneInputChange()">
+                                [numberFormat]="PhoneNumberFormat.National" (ngModelChange)="onPhoneInputChange()"
+                                disabled
+                            >
                             </ngx-intl-tel-input>
                             <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                 class="form-text text-danger">
