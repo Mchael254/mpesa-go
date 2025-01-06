@@ -1,3 +1,23 @@
+.breadcrumb-container {
+  padding-top: 1rem;
+  justify-content: end;
+}
+
+.content-container {
+  box-shadow: none;
+  border: 1px solid #ddd;
+}
+
+.section-header {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+
+.spinner-container {
+  position: relative;
+  color: black;
+}
+
 div > label {
   margin-top: 1rem;
 }
@@ -5,6 +25,11 @@ div > label {
 label {
   margin-bottom: 0.5rem;
 }
+
+.required {
+  padding: 0 0 0.5rem 0;
+}
+
 .p-dropdown .p-dropdown-label .p-placeholder {
   color: #ca1b0e !important;
   transform: translateY(-4px) !important;
