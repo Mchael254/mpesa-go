@@ -100,7 +100,6 @@ export class QuoteSummaryComponent {
     public globalMessagingService: GlobalMessagingService,
 
 
-
   ) {
 
   }
@@ -151,8 +150,10 @@ export class QuoteSummaryComponent {
     log.debug("Selected subclass code", this.selectedSubclassCode)
 
     this.isAddRisk=false;
+    sessionStorage.setItem("isAddRisk", JSON.stringify(this.isAddRisk))
     log.debug("IS ADD RISK STATE:",this.isAddRisk)
     this.isEditRisk=false;
+    sessionStorage.setItem("isEditRisk", JSON.stringify(this.isEditRisk))
     log.debug("IS EDIT RISK STATE:",this.isEditRisk)
 
   }
@@ -456,12 +457,8 @@ export class QuoteSummaryComponent {
     this.totalTaxes = 0;
     this.premiumAmount = 0;
     const totalPremiumAmount = this.quotationDetails.quotationProducts[0].premium;
-    // const amount1 = this.quotationDetails.taxInformation[0].taxAmount;
-    // const amount2 = this.quotationDetails.taxInformation[0].taxAmount;
 
-    // const totalTaxes = this.quotationDetails.taxInformation
-
-    // const premiumAmount = totalPremiumAmount - totalTaxes
+    //subtract the totalPremium and the taxes amount to get the premium
     if (this.quotationDetails.taxInformation) {
       this.quotationDetails.taxInformation.forEach((tax: any) => {
         if (tax.taxAmount) {

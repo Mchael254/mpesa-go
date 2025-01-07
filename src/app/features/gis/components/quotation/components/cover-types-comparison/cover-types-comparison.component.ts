@@ -738,17 +738,6 @@ export class CoverTypesComparisonComponent {
       }
       this.createQuotationRisk();
 
-      // const newriskLevelPremiums = this.riskLevelPremiums;
-      // this.newRiskLevelPremiums = newriskLevelPremiums;
-      // log.debug('newRiskLevelPremiums:',this.newRiskLevelPremiums)
-
-      // if(this.newRiskLevelPremiums) {
-      //   this.updateQuotationDetails()
-      // }
-
-
-
-
     })
   }
   loadClientQuotation() {
@@ -868,9 +857,6 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
-
-
-    log.debug("")
 
     // Check if passedNumber exists (not null, empty, or 'null')
     if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
@@ -1521,8 +1507,15 @@ export class CoverTypesComparisonComponent {
       return;
     }
 
-    this.quotationCode = this.quotationData._embedded[0].quotationCode;
-    let quotationCode = Number(this.quotationCode);
+    let quotationCode;
+    if(this.quotationData) {
+      this.quotationCode = this.quotationData._embedded[0].quotationCode;
+      quotationCode = Number(this.quotationCode);
+    } else {
+      quotationCode = sessionStorage.getItem("passedQuotationCode");
+    }
+
+
 
     // Fetch individual tax premiums
     const taxPremiums = selectedRiskLevelPremium.taxComputation.map((tax) => tax.premium);
