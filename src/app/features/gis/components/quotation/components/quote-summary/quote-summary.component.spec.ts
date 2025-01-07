@@ -32,6 +32,7 @@ import { Pagination } from 'src/app/shared/data/common/pagination';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { Limit } from '../../data/quotationsDTO';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 
@@ -86,143 +87,185 @@ export class mockPremiumRateService {
 export class MockBrowserStorage {
 
 }
+jest.mock('ng2-pdf-viewer', () => ({
+  PdfViewerComponent: jest.fn(),
+}));
 const mockQuotationDetails = {
-  no: "Q/LG/PMT/24/0000182",
-  premium: null,
-  expiryDate: "2024-05-01",
-  status: "Draft",
-  coverFrom: "2024-02-01",
-  coverTo: "2025-01-31",
-  clientCode: 1195472,
-  currency: "NGN",
-  agentCode: 0,
-  branch: {
-    id: 332,
-    name: "ELDORET",
-    countryName: null,
-    townName: null
-  },
-  source: {
-    code: 36,
-    description: "WALK IN",
-    applicableModule: "B"
-  },
-  likelihood: null,
-  frequencyOfPayment: "A",
+  quotCode: null,
+  quotPrpCode: 221243788,
+  quotNo: null,
+  quotRevisionNo: 0,
+  quotPropHoldingCoPrpCode: null,
+  quotAgntShtDesc: "DIRECT",
+  quotCurCode: 268,
+  coverFrom: "2025-01-07",
+  coverTo: "2026-01-06",
+  quotTotPropertyVal: null,
+  quotComments: null,
+  quotStatus: null,
+  quotExpiryDate: null,
+  quotOk: "N",
+  quotPremium: 0,
+  quotCommAmt: null,
+  quotInternalComments: null,
+  quotAuthorisedBy: null,
+  quotAuthorisedDt: null,
+  quotConfirmed: null,
+  quotConfirmedBy: null,
+  quotConfirmedDt: null,
+  quotReady: null,
+  quotReadyBy: null,
+  quotReadyDate: null,
+  quotRevised: "N",
+  quotPreparedBy: null,
+  quotFactor: null,
+  quotGspCode: null,
+  quotDivCode: null,
+  quotAgnWithin: "Y",
+  quotNewAgent: null,
+  quotIncsCode: null,
+  quotWeb: "Y",
+  quotIntroCode: null,
+  sourceCode: null,
+  quotChequeRequistion: null,
+  quotParentRevision: null,
+  quotSubAgnCode: null,
+  quotSubAgnShtDesc: null,
+  quotSubCommAmt: null,
+  quotPrsCode: null,
+  quotMktrAgnCode: null,
+  quotClntType: "I",
   marketerCommissionAmount: null,
-  commissionAmount: null,
-  quotationProduct: [
+  quotOriginalQuotNo: "Q/HDO/MAC/25/0000001",
+  quotTrvDstCouCode: null,
+  quotRemarks: null,
+  quotCancelReasons: null,
+  quotWclntCode: null,
+  quotTcbCode: null,
+  quotClntRef: null,
+  quotLoanDisbursed: "N",
+  quotTenderNumber: null,
+  preparedDt: "2025-01-07",
+  quotCancelReason: null,
+  quotCmpCode: null,
+  quotSourceCampaign: null,
+  frequencyOfPayment: "A",
+  quotCurRate: null,
+  quotWebPolId: null,
+  quotTravelQuote: "N",
+  likelihood: null,
+  quotQscCode: null,
+  quotLtaCommAmt: null,
+  ginQuotations: null,
+  quotPipCode: null,
+  quotOrgCode: null,
+  rfqDate: null,
+  quotMultiUser: null,
+  quoteSubQuote: "N",
+  quotPremFixed: "N",
+  dateCreated: "2025-01-07",
+  agentCode: 0,
+  currency: "NGN",
+  quotationProducts: [
     {
-      code: 2024136738,
-      proCode: 8293,
-      quotCode: 202446065,
-      productShortDescription: null,
-      quotationNo: "Q/LG/PMT/24/0000182",
+      code: 2024137989,
+      proCode: 8173,
+      quotCode: 202547085,
+      productShortDescription: "MARINE CARGO",
+      quotationNo: null,
       premium: null,
       revisionNo: 0,
-      totalSumInsured: null,
+      totalSumInsured: 890000,
       commission: null,
       binder: null,
-      agentShortDescription: "DIRECT",
-      wet: "2025-01-31",
-      wef: "2024-02-01"
+      agentShortDescription: null,
+      wef: "2025-01-07",
+      wet: "2026-01-06"
     }
   ],
   riskInformation: [
     {
-      code: 2024217732,
-      quotationRiskNo: "Q/LG/PMT/24/0000182",
-      quotationCode: 202446065,
-      value: null,
-      propertyId: "KDD 567H",
-      covertypecode: 302,
-      covertypeShortDescription: "COMP",
+      insuredCode: null,
+      location: null,
+      town: null,
+      ncdLevel: null,
+      schedules: null,
+      coverTypeCode: 305,
+      addEdit: null,
+      quotRevisionNo: 0,
+      code: 20242186498,
+      quotationRiskNo: "Q/HDO/MAC/25/0000001",
+      quotationCode: 202547085,
+      value: 890000,
+      propertyId: "366",
+      coverTypeShortDescription: "STD",
       sectionsDetails: [
         {
-          code: 425333,
-          description: "SI",
-          limitAmount: 1000000,
+          code: 426529,
+          description: "CL",
+          limitAmount: 890000,
           freeLimit: 0,
-          rate: 10,
+          rate: 0.149,
           premium: 0,
           rateType: "FXD",
-          sectionShortDescription: "SI",
+          sectionShortDescription: "CL",
           rowNumber: 1,
           calculationGroup: 1
         },
         {
-          code: 425334,
-          description: "WINDSCREEN",
-          limitAmount: 1000000,
-          freeLimit: 0,
-          rate: 50000,
-          premium: 0,
-          rateType: "FXD",
-          sectionShortDescription: "WINDSCREEN",
-          rowNumber: 1,
-          calculationGroup: 1
-        }
-      ],
-      scheduleDetails: null
-    },
-    {
-      code: 2024217733,
-      quotationRiskNo: "Q/LG/PMT/24/0000182",
-      quotationCode: 202446065,
-      value: null,
-      propertyId: "FGT 567U",
-      covertypecode: 302,
-      covertypeShortDescription: "COMP",
-      sectionsDetails: [
-        {
-          code: 425335,
-          description: "SI",
-          limitAmount: 3000000,
+          code: 426530,
+          description: "ML",
+          limitAmount: 90000,
           freeLimit: 0,
           rate: 10,
           premium: 0,
           rateType: "FXD",
-          sectionShortDescription: "SI",
+          sectionShortDescription: "ML",
           rowNumber: 1,
           calculationGroup: 1
         }
       ],
-      scheduleDetails: null
-    },
-    {
-      code: 2024217734,
-      quotationRiskNo: "Q/LG/PMT/24/0000182",
-      quotationCode: 202446065,
-      value: null,
-      propertyId: "EDR 345T",
-      covertypecode: 302,
-      covertypeShortDescription: "COMP",
-      sectionsDetails: [
-        {
-          code: 425336,
-          description: "SI",
-          limitAmount: 4000000,
-          freeLimit: 0,
-          rate: 10,
-          premium: 0,
-          rateType: "FXD",
-          sectionShortDescription: "SI",
-          rowNumber: 1,
-          calculationGroup: 1
-        }
-      ],
-      scheduleDetails: null
+      scheduleDetails: null,
+      premium: null,
+      sclCode: 301,
+      itemDesc: "STD",
+      quotProCode: 2024137989,
+      binderCode: 20207154,
+      wef: "2025-01-07",
+      wet: "2026-01-06",
+      commRate: null,
+      commAmount: null,
+      prpCode: 221243788,
+      prpShtDesc: null,
+      annualPrem: null,
+      coverDays: 365,
+      clntType: "I",
+      prsCode: null,
+      coverTypeDescription: "STANDARD"
     }
   ],
+  branchCode: 1,
   taxInformation: [
     {
-      description: "SD",
+      rateDescription: "PHFUND",
+      quotationRate: 0.25,
+      rateType: "FXD",
+      taxAmount: null
+    },
+    {
+      rateDescription: "SD",
       quotationRate: 0.075,
-      rateType: null,
-      amount: null
+      rateType: "FXD",
+      taxAmount: null
     }
-  ]
-}
+  ],
+  source: null,
+  agentName: "DIRECT",
+  clientName: "DOE",
+  sumInsured: 0,
+  clientCode: null
+};
+
 export const mockClient: ClientDTO = {
   branchCode: 123,
   category: 'Individual',
@@ -298,7 +341,14 @@ describe('QuoteSummaryComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [QuoteSummaryComponent],
-      imports: [HttpClientTestingModule, SharedModule, FormsModule, RouterTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        //  SharedModule, 
+        //  FormsModule, 
+        //  RouterTestingModule
+        TranslateModule.forRoot(),
+
+      ],
       providers: [
         { provide: quotationService, useClass: mockQuotationService },
         { provide: productService, useClass: mockProductService },
@@ -317,13 +367,13 @@ describe('QuoteSummaryComponent', () => {
         { provide: APP_BASE_HREF, useValue: '/' },
         // { provide: Router, useFactory: spy },
 
-        GlobalMessagingService, MessageService,Router, 
+        GlobalMessagingService, MessageService, Router,
         FormBuilder,
         { provide: AppConfigService, useValue: { config: { contextPath: { gis_services: 'gis/setups/api/v1' } } } }
 
       ],
     })
-    .compileComponents();
+      .compileComponents();
     fixture = TestBed.createComponent(QuoteSummaryComponent);
     component = fixture.componentInstance;
     routerSpy = TestBed.inject(Router) as jest.Mocked<Router>;
@@ -363,11 +413,11 @@ describe('QuoteSummaryComponent', () => {
 
     // Expectations for the state changes or actions triggered by the method
     expect(component.quotationDetails).toEqual(mockQuotationDetails);
-    expect(component.quotationNo).toEqual(mockQuotationDetails.no);
+    expect(component.quotationNo).toEqual(mockQuotationDetails.quotOriginalQuotNo);
     expect(component.insuredCode).toEqual(mockQuotationDetails.clientCode);
     expect(component.coverFrom).toEqual(mockQuotationDetails.coverFrom);
     expect(component.coverTo).toEqual(mockQuotationDetails.coverTo);
-    expect(component.productCode).toEqual(mockQuotationDetails.quotationProduct[0].proCode);
+    expect(component.productCode).toEqual(mockQuotationDetails.quotationProducts[0].proCode);
 
     // Example of testing a function call
     // expect(component.getClient).toHaveBeenCalled();
@@ -426,8 +476,8 @@ describe('QuoteSummaryComponent', () => {
     expect(component.clientDetails).toEqual(mockClient);
     expect(component.selectedClientName).toEqual('John Doe');
   }));
- 
-  
+
+
   it('should set quotationproduct and productDesc on successful getProductByCode', fakeAsync(() => {
     const mockQuotationProduct = {
       description: 'Some product description',
@@ -459,7 +509,7 @@ describe('QuoteSummaryComponent', () => {
   //   // Since Router is part of the mocked module, TestBed.inject(Router) will work without providing a custom mock
   //   expect(component['router'].navigate).toHaveBeenCalledWith(['/home/gis/quotation/quotations-client-details']);
   // });
-  
+
   it('should set sessionStorage', (() => {
     // Mock the necessary properties
     component.quotationDetails = mockQuotationDetails;
@@ -477,14 +527,14 @@ describe('QuoteSummaryComponent', () => {
 
     // Simulate asynchronous operation completion
 
-    sessionStorage.setItem('passedQuotationDetails','JSON.stringify(component.quotationDetails');
-    sessionStorage.setItem('passedClientDetails','JSON.stringify(component.clientDetails');
-    sessionStorage.setItem('isAddRisk','JSON.stringify(component.isAddRisk');
+    sessionStorage.setItem('passedQuotationDetails', 'JSON.stringify(component.quotationDetails');
+    sessionStorage.setItem('passedClientDetails', 'JSON.stringify(component.clientDetails');
+    sessionStorage.setItem('isAddRisk', 'JSON.stringify(component.isAddRisk');
 
-   
+
     // Additional expectations if needed
     // expect(navigateSpy).toHaveBeenCalledWith(['/home/gis/quotation/quick-quote']);
-        // expect(router.navigate).toHaveBeenCalledWith(['/home/gis/quotation/quote-summary']);
+    // expect(router.navigate).toHaveBeenCalledWith(['/home/gis/quotation/quote-summary']);
 
   }));
   // it('should store data in sessionStorage and log correctly', () => {

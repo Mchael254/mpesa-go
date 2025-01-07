@@ -6,8 +6,8 @@
     <ngx-spinner name="coverComparisonScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
       size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
     <div class="row">
-      <!-- Cover Section -->
-      <div class="col-5">
+      <!-- old Cover Section -->
+      <!-- <div class="col-5">
         <p class="card-title mb-3"> {{'gis.quotation.select_a_cover' | translate}}</p>
         <div class="row">
           <div class="col-12" *ngFor="let risk of riskLevelPremiums; let i = index">
@@ -27,7 +27,31 @@
             </div>
           </div>
         </div>
+      </div> -->
+      <!-- Cover Section -->
+      <div class="col-5">
+        <p class="card-title mb-3"> {{'gis.quotation.select_a_cover' | translate}}</p>
+        <div class="row">
+          <!-- Add a scrollable container -->
+          <div class="col-12 scrollable-container">
+            <div class="card mb-3" *ngFor="let risk of riskLevelPremiums; let i = index">
+              <div class="card-body cover-types-body">
+                <label>
+                  <input type="radio" name="cover" [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
+                    [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
+                    class="radio-btn" />
+                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription
+                    }}</span><br />
+                  <small class="cover-premium">
+                    Basic Premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
+                  </small>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
 
       <!-- Benefits Section -->
       <div class="col-7">

@@ -246,5 +246,17 @@ border: 1px solid #00529B;
   vertical-align: middle;
   padding: 20px; 
 }
-
+#compute{
+  color: #FFF;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  /* border-radius: 4px; */
+  /* background: #00529B; */
+}
+.card{
+  border: none;
+}
 

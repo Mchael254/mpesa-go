@@ -23,6 +23,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { Router } from '@angular/router';
+
 const log = new Logger('CoverTypesComparisonComponent');
 
 @Component({
@@ -902,7 +903,7 @@ export class CoverTypesComparisonComponent {
           sessionStorage.setItem('quotationNumber', quotationNumberString);
 
           // Navigate to policy summary after creating the quotation risk
-          this.router.navigate(['/home/gis/quotation/policy-summary']);
+          // this.router.navigate(['/home/gis/quotation/policy-summary']);
         }
 
       }
