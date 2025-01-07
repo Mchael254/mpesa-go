@@ -179,7 +179,7 @@
                     </ng-template>
 
                     <ng-template pTemplate="body" let-risk>
-                        <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)">
+                        <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
                             <td>{{ risk.propertyId }}</td>
                             <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription}}</td>
                             <!-- <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td> -->

@@ -252,6 +252,7 @@ export class QuickQuoteFormComponent {
   selectedCoverToDate: any;
   vesselTypeList: VesselType[];
   selectedVesselTypeCode: any;
+  isFormDataLoaded: boolean = false;
 
 
   filterObject: {
@@ -357,10 +358,12 @@ export class QuickQuoteFormComponent {
     if (this.isAddRisk) {
       log.debug("ADD RISK IS TRUE")
       this.addRisk();  // Call addRisk() if isAddRisk is true
+
     } else if (this.isEditRisk) {
       log.debug("EDIT RISK IS TRUE")
-
+      this.isFormDataLoaded = true;
       this.editRisk();  // Call editRisk() if isEditRisk is true
+
     }
     this.premiumComputationRequest;
     // this.loadFormData()
@@ -572,6 +575,12 @@ export class QuickQuoteFormComponent {
   }
 
   loadFormData() {
+
+    if (!this.isEditRisk) {
+      log.debug('Form data loading skipped - not in edit mode');
+      return;
+    }
+
     log.debug('LOAD FORM DATA IS BEING CALLED TO POPULATE THE FORM');
     // Load data from session storage on initialization
     const savedData = sessionStorage.getItem('personalDetails');
@@ -795,7 +804,9 @@ export class QuickQuoteFormComponent {
 
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
-      this.loadFormData();
+      if (this.isFormDataLoaded) {
+        this.loadFormData();
+      }
       this.cdr.detectChanges();
     });
   }
