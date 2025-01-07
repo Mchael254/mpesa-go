@@ -314,14 +314,22 @@
                                         <div *ngIf="field.name == 'coverTo'">
                                             <label class="quote-label " [for]="field.name">{{ field.label
                                                 }}</label>
-                                            <p-calendar [dateFormat]="dateFormat" [showIcon]="true"
+                                            <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true"
                                                 [showButtonBar]="true" [minDate]="minDate"
                                                 [(ngModel)]="selectedCoverToDate"
                                                 (ngModelChange)="onCoverToInputChange(selectedCoverToDate);">
-                                            </p-calendar>
-
-
-
+                                            </p-calendar> -->
+<br>
+                                            <p-calendar 
+                                            
+                                            [(ngModel)]="selectedCoverToDate" 
+                                            [dateFormat]="dateFormat" 
+                                            [showIcon]="true"
+                                            [showButtonBar]="true" 
+                                            [minDate]="minDate"
+                                            (onSelect)="onCoverToChange($event)">
+                                          </p-calendar>
+                                          
                                         </div>
                                         <div *ngIf="field.name == 'vesselType'">
                                             <label class="quote-label " [for]="field.name">{{ field.label
