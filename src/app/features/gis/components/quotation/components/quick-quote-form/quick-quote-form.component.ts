@@ -67,11 +67,11 @@ import {
   PhoneNumberFormat,
   SearchCountryField,
 } from 'ngx-intl-tel-input';
-import { OccupationService } from 'src/app/shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
 import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { TableDetail } from 'src/app/shared/data/table-detail';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -507,7 +507,7 @@ export class QuickQuoteFormComponent {
 
 
     log.debug("Quotation Details:", this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.no ?? null;
+    this.passedQuotationNo = this.passedQuotation?.quotOriginalQuotNo ?? null;
     log.debug("passed QUOYTATION number", this.passedQuotationNo)
     if (this.passedQuotation) {
       this.existingPropertyIds = this.passedQuotation.riskInformation?.map(risk => risk.propertyId);
@@ -517,7 +517,9 @@ export class QuickQuoteFormComponent {
 
     // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
 
-    this.passedQuotationCode = this.passedQuotation?.quotationProduct?.[0]?.quotCode ?? null
+    this.passedQuotationCode =
+    this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+
     log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
@@ -1191,6 +1193,7 @@ export class QuickQuoteFormComponent {
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
         // this.coverFrom =this.effectiveFromDate
         log.debug("DATe FROM DATA:", this.passedCoverToDate)
+        this.selectedCoverToDate= this.passedCoverToDate
         this.getPremiumRates();
 
       })
@@ -1854,8 +1857,9 @@ export class QuickQuoteFormComponent {
   }
   computePremiumV2() {
     this.ngxSpinner.show();
+    log.debug("Cover to", this.selectedCoverToDate)
     this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
-    this.personalDetailsForm.get('withEffectiveToDate').setValue(this.passedCoverToDate);
+    this.personalDetailsForm.get('withEffectiveToDate').setValue(this.passedCoverToDate || this.selectedCoverToDate);
     this.personalDetailsForm.get('withEffectiveFromDate').setValue(this.effectiveFromDate);
     // if (this.) {
 
@@ -2171,6 +2175,20 @@ export class QuickQuoteFormComponent {
     log.debug('selected Cover to date raaaaaw', date);
     this.selectedCoverToDate = date;
     log.debug('selected cover to date', this.selectedCoverToDate);
+  }
+  onCoverToChange(event: Date): void {
+    console.log('selected Cover to date raaaaaw:', event); 
+    const selectedCoverToDate = event;
+    log.debug('selected cover to date', selectedCoverToDate);
+
+    if (selectedCoverToDate) {
+      const SelectedFormatedDate = this.formatDate(selectedCoverToDate)
+      log.debug(" SELECTED FORMATTED DATE:", SelectedFormatedDate)
+
+      this.selectedCoverToDate = SelectedFormatedDate
+      log.debug("Cover  to date  :",this.selectedCoverToDate)
+    } 
+
   }
    /**
    * Fetches vessel types data based on the provided organization ID and

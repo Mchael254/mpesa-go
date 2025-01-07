@@ -11,8 +11,8 @@ import { ApiService } from "../../../../shared/services/api/api.service";
 import { API_CONFIG } from "../../../../../environments/api_service_config";
 import { SESSION_KEY } from "../../../lms/util/session_storage_enum";
 import { StringManipulation } from "../../../lms/util/string_manipulation";
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { UtilService } from 'src/app/shared/services';
+import { ClientDTO } from '../../../../features/entities/data/ClientDTO';
+import { UtilService } from '../../../../shared/services';
 
 @Injectable({
   providedIn: 'root'
