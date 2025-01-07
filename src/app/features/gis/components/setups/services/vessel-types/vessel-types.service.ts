@@ -1,9 +1,10 @@
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import { AppConfigService } from '../../../../../../../app/core/config/app-config-service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../../app/shared/services/api/api.service';
+
 
 @Injectable({
   providedIn: 'root'

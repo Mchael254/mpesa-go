@@ -66,7 +66,7 @@ export class SubClassCoverTypesService {
    * @param subClassCode Subclass code
    */
   getSubclassCovertypeBySCode(subClassCode: any): Observable<any>{
-    return this.api.GET<any>(`api/v1/subclass-cover-types/?pageNo=0&pageSize=100000&subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/subclass-cover-types?pageNo=0&pageSize=100000&subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
