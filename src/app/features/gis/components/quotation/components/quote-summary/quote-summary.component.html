@@ -2,9 +2,19 @@
     <p class="titleMain mt-3">{{'gis.quotation.quotation_summary' | translate}}</p>
     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
     <div class="container mx-2 mt-n1">
+        
         <div class="card">
             <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
+                <div class="row ">
+                    <div class="col-6">
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        
+                            <button class="btn btn-primary" type="submit" >
+                                Reassign quote</button>
+                    </div>
+                </div>
                 <p class="title mt-2">{{'gis.quotation.quote_details' | translate}}</p>
                 <div class="row ">
                     <div class="col-lg-4 col-12">
@@ -426,14 +436,16 @@
         <div class="float-start mt-4 mb-4 ">
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
                 id="btnCancelQuote">{{'gis.quotation.cancel_quote' | translate}}</button>
-
+                <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
+                data-bs-target="#shareQuote" id="btnCancelQuote"> {{'gis.quotation.share_quote' | translate}}</button>
         </div>
         <div class="float-end mt-4 mb-4  ">
-            <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal"
-                data-bs-target="#shareQuote" id="btnCancelQuote"> {{'gis.quotation.share_quote' | translate}}</button>
+            <button type="button" class="btn btn-primary me-3" 
+                id="btnCancelQuote"> Convert to policy</button>
             <button class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">
-                {{'gis.quotation.accept_quote' | translate}}</button>
+                Convert to normal quote</button>
         </div>
+        
         <!-- Cancel Quote Modal -->
         <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

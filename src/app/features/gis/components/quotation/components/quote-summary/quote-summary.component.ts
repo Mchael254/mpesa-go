@@ -15,7 +15,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, Excesses, LimitsOfLiability } from '../../data/quotationsDTO';
 
