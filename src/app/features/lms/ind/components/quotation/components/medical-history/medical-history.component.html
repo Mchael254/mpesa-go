@@ -1,238 +1,165 @@
-<div class="container-fluid">
-  <div style="display: flex; padding-top: 1rem; justify-content: end">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+<!-- Main Container for Medical History-->
+ <div class="container-fluid">
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-container">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems"></app-dynamic-breadcrumb>
   </div>
+
+  <!-- Stepper Component -->
   <div class="row">
     <div class="col-md-12">
-      <app-stepper [currentStep]="6" [stepperData]="steps"></app-stepper>
+      <app-stepper [currentStep]="7" [stepperData]="steps"></app-stepper>
     </div>
   </div>
 
-  <div class="full-border px-5" style="padding: 0">
+   <!-- Content Section -->
+  <div class="full-border px-5 content-container">
 
     <div>
+
       <div class="d-flex justify-content-between pt-3 siz">
-        <div class="fw-bold text-black">Medical history</div>
+        <div class="section-header">{{ "lms.ind.quotations.medical_history" | translate }}</div>
       </div>
-      <div class="text-black">
-        <div class="col fadeIn" style="position: relative">
-          <ngx-spinner
+
+      <!-- Content Wrapper with Spinner -->
+      <div class="text-black spinner-container">
+        <ngx-spinner
           name="medical_history_screen"
-            type="ball-clip-rotate-multiple"
-            [fullScreen]="false"
-            color="#00529B"
-            size="medium"
-            bdColor="rgba(255, 255, 255, 0.966)"
-          ></ngx-spinner>
+          type="ball-clip-rotate-multiple"
+          [fullScreen]="false"
+          color="#00529B"
+          size="medium"
+          bdColor="rgba(255, 255, 255, 0.0)">
+        </ngx-spinner>
 
-
+        <div class="col fadeIn">
+          <!-- Main Form Section -->
           <div [formGroup]="medicalHistoryForm" class="w-100">
+
+            <!-- Question 1 -->
             <div class="my-2">
-              <label class="required">1. Do you have a personal doctor?</label>
+              <label class="required">1. {{ "lms.ind.quotations.personal_doctor" | translate }}?</label>
               <div></div>
               <div class="row">
                 <div class="col-12">
                   <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="male"
-                      formControlName="question1"
-                      value="Y"
-                    />
-                    <label class="form-check-label" for="male">Yes</label>
+                    <input class="form-check-input" type="radio" id="male" formControlName="question1" value="Y" />
+                    <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
                   </span>
                   <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      formControlName="question1"
-                      value="N"
-                    />
-                    <label class="form-check-label" for="female">No</label>
+                    <input class="form-check-input" type="radio" id="female" formControlName="question1" value="N" />
+                    <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
                   </span>
                 </div>
+                <!-- Dynamic Inputs for Question 1 -->
                 <div *ngIf="getValue('question1') === 'Y'" formGroupName="medical_personnel">
+
                   <div class="row" >
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4">
-                      <label for="name">Name</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        formControlName="name"
-                        [id]="'name'"
-                      />
+                      <label for="name">{{ "lms.ind.quotations.name" | translate }}</label>
+                      <input class="form-control" type="text" formControlName="name" [id]="'name'" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4">
-                      <label for="address">Address</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        formControlName="address"
-                        [id]="'address'"
-                      />
+                      <label for="address">{{ "lms.ind.quotations.address" | translate }}</label>
+                      <input class="form-control" type="text" formControlName="address" [id]="'address'" />
                     </div>
                   </div>
+
                   <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4">
-                      <label for="phone_no">Phone No.</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        formControlName="phone_no"
-                        [id]="'phone_no'"
-                      />
+                      <label for="phone_no">{{ "lms.ind.quotations.phone_number" | translate }}.</label>
+                      <input class="form-control" type="text" formControlName="phone_no" [id]="'phone_no'" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4">
-                      <label for="email_address">Email Address</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        formControlName="email_address"
-                        [id]="'email_address'"
-                      />
+                      <label for="email_address">{{ "lms.ind.quotations.email_address" | translate }}</label>
+                      <input class="form-control" type="text" formControlName="email_address" [id]="'email_address'" />
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
 
+            <!-- Question 2 Currently Not Displayed -->
             <div *ngIf="gender==='F'" class="my-2">
-              <label class="required"
-                >2. Pregnant? Please provide your status</label
-              >
+              <label class="required">2. {{ "lms.ind.quotations.pregnancy_status" | translate }}</label>
               <div></div>
               <div>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="male"
-                    formControlName="question2"
-                    value="Y"
-                  />
-                  <label class="form-check-label" for="male">Yes</label>
+                  <input class="form-check-input" type="radio" id="male" formControlName="question2" value="Y" />
+                  <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
                 </span>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="female"
-                    formControlName="question2"
-                    value="N"
-                  />
-                  <label class="form-check-label" for="female">No</label>
+                  <input class="form-check-input" type="radio" id="female" formControlName="question2" value="N" />
+                  <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
                 </span>
               </div>
 
               <div class="row" *ngIf="getValue('question2') === 'Y'">
                 <div class="col-lg-4 col-md-6 col-sm-12 py-3">
-                  <label for="pregnancy_due_date">Expected delivery date</label>
+                  <label for="pregnancy_due_date">{{ "lms.ind.quotations.delivery_date" | translate }}</label>
                   <p-calendar
                     appendTo="body"
                     dateFormat="dd/mm/yy"
                     formControlName="pregnancy_due_date"
                     [showIcon]="true"
-                    [showButtonBar]="true"
-                  >
+                    [showButtonBar]="true">
                   </p-calendar>
                 </div>
               </div>
             </div>
 
+            <!-- Current Question 2 -->
             <div class="my-2">
-              <label class="required"
-                >3. Are you currently taking any medication?</label
+              <label class="required">2. {{ "lms.ind.quotations.medication" | translate }} ?</label
               >
               <div>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="male"
-                    formControlName="question3"
-                    value="Y"
-                  />
-                  <label class="form-check-label" for="male">Yes</label>
+                  <input class="form-check-input" type="radio" id="male" formControlName="question3" value="Y" />
+                  <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
                 </span>
                 <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="female"
-                    formControlName="question3"
-                    value="N"
-                  />
-                  <label class="form-check-label" for="female">No</label>
+                  <input class="form-check-input" type="radio" id="female" formControlName="question3" value="N" />
+                  <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
                 </span>
               </div>
               <div></div>
 
               <div class="row" *ngIf="getValue('question3') === 'Y'">
                 <div class="col-lg-6 col-md-6 col-sm-12">
-                  <label for="medication_intake" class="my-1">Description</label>
-                  <textarea
-                    type="text"
-                    class="form-control"
-                    formControlName="medication_intake"
-                    [id]="'medication_intake'"
-                    cols="70"
-                    rows="5"
-                  ></textarea>
+                  <label for="medication_intake" class="my-1">{{ "lms.ind.quotations.description" | translate }}</label>
+                  <textarea class="form-control" type="text" formControlName="medication_intake" 
+                    [id]="'medication_intake'" cols="70" rows="5">
+                  </textarea>
                 </div>
               </div>
             </div>
 
+            <!-- Question 3 -->
             <div class="my-2">
-              <label class="required"
-                >4. Do you have any congenital defect/ abnormality/ Physical
-                deformity/ Handicap?</label
-              >
+              <label class="required">3. {{ "lms.ind.quotations.defects" | translate }} ?</label>
               <div></div>
               <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="male"
-                  formControlName="physical_challenge"
-                  value="Y"
-                />
-                <label class="form-check-label" for="male">Yes</label>
+                <input class="form-check-input" type="radio" id="male" formControlName="physical_challenge" value="Y" />
+                <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
               </span>
               <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="female"
-                  formControlName="physical_challenge"
-                  value="N"
-                />
-                <label class="form-check-label" for="female">No</label>
+                <input class="form-check-input" type="radio" id="female" formControlName="physical_challenge" value="N" />
+                <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
               </span>
             </div>
 
-            <div class="my-5">
-              <label class="required"
-                >5. Have you or any of you dependents ever suffered or do you
-                suffer from or diagnosed with any of the following? Yes/No
-                Questions. If Yes, please provide dates, duration, description
-                and treatment given</label
-              >
+            <!-- Question 4 -->
+            <div class="my-2">
+              <label class="required">4. {{ "lms.ind.quotations.diagnosed_dependents" | translate }}</label>
               <div></div>
 
               <div class="row col-lg-12 col-sm-12">
-                <div
-                  class="d-flex justify-content-between "
-                  style="padding: 0 0 0 0rem"
-                >
+                <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
                   <div></div>
                   <div>
-                    <div
-                      (click)="addEmptyMedicalList(medicalListOne)"
-                      class="b-r d-flex justify-content-center align-content-center"
-                    >
+                    <div (click)="addEmptyMedicalList(medicalListOne)" class="b-r d-flex justify-content-center align-content-center">
                       <i class="fa-solid fa-plus"></i>
                     </div>
                   </div>
@@ -242,17 +169,15 @@
                     <table class="table table-bordered">
                       <thead>
                         <tr style="font-weight: 400; font-size: 12px; height:3rem; background-color: var(--grey-color);">
-                          <th>Person</th>
-                          <th>Disease</th>
-                          <th>Diagnosis Date</th>
-                          <th>Diagnosis</th>
+                          <th>{{ "lms.ind.quotations.person" | translate }}</th>
+                          <th>{{ "lms.ind.quotations.disease" | translate }}</th>
+                          <th>{{ "lms.ind.quotations.diagnosis_date" | translate }}</th>
+                          <th>{{ "lms.ind.quotations.diagnosis" | translate }}</th>
                           <th style="width: 2rem"></th>
                         </tr>
                       </thead>
                       <tbody>
-                        <ng-container
-                          *ngFor="let row of medicalListOne; let i = index"
-                        >
+                        <ng-container *ngFor="let row of medicalListOne; let i = index">
                           <tr *ngIf="row['isEdit'] == true" [formGroup]="medicalHistoryTableOne">
                             <td style="width:20%">
                               <select class="form-select" [id]="'clientType'" formControlName="relation_type_code">
@@ -265,13 +190,11 @@
                             </td>
                             <td style="width:20%">
                               <select class="form-select" [id]="'clientType'" formControlName="disease">
-
                                 <ng-container *ngFor="let disease of diseaseList;">
                                   <option [value]="disease?.id">
                                     {{ disease["name"] | titlecase }}
                                   </option>
                                 </ng-container>
-
                               </select>
                             </td>
                             <td style="width:20%">
@@ -280,17 +203,11 @@
                                 dateFormat="dd/mm/yy"
                                 [showIcon]="true"
                                 [showButtonBar]="true"
-                                formControlName="diagnosis_date"
-                              >
+                                formControlName="diagnosis_date">
                               </p-calendar>
                             </td>
                             <td style="width:35%">
-                              <input
-                                type="text"
-                                class="form-control"
-                                required
-                                formControlName="diagnosis"
-                              />
+                              <input class="form-control" type="text" formControlName="diagnosis" required />
                             </td>
                             <td style="width:5%" class="d-flex justify-content-between py-2">
                               <div (click)="addResponseOne(i)" class="mx-2">
@@ -301,8 +218,7 @@
                               </div>
                             </td>
                           </tr>
-                          <tr *ngIf="row['isEdit'] == false">
-                           
+                          <tr *ngIf="row['isEdit'] == false">           
                             <td>{{ relationTypeList | relationType: row["relation_type_code"] }}</td>
                             <td>{{ diseaseList | diseases: row["disease"] }}</td>
                             <td>{{ row["diagnosis_date"] | date : "short" }}</td>
@@ -323,110 +239,57 @@
                     </table>
 
                     <div *ngIf="editEntity">
-                      <div
-                        style="
-                          left: 50%;
-                          right: 50%;
-                          width: 3rem;
-                          height: 3rem;
-                          position: relative;
-                        "
-                        class="spinner-border text-primary spinner-border"
-                        role="status"
-                      >
+                      <div style=" left: 50%; right: 50%; width: 3rem; height: 3rem; position: relative;"
+                          class="spinner-border text-primary spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                       </div>
                     </div>
                   </div>
-                  <div
-                    *ngIf="medicalListOne?.length === 0"
-                    class="d-flex justify-content-center text-danger"
-                  >
+                  <div *ngIf="medicalListOne?.length === 0" class="d-flex justify-content-center text-danger">
                     No Available Data!
                   </div>
                 </ng-container>
               </div>
             </div>
 
-            <div class="my-5">
-              <label class="required"
-                >6. Are any of your family members (Parents, Siblings, Children)
-                suffering from or have suffered from or have died of heart
-                disease, diabetes or high sugar levels in blood, cancer or any
-                other hereditary or family specific disorder before attaining 55
-                years of age ?</label
-              >
+            <!-- Question 5 -->
+            <div class="my-2">
+              <label class="required">5. {{ "lms.ind.quotations.hereditary_diseases" | translate }} ?</label>
               <div></div>
 
               <div>
                 <div class="row col-lg-12 col-sm-12">
-                  <div
-                    class="d-flex justify-content-between "
-                    style="padding: 0 0 0 0rem"
-                  >
-
-
+                  <div class="d-flex justify-content-between " style="padding: 0 0 0 0rem">
                     <div class="row">
                       <div class="col-12">
-                  <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="male"
-                      formControlName="question5"
-                      value="Y"
-                    />
-                    <label class="form-check-label" for="male">Yes</label>
-                  </span>
                         <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      formControlName="question5"
-                      value="N"
-                    />
-                    <label class="form-check-label" for="female">No</label>
-                  </span>
+                          <input class="form-check-input" type="radio" id="male" formControlName="question5" value="Y" />
+                          <label class="form-check-label" for="male">{{ "lms.ind.quotations.yes" | translate }}</label>
+                        </span>
+                        <span class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="female" formControlName="question5" value="N" />
+                          <label class="form-check-label" for="female">{{ "lms.ind.quotations.no" | translate }}</label>
+                        </span>
                       </div>
                       <div class="px-4" *ngIf="getValue('question5') === 'Y'">
-                          <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      formControlName="hereditary_disease"
-                      value="CANCER"
-                    />
-                    <label class="form-check-label" for="female">Cancer</label>
-                  </span>
+                        <span class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="female" formControlName="hereditary_disease" value="CANCER" />
+                          <label class="form-check-label" for="female">Cancer</label>
+                        </span>
                       </div>
 
                       <div class="px-4" *ngIf="getValue('question5') === 'Y'">
-                          <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      formControlName="hereditary_disease"
-                      value="DIABETES"
-                    />
-                    <label class="form-check-label" for="female">diabetes or high sugar levels in blood</label>
-                  </span>
+                        <span class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="female" formControlName="hereditary_disease" value="DIABETES" />
+                          <label class="form-check-label" for="female">diabetes or high sugar levels in blood</label>
+                        </span>
                       </div>
 
-
                       <div class="px-4" *ngIf="getValue('question5') === 'Y'">
-                          <span class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      id="female"
-                      formControlName="hereditary_disease"
-                      value="HEART_DISEASE"
-                    />
-                    <label class="form-check-label" for="female">heart disease</label>
-                  </span>
+                        <span class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="female" formControlName="hereditary_disease" value="HEART_DISEASE" />
+                          <label class="form-check-label" for="female">heart disease</label>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -440,21 +303,11 @@
   </div>
 
   <div class="d-flex justify-content-between p-3">
-    <button
-      routerLink="/home/lms/ind/quotation/lifestyle-details"
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-    >
-      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
+    <button routerLink="/home/lms/ind/quotation/lifestyle-details" style="padding: 0.6em" class="btn btn-primary btn-sm" type="button">
+      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; {{ "lms.ind.quotations.back" | translate }}
     </button>
-    <button
-      style="padding: 0.6em"
-      type="button"
-      class="btn btn-primary btn-sm"
-      (click)="nextPage()"
-    >
-      Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+    <button style="padding: 0.6em" type="button" class="btn btn-primary btn-sm" (click)="nextPage()" >
+      {{ "lms.ind.quotations.next" | translate }} &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>
   </div>
 </div>
