@@ -3,10 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService, SelectItem } from 'primeng/api';
 import { DashboardService } from '../../../services/dashboard.service';
 import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, MemberWithdrawalsDTO, PensionAccountSummaryDTO, memberBalancesDTO } from '../../../models/member-policies';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { Logger } from 'src/app/shared/services';
-import { ReportsService } from 'src/app/shared/services/reports/reports.service';
+import { BreadCrumbItem } from '../../../../../../../../shared/data/common/BreadCrumbItem';
+import { AutoUnsubscribe } from '../../../../../../../../shared/services/AutoUnsubscribe';
+import { Logger } from '../../../../../../../../shared/services';
+import { ReportsService } from '../../../../../../../../shared/services/reports/reports.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 const log = new Logger("PolicyDetailsComponent")

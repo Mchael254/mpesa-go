@@ -24,7 +24,7 @@ export class MemberPolicies {
     code: number;
     emailAddress: string;
     fullName: string;
-    idNo: string;
+    idNo: number;
     teleponeNo: string;
     userName: string;
   }

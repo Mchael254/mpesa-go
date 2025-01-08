@@ -30,7 +30,7 @@ export class LandingDashboardComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private activatedRoute: ActivatedRoute,
+    // private activatedRoute: ActivatedRoute,
     private session_storage: SessionStorageService,
     private dashboardService: DashboardService,
     private cdr: ChangeDetectorRef,
@@ -52,10 +52,10 @@ export class LandingDashboardComponent implements OnInit {
 
     this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
     const data = this.session_storage.get('memberProfile');
-    log.info("this.entityType", this.entityType)
+    // log.info("this.entityType", this.entityType)
     this.userProfileData = data;
-    this.entityCode = data.code;
-    this.entityIdNo =  data.idNo;
+    this.entityCode = data?.code;
+    this.entityIdNo =  data?.idNo;
   }
 
   getStatusDescription(statusCode: string): string {
