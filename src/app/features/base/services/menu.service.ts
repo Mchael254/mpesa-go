@@ -575,8 +575,10 @@ export class MenuService {
     FMS: [
       {
         name: 'General Ledger',
+        
         nameSlug: 'general-ledger',
-        // icon: 'fa-solid fa-money-check',
+       // icon: 'fa-solid fa-money-check',
+        
         menuItems: [
           { name:'Paramaters', nameSlug:'parameters',subList:[
             {name:'',link:''}
@@ -591,7 +593,9 @@ export class MenuService {
             {name:'',link:''}
                           ] },
                         ],
+                       
                         collapsed: true,
+                        
       },
       {
         name: 'Cashbook',
