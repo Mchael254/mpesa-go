@@ -72,22 +72,22 @@
         <div class="info">
             <div>
                 <label class="label-name" for="name">{{ "lms.grp.member_portal.name" | translate }}:</label>
-                <span class="label-desc" id="name">{{ userProfileData.fullName }}</span>
+                <span class="label-desc" id="name">{{ userProfileData?.fullName }}</span>
             </div>
     
             <div>
                 <label class="label-name" for="national-id">{{ "lms.grp.member_portal.national_id" | translate }}:</label>
-                <span class="label-desc" id="national-id">{{ userProfileData.idNo }}</span>
+                <span class="label-desc" id="national-id">{{ userProfileData?.idNo }}</span>
             </div>
 
             <div>
                 <label class="label-name" for="phone">{{ "lms.grp.member_portal.phone_number" | translate }}:</label>
-                <span class="label-desc" id="phone">{{ userProfileData.teleponeNo }}</span>
+                <span class="label-desc" id="phone">{{ userProfileData?.teleponeNo }}</span>
             </div>
     
             <div>
                 <label class="label-name" for="email">{{ "lms.grp.member_portal.email" | translate }}:</label>
-                <span class="label-desc" id="email">{{ userProfileData.userName }}</span>
+                <span class="label-desc" id="email">{{ userProfileData?.userName }}</span>
             </div>
     
         </div>
