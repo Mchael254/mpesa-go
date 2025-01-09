@@ -1,7 +1,12 @@
-.fixed-height-card {
+
+/* .fixed-height-card {
     height: 350px;
     overflow: hidden;
-  }
+  } */
+  .fixed-height-card {
+    height: 350px;
+    overflow-y: auto; /* Add vertical scrolling */
+}
   .card-header {
     font-family: Roboto;
     font-size: 16px;
