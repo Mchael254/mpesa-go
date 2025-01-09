@@ -3,6 +3,65 @@ export interface GenericResponse<F> {
   msg: string;
   success: boolean;
 }
+export interface UsersDTO{
+  id: number;
+    name: string;
+    username: string;
+    emailAddress: string;
+    dateOfBirth: Date;
+    status: string;
+    userType:string;
+    telNo: number;
+    phoneNumber: string;
+    otherPhone:  number;
+    personelRank: number;
+    countryCode:  number;
+    townCode:  number;
+    physicalAddress:  string;
+    postalCode:  number;
+    departmentCode:  number;
+    activatedBy: string;
+    updateBy: string;
+    dateCreated: Date;
+    profilePicture: string | null;
+    organizationId: number;
+    organizationGroupId:  number;
+    supervisorId:  number;
+    branchId:  number;
+    gender: string;
+    pinNumber: number;
+    idNumber: number;
+}
+export interface BranchDTO{
+  bnsCode: number;
+  countryId: number;
+  countryName: string;
+  emailAddress: string;
+  generalPolicyClaim: string;
+  id: number;
+  logo: string;
+  manager: string;
+  managerAllowed: string;
+  managerId: number;
+  managerName: string;
+ managerSeqNo: string;
+  name: string;
+  organizationId: number;
+  overrideCommissionAllowed: string;
+  physicalAddress: string;
+  policyPrefix: string;
+  policySequence: number;
+  postalAddress: string;
+  postalCode: number;
+  regionId: number;
+  regionName: string;
+  shortDescription: string;
+  stateId: number;
+  stateName: string;
+  telephone: string;
+  townId: number;
+  townName: string;
+}
 export interface DeleteAllocationResponseDTO {
   msg: string;
   success: boolean;
@@ -27,7 +86,7 @@ export interface ReceiptNumberDTO{
   receiptingPointAutoManual: string;
   branchReceiptNumber: number;
   receiptNumber: string;
-  newCurrencyExchangeRateAmount: number;
+  
 }
 export interface ManualExchangeRateDTO{
   data: string;
@@ -39,12 +98,13 @@ export interface ManualExchangeRateResponseDTO {
   data: string | object; // Adjust type if necessary (e.g., object or another type)
 }
 
-export interface DrawersBankDTO {
-  bankName: string;
-branchName: string | null;
-refCode: string | null;
-code: number; 
-}
+// export interface DrawersBankDTO {
+//   bankName: string;
+// branchName: string | null;
+// refCode: string | null;
+// code: number; 
+// }
+
 export interface NarrationDTO{
   code:number;
   narration:string;
@@ -57,7 +117,7 @@ export interface ReceiptingPointsDTO{
     printerName: string | null;
     userRestricted: string;
 }
-export interface BankDTO{
+export interface BanksDTO{
   code: number;
   branchCode: number;
   name: string;
@@ -299,13 +359,13 @@ export interface Receipt {
   transactions: Transaction[]; 
 }
 export interface ReceiptSaveDTO {
-  receiptNo: number;
+  receiptNo: number | string;
   receiptCode: string;
   receiptDate: string;
-  amount: number;
+  amount: number | string;
   paidBy: string;
-  currencyCode: number;
-  branchCode: number;
+  currencyCode: number | string;
+  branchCode: number | string;
   paymentMode: string;
   paymentMemo: string;
   docDate: string;
@@ -331,14 +391,14 @@ export interface ReceiptSaveDTO {
   currencyRate: number;
   internalRemarks: string;
   manualRef: string;
-  bankAccountCode: number;
+  bankAccountCode: number | string;
   grossOrNetAdminCharge: string;
   insurerAcc: number;
   grossOrNetWhtax: string;
   grossOrNetVat: string;
   sysCode: number;
   bankAccountType: string;
-  receiptParticularDetailUpdateRequests: {
+  receiptParticularDetailUpdateRequests?: {
     receiptParticularDetailCode: number;
     premium: number;
     loan: number;
@@ -441,4 +501,95 @@ export interface GetAllocationResponseDTO {
   msg: string;
   success: boolean;
   data: AllocationDTO[];
+}
+export interface printDTO{
+  receiptNumber: number;
+    receiptDate:Date;
+    captureDate: Date;
+    capturedBy: number;
+    amount: number;
+    paymentMode: string;
+    paymentMemo: string;
+    paidBy: string;
+    documentDate: Date;
+    description: string;
+    printed: string;
+    applicationSource: number;
+    accountCode: number;
+    accountType: string;
+    branchCode: number;
+    accountShortDescription: string;
+    currencyCode: number;
+    bankAccCode: number;
+    cancelled: string;
+    commission: number;
+    batchCode: number;
+    branchReceiptNumber: number;
+    branchReceiptCode: string;
+    drawersBank: string;
+    accountTypeId: string;
+    bankBranchCode: number;
+    receiptType: string;
+    cancelledBy: number;
+    cbPosted: string;
+    sourcePosted: string;
+    netGrossFlag: string;
+    glAccount: string;
+    parentNumber: number;
+    cancelledDate: Date;
+    voucherNumber: number;
+    reverseVoucherNumber: number;
+    bankChargeAmount: number;
+    clientChargeAmount: number;
+    vatCertificateNumber: string;
+  policyType: string;
+    remarks: string;
+    agentCode: number;
+    receivedFrom: string;
+    collectionAccountCode: number;
+    cleared: string;
+    divisionCode: number;
+    clearedBy: number;
+    clearedDate:string;
+    batchRecordId: number;
+    multiOrg: string;
+    sourceOrganization: number;
+    multiOrgAmount: number;
+    directReceipt: string;
+    insurerAccount: number;
+    receiptingPointId: number;
+    fixedExchangeRate: string;
+    fixedExchangeCurrencyRate: number;
+    manualReference: string;
+    banked: string;
+    unallocatedAmount: number;
+    grossAmount: number;
+    capitalInjectionFlag: string;
+    cancelSourcePosted: string;
+    ipfFinancier: string;
+    ipfNumber: number;
+    ocqNumber: number;
+    smsNotification: string;
+    currencyRate: number;
+    isPostDatedCheque: string;
+    postDatedChequeNotification: string;
+    acknowledgementPrinted: string;
+   uniqueVal: number;
+    raiseException: string;
+    exceptionAuthorizedBy: number;
+    exceptionAuthDate: string;
+    loadIndicator: string;
+    authorizationStatus: string
+}
+export interface ReceiptRequestDTO {
+  docType: string;
+  docData: string;
+  module: string;
+  referenceNo: string;
+  originalFileName: string;
+  description: string;
+  amount: number;
+  paymentMethod: string;
+  filename: string;
+  policyNumber: string;
 }

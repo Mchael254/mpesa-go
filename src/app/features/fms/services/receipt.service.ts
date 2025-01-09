@@ -1,24 +1,48 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {  DrawersBankDTO,NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BankDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, GetAllocationDTO, DeleteAllocationResponseDTO } from '../data/receipting-dto';
+import { NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, printDTO } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
 
 import {API_CONFIG} from '../../../../environments/api_service_config';
 import { HttpParams } from '@angular/common/http';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
+import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 @Injectable({
   providedIn: 'root'
 })
 export class ReceiptService {
 
   constructor(private api:ApiService) { }
-  getDrawersBanks(): Observable<DrawersBankDTO[]> {
-    return this.api.GET<DrawersBankDTO[]>(
-      `drawer-banks`,
-      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+
+getUsers(userId:number):Observable<UsersDTO[]>{
+ 
+  return this.api.GET<UsersDTO[]>(
+    `users/${userId}`,
+    API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+ 
+  );
+
+}
+  getBranches(
+    organizationId: number
+   
+  ): Observable<BranchDTO[]> {
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`)
+      
+    return this.api.GET<BranchDTO[]>(
+      `branches?${params}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
-    }
+  }
+
+  // getDrawersBanks(): Observable<DrawersBankDTO[]> {
+  //   return this.api.GET<DrawersBankDTO[]>(
+  //     `drawer-banks`,
+  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+  //   );
+  //   }
 
   getNarrations(): Observable<{ data: NarrationDTO[] }> {
     return this.api.GET<{ data: NarrationDTO[] }>(
@@ -36,17 +60,17 @@ export class ReceiptService {
       params
     );
     }
-    getReceiptNumber(branchCode:number,userCode:number):Observable<ReceiptNumberDTO[]>{
+    getReceiptNumber(branchCode:number,userCode:number):Observable<ReceiptNumberDTO>{
       const params = new HttpParams().set('branchCode',`${branchCode}`).set('userCode',`${userCode}`);
-      return this.api.GET<ReceiptNumberDTO[]>(
+      return this.api.GET<ReceiptNumberDTO>(
         `receipts/get-receipt-no`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
       ) ;
 
     }
-  getReceiptingPoints(branchCode:number):Observable<{data: ReceiptingPointsDTO[]}> {
-      const params = new HttpParams().set('branchCode', `${branchCode}`);
+  getReceiptingPoints(branchCode:number,userCode:number):Observable<{data: ReceiptingPointsDTO[]}> {
+      const params = new HttpParams().set('branchCode', `${branchCode}`).set('userCode',`${userCode}`);
       return this.api.GET<{data:ReceiptingPointsDTO[]}>(
         `points`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
@@ -54,17 +78,17 @@ export class ReceiptService {
       );
       }
       
-getPaymentModes():Observable< {data: PaymentModesDTO[]}> {
-        
+getPaymentModes(orgCode:number):Observable< {data: PaymentModesDTO[]}> {
+        const params =  new HttpParams().set('orgCode',`${orgCode}`);
         return this.api.GET<{data: PaymentModesDTO[]}>(
           `payment-methods`, 
           API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-         
+          params
         );
         }
-    getBanks(branchCode:number,currCode:number):Observable<{data:BankDTO[]}>{
+    getBanks(branchCode:number,currCode:number):Observable<{data:BanksDTO[]}>{
       const params = new HttpParams().set('branchCode',`${branchCode}`).set('currCode',`${currCode}`);
-      return this.api.GET<{data:BankDTO[]}>(
+      return this.api.GET<{data:BanksDTO[]}>(
       `banks`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
@@ -136,34 +160,10 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
           API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
     }
 
-    // uploadReceiptDocs(
-    //   originalFilename: string,
-    //   docDescription: string,
-    //   username: string,
-    //   receiptNumber: number,
-    //   userCode: number,
-    //   uploadedFiles: string[]
-    // ): Observable<{ message: string }> {
-    //   const params = new HttpParams()
-    //     .set('originalFilename', originalFilename)
-    //     .set('docDescription', docDescription)
-    //     .set('username', username)
-    //     .set('receiptNumber', `${receiptNumber}`)
-    //     .set('userCode', `${userCode}`);
-  
-    //   const requestBody = { uploadedFiles };
-  
-    //   return this.api.POST<{ message: string }>(
-    //     `dms/upload-receipt-docs`,
-    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-    //      params,
-    //     requestBody
-    //   );
-    // }
+   
     
-    
-    getAccountTypes(orgCode:number,userCode:number,branchCode:number):Observable<{data:AccountTypeDTO[]}>{
-      const params = new HttpParams().set('orgCode',`${orgCode}`).set('usrCode',`${userCode}`).set('branchCode',`${branchCode}`)
+    getAccountTypes(orgCode:number,branchCode:number,userCode:number):Observable<{data:AccountTypeDTO[]}>{
+      const params = new HttpParams().set('orgCode',`${orgCode}`).set('branchCode',`${branchCode}`).set('usrCode',`${userCode}`)
      return this.api.GET<{data:AccountTypeDTO[]}>(
         `account-types`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
@@ -185,7 +185,7 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
         .set('searchValue', `${searchValue}`);
     
       return this.api.GET<{ data: ClientsDTO[] }>(
-        'clients',
+        'receipting-clients',
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
       );
@@ -204,72 +204,57 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
       .set('receiptType',`${receiptType}`)
       .set('clientShtDesc',`${clientShtDesc }`);
       return this.api.GET<{data:TransactionDTO[]}>(
-        `clients/transactions`,
+        `receipting-clients/transactions`,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
         params
       )
     }
-    // postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
-    //   const endpoint = `allocations/save?userCode=${userCode}`;
-    //   return this.api.POST<any>(endpoint, data, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
-    // }
-    
-    
-    // uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<UploadReceiptDocsDTO[]> {
-    //   // Construct the query parameters directly in the URL
-    //   const endpoint = `upload-receipt-docs?username=${requestBody.username}&receiptNumber=${requestBody.receiptNumber}&userCode=${requestBody.userCode}`;
-    
-    //   // Use the POST method, passing the endpoint and base URL
-    //   return this.api.POST<UploadReceiptDocsDTO[]>(
-    //     `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}/${endpoint}`,
-    //     formData,
-    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-    //   );
-    // }
-    uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<any> {
-      // Construct the full endpoint URL
-      const fullUrl = `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}/dms/upload-receipt-docs`;
-    
-      // Add data to the FormData object
-      formData.append('originalFilename', requestBody.originalFilename);
-      formData.append('docDescription', requestBody.docDescription);
-      formData.append('username', requestBody.username);
-      formData.append('receiptNumber', requestBody.receiptNumber.toString());
-      formData.append('userCode', requestBody.userCode.toString());
-    
-      // Use the POST method to send the data
+    uploadReceiptDocs(
+      docType: string,
+      docData: string, // Base64 encoded file
+      module: string,
+      referenceNo: string,
+      description: string,
+      amount: number,
+      paymentMethod: string,
+      policyNumber: string,
+      filename:string,
+      originalFileName:string,
+      
+    ): Observable<any> {
+      const requestBody = {
+        docType: docType,
+        docData: docData,
+        module: module,
+        originalFileName:originalFileName,
+        filename:filename,
+        referenceNo: referenceNo,
+
+        docDescription: description,
+        amount: amount,
+        paymentType: paymentMethod,
+        policyNumber: policyNumber,
+        
+        // Add any other optional fields if needed
+      };
+  
       return this.api.POST<any>
-    (
-     
-     
-      `dms/upload-receipt-docs`,
-      formData,
-      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+
+      (
+      
+          `uploadAllFinanceDocument`,
+          JSON.stringify(requestBody), API_CONFIG.DMS_SERVICE
       );
     }
+   
     
-    // uploadReceiptDocs(requestBody: UploadReceiptDocsDTO, formData: FormData): Observable<any> {
-    //   // Construct the endpoint
-    //   const endpoint = `dms/upload-receipt-docs`;
-    
-    //   // Append the endpoint to the base URL
-    //   const fullUrl = `${API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL}`;
-    
-    //   // Add query parameters to the FormData
-    //   formData.append('originalFilename', requestBody.originalFilename);
-    //   formData.append('docDescription', requestBody.docDescription);
-    //   formData.append('username', requestBody.username);
-    //   formData.append('receiptNumber', requestBody.receiptNumber.toString());
-    //   formData.append('userCode', requestBody.userCode.toString());
-    
-    //   // Use the POST method to upload the file
-    //   return this.api.POST<any>(
-        
-    //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-    //     `dms/upload-receipt-docs`,
-    //      formData
-    //     );
-    // }
+    saveClientDocs(data: any): Observable<any> {
+      return this.api.POST<any>(
+        `uploadAllFinanceDocument
+`,
+        JSON.stringify(data), API_CONFIG.DMS_SERVICE
+      );
+    }
     postAllocation(userCode: number, data: AllocationDTO): Observable<any> {
       const endpoint = `allocations/save?userCode=${userCode}`;
       return this.api.POST<any>(endpoint, data, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
@@ -296,16 +281,43 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
       );
     }
     
-  deleteAllocation(receiptDetailCode: number): Observable<DeleteAllocationResponseDTO> {
+  // deleteAllocation(receiptDetailCode: number): Observable<DeleteAllocationResponseDTO> {
     
-    const params = new HttpParams().set('receiptDetailCode', `${receiptDetailCode}`);
+  //   const params = new HttpParams().set('receiptDetailCode', `${receiptDetailCode}`);
+  //   return this.api.DELETE<DeleteAllocationResponseDTO>(
+  //    `allocations/delete`,
+  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+  //     params
+  //   );
+  // }
+  deleteAllocation(receiptDetailCode: number): Observable<DeleteAllocationResponseDTO> {
+    // Remove the params since we're using path parameter
     return this.api.DELETE<DeleteAllocationResponseDTO>(
-     `allocations/delete`,
+      `allocations/delete/${receiptDetailCode}`, // Include receiptDetailCode in the path
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    )
+  }
+  getParamStatus(paramName:string):Observable<GenericResponse<string>>{
+const params=new HttpParams().set('paramName',`${paramName}`);
+return(
+  this.api.GET<GenericResponse<string>>(
+    `parameters/get-param-status`,
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    params
+  )
+)
+  }
+  getReceiptDetails(receiptNo:number):Observable<{data:printDTO[] }>{
+    const params = new HttpParams().set('receiptNo',`${receiptNo}`);
+    return(
+       this.api.GET<{data:printDTO[]}>(
+      `receipts/get-receipt`,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
       params
-    );
+    )
+    )
+
   }
-    
     
      }
       

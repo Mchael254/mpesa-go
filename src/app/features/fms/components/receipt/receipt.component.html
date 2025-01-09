@@ -1,21 +1,28 @@
 
 
 <div class="container ms-4 mt-7" >
+  <form [formGroup]="receiptingDetailsForm">
 <div class="card mb-2 " style="box-shadow:none;height:40px;margin-right: 38px;">
   <div class="row px-3 d-flex justify-content-center ">
     <div class="col-lg-3 d-flex ms-2">
       <label  class="form-label text-black align-content-center m-0" style="width: 50%;font-size: 16px;text-align:center">{{'fms.org' | translate }}:</label>
-      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;"  id="organization" style="width: 67%;">
-        <option value="" disabled >Select option</option>
-        <option value="" selected>Turnkey Africa LTD</option>
+   
+      <select   class="form-control form-select text-black border-0 fw-medium font-size: 14px;"  id="organization" style="width: 67%;" formControlName="organization"  (change)="onOrganizationChange($event)"  >
+       <!-- <option value=""  >Select </option> -->
+       <label for="organization">Select</label>
+        <!-- <option *ngFor="let organizations of organization"    [value]="organizations.id" [selected]="organizations.id === 2">{{organizations.name}} </option> -->
+        <option *ngFor="let org of organization" [value]="org.name">{{ org.name }}</option>
       </select>
     </div>
     <div class="col-lg-3 d-flex">
+   
       <label  class="form-label text-black text-end align-content-center m-0" style="width: 50%;font-size: 16px;">{{'fms.branch' | translate }}:</label>
-      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;">
-        <option value="" disabled >Select option</option>
-        <option value="" selected>Head Office</option>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;" formControlName="selectedBranch">
+        <option value=""  >Select </option>
+        <option *ngFor="let branch of branches" [value]="branch.id"  >{{branch.name}}</option>
+       
       </select>
+   
     </div>
     <div class="col-lg-2 d-flex">
       <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;font-size: 16px;">{{'fms.yr' | translate }}:</label>
@@ -37,6 +44,7 @@
     </div>
   </div>
 </div>
+</form>
 </div> 
 
 <div class="base-content-section">
@@ -62,50 +70,14 @@
     </div>
   </div>
 
-  
-    <!-- <div class="card mb-2" style="box-shadow:none">
-      <div class="row px-3 d-flex justify-content-center">
-        <div class="col-lg-3 d-flex">
-          <label  class="form-label text-black align-content-center m-0" style="width: 35%;">{{'fms.org' | translate }}:</label>
-          <select class="form-control form-select text-black border-0 fw-medium" id="organization" style="width: 67%;">
-            <option value="" disabled >Select option</option>
-            <option value="" selected>Turnkey Africa LTD</option>
-          </select>
-        </div>
-        <div class="col-lg-3 d-flex">
-          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.branch' | translate }}:</label>
-          <select class="form-control form-select text-black border-0 fw-medium" id="branch" style="width: 62%;">
-            <option value="" disabled >Select option</option>
-            <option value="" selected>Head Office</option>
-          </select>
-        </div>
-        <div class="col-lg-2 d-flex">
-          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.yr' | translate }}:</label>
-          <select class="form-control form-select text-black border-0 fw-medium" id="year" style="width: 50%;">
-            <option value="" disabled >Select option</option>
-            <option value="" selected>2022</option>
-            <option value="" selected>2023</option>
-            <option value="" selected>2024</option>
-          </select>
-        </div>
-        <div class="col-lg-2 d-flex">
-          <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">{{'fms.period' | translate }}:</label>
-          <select class="form-control form-select text-black border-0 fw-medium" id="period" style="width: 50%;">
-            <option value="" disabled >Select option</option>
-            <option value="" selected>APR</option>
-            <option value="" selected>MAY</option>
-            <option value="" selected>JUN</option>
-          </select>
-        </div>
-      </div>
-    </div>  -->
+
 
   <div class="container drop">
     <div class="scroll-container bg-white">
 
       <h1 class="text-start fs-4 mt-1">{{'fms.receipting.capture_receipt' | translate }}</h1>
-
       <form [formGroup]="receiptingDetailsForm">
+   
         <!-- Receipt Details Section -->
         <div class="row mt-4">
           <div class="col-md-4">
@@ -113,7 +85,8 @@
               <label for="currency" class="text-dark">{{'fms.receipting.currency' | translate }}</label>
               <div class="dropdown-container">
                 <select id="currency" class="form-control" formControlName="currency" (change)="onCurrencyChanged($event)">
-                  <option *ngFor="let currency of currencies" [value]="currency.code">{{currency?.symbol}}</option>
+                  
+                  <option *ngFor="let currency of currencies" [value]="currency.id">{{currency?.symbol}}</option>
                 </select>
                 <i class="pi pi-chevron-down dropdown-icon"></i>
               </div>
@@ -126,14 +99,14 @@
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
-      <button
+      <!-- <button
         type="button"
         class="close"
         data-dismiss="modal"
         aria-label="Close"
       >
-        <span aria-hidden="true">×</span>
-      </button>
+        <span aria-hidden="true">×</span> -->
+      <!-- </button> -->
     </div>
     <div class="modal-body">
      
@@ -145,42 +118,43 @@
           id="exchangeRateInput"
           placeholder="value in base currency"
           class="form-control"
-          formControlName="exchangeRate"
+          min="0"
+          step="0.01"
+          formControlName="manualExchangeRate"
         />
        
       </div>
     </div>
     <div class="modal-footer">
+      <button type="button" 
+      class="btn btn-secondary" 
+      (click)="closeModal2()">Cancel</button>
       <button type="button" class="btn btn-primary" (click)="confirmExchangeRateValue()">OK</button>
     </div>
   </div>
 </div>
 </div>
-<div
-class="modal fade"
-id="exchangeRateModal"
-tabindex="-1"
-role="dialog"
-aria-labelledby="exchangeRateLabel"
-aria-hidden="true"
->
+
+<!--predefined exchange rates modal-->
+<div class="modal fade" id="exchangeRateModal" tabindex="-1" role="dialog" aria-labelledby="exchangeRateLabel" aria-hidden="true">
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title" id="exchangeRateLabel">Exchange Rate</h5>
-      <button
+      <!-- <button
         type="button"
         class="close"
         data-dismiss="modal"
         aria-label="Close"
       >
         <span aria-hidden="true">×</span>
-      </button>
+      </button> -->
     </div>
     <div class="modal-body">
-      <!-- <div *ngIf="useDefaultExchangeRate"> -->
+      
         <div>
-        <p>1 {{ currencySymbolGlobal }} = {{ exchangeRates }} </p><p>{{this.selectedCurrencySymbol}}</p>
+          <p>Current Exchange Rate: {{receiptingDetailsForm.get('exchangeRate')?.value}}</p>
+        <!-- <p>1 {{ currencySymbolGlobal }} = {{ exchangeRates }} </p><p>{{this.selectedCurrencySymbol}}</p> -->
       </div>
     
     </div>
@@ -191,6 +165,10 @@ aria-hidden="true"
   </div>
 </div>
 </div>
+
+
+
+
 
           <!-- Payment Mode Dropdown -->
           <div class="col-md-4">
@@ -245,7 +223,7 @@ aria-hidden="true"
               <div class="dropdown-container">
                 <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBank($event)" >
                 <!-- <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()"> -->
-                   <option *ngFor="let bank of bankAccounts" [value]="bank.name">{{bank.name}} - {{bank.name}}</option> 
+                   <option *ngFor="let bank of bankAccounts" [value]="bank.code">{{bank.name}} - {{bank.name}}</option> 
                 </select>
                   
                 
@@ -291,7 +269,7 @@ aria-hidden="true"
                 <select id="drawersBank" class="form-control" formControlName="drawersBank"
                   
                 >
-                  <option *ngFor="let bank of drawersBank" [value]="bank.bankName">{{bank.bankName}}</option> 
+                  <option *ngFor="let bank of drawersBanks" [value]="bank.name">{{bank.name}}</option> 
                 </select>
                 <i class="pi pi-chevron-down dropdown-icon"></i>
               </div>
@@ -540,7 +518,7 @@ aria-hidden="true"
           </div>
           
           <div class="row mt-3">
-            <div class="col-md-4 p-0" *ngIf="orgCode === 'A=='">
+            <div class="col-md-4 p-0 ps-2" *ngIf="defaultOrgId == 2">
               <div class="form-group position-relative">
                 <div class="h-100 d-flex flex-column"></div>
                 <label for="capitalInjection" class="text-dark">{{'fms.receipting.capitalInjection' | translate}}</label>
@@ -564,7 +542,9 @@ aria-hidden="true"
 <!-- Upload Button and Hidden File Input -->
  <div class="row mt-3">
 <div class="col-md-4">
-  <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
+  <!-- <input type="file" id="fileInput" (change)="onFileSelected($event)" /> -->
+  <!-- <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;"> -->
+  <input type="file" #fileInput (change)="onFileSelected($event)"  style="display: none;">
   <button type="button" class="btn btn-primary" (click)="fileInput.click()">
     {{ 'fms.receipting.uploadFiles' | translate }}
   </button>
@@ -575,7 +555,12 @@ aria-hidden="true"
 
 <!-- File List with Description -->
 <div class="col-md-4 mt-2">
-  <div class="form-group">
+  <div *ngFor="let fileDesc of fileDescriptions; let i = index">
+    <span>{{ fileDesc.file.name }}</span> - 
+    <span>{{ fileDesc.description || 'No description' }}</span>
+    <button type="button" class="btn btn-danger" (click)="onRemoveFile(i)">Remove</button>
+  </div>
+  <!-- <div class="form-group">
     <ul>
       <li *ngFor="let file of fileDescriptions; let i = index">
         <span>{{ file.file.name }}</span> - 
@@ -586,10 +571,10 @@ aria-hidden="true"
         </button>
       </li>
     </ul>
-  </div>
+  </div> -->
 </div>
 <div class="col-md-4 mt-2"  *ngIf="fileDescriptions.length > 0">
-  <button type="button" class="btn btn-success" (click)="uploadFiles()">post File</button>
+  <button type="button" class="btn btn-success" (click)="uploadFile()">post File</button>
 </div>
 </div>
 <!-- Modal for File Description -->
@@ -604,6 +589,7 @@ aria-hidden="true"
           <div class="form-group">
             <label for="description">Enter File Description</label>
             <input id="description" type="text" class="form-control" formControlName="description" />
+            
             <div *ngIf="receiptingDetailsForm.get('description')?.invalid && receiptingDetailsForm.get('description')?.touched" class="text-danger">
               Description is required
             </div>
@@ -790,7 +776,7 @@ balance}}</td>
         
        
 <!-- Allocated Amounts Table -->
-<div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-3">
+<div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0 && !isReceiptSaved" class="row mt-3">
   <div class="col-md-12">
     <p-table 
       [value]="getAllocation"
@@ -803,26 +789,33 @@ balance}}</td>
       <ng-template pTemplate="header" style="background-color:#89A8B2">
         <tr>
           <th>Policy Number</th>
+         
+        <th>Transaction Number</th>
+        <th>Batch Number</th>
           <th>Allocated Amount</th>
-          <th>DrCr Number</th>
-          <!-- <th>Date</th> -->
+      
+          <th>Commission Amount</th>
+        <th>Include Commission</th>
+       
           <th>Actions</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-allocation>
-        <tr>
-          <td>{{ allocation.clientPolicyNumber
- }}</td>
-          <td>{{ allocation.premiumAmount }}</td>
-          <td>{{ allocation.endorsementDrCrNumber}}</td>
-          <!-- <td>allocation.captureDate
-          </td> -->
+        <tr  *ngFor="let detail of allocation.receiptParticularDetails">
+          <td>{{detail.policyNumber}}</td>
+          
+          <td>{{detail.transactionNumber}}</td>
+          <td>{{detail.batchNumber}}</td>
+          <td>{{detail.premiumAmount | number:'1.2-2'}}</td>
+          <td>{{detail.commissionAmount | number:'1.2-2'}}</td>
+          <td>{{detail.includeCommission}}</td>
+         
+
           <td>
-            <button 
-              class="btn btn-danger btn-sm" 
-              (click)="deleteAllocation(allocation.code)"
-            >
-              Delete
+            <button class="btn btn-danger btn-sm" 
+                    (click)="deleteAllocation(detail.code)"
+                    title="Delete Allocation">
+              <i class="fas fa-trash"></i> Delete
             </button>
           </td>
         </tr>
@@ -837,10 +830,10 @@ balance}}</td>
         <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
           <button type="button" class="btn btn-primary me-3" id="saveReceipt" (click)="submitReceipt()"
           >Save Receipt</button>
-          <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt"
+          <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt" (click)="fetchReceiptDetails()"
             >Print Receipt
           </button>
-          <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" >Cancel</button>
+          <!-- <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" >Cancel</button> -->
         </div>
 
         <script>
