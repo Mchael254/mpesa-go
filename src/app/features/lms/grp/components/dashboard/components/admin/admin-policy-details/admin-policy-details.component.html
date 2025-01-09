@@ -229,7 +229,7 @@ aria-labelledby="memberSummaryModal" aria-hidden="true" (click)="onBackdropClick
 
         <div class="modal-body">
             <div class="multiselect-add">
-                <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets" ngDefaultControl>
                 </p-multiSelect>
               </div>
             
@@ -312,7 +312,7 @@ aria-labelledby="categorySummaryModal" aria-hidden="true" (click)="onBackdropCli
 
         <div class="modal-body">
             <div class="multiselect-add">
-                <p-multiSelect [options]="columnOptionsCatDets" [(ngModel)]="selectedColumnsCatDets" [filter]="false">
+                <p-multiSelect [options]="columnOptionsCatDets" [(ngModel)]="selectedColumnsCatDets" [filter]="false" ngDefaultControl>
                 </p-multiSelect>
               </div>
             
@@ -356,7 +356,7 @@ aria-labelledby="categorySummaryModal" aria-hidden="true" (click)="onBackdropCli
             <div class="mt-5">
                 <h6>Dependent limit</h6>
                 <div class="multiselect-add">
-                    <p-multiSelect [options]="columnOptionsDepLimits" [(ngModel)]="selectedColumnsDepLimits" [filter]="false">
+                    <p-multiSelect [options]="columnOptionsDepLimits" [(ngModel)]="selectedColumnsDepLimits" [filter]="false" ngDefaultControl>
                     </p-multiSelect>
                   </div>
                 <p-table [value]="dependentLimit" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">

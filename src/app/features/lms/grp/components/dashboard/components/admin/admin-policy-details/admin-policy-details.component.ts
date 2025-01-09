@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { DashboardService } from '../../../services/dashboard.service';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { Logger } from 'src/app/shared/services';
+import { AutoUnsubscribe } from '../../../../../../../../shared/services/AutoUnsubscribe';
+import { Logger } from '../../../../../../../../shared/services';
 import { AdminPolicyDetailsDTO, CategorySummaryDTO, CoverTypesDTO, DependentLimitDTO, EndorsementDetailsDTO, MemberDetailsDTO, MemberDetailsSummaryDTO, MemberListDTO } from '../../../models/admin-policies';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -40,7 +40,7 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   memberList: MemberListDTO[] = [];
 
   constructor(
-    private router: Router,
+    // private router: Router,
     private activatedRoute: ActivatedRoute,
     private dasboardService: DashboardService,
     private fb: FormBuilder,
@@ -193,26 +193,35 @@ onEndorsementChange() {
     }
   }
 
+  // onCategoryDetailsTableRowClick(categorySummary: CategorySummaryDTO[], index: number) {
+  //   this.selectedRowIndex = index;
+  //   if(categorySummary){
+  //     this.categoryCode = categorySummary["policy-category-code"];
+  //     log.info("catCode from row click", this.categoryCode)
+  //     this.getDependentLimits();
+  //   }
+  // }
   onCategoryDetailsTableRowClick(categorySummary: CategorySummaryDTO[], index: number) {
     this.selectedRowIndex = index;
-    if(categorySummary){
-      this.categoryCode = categorySummary["policy-category-code"];
-      log.info("catCode from row click", this.categoryCode)
+    if (categorySummary && categorySummary[index]) {
+      this.categoryCode = categorySummary[index]["policy_category_code"];
       this.getDependentLimits();
     }
-  }
+  }  
 
   getAdminPolicyDetails() {
     this.dasboardService.getAdminPolicyDetails(this.endorsementCode).subscribe((res: AdminPolicyDetailsDTO) => {
       this.adminPolicyDetails = res;
-      log.info("getAdminPolicyDetails", this.adminPolicyDetails);
+    }, error => {
+
     });
   }
 
   getEndorsements() {
     this.dasboardService.getEndorsements(this.policyCode).subscribe((res: EndorsementDetailsDTO[]) => {
       this.endorsements = res;
-      log.info("getEndorsements", res)
+    }, error => {
+      
     });
   }
 
