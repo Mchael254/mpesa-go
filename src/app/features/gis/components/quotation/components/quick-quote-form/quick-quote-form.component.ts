@@ -102,7 +102,10 @@ export class QuickQuoteFormComponent {
   binderListDetails: any;
   selectedBinderCode: any;
   selectedBinder: Binders;
-  new: boolean;
+  new: boolean = false;
+  isNewClient: boolean = true;
+  readonlyClient: boolean = false;
+  isFieldsDisabled: boolean = false;
 
   sourceList: any;
   sourceDetail: any;
@@ -210,7 +213,6 @@ export class QuickQuoteFormComponent {
   };
 
   passedSections: any[] = [];
-  isNewClient: boolean = true;
   existingPropertyIds: string[] = [];
   passedExistingClientDetails: any;
   parsedProductDesc: any;
@@ -483,266 +485,265 @@ export class QuickQuoteFormComponent {
   }
 
   editRisk() {
-    log.debug("EDIT RISK METHOD")
+    log.debug("EDIT RISK METHOD");
     const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
     this.isEditRisk = JSON.parse(passedIsEditRiskString);
     log.debug("isEditRiskk Details:", this.isEditRisk);
 
-    /** THIS LINES OF CODES BELOW IS USED WHEN EDITING  RISK ****/
+    /** THIS LINES OF CODES BELOW IS USED WHEN EDITING RISK ****/
     const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
     this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
+    // Handle client data population
     if (this.passedClientDetailsString == undefined) {
-      log.debug("New Client has been passed")
-
+      log.debug("New Client has been passed");
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
       this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
       log.debug("Client Details:", this.passedNewClientDetails);
 
-    } else {
-      log.debug("Existing Client has been passed")
-      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
-
-
-    }
-
-
-
-    log.debug("Quotation Details:", this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.quotOriginalQuotNo ?? null;
-    log.debug("passed QUOYTATION number", this.passedQuotationNo)
-    if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(risk => risk.propertyId);
-      log.debug("existing property id", this.existingPropertyIds);
-    }
-
-
-    // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
-
-    this.passedQuotationCode =
-    this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
-
-    log.debug("passed QUOYTATION CODE", this.passedQuotationCode)
-    sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
-    sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
-    // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
-
-    log.debug("Client Details:", this.PassedClientDetails);
-    if (this.passedQuotation) {
-      if (this.PassedClientDetails) {
-        this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
-        this.clientEmail = this.PassedClientDetails.emailAddress;
-        this.clientPhone = this.PassedClientDetails.phoneNumber;
-        this.personalDetailsForm.patchValue(this.passedQuotation)
-        this.isNewClient = false;
-        this.toggleButton();
-      } else {
-        log.debug("NEW CLIENT ADD ANOTHER RISK")
+      // Set new client data
+      if (this.passedNewClientDetails) {
         this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
         this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
+
+        // Set fields disable state for new client
+        sessionStorage.setItem('fieldsDisableState', 'true');
       }
-      // const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
-      // this.isAddRisk = JSON.parse(passedIsAddRiskString);
-      // log.debug("isAddRiskk Details:", this.isAddRisk);
+    } else {
+      log.debug("Existing Client has been passed");
+      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
 
-      this.selectedCountry = this.PassedClientDetails.country;
-      log.info("Paased selected country:", this.selectedCountry)
-      if (this.selectedCountry) {
-        this.getCountries()
+      // Set existing client data
+      if (this.PassedClientDetails) {
+        log.debug("edit client passed client details:", this.PassedClientDetails)
+        this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
+        this.clientEmail = this.PassedClientDetails.emailAddress;
+        this.clientPhone = this.PassedClientDetails.phoneNumber;
+        this.personalDetailsForm.patchValue(this.passedQuotation);
+        this.isNewClient = false;
+        this.toggleButton();
 
+        // Set fields disable state for existing client
+        sessionStorage.setItem('fieldsDisableState', 'true');
       }
     }
 
+    // Process quotation data
+    log.debug("Quotation Details:", this.passedQuotation);
+    if (this.passedQuotation) {
+      // Handle property IDs
+      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(risk => risk.propertyId);
+      log.debug("existing property id", this.existingPropertyIds);
 
+      // Handle quotation numbers and codes
+      this.passedQuotationNo = this.passedQuotation?.quotOriginalQuotNo ?? null;
+      this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+
+      log.debug("passed QUOTATION number", this.passedQuotationNo);
+      log.debug("passed QUOTATION CODE", this.passedQuotationCode);
+
+      // Store in session
+      sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
+      sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
+
+      // Handle country selection
+      if (this.PassedClientDetails?.country) {
+        this.selectedCountry = this.PassedClientDetails.country;
+        log.info("Passed selected country:", this.selectedCountry);
+        this.getCountries();
+      }
+    }
+
+    // Handle quick quote form data
     const quickQuoteFormDetails = sessionStorage.getItem('quickQuoteFormData');
-    log.debug(quickQuoteFormDetails, 'Quick Quote form details session storage')
+    log.debug(quickQuoteFormDetails, 'Quick Quote form details session storage');
 
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
-      log.debug(parsedData)
+      log.debug(parsedData);
       this.personalDetailsForm.patchValue(parsedData);
-
     }
+
     this.premiumComputationRequest;
-    // this.loadFormData()
-    this.loadAllCurrencies()
+    this.loadAllCurrencies();
+}
 
+loadFormData() {
 
+  if (!this.isEditRisk) {
+    log.debug('Form data loading skipped - not in edit mode');
+    return;
   }
 
-  loadFormData() {
+  // Check fields disable state when loading form
+  this.checkFieldsDisableState();
 
-    if (!this.isEditRisk) {
-      log.debug('Form data loading skipped - not in edit mode');
-      return;
-    }
+  log.debug('LOAD FORM DATA IS BEING CALLED TO POPULATE THE FORM');
+  // Load data from session storage on initialization
+  const savedData = sessionStorage.getItem('personalDetails');
+  log.debug('TESTING IF THE DATA HAS BEEN SAVED', savedData);
+  const savedCarRegNo = JSON.parse(sessionStorage.getItem('carRegNo'));
 
-    log.debug('LOAD FORM DATA IS BEING CALLED TO POPULATE THE FORM');
-    // Load data from session storage on initialization
-    const savedData = sessionStorage.getItem('personalDetails');
-    log.debug('TESTING IF THE DATA HAS BEEN SAVED', savedData);
-    const savedCarRegNo = JSON.parse(sessionStorage.getItem('carRegNo'));
+  log.debug('TESTING IF THE CAR REG DATA HAS BEEN  SAVED', savedCarRegNo);
+  this.parsedCarRegNo = savedCarRegNo;
 
-    log.debug('TESTING IF THE CAR REG DATA HAS BEEN  SAVED', savedCarRegNo);
-    this.parsedCarRegNo = savedCarRegNo;
+  // const savedYearOfManufacture = sessionStorage.getItem('yearOfManufacture')
+  const savedYearOfManufacture = JSON.parse(
+    sessionStorage.getItem('yearOfManufacture')
+  );
 
-    // const savedYearOfManufacture = sessionStorage.getItem('yearOfManufacture')
-    const savedYearOfManufacture = JSON.parse(
-      sessionStorage.getItem('yearOfManufacture')
-    );
+  log.debug(
+    'TESTING IF THE Year of manufacture DATA HAS BEEN  SAVED',
+    savedYearOfManufacture
+  );
+  this.parsedYearOfManufacture = savedYearOfManufacture;
 
-    log.debug(
-      'TESTING IF THE Year of manufacture DATA HAS BEEN  SAVED',
-      savedYearOfManufacture
-    );
-    this.parsedYearOfManufacture = savedYearOfManufacture;
+  // const savedSumInsured = sessionStorage.getItem('selfDeclaredValue')
+  const savedSumInsured = JSON.parse(sessionStorage.getItem('sumInsured'));
+  log.debug(
+    'TESTING IF THE SumInsured DATA HAS BEEN  SAVED',
+    savedSumInsured
+  );
+  this.parsedSumInsured = savedSumInsured;
 
-    // const savedSumInsured = sessionStorage.getItem('selfDeclaredValue')
-    const savedSumInsured = JSON.parse(sessionStorage.getItem('sumInsured'));
-    log.debug(
-      'TESTING IF THE SumInsured DATA HAS BEEN  SAVED',
-      savedSumInsured
-    );
-    this.parsedSumInsured = savedSumInsured;
+  if (savedData) {
+    const parsedPersonalDetailsData = JSON.parse(savedData);
 
-    if (savedData) {
-      const parsedPersonalDetailsData = JSON.parse(savedData);
+    this.personalDetailsForm.patchValue(JSON.parse(savedData));
+    /**BRANCH */
+    const filteredBranchCode = parsedPersonalDetailsData.branchCode;
+    this.filteredBranchCodeNumber = parseInt(filteredBranchCode);
+    log.debug('Branch code', parsedPersonalDetailsData.branchCode);
+    log.debug('Branch code number', this.filteredBranchCodeNumber);
+    setTimeout(() => {
+      log.debug('Branch listsssss:', this.branchDescriptionArray);
+      const filteredbranch = this.branchDescriptionArray.find(
+        (branch) => branch.code === this.filteredBranchCodeNumber
+      );
+      log.debug('Filtered Branch', filteredbranch);
+      this.parsedBranchDesc = filteredbranch.description;
+      log.debug('Filtered Branch description', this.parsedBranchDesc);
+      this.userBranchName = this.parsedBranchDesc;
+    }, 1000);
+    /**PRODUCT */
+    log.debug('product code', parsedPersonalDetailsData?.productCode);
+    log.debug('parsedPersonalDetailsData', parsedPersonalDetailsData);
+    log.debug('PRODUCT ARRAY', this.ProductDescriptionArray);
+    if (this.ProductDescriptionArray) {
+      const filteredProductCode = parsedPersonalDetailsData.productCode;
+      const filteredProduct = this.ProductDescriptionArray.find(
+        (product) => product.code === filteredProductCode
+      );
+      log.debug('Filtered Product', filteredProduct);
+      this.parsedProductDesc = filteredProduct?.description;
+      log.debug('Filtered Product description', this.parsedProductDesc);
+      this.selectedProductCode = filteredProductCode;
+      // if(this.selectedProductCode){
+      //   this.getCoverToDate()
+      // }
+      this.getProductSubclass(this.selectedProductCode);
+      // this.loadAllSubclass()
 
-      this.personalDetailsForm.patchValue(JSON.parse(savedData));
-      /**BRANCH */
-      const filteredBranchCode = parsedPersonalDetailsData.branchCode;
-      this.filteredBranchCodeNumber = parseInt(filteredBranchCode);
-      log.debug('Branch code', parsedPersonalDetailsData.branchCode);
-      log.debug('Branch code number', this.filteredBranchCodeNumber);
+      // Load the dynamic form fields based on the selected product
+      this.LoadAllFormFields(this.selectedProductCode);
+      this.getProductExpiryPeriod();
+      /**SUBCLASS */
+      const filteredsubclassCode = parsedPersonalDetailsData.subclassCode;
+      const filteredSubclassCodeNumber = parseInt(filteredsubclassCode);
+      log.debug('Filtere subclass code:', filteredsubclassCode);
+      log.debug('Filtere subclass code Number:', filteredSubclassCodeNumber);
+      log.debug(
+        'Type of filteredSubclassCodeNumber:',
+        typeof filteredSubclassCodeNumber
+      );
+      log.debug('subclasses', this.allMatchingSubclasses);
       setTimeout(() => {
-        log.debug('Branch listsssss:', this.branchDescriptionArray);
-        const filteredbranch = this.branchDescriptionArray.find(
-          (branch) => branch.code === this.filteredBranchCodeNumber
+        log.debug('Subclasses after delay:', this.allMatchingSubclasses);
+        const filteredSubclass = this.allMatchingSubclasses.find(
+          (subclass) => subclass.code === filteredSubclassCodeNumber
         );
-        log.debug('Filtered Branch', filteredbranch);
-        this.parsedBranchDesc = filteredbranch.description;
-        log.debug('Filtered Branch description', this.parsedBranchDesc);
-        this.userBranchName = this.parsedBranchDesc;
+        log.debug('Filtered Subclass', filteredSubclass);
+        this.parsedSubclassDesc = filteredSubclass.description;
+        log.debug('Filtered Subclass description', this.parsedSubclassDesc);
+        this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
+        // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
+        this.selectedSubclassCode = filteredsubclassCode;
+        this.fetchTaxes();
       }, 1000);
-      /**PRODUCT */
-      log.debug('product code', parsedPersonalDetailsData?.productCode);
-      log.debug('parsedPersonalDetailsData', parsedPersonalDetailsData);
-      log.debug('PRODUCT ARRAY', this.ProductDescriptionArray);
-      if (this.ProductDescriptionArray) {
-        const filteredProductCode = parsedPersonalDetailsData.productCode;
-        const filteredProduct = this.ProductDescriptionArray.find(
-          (product) => product.code === filteredProductCode
+
+      /** BINDER */
+      this.loadAllBinders(filteredSubclassCodeNumber);
+      const filteredBinderCode = parsedPersonalDetailsData.bindCode;
+      const filteredBinderCodeNumber = parseInt(filteredBinderCode);
+      log.debug('Filtered Binder Code', filteredBinderCode);
+      setTimeout(() => {
+        log.debug('Binder List', this.binderListDetails);
+        const filteredBinder = this.binderListDetails.find(
+          (binder) => binder.code === filteredBinderCodeNumber
         );
-        log.debug('Filtered Product', filteredProduct);
-        this.parsedProductDesc = filteredProduct?.description;
-        log.debug('Filtered Product description', this.parsedProductDesc);
-        this.selectedProductCode = filteredProductCode;
-        // if(this.selectedProductCode){
-        //   this.getCoverToDate()
-        // }
-        this.getProductSubclass(this.selectedProductCode);
-        // this.loadAllSubclass()
+        log.debug('Filtered Binder', filteredBinder);
+        this.parsedBinderDesc = filteredBinder.binder_name;
+        log.debug('Filtered Binder description', this.parsedBinderDesc);
+        const currencyCode = filteredBinder.currency_code;
+        this.loadAllCurrencies();
 
-        // Load the dynamic form fields based on the selected product
-        this.LoadAllFormFields(this.selectedProductCode);
-        this.getProductExpiryPeriod();
-        /**SUBCLASS */
-        const filteredsubclassCode = parsedPersonalDetailsData.subclassCode;
-        const filteredSubclassCodeNumber = parseInt(filteredsubclassCode);
-        log.debug('Filtere subclass code:', filteredsubclassCode);
-        log.debug('Filtere subclass code Number:', filteredSubclassCodeNumber);
-        log.debug(
-          'Type of filteredSubclassCodeNumber:',
-          typeof filteredSubclassCodeNumber
-        );
-        log.debug('subclasses', this.allMatchingSubclasses);
-        setTimeout(() => {
-          log.debug('Subclasses after delay:', this.allMatchingSubclasses);
-          const filteredSubclass = this.allMatchingSubclasses.find(
-            (subclass) => subclass.code === filteredSubclassCodeNumber
-          );
-          log.debug('Filtered Subclass', filteredSubclass);
-          this.parsedSubclassDesc = filteredSubclass.description;
-          log.debug('Filtered Subclass description', this.parsedSubclassDesc);
-          this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
-          // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
-          this.selectedSubclassCode = filteredsubclassCode;
-          this.fetchTaxes();
-        }, 1000);
+        this.selectedBinderCode = filteredBinderCode;
+        this.selectedBinder = filteredBinder;
+      }, 1000);
+      setTimeout(() => {
+        log.info(this.currencyList, 'this is a currency list');
 
-        /** BINDER */
-        this.loadAllBinders(filteredSubclassCodeNumber);
-        const filteredBinderCode = parsedPersonalDetailsData.bindCode;
-        const filteredBinderCodeNumber = parseInt(filteredBinderCode);
-        log.debug('Filtered Binder Code', filteredBinderCode);
-        setTimeout(() => {
-          log.debug('Binder List', this.binderListDetails);
-          const filteredBinder = this.binderListDetails.find(
-            (binder) => binder.code === filteredBinderCodeNumber
-          );
-          log.debug('Filtered Binder', filteredBinder);
-          this.parsedBinderDesc = filteredBinder.binder_name;
-          log.debug('Filtered Binder description', this.parsedBinderDesc);
-          const currencyCode = filteredBinder.currency_code;
-          this.loadAllCurrencies();
+        log.debug('Selected Currency:', this.selectedCurrency);
+      }, 1000);
+      this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
+        .then(() => {
+          // Now execute this code after loadSubclassSectionCovertype finishes
+          setTimeout(() => {
+            log.debug('Selected Product Code:', this.selectedProductCode);
+            log.debug('Selected Subclass:', this.selectedSubclassCode);
+            log.debug('Selected Binder:', this.selectedBinderCode);
 
-          this.selectedBinderCode = filteredBinderCode;
-          this.selectedBinder = filteredBinder;
-        }, 1000);
-        setTimeout(() => {
-          log.info(this.currencyList, 'this is a currency list');
+            if (
+              this.selectedBinderCode &&
+              this.selectedSubclassCode &&
+              this.selectedProductCode
+            ) {
+              // this.getCoverToDate();
+              const selctedDate = JSON.parse(
+                sessionStorage.getItem('selectedDate')
+              );
+              log.debug(
+                'NOW CHECK WHICH DATE WILL BE DISPLAYED before the formatting',
+                selctedDate
+              );
 
-          log.debug('Selected Currency:', this.selectedCurrency);
-        }, 1000);
-        this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
-          .then(() => {
-            // Now execute this code after loadSubclassSectionCovertype finishes
-            setTimeout(() => {
-              log.debug('Selected Product Code:', this.selectedProductCode);
-              log.debug('Selected Subclass:', this.selectedSubclassCode);
-              log.debug('Selected Binder:', this.selectedBinderCode);
+              const selectedDate = new Date(selctedDate);
 
-              if (
-                this.selectedBinderCode &&
-                this.selectedSubclassCode &&
-                this.selectedProductCode
-              ) {
-                // this.getCoverToDate();
-                const selctedDate = JSON.parse(
-                  sessionStorage.getItem('selectedDate')
-                );
-                log.debug(
-                  'NOW CHECK WHICH DATE WILL BE DISPLAYED before the formatting',
-                  selctedDate
-                );
+              // Extract the day, month, and year
+              const day = selectedDate.getDate();
+              const month = selectedDate.toLocaleString('default', {
+                month: 'long',
+              }); // 'long' gives the full month name
+              const year = selectedDate.getFullYear();
 
-                const selectedDate = new Date(selctedDate);
+              // Format the date in 'dd-Month-yyyy' format
+              const formattedDate = `${day}-${month}-${year}`;
 
-                // Extract the day, month, and year
-                const day = selectedDate.getDate();
-                const month = selectedDate.toLocaleString('default', {
-                  month: 'long',
-                }); // 'long' gives the full month name
-                const year = selectedDate.getFullYear();
-
-                // Format the date in 'dd-Month-yyyy' format
-                const formattedDate = `${day}-${month}-${year}`;
-
-                this.coverFrom = formattedDate;
-                log.debug(
-                  'NOW CHECK WHICH DATE WILL BE DISPLAYED',
-                  this.coverFrom
-                );
-              }
-            }, 1000);
-          })
-          .catch((error) => {
-            log.error('Error in loading subclass section cover type:', error);
-          });
+              this.coverFrom = formattedDate;
+              log.debug(
+                'NOW CHECK WHICH DATE WILL BE DISPLAYED',
+                this.coverFrom
+              );
+            }
+          }, 1000);
+        })
+        .catch((error) => {
+          log.error('Error in loading subclass section cover type:', error);
+        });
       }
     }
 
@@ -750,27 +751,6 @@ export class QuickQuoteFormComponent {
     this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
     log.debug('Client details', this.passedExistingClientDetails);
 
-    if (this.passedExistingClientDetails) {
-      this.toggleButton();
-
-      this.clientName =
-        this.passedExistingClientDetails.firstName +
-        ' ' +
-        this.passedExistingClientDetails.lastName;
-      this.clientEmail = this.passedExistingClientDetails.emailAddress;
-      this.clientPhone = this.passedExistingClientDetails.phoneNumber;
-      this.isNewClient = false;
-    } else {
-      log.debug('NEW CLIENT ADD ANOTHER RISK');
-      this.newClientData.inputClientName =
-        this.passedNewClientDetails?.inputClientName;
-      this.newClientData.inputClientEmail =
-        this.passedNewClientDetails?.inputClientEmail;
-      this.newClientData.inputClientPhone =
-        this.passedNewClientDetails?.inputClientPhone?.number;
-      this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
-      this.isNewClient = true;
-    }
   }
 
   /**
@@ -810,6 +790,11 @@ export class QuickQuoteFormComponent {
       this.cdr.detectChanges();
     });
   }
+   // Method to check and set fields disable state from session storage
+  checkFieldsDisableState() {
+    const disableState = sessionStorage.getItem('fieldsDisableState');
+    this.isFieldsDisabled = disableState === 'true';
+  }
   /**
    * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
    * This method is typically used to reset form fields or client-related data in the component.
@@ -831,6 +816,9 @@ export class QuickQuoteFormComponent {
    */
   toggleButton() {
     this.new = true;
+    this.isNewClient = false;
+    this.readonlyClient = false;
+    this.checkFieldsDisableState();
   }
   /**
    * Toggles the 'new' state to false and resets client-related data.
@@ -840,7 +828,30 @@ export class QuickQuoteFormComponent {
    */
   toggleNewClient() {
     this.new = false;
+    this.isNewClient = true;
+    this.readonlyClient = false;
+    this.checkFieldsDisableState();
     this.resetClientData();
+  }
+
+  toggleReadonlyClient() {
+    this.readonlyClient = true;
+    this.isNewClient = false;
+    this.new = false;
+  }
+
+  // Helper method to determine if email field should be disabled
+  isFieldDisabled(fieldType: 'email' | 'other'): boolean {
+    if (this.isFieldsDisabled) {
+      // When fieldsDisableState is true, disable all fields
+      return true;
+    } else {
+      // When fieldsDisableState is false, only disable email for existing client
+      if (fieldType === 'email') {
+        return !this.isNewClient; // Disable email for existing client
+      }
+      return false; // Don't disable other fields
+    }
   }
   /**
    * Retrieves user information from the authentication service.
@@ -2188,7 +2199,7 @@ export class QuickQuoteFormComponent {
     log.debug('selected cover to date', this.selectedCoverToDate);
   }
   onCoverToChange(event: Date): void {
-    console.log('selected Cover to date raaaaaw:', event); 
+    console.log('selected Cover to date raaaaaw:', event);
     const selectedCoverToDate = event;
     log.debug('selected cover to date', selectedCoverToDate);
 
@@ -2198,7 +2209,7 @@ export class QuickQuoteFormComponent {
 
       this.selectedCoverToDate = SelectedFormatedDate
       log.debug("Cover  to date  :",this.selectedCoverToDate)
-    } 
+    }
 
   }
    /**
