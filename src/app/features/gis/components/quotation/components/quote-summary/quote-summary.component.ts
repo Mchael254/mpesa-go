@@ -59,6 +59,7 @@ export class QuoteSummaryComponent {
   formattedCoverTo: string;
 
   isAddRisk: boolean = false;
+  fieldDisableState: boolean = false;
   passedPremium: any;
   selectedEmail: any;
   selectedPhoneNo: any;
@@ -155,6 +156,9 @@ export class QuoteSummaryComponent {
     this.isEditRisk=false;
     sessionStorage.setItem("isEditRisk", JSON.stringify(this.isEditRisk))
     log.debug("IS EDIT RISK STATE:",this.isEditRisk)
+    this.fieldDisableState = false;
+    const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
+    sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
   }
   ngOnDestroy(): void { }
@@ -263,6 +267,11 @@ export class QuoteSummaryComponent {
     this.isAddRisk = true;
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
+
+    // Set the fields disable state to true
+    this.fieldDisableState = true;
+    const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
+    sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
     log.debug("isAddRisk:", this.isAddRisk)
     log.debug("quotation number:", this.quotationNo)
@@ -599,6 +608,10 @@ export class QuoteSummaryComponent {
     const passedIsEditRiskString = JSON.stringify(this.isEditRisk);
     sessionStorage.setItem('isEditRisk', passedIsEditRiskString);
 
+    // Set the fields disable state to true
+    this.fieldDisableState = true;
+    const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
+    sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
 
     log.debug("isEditRisk:", this.isEditRisk)

@@ -6,20 +6,21 @@
             <ngx-spinner name="quickQuoteScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
                 size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
             <div class="card-body">
-                <div class="d-inline me-4">
-                    <input class="form-check-input me-2 mt-2" (click)="toggleNewClient()" type="radio"
-                        name="flexRadioDefault" id="flexRadioDefault2" [checked]="isNewClient">
-                    <label class="form-check-label mb-4 mt-2" for="flexRadioDefault2">
-                        {{'gis.quotation.new_client' | translate}}
-                    </label>
-                </div>
-                <div class="d-inline ms-4">
-                    <input class="form-check-input me-2 ms-4 mt-2" (click)="toggleButton()" type="radio"
-                        name="flexRadioDefault" id="flexRadioDefault1" [checked]="!isNewClient">
-                    <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1">
-                        {{'gis.quotation.existing_client' | translate}}
-                    </label>
-                </div>
+              <div class="d-inline me-4">
+                <input class="form-check-input me-2 mt-2" (click)="toggleNewClient()" type="radio"
+                    name="flexRadioDefault" id="newClient" [checked]="isNewClient">
+                <label class="form-check-label mb-4 mt-2" for="newClient">
+                    {{'gis.quotation.new_client' | translate}}
+                </label>
+            </div>
+            <div class="d-inline ms-4">
+                <input class="form-check-input me-2 ms-4 mt-2" (click)="toggleButton()" type="radio"
+                    name="flexRadioDefault" id="existingClient" [checked]="!isNewClient">
+                <label class="form-check-label mb-4 mt-2" for="existingClient">
+                    {{'gis.quotation.existing_client' | translate}}
+                </label>
+            </div>
+
 
 
 
@@ -31,7 +32,10 @@
                             translate}}</label>
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="newClientData.inputClientName" (blur)="onInputChange()">
+                          [(ngModel)]="newClientData.inputClientName"
+                          [disabled]="isFieldDisabled('other')"
+                          (blur)="onInputChange()"
+                        >
 
                     </div>
                     <div class=" col-sm-4 col-6" *ngIf="new">
@@ -40,7 +44,12 @@
 
 
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
-                            [(ngModel)]="clientName" data-bs-toggle="modal" data-bs-target="#clientModal" readonly>
+                          [(ngModel)]="clientName"
+                          [disabled]="isFieldDisabled('other')"
+                          data-bs-toggle="modal"
+                          data-bs-target="#clientModal"
+                          readonly
+                        >
 
                     </div>
                     <div class=" col-sm-4 col-6 " *ngIf="!new">
@@ -51,8 +60,12 @@
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="newClientData.inputClientEmail" #emailInput="ngModel" [pattern]="emailPattern"
-                            required>
+                            [(ngModel)]="newClientData.inputClientEmail"
+                            [disabled]="isFieldDisabled('email')"
+                            #emailInput="ngModel"
+                            [pattern]="emailPattern"
+                            required
+                          >
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
                             <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
@@ -69,7 +82,10 @@
                             [(ngModel)]="clientEmail" disabled> -->
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail" #clientEmailInput="ngModel" disabled>
+                            [(ngModel)]="clientEmail"
+                            [disabled]="isFieldDisabled('email')"
+                            #clientEmailInput="ngModel"
+                          >
                         <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
                             <span *ngIf="clientEmailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
@@ -83,13 +99,20 @@
                         <div class="input-group">
                             <div class="input-group">
                                 <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
-                                    [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true"
-                                    [enablePlaceholder]="true" [searchCountryFlag]="true" [selectFirstCountry]="true"
+                                    [preferredCountries]="preferredCountries"
+                                    [enableAutoCountrySelect]="true"
+                                    [enablePlaceholder]="true"
+                                    [searchCountryFlag]="true"
+                                    [selectFirstCountry]="true"
                                     [selectedCountryISO]="CountryISO.Kenya"
                                     [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                    [phoneValidation]="true" [(ngModel)]="newClientData.inputClientPhone"
-                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
-                                    (ngModelChange)="onPhoneInputChange()">
+                                    [phoneValidation]="true"
+                                    [(ngModel)]="newClientData.inputClientPhone"
+                                    [numberFormat]="PhoneNumberFormat.National"
+                                    #newClientPhoneInput="ngModel"
+                                    (ngModelChange)="onPhoneInputChange()"
+                                    [disabled]="isFieldDisabled('other')"
+                                  >
                                 </ngx-intl-tel-input>
                                 <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                     class="form-text text-danger">
@@ -107,13 +130,19 @@
                             translate}}</label>
                         <div class="input-group">
                             <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
-                                [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true"
-                                [enablePlaceholder]="true" [searchCountryFlag]="true" [selectFirstCountry]="true"
+                                [preferredCountries]="preferredCountries"
+                                [enableAutoCountrySelect]="true"
+                                [enablePlaceholder]="true"
+                                [searchCountryFlag]="true"
+                                [selectFirstCountry]="true"
                                 [selectedCountryISO]="CountryISO.Kenya"
                                 [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                [phoneValidation]="true" [(ngModel)]="clientPhone" #clientPhoneInput="ngModel"
-                                [numberFormat]="PhoneNumberFormat.National" (ngModelChange)="onPhoneInputChange()"
-                                disabled
+                                [phoneValidation]="true"
+                                [(ngModel)]="clientPhone"
+                                #clientPhoneInput="ngModel"
+                                [numberFormat]="PhoneNumberFormat.National"
+                                (ngModelChange)="onPhoneInputChange()"
+                                [disabled]="isFieldDisabled('other')"
                             >
                             </ngx-intl-tel-input>
                             <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
@@ -121,13 +150,7 @@
                                 {{'gis.quotation.invalid_phone_format' | translate}}
                             </div>
                         </div>
-
-
-
-
                     </div>
-
-
                 </div>
 
 
@@ -320,16 +343,16 @@
                                                 (ngModelChange)="onCoverToInputChange(selectedCoverToDate);">
                                             </p-calendar> -->
 <br>
-                                            <p-calendar 
-                                            
-                                            [(ngModel)]="selectedCoverToDate" 
-                                            [dateFormat]="dateFormat" 
+                                            <p-calendar
+
+                                            [(ngModel)]="selectedCoverToDate"
+                                            [dateFormat]="dateFormat"
                                             [showIcon]="true"
-                                            [showButtonBar]="true" 
+                                            [showButtonBar]="true"
                                             [minDate]="minDate"
                                             (onSelect)="onCoverToChange($event)">
                                           </p-calendar>
-                                          
+
                                         </div>
                                         <div *ngIf="field.name == 'vesselType'">
                                             <label class="quote-label " [for]="field.name">{{ field.label
