@@ -160,16 +160,13 @@ export class QuoteSummaryComponent {
     this.isEditRisk=false;
     sessionStorage.setItem("isEditRisk", JSON.stringify(this.isEditRisk))
     log.debug("IS EDIT RISK STATE:",this.isEditRisk)
-<<<<<<< Updated upstream
     this.fieldDisableState = false;
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
-=======
     // this.isAddRisk = false;
     // log.debug("IS ADD RISK STATE:", this.isAddRisk)
     // this.isEditRisk = false;
     // log.debug("IS EDIT RISK STATE:", this.isEditRisk)
->>>>>>> Stashed changes
 
   }
   ngOnDestroy(): void { }

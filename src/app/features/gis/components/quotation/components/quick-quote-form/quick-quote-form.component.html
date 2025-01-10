@@ -60,17 +60,9 @@
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-<<<<<<< Updated upstream
-                            [(ngModel)]="newClientData.inputClientEmail"
-                            [disabled]="isFieldDisabled('email')"
-                            #emailInput="ngModel"
-                            [pattern]="emailPattern"
-                            required
-                          >
-=======
+                     
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()" #emailInput="ngModel" [pattern]="emailPattern"
                             required>
->>>>>>> Stashed changes
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
                             <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
@@ -111,19 +103,9 @@
                                     [selectFirstCountry]="true"
                                     [selectedCountryISO]="CountryISO.Kenya"
                                     [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-<<<<<<< Updated upstream
-                                    [phoneValidation]="true"
-                                    [(ngModel)]="newClientData.inputClientPhone"
-                                    [numberFormat]="PhoneNumberFormat.National"
-                                    #newClientPhoneInput="ngModel"
-                                    (ngModelChange)="onPhoneInputChange()"
-                                    [disabled]="isFieldDisabled('other')"
-                                  >
-=======
                                     [phoneValidation]="true" [(ngModel)]="newClientPhone" 
                                     [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
                                     (ngModelChange)="onPhoneInputChange()">
->>>>>>> Stashed changes
                                 </ngx-intl-tel-input>
                                 <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                     class="form-text text-danger">
