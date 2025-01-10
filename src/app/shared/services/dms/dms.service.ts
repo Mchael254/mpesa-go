@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Logger} from "../logger/logger.service";
-import {HttpParams} from "@angular/common/http";
+import { HttpParams} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {DmsDocument, SingleDmsDocument} from "../../data/common/dmsDocument";
 import {ParameterService} from "../system-parameters/parameter.service";
@@ -39,6 +39,7 @@ export class DmsService{
 
   constructor(
     private parameterService: ParameterService,
+    
     private api:ApiService,) {
     this.dmsUrlParameter$.subscribe( dmsUrl =>  this.dmsApiUrl = dmsUrl);
   }
@@ -177,7 +178,10 @@ export class DmsService{
       JSON.stringify(data), API_CONFIG.DMS_SERVICE
     );
   }
-
+ 
+ 
+  
+  
   deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
     const params = new HttpParams()
       .set('docId', `${docId}`);
