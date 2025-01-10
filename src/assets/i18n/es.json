@@ -182,7 +182,7 @@
     "FinalReports": "Informes Finales del Libro Mayor",
     "Invoices/DR Notes": "Facturas/Notas de Débito",
     "invoicesCrNotes":"Facturas/Notas de Crédito",
-    
+
     "Requisitions": "Requisiciones",
     "Cheques": "Cheques",
     "Petty cash": "Caja Chica",
@@ -889,7 +889,10 @@
       "no_contact_information_available": "No hay información de contacto disponible",
       "total_sum_insured": "Suma total asegurada",
       "total_taxes": "Total de impuestos",
-      "excesses": "Excesos"
+      "excesses": "Excesos",
+      "convert_quote": "Convertir cotización",
+      "confirm_conversion": "Confirmar conversión"
+
     },
     "policy": {
       "underwriting_new_transaction": "Suscripción: Nueva transacción",
@@ -1818,7 +1821,7 @@
           "reports": "Informes",
           "share": "Compartir",
           "finish": "Terminar"
-        }        
+        }
       },
       "agent_portal": {
         "policy": "Póliza",
@@ -2548,10 +2551,10 @@
     "chargeAmount": "Monto del Cargo",
     "uploadFiles": "Cargar Archivos"
     },
-    
-      
-    
-    
+
+
+
+
     "allocation": {
       "allocate_funds": "Asignar Fondos",
       "transactions": "Transacciones",
@@ -2599,7 +2602,7 @@
         "total_amount": "Cantidad Total",
         "send_sms_alerts": "Enviar Alertas SMS"
       }
-    
+
   },
   "campaignMngmt": {
     "campaigns": "Campañas",

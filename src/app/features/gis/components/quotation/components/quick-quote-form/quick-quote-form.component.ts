@@ -390,6 +390,7 @@ export class QuickQuoteFormComponent {
   }
   ngOnDestroy(): void { }
   addRisk() {
+    this.loadAllCurrencies();
     log.debug("ADDING ANOTHER RISK TO THE SAME QUOTATION")
 
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
@@ -401,7 +402,9 @@ export class QuickQuoteFormComponent {
       'passedClientDetails'
     );
 
-    if (this.passedClientDetailsString == undefined) {
+    log.debug("passedClientDetails", this.passedClientDetailsString)
+
+    if (this.passedClientDetailsString == "undefined") {
       log.debug('New Client has been passed');
 
       const passedNewClientDetailsString = sessionStorage.getItem(
@@ -456,6 +459,7 @@ export class QuickQuoteFormComponent {
           this.passedNewClientDetails?.inputClientPhone?.number;
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
+        this.toggleNewClient();
       }
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
       this.isAddRisk = JSON.parse(passedIsAddRiskString);
@@ -479,9 +483,9 @@ export class QuickQuoteFormComponent {
       log.debug(parsedData, "pARSED dATA");
       this.personalDetailsForm.patchValue(parsedData);
     }
+
     this.premiumComputationRequest;
-    // this.loadFormData()
-    this.loadAllCurrencies();
+
   }
 
   editRisk() {
@@ -496,7 +500,7 @@ export class QuickQuoteFormComponent {
     this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
     // Handle client data population
-    if (this.passedClientDetailsString == undefined) {
+    if (this.passedClientDetailsString == "undefined") {
       log.debug("New Client has been passed");
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
       this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
@@ -509,6 +513,7 @@ export class QuickQuoteFormComponent {
         this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
+        this.toggleNewClient();
 
         // Set fields disable state for new client
         sessionStorage.setItem('fieldsDisableState', 'true');
@@ -570,7 +575,7 @@ export class QuickQuoteFormComponent {
 
     this.premiumComputationRequest;
     this.loadAllCurrencies();
-}
+  }
 
 loadFormData() {
 
@@ -815,10 +820,12 @@ loadFormData() {
    * @return {void}
    */
   toggleButton() {
-    this.new = true;
-    this.isNewClient = false;
-    this.readonlyClient = false;
-    this.checkFieldsDisableState();
+    if (!this.isFieldDisabled('radio')) {
+      this.new = true;
+      this.isNewClient = false;
+      this.readonlyClient = false;
+      this.checkFieldsDisableState();
+    }
   }
   /**
    * Toggles the 'new' state to false and resets client-related data.
@@ -826,12 +833,16 @@ loadFormData() {
    * @method toggleNewClient
    * @return {void}
    */
+
   toggleNewClient() {
-    this.new = false;
-    this.isNewClient = true;
-    this.readonlyClient = false;
-    this.checkFieldsDisableState();
-    this.resetClientData();
+    if (!this.isFieldDisabled('radio')) {
+      this.new = false;
+      this.isNewClient = true;
+      this.readonlyClient = false;
+      this.checkFieldsDisableState();
+      this.resetClientData();
+      sessionStorage.removeItem("clientDetails");
+    }
   }
 
   toggleReadonlyClient() {
@@ -841,16 +852,20 @@ loadFormData() {
   }
 
   // Helper method to determine if email field should be disabled
-  isFieldDisabled(fieldType: 'email' | 'other'): boolean {
+  isFieldDisabled(fieldType: 'email' | 'other' | 'radio'): boolean {
     if (this.isFieldsDisabled) {
       // When fieldsDisableState is true, disable all fields
       return true;
     } else {
-      // When fieldsDisableState is false, only disable email for existing client
-      if (fieldType === 'email') {
-        return !this.isNewClient; // Disable email for existing client
+      // When fieldsDisableState is false, handle specific field types
+      switch (fieldType) {
+        case 'email':
+          return !this.isNewClient; // Disable email for existing client
+        case 'radio':
+          return this.readonlyClient || this.isFieldsDisabled; // Disable radio when readonly or fields are disabled
+        default:
+          return false; // Don't disable other fields
       }
-      return false; // Don't disable other fields
     }
   }
   /**
@@ -911,6 +926,7 @@ loadFormData() {
     const newClientDetailsString = JSON.stringify(this.newClientData);
     sessionStorage.setItem('newClientDetails', newClientDetailsString);
   }
+
   /**
    * Retrieves branch information by making an HTTP GET request to the BranchService.
    * - Populates the 'branchList' property with the received data.
@@ -2106,16 +2122,12 @@ loadFormData() {
     if (!this.emailPattern.test(this.newClientData.inputClientEmail)) {
       console.error('Invalid email format');
       // You can also set a custom error state here if needed
+    } else {
+      log.debug("input email", this.newClientData.inputClientEmail);
+      sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
     }
   }
-  // isEmailOrPhoneValid(): boolean {
-  //   const email1Valid = this.validateEmail(this.newClientData.inputClientEmail); //new client email input
-  //   const email2Valid = this.validateEmail(this.clientEmail); // existing client email input
-  //   const phone1Valid = this.newClientPhoneInput?.valid; // From ngx-intl-tel-input
-  //   const phone2Valid = this.clientPhoneInput?.valid; // From ngx-intl-tel-input
 
-  //   return phone1Valid || phone2Valid || email1Valid || email2Valid;
-  // }
   isEmailOrPhoneValid(): boolean {
     const email1Valid = !!this.newClientData.inputClientEmail; // Check if new client email has a value
     const email2Valid = !!this.clientEmail; // Check if existing client email has a value
@@ -2153,7 +2165,8 @@ loadFormData() {
   }
   onPhoneInputChange() {
     console.log('Client Phone:', this.clientPhone);
-    console.log('New Client Phone:', this.newClientData.inputClientPhone);
+    console.log('New input Client Phone:', this.newClientData.inputClientPhone);
+    sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
   }
  /**
    * Fetches occupation data based on the provided organization ID and

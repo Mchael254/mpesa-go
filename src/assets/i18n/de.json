@@ -859,7 +859,9 @@
       "no_contact_information_available": "Keine Kontaktinformationen verfügbar",
       "total_sum_insured": "Gesamtsumme versichert",
       "total_taxes": "Gesamte Steuern",
-      "excesses": "Selbstbehalte"
+      "excesses": "Selbstbehalte",
+      "convert_quote": "Angebot konvertieren",
+      "confirm_conversion": "Konvertierung bestätigen"
 
     },
     "policy": {
@@ -2032,7 +2034,7 @@
       "save_allocations": "Zuweisungen speichern",
       "print_receipt": "Empfang drucken",
       "cancel_receipt": "Empfang abbrechen",
-      
+
       "allocation_type": "Zuweisungstyp",
       "allocatedAmount": "Zugewiesener Betrag"
     },
@@ -2063,7 +2065,7 @@
         "total_amount": "Gesamtbetrag",
         "send_sms_alerts": "SMS-Benachrichtigungen senden"
       }
-    
+
   },
   "campaignMngmt": {
     "campaigns": "Kampagnen",

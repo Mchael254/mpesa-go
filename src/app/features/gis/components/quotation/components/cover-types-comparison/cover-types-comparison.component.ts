@@ -157,6 +157,7 @@ export class CoverTypesComparisonComponent {
   updatePremiumPayload: premiumPayloadData;
   newRiskLevelPremiums: any;
   quoteProductCode: any;
+  showQuoteActions: boolean;
 
 
 
@@ -858,6 +859,10 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
 
+    this.showQuoteActions = true;
+    const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
+    sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
+
     // Check if passedNumber exists (not null, empty, or 'null')
     if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
 
@@ -1113,6 +1118,7 @@ export class CoverTypesComparisonComponent {
 
           log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
           log.debug("just CKECING IF IT EXISTS", this.taxInformation)
+
 
         },
         error: (error: HttpErrorResponse) => {
