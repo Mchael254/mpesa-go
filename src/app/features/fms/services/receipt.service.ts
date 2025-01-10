@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, printDTO } from '../data/receipting-dto';
+import { NarrationDTO,CurrencyDTO, ReceiptingPointsDTO,PaymentModesDTO, ManualExchangeRateDTO, AccountTypeDTO, ReceiptNumberDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ManualExchangeRateResponseDTO, GenericResponse, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, printDTO, ReceiptUploadRequest } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
 
@@ -8,6 +8,7 @@ import {API_CONFIG} from '../../../../environments/api_service_config';
 import { HttpParams } from '@angular/common/http';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
+import { PaymentMethod } from '../../lms/grp/components/claims/models/claim-models';
 @Injectable({
   providedIn: 'root'
 })
@@ -209,45 +210,35 @@ getExistingCharges(receiptNo: number): Observable<{data:ExistingChargesResponseD
         params
       )
     }
-    uploadReceiptDocs(
-      docType: string,
-      docData: string, // Base64 encoded file
-      module: string,
-      referenceNo: string,
-      description: string,
-      amount: number,
-      paymentMethod: string,
-      policyNumber: string,
-      filename:string,
-      originalFileName:string,
-      
-    ): Observable<any> {
-      const requestBody = {
-        docType: docType,
-        docData: docData,
-        module: module,
-        originalFileName:originalFileName,
-        filename:filename,
-        referenceNo: referenceNo,
-
-        docDescription: description,
-        amount: amount,
-        paymentType: paymentMethod,
-        policyNumber: policyNumber,
-        
-        // Add any other optional fields if needed
-      };
-  
-      return this.api.POST<any>
-
-      (
-      
-          `uploadAllFinanceDocument`,
-          JSON.stringify(requestBody), API_CONFIG.DMS_SERVICE
-      );
-    }
-   
     
+// ... existing code ...
+uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
+  // Map requests to simple objects
+  const formattedRequests = requests
+    .map(request => JSON.stringify({
+      docType: request.docType,
+      docData: request.docData,
+      module: request.module,
+      originalFileName: request.originalFileName,
+      filename: request.filename,
+      referenceNo: request.referenceNo,
+      description: request.docDescription,
+      amount: request.amount,
+      paymentMethod: request.paymentMethod,
+      policyNumber: request.policyNumber
+    }));
+
+  // Join the JSON strings with commas to remove array brackets
+  const payload = formattedRequests.join(',');
+
+  // Send the payload as a raw string
+  return this.api.POST<any>(
+    `uploadAllFinanceDocument`,
+    payload,
+    API_CONFIG.DMS_SERVICE
+  );
+}
+
     saveClientDocs(data: any): Observable<any> {
       return this.api.POST<any>(
         `uploadAllFinanceDocument
@@ -318,6 +309,29 @@ return(
     )
 
   }
-    
+  // uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
+  //   // Convert array to object with numbered properties
+  //   const formattedRequests = requests.reduce((acc, request, index) => {
+  //     acc[index] = {
+  //       docType: request.docType,
+  //       docData: request.docData,
+  //       module: request.module,
+  //       originalFileName: request.originalFileName,
+  //       filename: request.filename,
+  //       referenceNo: request.referenceNo,
+  //       docDescription: request.docDescription,
+  //       amount: request.amount,
+  //       PaymentMethod: request.paymentMethod,
+  //       policyNumber: request.policyNumber
+  //     };
+  //     return acc;
+  //   }, {});
+  
+  //   return this.api.POST<any>(
+  //     `uploadAllFinanceDocument`,
+  //     JSON.stringify(formattedRequests),
+  //     API_CONFIG.DMS_SERVICE
+  //   );
+  // }
      }
       
