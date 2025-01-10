@@ -372,3 +372,18 @@ export interface premiumPayloadData {
   taxes: tax[];
   riskLevelPremiums: riskLevelPremiums[];
 }
+
+export enum StatusEnum {
+  Lapsed = 'Lapsed',
+  Rejected = 'Rejected',
+  Pending = 'Pending',
+  None = 'None',
+  Confirmed = 'Confirmed',
+  Draft = 'Draft'
+}
+
+export interface Status {
+  status: StatusEnum;
+}
+
+

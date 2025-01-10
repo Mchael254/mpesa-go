@@ -7,22 +7,29 @@
                 size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
             <div class="card-body">
               <div class="d-inline me-4">
-                <input class="form-check-input me-2 mt-2" (click)="toggleNewClient()" type="radio"
-                    name="flexRadioDefault" id="newClient" [checked]="isNewClient">
+                <input class="form-check-input me-2 mt-2"
+                       (click)="toggleNewClient()"
+                       type="radio"
+                       name="flexRadioDefault"
+                       id="newClient"
+                       [checked]="isNewClient"
+                       [disabled]="isFieldDisabled('radio')">
                 <label class="form-check-label mb-4 mt-2" for="newClient">
                     {{'gis.quotation.new_client' | translate}}
                 </label>
-            </div>
-            <div class="d-inline ms-4">
-                <input class="form-check-input me-2 ms-4 mt-2" (click)="toggleButton()" type="radio"
-                    name="flexRadioDefault" id="existingClient" [checked]="!isNewClient">
-                <label class="form-check-label mb-4 mt-2" for="existingClient">
-                    {{'gis.quotation.existing_client' | translate}}
-                </label>
-            </div>
-
-
-
+              </div>
+              <div class="d-inline ms-4">
+                  <input class="form-check-input me-2 ms-4 mt-2"
+                        (click)="toggleButton()"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="existingClient"
+                        [checked]="!isNewClient"
+                        [disabled]="isFieldDisabled('radio')">
+                  <label class="form-check-label mb-4 mt-2" for="existingClient">
+                      {{'gis.quotation.existing_client' | translate}}
+                  </label>
+              </div>
 
 
                 <!-- ROW 1 -->
@@ -64,6 +71,7 @@
                             [disabled]="isFieldDisabled('email')"
                             #emailInput="ngModel"
                             [pattern]="emailPattern"
+                            (ngModelChange)="onEmailInputChange()"
                             required
                           >
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">

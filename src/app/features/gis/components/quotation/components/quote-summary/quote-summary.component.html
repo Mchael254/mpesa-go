@@ -2,15 +2,15 @@
     <p class="titleMain mt-3">{{'gis.quotation.quotation_summary' | translate}}</p>
     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
     <div class="container mx-2 mt-n1">
-        
+
         <div class="card">
             <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
                 <div class="row ">
                     <div class="col-6">
                     </div>
-                    <div class="col-6 d-flex justify-content-end">
-                        
+                    <div class="col-6 d-flex justify-content-end" *ngIf="showQuoteActions">
+
                             <button class="btn btn-primary" type="submit" >
                                 Reassign quote</button>
                     </div>
@@ -117,7 +117,7 @@
 
                     </div>
                     <div class="col-sm-9 d-flex justify-content-end">
-                        <div class="row  mb-2">
+                        <div class="row  mb-2" *ngIf="showQuoteActions">
 
                             <!-- <div class="col-sm-3"></div> -->
                             <div class="col-2">
@@ -437,22 +437,49 @@
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
                 id="btnCancelQuote">{{'gis.quotation.cancel_quote' | translate}}</button>
                 <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
-                data-bs-target="#shareQuote" id="btnCancelQuote"> {{'gis.quotation.share_quote' | translate}}</button>
+                data-bs-target="#shareQuote" id="btnCancelQuote" *ngIf="showQuoteActions"> {{'gis.quotation.share_quote' | translate}}</button>
         </div>
-        <div class="float-end mt-4 mb-4  ">
-            <button type="button" class="btn btn-primary me-3" 
-                id="btnCancelQuote"> Convert to policy</button>
-            <button class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">
+        <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
+            <button type="button" class="btn btn-primary me-3"
+                id="btnConvertPolicy"> Convert to policy</button>
+            <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-toggle="modal" data-bs-target="#convertQuote">
                 Convert to normal quote</button>
         </div>
-        
+
+        <!-- Convert Quote Modal -->
+        <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content ps-4 pt-4 pe-4 pb-4">
+                  <!-- Centered Title and Message -->
+                  <div class="text-center mb-4">
+                      <h3 class="convertQuoteTitle">{{'gis.quotation.convert_quote' | translate}}</h3>
+                      <p>{{'gis.quotation.conversion_message' | translate}}</p>
+                  </div>
+
+                  <!-- Vertical Layout using flex-column -->
+                  <div class="d-flex flex-column gap-3">
+                      <!-- Close Button -->
+                      <button type="button" class="btn btn-outline-primary w-100" id="closeBtn" data-bs-dismiss="modal">
+                          {{'gis.quotation.close' | translate}}
+                      </button>
+
+                      <!-- Confirm Conversion Button -->
+                      <button type="button" class="btn btn-primary w-100" (click)="acceptQuote()">
+                          {{'gis.quotation.confirm_conversion' | translate}}
+                      </button>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+
         <!-- Cancel Quote Modal -->
         <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content  ps-4 pt-4 pe-4">
                     <p class="cancelQouteTitle">{{'gis.quotation.provide_reason_for_cancellation' | translate}}</p>
                     <p class="cancelQouteTitle">{{'gis.quotation.reason' | translate}}</p>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" required [(ngModel)]="reasonCancelled"></textarea>
 
 
                     <div class="row mt-4 mb-4">
@@ -464,9 +491,15 @@
                                         data-bs-dismiss="modal">{{'gis.quotation.close' | translate}}</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
-                                    <button type="button" class="btn btn-primary" id="cancelQoute"
-                                        (click)="cancelQuote()">
-                                        {{'gis.quotation.cancel_quote' | translate}}</button>
+                                    <button
+                                      type="button"
+                                      class="btn btn-primary"
+                                      id="cancelQoute"
+                                      [attr.data-bs-dismiss]="reasonCancelled?.trim() ? 'modal' : null"
+                                      (click)="cancelQuote()"
+                                    >
+                                        {{'gis.quotation.cancel_quote' | translate}}
+                                    </button>
                                 </div>
                             </div>
                         </div>
