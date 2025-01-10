@@ -157,6 +157,7 @@ export class CoverTypesComparisonComponent {
   updatePremiumPayload: premiumPayloadData;
   newRiskLevelPremiums: any;
   quoteProductCode: any;
+  showQuoteActions: boolean;
 
   isAddededBenefitsCalled: boolean = false;
   premiumRates: PremiumRate[] = [];
@@ -860,6 +861,10 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
 
+    this.showQuoteActions = true;
+    const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
+    sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
+
     // Check if passedNumber exists (not null, empty, or 'null')
     if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
 
@@ -1207,6 +1212,7 @@ export class CoverTypesComparisonComponent {
           log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
           log.debug("just CKECING IF IT EXISTS", this.taxInformation)
 
+
           log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
         //   const quotationNumberString = JSON.stringify(this.passedNumber);
         //   sessionStorage.setItem('quotationNumber', quotationNumberString);
@@ -1226,6 +1232,7 @@ export class CoverTypesComparisonComponent {
         
           this.router.navigate(['/home/gis/quotation/quote-summary']);
           // this.loadClientQuotation();
+
 
         },
         error: (error: HttpErrorResponse) => {

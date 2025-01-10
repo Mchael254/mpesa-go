@@ -17,7 +17,7 @@ import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, Excesses, LimitsOfLiability } from '../../data/quotationsDTO';
+import { Clause, Excesses, LimitsOfLiability, StatusEnum, Status } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -36,6 +36,7 @@ export class QuoteSummaryComponent {
   coverQuotationNo: any;
   quotationDetails: any;
   quotationNo: any;
+  quotationCode: number;
   quoteDate: any;
 
   productInformation: any;
@@ -82,6 +83,9 @@ export class QuoteSummaryComponent {
   excessesList: Excesses[] = []
   selectedExcess: any;
   isEditRisk: boolean = false;
+  reasonCancelled: string = '';
+  cancelQuoteClicked: boolean = false;
+  showQuoteActions: boolean = true;
 
 
   constructor(
@@ -129,6 +133,9 @@ export class QuoteSummaryComponent {
     const newClientDetailsString = sessionStorage.getItem('newClientDetails');
     this.passedNewClientDetails = JSON.parse(newClientDetailsString);
     log.debug("New Client Details", this.passedNewClientDetails);
+
+    const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
+    this.showQuoteActions = JSON.parse(showQuoteActionsString);
 
     if (this.passedClientDetails) {
       log.info("EXISTING CLIENT")
@@ -301,10 +308,12 @@ export class QuoteSummaryComponent {
   cancelQuote() {
 
     log.debug("Starting cancelQuote method");
+    this.cancelQuoteClicked = true;
+    const cancelQuoteClickedString = JSON.stringify(this.cancelQuoteClicked);
+    sessionStorage.setItem("cancelQuoteClicked", cancelQuoteClickedString);
 
     // Remove specific items from session storage
     sessionStorage.removeItem('clientCode');
-    sessionStorage.removeItem('clientDetails');
     sessionStorage.removeItem('mandatorySections');
     sessionStorage.removeItem('passedQuotationCode');
     sessionStorage.removeItem('passedQuotationNumber');
@@ -313,7 +322,6 @@ export class QuoteSummaryComponent {
     sessionStorage.removeItem('product');
     sessionStorage.removeItem('quickQuotationCode');
     sessionStorage.removeItem('quickQuotationNum');
-    sessionStorage.removeItem('quotationNumber');
     sessionStorage.removeItem('quotationSource');
     sessionStorage.removeItem('riskLevelPremium');
     sessionStorage.removeItem('subclassCoverType');
@@ -321,16 +329,12 @@ export class QuoteSummaryComponent {
 
     log.debug("Session storage items removed");
 
-    // Use NgZone.run to execute the navigation code inside the Angular zone
-    this.ngZone.run(() => {
-      log.debug("Navigating to quick-quote screen");
-      this.router.navigate(['/home/gis/quotation/quick-quote']);
+    if(this.reasonCancelled !== '') {
+      this.updateQuoteStatus();
+    } else {
+      this.globalMessagingService.displayInfoMessage('Error', 'Provide a reason');
+    }
 
-    });
-
-
-
-    log.debug("Navigation code executed");
   }
 
 
@@ -641,10 +645,38 @@ convertToPolicy(){
   this.router.navigate(['/home/gis/quotation/create-client']);
 
 
+
   }else{
     // NAVIGATE TO POLICY SCREEN
   }
 }
+  updateQuoteStatus() {
 
+    if (!this.reasonCancelled?.trim()) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please provide a reason for cancellation');
+      return;
+    }
+
+    this.quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+
+    this.quotationService
+      .updateQuotationStatus(this.quotationCode, StatusEnum.Rejected, this.reasonCancelled)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after updating quotation status succesfully", response);
+          this.showQuoteActions = false; // Hide the buttons after successful cancellation
+          const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
+          sessionStorage.setItem("showQuoteActions", showQuoteActionsString)
+          this.globalMessagingService.displaySuccessMessage('Success', 'Quote cancelled');
+
+        },
+        error: (error) => {
+          log.debug("Could not update status", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to cancel quote. Try again later');
+        }
+      }
+    );
+  }
 
 }

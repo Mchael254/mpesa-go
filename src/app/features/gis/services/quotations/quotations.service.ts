@@ -283,4 +283,10 @@ export class QuotationsService {
     // console.log(JSON.stringify(data),"Data from the service")
     return this.api.POST(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
+  updateQuotationStatus(quotationCode: number, status: string, reasonCancelled: string) {
+
+    return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+  }
 }

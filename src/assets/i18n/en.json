@@ -922,7 +922,6 @@
       "absolute_range": "Absolute Range",
       "step_ranges": "Step Ranges",
       "effective_date": "Effective date",
-
       "pin":"Pin",
       "internal_id": "Internal id",
       "this_property_id_is_duplicated": "This property Id is duplicated",
@@ -939,8 +938,10 @@
       "no_contact_information_available": "No contact information available",
       "total_sum_insured":"Total sum insured",
       "total_taxes":"Total taxes",
-      "excesses": "Excesses"
-        },
+      "excesses": "Excesses",
+      "convert_quote":"Convert Quote",
+      "confirm_conversion": "Confirm Conversion"
+  },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
       "type_of_transaction": "Type of transaction",

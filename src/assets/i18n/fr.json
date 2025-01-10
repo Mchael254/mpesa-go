@@ -888,7 +888,10 @@
       "no_contact_information_available": "Aucune information de contact disponible",
       "total_sum_insured": "Montant total assuré",
       "total_taxes": "Total des taxes",
-      "excesses": "Franchises"
+      "excesses": "Franchises",
+      "convert_quote": "Convertir le devis",
+      "confirm_conversion": "Confirmer la conversion"
+
     },
     "policy": {
       "underwriting_new_transaction": "Souscription : Nouvelle transaction",
@@ -1821,7 +1824,7 @@
           "reports": "Rapports",
           "share": "Partager",
           "finish": "Terminer"
-        }        
+        }
       },
       "agent_portal": {
         "policy": "Police",
@@ -2571,7 +2574,7 @@
       "allocatedAmount": "Montant alloué",
       "cancel_receipt": "Annuler le Reçu"
     },
-   
+
       "receipt_authorization": {
         "title": "Autorisation de reçus",
         "normal_tab": "Reçus normaux",
@@ -2596,7 +2599,7 @@
         "total_amount": "Montant total",
         "send_sms_alerts": "Envoyer des alertes SMS"
       }
-    
+
   },
   "campaignMngmt": {
     "campaigns": "Campagnes",
