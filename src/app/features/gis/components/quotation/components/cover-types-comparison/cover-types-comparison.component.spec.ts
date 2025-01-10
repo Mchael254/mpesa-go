@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CoverTypesComparisonComponent } from './cover-types-comparison.component';
-import { MessageService, SharedModule } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+// import { SharedModule, untilDestroyed } from '../../../../../../shared/shared.module';
+
 import { AuthService } from '../../../../../../shared/services/auth.service';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { ClientService } from '../../../../../entities/services/client/client.service';
@@ -27,6 +29,7 @@ import { Premiums } from '../../../setups/data/gisDTO';
 import { QuotationDetails, PremiumComputationRequest, quotationDTO } from '../../data/quotationsDTO';
 import { TranslateModule } from '@ngx-translate/core';
 import { CUSTOM_ELEMENTS_SCHEMA, forwardRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { SharedModule } from '../../../../../../shared/shared.module';
 
 
 
@@ -146,14 +149,11 @@ const mockQuotationDetail: QuotationDetails = {
   ],
   status: 'Active',
   taxInformation: [
-    {
-      amount: 50,
-      description: 'Tax ABC',
-      quotationRate: 0.05,
-      rateType: 'Percentage',
-    },
-    // Add more tax information as needed
-  ],
+    { amount: 200, description: 'Tax 1', quotationRate: 10, rateType: 'percentage' },
+    { amount: 150, description: 'Tax 2', quotationRate: 15, rateType: 'percentage' },
+    { amount: 50, description: 'Tax 3', quotationRate: 5, rateType: 'percentage' }
+  ]
+
 };
 const mockPremiumPayload: PremiumComputationRequest = {
   entityUniqueCode: 123,
@@ -488,14 +488,14 @@ describe('CoverTypesComparisonComponent', () => {
       declarations: [CoverTypesComparisonComponent],
       imports: [
         HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
+        // SharedModule,
+        // RouterTestingModule,
+        // FormsModule,
+        // ReactiveFormsModule,
         TranslateModule.forRoot(),
 
-        CommonModule,
-          
+        // CommonModule,
+
       ],
       providers: [
         { provide: QuotationsService, useClass: mockQuotationService },
@@ -523,29 +523,166 @@ describe('CoverTypesComparisonComponent', () => {
     component = fixture.componentInstance;
 
     globalMessagingService = TestBed.inject(GlobalMessagingService);
-        quotationService = TestBed.inject(QuotationsService);
-        productService = TestBed.inject(ProductsService);
-        authService = TestBed.inject(AuthService);
-        branchService = TestBed.inject(BranchService);
-        clientService = TestBed.inject(ClientService);
-        countryService = TestBed.inject(CountryService);
-        subclassService = TestBed.inject(SubclassesService);
-        binderService = TestBed.inject(BinderService);
-        currencyService = TestBed.inject(CurrencyService);
-        subclassCoverTypesService = TestBed.inject(SubClassCoverTypesService);
-        subclassSectionCovertypeService = TestBed.inject(SubClassCoverTypesSectionsService);
-        sectionService = TestBed.inject(SectionsService);
-        premiumRateService = TestBed.inject(PremiumRateService);
-        // component.emailForm = new FormGroup({});
-        // component.riskDetailsForm = new FormGroup({});
-        // component.quotationForm = new FormGroup({});
-        // component.sectionDetailsForm = new FormGroup({});
-        // component.fb = TestBed.inject(FormBuilder);
+    quotationService = TestBed.inject(QuotationsService);
+    productService = TestBed.inject(ProductsService);
+    authService = TestBed.inject(AuthService);
+    branchService = TestBed.inject(BranchService);
+    clientService = TestBed.inject(ClientService);
+    countryService = TestBed.inject(CountryService);
+    subclassService = TestBed.inject(SubclassesService);
+    binderService = TestBed.inject(BinderService);
+    currencyService = TestBed.inject(CurrencyService);
+    subclassCoverTypesService = TestBed.inject(SubClassCoverTypesService);
+    subclassSectionCovertypeService = TestBed.inject(SubClassCoverTypesSectionsService);
+    sectionService = TestBed.inject(SectionsService);
+    premiumRateService = TestBed.inject(PremiumRateService);
+    // component.emailForm = new FormGroup({});
+    // component.riskDetailsForm = new FormGroup({});
+    // component.quotationForm = new FormGroup({});
+    // component.sectionDetailsForm = new FormGroup({});
+    // component.fb = TestBed.inject(FormBuilder);
 
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
+  test('should open and close the modal', () => {
+    // Initial value of isModalOpen should be false
+    expect(component.isModalOpen).toBe(false);
+
+    // Call the openModal method
+    component.openModal();
+
+    // After calling the openModal method, isModalOpen should be true
+    expect(component.isModalOpen).toBe(true);
+
+    // Call the closeModal method
+    component.closeModal();
+
+    // After calling the closeModal method, isModalOpen should be false
+    expect(component.isModalOpen).toBe(false);
+  });
+
+  test('should pass the correct cover type description and related methods', () => {
+    // Mocking necessary data
+    const selectedCoverCode = 'someCode';
+    const mockCoverObject = {
+      coverTypeDetails: {
+        coverTypeCode: selectedCoverCode,
+        coverTypeDescription: 'Mocked Cover Description',
+        coverTypeShortDescription: 'COMP',
+      }
+    };
+    const mockQuickQuoteSections = [
+      { coverTypeDescription: 'COMPREHENSIVE', coverTypeCode: selectedCoverCode, coverTypeShortDescription: 'COMP' },
+      { coverTypeDescription: 'STANDARD', coverTypeCode: 'anotherCode', coverTypeShortDescription: 'STD' }
+    ];
+
+    // Mocking component properties
+    component.riskLevelPremiums = [mockCoverObject];
+    component.quickQuoteSectionList = mockQuickQuoteSections;
+
+    // Spying on methods that should be called
+    jest.spyOn(component, 'fetchClauses');
+    jest.spyOn(component, 'fetchExcesses');
+    jest.spyOn(component, 'fetchLimitsOfLiability');
+    jest.spyOn(component, 'loadSubclassSectionCovertype');
+    jest.spyOn(component, 'loadAllPremiums');
+
+    // Call the method to test
+    component.passCovertypeDesc(selectedCoverCode);
+
+    // Expectations
+    expect(component.passedCovertypeDescription).toBe('Mocked Cover Description');
+    expect(component.passedCovertypeCode).toBe(selectedCoverCode);
+    expect(component.passedCoverTypeShortDes).toBe('COMP');
+    expect(component.filteredSection).toEqual([mockQuickQuoteSections[0]]);
+    expect(component.passedSections).toEqual([mockQuickQuoteSections[0]]);
+
+    // Check if internal methods were called
+    expect(component.fetchClauses).toHaveBeenCalled();
+    expect(component.fetchExcesses).toHaveBeenCalled();
+    expect(component.fetchLimitsOfLiability).toHaveBeenCalled();
+    expect(component.loadSubclassSectionCovertype).toHaveBeenCalled();
+    expect(component.loadAllPremiums).toHaveBeenCalled();
+  });
+  test('should correctly calculate total payable premium', () => {
+    // Mock QuotationDetails object with premium and tax information
+    // const mockQuotationDetail = {
+    //   premium: 1000,
+    //   taxInformation: [
+    //     { amount: 200 },
+    //     { amount: 150 },
+    //     { amount: 50 }
+    //   ]
+    // };
+
+    // Call the method to test
+    const result = component.calculateTotalPayablePremium(mockQuotationDetail);
+
+    // Expected total premium (1000 + 200 + 150 + 50)
+    const expectedTotal = 1000 + 200 + 150 + 50;
+
+    // Assert that the calculated total matches the expected value
+    expect(result).toBe(expectedTotal);
+  });
+  test('should correctly load subclass sections and process them', () => {
+    // Mock the response of the subclassSectionCovertypeService
+    const mockSubclassCovertypeSections = [
+      { subClassCode: 'A', isMandatory: null, coverTypeCode: 'B', description: 'Section 1' },
+      { subClassCode: 'A', isMandatory: null, coverTypeCode: 'C', description: 'Section 2' },
+      { subClassCode: 'B', isMandatory: null, coverTypeCode: 'B', description: 'Section 3' },
+    ];
+  
+    // Mock the service method
+    jest.spyOn(subclassSectionCovertypeService, 'getSubclassCovertypeSections').mockReturnValue(of(mockSubclassCovertypeSections)as any);
+  
+    // Set up mock values for selectedSubclassCode and passedCovertypeCode
+    component.selectedSubclassCode = 'A';
+    component.passedCovertypeCode = 'B';
+  
+    // Spy on the sessionStorage.setItem and findTemporaryPremium methods
+    // const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
+    const setItemMock = jest.fn();
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        setItem: setItemMock,
+      },
+      writable: true,
+    });
+    const findTemporaryPremiumSpy = jest.spyOn(component, 'findTemporaryPremium');
+  
+    // Call the method to test
+    component.loadSubclassSectionCovertype();
+  
+    // Expectations:
+    // Ensure the response is processed correctly and stored in passedSections
+    expect(component.subclassSectionCoverList).toEqual(mockSubclassCovertypeSections);
+  
+    // Filtered list based on selectedSubclassCode and isMandatory being null
+    const filteredSections = mockSubclassCovertypeSections.filter(section =>
+      section.subClassCode === component.selectedSubclassCode && section.isMandatory === null
+    );
+    expect(component.covertypeSectionList).toEqual(filteredSections);
+  
+    // Further filter based on passedCovertypeCode
+    const specificSection = filteredSections.filter(section => section.coverTypeCode === component.passedCovertypeCode);
+    expect(component.covertypeSpecificSection).toEqual(specificSection);
+  
+    // Set passedMandatorySections
+    expect(component.passedMandatorySections).toEqual(specificSection);
+  
+    // Ensure the sessionStorage.setItem was called with the correct parameters
+    expect(setItemMock).toHaveBeenCalledWith("Added Benefit", JSON.stringify(component.passedSections));
+  
+    // Ensure findTemporaryPremium was called
+    expect(findTemporaryPremiumSpy).toHaveBeenCalled();
+  });
+ 
+
+
+  
+ 
 });

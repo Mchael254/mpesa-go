@@ -48,6 +48,7 @@ import { OrganizationBranchDto } from '../../../../../../shared/data/common/orga
 import { NgxSpinnerService } from 'ngx-spinner';
 import {
   Clause,
+  ClientPhone,
   Limit,
   PremiumComputationRequest,
   Risk,
@@ -139,6 +140,7 @@ export class QuickQuoteFormComponent {
     inputClientName: '',
     inputClientZipCode: '',
     inputClientPhone: '',
+    // inputClientPhone: {} as ClientPhone,
     inputClientEmail: '',
   };
   countryList: CountryDto[];
@@ -281,6 +283,7 @@ export class QuickQuoteFormComponent {
   pinValue: string;
   idValue: string;
   taxList: any;
+  newClientPhone: ClientPhone;
 
   // headers: { key: string, translationKey: string }[] = [
   //   { key: 'name', translationKey: 'gis.quotation.name' },
@@ -785,6 +788,7 @@ loadFormData() {
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
       if (this.isFormDataLoaded) {
+    
         this.loadFormData();
       }
       this.cdr.detectChanges();
@@ -907,6 +911,8 @@ loadFormData() {
   onInputChange() {
     log.debug('Method called');
     this.newClientData.inputClientZipCode = this.selectedZipCode;
+    this.newClientData.inputClientPhone = this.newClientPhone.number
+    // this.newClientData.inputClientPhone = this.newClientPhone
     log.debug('New User Data', this.newClientData);
     const newClientDetailsString = JSON.stringify(this.newClientData);
     sessionStorage.setItem('newClientDetails', newClientDetailsString);
@@ -2154,7 +2160,11 @@ loadFormData() {
   onPhoneInputChange() {
     console.log('Client Phone:', this.clientPhone);
     console.log('New Client Phone:', this.newClientData.inputClientPhone);
+    console.log('New Client Phone:', this.newClientPhone)
+    this.onInputChange();
   }
+ 
+  
  /**
    * Fetches occupation data based on the provided organization ID and
    *  updates the component's occupationData property.
