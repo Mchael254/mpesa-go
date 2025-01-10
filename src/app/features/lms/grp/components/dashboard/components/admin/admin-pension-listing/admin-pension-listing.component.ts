@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { DashboardService } from '../../../services/dashboard.service';
 import { PensionListingDTO } from '../../../models/admin-policies';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { Logger } from 'src/app/shared/services';
+import { AutoUnsubscribe } from '../../../../../../../../shared/services/AutoUnsubscribe';
+import { Logger } from '../../../../../../../../shared/services';
+import { GlobalMessagingService } from '../../../../../../../../shared/services/messaging/global-messaging.service';
 
 const log = new Logger("AdminPensionListingComponent")
 @AutoUnsubscribe
@@ -21,6 +22,7 @@ export class AdminPensionListingComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private dashboardService: DashboardService,
+    private globalMessageService: GlobalMessagingService
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +76,7 @@ export class AdminPensionListingComponent implements OnInit, OnDestroy {
         log.info("getAdminPensionListing", this.pensionList);
       },
       (error) => {
-        log.error("Error fetching pension listing", error);
+        this.globalMessageService.displayErrorMessage('Error fetching pension listing', error)
       }
     );
   }

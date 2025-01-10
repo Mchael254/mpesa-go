@@ -67,6 +67,7 @@
                             [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
 
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+
                             [(ngModel)]="newClientData.inputClientEmail"
                             [disabled]="isFieldDisabled('email')"
                             #emailInput="ngModel"
@@ -74,6 +75,7 @@
                             (ngModelChange)="onEmailInputChange()"
                             required
                           >
+                      
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
                             <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
@@ -114,13 +116,9 @@
                                     [selectFirstCountry]="true"
                                     [selectedCountryISO]="CountryISO.Kenya"
                                     [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                    [phoneValidation]="true"
-                                    [(ngModel)]="newClientData.inputClientPhone"
-                                    [numberFormat]="PhoneNumberFormat.National"
-                                    #newClientPhoneInput="ngModel"
-                                    (ngModelChange)="onPhoneInputChange()"
-                                    [disabled]="isFieldDisabled('other')"
-                                  >
+                                    [phoneValidation]="true" [(ngModel)]="newClientPhone" 
+                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
+                                    (ngModelChange)="onPhoneInputChange()">
                                 </ngx-intl-tel-input>
                                 <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                     class="form-text text-danger">

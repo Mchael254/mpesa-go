@@ -373,6 +373,15 @@ export interface premiumPayloadData {
   riskLevelPremiums: riskLevelPremiums[];
 }
 
+export interface ClientPhone {
+  number: string;
+  internationalNumber: string;
+  nationalNumber: string;
+  e164Number: string;
+  countryCode: string;
+  dialCode: string;
+}
+
 export enum StatusEnum {
   Lapsed = 'Lapsed',
   Rejected = 'Rejected',
