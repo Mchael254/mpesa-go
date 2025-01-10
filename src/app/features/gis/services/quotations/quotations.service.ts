@@ -161,8 +161,8 @@ export class QuotationsService {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['coverTypeCode'] = covertypeCode.toString();
-    paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['coverTypeCode'] = covertypeCode?.toString();
+    paramsObj['subclassCode'] = subclassCode?.toString();
 
     const params = new HttpParams({ fromObject: paramsObj });
 
@@ -177,7 +177,7 @@ export class QuotationsService {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['subclassCode'] = subclassCode?.toString();
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });
@@ -191,7 +191,7 @@ export class QuotationsService {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['subclassCode'] = subclassCode?.toString();
     paramsObj['scheduleType'] = scheduleType;
 
     const params = new HttpParams({ fromObject: paramsObj });

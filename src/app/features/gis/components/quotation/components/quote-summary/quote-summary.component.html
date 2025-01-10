@@ -77,7 +77,7 @@
                 </div>
                 <!-- PRODUCT DETAILS -->
                 <p class="title mt-4">{{'gis.quotation.product_details' | translate}}</p>
-                <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
+                <p-table [value]="quotationDetails?.quotationProducts"[tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>{{'gis.quotation.product' | translate}}</th>
@@ -87,16 +87,16 @@
                             <th>{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-quotationDetails let-i="index">
+                    <ng-template pTemplate="body" let-product let-i="index">
                         <tr>
-                            <td>{{ productDesc}}</td>
-                            <td class="text-start" appCommaFormat> {{quotationDetails.quotationProducts[0].totalSumInsured |
+                            <td>{{ product.productShortDescription}}</td>
+                            <td class="text-start" appCommaFormat> {{product.totalSumInsured |
                                 number }}</td>
                             <td class="text-start" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
                             <td class="text-start" appCommaFormat>{{premiumAmount | number }}</td>
-                            <td class="text-start" appCommaFormat>{{ quotationDetails.quotationProducts[0].premium |
+                            <td class="text-start" appCommaFormat>{{ product.premium |
                                 number }}</td>
                         </tr>
 
