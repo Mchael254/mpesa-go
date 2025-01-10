@@ -29,6 +29,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
+import { CreateClientComponent } from './components/create-client/create-client.component';
+import { EntitiesModule } from '../../../entities/entities.module';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
     RiskSectionDetailsComponent,
     QuotationSummaryComponent,
     CoverTypesComparisonComponent,
+    CreateClientComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -64,7 +68,8 @@ import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
     RadioButtonModule,
     NgxCurrencyDirective,
     RadioButtonModule,
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    EntitiesModule
   ],
   providers: [DatePipe],
 

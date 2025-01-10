@@ -96,7 +96,7 @@ export class QuoteSummaryComponent {
     private messageService: MessageService,
     private clientService: ClientService,
     public sharedService: SharedQuotationsService,
-    private router: Router,
+    public router: Router,
     private ngZone: NgZone,
     public globalMessagingService: GlobalMessagingService,
 
@@ -110,12 +110,16 @@ export class QuoteSummaryComponent {
     const quotationNumberString = sessionStorage.getItem('quotationNumber');
     this.coverQuotationNo = JSON.parse(quotationNumberString);
 
+
     const riskLevelPremiumString = sessionStorage.getItem('riskLevelPremium');
     this.passedPremium = JSON.parse(riskLevelPremiumString);
     log.debug("Selected Cover Quotation Number:", this.coverQuotationNo);
     log.debug("Passed Premium :", this.passedPremium);
 
-    this.loadClientQuotation();
+    if (this.coverQuotationNo) {
+      this.loadClientQuotation();
+
+    }
 
     const storedClientDetailsString = sessionStorage.getItem('clientDetails');
     this.passedClientDetails = JSON.parse(storedClientDetailsString);
@@ -159,6 +163,10 @@ export class QuoteSummaryComponent {
     this.fieldDisableState = false;
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
+    // this.isAddRisk = false;
+    // log.debug("IS ADD RISK STATE:", this.isAddRisk)
+    // this.isEditRisk = false;
+    // log.debug("IS EDIT RISK STATE:", this.isEditRisk)
 
   }
   ngOnDestroy(): void { }
@@ -182,7 +190,7 @@ export class QuoteSummaryComponent {
       this.coverFrom = this.quotationDetails.coverFrom;
       log.debug("Cover From:", this.coverFrom)
 
-      this.coverTo = this.quotationDetails.quotCoverTo;
+      this.coverTo = this.quotationDetails.coverTo;
       log.debug("Cover To:", this.coverTo)
 
 
@@ -192,7 +200,7 @@ export class QuoteSummaryComponent {
       this.productCode = this.productInformation[0].proCode;
       log.debug("ProductCode:", this.productCode)
 
-      this.quoteDate = this.productInformation.wef;
+      this.quoteDate = this.productInformation[0].wef;
 
 
       this.agentDesc = this.productInformation[0].agentShortDescription;
@@ -206,17 +214,17 @@ export class QuoteSummaryComponent {
 
 
 
-  showOptions(item: any): void {
-    item.showOptions = !item.showOptions;
-  }
+  // showOptions(item: any): void {
+  //   item.showOptions = !item.showOptions;
+  // }
 
-  editItem(item: any): void {
-    log.debug('Edit item clicked', item);
-  }
+  // editItem(item: any): void {
+  //   log.debug('Edit item clicked', item);
+  // }
 
-  deleteItem(item: any): void {
-    log.debug('Delete item clicked', item);
-  }
+  // deleteItem(item: any): void {
+  //   log.debug('Delete item clicked', item);
+  // }
   getClient() {
     if (this.passedNewClientDetails) {
       log.debug("new client")
@@ -505,11 +513,11 @@ export class QuoteSummaryComponent {
         tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
       )
       .join('\n\n');
-}
+  }
 
   fetchClauses() {
     this.quotationService
-      .getClauses(this.selectedRisk.coverTypeCode, this.selectedSubclassCode)
+      .getClauses(this.selectedRisk?.coverTypeCode, this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -626,7 +634,17 @@ export class QuoteSummaryComponent {
       this.router.navigate(['/home/gis/quotation/quick-quote']);
     });
   }
+convertToPolicy(){
+  if(this.passedNewClientDetails){
+  //NAVIGATE TO CREATE CLIENT SCREEN
+  log.debug("Passed new client details:",this.passedNewClientDetails)
+  this.router.navigate(['/home/gis/quotation/create-client']);
 
+
+  }else{
+    // NAVIGATE TO POLICY SCREEN
+  }
+}
 
 
 }
