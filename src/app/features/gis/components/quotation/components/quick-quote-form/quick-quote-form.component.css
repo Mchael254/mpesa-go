@@ -35,7 +35,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
 }
 #quote-select{
   border-radius: 4px;
@@ -46,7 +46,7 @@
  font-size: 14px;
  font-style: normal;
  font-weight: 400;
- line-height: normal; 
+ line-height: normal;
  height: 35px;
 }
 #productSpecificLabel{
@@ -55,7 +55,7 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
 }
 #compute{
     color: #FFF;
@@ -79,9 +79,9 @@ select#quote-input option {
 ::ng-deep .p-calendar{
     height: 35px !important;
     width: 350px;
-    
+
   }
-::ng-deep 
+::ng-deep
   .p-datepicker table td > span {
     width:1.5rem;
     height: 1.5rem;
@@ -103,15 +103,15 @@ select#quote-input option {
     position: relative;
     display: inline-block;
   }
-  
+
   .search-input {
     padding-bottom: 6px;
-    padding-left: 30px; 
+    padding-left: 30px;
     border: 1px solid #ccc;
     background: rgba(245, 246, 248, 1);
     border-radius: 5px;
     height: 40px;
-    width: 465px; 
+    width: 465px;
     font-size: 13px;
   }
   ::ng-deep .p-datatable .p-datatable-header{
@@ -122,7 +122,7 @@ select#quote-input option {
     padding:0;
     padding-bottom:16px;
   }
-  
+
   .search-icon {
     /* position: absolute; */
     /* left: 25px; */
@@ -150,7 +150,7 @@ select#quote-input option {
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
   }
   #zip-quote-input{
     border-radius: 4px;
@@ -161,7 +161,7 @@ select#quote-input option {
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: normal; 
+    line-height: normal;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
   }
@@ -223,5 +223,4 @@ select#quote-input option {
 .ui-datatable td {
   white-space: nowrap;
 }
-  
-    
+

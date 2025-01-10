@@ -372,6 +372,7 @@ export interface premiumPayloadData {
   taxes: tax[];
   riskLevelPremiums: riskLevelPremiums[];
 }
+
 export interface ClientPhone {
   number: string;
   internationalNumber: string;
@@ -380,3 +381,18 @@ export interface ClientPhone {
   countryCode: string;
   dialCode: string;
 }
+
+export enum StatusEnum {
+  Lapsed = 'Lapsed',
+  Rejected = 'Rejected',
+  Pending = 'Pending',
+  None = 'None',
+  Confirmed = 'Confirmed',
+  Draft = 'Draft'
+}
+
+export interface Status {
+  status: StatusEnum;
+}
+
+

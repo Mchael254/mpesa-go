@@ -862,7 +862,10 @@
       "no_contact_information_available": "没有可用的联系信息",
       "total_sum_insured": "总保额",
       "total_taxes": "总税额",
-      "excesses": "免赔额"
+      "excesses": "免赔额",
+      "convert_quote": "转换报价",
+      "confirm_conversion": "确认转换"
+
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",
@@ -2002,7 +2005,7 @@
        "allocationType": "分配类型",
        "allocatedAmount": "已分配金额"
    },
-     
+
        "receipt_authorization": {
          "title": "Autorisation de reçus",
          "normal_tab": "Reçus normaux",
@@ -2027,7 +2030,7 @@
          "total_amount": "Montant total",
          "send_sms_alerts": "Envoyer des alertes SMS"
        }
-     
+
   },
   "campaignMngmt": {
     "campaigns": "活动",

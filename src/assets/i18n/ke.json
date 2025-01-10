@@ -865,7 +865,10 @@
       "no_contact_information_available": "Hakuna maelezo ya mawasiliano yanayopatikana",
       "total_sum_insured": "Jumla ya kiasi kilichokatiwa bima",
       "total_taxes": "Jumla ya kodi",
-      "excesses": "Ziada"
+      "excesses": "Ziada",
+      "convert_quote": "Badilisha nukuu",
+      "confirm_conversion": "Thibitisha ubadilishaji"
+
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
@@ -2062,7 +2065,7 @@
         "total_amount": "Kiasi Jumla",
         "send_sms_alerts": "Tuma Tahadhari za SMS"
       }
-    
+
   },
   "campaignMngmt": {
     "campaigns": "Kampeni",
