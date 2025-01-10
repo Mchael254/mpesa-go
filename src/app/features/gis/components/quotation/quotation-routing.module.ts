@@ -12,6 +12,7 @@ import { QuoteAssigningComponent } from './components/quote-assigning/quote-assi
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
+import { CreateClientComponent } from './components/create-client/create-client.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,9 @@ const routes: Routes = [
   },
   {
     path:'quotation-summary',component:QuotationSummaryComponent
+  },
+  {
+    path:'create-client',component:CreateClientComponent
   }
 ];
 
