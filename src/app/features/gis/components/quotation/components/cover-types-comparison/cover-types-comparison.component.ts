@@ -302,6 +302,10 @@ export class CoverTypesComparisonComponent {
     this.isAddRisk = JSON.parse(passedIsAddRiskString);
     log.debug("isAddRiskk Details:", this.isAddRisk);
 
+    this.showQuoteActions = true;
+    const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
+    sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
+
   }
   ngOnDestroy(): void { }
 
@@ -524,15 +528,15 @@ export class CoverTypesComparisonComponent {
     const interval = setInterval(() => {
       if (this.premiumList && this.premiumList.length > 0) {
         clearInterval(interval); // Stop the polling once data is available
-    
+
         log.debug('Premium Rates:', this.premiumList);
          this.premiumRates= this.premiumList;
-    
+
         if (this.premiumRates.length !== this.passedSections.length) {
           log.error("Number of premium rates doesn't match the number of sections");
           return;
         }
-    
+
         // Proceed with further execution
         console.log('Premium list validation passed!');
       }
@@ -861,9 +865,6 @@ export class CoverTypesComparisonComponent {
     log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:", this.quotationData);
 
-    this.showQuoteActions = true;
-    const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
-    sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
 
     // Check if passedNumber exists (not null, empty, or 'null')
     if (this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null') {
@@ -971,9 +972,9 @@ export class CoverTypesComparisonComponent {
 
     // Check if passedNumber exists (not null, empty, or 'null')
     // if(this.isAddededBenefitsCalled = true){
-    //   // Check if additonal benefit was added 
+    //   // Check if additonal benefit was added
     //   if(this.passedNumber && this.passedNumber.trim() !== '' && this.passedNumber.toLowerCase() !== 'null' ){
-    //      // Both passedNumber and additional benefit has been added 
+    //      // Both passedNumber and additional benefit has been added
     //      log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED ");
     //      log.debug(" NAVIGATING TO POLICY SUMMARY");
     //      this.router.navigate(['/home/gis/quotation/policy-summary']);
@@ -986,7 +987,7 @@ export class CoverTypesComparisonComponent {
     //       log.debug(" UPDATING EXISTING QUOTATION RISK");
     //       this.UpdateQuotationRisk();
     //       sessionStorage.removeItem('isEditRisk');
-        
+
     //     } else if (this.isAddRisk) {
 
     //       log.debug(" ADDING ANOTHER QUOTATION RISK");
@@ -1012,25 +1013,25 @@ export class CoverTypesComparisonComponent {
       // PassedNumber exists, but no additional benefit has been added
       log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
       log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
-      
+
       if (this.isEditRisk) {
           log.debug("UPDATING EXISTING QUOTATION RISK");
           this.UpdateQuotationRisk();
           sessionStorage.removeItem('isEditRisk');
-          
+
       const quotationNumberString = JSON.stringify(this.passedNumber);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
       } else if (this.isAddRisk) {
           log.debug("ADDING ANOTHER QUOTATION RISK");
           this.createQuotationRisk();
           sessionStorage.removeItem('isAddRisk');
-          
+
       const quotationNumberString = JSON.stringify(this.passedNumber);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
       } else {
           log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
       }
-  
+
       const quotationNumberString = JSON.stringify(this.passedNumber);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
   } else {
@@ -1039,7 +1040,7 @@ export class CoverTypesComparisonComponent {
       this.createQuotation();
       this.getQuotationNumber();
   }
-  
+
 
   }
 
@@ -1228,8 +1229,8 @@ export class CoverTypesComparisonComponent {
         //   'quickQuotationCode',
         //   (this.quotationCode?.toString() || this.passedQuotationCode.toString())
         // );
-        
-        
+
+
           this.router.navigate(['/home/gis/quotation/quote-summary']);
           // this.loadClientQuotation();
 
