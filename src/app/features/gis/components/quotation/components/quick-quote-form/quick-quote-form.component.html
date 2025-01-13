@@ -75,7 +75,7 @@
                             (ngModelChange)="onEmailInputChange()"
                             required
                           >
-                      
+
                         <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
                             <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
                                 translate}}</span>
@@ -116,9 +116,11 @@
                                     [selectFirstCountry]="true"
                                     [selectedCountryISO]="CountryISO.Kenya"
                                     [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                    [phoneValidation]="true" [(ngModel)]="newClientPhone" 
+                                    [phoneValidation]="true" [(ngModel)]="newClientPhone"
                                     [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
-                                    (ngModelChange)="onPhoneInputChange()">
+                                    (ngModelChange)="onPhoneInputChange()"
+                                    [disabled]="isFieldDisabled('other')"
+                                  >
                                 </ngx-intl-tel-input>
                                 <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
                                     class="form-text text-danger">
@@ -126,11 +128,8 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-
                     </div>
+
                     <div class="col-sm-4 col-6" *ngIf="new">
                         <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
                             translate}}</label>
