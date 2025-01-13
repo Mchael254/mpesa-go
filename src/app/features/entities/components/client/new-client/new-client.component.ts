@@ -1,6 +1,6 @@
 // import { DatePipe } from '@angular/common';
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,28 +8,29 @@ import { EntityService } from '../../../services/entity/entity.service';
 import { ClientService } from '../../../services/client/client.service';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { AccountService } from '../../../services/account/account.service';
-import {Logger, UtilService} from "../../../../../shared/services";
-import {CountryDto, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
-import {SectorDTO} from "../../../../../shared/data/common/sector-dto";
-import {BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO} from "../../../../../shared/data/common/bank-dto";
-import {OccupationDTO} from "../../../../../shared/data/common/occupation-dto";
-import {ClientTitleDTO} from "../../../../../shared/data/common/client-title-dto";
+import { Logger, UtilService } from "../../../../../shared/services";
+import { CountryDto, StateDto, TownDto } from "../../../../../shared/data/common/countryDto";
+import { SectorDTO } from "../../../../../shared/data/common/sector-dto";
+import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO } from "../../../../../shared/data/common/bank-dto";
+import { OccupationDTO } from "../../../../../shared/data/common/occupation-dto";
+import { ClientTitleDTO } from "../../../../../shared/data/common/client-title-dto";
 import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../../data/ClientDTO';
-import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {CountryService} from "../../../../../shared/services/setups/country/country.service"
-import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
-import {OccupationService} from "../../../../../shared/services/setups/occupation/occupation.service";
-import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
-import {SectorService} from "../../../../../shared/services/setups/sector/sector.service";
-import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import { BreadCrumbItem } from "../../../../../shared/data/common/BreadCrumbItem";
+import { GlobalMessagingService } from "../../../../../shared/services/messaging/global-messaging.service";
+import { CountryService } from "../../../../../shared/services/setups/country/country.service"
+import { BankService } from "../../../../../shared/services/setups/bank/bank.service";
+import { OccupationService } from "../../../../../shared/services/setups/occupation/occupation.service";
+import { MandatoryFieldsService } from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
+import { SectorService } from "../../../../../shared/services/setups/sector/sector.service";
+import { untilDestroyed } from "../../../../../shared/services/until-destroyed";
 import { DatePipe } from '@angular/common';
-import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
-import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
-import {AuthService} from "../../../../../shared/services/auth.service";
-import {DmsService} from "../../../../../shared/services/dms/dms.service";
-import {AppConfigService} from "../../../../../core/config/app-config-service";
-const log =  new Logger("CreateClientComponent")
+import { SetupsParametersService } from "../../../../../shared/services/setups-parameters.service";
+import { DmsDocument } from "../../../../../shared/data/common/dmsDocument";
+import { AuthService } from "../../../../../shared/services/auth.service";
+import { DmsService } from "../../../../../shared/services/dms/dms.service";
+import { AppConfigService } from "../../../../../core/config/app-config-service";
+import { PassedClientDto } from '../../../data/PassedClientDTO';
+const log = new Logger("CreateClientComponent")
 
 @Component({
   selector: 'app-new-client',
@@ -45,7 +46,7 @@ const log =  new Logger("CreateClientComponent")
  * cities, and bank branches based on user choices. Overall, it serves as the interface for creating and
  *  managing new client records within the application.
  */
-export class NewClientComponent implements OnInit{
+export class NewClientComponent implements OnInit {
 
   public clientRegistrationForm: FormGroup;
   submitted = false;
@@ -55,7 +56,7 @@ export class NewClientComponent implements OnInit{
   countryData: CountryDto[] = [];
   citiesData: StateDto[] = [];
   townData: TownDto[] = [];
-  countyData : StateDto[];
+  countyData: StateDto[];
   sectorData: SectorDTO[];
   banksData: BankDTO[];
   bankBranchData: BankBranchDTO[];
@@ -64,10 +65,10 @@ export class NewClientComponent implements OnInit{
   fundSource: FundSourceDTO[];
   clients: ClientDTO[] = [];
   clientID: number;
-  currenciesData : CurrencyDTO[];
-  identityTypeData : IdentityModeDTO[];
-  clientTypeData : ClientTypeDTO[];
-  clientBranchData : ClientBranchesDto[];
+  currenciesData: CurrencyDTO[];
+  identityTypeData: IdentityModeDTO[];
+  clientTypeData: ClientTypeDTO[];
+  clientBranchData: ClientBranchesDto[];
   entityDetails: EntityDto;
   clientType: string = 'I';
   groupId: string = 'MainClientTab';
@@ -79,7 +80,7 @@ export class NewClientComponent implements OnInit{
   visibleStatus: any = {
     identity_type: 'Y',
     citizenship: 'Y',
-    surname:'Y',
+    surname: 'Y',
     certRegNo: 'Y',
     regName: 'Y',
     tradeName: 'Y',
@@ -129,7 +130,7 @@ export class NewClientComponent implements OnInit{
     distributeChannel: 'Y'
   };
   response: any;
-  phoneNumberRegex:string;
+  phoneNumberRegex: string;
   clientBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -144,7 +145,7 @@ export class NewClientComponent implements OnInit{
       url: '/home/entity/client/new'
     }
   ];
-  timeStamp:any;
+  timeStamp: any;
   isLoading: boolean = false;
   documentPayload: any;
   selectedFile: File;
@@ -152,8 +153,10 @@ export class NewClientComponent implements OnInit{
   @Input() shouldReroute: boolean = true;
   @Output() onClickSaveClient: EventEmitter<any> = new EventEmitter<any>();
 
+  @Input() PassedGisClientData!: PassedClientDto;
+
   allUsersModalVisible: boolean = false;
-  zIndex= 1;
+  zIndex = 1;
   selectedMainUser: ClientDTO;
   private today = new Date();
   public eighteenYearsAgo: Date = new Date(
@@ -186,14 +189,14 @@ export class NewClientComponent implements OnInit{
   ) {
     this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
   }
-/**
- * Initializes the New Client Component.
- * - Retrieves entity details from session storage.
- * - Initializes the client registration form.
- * - Retrieves the client ID from route parameters.
- * - Fetches necessary data for populating form fields, including countries, sectors, currencies,
- *   client titles, identity types, occupations, client types, and client branches.
- */
+  /**
+   * Initializes the New Client Component.
+   * - Retrieves entity details from session storage.
+   * - Initializes the client registration form.
+   * - Retrieves the client ID from route parameters.
+   * - Fetches necessary data for populating form fields, including countries, sectors, currencies,
+   *   client titles, identity types, occupations, client types, and client branches.
+   */
   ngOnInit(): void {
     this.createClientRegistrationForm();
     const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
@@ -212,7 +215,7 @@ export class NewClientComponent implements OnInit{
 
     const passedTimestampString = sessionStorage.getItem('Timestamp');
     this.timeStamp = JSON.parse(passedTimestampString);
-    log.info("Passed Timestamp (CRM):",this.timeStamp)
+    log.info("Passed Timestamp (CRM):", this.timeStamp)
   }
 
   /**
@@ -222,29 +225,29 @@ export class NewClientComponent implements OnInit{
    */
   getPartyDetails(id: number): void {
     this.entityService.getEntityById(id)
-    .subscribe({
-      next: (party) => {
-        this.entityDetails = {
-          categoryName: party.categoryName,
-          countryId: party.countryId,
-          dateOfBirth: party.dateOfBirth,
-          effectiveDateFrom: party.effectiveDateFrom,
-          effectiveDateTo: party.effectiveDateTo,
-          id: party.id,
-          modeOfIdentity: party.modeOfIdentity,
-          identityNumber: party.identityNumber,
-          name: party.name,
-          organizationId: party.organizationId,
-          pinNumber: party.pinNumber,
-          profilePicture: party.profilePicture,
-          profileImage: party.profileImage
-        };
-        this.patchClientEntityFormValues()
-      },
-      error: (e) => {
-        log.error(`error fetching parties >>>`, e)
-      }
-    })
+      .subscribe({
+        next: (party) => {
+          this.entityDetails = {
+            categoryName: party.categoryName,
+            countryId: party.countryId,
+            dateOfBirth: party.dateOfBirth,
+            effectiveDateFrom: party.effectiveDateFrom,
+            effectiveDateTo: party.effectiveDateTo,
+            id: party.id,
+            modeOfIdentity: party.modeOfIdentity,
+            identityNumber: party.identityNumber,
+            name: party.name,
+            organizationId: party.organizationId,
+            pinNumber: party.pinNumber,
+            profilePicture: party.profilePicture,
+            profileImage: party.profileImage
+          };
+          this.patchClientEntityFormValues()
+        },
+        error: (e) => {
+          log.error(`error fetching parties >>>`, e)
+        }
+      })
   }
 
   /**
@@ -343,6 +346,7 @@ export class NewClientComponent implements OnInit{
     this.defineSmsNumberFormat();
     this.defineDisabledFormInputs();
     this.updateRegex();
+    this.patchGISClientFormValues();
   }
 
 
@@ -352,19 +356,19 @@ export class NewClientComponent implements OnInit{
    */
   defineSmsNumberFormat(): void {
     this.setupsParameterService.getParameters('SMS_NO_FORMAT')
-    .subscribe({
-      next: (param) => {
-        const phoneNumberRegex = param[0].value;
-        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
-        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
-        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
-        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
-        log.info(`from sms number format >>>`, param);
-      },
-      error: (e) => {
-        log.error(`Error fetching SMS number format >>>`, e);
-      }
-    })
+      .subscribe({
+        next: (param) => {
+          const phoneNumberRegex = param[0].value;
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+          log.info(`from sms number format >>>`, param);
+        },
+        error: (e) => {
+          log.error(`Error fetching SMS number format >>>`, e);
+        }
+      })
   }
 
   defineDisabledFormInputs(): void {
@@ -434,17 +438,17 @@ export class NewClientComponent implements OnInit{
   }
 
 
-/**
- * After the view has been initialized, this method retrieves mandatory field data
- * and updates the visibility and validation of form fields based on the received data.
- */
+  /**
+   * After the view has been initialized, this method retrieves mandatory field data
+   * and updates the visibility and validation of form fields based on the received data.
+   */
   ngAfterViewInit() {
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
     )
-      .subscribe((response) =>{
+      .subscribe((response) => {
         this.response = response; // Store the response in a class property
-        response.forEach((field) =>{
+        response.forEach((field) => {
           for (const key of Object.keys(this.clientRegistrationForm.controls)) {
 
             /*const value = (Object.keys(this.clientRegistrationForm.getRawValue()));
@@ -478,7 +482,7 @@ export class NewClientComponent implements OnInit{
 
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
                 this.clientRegistrationForm.get(`address.${key}`).setValidators(Validators.required);
                 this.clientRegistrationForm.get(`address.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
@@ -499,7 +503,7 @@ export class NewClientComponent implements OnInit{
             this.visibleStatus[field.frontedId] = field.visibleStatus;
 
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
                 this.clientRegistrationForm.get(`contact_details.${key}`).addValidators(Validators.required);
                 this.clientRegistrationForm.get(`contact_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
@@ -518,7 +522,7 @@ export class NewClientComponent implements OnInit{
 
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
                 this.clientRegistrationForm.get(`payment_details.${key}`).setValidators(Validators.required);
                 this.clientRegistrationForm.get(`payment_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
@@ -537,7 +541,7 @@ export class NewClientComponent implements OnInit{
 
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
                 this.clientRegistrationForm.get(`wealth_details.${key}`).setValidators(Validators.required);
                 this.clientRegistrationForm.get(`wealth_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
@@ -563,10 +567,10 @@ export class NewClientComponent implements OnInit{
   ];
   option= 'Individual';*/
 
-/**
- * Handles the selection of a user type and updates the clientType property accordingly.
- * @param e - The event object containing information about the selected user type.
- */
+  /**
+   * Handles the selection of a user type and updates the clientType property accordingly.
+   * @param e - The event object containing information about the selected user type.
+   */
   selectUserType(e) {
     this.clientType = e.target.value;
     console.log(`userType >>>`, this.clientType, e.target.value)
@@ -591,7 +595,7 @@ export class NewClientComponent implements OnInit{
     this.submitted = true;
     this.clientRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
-    setTimeout( () => {
+    setTimeout(() => {
       if (this.clientRegistrationForm.invalid) {
         const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
 
@@ -628,7 +632,7 @@ export class NewClientComponent implements OnInit{
       const clientFormValues = this.clientRegistrationForm.getRawValue();
       log.debug("Contact details->", clientFormValues)
       // Preparing address dto
-      const address: any ={
+      const address: any = {
         /* Todo:
             fax- no field for it but its on endpoint
             postal_code - no field for it but its on endpoint
@@ -647,7 +651,7 @@ export class NewClientComponent implements OnInit{
         road: clientFormValues.address.road,
         state_id: 2,
         town_id: clientFormValues.address.town,
-        utility_address_proof:clientFormValues.address.utility_address_proof,
+        utility_address_proof: clientFormValues.address.utility_address_proof,
         zip: "1022",
         phoneNumber: clientFormValues.address.phoneNumber
       }
@@ -736,39 +740,39 @@ export class NewClientComponent implements OnInit{
 
       }
 
-    const clientDetails: any = {
-      branchId: clientFormValues.contact_details.clientBranch
-    }
-    //preparing Client Dto
-    const saveClient: any = {
-      address: address,
-      contactDetails: contact,
-      effectiveDateFrom: null,
-      effectiveDateTo: null,
-      id: null,
-      createdBy: null,
-      partyId: this.entityDetails?.id,
-      partyTypeShortDesc: "CLIENT",
-      paymentDetails: payment,
-      clientDetails: clientDetails,
-      firstName: clientFormValues.surname,
-      gender: clientFormValues.gender ? clientFormValues.gender : null,
-      lastName: clientFormValues.otherName,
-      pinNumber: clientFormValues.pinNumber,
-      category: this.clientType,
-      status: "A",
-      wealthAmlDetails:wealth,
-      countryId: clientFormValues.citizenship,
-      dateCreated: null,
-      accountType: clientFormValues.clientTypeId,
-      dateOfBirth: this.entityDetails?.dateOfBirth,
-      organizationId: 2,
-      modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
-      idNumber: clientFormValues.idNumber,
-      // system: GIS/LMS
-      nextOfKinDetailsList: null,
-      modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
-      modeOfIdentityNumber: this.entityDetails?.identityNumber,
+      const clientDetails: any = {
+        branchId: clientFormValues.contact_details.clientBranch
+      }
+      //preparing Client Dto
+      const saveClient: any = {
+        address: address,
+        contactDetails: contact,
+        effectiveDateFrom: null,
+        effectiveDateTo: null,
+        id: null,
+        createdBy: null,
+        partyId: this.entityDetails?.id,
+        partyTypeShortDesc: "CLIENT",
+        paymentDetails: payment,
+        clientDetails: clientDetails,
+        firstName: clientFormValues.surname,
+        gender: clientFormValues.gender ? clientFormValues.gender : null,
+        lastName: clientFormValues.otherName,
+        pinNumber: clientFormValues.pinNumber,
+        category: this.clientType,
+        status: "A",
+        wealthAmlDetails: wealth,
+        countryId: clientFormValues.citizenship,
+        dateCreated: null,
+        accountType: clientFormValues.clientTypeId,
+        dateOfBirth: this.entityDetails?.dateOfBirth,
+        organizationId: 2,
+        modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
+        idNumber: clientFormValues.idNumber,
+        // system: GIS/LMS
+        nextOfKinDetailsList: null,
+        modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
+        modeOfIdentityNumber: this.entityDetails?.identityNumber,
 
       }
       log.info(saveClient)
@@ -782,14 +786,14 @@ export class NewClientComponent implements OnInit{
           this.onClickSaveClient.emit();
           this.clientRegistrationForm.reset();
           // this.clients = clientData;
-          log.debug("Timestamp:",this.timeStamp)
-          if(this.shouldReroute){
-            if(this.timeStamp){
+          log.debug("Timestamp:", this.timeStamp)
+          if (this.shouldReroute) {
+            if (this.timeStamp) {
               log.debug("BACK TO GIS:")
 
               this.router.navigate(['/home/gis/policy/policy-product']);
 
-            }else{
+            } else {
               log.debug("BACK TO CRM:")
 
               this.router.navigate(['home/entity/client/list']);
@@ -805,12 +809,11 @@ export class NewClientComponent implements OnInit{
 
   }
 
-/**
- * Handles file uploads and sets the URL of the uploaded file for display.
- * @param event - The file input change event containing uploaded files.
- */
-  onUpload(event)
-  {
+  /**
+   * Handles file uploads and sets the URL of the uploaded file for display.
+   * @param event - The file input change event containing uploaded files.
+   */
+  onUpload(event) {
     if (event.target.files) {
       var reader = new FileReader()
       reader.readAsDataURL(event.target.files[0])
@@ -954,14 +957,14 @@ export class NewClientComponent implements OnInit{
   }
   ngOnDestroy() {
   }
-/**
- * Fetches a list of countries and updates the component's countryData property.
- * This function is typically used to populate a dropdown or list of countries.
- */
-  fetchCountries(){
+  /**
+   * Fetches a list of countries and updates the component's countryData property.
+   * This function is typically used to populate a dropdown or list of countries.
+   */
+  fetchCountries() {
     log.info('Fetching countries list');
     this.countryService.getCountries()
-      .subscribe( (data) => {
+      .subscribe((data) => {
         this.countryData = data;
         // if(this.countryData){
         //   this.newServiceProviderForm.patchValue({
@@ -970,41 +973,41 @@ export class NewClientComponent implements OnInit{
         // }
       });
   }
-/**
- * Fetches a list of main city states for a specific country based on the given countryId
- * and updates the component's citiesData property.
- * This function is typically used to populate a dropdown or list of city states for a specific country.
- *
- * @param countryId - The unique identifier of the country for which city states are being fetched.
- */
-  fetchMainCityStates(countryId: number){
+  /**
+   * Fetches a list of main city states for a specific country based on the given countryId
+   * and updates the component's citiesData property.
+   * This function is typically used to populate a dropdown or list of city states for a specific country.
+   *
+   * @param countryId - The unique identifier of the country for which city states are being fetched.
+   */
+  fetchMainCityStates(countryId: number) {
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
-      .subscribe( (data) => {
-        this.citiesData  = data;
+      .subscribe((data) => {
+        this.citiesData = data;
       })
   }
-/**
- * Fetches a list of towns for a specific city-state based on the given stateId
- * and updates the component's townData property.
- * This function is typically used to populate a dropdown or list of towns for a specific city-state.
- *
- * @param stateId - The unique identifier of the city-state for which towns are being fetched.
- */
-  fetchTowns(stateId:number){
+  /**
+   * Fetches a list of towns for a specific city-state based on the given stateId
+   * and updates the component's townData property.
+   * This function is typically used to populate a dropdown or list of towns for a specific city-state.
+   *
+   * @param stateId - The unique identifier of the city-state for which towns are being fetched.
+   */
+  fetchTowns(stateId: number) {
     log.info(`Fetching towns list for city-state, ${stateId}`);
     this.countryService.getTownsByMainCityState(stateId)
-      .subscribe( (data) => {
+      .subscribe((data) => {
         this.townData = data;
       })
   }
-/**
- * Handles the change event when a user selects a different country in a form.
- * This function resets the county and town fields in the form,
- * fetches the list of banks based on the selected country,
- * and fetches the main city-states for the selected country.
- * It also triggers change detection to update the view.
- */
+  /**
+   * Handles the change event when a user selects a different country in a form.
+   * This function resets the county and town fields in the form,
+   * fetches the list of banks based on the selected country,
+   * and fetches the main city-states for the selected country.
+   * It also triggers change detection to update the view.
+   */
   onCountryChange() {
     this.clientRegistrationForm.patchValue({
       county: null,
@@ -1014,30 +1017,30 @@ export class NewClientComponent implements OnInit{
     this.getBanks(this.selectedCountry);
     this.countryService.getMainCityStatesByCountry(this.selectedCountry)
       .pipe(untilDestroyed(this))
-      .subscribe( (data) => {
+      .subscribe((data) => {
         this.citiesData = data;
       });
     this.cdr.detectChanges();
   }
-/**
- * Handles the change event when a user selects a different city-state in a form.
- * This function fetches the list of towns associated with the selected city-state
- * and updates the townData property accordingly.
- */
+  /**
+   * Handles the change event when a user selects a different city-state in a form.
+   * This function fetches the list of towns associated with the selected city-state
+   * and updates the townData property accordingly.
+   */
   onCityChange() {
     this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
-      .subscribe( (data) => {
+      .subscribe((data) => {
         this.townData = data;
       })
   }
-/**
- * Fetches the list of banks based on the selected country ID and updates the banksData property.
- * It also logs the retrieved bank data for debugging purposes.
- * After receiving the bank data, you can call other functions to fetch bank branches or perform further actions.
- *
- * @param countryId - The ID of the selected country for which banks are being fetched.
- */
+  /**
+   * Fetches the list of banks based on the selected country ID and updates the banksData property.
+   * It also logs the retrieved bank data for debugging purposes.
+   * After receiving the bank data, you can call other functions to fetch bank branches or perform further actions.
+   *
+   * @param countryId - The ID of the selected country for which banks are being fetched.
+   */
   getBanks(countryId: number) {
     this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
@@ -1046,15 +1049,15 @@ export class NewClientComponent implements OnInit{
         console.log('Bank DATA', this.banksData);
       })
 
-      // Call getBankBranches after receiving banksData
+    // Call getBankBranches after receiving banksData
   }
-/**
- * Handles the selection of a bank by updating the selectedBank property and resetting the branch selection.
- * It triggers the retrieval of bank branches based on the selected bank ID.
- */
+  /**
+   * Handles the selection of a bank by updating the selectedBank property and resetting the branch selection.
+   * It triggers the retrieval of bank branches based on the selected bank ID.
+   */
   onBankSelection() {
-   /* const bankId = event.target.value; // Get the selected bank ID from the event
-    this.getBankBranches(bankId);*/
+    /* const bankId = event.target.value; // Get the selected bank ID from the event
+     this.getBankBranches(bankId);*/
     log.info(`selected bank ==> `, this.selectedBank);
     this.clientRegistrationForm.patchValue({
       branch: null
@@ -1063,10 +1066,10 @@ export class NewClientComponent implements OnInit{
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
   }
-/**
- * Retrieves bank branches based on the provided bank ID and updates the bankBranchData property.
- * @param bankId The ID of the selected bank to fetch branches for.
- */
+  /**
+   * Retrieves bank branches based on the provided bank ID and updates the bankBranchData property.
+   * @param bankId The ID of the selected bank to fetch branches for.
+   */
   getBankBranches(bankId: number) {
     if (bankId) {
       this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {
@@ -1142,7 +1145,7 @@ export class NewClientComponent implements OnInit{
   }
 
   openAllUsersModal() {
-    this.zIndex  = -1;
+    this.zIndex = -1;
     this.toggleAllUsersModal(true);
   }
 
@@ -1160,7 +1163,7 @@ export class NewClientComponent implements OnInit{
       clientTypeId: client?.clientType?.code,
       contact_details: {
         clientBranch: client?.branchCode,
-        clientTitle: client?.clientTitle ,
+        clientTitle: client?.clientTitle,
         smsNumber: client?.mobileNumber,
         phoneNumber: client?.phoneNumber,
         email: client?.emailAddress,
@@ -1201,5 +1204,21 @@ export class NewClientComponent implements OnInit{
       }
 
     });
+  }
+  patchGISClientFormValues() {
+    if (this.PassedGisClientData) {
+      const client = this.PassedGisClientData
+      this.clientRegistrationForm.patchValue({
+        surname: client?.surname,
+        otherName: client?.otherName,
+        contact_details: {
+          countryCodeSms: client.countryCodeSms,
+          smsNumber: client?.smsNumber,
+          email: client?.email,
+        },
+      });
+    }
+
+
   }
 }
