@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { BreadCrumbItem } from '../../../../../../../../shared/data/common/BreadCrumbItem';
 import { DashboardService } from '../../../services/dashboard.service';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { Logger } from 'src/app/shared/services';
+import { AutoUnsubscribe } from '../../../../../../../../shared/services/AutoUnsubscribe';
+import { Logger } from '../../../../../../../../shared/services';
 import { ClaimsListingDTO } from '../../../models/admin-policies';
 
 const log = new Logger("AdminClaimsListingComponent")
