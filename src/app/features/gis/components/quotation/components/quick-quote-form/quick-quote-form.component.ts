@@ -940,7 +940,7 @@ loadFormData() {
   }
   onInputChange() {
     log.debug('Method called');
-    this.newClientData.inputClientZipCode = this.selectedZipCode;
+    this.newClientData.inputClientZipCode = this.newClientPhone.dialCode;
     this.newClientData.inputClientPhone = this.newClientPhone.number
     // this.newClientData.inputClientPhone = this.newClientPhone
     log.debug('New User Data', this.newClientData);

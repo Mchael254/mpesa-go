@@ -228,7 +228,7 @@ export class CoverTypesComparisonComponent {
     this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.coverTypeCode;
 
     log.info("selectedCovertype when the page loads:", this.selectedCoverType)
-    this.selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code
+    this.selectedSubclassCode = this.premiumPayload?.risks?.[0]?.subclassSection.code
 
     const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
     this.quickQuoteSectionList = JSON.parse(storedMandatorySectionsString);
@@ -501,8 +501,8 @@ export class CoverTypesComparisonComponent {
     sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
   }
   loadAllPremiums() {
-    const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
-    const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
+    const selectedBinder = this.premiumPayload?.risks?.[0]?.binderDto.code;
+    const selectedSubclassCode = this.premiumPayload?.risks?.[0]?.subclassSection.code;
     const sections = this.passedSections;
 
     // Create an array to store observables returned by each service call
@@ -1004,12 +1004,21 @@ export class CoverTypesComparisonComponent {
     //     this.createQuotation();
     //     this.getQuotationNumber();
     // }
-    if (this.isAddededBenefitsCalled == true && this.passedNumber) {
+    if(this.isAddededBenefitsCalled == true){
+      log.debug(" A BENEFIT HAS BEEN ADDED");
+      log.debug("Quotation Number:",this.quotationNo)
+      const quotationNumberString = JSON.stringify(this.quotationNo);
+      sessionStorage.setItem('quotationNumber', quotationNumberString);
+      this.loadClientQuotation()
+      log.debug("NAVIGATING TO POLICY SUMMARY");
+      this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+     if(this.passedNumber) {
       // Both passedNumber and additional benefit have been added
       log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
       log.debug("NAVIGATING TO POLICY SUMMARY");
-      this.router.navigate(['/home/gis/quotation/policy-summary']);
-  } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
+      this.router.navigate(['/home/gis/quotation/quote-summary']);
+  }} else if (!this.isAddededBenefitsCalled && this.passedNumber) {
       // PassedNumber exists, but no additional benefit has been added
       log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
       log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
@@ -1195,11 +1204,50 @@ export class CoverTypesComparisonComponent {
           }
           log.debug(JSON.stringify(this.premiumPayload, null, 2));
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
-          if(this.premiumPayload){
-            log.debug("if statement put on premium payload")
-            this.loadClientQuotation();
-            this.router.navigate(['/home/gis/quotation/quote-summary']);
+          
+          if(this.isAddededBenefitsCalled){
+            log.debug("Do not navigate to quote summary")
+            // this.router.navigate(['/home/gis/quotation/quote-summary']);
 
+          }else{
+            if(this.premiumPayload){
+              log.debug("if statement put on premium payload")
+              this.loadClientQuotation();
+              this.router.navigate(['/home/gis/quotation/quote-summary']);
+  
+            }
+            if(this.premiums){
+              log.debug("if statement put on premiums")
+  
+              this.loadClientQuotation();
+              this.router.navigate(['/home/gis/quotation/quote-summary']);
+  
+  
+            }
+  
+            log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
+            log.debug("just CKECING IF IT EXISTS", this.taxInformation)
+  
+            log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
+          //   const quotationNumberString = JSON.stringify(this.passedNumber);
+          //   sessionStorage.setItem('quotationNumber', quotationNumberString);
+          //   //   const quotationNumberString = JSON.stringify(this.quotationNo);
+          // // sessionStorage.setItem('quotationNumber', quotationNumberString ||this.passedNumber.toString());
+          // // sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+          // sessionStorage.setItem(
+          //   'quickQuotationNum',
+          //   (this.quotationNo || this.passedNumber.toString())
+          // );
+          // // sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString()||this.passedQuotationCode);
+          // sessionStorage.setItem(
+          //   'quickQuotationCode',
+          //   (this.quotationCode?.toString() || this.passedQuotationCode.toString())
+          // );
+          
+          
+            this.router.navigate(['/home/gis/quotation/quote-summary']);
+            // this.loadClientQuotation();
+  
           }
           if(this.premiums){
             log.debug("if statement put on premiums")
@@ -1235,6 +1283,7 @@ export class CoverTypesComparisonComponent {
           // this.loadClientQuotation();
 
 
+         
         },
         error: (error: HttpErrorResponse) => {
           log.info(error);

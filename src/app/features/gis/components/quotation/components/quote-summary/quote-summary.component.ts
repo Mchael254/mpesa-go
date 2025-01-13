@@ -642,6 +642,10 @@ convertToPolicy(){
   if(this.passedNewClientDetails){
   //NAVIGATE TO CREATE CLIENT SCREEN
   log.debug("Passed new client details:",this.passedNewClientDetails)
+
+  const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+  sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+  
   this.router.navigate(['/home/gis/quotation/create-client']);
 
 

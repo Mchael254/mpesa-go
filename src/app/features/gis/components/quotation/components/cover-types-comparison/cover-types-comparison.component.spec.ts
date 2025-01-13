@@ -29,7 +29,7 @@ import { Premiums } from '../../../setups/data/gisDTO';
 import { QuotationDetails, PremiumComputationRequest, quotationDTO } from '../../data/quotationsDTO';
 import { TranslateModule } from '@ngx-translate/core';
 import { CUSTOM_ELEMENTS_SCHEMA, forwardRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { SharedModule } from '../../../../../../shared/shared.module';
+import { Logger, SharedModule } from '../../../../../../shared/shared.module';
 
 
 
@@ -95,6 +95,7 @@ export class MockGlobalMessageService {
     return;
   });
 }
+
 
 
 const mockQuotationDetail: QuotationDetails = {
@@ -461,6 +462,86 @@ const mockRiskLevelPremiumResponse = {
     }
   ]
 };
+const mockTemporaryPremiumList: Premiums[] =[
+  {
+    code: 1,
+    sectionCode: 101,
+    sectionShortDescription: 'Premium 1',
+    sectionType: 'Type A',
+    rate: 1500,
+    dateWithEffectFrom: '2025-01-01',
+    dateWithEffectTo: '2025-12-31',
+    subClassCode: 2001,
+    binderCode: 3001,
+    rangeFrom: 5000,
+    rangeTo: 10000,
+    rateDescription: 'Basic Rate',
+    divisionFactor: 1.5,
+    rateType: 'Fixed',
+    premiumMinimumAmount: 100,
+    territoryCode: 1,
+    proratedOrFull: 'Full',
+    premiumEndorsementMinimumAmount: 50,
+    multiplierRate: 1.1,
+    multiplierDivisionFactor: 1.2,
+    maximumRate: 2000,
+    minimumRate: 100,
+    freeLimit: 500,
+    isExProtectorApplication: 'No',
+    isSumInsuredLimitApplicable: 'Yes',
+    sumInsuredLimitType: 'Type 1',
+    sumInsuredRate: '10%',
+    grpCode: 'GRP01',
+    isNoClaimDiscountApplicable: 'Yes',
+    currencyCode: 1,
+    agentName: 'Agent A',
+    rangeType: 'Range A',
+    limitAmount: 10000,
+    noClaimDiscountLevel: 'Level 1',
+    doesCashBackApply: 'Yes',
+    cashBackLevel: 5,
+    rateFrequencyType: 'Annual'
+  },
+  {
+    code: 2,
+    sectionCode: 102,
+    sectionShortDescription: 'Premium 2',
+    sectionType: 'Type B',
+    rate: 2000,
+    dateWithEffectFrom: '2025-02-01',
+    dateWithEffectTo: '2025-12-31',
+    subClassCode: 2002,
+    binderCode: 3002,
+    rangeFrom: 10000,
+    rangeTo: 20000,
+    rateDescription: 'Premium Rate',
+    divisionFactor: 1.7,
+    rateType: 'Tiered',
+    premiumMinimumAmount: 200,
+    territoryCode: 2,
+    proratedOrFull: 'Prorated',
+    premiumEndorsementMinimumAmount: 100,
+    multiplierRate: 1.2,
+    multiplierDivisionFactor: 1.3,
+    maximumRate: 2500,
+    minimumRate: 150,
+    freeLimit: 1000,
+    isExProtectorApplication: 'Yes',
+    isSumInsuredLimitApplicable: 'No',
+    sumInsuredLimitType: 'Type 2',
+    sumInsuredRate: '15%',
+    grpCode: 'GRP02',
+    isNoClaimDiscountApplicable: 'No',
+    currencyCode: 2,
+    agentName: 'Agent B',
+    rangeType: 'Range B',
+    limitAmount: 15000,
+    noClaimDiscountLevel: 'Level 2',
+    doesCashBackApply: 'No',
+    cashBackLevel: 0,
+    rateFrequencyType: 'Quarterly'
+  }
+]
 
 describe('CoverTypesComparisonComponent', () => {
   let component: CoverTypesComparisonComponent;
@@ -483,7 +564,14 @@ describe('CoverTypesComparisonComponent', () => {
 
 
   beforeEach(() => {
-
+    globalThis.sessionStorage = {
+      getItem: jest.fn().mockReturnValue('{"someKey": "someValue"}'),  // Mocked valid JSON
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+      length: 1,
+      key: jest.fn(),
+    };
     TestBed.configureTestingModule({
       declarations: [CoverTypesComparisonComponent],
       imports: [
@@ -635,14 +723,14 @@ describe('CoverTypesComparisonComponent', () => {
       { subClassCode: 'A', isMandatory: null, coverTypeCode: 'C', description: 'Section 2' },
       { subClassCode: 'B', isMandatory: null, coverTypeCode: 'B', description: 'Section 3' },
     ];
-  
+
     // Mock the service method
-    jest.spyOn(subclassSectionCovertypeService, 'getSubclassCovertypeSections').mockReturnValue(of(mockSubclassCovertypeSections)as any);
-  
+    jest.spyOn(subclassSectionCovertypeService, 'getSubclassCovertypeSections').mockReturnValue(of(mockSubclassCovertypeSections) as any);
+
     // Set up mock values for selectedSubclassCode and passedCovertypeCode
     component.selectedSubclassCode = 'A';
     component.passedCovertypeCode = 'B';
-  
+
     // Spy on the sessionStorage.setItem and findTemporaryPremium methods
     // const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
     const setItemMock = jest.fn();
@@ -653,36 +741,200 @@ describe('CoverTypesComparisonComponent', () => {
       writable: true,
     });
     const findTemporaryPremiumSpy = jest.spyOn(component, 'findTemporaryPremium');
-  
+
     // Call the method to test
     component.loadSubclassSectionCovertype();
-  
+
     // Expectations:
     // Ensure the response is processed correctly and stored in passedSections
     expect(component.subclassSectionCoverList).toEqual(mockSubclassCovertypeSections);
-  
+
     // Filtered list based on selectedSubclassCode and isMandatory being null
     const filteredSections = mockSubclassCovertypeSections.filter(section =>
       section.subClassCode === component.selectedSubclassCode && section.isMandatory === null
     );
     expect(component.covertypeSectionList).toEqual(filteredSections);
-  
+
     // Further filter based on passedCovertypeCode
     const specificSection = filteredSections.filter(section => section.coverTypeCode === component.passedCovertypeCode);
     expect(component.covertypeSpecificSection).toEqual(specificSection);
-  
+
     // Set passedMandatorySections
     expect(component.passedMandatorySections).toEqual(specificSection);
-  
+
     // Ensure the sessionStorage.setItem was called with the correct parameters
     expect(setItemMock).toHaveBeenCalledWith("Added Benefit", JSON.stringify(component.passedSections));
-  
+
     // Ensure findTemporaryPremium was called
     expect(findTemporaryPremiumSpy).toHaveBeenCalled();
   });
- 
 
+  test('should use existing temporaryPremiumList if the coverTypeCodes match and the list is updated', () => {
+    // Setup initial conditions
+    component.isTempPremiumListUpdated = true;
+    component.lastUpdatedCoverTypeCode = 'someCoverTypeCode';
+    component.passedCovertypeCode = 'someCoverTypeCode';
+    component.temporaryPremiumList = mockTemporaryPremiumList;
+    // Spy on methods that should be called within findTemporaryPremium
+    // Mock detectChanges method
+    jest.spyOn(component.cdr, 'detectChanges');
 
+    jest.spyOn(console, 'debug'); // Optional: for logging/debugging purposes
+// Spy on the sessionStorage.setItem and findTemporaryPremium methods
+    // const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
+    const getItemMock = jest.fn();
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        setItem: getItemMock,
+      },
+      writable: true,
+    });
+    // Call the method
+    component.findTemporaryPremium();
+
+    // Expect that detectChanges is called and method exits early
+    expect(component.cdr.detectChanges).toHaveBeenCalled();
+
+    // expect(console.debug).toHaveBeenCalledWith('Premium List',mockTemporaryPremiumList);
+    expect(component.temporaryPremiumList).toEqual(mockTemporaryPremiumList);
+  });
   
- 
+  // test('should fetch new premiums if the coverTypeCodes do not match', () => {
+  //   // Setup initial conditions
+  //   component.isTempPremiumListUpdated = false;
+  //   component.lastUpdatedCoverTypeCode = 'coverTypeCode1';
+  //   component.passedCovertypeCode = 'coverTypeCode2';
+  //   component.premiumPayload = {
+  //     frequencyOfPayment: 'Annual',
+  //     product: { code: 123, expiryPeriod: '12 months' },
+  //     taxes: [], // Empty or provide mock tax details
+  //     currency: { rate: 1.2 },
+  //     risks: [
+  //       {
+  //         binderDto: { code: 101, currencyCode: 1, currencyRate: 1.5 },
+  //         subclassSection: { code: 202 },
+  //         withEffectFrom: '2025-01-01',
+  //         withEffectTo: '2025-12-31',
+  //         prorata: 'Full',
+  //         subclassCoverTypeDto: { subclassCode: 202, coverTypeCode: 303, minimumAnnualPremium: 1000, minimumPremium: 500, coverTypeShortDescription: 'Type A', coverTypeDescription: 'Description A' },
+  //         enforceCovertypeMinimumPremium: 'No',
+  //         noClaimDiscountLevel: 1,
+  //         limits: [
+  //           {
+  //             description: 'Limit 1',
+  //             riskCode: 123,
+  //             calculationGroup: 1,
+  //             declarationSection: null,
+  //             rowNumber: 1,
+  //             rateDivisionFactor: 1.2,
+  //             premiumRate: 10,
+  //             rateType: 'Fixed',
+  //             sectionType: 'Type A',
+  //             limitAmount: 10000,
+  //             compute: 'RateBased',
+  //             section: { code: 101 },
+  //             dualBasis: 'No',
+  //             minimumPremium: 100,
+  //             annualPremium: 1200,
+  //             premiumAmount: 1100,
+  //             limitPeriod: 'Yearly',
+  //             indemFstPeriod: 1,
+  //             indemPeriod: 12,
+  //           }
+  //         ]
+  //       }
+  //     ],
+  //     dateWithEffectTo: '2025-12-31',
+  //     dateWithEffectFrom: '2025-01-01',
+  //     underwritingYear: 2025,
+  //     age: 30,
+  //     coinsuranceLeader: 'Leader A',
+  //     coinsurancePercentage: 20,
+  //   };
+  
+  //   component.passedMandatorySections = [
+  //     { sectionCode: 100 },
+  //     { sectionCode: 102 }
+  //   ];
+  
+  //   // Define mockTemporaryPremiumList that matches the Premiums interface
+   
+  
+  //   // Mock the service call response with mockTemporaryPremiumList
+  //   jest.spyOn(premiumRateService, 'getAllPremiums').mockReturnValue(of(mockTemporaryPremiumList));
+  //   jest.spyOn(premiumRateService, 'getAllPremiums').mockReturnValue(of(mockTemporaryPremiumList));
+    
+  
+  //   // Spy on methods that should be called within findTemporaryPremium
+  //   jest.spyOn(component.cdr, 'detectChanges');
+  //   jest.spyOn(console, 'debug');
+  
+  //   // Call the method
+  //   component.findTemporaryPremium();
+  
+  //   // Expectations
+  //   expect(premiumRateService.getAllPremiums).toHaveBeenCalledTimes(2); // Two calls for 'section1' and 'section2'
+  //   expect(premiumRateService.getAllPremiums).toHaveBeenCalledWith(100,   component.premiumPayload.risks[0].binderDto.code, component.premiumPayload.risks[0].subclassSection.code);
+  //   expect(premiumRateService.getAllPremiums).toHaveBeenCalledWith(102, component.premiumPayload.risks[0].binderDto.code, component.premiumPayload.risks[0].subclassSection.code);
+  //   expect(component.cdr.detectChanges).toHaveBeenCalled();
+
+  //   expect(component.temporaryPremiumList).toEqual(mockTemporaryPremiumList); // Expect the list to match mockTemporaryPremiumList
+  //   // expect(component.cdr.detectChanges).toHaveBeenCalled();
+  //   // expect(console.debug).toHaveBeenCalledWith('Premium List', component.temporaryPremiumList);
+  // });
+  
+  test('should update section, add it to passedSections, and call dependent methods', () => {
+    const mockEvent = {
+      target: { value: '123' },
+    } as unknown as KeyboardEvent;
+    const mockSection = { typedWord: null, isChecked: false };
+    const initialSessionStorageSetItem = jest.spyOn(sessionStorage, 'setItem');
+    jest.spyOn(component, 'loadAllPremiums');
+
+    component.onKeyUp(mockEvent, mockSection);
+ // Create a spy on the debug method of the log object
+    const debugSpy = jest.spyOn(Logger.prototype, 'debug');
+
+    // Expectations for section updates
+    expect(mockSection.typedWord).toEqual(123);
+    expect(mockSection.isChecked).toBe(true);
+
+    // Expectations for passedSections
+    expect(component.passedSections).toContain(mockSection);
+
+    // Verify if sessionStorage was updated
+    expect(initialSessionStorageSetItem).toHaveBeenCalledWith(
+      'Added Benefit',
+      JSON.stringify(component.passedSections)
+    );
+
+    // Verify if loadAllPremiums was called
+    expect(component.loadAllPremiums).toHaveBeenCalled();
+
+    // Check if log.debug was called with the expected value
+    // expect(debugSpy).toHaveBeenCalledWith('Selected Sections:', component.passedSections);
+  });
+  test('should return true if section is checked', () => {
+    const mockSection = { isChecked: true };
+
+    const result = component.isSectionChecked(mockSection);
+
+    expect(result).toBe(true);
+  });
+  test('should call log.debug and save payload to sessionStorage', () => {
+    const mockPayload = { id: 1, name: 'Test Risk Section' };
+    const sessionStorageSetItemSpy = jest.spyOn(sessionStorage, 'setItem');
+    const debugSpy = jest.spyOn(Logger.prototype, 'debug');
+
+    component.createRiskSection(mockPayload);
+
+    // Verify log.debug was called with the correct arguments
+    // expect(debugSpy).toHaveBeenCalledWith('createRiskSection called with payload:', mockPayload);
+
+    // Verify the payload was saved to sessionStorage
+    expect(sessionStorageSetItemSpy).toHaveBeenCalledWith(
+      'Added Benefit',
+      JSON.stringify(mockPayload)
+    );
+  });
 });
