@@ -441,37 +441,34 @@
         </div>
         <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
             <button type="button" class="btn btn-primary me-3"
-                id="btnConvertPolicy"> Convert to policy</button>
+                id="btnConvertPolicy">{{'gis.quotation.convert_to_policy' | translate}}</button>
             <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-toggle="modal" data-bs-target="#convertQuote">
-                Convert to normal quote</button>
+                {{'gis.quotation.convert_to_normal_quote' | translate}}</button>
         </div>
 
-        <!-- Convert Quote Modal -->
+       <!-- Convert Quote Modal -->
         <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content ps-4 pt-4 pe-4 pb-4">
-                  <!-- Centered Title and Message -->
-                  <div class="text-center mb-4">
-                      <h3 class="convertQuoteTitle">{{'gis.quotation.convert_quote' | translate}}</h3>
-                      <p>{{'gis.quotation.conversion_message' | translate}}</p>
-                  </div>
+              <div class="modal-content ps-4 pt-4 pe-4 pb-4 text-center">
+                  <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
+                  <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
+                  <p class="cancelQouteTitle">{{'gis.quotation.conversion_message' | translate}}</p>
 
-                  <!-- Vertical Layout using flex-column -->
+                  <!-- Centered Button Layout with Vertical Stack and Restricted Width -->
                   <div class="d-flex flex-column gap-3">
-                      <!-- Close Button -->
-                      <button type="button" class="btn btn-outline-primary w-100" id="closeBtn" data-bs-dismiss="modal">
-                          {{'gis.quotation.close' | translate}}
-                      </button>
+                    <!-- Close Button -->
+                    <button type="button" class="btn btn-outline-primary w-100" id="closeBtn" data-bs-dismiss="modal">
+                        {{'gis.quotation.close' | translate}}
+                    </button>
 
-                      <!-- Confirm Conversion Button -->
-                      <button type="button" class="btn btn-primary w-100" (click)="acceptQuote()">
-                          {{'gis.quotation.confirm_conversion' | translate}}
-                      </button>
-                  </div>
+                    <!-- Confirm Conversion Button -->
+                    <button type="button" class="btn btn-primary w-100" (click)="acceptQuote()">
+                        {{'gis.quotation.confirm_conversion' | translate}}
+                    </button>
+                </div>
               </div>
           </div>
         </div>
-
 
         <!-- Cancel Quote Modal -->
         <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
