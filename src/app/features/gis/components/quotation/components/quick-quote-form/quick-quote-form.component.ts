@@ -390,6 +390,10 @@ export class QuickQuoteFormComponent {
       // viewMethod: this.viewDetailsWithId.bind(this),
       isLazyLoaded: true
     }
+
+    sessionStorage.removeItem("clientDetails");
+    sessionStorage.removeItem("newClientDetails");
+    sessionStorage.removeItem('quotationNumber');
   }
   ngOnDestroy(): void { }
   addRisk() {
