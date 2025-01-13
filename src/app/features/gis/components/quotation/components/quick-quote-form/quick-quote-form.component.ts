@@ -458,8 +458,15 @@ export class QuickQuoteFormComponent {
           this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail =
           this.passedNewClientDetails?.inputClientEmail;
-        this.newClientData.inputClientPhone =
-          this.passedNewClientDetails?.inputClientPhone?.number;
+        const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
+        this.newClientPhone = {
+            number: phoneNumberString,
+            internationalNumber: '',  // Left empty as it's not stored
+            nationalNumber: phoneNumberString,
+            e164Number: '',
+            countryCode: '',
+            dialCode: ''
+        };
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
         this.toggleNewClient();
@@ -513,7 +520,15 @@ export class QuickQuoteFormComponent {
       if (this.passedNewClientDetails) {
         this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
         this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone?.number;
+        const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
+        this.newClientPhone = {
+            number: phoneNumberString,
+            internationalNumber: '',  // Left empty as it's not stored
+            nationalNumber: phoneNumberString,
+            e164Number: '',
+            countryCode: '',
+            dialCode: ''
+        };
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
         this.toggleNewClient();
@@ -793,7 +808,7 @@ loadFormData() {
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
       if (this.isFormDataLoaded) {
-    
+
         this.loadFormData();
       }
       this.cdr.detectChanges();
@@ -2177,8 +2192,8 @@ loadFormData() {
     console.log('New input Client Phone:', this.newClientData.inputClientPhone);
     sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
   }
- 
-  
+
+
  /**
    * Fetches occupation data based on the provided organization ID and
    *  updates the component's occupationData property.
