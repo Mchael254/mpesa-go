@@ -52,6 +52,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   relationTypeList: any[] =[];
   gender: string ='';
   util: Utils;
+  showModal: boolean = false; // Tracks modal visibility
   constructor(
     private fb: FormBuilder,
     private medical_history_service: MedicalHistoryService,
@@ -309,6 +310,50 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   addEmptyMedicalList(medicalList: any[]) {
     this.medicalListOne = this.addEntity(medicalList);
   }
+
+  openModal() {
+    const modalElement = document.getElementById('medicalHistoryModal');
+    if (modalElement) {
+      modalElement.classList.add('show');
+      modalElement.style.display = 'block';
+    }
+  }
+
+  closeModal() {
+    const modalElement = document.getElementById('medicalHistoryModal');
+    if (modalElement) {
+      modalElement.classList.remove('show');
+      modalElement.style.display = 'none';
+    }
+  }
+
+  saveModalData() {
+  if (this.medicalHistoryTableOne.valid) {
+    const newEntry = { ...this.medicalHistoryTableOne.value, isEdit: false };
+
+    // Push the new entry into the table's data source
+    this.medicalListOne.push(newEntry);
+
+    // Reset the form and close the modal
+    this.medicalHistoryTableOne.reset();
+    this.closeModal();
+
+    // Log for debugging
+    console.log('New entry added to table:', newEntry);
+    console.log('Updated medicalListOne:', this.medicalListOne);
+  } else {
+    // Show validation error message (Optional)
+    this.toast.danger('Please fill all required fields before saving.', 'Validation Error');
+  }
+}
+
+closeModalData(name='medicalHistoryModal') {
+  const modal = document.getElementById(name);
+  if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }    
+}
 
   private addEntity(d: any[]) {
     console.log(d);
