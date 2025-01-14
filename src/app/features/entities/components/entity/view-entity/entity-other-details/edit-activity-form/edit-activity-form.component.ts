@@ -96,42 +96,43 @@ export class EditActivityFormComponent implements OnInit {
     }));
 
     log.info('Activity Details to be Assigned to a Lead', leadActivities);
-    leadActivities.forEach((activity) => {
-      this.leadService.assignLeadActivity(activity, leadId).subscribe({
-        next: (res) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Assigned an Activity to Lead'
-          );
-          this.closeEditModal.emit();
-          this.activityAssigned.emit(true);
-          this.isFormDetailsReady.emit(false);
-        },
-        error: (err) => {
-          const errorMessage = err?.error?.message ?? err.message;
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            errorMessage
-          );
-        },
-      });
-    });
+    // leadActivities.forEach((activity) => {
+    //   this.leadService.assignLeadActivity(activity, leadId).subscribe({
+    //     next: (res) => {
+    //       this.globalMessagingService.displaySuccessMessage(
+    //         'Success',
+    //         'Successfully Assigned an Activity to Lead'
+    //       );
+    //       this.closeEditModal.emit();
+    //       this.activityAssigned.emit(true);
+    //       this.isFormDetailsReady.emit(false);
+    //     },
+    //     error: (err) => {
+    //       const errorMessage = err?.error?.message ?? err.message;
+    //       this.globalMessagingService.displayErrorMessage(
+    //         'Error',
+    //         errorMessage
+    //       );
+    //     },
+    //   });
+    // });
 
     //Use this after endpoint modification::
 
-    // this.leadService.assignLeadActivity(leadActivities, leadId).subscribe({
-    //   next: (res) => {
-    //     this.globalMessagingService.displaySuccessMessage(
-    //       'Success',
-    //       'Successfully Assigned an Activity to Lead'
-    //     );
-    //     this.closeEditModal.emit();
-    //     this.isFormDetailsReady.emit(false);
-    //   },
-    //   error: (err) => {
-    //     const errorMessage = err?.error?.message ?? err.message;
-    //     this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-    //   },
-    // });
+    this.leadService.assignLeadActivity(leadActivities, leadId).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Successfully Assigned an Activity to Lead'
+        );
+        this.closeEditModal.emit();
+        this.activityAssigned.emit(true);
+        this.isFormDetailsReady.emit(false);
+      },
+      error: (err) => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
   }
 }
