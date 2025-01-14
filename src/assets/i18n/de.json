@@ -861,7 +861,10 @@
       "total_taxes": "Gesamte Steuern",
       "excesses": "Selbstbehalte",
       "convert_quote": "Angebot konvertieren",
-      "confirm_conversion": "Konvertierung bestätigen"
+      "confirm_conversion": "Konvertierung bestätigen",
+      "conversion_message": "Sie sind dabei, ein Schnellangebot in ein normales Angebot umzuwandeln",
+      "convert_to_normal_quote": "In normales Angebot umwandeln",
+      "convert_to_policy": "In Police umwandeln"
 
     },
     "policy": {
