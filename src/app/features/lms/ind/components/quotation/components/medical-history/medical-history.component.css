@@ -115,6 +115,38 @@ tbody > tr {
   justify-content: space-between;
 }
 
+.no-record-message span {
+  color: gray;
+}
+
+/* Custom Modal Dimensions */
+.modal-content {
+  border-radius: 6px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 1.5rem;
+}
+
+.modal-header {
+  border-bottom: 0px;
+  padding-bottom: 0.50rem;
+}
+
+.modal-header .modal-title {
+  font-size: 18px; 
+}
+
+.modal-custom {
+  max-width: 727px;
+  height: 311px;
+  margin: auto;
+}
+
+.modal-footer {
+  border-top: none;
+  padding-top: 0.75rem; 
+}
+
 @media (min-width: 768px) {
   .justify-md {
     justify-content: start;

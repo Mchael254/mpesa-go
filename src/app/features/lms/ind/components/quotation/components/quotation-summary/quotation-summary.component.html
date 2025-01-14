@@ -6,30 +6,20 @@
   <div class="row">
     <!-- Stepper column (covers 20% of the width) -->
     <div class="col-md-12">
-      <app-stepper [currentStep]="7" [stepperData]="steps"></app-stepper>
+      <app-stepper [currentStep]="8" [stepperData]="steps"></app-stepper>
     </div>
   </div>
 
   <div>
-    <div
-      class="w-80"
-      style="
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem 0;
-      "
-    >
-      <div
-        class="fadeIn full-border" style="position: relative">
-        <ngx-spinner
-        name="summary_screen"
+    <div class="w-80" style=" display: flex; justify-content: center; align-items: center; padding: 2rem 0;">
+      <div class="fadeIn full-border" style="position: relative">
+        <ngx-spinner name="summary_screen"
           type="ball-clip-rotate-multiple"
           [fullScreen]="false"
           color="#00529B"
           size="medium"
-          bdColor="rgba(255, 255, 255, 0.966)"
-        ></ngx-spinner>
+          bdColor="rgba(255, 255, 255, 0.966)">
+        </ngx-spinner>
 
         <div class="text-black fw-bold d-flex justify-content-center mb-4 fs-6">
           Overview Summary
@@ -75,29 +65,15 @@
           </div>
         </div>
         <div>
-          <div
-            class="accordion accordion-flush py-5"
-            id="accordionFlushExample"
-          >
+          <div class="accordion accordion-flush py-5" id="accordionFlushExample">
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingOne">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseOne"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseOne"
-                >
-                  Client Details
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                  aria-expanded="false" aria-controls="flush-collapseOne">
+                    Client Details
                 </button>
               </h2>
-              <div
-                id="flush-collapseOne"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingOne"
-                data-bs-parent="#accordionFlushExample"
-              >
+              <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                 <div class="container">
                   <div class="row">
                     <div class="col-md-6">
@@ -107,20 +83,20 @@
                           <span class="fw-light">{{client_details?.firstName || ''  | titlecase }} {{client_details?.lastName || '' | titlecase }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Date of Birth:
+                          <span class="font-grey__font-eight__700">
+                            Date of Birth:
                           </span>
                           <span class="fw-light">{{ client_details?.dateOfBirth | date:'dd/MM/yyyy'}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Physical Address:
+                          <span class="font-grey__font-eight__700">
+                            Physical Address:
                           </span>
                           <span class="fw-light">{{ client_details?.physicalAddress | titlecase}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Nationality:
+                          <span class="font-grey__font-eight__700">
+                            Nationality:
                           </span>
                           <span class="fw-light">{{countryList | nationality: client_details?.country | titlecase}}</span>
                         </div>
@@ -130,24 +106,21 @@
                     <div class="col-md-6">
                       <div class="m-4">
                         <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Country of Residence:
+                          <span class="font-grey__font-eight__700">
+                            Country of Residence:
                           </span>
                           <span class="fw-light">{{countryList | country: client_details?.country | titlecase}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Gender:
+                          <span class="font-grey__font-eight__700">
+                            Gender:
                           </span>
                           <span class="fw-light">{{ summaryRecord['gender']==='M' ? "Male":"Female" | titlecase }}</span>
                         </div>
                       </div>
                       <div class="col-12">
-                        <div
-                        routerLink="/home/lms/ind/quotation/client-details"
-                          class="fs-5 d-flex justify-content-end p-2"
-                          style="color: var(--primary-color)"
-                        >
+                        <div routerLink="/home/lms/ind/quotation/client-details" class="fs-5 d-flex justify-content-end p-2" 
+                            style="color: var(--primary-color)">
                           <i class="fas fa-edit cursor-pointer"></i>
                         </div>
                       </div>
@@ -158,52 +131,38 @@
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingTwo">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseTwo"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseTwo"
-                >
-                  Cover Types
+                <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
+                  aria-expanded="false" aria-controls="flush-collapseTwo">
+                    Cover Types
                 </button>
               </h2>
-              <div
-                id="flush-collapseTwo"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingTwo"
-                data-bs-parent="#accordionFlushExample"
-              >
+              <div id="flush-collapseTwo" class="accordion-collapse collapse"
+                  aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
                 <div class="container">
                   <div class="row">
-
                     <ng-container *ngFor="let coverType of summaryRecord['tel_quote_covers']">
-                    <div class="col-md-6" *ngIf="coverType['tqcvt_premium']>0 || coverType['tqcvt_sa']>0">
-                      <div class="m-4">
-                        <div>{{coverTypeList | coverType:coverType['tqcvt_cvt_code'] }}</div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Premium:
-                          </span>
-                          <span class="fw-light">{{ coverType['tqcvt_premium'] | number }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Sum assured:
-                          </span>
-                          <span class="fw-light">{{ coverType['tqcvt_sa'] | number}}</span>
+                      <div class="col-md-6" *ngIf="coverType['tqcvt_premium']>0 || coverType['tqcvt_sa']>0">
+                        <div class="m-4">
+                          <div>{{coverTypeList | coverType:coverType['tqcvt_cvt_code'] }}</div>
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">
+                              Premium:
+                            </span>
+                            <span class="fw-light">{{ coverType['tqcvt_premium'] | number }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">
+                              Sum assured:
+                            </span>
+                            <span class="fw-light">{{ coverType['tqcvt_sa'] | number}}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </ng-container>
+                    </ng-container>
                   </div>
                   <div class="col-12">
-                    <div
-                    routerLink="/home/lms/ind/quotation/product"
-                      class="fs-5 d-flex justify-content-end p-2"
-                      style="color: var(--primary-color)"
-                    >
+                    <div routerLink="/home/lms/ind/quotation/product" class="fs-5 d-flex justify-content-end p-2" style="color: var(--primary-color)">
                       <i class="fas fa-edit cursor-pointer"></i>
                     </div>
                   </div>
@@ -212,65 +171,53 @@
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingThree">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseThree"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseThree"
-                >
-                  Beneficiaries, Dependants, Trustees
+                <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"
+                  aria-expanded="false" aria-controls="flush-collapseThree">
+                    Beneficiaries, Dependants, Trustees
                 </button>
               </h2>
-              <div
-                id="flush-collapseThree"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingThree"
-                data-bs-parent="#accordionFlushExample"
-              >
+              <div id="flush-collapseThree" class="accordion-collapse collapse"
+                  aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
                 <div class="container">
                   <div class="row">
                     <ng-container *ngFor="let beneficiary of beneficiaryList">
-                    <div class="col-md-6">
-                      <div class="m-4">
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{ beneficiary['beneficiary_info']['first_name'] +' '+beneficiary['beneficiary_info']['first_name'] | uppercase }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Benefit proportion:
-                          </span>
-                          <span class="fw-light">{{ beneficiary['percentage_benefit'] | number}}%</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Date of Birth:
-                          </span>
-                          <span class="fw-light">{{ beneficiary['beneficiary_info']['date_of_birth'] |date:'short' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Relation:
-                          </span>
-                          <span class="fw-light">{{ relationTypeList | relationType : beneficiary?.beneficiary_info?.relation_code }}</span>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Type: </span>
-                          <span class="fw-light">{{ beneficiary["type"] === "B" ? "Beneficiary" : "Trustee"  |uppercase}}</span>
+                      <div class="col-md-6">
+                        <div class="m-4">
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">Name: </span>
+                            <span class="fw-light">{{ beneficiary['beneficiary_info']['first_name'] +' '+beneficiary['beneficiary_info']['first_name'] | uppercase }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">
+                              Benefit proportion:
+                            </span>
+                            <span class="fw-light">{{ beneficiary['percentage_benefit'] | number}}%</span>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">
+                              Date of Birth:
+                            </span>
+                            <span class="fw-light">{{ beneficiary['beneficiary_info']['date_of_birth'] |date:'short' }}</span>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">
+                              Relation:
+                            </span>
+                            <span class="fw-light">{{ relationTypeList | relationType : beneficiary?.beneficiary_info?.relation_code }}</span>
+                          </div>
+                          
+                          <div class="d-flex justify-content-between">
+                            <span class="font-grey__font-eight__700">Type: </span>
+                            <span class="fw-light">{{ beneficiary["type"] === "B" ? "Beneficiary" : "Trustee"  |uppercase}}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </ng-container>
+                    </ng-container>
                   </div>
                   <div class="col-12">
-                    <div
-                    routerLink="/home/lms/ind/quotation/beneficiaries-dependents"
-                      class="fs-5 d-flex justify-content-end p-2"
-                      style="color: var(--primary-color)"
-                    >
+                    <div routerLink="/home/lms/ind/quotation/beneficiaries-dependents" class="fs-5 d-flex justify-content-end p-2"
+                        style="color: var(--primary-color)">
                       <i class="fas fa-edit cursor-pointer"></i>
                     </div>
                   </div>
@@ -279,55 +226,41 @@
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="flush-headingFour">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseFour"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseFour"
-                >
-                  Documents
+                <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#flush-collapseFour"
+                  aria-expanded="false" aria-controls="flush-collapseFour">
+                    Documents
                 </button>
               </h2>
-              <div
-                id="flush-collapseFour"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingFour"
-                data-bs-parent="#accordionFlushExample"
-              >
+              <div id="flush-collapseFour" class="accordion-collapse collapse"
+                  aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushExample">
                 <div class="accordion-body">
-                    <div class="col-md-6" style="position: relative">
-                      <ngx-spinner
-                      name="download_view"
-                        type="ball-clip-rotate-multiple"
-                        [fullScreen]="false"
-                        color="#00529B"
-                        size="medium"
-                        bdColor="rgba(255, 255, 255, 0.966)"
-                      ></ngx-spinner>
+                  <div class="col-md-6" style="position: relative">
+                    <ngx-spinner name="download_view"
+                      type="ball-clip-rotate-multiple"
+                      [fullScreen]="false"
+                      color="#00529B"
+                      size="medium"
+                      bdColor="rgba(255, 255, 255, 0.966)">
+                    </ngx-spinner>
 
-                      <div class="m-4" *ngFor="let item of documentList; let i = index">
-                        <div class="d-flex justify-content-start">
-                          <span class="font-grey__font-eight__700">{{i+1}}.</span>
-                          <a (click)="downloadBase64File(item['backend_file_url'])" class="fw-light click">{{item['type'] | lowercase}}.{{item['file_extension'] | lowercase}}</a>
-                        </div>
-                      </div>
-                      <div *ngIf="documentList?.length===0" style="color: red;">
-                        No Document Available!!
+                    <div class="m-4" *ngFor="let item of documentList; let i = index">
+                      <div class="d-flex justify-content-start">
+                        <span class="font-grey__font-eight__700">{{i+1}}.</span>
+                        <a (click)="downloadBase64File(item['backend_file_url'])" class="fw-light click">{{item['type'] | lowercase}}.{{item['file_extension'] | lowercase}}</a>
                       </div>
                     </div>
+                    <div *ngIf="documentList?.length===0" style="color: red;">
+                      No Document Available!!
+                    </div>
+                    </div>
                     <div class="col-12">
-                      <div
-                      routerLink="/home/lms/ind/quotation/documents-upload"
-                        class="fs-5 d-flex justify-content-end p-2"
-                        style="color: var(--primary-color)"
-                      >
+                      <div routerLink="/home/lms/ind/quotation/documents-upload" class="fs-5 d-flex justify-content-end p-2"
+                          style="color: var(--primary-color)">
                         <i class="fas fa-edit cursor-pointer"></i>
                       </div>
                     </div>
-
-                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -346,26 +279,11 @@
             Share:
           </div> -->
 
-          <div
-            style="display: flex; justify-content: center; padding-top: 0rem"
-          >
-            <div
-              style="
-                display: flex;
-                justify-content: center;
-                padding-top: 1em;
-                transform: translateY(-1rem);
-                font-weight: 600;
-                color: var(--primary-color);
-              "
-            >
+          <div style="display: flex; justify-content: center; padding-top: 0rem">
+            <div style="display: flex; justify-content: center; padding-top: 1em; transform: translateY(-1rem); 
+                font-weight: 600; color: var(--primary-color);">
               <div style="font-size: 1.3em; cursor: pointer">
-                <button
-                (click)="nextPage()"
-                  type="button"
-                  class="text-end-view mx-1"
-                  style="padding: 0.6em; width: 7rem"
-                >
+                <button (click)="nextPage()" type="button" class="text-end-view mx-1" style="padding: 0.6em; width: 7rem">
                   Complete
                 </button>
               </div>
@@ -376,16 +294,9 @@
     </div>
   </div>
 
-  <div
-    class="d-flex justify-content-between mt-3 action-buttons-container"
-    style="padding-bottom: 2rem"
-  >
-    <button
-      routerLink="/home/lms/ind/quotation/medical-history"
-      type="button"
-      class="btn btn-primary btn-sm"
-      style="padding: 0.6em"
-    >
+  <div class="d-flex justify-content-between mt-3 action-buttons-container" style="padding-bottom: 2rem">
+    <button routerLink="/home/lms/ind/quotation/medical-history" type="button"
+        class="btn btn-primary btn-sm" style="padding: 0.6em">
       <i class="fa-solid fa-arrow-left"></i> Previous
     </button>
   </div>
