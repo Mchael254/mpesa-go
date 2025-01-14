@@ -17,7 +17,7 @@
   <div class="full-border px-5 content-container">
 
     <div>
-
+      <!-- Header for Medical History -->
       <div class="d-flex justify-content-between pt-3 siz">
         <div class="section-header">{{ "lms.ind.quotations.medical_history" | translate }}</div>
       </div>
@@ -159,12 +159,13 @@
                 <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
                   <div></div>
                   <div>
-                    <div (click)="addEmptyMedicalList(medicalListOne)" class="b-r d-flex justify-content-center align-content-center">
+                    <div (click)="openModal()" class="b-r d-flex justify-content-center align-content-center">
                       <i class="fa-solid fa-plus"></i>
                     </div>
                   </div>
                 </div>
                 <ng-container>
+                  <!-- Table to Add/Edit Medical History -->
                   <div class="table-responsive">
                     <table class="table table-bordered">
                       <thead>
@@ -245,8 +246,9 @@
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="medicalListOne?.length === 0" class="d-flex justify-content-center text-danger">
-                    No Available Data!
+                  <div *ngIf="medicalListOne?.length === 0" class="d-flex justify-content-center no-record-message">
+                      {{ "lms.ind.quotations.no_record_capture" | translate }}. &nbsp;
+                    <span>&nbsp; {{ "lms.ind.quotations.click_on_+_icon_to_add_record" | translate }}</span>
                   </div>
                 </ng-container>
               </div>
@@ -309,5 +311,77 @@
     <button style="padding: 0.6em" type="button" class="btn btn-primary btn-sm" (click)="nextPage()" >
       {{ "lms.ind.quotations.next" | translate }} &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>
+  </div>
+</div>
+
+<!-- Modal Component -->
+<div class="modal fade" 
+    tabindex="-1"
+    id="medicalHistoryModal"  
+    [ngClass]="{ show: showModal }" 
+    [style.display]="showModal ? 'block' : 'none'"
+    aria-labelledby="medicalHistoryModalLabel" 
+    aria-hidden="!showModal">
+  <div class="modal-dialog modal-custom">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="medicalHistoryModalLabel">Dependants Details</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="medicalHistoryTableOne">
+          <div class="row">
+
+            <!-- First Row -->
+            <div class="col-md-6">
+              <label for="person" class="form-label">Person</label>
+              <input type="text" class="form-control" id="person" formControlName="person" />
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <label for="diagnosis" class="form-label">Diagnosis</label>
+              <select class="form-select" id="diagnosis" formControlName="disease">
+                <option *ngFor="let disease of diseaseList" [value]="disease?.id  | sort : 'asc' : 'description'" >
+                  {{ disease?.name | titlecase }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Second Row -->
+            <div class="col-md-6">
+              <div>
+                <label class="required">Diagnosis Date</label>
+                  <p-calendar 
+                    ngDefaultControl 
+                    formControlName="diagnosis_date"
+                    id="diagnosisDate" 
+                    dateFormat="dd/mm/yy" 
+                    [showIcon]="true" 
+                    [showButtonBar]="true">
+                  </p-calendar>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="relationship" class="form-label">Relationship</label>
+              <select class="form-select" id="relationship" formControlName="relation_type_code">
+                <option *ngFor="let product of relationTypeList" [value]="product['id']">
+                  {{ product?.description | titlecase }}
+                </option>
+              </select>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModalData()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveModalData()">Save</button>
+      </div>
+    </div>
   </div>
 </div>
