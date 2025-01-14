@@ -891,7 +891,10 @@
       "total_taxes": "Total de impuestos",
       "excesses": "Excesos",
       "convert_quote": "Convertir cotización",
-      "confirm_conversion": "Confirmar conversión"
+      "confirm_conversion": "Confirmar conversión",
+      "conversion_message": "Estás a punto de convertir una cotización rápida en una cotización normal",
+      "convert_to_normal_quote": "Convertir a cotización normal",
+      "convert_to_policy": "Convertir a póliza"
 
     },
     "policy": {

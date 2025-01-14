@@ -303,8 +303,13 @@ export class QuoteSummaryComponent {
 
 
   acceptQuote() {
-    this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+    if(this.passedClientDetails) {
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    } else {
+      this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+    }
   }
+
   cancelQuote() {
 
     log.debug("Starting cancelQuote method");
@@ -645,7 +650,7 @@ convertToPolicy(){
 
   const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
   sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-  
+
   this.router.navigate(['/home/gis/quotation/create-client']);
 
 

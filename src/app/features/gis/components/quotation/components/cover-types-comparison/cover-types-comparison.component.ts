@@ -741,7 +741,8 @@ export class CoverTypesComparisonComponent {
       log.debug("Quotation Number", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
       if (this.quotationNo) {
-        // this.loadClientQuotation()
+        const quotationNumberString = JSON.stringify(this.quotationNo);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
       }
       this.createQuotationRisk();
 
@@ -892,9 +893,6 @@ export class CoverTypesComparisonComponent {
             this.createQuotationRisk();
 
           }
-
-          const quotationNumberString = JSON.stringify(this.passedNumber);
-          sessionStorage.setItem('quotationNumber', quotationNumberString);
 
           // Navigate to policy summary after creating the quotation risk
           // this.router.navigate(['/home/gis/quotation/policy-summary']);
@@ -1204,7 +1202,7 @@ export class CoverTypesComparisonComponent {
           }
           log.debug(JSON.stringify(this.premiumPayload, null, 2));
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
-          
+
           if(this.isAddededBenefitsCalled){
             log.debug("Do not navigate to quote summary")
             // this.router.navigate(['/home/gis/quotation/quote-summary']);
@@ -1214,20 +1212,20 @@ export class CoverTypesComparisonComponent {
               log.debug("if statement put on premium payload")
               this.loadClientQuotation();
               this.router.navigate(['/home/gis/quotation/quote-summary']);
-  
+
             }
             if(this.premiums){
               log.debug("if statement put on premiums")
-  
+
               this.loadClientQuotation();
               this.router.navigate(['/home/gis/quotation/quote-summary']);
-  
-  
+
+
             }
-  
+
             log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
             log.debug("just CKECING IF IT EXISTS", this.taxInformation)
-  
+
             log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
           //   const quotationNumberString = JSON.stringify(this.passedNumber);
           //   sessionStorage.setItem('quotationNumber', quotationNumberString);
@@ -1243,11 +1241,11 @@ export class CoverTypesComparisonComponent {
           //   'quickQuotationCode',
           //   (this.quotationCode?.toString() || this.passedQuotationCode.toString())
           // );
-          
-          
+
+
             this.router.navigate(['/home/gis/quotation/quote-summary']);
             // this.loadClientQuotation();
-  
+
           }
           if(this.premiums){
             log.debug("if statement put on premiums")
@@ -1283,7 +1281,7 @@ export class CoverTypesComparisonComponent {
           // this.loadClientQuotation();
 
 
-         
+
         },
         error: (error: HttpErrorResponse) => {
           log.info(error);
