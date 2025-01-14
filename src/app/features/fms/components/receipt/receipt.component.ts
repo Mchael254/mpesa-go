@@ -1,6 +1,6 @@
 import { Component, OnInit,NgZone,ViewChild, ElementRef,Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
-import {NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, ReceiptParticularDetailsDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO} from '../../data/receipting-dto'
+import {NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, ReceiptParticularDetailsDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, Allocation, ReceiptRequest, ReceiptUploadRequest, FileDescription} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap'; 
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
@@ -17,6 +17,7 @@ import {AuthService} from '../../../../shared/services/auth.service';
 import {StaffService} from '../../../../features/entities/services/staff/staff.service';
 import {CurrencyService} from '../../../../shared/services/setups/currency/currency.service';
 import {BankService} from '../../../../shared/services/setups/bank/bank.service';
+import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 
 @Component({
@@ -28,6 +29,17 @@ import {BankService} from '../../../../shared/services/setups/bank/bank.service'
 
 
 export class ReceiptComponent implements OnInit {
+  fetchedAllocations: Allocation[] = [];
+  //selectedFile: File | null = null;
+  base64Output: string = '';
+  selectedFile: File | null = null;
+  //fileDescriptions: FileDescription[] = [];
+  currentFileIndex: number = 0;
+  uploadedFile: any = null;
+  globalDocId:string;
+  decodedFileUrl: string | null = null;
+  //description: string = '';
+  paymentMode: string = '';
   receiptingDetailsForm: FormGroup;
   users:StaffDto;
   organization:OrganizationDTO[];
@@ -38,8 +50,8 @@ export class ReceiptComponent implements OnInit {
   drawersBanks:BankDTO[]=[];
   selectedCountryId: number | null = null;
 
-      backdatingEnabled = false;
-minDate: string = '';
+      
+
     loggedInUser:any;
   chargesEnabled: boolean = false;
    // selectedChargeType: string = 'charges';
@@ -106,10 +118,10 @@ currentReceiptingPoint:any;
   // allocatedAmounts: number[] = []; // Array to store allocated amounts
   totalAllocatedAmounts: number = 0;
   isSubmitButtonVisible = false;
-  selectedFile: File | null = null;
+  //selectedFile: File | null = null;
   description: string = '';
   fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
-  currentFileIndex: number = -1; // Initialize to -1 or a valid index when a file is selected
+  //currentFileIndex: number = -1; // Initialize to -1 or a valid index when a file is selected
 
   
 
@@ -137,6 +149,9 @@ isSaveBtnActive=true;
   orgId: string;
   defaultOrgId: number;
   defaultCountryId: number;
+  minDate: string; // To enable backdating if necessary
+  maxDate: string; // To disable future dates
+  backdatingEnabled = true; // Adjust this based on your logic
 constructor(
   private fb: FormBuilder,
   private staffService:StaffService,
@@ -146,7 +161,8 @@ constructor(
   private organizationService:OrganizationService,
   private bankService:BankService,
   private  currencyService:CurrencyService,
- private authService:AuthService
+ private authService:AuthService,
+ private dmsService:DmsService
 
 ) {
 
@@ -174,7 +190,10 @@ this.fetchNarrations();
 
 this.loggedInUser = this.authService.getCurrentUser();
 this.fetchUserDetails();
-
+ // Set the minDate and maxDate for date validation
+ const currentDate = new Date();
+ this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
+ this.maxDate = this.formatDate(currentDate);
 //console.log('my alogged in user',this.loggedInUser);
 
 //console.log('logged user>',this.loggedInUser);
@@ -194,6 +213,7 @@ this.fetchUserDetails();
 
 
 captureReceiptForm(){
+  const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
   this.receiptingDetailsForm = this.fb.group({
     selectedBranch:['',Validators.required],
     organization: ['', Validators.required], // Set default value here as well
@@ -205,7 +225,7 @@ captureReceiptForm(){
     grossReceiptAmount: [''],
     receivedFrom: ['', Validators.required],
     drawersBank: [ '',[Validators.required, Validators.minLength(1)]], // Drawers bank required if not cash
-    receiptDate: ['', Validators.required],
+    receiptDate: [today, Validators.required],
     narration: ['', [Validators.required, Validators.maxLength(255)]],
     paymentRef: ['', Validators.required],
     otherRef: [''],
@@ -373,7 +393,12 @@ fetchManualExchangeRateParameter() {
     }
   });
 }
-
+private formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 fetchPaymentModes(orgCode:number){
 this.receiptService.getPaymentModes(orgCode).subscribe({
     next: (response) => {
@@ -1223,43 +1248,608 @@ if (chequeType) {
 }
 }
 
-// setDateRestrictions(): void {
-//   const today = new Date().toISOString().split('T')[0]; // Get today's date
 
-//   if (!this.backdatingEnabled) {
-//     // If backdating is not allowed, restrict to current or future dates
-//     this.minDate = today;
-//     this.receiptingDetailsForm.get('receiptDate')?.patchValue(today); // Default to today’s date
+
+
+
+
+
+// onFileSelected(event: any): void {
+
+//   if (event.target.files.length > 0) {
+//     this.selectedFile = event.target.files[0];
+//     console.log('Selected file:', this.selectedFile.name); // Debug log
+//     this.currentFileIndex = this.fileDescriptions.length; // Set to the next index
+//     this.fileDescriptions.push({ file: this.selectedFile, description: '' }); // Add the file to the array
+//     //console.log('Selected file:', this.selectedFile);
+//     console.log('File descriptions:', this.fileDescriptions); // Debug log
+//      // Convert file to base64
+//      const reader = new FileReader();
+//      reader.onload = () => {
+//        this.base64Output = reader.result as string;
+//      };
+//      reader.readAsDataURL(this.selectedFile);
+//     this.openModal(this.fileDescriptions.length -1); // Open modal for the last added file
 //   } else {
-//     // Allow all dates including past ones
-//     this.minDate = ''; // No restriction
+//    // console.error('No file selected'); // Log if no file is selected
+//     this.selectedFile = null; // Reset selectedFile
+   
+//   }
+// }
+
+
+// uploadFile(): void {
+//   if (!this.selectedFile || !this.base64Output) {
+//     alert('no selected file');
+//     return;
+//   }
+
+//   if (!this.globalGetAllocation.length) {
+//     alert('no fetched allocations');
+//     return;
+//   }
+
+//   const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+
+//   try {
+//     // Create array of requests by flattening receiptParticularDetails
+//     const requests: ReceiptUploadRequest[] = [];
+    
+//     // Loop through each allocation
+//     this.globalGetAllocation.forEach(allocation => {
+//       // Check if receiptParticularDetails exists and is an array
+//       if (allocation.receiptParticularDetails && Array.isArray(allocation.receiptParticularDetails)) {
+//         // Create a request for each detail in receiptParticularDetails
+//         allocation.receiptParticularDetails.forEach(detail => {
+//           requests.push({
+//             docType: 'RECEIPT',
+//             docData: this.base64Output,
+//             module: 'CB-RECEIPTS',
+//             originalFileName: this.selectedFile.name,
+//             filename: this.selectedFile.name,
+//             referenceNo: detail.referenceNumber,
+//             docDescription: this.description,
+//             amount: detail.premiumAmount, // Assuming this is the correct field
+//             paymentMethod: paymentMode,
+//             policyNumber: detail.policyNumber
+//           });
+//         });
+//       }
+//     });
+
+//     console.log('Request payload:', requests.reduce((acc, req, index) => {
+//       acc[index] = req;
+//       return acc;
+//     }, {}));
+
+//     this.receiptService.uploadFiles(requests).subscribe({
+//       next: (response) => {
+//         console.log('Upload successful:', response);
+//         this.globalDocId=response.docId;
+//         this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
+//         // Reset form fieldsb
+//         this.selectedFile = null;
+//         this.base64Output = '';
+//         this.fileDescriptions = [];
+//         this.currentFileIndex = 0;
+//         this.fetchDocByDocId(this.globalDocId);
+//       },
+//       error: (error) => {
+//         console.error('Upload error:', error);
+//         this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
+//       }
+//     });
+
+//   } catch (error) {
+//     console.error('Error preparing upload:', error);
+//     this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
+//   }
+// }
+fetchDocByDocId(docId: string){
+  this.dmsService.getDocumentById(docId).subscribe({
+    next:(response)=>{
+      this.uploadedFile = response;
+      this.globalMessagingService.displaySuccessMessage('Success','Doc retrieved successfullly');
+console.log('doc data>>',response);
+    },
+    error:(error)=>{
+      this.globalMessagingService.displayErrorMessage('Error',error.error.error);
+    }
+
+
+  })
+}
+// openFile() {
+//   if (this.uploadedFile && this.uploadedFile.byteData) {
+//     try {
+//       // Handle both formats: with or without data URI prefix
+//       let base64String = this.uploadedFile.byteData;
+//       if (base64String.includes(',')) {
+//         base64String = base64String.split(',')[1];
+//       }
+
+//       // Decode the base64 string
+//       const byteCharacters = atob(base64String);
+//       const byteNumbers = new Array(byteCharacters.length);
+//       for (let i = 0; i < byteCharacters.length; i++) {
+//         byteNumbers[i] = byteCharacters.charCodeAt(i);
+//       }
+//       const byteArray = new Uint8Array(byteNumbers);
+      
+//       // Create blob with proper content type
+//       const blob = new Blob([byteArray], { 
+//         type: this.uploadedFile.contentType || 'application/pdf' 
+//       });
+      
+//       // Create and open URL
+//       if (this.decodedFileUrl) {
+//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+//       }
+//       this.decodedFileUrl = URL.createObjectURL(blob);
+//       window.open(this.decodedFileUrl, '_blank');
+//     } catch (error) {
+//       console.error('Error processing file:', error);
+//       this.globalMessagingService.displayErrorMessage(
+//         'Error', 
+//         'Failed to process the file. The file might be corrupted or in an invalid format.'
+//       );
+//     }
+//   } else {
+//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+//   }
+// }
+// onFileSelected(event: any): void {
+//   if (event.target.files.length > 0) {
+//     this.selectedFile = event.target.files[0];
+//     console.log('Selected file:', this.selectedFile.name, 'Type:', this.selectedFile.type); // Debug log
+
+//     // Add file to descriptions array
+//     this.currentFileIndex = this.fileDescriptions.length;
+//     this.fileDescriptions.push({ file: this.selectedFile, description: '' });
+//     console.log('File descriptions:', this.fileDescriptions);
+
+//     // Convert file to Base64
+//     const reader = new FileReader();
+//     reader.onload = () => {
+//       this.base64Output = reader.result as string; // Includes the "data:" prefix
+//       console.log('Base64 Encoded String (Preview):', this.base64Output.slice(0, 50)); // Debug log
+//     };
+//     reader.readAsDataURL(this.selectedFile); // Encodes with "data:" prefix
+//     this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
+//   } else {
+//     this.selectedFile = null; // Reset selectedFile if no file is selected
+//   }
+// }
+// onFileSelected(event: any): void {
+//   if (event.target.files.length > 0) {
+//     this.selectedFile = event.target.files[0];
+//     console.log('Selected file:', this.selectedFile.name, 'Type:', this.selectedFile.type); // Debug log
+
+//     // Add file to descriptions array
+//     this.currentFileIndex = this.fileDescriptions.length;
+//     this.fileDescriptions.push({ file: this.selectedFile, description: '' });
+//     console.log('File descriptions:', this.fileDescriptions);
+
+//     // Convert file to Base64 without the "data:" prefix
+//     const reader = new FileReader();
+//     reader.onload = () => {
+//       const base64String = reader.result as string;
+
+//       // Remove the "data:" prefix if present
+//       if (base64String.includes(',')) {
+//         this.base64Output = base64String.split(',')[1];
+//       } else {
+//         this.base64Output = base64String;
+//       }
+
+//       console.log('Base64 Encoded String (No Prefix):', this.base64Output.slice(0, 50)); // Debug log
+//     };
+//     reader.readAsDataURL(this.selectedFile);
+//     this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
+//   } else {
+//     this.selectedFile = null; // Reset selectedFile if no file is selected
+//   }
+// }
+onFileSelected(event: any): void {
+  if (event.target.files.length > 0) {
+    this.selectedFile = event.target.files[0];
+    console.log('Selected file:', this.selectedFile.name, 'Type:', this.selectedFile.type); // Debug log
+
+    // Add file to descriptions array
+    this.currentFileIndex = this.fileDescriptions.length;
+    this.fileDescriptions.push({ file: this.selectedFile, description: '' });
+    console.log('File descriptions:', this.fileDescriptions);
+
+    // Convert file to Base64 without the "data:" prefix
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64String = reader.result as string;
+
+      // Remove the "data:" prefix if present
+      if (base64String.includes(',')) {
+        this.base64Output = base64String.split(',')[1];
+      } else {
+        this.base64Output = base64String;
+      }
+
+      console.log('Base64 Encoded String (No Prefix):', this.base64Output.slice(0, 50)); // Debug log
+    };
+    reader.readAsDataURL(this.selectedFile);
+    this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
+  } else {
+    this.selectedFile = null; // Reset selectedFile if no file is selected
+  }
+}
+// openFile(): void {
+//   if (this.uploadedFile && this.uploadedFile.byteData) {
+//     try {
+//       // Directly use the Base64 string without checking for "data:" prefix
+//       const base64String = this.uploadedFile.byteData;
+
+//       // Decode Base64 string
+//       const byteCharacters = atob(base64String);
+//       const byteNumbers = new Array(byteCharacters.length);
+//       for (let i = 0; i < byteCharacters.length; i++) {
+//         byteNumbers[i] = byteCharacters.charCodeAt(i);
+//       }
+//       const byteArray = new Uint8Array(byteNumbers);
+
+//       // Create Blob with correct content type
+//       const blob = new Blob([byteArray], {
+//         type: this.uploadedFile.contentType || 'application/pdf', // Use correct MIME type
+//       });
+
+//       // Generate Blob URL and open it
+//       if (this.decodedFileUrl) {
+//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+//       }
+//       this.decodedFileUrl = URL.createObjectURL(blob);
+//       window.open(this.decodedFileUrl, '_blank');
+//     } catch (error) {
+//       console.error('Error processing file:', error);
+//       this.globalMessagingService.displayErrorMessage(
+//         'Error',
+//         'Failed to process the file. The file might be corrupted or in an invalid format.'
+//       );
+//     }
+//   } else {
+//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+//   }
+// }
+uploadFile(): void {
+  if (!this.selectedFile || !this.base64Output) {
+    alert('No selected file');
+    return;
+  }
+
+  if (!this.globalGetAllocation.length) {
+    alert('No fetched allocations');
+    return;
+  }
+
+  const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+
+  try {
+    const requests: ReceiptUploadRequest[] = [];
+
+    this.globalGetAllocation.forEach((allocation) => {
+      if (allocation.receiptParticularDetails && Array.isArray(allocation.receiptParticularDetails)) {
+        allocation.receiptParticularDetails.forEach((detail) => {
+          requests.push({
+            docType: 'RECEIPT',
+            docData: this.base64Output, // No "data:" prefix here
+            module: 'CB-RECEIPTS',
+            originalFileName: this.selectedFile.name,
+            filename: this.selectedFile.name,
+            referenceNo: detail.referenceNumber,
+            docDescription: this.description,
+            amount: detail.premiumAmount,
+            paymentMethod: paymentMode,
+            policyNumber: detail.policyNumber,
+          });
+        });
+      }
+    });
+
+    console.log('Request payload:', requests);
+
+    this.receiptService.uploadFiles(requests).subscribe({
+      next: (response) => {
+        console.log('Upload successful:', response);
+        this.globalDocId = response.docId;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
+        this.selectedFile = null;
+        this.base64Output = '';
+        this.fileDescriptions = [];
+        this.currentFileIndex = 0;
+        this.fetchDocByDocId(this.globalDocId);
+      },
+      error: (error) => {
+        console.error('Upload error:', error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
+      },
+    });
+  } catch (error) {
+    console.error('Error preparing upload:', error);
+    this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
+  }
+}
+openFile(): void {
+  if (this.uploadedFile && this.uploadedFile.byteData) {
+    try {
+      // Get Base64 string from the file data
+      const base64String = this.uploadedFile.byteData;
+
+      // Decode Base64 string to binary data
+      const byteCharacters = atob(base64String);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+
+      // Determine file type
+      const isPdf = this.uploadedFile.docName?.toLowerCase().endsWith('.pdf');
+      const blobType = isPdf ? 'application/pdf' : (this.uploadedFile.contentType || 'application/octet-stream');
+
+      // Create Blob with correct type
+      const blob = new Blob([byteArray], { type: blobType });
+
+      // Handle PDF files
+      if (isPdf) {
+        // Generate Blob URL and open in a new tab
+        if (this.decodedFileUrl) {
+          URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+        }
+        this.decodedFileUrl = URL.createObjectURL(blob);
+        window.open(this.decodedFileUrl, '_blank');
+      } else {
+        // Handle non-PDF files: Provide a download option
+        const downloadUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = downloadUrl;
+        anchor.download = this.uploadedFile.docName || 'downloaded_file';
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(downloadUrl); // Clean up the download URL
+      }
+    } catch (error) {
+      console.error('Error processing file:', error);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Failed to process the file. The file might be corrupted or in an invalid format.'
+      );
+    }
+  } else {
+    this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+  }
+}
+
+// openFile(): void {
+//   if (this.uploadedFile && this.uploadedFile.byteData) {
+//     try {
+//       // Get Base64 string
+//       const base64String = this.uploadedFile.byteData;
+
+//       // Decode Base64 string
+//       const byteCharacters = atob(base64String);
+//       const byteNumbers = new Array(byteCharacters.length);
+//       for (let i = 0; i < byteCharacters.length; i++) {
+//         byteNumbers[i] = byteCharacters.charCodeAt(i);
+//       }
+//       const byteArray = new Uint8Array(byteNumbers);
+
+//       // Create Blob with correct content type
+//       const blob = new Blob([byteArray], {
+//         type: this.uploadedFile.contentType || 'application/octet-stream',
+//       });
+
+//       // Check if the file is a PDF
+//       if (this.uploadedFile.docName?.toLowerCase().endsWith('.pdf')) {
+//         // Generate Blob URL and open it in a new tab for PDFs
+//         if (this.decodedFileUrl) {
+//           URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+//         }
+//         this.decodedFileUrl = URL.createObjectURL(blob);
+//         window.open(this.decodedFileUrl, '_blank');
+//       } else {
+//         // Non-PDF files: provide a download option
+//         const downloadUrl = URL.createObjectURL(blob);
+//         const a = document.createElement('a');
+//         a.href = downloadUrl;
+//         a.download = this.uploadedFile.docName || 'downloaded_file';
+//         document.body.appendChild(a);
+//         a.click();
+//         document.body.removeChild(a);
+//         URL.revokeObjectURL(downloadUrl); // Clean up the download URL
+//       }
+//     } catch (error) {
+//       console.error('Error processing file:', error);
+//       this.globalMessagingService.displayErrorMessage(
+//         'Error',
+//         'Failed to process the file. The file might be corrupted or in an invalid format.'
+//       );
+//     }
+//   } else {
+//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+//   }
+// }
+
+// openFile(): void {
+//   if (this.uploadedFile && this.uploadedFile.byteData) {
+//     try {
+//       let base64String = this.uploadedFile.byteData;
+
+//       // Handle Base64 strings with or without the "data:" prefix
+//       if (base64String.includes(',')) {
+//         base64String = base64String.split(',')[1];
+//       }
+
+//       // Decode Base64 string
+//       const byteCharacters = atob(base64String);
+//       const byteNumbers = new Array(byteCharacters.length);
+//       for (let i = 0; i < byteCharacters.length; i++) {
+//         byteNumbers[i] = byteCharacters.charCodeAt(i);
+//       }
+//       const byteArray = new Uint8Array(byteNumbers);
+
+//       // Create Blob with correct content type
+//       const blob = new Blob([byteArray], {
+//         type: this.uploadedFile.contentType || 'application/pdf', // Use correct MIME type
+//       });
+
+//       // Generate Blob URL and open it
+//       if (this.decodedFileUrl) {
+//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+//       }
+//       this.decodedFileUrl = URL.createObjectURL(blob);
+//       window.open(this.decodedFileUrl, '_blank');
+//     } catch (error) {
+//       console.error('Error processing file:', error);
+//       this.globalMessagingService.displayErrorMessage(
+//         'Error',
+//         'Failed to process the file. The file might be corrupted or in an invalid format.'
+//       );
+//     }
+//   } else {
+//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+//   }
+// }
+// openFile(): void {
+//   if (this.uploadedFile && this.uploadedFile.byteData) {
+//     try {
+//       // Get Base64 string
+//       const base64String = this.uploadedFile.byteData;
+
+//       // Decode Base64 string
+//       const byteCharacters = atob(base64String);
+//       const byteNumbers = new Array(byteCharacters.length);
+//       for (let i = 0; i < byteCharacters.length; i++) {
+//         byteNumbers[i] = byteCharacters.charCodeAt(i);
+//       }
+//       const byteArray = new Uint8Array(byteNumbers);
+
+//       // Create Blob with correct content type
+//       const blob = new Blob([byteArray], {
+//         type: this.uploadedFile.contentType || 'application/octet-stream',
+//       });
+
+//       // Check if the file is a PDF
+//       if (this.uploadedFile.docName?.toLowerCase().endsWith('.pdf')) {
+//         // Generate Blob URL and open it in a new tab for PDFs
+//         if (this.decodedFileUrl) {
+//           URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
+//         }
+//         this.decodedFileUrl = URL.createObjectURL(blob);
+//         window.open(this.decodedFileUrl, '_blank');
+//       } else {
+//         // Non-PDF files: provide a download option
+//         const downloadUrl = URL.createObjectURL(blob);
+//         const a = document.createElement('a');
+//         a.href = downloadUrl;
+//         a.download = this.uploadedFile.docName || 'downloaded_file';
+//         document.body.appendChild(a);
+//         a.click();
+//         document.body.removeChild(a);
+//         URL.revokeObjectURL(downloadUrl); // Clean up the download URL
+//       }
+//     } catch (error) {
+//       console.error('Error processing file:', error);
+//       this.globalMessagingService.displayErrorMessage(
+//         'Error',
+//         'Failed to process the file. The file might be corrupted or in an invalid format.'
+//       );
+//     }
+//   } else {
+//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
+//   }
+// }
+
+// uploadFile(): void {
+//   if (!this.selectedFile || !this.base64Output) {
+//     alert('No selected file');
+//     return;
+//   }
+
+//   if (!this.globalGetAllocation.length) {
+//     alert('No fetched allocations');
+//     return;
+//   }
+
+//   const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+
+//   try {
+//     const requests: ReceiptUploadRequest[] = [];
+
+//     this.globalGetAllocation.forEach((allocation) => {
+//       if (allocation.receiptParticularDetails && Array.isArray(allocation.receiptParticularDetails)) {
+//         allocation.receiptParticularDetails.forEach((detail) => {
+//           requests.push({
+//             docType: 'RECEIPT',
+//             docData: this.base64Output, // Includes "data:" prefix
+//             module: 'CB-RECEIPTS',
+//             originalFileName: this.selectedFile.name,
+//             filename: this.selectedFile.name,
+//             referenceNo: detail.referenceNumber,
+//             docDescription: this.description,
+//             amount: detail.premiumAmount,
+//             paymentMethod: paymentMode,
+//             policyNumber: detail.policyNumber,
+//           });
+//         });
+//       }
+//     });
+
+//     console.log('Request payload:', requests);
+
+//     this.receiptService.uploadFiles(requests).subscribe({
+//       next: (response) => {
+//         console.log('Upload successful:', response);
+//         this.globalDocId = response.docId;
+//         this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
+//         this.selectedFile = null;
+//         this.base64Output = '';
+//         this.fileDescriptions = [];
+//         this.currentFileIndex = 0;
+//         this.fetchDocByDocId(this.globalDocId);
+//       },
+//       error: (error) => {
+//         console.error('Upload error:', error);
+//         this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Error preparing upload:', error);
+//     this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
 //   }
 // }
 
 
 
+ deleteFile() {
+    if (this.uploadedFile && this.globalDocId) {
+      this.globalMessagingService.displaySuccessMessage('success','Doc deleted successfully');
+      
+      this.dmsService.deleteDocumentById(this.globalDocId).subscribe({
+        next: (response) => {
+          
+          this.globalMessagingService.displaySuccessMessage('Success', 'File deleted successfully');
+          this.uploadedFile = null;
+          this.decodedFileUrl = null;
+          console.log('success',response);
+        },
+        error: (error) => {
+        console.error('error',error);
+         // this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete file');
+        }
+      });
+    } else {
+      alert('cannot find docId');
 
-
-
-
-onFileSelected(event: any): void {
-
-  if (event.target.files.length > 0) {
-    this.selectedFile = event.target.files[0];
-    //console.log('Selected file:', this.selectedFile.name); // Debug log
-    this.currentFileIndex = this.fileDescriptions.length; // Set to the next index
-    this.fileDescriptions.push({ file: this.selectedFile, description: '' }); // Add the file to the array
-    //console.log('Selected file:', this.selectedFile);
-    //console.log('File descriptions:', this.fileDescriptions); // Debug log
-    this.openModal(this.fileDescriptions.length -1); // Open modal for the last added file
-  } else {
-   // console.error('No file selected'); // Log if no file is selected
-    this.selectedFile = null; // Reset selectedFile
-   
+      this.globalMessagingService.displayErrorMessage('Error', 'No file selected for deletion');
+    }
   }
-}
-
-
 openModal(index: number): void {
   this.currentFileIndex = index;
   const modalElement = document.getElementById('fileDescriptionModal');
@@ -1295,108 +1885,12 @@ closeFileModal(): void {
   }
 }
 
-// onRemoveFile(index: number): void {
-//   this.fileDescriptions.splice(index, 1);
-// }
+
 onRemoveFile(index: number): void {
   this.fileDescriptions.splice(index, 1); // Remove the file from the array
   //console.log('File removed. Updated file descriptions:', this.fileDescriptions);
 }
-uploadFile(): any {
-  // Extract referenceNumber and policyNumber from receiptParticularDetails
-  const description = this.receiptingDetailsForm.get('description')?.value; // Get the description from the form
-  //console.log('Description:', description);
-  let extractedTransactions = [];
-  if (Array.isArray(this.globalGetAllocation)) {
-    this.globalGetAllocation.forEach(transaction => {
-      if (Array.isArray(transaction.receiptParticularDetails)) {
-        transaction.receiptParticularDetails.forEach(detail => {
-          extractedTransactions.push({
-            referenceNumber: detail.referenceNumber,
-            policyNumber: detail.policyNumber,
-          });
-        });
-      }
-    });
-  } else if (this.globalGetAllocation?.receiptParticularDetails) {
-    this.globalGetAllocation.receiptParticularDetails.forEach(detail => {
-      extractedTransactions.push({
-        referenceNumber: detail.referenceNumber,
-        policyNumber: detail.policyNumber,
-      });
-    });
-  }
 
-  // Log extracted transactions for debugging
-  //console.log('Extracted Transactions:', extractedTransactions);
-
-  const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-  const amountIssued = this.receiptingDetailsForm.get('amountIssued')?.value;
-  //console.log('desc', description);
-
-  //console.log('payment', paymentMode);
-  //console.log('amount', amountIssued);
-
-  if (this.selectedFile) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64File = reader.result as string; // This will be the base64 encoded file
-      const docType = 'RECEIPT'; // Set your document type
-      const module = 'CB-RECEIPTS'; // Set your module
-
-      // Loop through each extracted transaction and upload the file
-      extractedTransactions.forEach(transaction => {
-        const requestBody = {
-          docType: docType,
-          docData: base64File,
-          module: module,
-          referenceNo: transaction.referenceNumber,
-          description:description,
-          amount: amountIssued,
-          paymentMethod: paymentMode,
-          policyNumber: transaction.policyNumber,
-          originalFileName:this.selectedFile.name,
-          filename:this.selectedFile.name,
-        };
-        
-        // Map the allocations to create an array of requests
-  const requests = this.globalGetAllocation.map(allocation => ({
-    ...requestBody,
-    referenceNo: allocation.referenceNo,
-    amount: allocation.premiummount,
-    policyNumber: allocation.policyNumber
-  }));
-console.log('requests made>>',requests);
-        // Call the service to upload the file
-        this.receiptService.uploadReceiptDocs(
-          requestBody.docType,
-          requestBody.docData,
-          requestBody.module,
-          requestBody.referenceNo,
-          requestBody.description,
-          requestBody.amount,
-          requestBody.paymentMethod,
-          requestBody.policyNumber,
-          requestBody.originalFileName,
-requestBody.filename
-        ).subscribe({
-          next: (response) => {
-            //console.log('File uploaded successfully:', response);
-            this.globalMessagingService.displaySuccessMessage('success','file uploaded successfully');
-            this.fileDescriptions = []; // Clear fileDescriptions after successful upload
-            this.selectedFile = null; // Reset selected file
-          },
-          error: (err) => {
-            console.error('Error uploading file:', err);
-          }
-        });
-      });
-    };
-    reader.readAsDataURL(this.selectedFile); // Read the file as base64
-  } else {
-    console.error('No file selected'); // Log if no file is selected
-  }
-}
 
 
 
@@ -1804,7 +2298,7 @@ const receiptData: ReceiptSaveDTO={
    
    branchCode: "1",  // Add quotes to ensure it's treated as string before conversion
     paymentMode: formValues.paymentMode,
-    paymentMemo: null,
+    paymentMemo: formValues.paymentRef || null,
     docDate: formValues.documentDate ? new Date(formValues.documentDate).toISOString().split('T')[0]:'' ,
     //drawerBank: formValues.drawersBank || 'N/A',
     drawerBank: formValues.drawersBank,

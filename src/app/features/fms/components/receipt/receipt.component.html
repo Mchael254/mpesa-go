@@ -294,7 +294,7 @@
             </div>
           </div>
 
-          <div class="col-md-4">
+          <!-- <div class="col-md-4">
             <div class="form-group">
               <label for="receiptDate" class="text-dark">{{ 'fms.receipting.receipt_date' | translate }}</label>
               <input
@@ -306,7 +306,22 @@
                 [disabled]="!backdatingEnabled && minDate === ''"
               />
             </div>
+          </div> -->
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="receiptDate" class="text-dark">{{ 'fms.receipting.receipt_date' | translate }}</label>
+              <input
+                type="date"
+                class="form-control"
+                id="receiptDate"
+                formControlName="receiptDate"
+                [min]="minDate"
+                [max]="maxDate"
+                [disabled]="!backdatingEnabled && minDate === ''"
+              />
+            </div>
           </div>
+          
         </div>
 
         <div class="row mt-3">
@@ -533,7 +548,17 @@
               </div>
             </div>
           </div>
-  
+          <div class="col-md-4" *ngIf="uploadedFile" >
+            <p class="mb-1"><strong>File Name:</strong> {{ uploadedFile.docName }}</p>
+            <button class="btn btn-primary me-2" (click)="openFile()">
+              <i class="fas fa-eye"></i> Open
+            </button>
+          
+          <!-- <div class="col-md-3" *ngIf="uploadedFile" > -->
+            <button class="btn btn-danger" (click)="deleteFile()">
+              <i class="fas fa-trash"></i> Delete File
+            </button>
+          </div>
         </div>
   
 
@@ -560,22 +585,12 @@
     <span>{{ fileDesc.description || 'No description' }}</span>
     <button type="button" class="btn btn-danger" (click)="onRemoveFile(i)">Remove</button>
   </div>
-  <!-- <div class="form-group">
-    <ul>
-      <li *ngFor="let file of fileDescriptions; let i = index">
-        <span>{{ file.file.name }}</span> - 
-        <span>{{ file.description || 'No description' }}</span>
-        <button type="button" class="btn btn-danger remove-document-button" 
-                (click)="onRemoveFile(i)">
-          Remove
-        </button>
-      </li>
-    </ul>
-  </div> -->
+ 
 </div>
 <div class="col-md-4 mt-2"  *ngIf="fileDescriptions.length > 0">
   <button type="button" class="btn btn-success" (click)="uploadFile()">post File</button>
 </div>
+
 </div>
 <!-- Modal for File Description -->
 <div id="fileDescriptionModal"  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -588,7 +603,7 @@
         <form [formGroup]="receiptingDetailsForm">
           <div class="form-group">
             <label for="description">Enter File Description</label>
-            <input id="description" type="text" class="form-control" formControlName="description" />
+            <input id="description" placeholder="enter desc" type="text" class="form-control" formControlName="description" />
             
             <div *ngIf="receiptingDetailsForm.get('description')?.invalid && receiptingDetailsForm.get('description')?.touched" class="text-danger">
               Description is required
@@ -598,7 +613,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="saveFileDescription()">Save</button>
-        <button type="button" class="btn btn-secondary" (click)="closeFileModal()">Cancel</button>
+        <!-- <button type="button" class="btn btn-secondary" (click)="closeFileModal()">Cancel</button> -->
       </div>
     </div>
   </div>
