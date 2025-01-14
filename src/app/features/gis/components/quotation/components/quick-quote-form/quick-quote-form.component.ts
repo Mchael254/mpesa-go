@@ -391,9 +391,26 @@ export class QuickQuoteFormComponent {
       isLazyLoaded: true
     }
 
-    sessionStorage.removeItem("clientDetails");
-    sessionStorage.removeItem("newClientDetails");
-    sessionStorage.removeItem('quotationNumber');
+    const navigationSource = sessionStorage.getItem('navigationSource');
+
+    // Clear fields only if the navigation is not from editRisk or addAnotherRisk
+    if (navigationSource !== 'editRisk' && navigationSource !== 'addAnotherRisk') {
+      sessionStorage.removeItem("clientDetails");
+      sessionStorage.removeItem("newClientDetails");
+      sessionStorage.removeItem('quotationNumber');
+      sessionStorage.removeItem('passedQuotationDetails');
+      sessionStorage.removeItem('passedClientDetails');
+      sessionStorage.removeItem('passedNewClientDetails');
+      sessionStorage.removeItem('passedSelectedRiskDetails');
+      sessionStorage.removeItem('isEditRisk');
+      sessionStorage.removeItem('isAddRisk');
+      sessionStorage.removeItem('passedQuotationNumber');
+      sessionStorage.removeItem('passedQuotationCode');
+    }
+
+    // Always clear the navigation source flag after use
+    sessionStorage.removeItem('navigationSource');
+
   }
   ngOnDestroy(): void { }
   addRisk() {
@@ -537,8 +554,6 @@ export class QuickQuoteFormComponent {
         this.isNewClient = true;
         this.toggleNewClient();
 
-        // Set fields disable state for new client
-        sessionStorage.setItem('fieldsDisableState', 'true');
       }
     } else {
       log.debug("Existing Client has been passed");
@@ -554,8 +569,6 @@ export class QuickQuoteFormComponent {
         this.isNewClient = false;
         this.toggleButton();
 
-        // Set fields disable state for existing client
-        sessionStorage.setItem('fieldsDisableState', 'true');
       }
     }
 
