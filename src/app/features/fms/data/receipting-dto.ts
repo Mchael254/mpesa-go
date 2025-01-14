@@ -581,7 +581,23 @@ export interface printDTO{
     loadIndicator: string;
     authorizationStatus: string
 }
-export interface ReceiptRequestDTO {
+export interface ReceiptUploadRequest {
+  docType: string;
+  docData: string;
+  module: string;
+  originalFileName: string;
+  filename: string;
+  referenceNo: string;
+  docDescription: string;
+  amount: number;
+  paymentMethod: string;
+  policyNumber: string;
+}
+export interface FileDescription {
+  file: File;
+  description: string;
+}
+export interface ReceiptRequest {
   docType: string;
   docData: string;
   module: string;
@@ -592,4 +608,10 @@ export interface ReceiptRequestDTO {
   paymentMethod: string;
   filename: string;
   policyNumber: string;
+}
+export interface Allocation {
+  referenceNo: string;
+  amount: number;
+  policyNumber: string;
+  // ... add other allocation properties you need
 }
