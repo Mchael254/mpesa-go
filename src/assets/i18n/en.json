@@ -947,7 +947,10 @@
       "total_taxes":"Total taxes",
       "excesses": "Excesses",
       "convert_quote":"Convert Quote",
-      "confirm_conversion": "Confirm Conversion"
+      "confirm_conversion": "Confirm Conversion",
+      "conversion_message":"You are about to convert a quick quote to a normal quote",
+      "convert_to_normal_quote": "Convert to normal quote",
+      "convert_to_policy":"Convert to Policy"
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",

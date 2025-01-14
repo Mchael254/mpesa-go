@@ -864,7 +864,10 @@
       "total_taxes": "总税额",
       "excesses": "免赔额",
       "convert_quote": "转换报价",
-      "confirm_conversion": "确认转换"
+      "confirm_conversion": "确认转换",
+      "conversion_message": "您即将把快速报价转换为正常报价",
+      "convert_to_normal_quote": "转换为正常报价",
+      "convert_to_policy": "转换为保单"
 
     },
     "policy": {
