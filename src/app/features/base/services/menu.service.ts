@@ -351,7 +351,7 @@ export class MenuService {
               },
               {
                 name: 'Prospects',
-                link: '/home/crm',
+                link: '/home/crm/prospects',
               },
             ],
             collapsed: true,
@@ -575,100 +575,131 @@ export class MenuService {
     FMS: [
       {
         name: 'General Ledger',
-        
+
         nameSlug: 'general-ledger',
-       // icon: 'fa-solid fa-money-check',
-        
+        // icon: 'fa-solid fa-money-check',
+
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Inquiries', nameSlug:'gl-inquires',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Final Reports', nameSlug:'final-reports',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                       
-                        collapsed: true,
-                        
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Inquiries',
+            nameSlug: 'gl-inquires',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Final Reports',
+            nameSlug: 'final-reports',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+
+        collapsed: true,
       },
       {
         name: 'Cashbook',
-        
 
         nameSlug: 'cashbook',
         // icon: 'fa-solid fa-gears',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Requistions', nameSlug:'requistions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Cheques', nameSlug:'cheques',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Petty cash', nameSlug:'pettycash',subList:[
-        {name:'',link:''}
-                      ] },
-          { name:'Receipts', nameSlug:'receipting',subList:[
-{name:'Receipting',link:'/home/fms/receipt'}
-          ] },
-          
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Requistions',
+            nameSlug: 'requistions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Cheques',
+            nameSlug: 'cheques',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Petty cash',
+            nameSlug: 'pettycash',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Receipts',
+            nameSlug: 'receipting',
+            subList: [{ name: 'Receipting', link: '/home/fms/receipt' }],
+          },
         ],
         collapsed: true,
-        
       },
-    
+
       {
         name: 'Debtors',
         nameSlug: 'debtors',
         // icon: 'fa-solid fa-money-check',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Invoices/Cr Notes', nameSlug:'invoices-cr',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Inquires', nameSlug:'inquires',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                        collapsed: true,
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Invoices/Cr Notes',
+            nameSlug: 'invoices-cr',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Inquires',
+            nameSlug: 'inquires',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+        collapsed: true,
       },
       {
         name: 'Creditors',
         nameSlug: 'creditors',
         // icon: 'fa-solid fa-money-check',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Invoices/DR Notes', nameSlug:'invoices-dr',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Inquires', nameSlug:'inquires',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                        collapsed: true,
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Invoices/DR Notes',
+            nameSlug: 'invoices-dr',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Inquires',
+            nameSlug: 'inquires',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+        collapsed: true,
       },
-  
     ],
   };
 
