@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from '../../../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ContactMethodDTO, ServiceReqCategoriesDTO, ServiceReqCatTypesDTO } from '../models/admin-policies';
 
 @Injectable({
