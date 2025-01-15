@@ -758,7 +758,14 @@
     "import_prospect": "Import Prospect",
     "download_template": "Download Template",
     "convert_to_client": "Convert To Client",
-    "contact_address_details": "Contact and Address Details"
+    "contact_address_details": "Contact and Address Details",
+    "certRegistrationNumber": "Certificate Registration Number",
+    "registrationName": "Registration Number",
+    "tradeName": "Trade Name",
+    "registrationDate": "Registration Date",
+    "parentCompany": "Parent Company",
+    "contactPerson": "Contact Person",
+    "contactPersonTelephone": "Contact Person Telephone"
   },
   "gis": {
     "quotation": {
