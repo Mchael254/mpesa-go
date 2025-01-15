@@ -1,6 +1,6 @@
 import { Component, OnInit,NgZone,ViewChild, ElementRef,Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
-import {NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, PaymentModesDTO, AccountTypeDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, ReceiptParticularDetailsDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, Allocation, ReceiptRequest, ReceiptUploadRequest, FileDescription} from '../../data/receipting-dto'
+import {NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, AccountTypeDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, ReceiptParticularDetailsDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, Allocation, ReceiptRequest, ReceiptUploadRequest, FileDescription} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap'; 
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
@@ -18,7 +18,9 @@ import {StaffService} from '../../../../features/entities/services/staff/staff.s
 import {CurrencyService} from '../../../../shared/services/setups/currency/currency.service';
 import {BankService} from '../../../../shared/services/setups/bank/bank.service';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';
-
+import { FmsService } from '../../services/fms.service';
+import { FmsSetupService } from '../../services/fms-setup.service';
+import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 
 @Component({
   selector: 'app-receipt-details',
@@ -29,6 +31,8 @@ import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 
 export class ReceiptComponent implements OnInit {
+  onReclicked=false;
+  
   fetchedAllocations: Allocation[] = [];
   //selectedFile: File | null = null;
   base64Output: string = '';
@@ -75,6 +79,7 @@ transactions:TransactionDTO[]=[];
   canAddAllocation = false; 
   paymentModes:PaymentModesDTO[]=[];
 bankAccounts:BanksDTO[]=[];
+globalBankAccountVariable:any;
 selectedBankCode:number;
     
    narrations:NarrationDTO[]=[];
@@ -113,7 +118,9 @@ rate:any;
 uploadedFiles: File[] = [];
 currentReceiptingPoint:any;
   manualExchangeRate:any;
-  allocation:boolean=true;
+  // allocation:boolean=true;
+  allocation: boolean = false;
+
   allocationsReturned:any;
   // allocatedAmounts: number[] = []; // Array to store allocated amounts
   totalAllocatedAmounts: number = 0;
@@ -123,7 +130,7 @@ currentReceiptingPoint:any;
   fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
   //currentFileIndex: number = -1; // Initialize to -1 or a valid index when a file is selected
 
-  
+  onclicked:boolean=false;
 
   referenceNo: string = ''; // Assume this is set from the selected client
   amount: number = 0; // Assume this is set from the form
@@ -133,6 +140,9 @@ currentReceiptingPoint:any;
 isSaveBtnActive=true;
   @ViewChild('fileDescriptionModal', { static: false }) fileDescriptionModal!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef;
+  
+  
+  @ViewChild('printTemplate', { static: false }) printTemplate!: ReceiptComponent;
   // receiptingDetailsForm!: FormGroup;
  
 
@@ -152,6 +162,7 @@ isSaveBtnActive=true;
   minDate: string; // To enable backdating if necessary
   maxDate: string; // To disable future dates
   backdatingEnabled = true; // Adjust this based on your logic
+  globalReceiptDetails:any;
 constructor(
   private fb: FormBuilder,
   private staffService:StaffService,
@@ -162,7 +173,9 @@ constructor(
   private bankService:BankService,
   private  currencyService:CurrencyService,
  private authService:AuthService,
- private dmsService:DmsService
+ private dmsService:DmsService,
+ private fmsService:FmsService,
+ private fmsSetupService:FmsSetupService
 
 ) {
 
@@ -181,6 +194,7 @@ ngOnInit(): void {
 //this.fetchDrawersBanks();
 //this.fetchDrawersBank();
 this.fetchNarrations();
+
 //this.fetchParamStatus();
  // this.fetchDefaultExchangeRate();
 // this.fetchManualExchangeRateParameter();
@@ -190,6 +204,7 @@ this.fetchNarrations();
 
 this.loggedInUser = this.authService.getCurrentUser();
 this.fetchUserDetails();
+
  // Set the minDate and maxDate for date validation
  const currentDate = new Date();
  this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
@@ -216,7 +231,7 @@ captureReceiptForm(){
   const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
   this.receiptingDetailsForm = this.fb.group({
     selectedBranch:['',Validators.required],
-    organization: ['', Validators.required], // Set default value here as well
+    organization: ['org.id', Validators.required], // Set default value here as well
     amountIssued: ['', Validators.required],
     openCheque: [''],
     receiptNumber:['',Validators.required],
@@ -282,21 +297,23 @@ fetchOrganization(){
   this.organizationService.getOrganization().subscribe({
     next:(data)=>{
       this.organization=data;
-      //console.log('organization>>',data);
+      console.log('organization>>',data);
      // Set the default organization if it exists
-   
+     
      const defaultOrg = this.organization.find(org => org.id === 2);
      if (defaultOrg) {
-     
+    
        this.selectedOrganization = defaultOrg.name; // Set default organization
        this.defaultOrgId =  defaultOrg.id;
        this.defaultCountryId=defaultOrg.country.id;
       this.fetchBranches(this.defaultOrgId);
-       this.fetchPaymentModes(this.defaultOrgId);
+      this.fetchPayments(this.defaultOrgId);
+       //this.fetchPaymentModes(this.defaultOrgId);
        this.fetchDrawersBanks(this.defaultCountryId);
        //this.orgId=this.selectedOrganization.name;
-      this.receiptingDetailsForm.patchValue({organization:this.selectedOrganization});
-      
+       // Patch the form control with the default organization ID
+       this.receiptingDetailsForm.patchValue({ organization: this.defaultOrgId });
+       //this.receiptingDetailsForm.patchValue({organization:this.selectedOrganization});
        //console.log('id',defaultOrg.name);
      } else {
        this.selectedOrganization = null; // Allow user to select from the list
@@ -326,6 +343,7 @@ fetchBranches(organizationId: number){
 onOrganizationChange(event: any) {
 
   // Get the selected organization ID
+
   const selectedOrgId = Number(event.target.value);
   //console.log('Selected Organization ID:', selectedOrgId);
 
@@ -345,12 +363,15 @@ onOrganizationChange(event: any) {
 
       // Fetch branches for the selected organization
       this.fetchBranches(selectedOrgId);
-      this.fetchPaymentModes(selectedOrgId);
+      //this.fetchPaymentModes(selectedOrgId);
+      this.fetchPayments(this.defaultOrgId);
       // Now you can fetch drawer banks using the country ID
       if (this.selectedCountryId) {
         this.fetchDrawersBanks(this.selectedCountryId);
       }
     }
+     // Patch the form control with the default organization ID
+     //this.receiptingDetailsForm.patchValue({ organization: this.defaultOrgId });
   } else {
     // Clear dependent fields if no organization is selected
     this.selectedCountryId = null;
@@ -399,21 +420,30 @@ private formatDate(date: Date): string {
   const day = date.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-fetchPaymentModes(orgCode:number){
-this.receiptService.getPaymentModes(orgCode).subscribe({
-    next: (response) => {
-      this.paymentModes = response.data;
+// fetchPaymentModes(orgCode:number){
+// this.receiptService.getPaymentModes(orgCode).subscribe({
+//     next: (response) => {
+//       this.paymentModes = response.data;
       
-    },
-    error: (err) => {
-      this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-    }
-  });
-}
+//     },
+//     error: (err) => {
+//       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+//     }
+//   });
+// }
 onBank(event: Event): void {
   //const selectedBankName = (event.target as HTMLSelectElement).value;
   const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
   this.selectedBankCode = selectedBankCode; // Store the selected bank code
+   // Find the selected bank object based on the code
+   const selectedBank = this.bankAccounts.find(bank => bank.code === selectedBankCode);
+
+   if (selectedBank) {
+     this.globalBankAccountVariable = selectedBank; // Assign the selected bank to the global variable
+     //console.log('Selected Bank Object:', this.globalBankAccountVariable);
+   } else {
+     //console.error('Selected bank not found in the bankAccounts list.');
+   }
   this.receiptService.getReceiptingPoints(1,this.GlobalUser.id).subscribe({
     next: (response: { data: ReceiptingPointsDTO[] }) => {
       if (response.data.length > 0) {
@@ -758,7 +788,8 @@ fetchBanks(){
       .subscribe({
         next: (response) => {
         this.bankAccounts = response.data;
-       
+       console.log('this.bankAccounts',this.bankAccounts);
+
         
        },
         error: (err) => {
@@ -1018,6 +1049,7 @@ fetchAccountTypes() {
   this.receiptService.getAccountTypes(this.GlobalUser.organizationId, 1,this.GlobalUser.id).subscribe({
     next: (response) => {
       this.accountTypes = response.data || [];
+     // console.log('response>>',response);
     },
     error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
@@ -1045,6 +1077,8 @@ onAccountTypeChange(): void {
   
   
   onSearch(): void {
+ 
+   
     const { accountType, searchCriteria, searchQuery } = this.receiptingDetailsForm.value;
   
     if (!accountType || !searchCriteria || !searchQuery) {
@@ -1066,6 +1100,7 @@ onAccountTypeChange(): void {
     }
   
     this.fetchClients(apiSearchCriteria, searchQuery.trim());
+  
   }
   
   fetchClients(searchCriteria: string, searchValue: string): void {
@@ -1480,42 +1515,7 @@ onFileSelected(event: any): void {
     this.selectedFile = null; // Reset selectedFile if no file is selected
   }
 }
-// openFile(): void {
-//   if (this.uploadedFile && this.uploadedFile.byteData) {
-//     try {
-//       // Directly use the Base64 string without checking for "data:" prefix
-//       const base64String = this.uploadedFile.byteData;
 
-//       // Decode Base64 string
-//       const byteCharacters = atob(base64String);
-//       const byteNumbers = new Array(byteCharacters.length);
-//       for (let i = 0; i < byteCharacters.length; i++) {
-//         byteNumbers[i] = byteCharacters.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumbers);
-
-//       // Create Blob with correct content type
-//       const blob = new Blob([byteArray], {
-//         type: this.uploadedFile.contentType || 'application/pdf', // Use correct MIME type
-//       });
-
-//       // Generate Blob URL and open it
-//       if (this.decodedFileUrl) {
-//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
-//       }
-//       this.decodedFileUrl = URL.createObjectURL(blob);
-//       window.open(this.decodedFileUrl, '_blank');
-//     } catch (error) {
-//       console.error('Error processing file:', error);
-//       this.globalMessagingService.displayErrorMessage(
-//         'Error',
-//         'Failed to process the file. The file might be corrupted or in an invalid format.'
-//       );
-//     }
-//   } else {
-//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
-//   }
-// }
 uploadFile(): void {
   if (!this.selectedFile || !this.base64Output) {
     alert('No selected file');
@@ -1626,206 +1626,6 @@ openFile(): void {
   }
 }
 
-// openFile(): void {
-//   if (this.uploadedFile && this.uploadedFile.byteData) {
-//     try {
-//       // Get Base64 string
-//       const base64String = this.uploadedFile.byteData;
-
-//       // Decode Base64 string
-//       const byteCharacters = atob(base64String);
-//       const byteNumbers = new Array(byteCharacters.length);
-//       for (let i = 0; i < byteCharacters.length; i++) {
-//         byteNumbers[i] = byteCharacters.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumbers);
-
-//       // Create Blob with correct content type
-//       const blob = new Blob([byteArray], {
-//         type: this.uploadedFile.contentType || 'application/octet-stream',
-//       });
-
-//       // Check if the file is a PDF
-//       if (this.uploadedFile.docName?.toLowerCase().endsWith('.pdf')) {
-//         // Generate Blob URL and open it in a new tab for PDFs
-//         if (this.decodedFileUrl) {
-//           URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
-//         }
-//         this.decodedFileUrl = URL.createObjectURL(blob);
-//         window.open(this.decodedFileUrl, '_blank');
-//       } else {
-//         // Non-PDF files: provide a download option
-//         const downloadUrl = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = downloadUrl;
-//         a.download = this.uploadedFile.docName || 'downloaded_file';
-//         document.body.appendChild(a);
-//         a.click();
-//         document.body.removeChild(a);
-//         URL.revokeObjectURL(downloadUrl); // Clean up the download URL
-//       }
-//     } catch (error) {
-//       console.error('Error processing file:', error);
-//       this.globalMessagingService.displayErrorMessage(
-//         'Error',
-//         'Failed to process the file. The file might be corrupted or in an invalid format.'
-//       );
-//     }
-//   } else {
-//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
-//   }
-// }
-
-// openFile(): void {
-//   if (this.uploadedFile && this.uploadedFile.byteData) {
-//     try {
-//       let base64String = this.uploadedFile.byteData;
-
-//       // Handle Base64 strings with or without the "data:" prefix
-//       if (base64String.includes(',')) {
-//         base64String = base64String.split(',')[1];
-//       }
-
-//       // Decode Base64 string
-//       const byteCharacters = atob(base64String);
-//       const byteNumbers = new Array(byteCharacters.length);
-//       for (let i = 0; i < byteCharacters.length; i++) {
-//         byteNumbers[i] = byteCharacters.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumbers);
-
-//       // Create Blob with correct content type
-//       const blob = new Blob([byteArray], {
-//         type: this.uploadedFile.contentType || 'application/pdf', // Use correct MIME type
-//       });
-
-//       // Generate Blob URL and open it
-//       if (this.decodedFileUrl) {
-//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
-//       }
-//       this.decodedFileUrl = URL.createObjectURL(blob);
-//       window.open(this.decodedFileUrl, '_blank');
-//     } catch (error) {
-//       console.error('Error processing file:', error);
-//       this.globalMessagingService.displayErrorMessage(
-//         'Error',
-//         'Failed to process the file. The file might be corrupted or in an invalid format.'
-//       );
-//     }
-//   } else {
-//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
-//   }
-// }
-// openFile(): void {
-//   if (this.uploadedFile && this.uploadedFile.byteData) {
-//     try {
-//       // Get Base64 string
-//       const base64String = this.uploadedFile.byteData;
-
-//       // Decode Base64 string
-//       const byteCharacters = atob(base64String);
-//       const byteNumbers = new Array(byteCharacters.length);
-//       for (let i = 0; i < byteCharacters.length; i++) {
-//         byteNumbers[i] = byteCharacters.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumbers);
-
-//       // Create Blob with correct content type
-//       const blob = new Blob([byteArray], {
-//         type: this.uploadedFile.contentType || 'application/octet-stream',
-//       });
-
-//       // Check if the file is a PDF
-//       if (this.uploadedFile.docName?.toLowerCase().endsWith('.pdf')) {
-//         // Generate Blob URL and open it in a new tab for PDFs
-//         if (this.decodedFileUrl) {
-//           URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
-//         }
-//         this.decodedFileUrl = URL.createObjectURL(blob);
-//         window.open(this.decodedFileUrl, '_blank');
-//       } else {
-//         // Non-PDF files: provide a download option
-//         const downloadUrl = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = downloadUrl;
-//         a.download = this.uploadedFile.docName || 'downloaded_file';
-//         document.body.appendChild(a);
-//         a.click();
-//         document.body.removeChild(a);
-//         URL.revokeObjectURL(downloadUrl); // Clean up the download URL
-//       }
-//     } catch (error) {
-//       console.error('Error processing file:', error);
-//       this.globalMessagingService.displayErrorMessage(
-//         'Error',
-//         'Failed to process the file. The file might be corrupted or in an invalid format.'
-//       );
-//     }
-//   } else {
-//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
-//   }
-// }
-
-// uploadFile(): void {
-//   if (!this.selectedFile || !this.base64Output) {
-//     alert('No selected file');
-//     return;
-//   }
-
-//   if (!this.globalGetAllocation.length) {
-//     alert('No fetched allocations');
-//     return;
-//   }
-
-//   const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-
-//   try {
-//     const requests: ReceiptUploadRequest[] = [];
-
-//     this.globalGetAllocation.forEach((allocation) => {
-//       if (allocation.receiptParticularDetails && Array.isArray(allocation.receiptParticularDetails)) {
-//         allocation.receiptParticularDetails.forEach((detail) => {
-//           requests.push({
-//             docType: 'RECEIPT',
-//             docData: this.base64Output, // Includes "data:" prefix
-//             module: 'CB-RECEIPTS',
-//             originalFileName: this.selectedFile.name,
-//             filename: this.selectedFile.name,
-//             referenceNo: detail.referenceNumber,
-//             docDescription: this.description,
-//             amount: detail.premiumAmount,
-//             paymentMethod: paymentMode,
-//             policyNumber: detail.policyNumber,
-//           });
-//         });
-//       }
-//     });
-
-//     console.log('Request payload:', requests);
-
-//     this.receiptService.uploadFiles(requests).subscribe({
-//       next: (response) => {
-//         console.log('Upload successful:', response);
-//         this.globalDocId = response.docId;
-//         this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
-//         this.selectedFile = null;
-//         this.base64Output = '';
-//         this.fileDescriptions = [];
-//         this.currentFileIndex = 0;
-//         this.fetchDocByDocId(this.globalDocId);
-//       },
-//       error: (error) => {
-//         console.error('Upload error:', error);
-//         this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
-//       },
-//     });
-//   } catch (error) {
-//     console.error('Error preparing upload:', error);
-//     this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
-//   }
-// }
-
-
 
  deleteFile() {
     if (this.uploadedFile && this.globalDocId) {
@@ -1894,10 +1694,14 @@ onRemoveFile(index: number): void {
 
 
 
-
+// The onClickClient method sets this.selectedClient and fetches transactions based on the selected client's details. This allows the UI to reflect the transactions specific to the selected client.
 onClickClient(selectedClient) {
+  // if (this.selectedClient?.code === selectedClient.code) {
+  //   return; // Avoid unnecessary API call
+  // }
+//  this.onReclicked=true;
   this.selectedClient = selectedClient; // Store the selected client
- // console.log('SELECTED CLIENT',this.selectedClient);
+ console.log('SELECTED CLIENT',this.selectedClient);
   this.fetchTransactions(
     selectedClient.systemShortDesc,
     selectedClient.code,
@@ -1907,9 +1711,37 @@ onClickClient(selectedClient) {
     
 
   );
+   // Ensure the allocation table is displayed
+   this.allocation = true;
+  // this.onclicked=true;
  // console.log("selected client>>", selectedClient.accountCode);
   
 }
+
+
+// onClickClient(selectedClient) {
+//   // Check if the selected client is the same as the previously selected one
+//   if (this.selectedClient?.code === selectedClient.code) {
+//     this.fetchTransactions(
+//       selectedClient.systemShortDesc,
+//       selectedClient.code,
+//       selectedClient.accountCode,
+//       selectedClient.receiptType,
+//       selectedClient.shortDesc
+//     );
+//   } else {
+//     // If a new client is selected, reset allocations and fetch their transactions
+//     this.selectedClient = selectedClient;
+//     this.fetchTransactions(
+//       selectedClient.systemShortDesc,
+//       selectedClient.code,
+//       selectedClient.accountCode,
+//       selectedClient.receiptType,
+//       selectedClient.shortDesc
+//     );
+//     this.onclicked = true;
+//   }
+// }
 
 get allocatedAmountControls(): FormArray {
   return this.receiptingDetailsForm.get('allocatedAmount') as FormArray;
@@ -2088,8 +1920,21 @@ allocateAndPostAllocations(): void {
     next: (response) => {
       this.allocation = false;
       this.globalMessagingService.displaySuccessMessage('Success', 'Allocations posted successfully');
+       // Reset client selection and transactions
+       this.selectedClient = null;
+       this.transactions = [];
+       while (this.allocatedAmountControls.length > 0) {
+         this.allocatedAmountControls.removeAt(0);
+       }
+       // Clear state after successful allocation
+      this.selectedClient = null;
+      this.transactions = [];
+      while (this.allocatedAmountControls.length !== 0) {
+        this.allocatedAmountControls.removeAt(0);
+      }
+      this.totalAllocatedAmount = 0; // Reset total allocated amount
       this.getAllocations();
-      
+     
     },
     error: (err) => {
       //console.error('Error posting allocation:', err);
@@ -2098,6 +1943,7 @@ allocateAndPostAllocations(): void {
   });
 }
 getAllocations(){
+
   this.receiptService.getAllocations(this.globalReceiptNumber,this.GlobalUser.id).subscribe({
     next:(response)=>{
 //this.getAllocation=response.data;
@@ -2108,8 +1954,8 @@ this.getAllocation = response.data.filter(allocation =>
 this.isAllocationCompleted = true;
 this.allocationsReturned=this.getAllocation;
 this.globalGetAllocation=this.getAllocation;
-console.log('getallocations>>',this.globalGetAllocation);
-this.globalMessagingService.displaySuccessMessage('success', 'detail');
+//console.log('getallocations>>',this.globalGetAllocation);
+// this.globalMessagingService.displaySuccessMessage('success', 'detail');
 
     },
     error:(err)=>{
@@ -2247,11 +2093,23 @@ deleteAllocation(receiptDetailCode: number): void {
 //     }
 //   });
 // }
+// fetchParamStatus(){
+//   this.receiptService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
+//     next:(response)=>{
+//       //console.log('status',response.data);
+//       this.parameterStatus=response.data;
+//     },
+//     error:(err)=>{
+//       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
+//     }
+//   })
+// }
 fetchParamStatus(){
-  this.receiptService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
+  this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
     next:(response)=>{
       //console.log('status',response.data);
       this.parameterStatus=response.data;
+      this.globalMessagingService.displaySuccessMessage('success','successfully checked params')
     },
     error:(err)=>{
       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
@@ -2259,20 +2117,12 @@ fetchParamStatus(){
   })
 }
 submitReceipt(): any {
+  
   // if (this.receiptingDetailsForm.invalid) {
   //   this.globalMessagingService.displayErrorMessage('Error', 'Please fill in all required fields');
   //   return;
   // }
-  this.fetchParamStatus();
-  if(this.parameterStatus=='N')
-    {
-     // alert('jey');
-confirm('do you want to save receipt without uploading file?');
-    }else{
-     // alert('no');
-      //confirm('are you sure to save receipt?');
-      return true;
-    }
+  console.log('my SELECTED CLIENT',this.selectedClient);
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
 
@@ -2306,9 +2156,9 @@ const receiptData: ReceiptSaveDTO={
     narration: formValues.narration,
     insurerAccount: null,
     receivedFrom: formValues.receivedFrom,
-    grossOrNet: "G",
-   // grossOrNet: formValues.deductions || '',
-    sysShtDesc: null,
+    //grossOrNet: "G",
+    grossOrNet: formValues.deductions || null,
+    sysShtDesc: this.selectedClient.systemShortDesc,
     receiptingPointId: this.receiptingPointId,
     receiptingPointAutoManual: this.receiptingPointAutoManual,
     //capitalInjection: "N",
@@ -2317,23 +2167,24 @@ const receiptData: ReceiptSaveDTO={
     chequeNo: null,
     ipfFinancier: null,
     receiptSms: "Y",
-    receiptChequeType: null,
+    receiptChequeType: formValues.chequeType || null,
     vatInclusive: null,
-    rctbbrCode: null,
+    rctbbrCode: String(1) ,
     directType: null,
     pmBnkCode: null,
     dmsKey: null,
-    currencyRate: null,
+    currencyRate: formValues.exchangeRate || formValues.manualExchangeRate|| null,
     internalRemarks: null,
    // manualRef:formValues.manualRef || null,
-   manualRef: null,
-   bankAccountCode: "526", // Add quotes to ensure it's treated as string before conversion
+   manualRef: formValues.manualRef || null,
+   bankAccountCode: String(this.globalBankAccountVariable.code), // Add quotes to ensure it's treated as string before conversion
     grossOrNetAdminCharge: "G",
     insurerAcc: null,
     grossOrNetWhtax: null,
     grossOrNetVat: null,
+    
     sysCode: this.selectedClient.systemCode,
-    bankAccountType: "B"
+    bankAccountType: this.globalBankAccountVariable.type
   
 }
   // const receiptData: ReceiptSaveDTO = {
@@ -2416,16 +2267,105 @@ this.isReceiptSaved=true;
     }
   });
 }
+fetchPayments(orgCode:number){
+  this.fmsService.getPaymentMethods(orgCode).subscribe({
+    next:(response)=>{
+      this.paymentModes = response.data;
+      
+    
+    },
+    error:(error)=>{
+      this.globalMessagingService.displayErrorMessage('error','error fetching payments modes');
+      
+    }
+  })
+}
+
+confirmFormValidity():any{
+  this.fetchParamStatus();
+  
+  if(this.parameterStatus=='N')
+    {
+     // alert('jey');
+     if(confirm('do you want to save receipt without uploading file?')==true){
+      this.fetchReceiptDetails();
+return true;
+     }else{
+      return false;
+     }
+
+    // }else{
+    //  // alert('no');
+    //   //confirm('are you sure to save receipt?');
+    //   return true;
+     }
+
+}
+formatReturnedDate(date: string | Date): string {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString();
+}
+
+formatAmount(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+openReceiptPreviewModal() {
+  if (this.globalReceiptDetails) {
+    const receiptModal = new bootstrap.Modal(document.getElementById('receiptPreviewModal'));
+    receiptModal.show();
+  } else {
+    this.globalMessagingService.displayErrorMessage('Error', 'No receipt details available to preview');
+  }
+}
+
 fetchReceiptDetails(){
   this.receiptService.getReceiptDetails(this.globalReceiptNumber).subscribe({
     next:(response)=>{
-      
+      this.globalReceiptDetails=response.data;
       //console.log('receiptDetails>>',response.data);
       this.globalMessagingService.displaySuccessMessage('success','successfully retrieved receipt details');
+      this.openReceiptPreviewModal(); // Open modal after getting data
     },
     error:(error)=>{
 this.globalMessagingService.displayErrorMessage('Error',error.error?.message || 'Failed to fetch Receipt Details');
     }
   })
+}
+
+
+printReceipt() {
+  const printContents = document.getElementById('receiptPreviewModal')?.querySelector('.modal-body')?.innerHTML;
+  if (printContents) {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Receipt</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+              @media print {
+                body { padding: 20px; }
+                .modal-body { padding: 0; }
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            ${printContents}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250);
+    }
+  }
 }
  }
