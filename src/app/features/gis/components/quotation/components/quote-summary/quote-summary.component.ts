@@ -288,6 +288,9 @@ export class QuoteSummaryComponent {
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
+    // Add a unique flag for add another risk navigation
+    sessionStorage.setItem('navigationSource', 'addAnotherRisk');
+
     log.debug("isAddRisk:", this.isAddRisk)
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
@@ -302,7 +305,7 @@ export class QuoteSummaryComponent {
   }
 
 
-  acceptQuote() {
+  convertToNormalQuote() {
     if(this.passedClientDetails) {
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
     } else {
@@ -630,6 +633,8 @@ export class QuoteSummaryComponent {
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
+    // Add a unique flag for edit risk navigation
+    sessionStorage.setItem('navigationSource', 'editRisk');
 
     log.debug("isEditRisk:", this.isEditRisk)
     log.debug("quotation number:", this.quotationNo)
