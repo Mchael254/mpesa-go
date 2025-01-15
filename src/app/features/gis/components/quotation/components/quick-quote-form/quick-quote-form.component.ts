@@ -610,6 +610,12 @@ export class QuickQuoteFormComponent {
 
     this.premiumComputationRequest;
     this.loadAllCurrencies();
+
+    // Set the carRegNo value
+    const savedCarRegNo = JSON.parse(sessionStorage.getItem('carRegNo'));
+    if (savedCarRegNo) {
+      this.carRegNoValue = savedCarRegNo; // Set the carRegNoValue to the stored value
+    }
   }
 
   loadFormData() {
