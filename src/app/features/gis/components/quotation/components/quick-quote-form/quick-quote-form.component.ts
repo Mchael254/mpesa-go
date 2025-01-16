@@ -284,7 +284,7 @@ export class QuickQuoteFormComponent {
   idValue: string;
   taxList: any;
   newClientPhone: ClientPhone;
-
+  formattedCoverToDate:string;
   // headers: { key: string, translationKey: string }[] = [
   //   { key: 'name', translationKey: 'gis.quotation.name' },
   //   { key: 'email', translationKey: 'gis.quotation.email' },
@@ -938,6 +938,7 @@ export class QuickQuoteFormComponent {
     log.debug(' Date format', this.dateFormat);
 
     const todaysDate = new Date(today);
+    log.debug(' todays date before being formatted', todaysDate);
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
@@ -963,7 +964,7 @@ export class QuickQuoteFormComponent {
   }
   onInputChange() {
     log.debug('Method called');
-    this.newClientData.inputClientZipCode = this.newClientPhone.dialCode;
+    this.newClientData.inputClientZipCode = this.newClientPhone?.dialCode;
     this.newClientData.inputClientPhone = this.newClientPhone.number
     // this.newClientData.inputClientPhone = this.newClientPhone
     log.debug('New User Data', this.newClientData);
@@ -1273,6 +1274,20 @@ export class QuickQuoteFormComponent {
         log.debug("DATA FROM COVERFROM:", data)
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
+        log.debug("cover date:", this.passedCoverToDate)
+ const passedCoverTo = new Date(this.passedCoverToDate)
+
+         // Extract the day, month, and year
+    const day = passedCoverTo.getDate();
+    const month = passedCoverTo.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = passedCoverTo.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    this.formattedCoverToDate = formattedDate
+    log.debug("formatted cover to  Date", this.formattedCoverToDate)
+
         // this.coverFrom =this.effectiveFromDate
         log.debug("DATe FROM DATA:", this.passedCoverToDate)
         this.selectedCoverToDate= this.passedCoverToDate

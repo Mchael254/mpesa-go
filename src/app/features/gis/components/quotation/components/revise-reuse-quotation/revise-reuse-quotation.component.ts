@@ -64,7 +64,15 @@ export class ReviseReuseQuotationComponent {
     log.debug('Organization Date Format:', this.dateFormat);
 
   }
-  onDateInputChange(date: any) {
+  onDateFromInputChange(date: any) {
+    log.debug('selected Date from raaw', date);
+    const selectedDateFrom = date;
+    if(selectedDateFrom){
+    const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+    this.selectedDateFrom=SelectedFormatedDate
+    log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
+    // this.fetchGISQuotations()
+    }
   }
   /**
  * Loads all quotation sources.
@@ -84,8 +92,16 @@ export class ReviseReuseQuotationComponent {
   }
 
   fetchGISQuotations() {
+    const clientType= null
+    const clientCode= null
+    const quotPrsCode= null
+    const vPrsCode= null
+    const quote= null
+    const status= "Confirmed"
+    const dateFrom =this.selectedDateFrom || null
+
     this.quotationService
-      .searchQuotations(0, 10)
+      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,vPrsCode,quote,status)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -100,5 +116,11 @@ export class ReviseReuseQuotationComponent {
         }
       });
   }
-
+  formatDate(date: Date): string {
+    log.debug("Date (formatDate method):", date)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }
