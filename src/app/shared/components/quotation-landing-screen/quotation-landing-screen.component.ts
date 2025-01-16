@@ -44,6 +44,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.getParams();
     this.getGroupQuotationsList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+
+    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
