@@ -8,6 +8,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { forkJoin } from 'rxjs';
+
 import {
   CountryDto,
   StateDto,
@@ -28,10 +30,10 @@ import { EditOrganizationFormComponent } from './edit-organization-form/edit-org
 import { EditCommentFormComponent } from './edit-comment-form/edit-comment-form.component';
 import { EditOtherDetailsFormComponent } from './edit-other-details-form/edit-other-details-form.component';
 import { EditActivityFormComponent } from './edit-activity-form/edit-activity-form.component';
+import { EditContactAddressFormComponent } from './edit-contact-address-form/edit-contact-address-form.component';
 import { ReqPartyById } from '../../../../data/entityDto';
 import { ActivityService } from '../../../../../../features/crm/services/activity.service';
-import { forkJoin } from 'rxjs';
-import { LeadActivityDto } from 'src/app/features/crm/data/leads';
+import { LeadActivityDto } from '../../../../../../features/crm/data/leads';
 
 const log = new Logger('EntityOtherDetails');
 
@@ -64,6 +66,8 @@ export class EntityOtherDetailsComponent implements OnInit {
   editCommentFormComponent!: EditCommentFormComponent;
   @ViewChild(EditActivityFormComponent)
   editActivityFormComponent!: EditActivityFormComponent;
+  @ViewChild(EditContactAddressFormComponent)
+  editContactAddressFormComponent!: EditContactAddressFormComponent;
 
   @Input() partyAccountDetails: any;
   @Input() countries: CountryDto[];
@@ -79,6 +83,8 @@ export class EntityOtherDetailsComponent implements OnInit {
   public activitiesData: any[] = [];
 
   public leadDetails: any;
+
+  public prospectDetails: any;
 
   @Output('fetchWealthAmlDetails') fetchWealthAmlDetails: EventEmitter<any> =
     new EventEmitter<any>();
@@ -127,6 +133,7 @@ export class EntityOtherDetailsComponent implements OnInit {
     this.fetchSectors();
     this.getCommentList();
     this.getActivityList();
+    this.getProspectDetails();
   }
 
   onCommentUpdated(isUpdated: boolean): void {
@@ -165,6 +172,12 @@ export class EntityOtherDetailsComponent implements OnInit {
   getLeadDetails(): void {
     if (this.partyAccountDetails?.leadDto) {
       this.leadDetails = this.partyAccountDetails?.leadDto;
+    }
+  }
+
+  getProspectDetails(): void {
+    if (this.partyAccountDetails?.prospectDto) {
+      this.prospectDetails = this.partyAccountDetails?.prospectDto;
     }
   }
 
@@ -225,9 +238,20 @@ export class EntityOtherDetailsComponent implements OnInit {
    * Set the selected tab as active for edit purpose
    * @param event
    */
+  // setInitialTab(): void {
+  //   this.activeTabIndex =
+  //     this.partyAccountDetails?.partyType?.partyTypeName === 'Lead' ? 0 : 6;
+  //   this.setActiveTab({ index: this.activeTabIndex });
+  // }
+
   setInitialTab(): void {
     this.activeTabIndex =
-      this.partyAccountDetails?.partyType?.partyTypeName === 'Lead' ? 0 : 6;
+      this.partyAccountDetails?.partyType?.partyTypeName === 'Lead'
+        ? 0
+        : this.partyAccountDetails?.partyType?.partyTypeName === 'Prospect'
+        ? 0
+        : 6;
+
     this.setActiveTab({ index: this.activeTabIndex });
   }
 
@@ -244,6 +268,8 @@ export class EntityOtherDetailsComponent implements OnInit {
             'comment',
             'activity',
           ]
+        : this.partyAccountDetails?.partyType?.partyTypeName === 'Prospect'
+        ? ['prospect_contact']
         : ['contact', 'bank', 'wealth', 'aml', 'nok'];
     this.activeTab = tabs[this.activeTabIndex];
   }
@@ -256,6 +282,7 @@ export class EntityOtherDetailsComponent implements OnInit {
       partyAccountId: this.partyAccountDetails.id,
       countryId: this.partyAccountDetails?.address?.country_id,
       leadId: this.partyAccountDetails?.leadDto?.code,
+      prospectId: this.partyAccountDetails?.prospectDto.id,
       userCode: this.partyAccountDetails?.leadDto?.userCode,
     };
 
@@ -359,6 +386,22 @@ export class EntityOtherDetailsComponent implements OnInit {
           extras
         );
         break;
+      case 'prospect_contact':
+        this.editContactAddressFormComponent.prepareUpdateDetails(
+          {
+            mobileNumber: this.prospectDetails.mobileNumber,
+            emailAddress: this.prospectDetails.emailAddress,
+            telNumber: this.prospectDetails.telephoneNumber,
+            countryId: this.prospectDetails.countryId,
+            townId: this.prospectDetails.townId,
+            postalCode: this.prospectDetails.postalCode,
+            postalAddress: this.prospectDetails.postalAddress,
+            physicalAddress: this.prospectDetails.physicalAddress,
+          },
+          extras
+        );
+        break;
+
       // case 'activity':
       //   this.editActivityFormComponent.prepareUpdateDetails(
       //     this.selectedActivity,
@@ -448,5 +491,6 @@ export interface Extras {
   countryId?: number;
   leadId?: number;
   userCode?: number;
+  prospectId?: number;
   leadActivities?: LeadActivityDto[];
 }

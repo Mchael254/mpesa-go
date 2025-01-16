@@ -51,6 +51,7 @@ import {
 } from "./components/service-desk/service-desk-details/service-desk-details.component";
 import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
 import { RequestReportComponent } from './components/service-desk/request-report/request-report.component';
+import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { RequestReportComponent } from './components/service-desk/request-report
     ServiceDeskDetailsComponent,
     HierarchyComponent,
     RequestReportComponent,
+    ProspectsComponent,
   ],
   imports: [
     CommonModule,
