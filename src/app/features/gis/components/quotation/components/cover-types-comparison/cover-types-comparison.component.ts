@@ -161,6 +161,8 @@ export class CoverTypesComparisonComponent {
 
   isAddededBenefitsCalled: boolean = false;
   premiumRates: PremiumRate[] = [];
+  sectionDetails: any;
+  existingRisk: any;
 
 
 
@@ -607,8 +609,6 @@ export class CoverTypesComparisonComponent {
       this.computeQuotePremium();
     });
   }
-
-
 
 
   // getClient() {
