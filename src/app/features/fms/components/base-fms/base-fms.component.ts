@@ -15,7 +15,7 @@ GLledger: Array<{
   subItems?: Array<{ label: string; link?: string }>;
 }> = [
   {
-    label: 'Gl-Parameters',
+    label: 'GL-Parameters',
     showSubItems: false,
     subItems: [
       { label: '', link: '' },
@@ -23,7 +23,7 @@ GLledger: Array<{
     ],
   },
   {
-    label: 'Gl-Transactions',
+    label: 'GL-Transactions',
     showSubItems: false,
     subItems: [
       { label: '', link: '' },
@@ -31,7 +31,7 @@ GLledger: Array<{
     ],
   },
   {
-    label: 'Gl-Inquiries',
+    label: 'GL-Inquiries',
     showSubItems: false,
     subItems: [
       { label: '', link: '' },
@@ -39,7 +39,7 @@ GLledger: Array<{
     ],
   },
   {
-    label: 'Gl-Final Reports',
+    label: 'GL-Final Reports',
     showSubItems: false,
     subItems: [
       { label: '', link: '' },

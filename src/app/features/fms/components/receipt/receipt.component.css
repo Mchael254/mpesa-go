@@ -62,3 +62,24 @@
 .scroll-container::-webkit-scrollbar-thumb:hover {
   background-color: #495057;
 }
+.modal-body {
+  font-size: 14px;
+}
+
+.table th, .table td {
+  padding: 8px;
+}
+
+.text-end {
+  text-align: right;
+}
+
+@media print {
+  .modal-footer {
+    display: none;
+  }
+  
+  .btn-close {
+    display: none;
+  }
+}

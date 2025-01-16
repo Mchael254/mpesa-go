@@ -14,12 +14,14 @@ import { ReceiptAuthorizationComponent } from './components/receipt-authorizatio
 import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 
 
+
 @NgModule({
   declarations: [
     ChequeAuthorizationComponent,
     ReceiptComponent,
     ReceiptAuthorizationComponent,
-    BaseFmsComponent
+    BaseFmsComponent,
+   
   ],
     imports: [
         CommonModule,
