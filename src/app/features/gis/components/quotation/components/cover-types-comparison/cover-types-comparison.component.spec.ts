@@ -19,9 +19,9 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormsModule, FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { FormsModule, FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { BrowserStorage } from "../../../../../../shared/services/storage";
@@ -30,6 +30,7 @@ import { QuotationDetails, PremiumComputationRequest, quotationDTO } from '../..
 import { TranslateModule } from '@ngx-translate/core';
 import { CUSTOM_ELEMENTS_SCHEMA, forwardRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { Logger, SharedModule } from '../../../../../../shared/shared.module';
+import { Router } from '@angular/router';
 
 
 
@@ -462,7 +463,7 @@ const mockRiskLevelPremiumResponse = {
     }
   ]
 };
-const mockTemporaryPremiumList: Premiums[] =[
+const mockTemporaryPremiumList: Premiums[] = [
   {
     code: 1,
     sectionCode: 101,
@@ -780,7 +781,7 @@ describe('CoverTypesComparisonComponent', () => {
     jest.spyOn(component.cdr, 'detectChanges');
 
     jest.spyOn(console, 'debug'); // Optional: for logging/debugging purposes
-// Spy on the sessionStorage.setItem and findTemporaryPremium methods
+    // Spy on the sessionStorage.setItem and findTemporaryPremium methods
     // const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
     const getItemMock = jest.fn();
     Object.defineProperty(window, 'sessionStorage', {
@@ -798,7 +799,7 @@ describe('CoverTypesComparisonComponent', () => {
     // expect(console.debug).toHaveBeenCalledWith('Premium List',mockTemporaryPremiumList);
     expect(component.temporaryPremiumList).toEqual(mockTemporaryPremiumList);
   });
-  
+
   // test('should fetch new premiums if the coverTypeCodes do not match', () => {
   //   // Setup initial conditions
   //   component.isTempPremiumListUpdated = false;
@@ -851,27 +852,27 @@ describe('CoverTypesComparisonComponent', () => {
   //     coinsuranceLeader: 'Leader A',
   //     coinsurancePercentage: 20,
   //   };
-  
+
   //   component.passedMandatorySections = [
   //     { sectionCode: 100 },
   //     { sectionCode: 102 }
   //   ];
-  
+
   //   // Define mockTemporaryPremiumList that matches the Premiums interface
-   
-  
+
+
   //   // Mock the service call response with mockTemporaryPremiumList
   //   jest.spyOn(premiumRateService, 'getAllPremiums').mockReturnValue(of(mockTemporaryPremiumList));
   //   jest.spyOn(premiumRateService, 'getAllPremiums').mockReturnValue(of(mockTemporaryPremiumList));
-    
-  
+
+
   //   // Spy on methods that should be called within findTemporaryPremium
   //   jest.spyOn(component.cdr, 'detectChanges');
   //   jest.spyOn(console, 'debug');
-  
+
   //   // Call the method
   //   component.findTemporaryPremium();
-  
+
   //   // Expectations
   //   expect(premiumRateService.getAllPremiums).toHaveBeenCalledTimes(2); // Two calls for 'section1' and 'section2'
   //   expect(premiumRateService.getAllPremiums).toHaveBeenCalledWith(100,   component.premiumPayload.risks[0].binderDto.code, component.premiumPayload.risks[0].subclassSection.code);
@@ -882,7 +883,7 @@ describe('CoverTypesComparisonComponent', () => {
   //   // expect(component.cdr.detectChanges).toHaveBeenCalled();
   //   // expect(console.debug).toHaveBeenCalledWith('Premium List', component.temporaryPremiumList);
   // });
-  
+
   test('should update section, add it to passedSections, and call dependent methods', () => {
     const mockEvent = {
       target: { value: '123' },
@@ -892,7 +893,7 @@ describe('CoverTypesComparisonComponent', () => {
     jest.spyOn(component, 'loadAllPremiums');
 
     component.onKeyUp(mockEvent, mockSection);
- // Create a spy on the debug method of the log object
+    // Create a spy on the debug method of the log object
     const debugSpy = jest.spyOn(Logger.prototype, 'debug');
 
     // Expectations for section updates
@@ -937,4 +938,631 @@ describe('CoverTypesComparisonComponent', () => {
       JSON.stringify(mockPayload)
     );
   });
+  test('should load all premiums for passed sections', () => {
+
+    const mockPassedSections = [
+      { sectionCode: 789 },
+      // Add more sections as needed
+    ];
+
+    // Set the mock data in the component
+    component.premiumPayload = mockPremiumPayload;
+    component.passedSections = mockPassedSections;
+
+    // Mock premium data for the service call
+    const mockPremiumList = [{ /* mock premium data */ }];
+    // Spy on premiumRateService.getAllPremiums
+    jest.spyOn(premiumRateService, 'getAllPremiums').mockReturnValue(of(mockPremiumList) as any);
+
+    // Call the loadAllPremiums method
+    component.loadAllPremiums();
+
+    // Assertions
+    expect(premiumRateService.getAllPremiums).toHaveBeenCalledTimes(mockPassedSections.length);
+
+    // If you need to test other behaviors or states, add assertions accordingly
+    // Add more assertions based on the expected behavior of loadAllPremiums
+  });
+  // test('should create risk section and update premium list correctly', () => {
+  //   // Mock data
+  //   const mockPassedSections = [
+  //     { sectionCode: '001', code: 'A', sectionShortDescription: 'Section A', limitAmount: 1000 },
+  //     { sectionCode: '002', code: 'B', sectionShortDescription: 'Section B', limitAmount: 2000 },
+  //   ];
+  //   const mockPremiumList = [
+  //     { sectionCode: '001', sectionShortDescription: 'Premium A', rate: 1.5, divisionFactor: 1 },
+  //     { sectionCode: '002', sectionShortDescription: 'Premium B', rate: 2.0, divisionFactor: 1 },
+  //   ];
+  //   const mockRiskCode = 'RISK01';
+  //   const mockResponse = { success: true };
+  
+  //   // Mock services and methods
+  //   component.passedSections = mockPassedSections;
+  //   component.premiumList = mockTemporaryPremiumList;
+  //   component.riskCode = mockRiskCode;
+  
+  //   jest.spyOn(quotationService, 'createRiskSection').mockReturnValue(of(mockResponse));
+  //   jest.spyOn(messageService, 'add');
+  //   jest.spyOn(component.sectionDetailsForm, 'reset');
+  //   jest.spyOn(component, 'computeQuotePremium');
+  
+  //   // Control setInterval with Jest fake timers
+  //   jest.useFakeTimers();
+  
+  //   // Call the method
+  //   component.onCreateRiskSection();
+  
+  //   // Fast forward timers to trigger the interval
+  //   jest.advanceTimersByTime(200);
+  
+  //   // Expectations
+  //   expect(quotationService.createRiskSection).toHaveBeenCalledWith(
+  //     mockRiskCode,
+  //     expect.arrayContaining([
+  //       expect.objectContaining({ sectionCode: '001', description: 'Premium A', premiumRate: 1.5 }),
+  //       expect.objectContaining({ sectionCode: '002', description: 'Premium B', premiumRate: 2.0 }),
+  //     ])
+  //   );
+  
+  //   expect(messageService.add).toHaveBeenCalledWith({
+  //     severity: 'success',
+  //     summary: 'Success',
+  //     detail: 'Section Created',
+  //   });
+  
+  //   expect(component.sectionDetailsForm.reset).toHaveBeenCalled();
+  //   expect(component.computeQuotePremium).toHaveBeenCalled();
+  
+  //   jest.useRealTimers(); // Restore timers
+  // });
+  
+  test('should load all currencies', () => {
+    const mockCurrencyList = [
+      { id: 'USD', name: 'US Dollar' /* add more properties as needed */ },
+      { id: 'EUR', name: 'Euro' /* add more properties as needed */ },
+      // Add more currencies as needed
+    ];
+
+    jest.spyOn(currencyService, 'getAllCurrencies').mockReturnValue(of(mockCurrencyList));
+
+    // Set initial state
+    component.currencyCode = 'USD'; // Example currency code
+
+    // Call the method
+    component.loadAllCurrencies();
+
+    // Expectations
+    expect(currencyService.getAllCurrencies).toHaveBeenCalled();
+    expect(component.currencyList).toEqual(mockCurrencyList);
+
+    const selectedCurrency = mockCurrencyList.find(currency => currency.id === 'USD');
+    expect(component.selectedCurrency).toEqual(selectedCurrency?.name);
+
+    expect(component.selectedCurrencyCode).toEqual('USD'); // Assuming 'USD' is the initial value
+
+    // Add more expectations as needed
+  });
+  test('should create a quotation and handle response correctly', () => {
+    // Mocking the dependencies and the response of the createQuotation method
+    const mockQuoteForm = {
+      agentCode: 0,
+      agentShortDescription: "DIRECT",
+      branchCode: component.userBranchId,
+      bindCode: component.premiumPayload?.risks?.[0]?.binderDto?.code,
+      clientCode: component.passedClientDetails?.id,
+      clientType: "I",
+      currencyCode: component.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
+      currencySymbol: component.selectedCurrency,
+      productCode: component.premiumPayload?.product?.code,
+      source: component.passedQuotationSource && component.passedQuotationSource?.[0]?.code || undefined,
+      withEffectiveFromDate: component.premiumPayload?.risks?.[0]?.withEffectFrom,
+      withEffectiveToDate: component.premiumPayload?.[0]?.withEffectTo
+    };
+  
+    const mockQuotationResponse = {
+      _embedded: [
+        {
+          quotationCode: 1239000,
+          quotationNumber: '123456'
+        }
+      ]
+    };
+  
+    // Mocking the service call
+    jest.spyOn(component.quotationService, 'createQuotation').mockReturnValue(of(mockQuotationResponse));
+  
+    // Spying on the internal methods that should be called within createQuotation
+    jest.spyOn(component, 'createQuotationRisk');
+  
+    // Call the method to test
+    component.createQuotation();
+  
+    // Expectations for the state changes or actions triggered by the method
+    expect(component.quotationData).toEqual(mockQuotationResponse);
+    expect(component.quotationCode).toEqual(mockQuotationResponse._embedded[0].quotationCode);
+    expect(component.quotationNo).toEqual(mockQuotationResponse._embedded[0].quotationNumber);
+    
+    // Check if internal methods were called
+    expect(component.createQuotationRisk).toHaveBeenCalled();
+  });
+  test('should load client quotation details correctly and handle selectedRisk and addClauses', () => {
+    // Mock the service response with the full structure for riskInformation
+    const mockQuotationDetails = {
+      quotOriginalQuotNo: '123456',
+      taxInformation: {
+        taxRate: 0.15,
+        taxAmount: 100
+      },
+      riskInformation: [
+        {
+          insuredCode: null,
+          location: null,
+          town: null,
+          ncdLevel: null,
+          schedules: null,
+          coverTypeCode: 302,
+          addEdit: null,
+          quotRevisionNo: 0,
+          code: 20242186508,
+          quotationRiskNo: "Q/HDO/PMT/25/0000070",
+          quotationCode: 202547094,
+          value: 7890000,
+          propertyId: "XCV 567V",
+          coverTypeShortDescription: "COMP",
+          sectionsDetails: [
+            {
+              code: 426539,
+              description: "SI",
+              limitAmount: 7890000,
+              freeLimit: 0,
+              rate: 10,
+              premium: 789000,
+              rateType: "FXD",
+              sectionShortDescription: "SI",
+              rowNumber: 1,
+              calculationGroup: 1
+            }
+          ],
+          scheduleDetails: null,
+          premium: 789000,
+          sclCode: 460,
+          itemDesc: "COMP",
+          quotProCode: 2024137997,
+          binderCode: 202420207353,
+          wef: "2025-01-07",
+          wet: "2026-01-06",
+          commRate: null,
+          commAmount: null,
+          prpCode: 1195472,
+          prpShtDesc: null,
+          annualPrem: null,
+          coverDays: 365,
+          clntType: "I",
+          prsCode: null,
+          coverTypeDescription: "COMPREHENSIVE"
+        }
+      ]
+    };
+  
+    // Mocking the service call for getClientQuotations
+    jest.spyOn(component.quotationService, 'getClientQuotations').mockReturnValue(of(mockQuotationDetails));
+  
+    // Spying on the internal methods that should be called within loadClientQuotation
+    jest.spyOn(component, 'addLimitsOfLiability');
+    jest.spyOn(component, 'addClauses');
+  
+    // Test Case 1: When quotationNo is set
+    component.quotationNo = '123456';  // Define quotationNo
+    component.passedNumber = '654321';  // Example passed number
+    
+    component.loadClientQuotation();  // Call method to load data
+    
+    // Expectation when quotationNo is set
+    setTimeout(() => {
+      // Check that selectedRisk is set correctly
+      expect(component.selectedRisk).toEqual(mockQuotationDetails.riskInformation);
+      
+      // Ensure quotationNo is used correctly
+      expect(component.quotationNo).toEqual('123456');
+      expect(component.taxInformation).toEqual(mockQuotationDetails.taxInformation);
+      
+      // Ensure the internal methods are called
+      expect(component.addLimitsOfLiability).toHaveBeenCalled();
+      expect(component.addClauses).toHaveBeenCalled();  // Ensure addClauses is called when selectedRisk exists
+    }, 0);  // Allow for async execution
+    
+    // Test Case 2: When quotationNo is not set, using passedNumber
+    component.quotationNo = null;  // Clear quotationNo to trigger else case
+    component.passedNumber = '654321';  // Use passedNumber
+    
+    component.loadClientQuotation();  // Call method to load data
+    
+    // Expectation when quotationNo is not set
+    setTimeout(() => {
+      // Check that selectedRisk is set correctly
+      expect(component.selectedRisk).toEqual(mockQuotationDetails.riskInformation);
+      
+      // Ensure quotationNo is set to quotOriginalQuotNo when quotationNo is null
+      expect(component.quotationNo).toEqual(mockQuotationDetails.quotOriginalQuotNo);
+      expect(component.taxInformation).toEqual(mockQuotationDetails.taxInformation);
+      
+      // Ensure the internal methods are called
+      expect(component.addLimitsOfLiability).toHaveBeenCalled();
+      expect(component.addClauses).toHaveBeenCalled();  // Ensure addClauses is called when selectedRisk exists
+    }, 0);  // Allow for async execution
+  });
+  // test('createQuotationRisk should correctly handle form validation and populate the risk object', () => {
+  //   // Create a new instance of FormBuilder for the test
+  //   const fb = new FormBuilder();
+    
+  //   // Mock the form and set the values
+  //   component.riskDetailsForm = fb.group({
+  //     binderCode: [202420207353, Validators.required],
+  //     coverTypeCode: [302, Validators.required],
+  //     coverTypeShortDescription: ['COMP'],
+  //     wef: ['2025-01-07', Validators.required],
+  //     wet: ['2026-01-06', Validators.required],
+  //     dateRange: [''],
+  //     prpCode: [98765, Validators.required],
+  //     isNoClaimDiscountApplicable: [''],
+  //     itemDescription: ['COMPREHENSIVE', Validators.required],
+  //     location: [''],
+  //     noClaimDiscountLevel: [''],
+  //     quotProCode: [2024137997, Validators.required],
+  //     propertyId: ['XCV 567V', Validators.required],
+  //     itemDesc: ['COMP'],
+  //     riskPremAmount: [''],
+  //     quotationCode: ['123456', Validators.required],
+  //     sclCode: ['460', Validators.required],
+  //     town: [''],
+  //     value: [7890000, [Validators.required, Validators.min(1)]],
+  //     coverTypeDescription: ['COMPREHENSIVE'],
+  //   });
+  
+  //   // Mock the necessary values
+  
+  //   const mockSelectedCoverType = 302;
+  
+  //   // Mock the service call and response
+  //   const mockQuotationRiskResponse = {
+  //     _embedded: [
+  //       {
+  //         riskCode: 12345,
+  //         quotProductCode: 67890,
+  //       }
+  //     ]
+  //   };
+  
+  //   // Spying on the method createQuotationRisk
+  //   jest.spyOn(component.quotationService, 'createQuotationRisk').mockReturnValue(of(mockQuotationRiskResponse));
+  //   jest.spyOn(component, 'onCreateRiskSection'); // Spying on onCreateRiskSection
+  
+  //   // Set values in component
+  //   component.quotationCode = 123456;
+  //   component.passedQuotationCode = 654321;
+  //   component.premiumPayload = mockPremiumPayload;
+  //   component.selectedCoverType = mockSelectedCoverType;
+  //   component.sumInsuredValue = 7890000;
+  //   component.passedCovertypeCode = 302;
+  //   component.passedCoverTypeShortDes = "COMP";
+  //   component.passedCovertypeDescription = "COMPREHENSIVE";
+  //   component.passedClientDetails = { id: 98765 };
+  
+  //   // Call createQuotationRisk
+  //   component.createQuotationRisk();
+  
+  //   // Validate if the correct defaultCode is set based on the condition (quotationCode is set)
+  //   expect(component.quotationCode).toBe(123456);
+  //   expect(component.passedQuotationCode).toBe(654321);
+  //   // expect(component.selectedRisk).toBeDefined();  // Ensure selectedRisk is populated
+  //   expect(component.selectedRisk?.[0]?.subclassCoverTypeDto?.coverTypeCode).toBe(mockSelectedCoverType);
+  
+  //   // Check the created risk object against the expected quotationRisk type
+  //   const expectedRisk = {
+  //     binderCode: 202420207353,
+  //     coverTypeCode: 302,
+  //     coverTypeShortDescription: "COMP",
+  //     wef: "2025-01-07",
+  //     wet: "2026-01-06",
+  //     dateRange: "",
+  //     prpCode: 98765,
+  //     isNoClaimDiscountApplicable: "",
+  //     itemDescription: "COMPREHENSIVE",
+  //     location: "",
+  //     noClaimDiscountLevel: "",
+  //     quotProCode: 2024137997,
+  //     propertyId: "XCV 567V",
+  //     itemDesc: "COMP",
+  //     riskPremAmount: "",
+  //     quotationCode: "123456", // defaultCode should be '123456' based on quotationCode being set
+  //     sclCode: "460",
+  //     town: "",
+  //     value: 7890000,
+  //     coverTypeDescription: "COMPREHENSIVE",
+  //   };
+  
+  //   // Assert that the risk object is populated as expected
+  //   expect(component.riskDetailsForm.value).toEqual(expectedRisk);
+  
+  //   // Ensure createQuotationRisk was called
+  //   expect(component.quotationService.createQuotationRisk).toHaveBeenCalledTimes(1);
+  //   expect(component.quotationService.createQuotationRisk).toHaveBeenCalledWith(123456, [expectedRisk]);
+  
+  //   // Check if the response is handled correctly
+  //   expect(component.riskCode).toBe(12345);
+  //   expect(component.quoteProductCode).toBe(67890);
+  
+  //   // Ensure onCreateRiskSection is called after the API response
+  //   expect(component.onCreateRiskSection).toHaveBeenCalled();
+  // });
+  
+  test('should store risk level premium in sessionStorage', () => {
+    // Mock data to simulate the input
+    const mockData = {
+      level: 'high',
+      premiumAmount: 5000
+    };
+  
+    // Spy on sessionStorage to ensure setItem is called
+    const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
+  
+    // Mock sharedService if needed (currently commented in your method)
+    // jest.spyOn(sharedService, 'setPremiumResponse').mockImplementation(() => {});
+  
+    // Call the method
+    component.selectedRiskLevelPremium(mockData);
+  
+    // Check if sessionStorage.setItem was called with correct parameters
+    expect(setItemSpy).toHaveBeenCalledWith('riskLevelPremium', JSON.stringify(mockData));
+  
+    // If needed, check if the sharedService method was called
+    // expect(sharedService.setPremiumResponse).toHaveBeenCalledWith(mockData);
+  
+    // Clean up spies
+    setItemSpy.mockRestore();
+  });
+  
+  // test('should handle the cover selection and session storage', () => {
+  //   // Mock the data for the method
+  //   const mockPassedNumber = '12345';
+  //   const mockQuotationNo = '67890';
+    
+  //   // Mock necessary flags and properties
+  //   const isAddededBenefitsCalled = true;
+  //   const isEditRisk = false;
+  //   const isAddRisk = false;
+    
+  //   // Mock the sessionStorage methods
+  //   const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
+  //   const removeItemSpy = jest.spyOn(sessionStorage, 'removeItem');
+  
+  //   // Mock the router navigate method
+  //   const navigateSpy = jest.spyOn(Router.prototype, 'navigate');
+  
+    
+    
+  //   // Set component properties
+  //   component.passedNumber = mockPassedNumber;
+  //   component.quotationNo = mockQuotationNo;
+  //   component.isAddededBenefitsCalled = isAddededBenefitsCalled;
+  //   component.isEditRisk = isEditRisk;
+  //   component.isAddRisk = isAddRisk;
+  
+  //   // Call the method
+  //   component.selectCoverNew();
+  
+  //   // Expectations for sessionStorage.setItem
+  //   expect(setItemSpy).toHaveBeenCalledWith('quotationNumber', JSON.stringify(mockQuotationNo));
+    
+  //   // Expectations for sessionStorage.removeItem
+  //   if (isEditRisk) {
+  //     expect(removeItemSpy).toHaveBeenCalledWith('isEditRisk');
+  //   } else if (isAddRisk) {
+  //     expect(removeItemSpy).toHaveBeenCalledWith('isAddRisk');
+  //   }
+  
+  //   // Expectations for navigating to policy summary
+  //   expect(navigateSpy).toHaveBeenCalledWith(['/home/gis/quotation/quote-summary']);
+    
+  //   // Clean up spies
+  //   setItemSpy.mockRestore();
+  //   removeItemSpy.mockRestore();
+  //   navigateSpy.mockRestore();
+  // });
+  
+    test('should fetch clauses successfully and populate clauseList', () => {
+      // Mock the response from getClauses with data matching the Clause interface
+      const mockResponse = {
+        _embedded: [
+          { code: 1, coverTypeCode: 101, subclassCode: 202, classShortDescription: 'Clause 1', heading: 'Heading 1', isMandatory: 'Yes' },
+          { code: 2, coverTypeCode: 102, subclassCode: 203, classShortDescription: 'Clause 2', heading: 'Heading 2', isMandatory: 'No' }
+        ]
+      };
+  
+      const getClausesMock = jest.spyOn(component.quotationService, 'getClauses').mockReturnValue(of(mockResponse) as any);
+  
+      // Spy on the log.debug method
+      const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
+  
+      // Spy on the global messaging service
+      const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
+  
+      // Set up the selectedRisk and selectedSubclassCode to trigger the method
+      component.selectedRisk = { coverTypeCode: 101 };
+      component.selectedSubclassCode = 202;
+  
+      // Call the fetchClauses method
+      component.fetchClauses();
+  
+      // Check if getClauses was called with the correct arguments
+      expect(getClausesMock).toHaveBeenCalledWith(101, 202);
+  
+      // Check if clauseList was populated correctly
+      expect(component.clauseList).toEqual(mockResponse._embedded);
+  
+      // Check if log.debug was called with the correct arguments
+      // expect(debugSpy).toHaveBeenCalledWith("Clause List ", mockResponse._embedded);
+  
+      // Ensure no error message was displayed
+      expect(displayErrorMessageSpy).not.toHaveBeenCalled();
+  
+      // Restore the spies
+      getClausesMock.mockRestore();
+      debugSpy.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+    test('should handle error and display error message when fetch fails', () => {
+      // Mock the error response from getClauses
+      const getClausesMock = jest.spyOn(component.quotationService, 'getClauses').mockReturnValue(throwError('Error'));
+  
+      // Spy on the global messaging service
+      const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
+  
+      // Call the fetchClauses method
+      component.fetchClauses();
+  
+      // Check if the error message is displayed
+      expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch clauses. Try again later');
+  
+      // Restore the spies
+      getClausesMock.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+    test('should fetch excesses successfully and populate excessesList', () => {
+      // Mock the response from getExcesses with data matching the Excesses interface
+      const mockResponse = {
+        _embedded: [
+          { code: 1, narration: 'Excess 1', value: '100', subclassCode: 202, quotationValueCode: 301 },
+          { code: 2, narration: null, value: '200', subclassCode: 203, quotationValueCode: 302 }
+        ]
+      };
+  
+      const getExcessesMock = jest.spyOn(component.quotationService, 'getExcesses').mockReturnValue(of(mockResponse));
+  
+      // Spy on the log.debug method
+      const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
+  
+      // Spy on the global messaging service
+      const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
+  
+      // Set up the selectedSubclassCode to trigger the method
+      component.selectedSubclassCode = 202;
+  
+      // Call the fetchExcesses method
+      component.fetchExcesses();
+  
+      // Check if getExcesses was called with the correct argument
+      expect(getExcessesMock).toHaveBeenCalledWith(202);
+  
+      // Check if excessesList was populated correctly
+      expect(component.excessesList).toEqual(mockResponse._embedded);
+  
+      // Check if log.debug was called with the correct arguments
+      // expect(debugSpy).toHaveBeenCalledWith("Excesses List ", mockResponse._embedded);
+  
+      // Ensure no error message was displayed
+      expect(displayErrorMessageSpy).not.toHaveBeenCalled();
+  
+      // Restore the spies
+      getExcessesMock.mockRestore();
+      debugSpy.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+    test('should handle error and display error message when fetch fails', () => {
+      // Mock the error response from getExcesses
+      const getExcessesMock = jest.spyOn(component.quotationService, 'getExcesses').mockReturnValue(throwError('Error'));
+  
+      // Spy on the global messaging service
+      const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
+  
+      // Call the fetchExcesses method
+      component.fetchExcesses();
+  
+      // Check if the error message is displayed
+      expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch excesses. Try again later');
+  
+      // Restore the spies
+      getExcessesMock.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+    test('should fetch limits of liability successfully and populate limitsOfLiabilityList', () => {
+      // Mock response conforming to the LimitsOfLiability interface
+      const mockResponse = {
+        _embedded: [
+          {
+            code: 1,
+            narration: 'Limit 1',
+            value: '1000',
+            subclassCode: 202,
+            quotationValueCode: 101
+          },
+          {
+            code: 2,
+            narration: 'Limit 2',
+            value: '2000',
+            subclassCode: 202,
+            quotationValueCode: 102
+          },
+        ],
+      };
+  
+      const getLimitsOfLiabilityMock = jest
+        .spyOn(component.quotationService, 'getLimitsOfLiability')
+        .mockReturnValue(of(mockResponse));
+  
+      // Spy on log.debug
+      const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
+  
+      // Spy on globalMessagingService
+      const displayErrorMessageSpy = jest
+        .spyOn(globalMessagingService, 'displayErrorMessage')
+        .mockImplementation();
+  
+      // Set up selectedSubclassCode
+      component.selectedSubclassCode = 202;
+  
+      // Call the fetchLimitsOfLiability method
+      component.fetchLimitsOfLiability();
+  
+      // Ensure getLimitsOfLiability was called with correct argument
+      expect(getLimitsOfLiabilityMock).toHaveBeenCalledWith(202);
+  
+      // Check if limitsOfLiabilityList is populated correctly
+      expect(component.limitsOfLiabilityList).toEqual(mockResponse._embedded);
+  
+      // Check if log.debug was called with the correct arguments
+      // expect(debugSpy).toHaveBeenCalledWith('Limits of Liability List ', mockResponse._embedded);
+  
+      // Ensure no error message was displayed
+      expect(displayErrorMessageSpy).not.toHaveBeenCalled();
+  
+      // Restore spies
+      getLimitsOfLiabilityMock.mockRestore();
+      debugSpy.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+  
+    test('should handle error and display error message when fetch fails', () => {
+      // Mock error response from getLimitsOfLiability
+  
+      const getLimitsOfLiabilityMock = jest.spyOn(component.quotationService, 'getLimitsOfLiability').mockReturnValue(throwError('Error'));
+  
+      // Spy on globalMessagingService
+      const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
+  
+      // Call the fetchLimitsOfLiability method
+      component.fetchLimitsOfLiability();
+  
+      // Check if error message is displayed
+      expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch limits of liabilty. Try again later');
+  
+      // Ensure limitsOfLiabilityList remains undefined or empty
+      // expect(component.limitsOfLiabilityList).toBeUndefined();
+  
+      // Restore spies
+      getLimitsOfLiabilityMock.mockRestore();
+      displayErrorMessageSpy.mockRestore();
+    });
+
+
 });
