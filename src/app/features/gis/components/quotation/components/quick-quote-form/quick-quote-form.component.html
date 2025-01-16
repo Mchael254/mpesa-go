@@ -347,11 +347,12 @@
 <br>
                                             <p-calendar
 
-                                            [(ngModel)]="selectedCoverToDate"
+                                            [(ngModel)]="passedCoverToDate"
                                             [dateFormat]="dateFormat"
                                             [showIcon]="true"
                                             [showButtonBar]="true"
                                             [minDate]="minDate"
+                                            [placeholder]="formattedCoverToDate"
                                             (onSelect)="onCoverToChange($event)">
                                           </p-calendar>
 
