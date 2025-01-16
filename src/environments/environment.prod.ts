@@ -29,7 +29,8 @@ export const environment = {
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
-    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/v1'], //before fms refactoring
+    [API_CONFIG.FMS_SETUPS_SERVICE_BASE_URL, '/fms/setups/api/v1'],
+    [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/api/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
     [API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL, '/fms/receipting/api/v1'],
     [API_CONFIG.ETIMS_SERVICE_BASE_URL, '/etims'],
