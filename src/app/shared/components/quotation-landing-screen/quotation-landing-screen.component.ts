@@ -41,7 +41,10 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  pageSize: number = 19; 
+  pageSize: number = 19;
+  quotationSubMenuList: SidebarMenu[];
+
+
   constructor(
     private session_service:
       SessionStorageService,
@@ -52,8 +55,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
-    
-     
+
+
   ) { }
 
   ngOnInit(): void {
@@ -311,8 +314,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
 
-
-
   clearFilters(): void {
     this.selectedColumn = null;
     this.selectedCondition = null;
@@ -337,8 +338,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   onReassign() { }
 
-  onRevise() { }
-
   // fetchGISQuotations() {
   //   this.quotationService
   //     .searchQuotations()
@@ -360,9 +359,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
    console.log("FETCHING GIS QUOTATIONS LIST")
     const pageIndex = event.first / event.rows;
     const pageSize = event.rows;
-  
+
     // Call the API without sorting parameters
-    this.quotationService.searchQuotations( 
+    this.quotationService.searchQuotations(
      pageIndex,
       pageSize
     ).pipe(untilDestroyed(this))
@@ -370,15 +369,15 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         next: (response: any) => {
           // Assuming response._embedded holds the list of quotations
           this.gisQuotationList = response._embedded;
-  
-         
-  
+
+
+
           // Set the table data (including rows and totalElements)
           this.tableDetails = {
             rows: this.gisQuotationList,  // List of quotations to display
             totalElements: this.gisQuotationList.length  // Total records (current page data length)
           };
-  
+
           this.cdr.detectChanges();
           // this.spinner.hide(); // Hide the loading spinner
         },
@@ -388,8 +387,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         }
       });
   }
-  
-  
+
+
   onRevise(){}
 
   onTabChange(event: any): void {
