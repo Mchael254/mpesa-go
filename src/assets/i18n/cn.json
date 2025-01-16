@@ -208,7 +208,15 @@
     "Request Report": "请求报告",
     "Escalations": "升级",
     "Request Categories": "请求类别",
-    "Request Status": "请求状态"
+    "Request Status": "请求状态",
+    "Create Quotation": "创建报价",
+    "Quotation Actions": "报价操作",
+    "Edit Quotation": "编辑报价",
+    "Revise/Reuse Quotation": "修订/重用报价",
+    "Convert Quotation": "转换报价",
+    "Quotation Enquiry": "报价查询",
+    "Quotation Sources": "报价来源",
+    "Quotation Numbers": "报价号码"
   },
   "crm": {
     "activity": "活动",
