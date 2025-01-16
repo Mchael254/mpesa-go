@@ -5,6 +5,8 @@ import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { GroupQuotationsListDTO } from 'src/app/features/lms/models';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 
 @Component({
   selector: 'app-quotation-landing-screen',
@@ -26,18 +28,22 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   toDate: Date | null = null;
   minToDate: Date | null = null;
   selectedRowIndex: number;
+  quotationSubMenuList: SidebarMenu[];
+
   constructor(
-    private session_service: 
-    SessionStorageService, 
+    private session_service:
+    SessionStorageService,
     private router: Router,
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private messageService: MessageService,
+    private menuService: MenuService,
   ) { }
 
   ngOnInit(): void {
     this.session_service.clear_store();
     this.getParams();
     this.getGroupQuotationsList();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -110,7 +116,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.filteredLMS_GRP = []; // Handles undefined
       return;
     }
-    
+
     const inputElement = event.target as HTMLInputElement;
     const searchTerm = inputElement.value.toLowerCase().trim().replace(/,/g, '');
 
@@ -303,7 +309,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   onQuotationTableRowClick(filteredLMS_GRP, index: number) {
     this.selectedRowIndex = index;
     if(filteredLMS_GRP){
-      
+
     }
   }
 
@@ -312,4 +318,22 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   onReassign(){}
 
   onRevise(){}
+
+  onTabChange(event: any): void {
+    this.activeIndex = event.index; // Update the active index
+
+    if (this.activeIndex === 2) { // Index 2 corresponds to the "General" tab
+      this.dynamicSideBarMenu(this.quotationSubMenuList[0]);
+    } else {
+       // Clear or hide the sidebar menu
+       this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    }
+  }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
 }

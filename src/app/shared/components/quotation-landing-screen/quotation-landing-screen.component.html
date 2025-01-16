@@ -1,4 +1,4 @@
-<p-tabView [activeIndex]='activeIndex'>
+<p-tabView [activeIndex]='activeIndex' (onChange)="onTabChange($event)">
   <p-tabPanel header="IND Life">
     <div>
       <div>
@@ -182,11 +182,11 @@
               <td>{{ quoteData?.quotation_status || "-" | titlecase }}</td>
               <td>
                 <div class="dropdown">
-                  <i 
-                    class="pi pi-ellipsis-v" 
-                    id="actionDropdown" 
-                    data-bs-toggle="dropdown" 
-                    aria-expanded="false" 
+                  <i
+                    class="pi pi-ellipsis-v"
+                    id="actionDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                     style="cursor: pointer;">
                   </i>
                   <ul class="dropdown-menu" aria-labelledby="actionDropdown">
@@ -201,11 +201,11 @@
                     </li>
                   </ul>
                 </div>
-              </td>                            
+              </td>
             </tr>
           </ng-template>
         </p-table>
-  
+
         <div *ngIf="filteredLMS_GRP?.length === 0" class="text-danger d-flex justify-content-center mt-3">
           No Available List of Group Quotations
         </div>
@@ -245,7 +245,7 @@
                     Status
                   </option>
                   <option></option>
-                  
+
                 </select>
               </div>
             </div>
@@ -257,7 +257,7 @@
         <div class="d-flex justify-content-end">
           <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/gis/quotation/quick-quote'">Quick Quotation</button>
           <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/gis/quotation/quotations-client-details'"> Normal Quotation </button>
-        
+
 
         </div>
       </div>
