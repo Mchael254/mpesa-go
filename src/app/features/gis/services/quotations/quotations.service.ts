@@ -260,7 +260,7 @@ export class QuotationsService {
     );
   }
   getTaxes(
-    productCode : number,
+    productCode: number,
     subClassCode: number,
   ) {
     // Create an object to hold parameters only if they are provided
@@ -274,7 +274,7 @@ export class QuotationsService {
     return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  createQuotationDetails(quotationCode:any, data: premiumPayloadData ) {
+  createQuotationDetails(quotationCode: any, data: premiumPayloadData) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
@@ -289,4 +289,101 @@ export class QuotationsService {
     return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
+  // searchQuotations(
+  //   pageNo: number,
+  //   pageSize: number,
+  //   clientType: string,
+  //   clientCode: number,
+  //   quotPrsCode: number,
+  //   dateFrom: string,
+  //   vPrsCode: number,
+  //   quote: number,
+  //   status: string,
+
+
+  // ) {
+  //   // Create an object to hold parameters only if they are provided
+  //   const paramsObj: { [param: string]: string } = {};
+
+  //   // Add the mandatory parameter
+  //   paramsObj['pageNo'] = pageNo.toString();
+  //   paramsObj['pageSize'] = pageSize.toString();
+
+
+  //   // Add optional parameters if provided
+
+  //   if (clientType) {
+  //     paramsObj['clientType'] = clientType;
+  //   } if (clientCode) {
+  //     paramsObj['clientCode'] = clientCode.toString();;
+  //   }
+  //   if (quotPrsCode) {
+  //     paramsObj['quotPrsCode'] = quotPrsCode.toString();;
+  //   }
+  //   if (dateFrom) {
+  //     paramsObj['dateFrom'] = dateFrom;
+  //   }
+  //   if (vPrsCode) {
+  //     paramsObj['vPrsCode'] = vPrsCode.toString();;
+  //   }
+  //   if (quote) {
+  //     paramsObj['quote'] = quote.toString();;
+  //   }
+  //   if (status) {
+  //     paramsObj['status'] = status;
+  //   }
+  //   // Create HttpParams from the paramsObj
+  //   const params = new HttpParams({ fromObject: paramsObj });
+  //   // Make the API call
+
+  //   return this.api.GET(`v2/quotation/search?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  // }
+  searchQuotations(
+    pageNo: number,
+    pageSize: number,
+    clientType?: string,
+    clientCode?: number,
+    quotPrsCode?: number,
+    dateFrom?: string,
+    vPrsCode?: number,
+    quote?: number,
+    status?: string
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+  
+    // Add mandatory parameters
+    paramsObj['pageNo'] = pageNo.toString();
+    paramsObj['pageSize'] = pageSize.toString();
+  
+    // Add optional parameters if provided
+    if (clientType) {
+      paramsObj['clientType'] = clientType;
+    }
+    if (clientCode) {
+      paramsObj['clientCode'] = clientCode.toString();
+    }
+    if (quotPrsCode) {
+      paramsObj['quotPrsCode'] = quotPrsCode.toString();
+    }
+    if (dateFrom) {
+      paramsObj['dateFrom'] = dateFrom;
+    }
+    if (vPrsCode) {
+      paramsObj['vPrsCode'] = vPrsCode.toString();
+    }
+    if (quote) {
+      paramsObj['quote'] = quote.toString();
+    }
+    if (status) {
+      paramsObj['status'] = status;
+    }
+  
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+  
+    // Make the API call
+    return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+  
 }

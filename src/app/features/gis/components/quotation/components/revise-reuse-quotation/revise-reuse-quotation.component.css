@@ -1,0 +1,52 @@
+.titleMain {
+    color: #000;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.card {
+    border: none;
+}
+
+#search-input {
+    margin-left: -5px;
+    padding-left: 0;
+    height: 40px;
+}
+
+.filter-by-text {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18.75px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+
+}
+::ng-deep .custom-calendar-height .p-calendar {
+    height: 34px !important;
+}
+
+#source-input{
+    height: 35px;
+}
+#action-buttons{
+    color:rgba(0, 82, 155, 1); 
+    font-family: Roboto;
+font-size: 14px;
+font-weight: 600;
+line-height: 16.41px;
+text-align: left;
+text-decoration-line: underline;
+text-decoration-style: solid;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+
+}
+#search-buttons{
+    font-weight: 500;
+}
