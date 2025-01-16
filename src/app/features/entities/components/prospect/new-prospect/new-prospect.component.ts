@@ -83,6 +83,13 @@ export class NewProspectComponent implements OnInit {
     idNumber: 'Y',
     pinNumber: 'Y',
     gender: 'Y',
+    certRegistrationNumber: 'Y',
+    registrationName: 'Y',
+    tradeName: 'Y',
+    registrationDate: 'Y',
+    parentCompany: 'Y',
+    contactPerson: 'Y',
+    contactPersonTelephone: 'Y',
     country: 'Y',
     state: 'Y',
     town: 'Y',
@@ -135,8 +142,15 @@ export class NewProspectComponent implements OnInit {
       idNumber: new FormControl({ value: '', disabled: true }),
       pinNumber: new FormControl({ value: '', disabled: true }),
       gender: [''],
+      certRegistrationNumber: [''],
+      registrationName: [''],
+      tradeName: [''],
+      registrationDate: [''],
+      parentCompany: [''],
 
       addressDetails: this.fb.group({
+        contactPerson: [''],
+        contactPersonTelephone: [''],
         country: [''],
         state: [''],
         town: [''],
@@ -259,7 +273,7 @@ export class NewProspectComponent implements OnInit {
       pinNumber: entityDetails?.pinNumber,
       dateOfBirth: this.datePipe.transform(
         entityDetails?.dateOfBirth,
-        'dd-MM-yyy'
+        'yyy-MM-dd'
       ),
       idNumber: entityDetails?.identityNumber,
       identityType: entityDetails?.modeOfIdentity?.id,
@@ -412,11 +426,11 @@ export class NewProspectComponent implements OnInit {
     const prospectFormValues = this.createProspectForm.getRawValue();
 
     const saveProspect: ProspectDto = {
-      accountId: this.partyId,
+      accountId: null,
       clientType: prospectFormValues.clientType,
       contact: prospectFormValues.addressDetails.contact,
       contactTelephone: prospectFormValues.addressDetails.telNumber,
-      countryId: prospectFormValues.country,
+      countryId: prospectFormValues.addressDetails.country,
       dateOfBirth: prospectFormValues.dateOfBirth,
       emailAddress: prospectFormValues.addressDetails.emailAddress,
       id: null,
@@ -425,8 +439,9 @@ export class NewProspectComponent implements OnInit {
       mobileNumber: prospectFormValues.addressDetails.mobileNumber,
       organizationId: 2,
       otherNames: prospectFormValues.otherName,
+      partyCode: this.partyId,
       physicalAddress: prospectFormValues.addressDetails.physicalAddress,
-      pin: prospectFormValues.pinNumber,
+      pinNumber: prospectFormValues.pinNumber,
       postalAddress: prospectFormValues.addressDetails.postalAddress,
       postalCode: prospectFormValues.addressDetails.postalCode,
       surname: prospectFormValues.surname,

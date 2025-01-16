@@ -70,7 +70,10 @@
 
 <p-tabView [(activeIndex)]="activeTabIndex" (onChange)="setActiveTab($event)">
   <ng-container
-    *ngIf="partyAccountDetails?.partyType?.partyTypeName !== 'Lead'"
+    *ngIf="
+      partyAccountDetails?.partyType?.partyTypeName !== 'Lead' &&
+      partyAccountDetails?.partyType?.partyTypeName !== 'Prospect'
+    "
   >
     <p-tabPanel header="Contact Details">
       <div class="row">
@@ -692,9 +695,79 @@
       </div>
     </p-tabPanel>
   </ng-container>
+
+  <!-- Prospect Tabs Start here -->
+
+  <ng-container
+    *ngIf="partyAccountDetails?.partyType?.partyTypeName === 'Prospect'"
+  >
+    <p-tabPanel header="Contact and Address Details">
+      <div class="row">
+        <div class="col-sm-3">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Mobile Number</td>
+                <th>{{ partyAccountDetails?.prospectDto?.mobileNumber }}</th>
+              </tr>
+              <tr>
+                <td>Country</td>
+                <th>{{ partyAccountDetails?.prospectDto?.countryId }}</th>
+              </tr>
+              <tr>
+                <td>Postal Address</td>
+                <th>
+                  {{ partyAccountDetails?.prospectDto?.postalAddress }}
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-3 offset-1">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Email Address</td>
+                <th>{{ partyAccountDetails?.prospectDto?.emailAddress }}</th>
+              </tr>
+              <tr>
+                <td>Town</td>
+                <th>{{ partyAccountDetails?.prospectDto?.townId }}</th>
+              </tr>
+              <tr>
+                <td>Physical Address</td>
+                <th>
+                  {{ partyAccountDetails?.prospectDto?.physicalAddress }}
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-3 offset-1">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Telephone Number</td>
+                <th>{{ partyAccountDetails?.prospectDto?.telephoneNumber }}</th>
+              </tr>
+              <tr>
+                <td>Postal Code</td>
+                <th>
+                  {{ partyAccountDetails?.prospectDto?.postalCode }}
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </p-tabPanel>
+  </ng-container>
 </p-tabView>
 
-<app-entity-docs [partyAccountDetails]="partyAccountDetails" [entityPartyIdDetails]="entityPartyIdDetails"></app-entity-docs>
+<app-entity-docs
+  [partyAccountDetails]="partyAccountDetails"
+  [entityPartyIdDetails]="entityPartyIdDetails"
+></app-entity-docs>
 
 <!--Edit Modal-->
 <div
@@ -808,6 +881,13 @@
             (isFormDetailsReady)="confirmFormReadyStatus($event)"
             (activityAssigned)="onActivityAssigned($event)"
           ></app-edit-activity-form>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab === 'prospect_contact'">
+          <app-edit-contact-address-form
+            (closeEditModal)="closeEditModal()"
+            (isFormDetailsReady)="confirmFormReadyStatus($event)"
+          ></app-edit-contact-address-form>
         </ng-container>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
   EftPaymentTypesDTO,
   EligibleAuthorizersDTO,
   PaymentBankAccountsDTO,
+  PaymentModesDTO,
   TransactionalDetailsDTO,
 } from '../data/auth-requisition-dto';
 import { GenericResponseFMS } from '../../../shared/data/common/genericResponseDTO';
@@ -35,7 +36,18 @@ export class FmsService {
       API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL
     );
   }
-
+getPaymentMethods(
+  
+  orgCode:number
+):Observable<{data:PaymentModesDTO[]}>{
+  const params =  new HttpParams().set('orgCode',`${orgCode}`);
+  return this.api.GET<{data:PaymentModesDTO[]}>(
+    `payment-methods`,
+    API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL,
+    
+    params
+  );
+}
   getBankAccounts(
     userCode: number,
     orgCode: number,
