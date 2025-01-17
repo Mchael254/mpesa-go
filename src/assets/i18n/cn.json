@@ -875,7 +875,13 @@
       "confirm_conversion": "确认转换",
       "conversion_message": "您即将把快速报价转换为正常报价",
       "convert_to_normal_quote": "转换为正常报价",
-      "convert_to_policy": "转换为保单"
+      "convert_to_policy": "转换为保单",
+      "quotation_conversion": "报价转换",
+      "search_criteria": "搜索条件",
+      "search_results": "搜索结果",
+      "quotation_number": "报价号码",
+      "agent": "代理人",
+      "status": "状态"
 
     },
     "policy": {

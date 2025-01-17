@@ -873,7 +873,13 @@
       "confirm_conversion": "Konvertierung bestätigen",
       "conversion_message": "Sie sind dabei, ein Schnellangebot in ein normales Angebot umzuwandeln",
       "convert_to_normal_quote": "In normales Angebot umwandeln",
-      "convert_to_policy": "In Police umwandeln"
+      "convert_to_policy": "In Police umwandeln",
+      "quotation_conversion": "Angebotskonvertierung",
+      "search_criteria": "Suchkriterien",
+      "search_results": "Suchergebnisse",
+      "quotation_number": "Angebotsnummer",
+      "agent": "Agent",
+      "status": "Status"
 
     },
     "policy": {

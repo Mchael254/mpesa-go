@@ -1,0 +1,26 @@
+.titleMain{
+  color: #000;
+  font-family: Lato;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+.quote-label{
+  color: #000;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 7px;
+}
+.required:after {
+  content: " *";
+  color: red;
+}
+
+.form-text.text-danger {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}

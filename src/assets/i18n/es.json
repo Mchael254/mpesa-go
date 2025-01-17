@@ -903,7 +903,14 @@
       "confirm_conversion": "Confirmar conversión",
       "conversion_message": "Estás a punto de convertir una cotización rápida en una cotización normal",
       "convert_to_normal_quote": "Convertir a cotización normal",
-      "convert_to_policy": "Convertir a póliza"
+      "convert_to_policy": "Convertir a póliza",
+      "search_results": "Resultados de búsqueda",
+      "quotation_conversion": "Conversión de cotización",
+      "search_criteria": "Criterios de búsqueda",
+      "quotation_number": "Número de cotización",
+      "agent": "Agente",
+      "status": "Estado"
+
     },
     "policy": {
       "underwriting_new_transaction": "Suscripción: Nueva transacción",
