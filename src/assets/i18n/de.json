@@ -205,7 +205,16 @@
     "Request Report": "Anfragebericht",
     "Escalations": "Eskalationen",
     "Request Categories": "Anfragekategorien",
-    "Request Status": "Anfragestatus"
+    "Request Status": "Anfragestatus",
+    "Create Quotation": "Angebot erstellen",
+    "Quotation Actions": "Angebotsaktionen",
+    "Edit Quotation": "Angebot bearbeiten",
+    "Revise/Reuse Quotation": "Angebot überarbeiten/wiederverwenden",
+    "Convert Quotation": "Angebot konvertieren",
+    "Quotation Enquiry": "Angebotsanfrage",
+    "Quotation Sources": "Angebotsquellen",
+    "Quotation Numbers": "Angebotsnummern"
+
   },
   "crm": {
     "activity": "Activiteit",

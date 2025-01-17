@@ -209,7 +209,16 @@
     "Request Report": "Ripoti ya Ombi",
     "Escalations": "Kuinua",
     "Request Categories": "Aina za Ombi",
-    "Request Status": "Hali ya Ombi"
+    "Request Status": "Hali ya Ombi",
+    "Create Quotation": "Unda nukuu",
+    "Quotation Actions": "Vitendo vya nukuu",
+    "Edit Quotation": "Hariri nukuu",
+    "Revise/Reuse Quotation": "Rekebisha/Tumia tena nukuu",
+    "Convert Quotation": "Badilisha nukuu",
+    "Quotation Enquiry": "Maswali ya nukuu",
+    "Quotation Sources": "Vyanzo vya nukuu",
+    "Quotation Numbers": "Nambari za nukuu"
+
   },
   "crm": {
     "activity": "Shughuli",

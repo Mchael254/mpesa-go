@@ -208,7 +208,16 @@
     "Request Report": "Rapport de demande",
     "Escalations": "Escalades",
     "Request Categories": "Catégories de demande",
-    "Request Status": "Statut de la demande"
+    "Request Status": "Statut de la demande",
+    "Create Quotation": "Créer une devis",
+    "Quotation Actions": "Actions de devis",
+    "Edit Quotation": "Modifier le devis",
+    "Revise/Reuse Quotation": "Réviser/réutiliser le devis",
+    "Convert Quotation": "Convertir le devis",
+    "Quotation Enquiry": "Demande de devis",
+    "Quotation Sources": "Sources de devis",
+    "Quotation Numbers": "Numéros de devis"
+
   },
   "shared": {
     "quotation_landing_screen": {

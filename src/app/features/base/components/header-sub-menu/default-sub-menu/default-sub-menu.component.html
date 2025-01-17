@@ -352,7 +352,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#NewQuoteModal"
                   class="label-text"
-                  (click)="navLink('/home/lms/quotation/list')"
+                  (click)="navLink('/home/lms/quotation/list');"
                 >
                   {{ "base.new_quotation" | translate }}
                   <i class="fa-solid fa-plus"></i
@@ -409,11 +409,13 @@
 
               <div class="d-flex justify-content-end">
                 <label
-                  (click)="navLink('/home/lms/quotation/list')"
-                  class="text-plain"
-                  >View Quotations</label
+                    (click)="navLink('/home/lms/quotation/list'); dynamicSideBarMenu(quotationSubMenuList[2])"
+                    class="text-plain"
                 >
+                    View Quotations
+                </label>
               </div>
+
 
               <!-- Add space at the bottom -->
               <div class="mb-3"></div>
@@ -606,7 +608,7 @@
           <div
             data-bs-dismiss="modal"
             class="card sub-card"
-            (click)="closeModal()"
+            (click)="closeModal(); dynamicSideBarMenu(quotationSubMenuList[1])"
             routerLink="/home/gis/quotation/quick-quote"
           >
             <div class="with-background-image gis-image">
