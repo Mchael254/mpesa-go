@@ -209,7 +209,16 @@
     "Request Report": "Informe de solicitud",
     "Escalations": "Escalaciones",
     "Request Categories": "Categorías de solicitud",
-    "Request Status": "Estado de la solicitud"
+    "Request Status": "Estado de la solicitud",
+    "Create Quotation": "Crear cotización",
+    "Quotation Actions": "Acciones de cotización",
+    "Edit Quotation": "Editar cotización",
+    "Revise/Reuse Quotation": "Revisar/reutilizar cotización",
+    "Convert Quotation": "Convertir cotización",
+    "Quotation Enquiry": "Consulta de cotización",
+    "Quotation Sources": "Fuentes de cotización",
+    "Quotation Numbers": "Números de cotización"
+
   },
   "shared": {
     "quotation_landing_screen": {

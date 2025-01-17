@@ -233,7 +233,15 @@
     "Request Categories": "Request Categories",
     "Request Status": "Request Status",
     "Hierarchy": "Hierarchy",
-    "Prospects": "Prospects"
+    "Prospects": "Prospects",
+    "Create Quotation": "Create Quotation",
+    "Quotation Actions": "Quotation Actions",
+    "Edit Quotation": "Edit Quotation",
+    "Revise/Reuse Quotation" :"Revise/Reuse Quotation",
+    "Convert Quotation": "Convert Quotation",
+    "Quotation Enquiry": "Quotation Enquiry",
+    "Quotation Sources": "Quotation Sources",
+    "Quotation Numbers": "Quotation Numbers"
   },
   "shared": {
     "quotation_landing_screen": {

@@ -5,6 +5,8 @@ import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { GroupQuotationsListDTO } from 'src/app/features/lms/models';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Logger, untilDestroyed } from '../../shared.module';
 import { QuotationList } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
@@ -39,13 +41,17 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  pageSize: number = 19; 
+  pageSize: number = 19;
+  quotationSubMenuList: SidebarMenu[];
+
+
   constructor(
     private session_service:
       SessionStorageService,
     private router: Router,
     private route: ActivatedRoute,
     private messageService: MessageService,
+    private menuService: MenuService,
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
@@ -57,6 +63,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.session_service.clear_store();
     this.getParams();
     this.getGroupQuotationsList();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+
+    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -305,8 +314,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
 
-
-
   clearFilters(): void {
     this.selectedColumn = null;
     this.selectedCondition = null;
@@ -331,8 +338,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   onReassign() { }
 
-  onRevise() { }
-
   // fetchGISQuotations() {
   //   this.quotationService
   //     .searchQuotations()
@@ -354,9 +359,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
    console.log("FETCHING GIS QUOTATIONS LIST")
     const pageIndex = event.first / event.rows;
     const pageSize = event.rows;
-  
+
     // Call the API without sorting parameters
-    this.quotationService.searchQuotations( 
+    this.quotationService.searchQuotations(
      pageIndex,
       pageSize
     ).pipe(untilDestroyed(this))
@@ -364,15 +369,15 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         next: (response: any) => {
           // Assuming response._embedded holds the list of quotations
           this.gisQuotationList = response._embedded;
-  
-         
-  
+
+
+
           // Set the table data (including rows and totalElements)
           this.tableDetails = {
             rows: this.gisQuotationList,  // List of quotations to display
             totalElements: this.gisQuotationList.length  // Total records (current page data length)
           };
-  
+
           this.cdr.detectChanges();
           // this.spinner.hide(); // Hide the loading spinner
         },
@@ -382,8 +387,25 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         }
       });
   }
-  
-  
-  
 
+
+  onRevise(){}
+
+  onTabChange(event: any): void {
+    this.activeIndex = event.index; // Update the active index
+
+    if (this.activeIndex === 2) { // Index 2 corresponds to the "General" tab
+      this.dynamicSideBarMenu(this.quotationSubMenuList[0]);
+    } else {
+       // Clear or hide the sidebar menu
+       this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    }
+  }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
 }
