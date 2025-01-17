@@ -1,0 +1,137 @@
+<div class="container" style="max-width: 90%; margin: 0 auto;">
+  <!-- Page Title -->
+  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_conversion' | translate }}</p>
+
+  <!-- Input Fields Section -->
+  <div class="mt-4">
+    <!-- First Row: Two Dropdown Fields -->
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <label for="product" class="quote-label required" id="product">
+          {{ 'gis.quotation.search_criteria' | translate }}
+        </label><br>
+        <select
+          class="form-select form-control-sm"
+          class="form-select form-control-sm"
+          name="productCode"
+          optionLabel="description"
+          dataKey="code"
+        >
+          <option value=""></option>
+          <option >
+            description
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label for="use-of-property" class="quote-label required" id="use-of-property">
+          {{ 'gis.quotation.client' | translate }}
+        </label>
+        <select
+          class="form-select form-control-sm"
+          id="quote-select"
+          name="subclassCode"
+          placeholder="parsedSubclassDesc">
+          <option value=""></option>
+          <option >
+            description
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Second Row: Four Input Fields -->
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <label for="product" class="quote-label required" id="product">
+          {{'gis.quotation.search_results' | translate}}
+        </label><br>
+        <select
+          class="form-select form-control-sm"
+          class="form-select form-control-sm"
+          name="productCode"
+          optionLabel="description"
+          dataKey="code"
+        >
+          <option value=""></option>
+          <option >
+            description
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label for="use-of-property" class="quote-label" id="use-of-property">
+
+        </label>
+        <select
+          class="form-select form-control-sm"
+          id="quote-select"
+          name="subclassCode"
+          placeholder="parsedSubclassDesc">
+          <option value=""></option>
+          <option >
+            description
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="cover-From" class="quote-label required" id="cover-From">
+            {{'gis.quotation.effective_date' | translate}}</label>
+
+        <p-calendar name="withEffectiveFromDate"
+          [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+          [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
+        >
+        </p-calendar>
+
+      </div>
+      <div class="col-md-3">
+        <label for="cover-From" class="quote-label required" id="cover-From">
+            {{'gis.quotation.effective_date' | translate}}</label>
+
+        <p-calendar name="withEffectiveToDate"
+          [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+          [placeholder]="coverTo ? coverTo : todaysDate" [minDate]="minDate"
+        >
+        </p-calendar>
+
+      </div>
+    </div>
+
+    <!-- PrimeNG Data Table Section -->
+    <p class="title mt-4">{{ 'gis.quotation.product_details' | translate }}</p>
+    <p-table [tableStyle]="{ 'min-width': '50px' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
+          <th style="background-color: #f0f0f0"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product let-i="index">
+        <tr>
+          <td>{{ product.productShortDescription }}</td>
+          <td class="text-start" appCommaFormat>{{ product.totalSumInsured | number }}</td>
+          <td class="text-start" tooltipPosition="bottom">{{ product.totalTaxes | number }}</td>
+          <td class="text-start" appCommaFormat>{{ product.premium | number }}</td>
+          <td class="text-start" appCommaFormat>{{ product.totalPremium | number }}</td>
+          <td class="text-start" appCommaFormat>{{ product.totalPremium | number }}</td>
+          <td class="text-start" appCommaFormat><button>View Quotation</button></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center py-4" id="empty">
+            {{ 'gis.quotation.no_data' | translate }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
