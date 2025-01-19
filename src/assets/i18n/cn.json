@@ -881,7 +881,14 @@
       "search_results": "搜索结果",
       "quotation_number": "报价号码",
       "agent": "代理人",
-      "status": "状态"
+      "status": "状态",
+      "quotation_products": "报价产品",
+      "merge_to_policy": "合并到保单",
+      "start_date": "开始日期",
+      "end_date": "结束日期",
+      "commission": "佣金",
+      "converted": "已转换",
+      "policy_no": "保单号"
 
     },
     "policy": {

@@ -1,107 +1,161 @@
 <div class="container" style="max-width: 90%; margin: 0 auto;">
   <!-- Page Title -->
-  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_conversion' | translate }}</p>
+  <p class="titleMain mt-3 mb-5">{{ 'gis.quotation.quotation_conversion' | translate }}</p>
 
   <!-- Input Fields Section -->
-  <div class="mt-4">
-    <!-- First Row: Two Dropdown Fields -->
-    <div class="row mb-3">
+  <div class="input-section p-4 mb-4" style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <!-- First Row -->
+    <div class="row">
       <div class="col-md-3">
-        <label for="product" class="quote-label required" id="product">
-          {{ 'gis.quotation.search_criteria' | translate }}
-        </label><br>
-        <select
-          class="form-select form-control-sm"
-          class="form-select form-control-sm"
-          name="productCode"
-          optionLabel="description"
-          dataKey="code"
-        >
-          <option value=""></option>
-          <option >
-            description
-          </option>
-        </select>
+        <!-- Country Dropdown -->
+        <div class="field mb-4 w-full">
+          <label for="product" class="quote-label required" id="product">
+            {{ 'gis.quotation.search_criteria' | translate }}
+          </label><br>
+          <p-dropdown
+            [options]="countries"
+            [(ngModel)]="selectedCountry"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a Country"
+            [style]="{'width':'100%', 'height':'42px'}">
+            <ng-template pTemplate="selectedItem">
+              <div class="country-item country-item-value" *ngIf="selectedCountry">
+                <div>{{selectedCountry.name}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-country pTemplate="item">
+              <div class="country-item">
+                <div>{{country.name}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
       </div>
 
       <div class="col-md-3">
-        <label for="use-of-property" class="quote-label required" id="use-of-property">
-          {{ 'gis.quotation.client' | translate }}
-        </label>
-        <select
-          class="form-select form-control-sm"
-          id="quote-select"
-          name="subclassCode"
-          placeholder="parsedSubclassDesc">
-          <option value=""></option>
-          <option >
-            description
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Second Row: Four Input Fields -->
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <label for="product" class="quote-label required" id="product">
-          {{'gis.quotation.search_results' | translate}}
-        </label><br>
-        <select
-          class="form-select form-control-sm"
-          class="form-select form-control-sm"
-          name="productCode"
-          optionLabel="description"
-          dataKey="code"
-        >
-          <option value=""></option>
-          <option >
-            description
-          </option>
-        </select>
-      </div>
-
-      <div class="col-md-3">
-        <label for="use-of-property" class="quote-label" id="use-of-property">
-
-        </label>
-        <select
-          class="form-select form-control-sm"
-          id="quote-select"
-          name="subclassCode"
-          placeholder="parsedSubclassDesc">
-          <option value=""></option>
-          <option >
-            description
-          </option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label for="cover-From" class="quote-label required" id="cover-From">
-            {{'gis.quotation.effective_date' | translate}}</label>
-
-        <p-calendar name="withEffectiveFromDate"
-          [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-          [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
-        >
-        </p-calendar>
-
-      </div>
-      <div class="col-md-3">
-        <label for="cover-From" class="quote-label required" id="cover-From">
-            {{'gis.quotation.effective_date' | translate}}</label>
-
-        <p-calendar name="withEffectiveToDate"
-          [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-          [placeholder]="coverTo ? coverTo : todaysDate" [minDate]="minDate"
-        >
-        </p-calendar>
-
+        <!-- Client Dropdown -->
+        <div class="field mb-4 w-full">
+          <label for="use-of-property" class="quote-label required" id="use-of-property">
+            {{ 'gis.quotation.client' | translate }}
+          </label><br>
+          <p-dropdown
+            [options]="clients"
+            [(ngModel)]="selectedClient"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a Client"
+            [style]="{'width':'100%', 'height':'42px'}">
+            <ng-template pTemplate="selectedItem">
+              <div class="client-item client-item-value" *ngIf="selectedClient">
+                <div>{{selectedClient.name}} - {{selectedClient.type}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-client pTemplate="item">
+              <div class="client-item">
+                <div>{{client.name}} - {{client.type}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
       </div>
     </div>
 
-    <!-- PrimeNG Data Table Section -->
-    <p class="title mt-4">{{ 'gis.quotation.product_details' | translate }}</p>
+    <!-- Second Row -->
+    <div class="row">
+      <div class="col-md-3">
+        <!-- Industry Dropdown -->
+        <div class="field mb-4 w-full">
+          <label for="product" class="quote-label required" id="product">
+            {{'gis.quotation.search_results' | translate}}
+          </label><br>
+          <p-dropdown
+            [options]="products"
+            [(ngModel)]="selectedProduct"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select an product"
+            [style]="{'width':'100%', 'height':'42px'}">
+            <ng-template pTemplate="selectedItem">
+              <div class="industry-item industry-item-value" *ngIf="selectedProduct">
+                <div>{{selectedProduct.name}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-industry pTemplate="item">
+              <div class="industry-item">
+                <div>{{industry.name}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <!-- Business Type Dropdown -->
+        <div class="field mb-4 w-full">
+          <label for="use-of-property" class="quote-label" id="use-of-property">
+            Select an Option
+          </label><br>
+          <p-dropdown
+            [options]="status"
+            [(ngModel)]="selectedStatus"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="Select a status"
+            [style]="{'width':'100%', 'height':'42px'}">
+            <ng-template pTemplate="selectedItem">
+              <div class="business-type-item business-type-value" *ngIf="selectedStatus">
+                <div>{{selectedStatus.name}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-status pTemplate="item">
+              <div class="business-type-item">
+                <div>{{status.name}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <!-- Effective From Date -->
+        <div class="field mb-4 w-full">
+          <label for="cover-From" class="quote-label required" id="cover-From">
+            {{'gis.quotation.effective_date' | translate}}</label>
+          <p-calendar name="withEffectiveFromDate"
+            [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+            [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
+            [style]="{'width':'100%', 'height':'42px'}">
+          </p-calendar>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <!-- Effective To Date -->
+        <div class="field mb-4 w-full">
+          <label for="cover-To" class="quote-label required" id="cover-To">
+            {{'gis.quotation.effective_date' | translate}}</label>
+          <p-calendar name="withEffectiveToDate"
+            [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+            [placeholder]="coverTo ? coverTo : todaysDate" [minDate]="minDate"
+            [style]="{'width':'100%', 'height':'42px'}">
+          </p-calendar>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section mt-4 mb-3">
+    <p class="title mb-3">{{ 'gis.quotation.product_details' | translate }}</p>
     <p-table [tableStyle]="{ 'min-width': '50px' }">
       <ng-template pTemplate="header">
         <tr>
@@ -133,5 +187,59 @@
         </tr>
       </ng-template>
     </p-table>
+  </div>
+
+  <!-- Quotation Products Section -->
+  <div class="quotation-products-section mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <p class="title mb-3">{{'gis.quotation.quotation_products' | translate}}</p>
+      <div>
+        <button class="btn btn-outline-primary me-2">{{'gis.quotation.merge_to_policy' | translate}}</button>
+        <button class="btn btn-primary">{{'gis.quotation.convert_to_policy' | translate}}</button>
+      </div>
+    </div>
+
+    <p-table [tableStyle]="{ 'min-width': '50px' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 50px; background-color: #f0f0f0">
+            <input type="checkbox" id="selectAll" />
+          </th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.product' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.start_date' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.end_date' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.premium' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.commission' | translate}}</th>
+          <th style="background-color: #f0f0f0">FAP</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.remarks' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.converted' | translate}}</th>
+          <th style="background-color: #f0f0f0">{{'gis.quotation.policy_no' | translate}}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>
+            <input type="checkbox" id="productCheckbox{{ product.id }}" />
+          </td>
+          <td>Product</td>
+          <td>Start date</td>
+          <td>End date</td>
+          <td>Premium</td>
+          <td>Commission</td>
+          <td>FAP</td>
+          <td>Remarks</td>
+          <td>Converted</td>
+          <td>Policy no.</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center py-4">
+            {{'gis.quotation.no_data' | translate}}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
   </div>
 </div>

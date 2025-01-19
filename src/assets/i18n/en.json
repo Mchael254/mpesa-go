@@ -965,7 +965,14 @@
       "quotation_number": "Quotation Number",
       "agent" : "Agent",
       "status": "Status",
-      "no_data" : "No Data To Display"
+      "no_data" : "No Data To Display",
+      "quotation_products" : "Quotation Products",
+      "merge_to_policy" : "Merge to policy",
+      "start_date" : "Start date",
+      "end_date" : "End date",
+      "commission": "Commission",
+      "converted": "Converted",
+      "policy_no": "Policy no."
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",

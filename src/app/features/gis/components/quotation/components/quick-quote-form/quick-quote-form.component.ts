@@ -73,6 +73,8 @@ import { OccupationDTO } from '../../../../../../shared/data/common/occupation-d
 import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -257,6 +259,7 @@ export class QuickQuoteFormComponent {
   vesselTypeList: VesselType[];
   selectedVesselTypeCode: any;
   isFormDataLoaded: boolean = false;
+  quotationSubMenuList: SidebarMenu[];
 
 
   filterObject: {
@@ -321,7 +324,8 @@ export class QuickQuoteFormComponent {
     private datePipe: DatePipe,
     private occupationService: OccupationService,
     private vesselTypesService:VesselTypesService,
-    private spinner:NgxSpinnerService
+    private spinner:NgxSpinnerService,
+    private menuService: MenuService,
 
 
   ) {
@@ -350,6 +354,9 @@ export class QuickQuoteFormComponent {
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
+
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
 
     const QuickFormDetails = sessionStorage.getItem('riskFormData');
 
@@ -413,6 +420,14 @@ export class QuickQuoteFormComponent {
 
   }
   ngOnDestroy(): void { }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
+
   addRisk() {
     this.loadAllCurrencies();
     log.debug("ADDING ANOTHER RISK TO THE SAME QUOTATION")
