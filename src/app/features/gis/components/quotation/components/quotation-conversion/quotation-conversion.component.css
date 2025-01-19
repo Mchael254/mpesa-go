@@ -1,11 +1,21 @@
 .titleMain{
   color: #000;
   font-family: Lato;
-  font-size: 12px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
+
+.title{
+  color: #000;
+  font-family: Lato;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
 .quote-label{
   color: #000;
   font-family: Roboto;
@@ -23,4 +33,69 @@
 .form-text.text-danger {
   font-size: 0.875rem;
   margin-top: 0.25rem;
+}
+
+.input-fields-container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for p-dropdown */
+:host ::ng-deep .p-dropdown-panel {
+  /* Reduce the width of the options panel */
+  max-width: 300px !important;
+}
+
+/* Custom scrollbar styling */
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items-wrapper::-webkit-scrollbar {
+  width: 8px;  /* Reduce scrollbar width */
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Make the dropdown items more compact */
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item {
+  padding: 0.5rem 0.75rem;  /* Reduce padding around items */
+  font-size: 0.9rem;  /* Slightly reduce font size */
+}
+
+/* Custom styles for p-dropdown and p-calendar inputs */
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-calendar {
+  height: 42px !important;  /* Increased from 38px */
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-label,
+:host ::ng-deep .p-calendar input {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Ensure the dropdown trigger button is properly aligned */
+:host ::ng-deep .p-dropdown .p-dropdown-trigger {
+  height: 100%;
+}
+
+/* Calendar icon alignment */
+:host ::ng-deep .p-calendar .p-datepicker-trigger {
+  height: 100%;
+  display: flex;
+  align-items: center;
 }

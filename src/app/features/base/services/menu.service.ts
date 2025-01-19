@@ -858,7 +858,7 @@ export class MenuService {
       {
         name: 'Conversion',
         link: '/home/gis/quotation/quotation-conversion',
-        value: 'DEFAULT'
+        value: 'QUOTATION'
       },
       // {
       //   name: 'Create Quotation',

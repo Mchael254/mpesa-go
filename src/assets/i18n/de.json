@@ -879,7 +879,14 @@
       "search_results": "Suchergebnisse",
       "quotation_number": "Angebotsnummer",
       "agent": "Agent",
-      "status": "Status"
+      "status": "Status",
+      "quotation_products": "Angebotsprodukte",
+      "merge_to_policy": "Mit Police zusammenführen",
+      "start_date": "Startdatum",
+      "end_date": "Enddatum",
+      "commission": "Provision",
+      "converted": "Umgewandelt",
+      "policy_no": "Policennummer"
 
     },
     "policy": {

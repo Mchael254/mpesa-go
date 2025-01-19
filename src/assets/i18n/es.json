@@ -909,7 +909,14 @@
       "search_criteria": "Criterios de búsqueda",
       "quotation_number": "Número de cotización",
       "agent": "Agente",
-      "status": "Estado"
+      "status": "Estado",
+      "quotation_products": "Productos de cotización",
+      "merge_to_policy": "Fusionar con la póliza",
+      "start_date": "Fecha de inicio",
+      "end_date": "Fecha de finalización",
+      "commission": "Comisión",
+      "converted": "Convertido",
+      "policy_no": "Número de póliza"
 
     },
     "policy": {

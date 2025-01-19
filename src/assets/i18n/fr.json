@@ -908,7 +908,14 @@
       "search_results": "Résultats de recherche",
       "quotation_number": "Numéro de devis",
       "agent": "Agent",
-      "status": "Statut"
+      "status": "Statut",
+      "quotation_products": "Produits du devis",
+      "merge_to_policy": "Fusionner avec la police",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "commission": "Commission",
+      "converted": "Converti",
+      "policy_no": "Numéro de police"
 
 
     },
