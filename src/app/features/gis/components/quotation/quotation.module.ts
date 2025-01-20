@@ -32,6 +32,7 @@ import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
 import { CreateClientComponent } from './components/create-client/create-client.component';
 import { EntitiesModule } from '../../../entities/entities.module';
 import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
+import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
     CoverTypesComparisonComponent,
     CreateClientComponent,
     ReviseReuseQuotationComponent,
+    QuotationConversionComponent,
     
   ],
   imports: [
