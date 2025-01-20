@@ -83,3 +83,85 @@
     display: none;
   }
 }
+/* .required {
+  color: red;
+  margin-left: 3px;
+} */
+.text-danger {
+  color: #dc3545;
+}
+
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: none;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color: #dc3545;
+}
+
+.form-control.is-invalid ~ .invalid-feedback {
+  display: block;
+}
+
+.required-field::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 4px;
+}
+.dropdown-container {
+  position: relative;
+}
+
+.search-wrapper {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.search-input {
+  width: 100%;
+  padding-right: 30px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.dropdown-container select {
+  width: 100%;
+  padding-right: 30px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Style for filtered options */
+select option {
+  padding: 8px;
+}
+
+select option:hover {
+  background-color: #f8f9fa;
+}
+
+/* style the selected client */
+.selected-client-row {
+  background-color: #e3f2fd !important; /* Light blue background */
+  color: #1976d2 !important; /* Primary blue text */
+  font-weight: 500;
+}
+
+/* Add hover effect for better UX */
+.client-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
