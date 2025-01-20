@@ -6,65 +6,56 @@
   <div class="input-section p-4 mb-4" style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
     <!-- First Row -->
     <div class="row">
-      <div class="col-md-3">
-        <!-- Country Dropdown -->
-        <div class="field mb-4 w-full">
-          <label for="product" class="quote-label required" id="product">
-            {{ 'gis.quotation.search_criteria' | translate }}
-          </label><br>
-          <p-dropdown
-            [options]="countries"
-            [(ngModel)]="selectedCountry"
-            optionLabel="name"
-            [filter]="true"
-            filterBy="name"
-            [showClear]="true"
-            placeholder="Select a Country"
-            [style]="{'width':'100%', 'height':'42px'}">
-            <ng-template pTemplate="selectedItem">
-              <div class="country-item country-item-value" *ngIf="selectedCountry">
-                <div>{{selectedCountry.name}}</div>
-              </div>
-            </ng-template>
-            <ng-template let-country pTemplate="item">
-              <div class="country-item">
-                <div>{{country.name}}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
+      <div class="row">
+        <div class="col-md-3">
+          <!-- Search Type Dropdown -->
+          <div class="field mb-4 w-full">
+            <label for="search-type" class="quote-label required">
+              {{ 'gis.quotation.search_criteria' | translate }}
+            </label><br>
+            <p-dropdown
+              [options]="searchOptions"
+              [(ngModel)]="selectedSearchType"
+              optionLabel="name"
+              (onChange)="onSearchTypeChange()"
+              [style]="{'width':'100%', 'height':'38px'}"
+              placeholder="Select Search Type">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <!-- Dynamic Search Value Dropdown -->
+          <div class="field mb-4 w-full">
+            <label for="search-value" class="quote-label required">
+              {{ selectedSearchType ? selectedSearchType.name : "" }}
+            </label><br>
+            <p-dropdown
+              [options]="filteredOptions"
+              [(ngModel)]="selectedSearchValue"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              [style]="{'width':'100%', 'height':'38px'}"
+              [placeholder]="getPlaceholder()"
+              (onFocus)="onFocus()"
+              (onBlur)="onBlur()"
+              (onChange)="onSearchValueChange()"
+            >
+              <ng-template pTemplate="selectedItem">
+                <div class="search-item search-item-value" *ngIf="selectedSearchValue">
+                  <div>{{selectedSearchValue.name}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-option pTemplate="item">
+                <div class="search-item">
+                  <div>{{option.name}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
         </div>
       </div>
-
-      <div class="col-md-3">
-        <!-- Client Dropdown -->
-        <div class="field mb-4 w-full">
-          <label for="use-of-property" class="quote-label required" id="use-of-property">
-            {{ 'gis.quotation.client' | translate }}
-          </label><br>
-          <p-dropdown
-            [options]="clients"
-            [(ngModel)]="selectedClient"
-            optionLabel="name"
-            [filter]="true"
-            filterBy="name"
-            [showClear]="true"
-            placeholder="Select a Client"
-            [style]="{'width':'100%', 'height':'42px'}">
-            <ng-template pTemplate="selectedItem">
-              <div class="client-item client-item-value" *ngIf="selectedClient">
-                <div>{{selectedClient.name}} - {{selectedClient.type}}</div>
-              </div>
-            </ng-template>
-            <ng-template let-client pTemplate="item">
-              <div class="client-item">
-                <div>{{client.name}} - {{client.type}}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
-        </div>
-      </div>
-    </div>
-
     <!-- Second Row -->
     <div class="row">
       <div class="col-md-3">
@@ -81,7 +72,7 @@
             filterBy="name"
             [showClear]="true"
             placeholder="Select an product"
-            [style]="{'width':'100%', 'height':'42px'}">
+            [style]="{'width':'100%', 'height':'38px'}">
             <ng-template pTemplate="selectedItem">
               <div class="industry-item industry-item-value" *ngIf="selectedProduct">
                 <div>{{selectedProduct.name}}</div>
@@ -110,7 +101,7 @@
             filterBy="name"
             [showClear]="true"
             placeholder="Select a status"
-            [style]="{'width':'100%', 'height':'42px'}">
+            [style]="{'width':'100%', 'height':'38px'}">
             <ng-template pTemplate="selectedItem">
               <div class="business-type-item business-type-value" *ngIf="selectedStatus">
                 <div>{{selectedStatus.name}}</div>
@@ -133,7 +124,7 @@
           <p-calendar name="withEffectiveFromDate"
             [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
             [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
-            [style]="{'width':'100%', 'height':'42px'}">
+            [style]="{'width':'100%', 'height':'38px'}">
           </p-calendar>
         </div>
       </div>
@@ -146,7 +137,7 @@
           <p-calendar name="withEffectiveToDate"
             [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
             [placeholder]="coverTo ? coverTo : todaysDate" [minDate]="minDate"
-            [style]="{'width':'100%', 'height':'42px'}">
+            [style]="{'width':'100%', 'height':'38px'}">
           </p-calendar>
         </div>
       </div>
@@ -158,7 +149,7 @@
     <p class="title mb-3">{{ 'gis.quotation.product_details' | translate }}</p>
     <p-table
       #dt1
-      (onLazyLoad)="fetchGISQuotations($event)"
+      (onLazyLoad)="onTableLazyLoad($event)"
       [autoLayout]="true"
       [lazy]="true"
       [paginator]="true"
