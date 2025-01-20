@@ -958,7 +958,21 @@
       "confirm_conversion": "Confirm Conversion",
       "conversion_message":"You are about to convert a quick quote to a normal quote",
       "convert_to_normal_quote": "Convert to normal quote",
-      "convert_to_policy":"Convert to Policy"
+      "convert_to_policy":"Convert to Policy",
+      "search_results": "Search Results",
+      "quotation_conversion": "Quotation Conversion",
+      "search_criteria": "Search Criteria",
+      "quotation_number": "Quotation Number",
+      "agent" : "Agent",
+      "status": "Status",
+      "no_data" : "No Data To Display",
+      "quotation_products" : "Quotation Products",
+      "merge_to_policy" : "Merge to policy",
+      "start_date" : "Start date",
+      "end_date" : "End date",
+      "commission": "Commission",
+      "converted": "Converted",
+      "policy_no": "Policy no."
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
