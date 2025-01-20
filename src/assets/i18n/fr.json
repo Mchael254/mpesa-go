@@ -902,7 +902,21 @@
       "confirm_conversion": "Confirmer la conversion",
       "conversion_message": "Vous êtes sur le point de convertir une cotation rapide en une cotation normale",
       "convert_to_normal_quote": "Convertir en cotation normale",
-      "convert_to_policy": "Convertir en police"
+      "convert_to_policy": "Convertir en police",
+      "quotation_conversion": "Conversion de devis",
+      "search_criteria": "Critères de recherche",
+      "search_results": "Résultats de recherche",
+      "quotation_number": "Numéro de devis",
+      "agent": "Agent",
+      "status": "Statut",
+      "quotation_products": "Produits du devis",
+      "merge_to_policy": "Fusionner avec la police",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "commission": "Commission",
+      "converted": "Converti",
+      "policy_no": "Numéro de police"
+
 
     },
     "policy": {

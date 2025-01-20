@@ -14,6 +14,7 @@ import { QuotationSummaryComponent } from './components/quotation-summary/quotat
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 import { CreateClientComponent } from './components/create-client/create-client.component';
 import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
+import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 
 const routes: Routes = [
   {
@@ -25,7 +26,7 @@ const routes: Routes = [
   {
     path: 'quick-quote', component:QuickQuoteFormComponent
   },
- 
+
   //  {
   //   path: 'cover-type-details', component:CoverTypesDetailsComponent
   // },
@@ -58,8 +59,11 @@ const routes: Routes = [
   },
   {
     path:'revise-reuse-quote',component:ReviseReuseQuotationComponent
-  }
-  
+  },
+  {
+    path:'quotation-conversion',component:QuotationConversionComponent
+  },
+
 ];
 
 @NgModule({
