@@ -879,7 +879,20 @@
       "confirm_conversion": "Thibitisha ubadilishaji",
       "conversion_message": "Unakaribia kubadilisha nukuu ya haraka kuwa nukuu ya kawaida",
       "convert_to_normal_quote": "Badilisha kuwa nukuu ya kawaida",
-      "convert_to_policy": "Badilisha kuwa sera"
+      "convert_to_policy": "Badilisha kuwa sera",
+      "quotation_conversion": "Ubadilishaji wa nukuu",
+      "search_criteria": "Vigezo vya utafutaji",
+      "search_results": "Matokeo ya utafutaji",
+      "quotation_number": "Nambari ya nukuu",
+      "agent": "Wakala",
+      "status": "Hali",
+      "quotation_products": "Bidhaa za nukuu",
+      "merge_to_policy": "Unganisha na sera",
+      "start_date": "Tarehe ya kuanza",
+      "end_date": "Tarehe ya kumalizika",
+      "commission": "Tume",
+      "converted": "Imebadilishwa",
+      "policy_no": "Nambari ya sera"
 
     },
     "policy": {
