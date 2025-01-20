@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 import { MenuService } from 'src/app/features/base/services/menu.service';
 import { DropdownFilterOptions } from 'primeng/dropdown';
+import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationList } from '../../data/quotationsDTO';
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 interface Country {
   name: string;
@@ -43,6 +47,12 @@ export class QuotationConversionComponent {
   selectedProduct: Product;
   selectedStatus: Status;
   filterValue = '';
+  gisQuotationList: QuotationList[] = [];
+  tableDetails: any = {
+    rows: [], // Initially empty array for rows
+    totalElements: 0 // Default total count
+  };
+  pageSize: number = 19;
 
   countries: Country[];
   clients: Client[];
@@ -52,6 +62,10 @@ export class QuotationConversionComponent {
   constructor(
     private menuService: MenuService,
     private router: Router,
+    public quotationService: QuotationsService,
+    public globalMessagingService: GlobalMessagingService,
+    public cdr: ChangeDetectorRef,
+
   ) {
     this.countries = [
       {name: 'Australia', code: 'AU'},
@@ -98,6 +112,8 @@ export class QuotationConversionComponent {
 
   }
 
+  ngOnDestroy(): void { }
+
   myResetFunction(options: DropdownFilterOptions) {
     options.reset();
     this.filterValue = '';
@@ -108,5 +124,37 @@ export class QuotationConversionComponent {
       this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
     }
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
+
+  fetchGISQuotations(event: any) {
+    console.log("FETCHING GIS QUOTATIONS LIST")
+    const pageIndex = event.first / event.rows;
+    const pageSize = event.rows;
+
+    // Call the API without sorting parameters
+    this.quotationService.searchQuotations(
+      pageIndex,
+      pageSize
+    ).pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          // Assuming response._embedded holds the list of quotations
+          this.gisQuotationList = response._embedded;
+
+          // Set the table data (including rows and totalElements)
+          this.tableDetails = {
+            rows: this.gisQuotationList,  // List of quotations to display
+            totalElements: this.gisQuotationList.length  // Total records (current page data length)
+          };
+
+          this.cdr.detectChanges();
+          // this.spinner.hide(); // Hide the loading spinner
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
+          // this.spinner.hide();
+        }
+      }
+    );
   }
 }
