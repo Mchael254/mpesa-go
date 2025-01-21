@@ -6,6 +6,7 @@ import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { NeedAnalysisModule } from 'src/app/features/lms/ind/components/need-analysis/need-analysis.module';
 
 const log = new Logger('ReviseReuseQuotationComponent');
 
@@ -23,7 +24,8 @@ export class ReviseReuseQuotationComponent {
   sourceList: any;
   sourceDetail: Sources[] = [];
   gisQuotationList: QuotationList[] = [];
-
+  selectedDateTo: string;
+  selectedSource:string;
   constructor(
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
@@ -74,6 +76,17 @@ export class ReviseReuseQuotationComponent {
     // this.fetchGISQuotations()
     }
   }
+
+  onDateToInputChange(date: any) {
+    log.debug('selected Date To raaw', date);
+    const selectedDateTo = date;
+    if(selectedDateTo){
+    const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
+    this.selectedDateTo=SelectedFormatedDateTo
+    log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
+    // this.fetchGISQuotations()
+    }
+  }
   /**
  * Loads all quotation sources.
  * - Subscribes to 'getAllQuotationSources' from QuotationService.
@@ -99,9 +112,15 @@ export class ReviseReuseQuotationComponent {
     const quote= null
     const status= "Confirmed"
     const dateFrom =this.selectedDateFrom || null
+    const dateTo =this.selectedDateTo || null
+    const source =this.selectedSource
+    const clientName=null
+
+    log.debug("Selected Date from:",this.selectedDateFrom)
+    log.debug("Selected Date to:",this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,vPrsCode,quote,status)
+      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,dateTo,vPrsCode,quote,status,source,clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
