@@ -309,29 +309,15 @@ return(
     )
 
   }
-  // uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
-  //   // Convert array to object with numbered properties
-  //   const formattedRequests = requests.reduce((acc, request, index) => {
-  //     acc[index] = {
-  //       docType: request.docType,
-  //       docData: request.docData,
-  //       module: request.module,
-  //       originalFileName: request.originalFileName,
-  //       filename: request.filename,
-  //       referenceNo: request.referenceNo,
-  //       docDescription: request.docDescription,
-  //       amount: request.amount,
-  //       PaymentMethod: request.paymentMethod,
-  //       policyNumber: request.policyNumber
-  //     };
-  //     return acc;
-  //   }, {});
-  
-  //   return this.api.POST<any>(
-  //     `uploadAllFinanceDocument`,
-  //     JSON.stringify(formattedRequests),
-  //     API_CONFIG.DMS_SERVICE
-  //   );
-  // }
+validateReceipt(receiptNumber:number,userCode:number):Observable<GenericResponse<string>>{
+  const params= new HttpParams().set('receiptNumber',`${receiptNumber}`).set('userCode',`${userCode}`);
+  return(
+  this.api.GET<GenericResponse<string>>(
+    `receipt-validation/validate`,
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    params
+  )
+  )
+}
      }
       
