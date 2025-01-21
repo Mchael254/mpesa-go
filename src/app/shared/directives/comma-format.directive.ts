@@ -1,6 +1,7 @@
 import {Directive, ElementRef, HostListener} from '@angular/core';
 @Directive({
-  selector: '[appCommaFormat]'
+  selector: '[appCommaFormat]',
+  standalone : false
 })
 export class CommaformatDirective {
   private currencyDelimiter: string;

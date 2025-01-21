@@ -5,7 +5,8 @@ import { DynamicFormFields } from '../../utils/dynamic.form.fields';
 @Component({
   selector: 'app-dynamic-form-modal',
   templateUrl: './dynamic-form-modal.component.html',
-  styleUrls: ['./dynamic-form-modal.component.css']
+  styleUrls: ['./dynamic-form-modal.component.css'],
+  standalone : false
 })
 export class DynamicFormModalComponent {
   @Input() modalVisible: boolean;

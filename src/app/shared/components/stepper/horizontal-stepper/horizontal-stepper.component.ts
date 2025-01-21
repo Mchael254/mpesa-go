@@ -5,7 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'app-horizontal-stepper',
   templateUrl: './horizontal-stepper.component.html',
   styleUrls: ['./horizontal-stepper.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone : false
 })
 export class HorizontalStepperComponent {
 

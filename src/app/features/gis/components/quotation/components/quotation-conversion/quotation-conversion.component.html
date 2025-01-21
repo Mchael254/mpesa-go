@@ -11,49 +11,23 @@
           <!-- Search Type Dropdown -->
           <div class="field mb-4 w-full">
             <label for="search-type" class="quote-label required">
-              {{ 'gis.quotation.search_criteria' | translate }}
+              {{ 'gis.quotation.client' | translate }}
             </label><br>
-            <p-dropdown
-              [options]="searchOptions"
-              [(ngModel)]="selectedSearchType"
-              optionLabel="name"
-              (onChange)="onSearchTypeChange()"
-              [style]="{'width':'100%', 'height':'38px'}"
-              placeholder="Select Search Type">
-            </p-dropdown>
+            <input
+              type="text"
+              id="quote-input"
+              class="form-select form-control form-control-sm mb-1"
+              [value]="clientName"
+              data-bs-toggle="modal"
+              data-bs-target="#clientSearchModal"
+              readonly
+            />
           </div>
-        </div>
 
-        <div class="col-md-3">
-          <!-- Dynamic Search Value Dropdown -->
-          <div class="field mb-4 w-full">
-            <label for="search-value" class="quote-label required">
-              {{ selectedSearchType ? selectedSearchType.name : "" }}
-            </label><br>
-            <p-dropdown
-              [options]="filteredOptions"
-              [(ngModel)]="selectedSearchValue"
-              [filter]="true"
-              filterBy="name"
-              [showClear]="true"
-              [style]="{'width':'100%', 'height':'38px'}"
-              [placeholder]="getPlaceholder()"
-              (onFocus)="onFocus()"
-              (onBlur)="onBlur()"
-              (onChange)="onSearchValueChange()"
-            >
-              <ng-template pTemplate="selectedItem">
-                <div class="search-item search-item-value" *ngIf="selectedSearchValue">
-                  <div>{{selectedSearchValue.name}}</div>
-                </div>
-              </ng-template>
-              <ng-template let-option pTemplate="item">
-                <div class="search-item">
-                  <div>{{option.name}}</div>
-                </div>
-              </ng-template>
-            </p-dropdown>
-          </div>
+          <!-- Client Search Modal Component -->
+          <app-client-search-modal
+            (clientSelected)="onClientSelected($event)"
+          ></app-client-search-modal>
         </div>
       </div>
     <!-- Second Row -->
@@ -61,7 +35,7 @@
       <div class="col-md-3">
         <!-- Industry Dropdown -->
         <div class="field mb-4 w-full">
-          <label for="product" class="quote-label required" id="product">
+          <label for="product" class="quote-label" id="product">
             {{'gis.quotation.search_results' | translate}}
           </label><br>
           <p-dropdown
@@ -91,7 +65,7 @@
         <!-- Business Type Dropdown -->
         <div class="field mb-4 w-full">
           <label for="use-of-property" class="quote-label" id="use-of-property">
-            Select an Option
+            Select a product
           </label><br>
           <p-dropdown
             [options]="status"
@@ -100,7 +74,7 @@
             [filter]="true"
             filterBy="name"
             [showClear]="true"
-            placeholder="Select a status"
+            placeholder="Select a product"
             [style]="{'width':'100%', 'height':'38px'}">
             <ng-template pTemplate="selectedItem">
               <div class="business-type-item business-type-value" *ngIf="selectedStatus">
@@ -119,8 +93,8 @@
       <div class="col-md-3">
         <!-- Effective From Date -->
         <div class="field mb-4 w-full">
-          <label for="cover-From" class="quote-label required" id="cover-From">
-            Effective Date From</label>
+          <label for="cover-From" class="quote-label" id="cover-From">
+            Effective date from</label>
           <p-calendar name="withEffectiveFromDate"
             [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
             [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
@@ -132,8 +106,8 @@
       <div class="col-md-3">
         <!-- Effective To Date -->
         <div class="field mb-4 w-full">
-          <label for="cover-To" class="quote-label required" id="cover-To">
-            Effective Date To</label>
+          <label for="cover-To" class="quote-label" id="cover-To">
+            Effective date to</label>
           <p-calendar name="withEffectiveToDate"
             [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
             [placeholder]="coverTo ? coverTo : todaysDate" [minDate]="minDate"
@@ -169,7 +143,7 @@
         <tr>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
-          <th>Sum Assured</th>
+          <th>Sum Insured</th>
           <th style="background-color: #f0f0f0">{{'gis.quotation.premium' | translate}}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
           <th>Date Created</th>
@@ -183,8 +157,8 @@
         <tr style="cursor: pointer" >
           <td>{{ quotation?.quotationNumber || '' }}</td>
           <td>{{ quotation?.clientName || '' }}</td>
-          <td>{{ quotation?.clientName ||''}}</td>
-          <td>{{ quotation?.clientName ||'' }}</td>
+          <td>{{ quotation?.sumInsured || 0 }}</td>
+          <td>{{ quotation?.premium || 0 }}</td>
           <td>{{ quotation?.agentShortDescription || '' }}</td>
           <td>{{ quotation?.quotDate || '' | date:'short' }}</td>
           <td>{{ quotation?.fromDate || '' }}</td>

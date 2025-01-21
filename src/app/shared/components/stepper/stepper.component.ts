@@ -6,7 +6,8 @@ import { StepperService } from '../../services/stepper/stepper.service';
   selector: 'app-stepper',
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone : false
 })
 export class StepperComponent {
   @Input() stepperData: Step[];

@@ -17,7 +17,8 @@ const log = new Logger('DocViewerComponent');
 @Component({
   selector: 'ngx-doc-viewer',
   templateUrl: './doc-viewer.component.html',
-  styleUrls: ['./doc-viewer.component.scss']
+  styleUrls: ['./doc-viewer.component.scss'],
+  standalone : false
 })
 export class DocViewerComponent implements OnInit {
 
