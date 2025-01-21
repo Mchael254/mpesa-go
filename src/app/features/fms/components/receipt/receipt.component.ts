@@ -31,138 +31,142 @@ import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 
 
 export class ReceiptComponent implements OnInit {
-  onReclicked=false;
-  
-  fetchedAllocations: Allocation[] = [];
-  //selectedFile: File | null = null;
-  base64Output: string = '';
-  selectedFile: File | null = null;
-  //fileDescriptions: FileDescription[] = [];
-  currentFileIndex: number = 0;
-  uploadedFile: any = null;
-  globalDocId:string;
-  decodedFileUrl: string | null = null;
-  //description: string = '';
-  paymentMode: string = '';
+    // 1.1 Form Controls
   receiptingDetailsForm: FormGroup;
+
+  // 1.2 User & Organization and Branch Details
+  loggedInUser: any;
+  GlobalUser: any;
+  organization: OrganizationDTO[];
+  defaultOrgId: number;
   users:StaffDto;
-  organization:OrganizationDTO[];
-  selectedOrganization: string | null = null; // Currently selected organization
-  GlobalUser:any;
+  branches:BranchDTO[]=[];  
   organizationId: number;
-  branches:BranchDTO[]=[];
-  drawersBanks:BankDTO[]=[];
   selectedCountryId: number | null = null;
+  defaultCountryId: number;
+  selectedOrganization: string | null = null; // Currently selected organization
+  
+  // 1.3 Receipt capture Details
+  globalReceiptNumber: number;
+  globalReceiptNo: string;
+  currentReceiptingPoint: any;
+drawersBanks:BankDTO[]=[];
+originalNarration: string | null = null; 
 
-      
+   // 1.4 Client & Transaction Details
+   selectedClient: any;
+   transactions: TransactionDTO[] = [];
+   accountTypes:AccountTypeDTO[]=[];
+clients:ClientsDTO[]=[];
+getAllocation:GetAllocationDTO[]=[];
+   allocatedClients: any[] = [];
+   remainingAmount: number = 0;
+   globalGetAllocation:any;
+   totalAllocatedAmount = 0;
+   fetchedAllocations: Allocation[] = [];
+   searchClients: any[] = [];
+searchQuery: string = '';
+allocationsReturned:any;
 
-    loggedInUser:any;
+cumulativeAllocatedTransactions: Array<{
+  transactionNumber: string;
+  allocatedAmount: number;
+  clientName?: string;
+  policyNumber?: string;
+}> = [];
+
+// totalAllocatedAmount: number = 0;
+   // 1.5 UI Control Flags
+  isSubmitButtonVisible: boolean = false;
+  canAddAllocation: boolean = false;
+  isAllocationCompleted: boolean = false;
+  isClientSelected: boolean = false;
   chargesEnabled: boolean = false;
-   // selectedChargeType: string = 'charges';
-    chargeAmount: number = 0;
-    //private chargesModal: Modal | undefined;
-    chargeTypes: string[]=[];
-  globalBankAccountCode:number;
-   chequeTypes = ['normal Cheque', 'pd Cheque'];
+  isAccountTypeSelected = false;
+  loading = false; 
+  isNarrationFromLov = false; 
+  backdatingEnabled = true; // Adjust this based on your logic
+  isSaveBtnActive=true;
+  isReceiptSaved=false;
+  onclicked:boolean=false;
+  allocation: boolean = false;
+  getAllocationStatus:boolean=false;
+onBankSelected:boolean=false;
+  // 1.6 File Upload Properties
+  selectedFile: File | null = null;
+  fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
+  base64Output: string = '';
+currentFileIndex: number = 0;
+decodedFileUrl: string | null = null;
+uploadedFile: any = null;
+globalDocId:string;
+description: string = '';
 
-  chargeAmountInput: number = 0;
+//1.7 charges details
+chargeAmount: number = 0;
+chargeTypes: string[]=[];
+chargeAmountInput: number = 0;
+receiptChargeId!: number; // Component-level variable to store the selected charge ID
+chargeList:ExistingChargesResponseDTO[];
+charges:ChargesDTO[]=[];
+editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
 
-  editingIndex: number | null = null;
-  searchClients: any[] = [];
-  selectedClient: any;
-  allocatedClients: any[] = [];
- 
-   isAccountTypeSelected = false;
-transactions:TransactionDTO[]=[];
-  searchQuery: string = '';
-
-  canAddAllocation = false; 
+//1.8 payment mode details
+  paymentMode: string = '';
   paymentModes:PaymentModesDTO[]=[];
+  chequeTypes = ['normal Cheque', 'pd Cheque'];
+ 
+
+//Bank Details
 bankAccounts:BanksDTO[]=[];
 globalBankAccountVariable:any;
 selectedBankCode:number;
-    
-   narrations:NarrationDTO[]=[];
-filteredNarrations: NarrationDTO[] = [];
-loading = false; 
+filteredBankAccounts: BanksDTO[] = [];
+bankSearchTerm: string = '';
+  
+ 
+ 
 
+   
+ 
+   
+//currency details
+currencies:CurrencyDTO[]=[];
+defaultCurrencyId: number | null = null;
+exchangeRate: number =0; // Default exchange rate
+
+
+currencySymbolGlobal:string | undefined;
 selectedCurrencySymbol: string | undefined; // To store the currency symbol for checks
 selectedCurrencyCode: number=0;
 currencyGlobal: number | null = null;
-// currencies:CurrencyDTO[]=[];
-currencies:CurrencyDTO[]=[];
-currencyRates:CurrencyRateDTO[]=[];
-defaultCurrencyId: number | null = null;
+exchangeRates: string | undefined; // Fetched exchange rate
+manualExchangeRate:any;
+defaultCurrencyName:any;
+
+//receipting point details
 receiptingPoints: ReceiptingPointsDTO[]=[];
 receiptingPointId:number;
 receiptingPointAutoManual:string;
 receiptingPointName:string;
-globalReceiptNumber:number;
-    charges:ChargesDTO[]=[];
-  accountTypes:AccountTypeDTO[]=[];
-  clients:ClientsDTO[]=[];
-  globalReceiptNo: string ;
-  branchNo:number;
-  receiptChargeId!: number; // Component-level variable to store the selected charge ID
-  chargeList:ExistingChargesResponseDTO[];
-  getAllocation:GetAllocationDTO[]=[];
-  editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
-  countryId:number=1100;
- originalNarration: string | null = null; 
-isNarrationFromLov = false; 
-orgCode: string;
-currencySymbolGlobal:string | undefined;
-exchangeRates: string | undefined; // Fetched exchange rate
-exchangeRate: number =0; // Default exchange rate
-rate:any;
-uploadedFiles: File[] = [];
-currentReceiptingPoint:any;
-  manualExchangeRate:any;
-  // allocation:boolean=true;
-  allocation: boolean = false;
 
-  allocationsReturned:any;
-  // allocatedAmounts: number[] = []; // Array to store allocated amounts
-  totalAllocatedAmounts: number = 0;
-  isSubmitButtonVisible = false;
-  //selectedFile: File | null = null;
-  description: string = '';
-  fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
-  //currentFileIndex: number = -1; // Initialize to -1 or a valid index when a file is selected
+//narration details
+narrations:NarrationDTO[]=[];
+filteredNarrations: NarrationDTO[] = [];
 
-  onclicked:boolean=false;
+ //document and receipt date details
+ minDate: string; // To enable backdating if necessary
+ maxDate: string; // To disable future dates
 
-  referenceNo: string = ''; // Assume this is set from the selected client
-  amount: number = 0; // Assume this is set from the form
-  paymentMethod: string = ''; // Assume this is set from the form
-  policyNumber: string = ''; // Assume this is set from the selected client
-  //status: string = 'Pending'; // Default status or set as needed
-isSaveBtnActive=true;
+//save and print receipt details
+ globalReceiptDetails:any;
+ parameterStatus:string;
+
   @ViewChild('fileDescriptionModal', { static: false }) fileDescriptionModal!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef;
-  
-  
   @ViewChild('printTemplate', { static: false }) printTemplate!: ReceiptComponent;
-  // receiptingDetailsForm!: FormGroup;
- 
+  
 
- // username = 'frank'; // Replace with actual user retrieval
-  //receiptNumberFile = 147; // Replace with actual receipt number
- // userCode = 940;     // Replace with actual user code
-  isAllocationCompleted = false;
-  globalGetAllocation:any;
-  totalAllocatedAmount = 0;
-  amountIssued: number = 0; // Initialize amountIssued
-  parameterStatus:string;
-  currentReceiptNo: any;
-  isReceiptSaved=false;
-  orgId: string;
-  defaultOrgId: number;
-  defaultCountryId: number;
-  minDate: string; // To enable backdating if necessary
-  maxDate: string; // To disable future dates
-  backdatingEnabled = true; // Adjust this based on your logic
-  globalReceiptDetails:any;
 constructor(
   private fb: FormBuilder,
   private staffService:StaffService,
@@ -182,45 +186,25 @@ constructor(
 
 }
 ngOnInit(): void {
- 
-   this.captureReceiptForm();
-   //this.fetchBranches();
+ this.captureReceiptForm();
    this.fetchCurrencies();
- // this.fetchPaymentModes();
  this.fetchOrganization();
-  //this.fetchExistingCharges();
- // this.fetchAccountTypes();
-//this.fetchBanks();
-//this.fetchDrawersBanks();
-//this.fetchDrawersBank();
 this.fetchNarrations();
-
-//this.fetchParamStatus();
- // this.fetchDefaultExchangeRate();
-// this.fetchManualExchangeRateParameter();
-// this.fetchExchangeRate();
- //this.fetchCharges();
-//this.submitChargeManagement();
-
 this.loggedInUser = this.authService.getCurrentUser();
 this.fetchUserDetails();
-
- // Set the minDate and maxDate for date validation
+// Set the minDate and maxDate for date validation
  const currentDate = new Date();
  this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
  this.maxDate = this.formatDate(currentDate);
-//console.log('my alogged in user',this.loggedInUser);
+
 
 //console.log('logged user>',this.loggedInUser);
 //console.log(this.currencies);
 //console.log('>>>',this.sessionStorage.getItem("SESSION_ORG_CODE"));
 // this.orgCode = this.sessionStorage.getItem("SESSION_ORG_CODE");
 
-// const user=this.sessionStorage.getItem(JSON.parse("code"));
-// console.log("users>>",user);
-//  this.userCode=this.sessionStorage.getItem('SESSION__USER_CODE');
-//console.log('user org code',this.userCode);
-//alert(this.loggedInUser.code);
+
+
 
 
 }
@@ -244,36 +228,28 @@ captureReceiptForm(){
     narration: ['', [Validators.required, Validators.maxLength(255)]],
     paymentRef: ['', Validators.required],
     otherRef: [''],
-    documentDate: [''],
+    documentDate: [today,Validators.required],
     manualRef: [''],
     currency: ['', Validators.required], // Default currency is KES
     paymentMode: ['', Validators.required],
     chequeType: [{ value: '', disabled: true }],
-    bankAccount: [''],
+    bankAccount: ['',Validators.required],
     receiptingPoint:['',Validators.required],
  charges: ['no', Validators.required],
-      
       chargeAmount: [ ''],
       selectedChargeType:['', Validators.required],
-      
       description: ['', Validators.required],
-     // allocatedAmount: this.fb.array([]) ,
-//      allocatedAmount: this.fb.array(this.initializeAllocatedAmounts()),
     deductions: [''], 
     exchangeRate:['',[Validators.required, Validators.min(0)]],
     exchangeRates:[''],
-    // Exchange rate modal form
-
-      manualExchangeRate: ['', [Validators.required, Validators.min(0.01)]],
-    
+   manualExchangeRate: ['', [Validators.required, Validators.min(0.01)]],
     capitalInjection: [''], 
     allocationType: [''],
     accountType: ['', Validators.required],
       searchCriteria: [{ value: '', disabled: true }, Validators.required],
       searchQuery: [{ value: '', disabled: true }, Validators.required],
       allocatedAmount: this.fb.array([]) // FormArray for allocated amounts
-   // allocations: this.fb.array([]), // Dynamically add transaction allocations here
-   // transactions: this.fb.array([]), 
+   
   });
 }
 
@@ -282,11 +258,8 @@ fetchUserDetails(){
     next:(data)=>{
 this.users=data;
 this.GlobalUser=this.users;
-//console.log('users>>',this.users);
 this.organizationId = this.GlobalUser.organizationId;
-//this.fetchBranches(this.GlobalUser.organizationId);
 this.fetchAccountTypes();
-//console.log('user>>',this.GlobalUser);
     },
     error:(err)=>{
       this.globalMessagingService.displayErrorMessage('Error',err.err.err);
@@ -297,7 +270,6 @@ fetchOrganization(){
   this.organizationService.getOrganization().subscribe({
     next:(data)=>{
       this.organization=data;
-      console.log('organization>>',data);
      // Set the default organization if it exists
      
      const defaultOrg = this.organization.find(org => org.id === 2);
@@ -314,7 +286,7 @@ fetchOrganization(){
        // Patch the form control with the default organization ID
        this.receiptingDetailsForm.patchValue({ organization: this.defaultOrgId });
        //this.receiptingDetailsForm.patchValue({organization:this.selectedOrganization});
-       //console.log('id',defaultOrg.name);
+      
      } else {
        this.selectedOrganization = null; // Allow user to select from the list
      }
@@ -331,7 +303,7 @@ fetchBranches(organizationId: number){
   ).subscribe({
     next:(data)=>{
       this.branches = data;
-    //  console.log('branches>>', this.branches);
+  
     },
     error:(err)=>{
       this.globalMessagingService.displayErrorMessage('Error',err.error.error);
@@ -391,7 +363,6 @@ fetchDrawersBanks(countryId: number) {
   this.bankService.getBanks(countryId).subscribe({
     next: (data) => {
       this.drawersBanks = data;
-     // console.log('Drawers Banks:', this.drawersBanks);
     },
     error: (error) => {
       console.error('Error fetching drawer banks:', error);
@@ -408,7 +379,7 @@ fetchManualExchangeRateParameter() {
      // this.system = response.Systemshortdesc
     },
     error: (err) => {
-      //console.log(err)
+
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
      
     }
@@ -420,17 +391,7 @@ private formatDate(date: Date): string {
   const day = date.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-// fetchPaymentModes(orgCode:number){
-// this.receiptService.getPaymentModes(orgCode).subscribe({
-//     next: (response) => {
-//       this.paymentModes = response.data;
-      
-//     },
-//     error: (err) => {
-//       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-//     }
-//   });
-// }
+
 onBank(event: Event): void {
   //const selectedBankName = (event.target as HTMLSelectElement).value;
   const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
@@ -444,6 +405,8 @@ onBank(event: Event): void {
    } else {
      //console.error('Selected bank not found in the bankAccounts list.');
    }
+   //set the boolean to true if the bank is selected
+   this.onBankSelected=true;
   this.receiptService.getReceiptingPoints(1,this.GlobalUser.id).subscribe({
     next: (response: { data: ReceiptingPointsDTO[] }) => {
       if (response.data.length > 0) {
@@ -488,6 +451,7 @@ fetchReceiptNumber(branchCode: number, userCode: number): void {
 
         // Update the form control
         this.receiptingDetailsForm.get('receiptNumber')?.setValue(this.globalReceiptNo);
+        //this.fetchReceiptValidationStatus();
       } else {
        // console.error('Receipt number not found in the response');
       }
@@ -550,14 +514,15 @@ fetchCurrencies() {
       
       if (defaultCurrency) {
         this.defaultCurrencyId = defaultCurrency.id;
-        console.log('Default Currency:', defaultCurrency);
+        this.defaultCurrencyName= defaultCurrency.symbol;
+        //console.log('Default Currency symbol', this.defaultCurrencyName);
 
         // Set the default currency in the form
         this.receiptingDetailsForm.patchValue({
           currency: defaultCurrency.id
         });
       }
-      this.fetchBanks();
+      this.fetchBanks(1,this.defaultCurrencyId);
     },
     error: (err) => {
       //console.error('Error fetching currencies:', err);
@@ -582,7 +547,7 @@ const selectedCurrency = this.currencies.find(
 // Get the symbol of the selected currency
 this.selectedCurrencySymbol = selectedCurrency ? selectedCurrency.symbol : '';
 
-  //console.log('selected currency',this.selectedCurrencyCode);
+ // console.log('selected currency',this.selectedCurrencyCode);
   this.fetchCurrencyRate();
 
 
@@ -594,29 +559,21 @@ fetchCurrencyRate(){
   this.currencyService.getCurrenciesRate(this.defaultCurrencyId)
   .subscribe({
     next: (rates) => {
-     // console.log('Selected Currency ID:',this.selectedCurrencyCode);
-     // console.log('All Currency Rates:', rates);
-
-      // this.currencyRates = rates; // `data` is now a string
-      // console.log('currency rates',this.currencyRates);
-      //   // Filter rates matching the selected currency
-      //   const matchingRates = rates.filter(rate => 
-      //     rate.targetCurrencyId ===this.selectedCurrencyCode
-      //   );
+    
         // Filter rates matching the selected currency
       const matchingRates = rates.filter(rate => {
-        console.log('Comparing:', {
-          rateTargetCurrencyId: rate.targetCurrencyId,
-          selectedId: this.selectedCurrencyCode,
-          isMatch: rate.targetCurrencyId === this.selectedCurrencyCode
-        });
+        // console.log('Comparing:', {
+        //   rateTargetCurrencyId: rate.targetCurrencyId,
+        //   selectedId: this.selectedCurrencyCode,
+        //   isMatch: rate.targetCurrencyId === this.selectedCurrencyCode
+        // });
         return rate.targetCurrencyId === this.selectedCurrencyCode;
       });
 
       //console.log('Matching Rates:', matchingRates);
         if (matchingRates.length === 0) {
           // No rates found - show manual entry modal
-          //console.log('No currency rate found - showing manual entry modal');
+          
           this.showExchangeRateModal2();
         } else if (matchingRates.length === 1) {
           // Single rate found - use it directly
@@ -634,11 +591,11 @@ fetchCurrencyRate(){
           const validRates = matchingRates
             .filter(rate => {
               const effectiveDate = new Date(rate.withEffectToDate);
-              console.log('Checking date:', {
-                effectiveDate,
-                currentDate,
-                isValid: effectiveDate >= currentDate
-              });
+              // console.log('Checking date:', {
+              //   effectiveDate,
+              //   currentDate,
+              //   isValid: effectiveDate >= currentDate
+              // });
               return effectiveDate >= currentDate;
             })
             .sort((a, b) => 
@@ -657,6 +614,7 @@ fetchCurrencyRate(){
               // No valid rates found - show manual entry modal
               //console.log('No valid currency rate found - showing manual entry modal');
               this.showExchangeRateModal2();
+              this.fetchBanks(1,this.selectedCurrencyCode);
             }
           }
     },
@@ -675,7 +633,7 @@ fetchDefaultExchangeRate(): void {
       next: (response) => {
      
         this.exchangeRates = response.data; // `data` is now a string
-       // alert(`the exchange rate is ${this.exchangeRates}`);
+      
         this.showExchangeRateModal(); // Show modal with exchange rate
       },
       error: (err) => {
@@ -783,13 +741,13 @@ showExchangeRateModal2():void{
 }
 
 
-fetchBanks(){
-  this.receiptService.getBanks(1,this.defaultCurrencyId)
+fetchBanks(branchCode:number,currCode:number){
+  this.receiptService.getBanks(branchCode,currCode)
       .subscribe({
         next: (response) => {
         this.bankAccounts = response.data;
-       console.log('this.bankAccounts',this.bankAccounts);
-
+      // console.log('this.bankAccounts',this.bankAccounts);
+       this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
         
        },
         error: (err) => {
@@ -798,7 +756,20 @@ fetchBanks(){
         }
       });
 }
-
+ // Add this method to filter banks
+ filterBanks(event: any) {
+  const searchTerm = event.target.value.toLowerCase();
+  this.bankSearchTerm = searchTerm;
+  
+  if (!searchTerm) {
+    this.filteredBankAccounts = this.bankAccounts;
+  } else {
+    this.filteredBankAccounts = this.bankAccounts.filter(bank => 
+      bank.name.toLowerCase().includes(searchTerm) || 
+      bank.code.toString().includes(searchTerm)
+    );
+  }
+}
 showChargesModal(): void {
   // Open the modal programmatically every time "Yes" is clicked
   const chargesModal = new bootstrap.Modal(
@@ -895,7 +866,7 @@ showChargesModal(): void {
    // Populate the form with the charge details
       
       if (!chargeAmount || !selectedChargeType || !this.editReceiptExpenseId || !this.receiptChargeId) {
-        //alert('All fields are required!');
+      
         this.globalMessagingService.displayWarningMessage('Warning:','All Fields are required');
         return;
       }
@@ -911,7 +882,7 @@ showChargesModal(): void {
   
       this.receiptService.postChargeManagement(payload).subscribe({
         next: (response) => {
-         // alert('Charge updated successfully!');
+       
          
              // Update chargeAmount input field with saved value
      
@@ -965,7 +936,7 @@ showChargesModal(): void {
     this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
       //  console.log('Charge deleted successfully:', response);
-      //  alert('deleted successfully');
+  
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
@@ -991,7 +962,9 @@ showChargesModal(): void {
     this.submitChargeManagement();
    
   }else{
-    alert('all fields are required!');
+    
+   
+    this.globalMessagingService.displayErrorMessage('Error','all fields are required!');
   }
   this.fetchExistingCharges(this.globalReceiptNumber);
   }
@@ -1082,7 +1055,8 @@ onAccountTypeChange(): void {
     const { accountType, searchCriteria, searchQuery } = this.receiptingDetailsForm.value;
   
     if (!accountType || !searchCriteria || !searchQuery) {
-      alert('Please provide all the required fields.');
+     
+      this.globalMessagingService.displayErrorMessage('Error','Please provide all the required fields');
       return;
     }
   
@@ -1095,7 +1069,8 @@ onAccountTypeChange(): void {
   
     const apiSearchCriteria = criteriaMapping[searchCriteria];
     if (!apiSearchCriteria) {
-      alert('Invalid search criteria selected.');
+      
+      this.globalMessagingService.displayErrorMessage('Error','Invalid search criteria selected');
       return;
     }
   
@@ -1115,15 +1090,15 @@ onAccountTypeChange(): void {
         next: (response) => {
           this.clients = response.data || [];
         //console.log('Clients:', this.clients);
-          //alert('clients found');
+         
 
           if (!this.clients.length) {
-            alert('No clients found for the given criteria.');
             
+            this.globalMessagingService.displayErrorMessage('Error','No clients found for the given criteria');
           }
         },
         error: (err) => {
-          alert('error fetching clients');
+          
           this.globalMessagingService.displayErrorMessage('Error', err.error.error);
          
         },
@@ -1132,7 +1107,8 @@ onAccountTypeChange(): void {
         },
       });
     } else {
-      alert('Invalid account type selected.');
+     
+      this.globalMessagingService.displayErrorMessage('Error','Invalid account type!');
     }
   }
   
@@ -1286,106 +1262,12 @@ if (chequeType) {
 
 
 
-
-
-
-// onFileSelected(event: any): void {
-
-//   if (event.target.files.length > 0) {
-//     this.selectedFile = event.target.files[0];
-//     console.log('Selected file:', this.selectedFile.name); // Debug log
-//     this.currentFileIndex = this.fileDescriptions.length; // Set to the next index
-//     this.fileDescriptions.push({ file: this.selectedFile, description: '' }); // Add the file to the array
-//     //console.log('Selected file:', this.selectedFile);
-//     console.log('File descriptions:', this.fileDescriptions); // Debug log
-//      // Convert file to base64
-//      const reader = new FileReader();
-//      reader.onload = () => {
-//        this.base64Output = reader.result as string;
-//      };
-//      reader.readAsDataURL(this.selectedFile);
-//     this.openModal(this.fileDescriptions.length -1); // Open modal for the last added file
-//   } else {
-//    // console.error('No file selected'); // Log if no file is selected
-//     this.selectedFile = null; // Reset selectedFile
-   
-//   }
-// }
-
-
-// uploadFile(): void {
-//   if (!this.selectedFile || !this.base64Output) {
-//     alert('no selected file');
-//     return;
-//   }
-
-//   if (!this.globalGetAllocation.length) {
-//     alert('no fetched allocations');
-//     return;
-//   }
-
-//   const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-
-//   try {
-//     // Create array of requests by flattening receiptParticularDetails
-//     const requests: ReceiptUploadRequest[] = [];
-    
-//     // Loop through each allocation
-//     this.globalGetAllocation.forEach(allocation => {
-//       // Check if receiptParticularDetails exists and is an array
-//       if (allocation.receiptParticularDetails && Array.isArray(allocation.receiptParticularDetails)) {
-//         // Create a request for each detail in receiptParticularDetails
-//         allocation.receiptParticularDetails.forEach(detail => {
-//           requests.push({
-//             docType: 'RECEIPT',
-//             docData: this.base64Output,
-//             module: 'CB-RECEIPTS',
-//             originalFileName: this.selectedFile.name,
-//             filename: this.selectedFile.name,
-//             referenceNo: detail.referenceNumber,
-//             docDescription: this.description,
-//             amount: detail.premiumAmount, // Assuming this is the correct field
-//             paymentMethod: paymentMode,
-//             policyNumber: detail.policyNumber
-//           });
-//         });
-//       }
-//     });
-
-//     console.log('Request payload:', requests.reduce((acc, req, index) => {
-//       acc[index] = req;
-//       return acc;
-//     }, {}));
-
-//     this.receiptService.uploadFiles(requests).subscribe({
-//       next: (response) => {
-//         console.log('Upload successful:', response);
-//         this.globalDocId=response.docId;
-//         this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
-//         // Reset form fieldsb
-//         this.selectedFile = null;
-//         this.base64Output = '';
-//         this.fileDescriptions = [];
-//         this.currentFileIndex = 0;
-//         this.fetchDocByDocId(this.globalDocId);
-//       },
-//       error: (error) => {
-//         console.error('Upload error:', error);
-//         this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error('Error preparing upload:', error);
-//     this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
-//   }
-// }
 fetchDocByDocId(docId: string){
   this.dmsService.getDocumentById(docId).subscribe({
     next:(response)=>{
       this.uploadedFile = response;
       this.globalMessagingService.displaySuccessMessage('Success','Doc retrieved successfullly');
-console.log('doc data>>',response);
+//console.log('doc data>>',response);
     },
     error:(error)=>{
       this.globalMessagingService.displayErrorMessage('Error',error.error.error);
@@ -1394,97 +1276,7 @@ console.log('doc data>>',response);
 
   })
 }
-// openFile() {
-//   if (this.uploadedFile && this.uploadedFile.byteData) {
-//     try {
-//       // Handle both formats: with or without data URI prefix
-//       let base64String = this.uploadedFile.byteData;
-//       if (base64String.includes(',')) {
-//         base64String = base64String.split(',')[1];
-//       }
 
-//       // Decode the base64 string
-//       const byteCharacters = atob(base64String);
-//       const byteNumbers = new Array(byteCharacters.length);
-//       for (let i = 0; i < byteCharacters.length; i++) {
-//         byteNumbers[i] = byteCharacters.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumbers);
-      
-//       // Create blob with proper content type
-//       const blob = new Blob([byteArray], { 
-//         type: this.uploadedFile.contentType || 'application/pdf' 
-//       });
-      
-//       // Create and open URL
-//       if (this.decodedFileUrl) {
-//         URL.revokeObjectURL(this.decodedFileUrl); // Clean up old URL
-//       }
-//       this.decodedFileUrl = URL.createObjectURL(blob);
-//       window.open(this.decodedFileUrl, '_blank');
-//     } catch (error) {
-//       console.error('Error processing file:', error);
-//       this.globalMessagingService.displayErrorMessage(
-//         'Error', 
-//         'Failed to process the file. The file might be corrupted or in an invalid format.'
-//       );
-//     }
-//   } else {
-//     this.globalMessagingService.displayErrorMessage('Error', 'No file data available');
-//   }
-// }
-// onFileSelected(event: any): void {
-//   if (event.target.files.length > 0) {
-//     this.selectedFile = event.target.files[0];
-//     console.log('Selected file:', this.selectedFile.name, 'Type:', this.selectedFile.type); // Debug log
-
-//     // Add file to descriptions array
-//     this.currentFileIndex = this.fileDescriptions.length;
-//     this.fileDescriptions.push({ file: this.selectedFile, description: '' });
-//     console.log('File descriptions:', this.fileDescriptions);
-
-//     // Convert file to Base64
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       this.base64Output = reader.result as string; // Includes the "data:" prefix
-//       console.log('Base64 Encoded String (Preview):', this.base64Output.slice(0, 50)); // Debug log
-//     };
-//     reader.readAsDataURL(this.selectedFile); // Encodes with "data:" prefix
-//     this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
-//   } else {
-//     this.selectedFile = null; // Reset selectedFile if no file is selected
-//   }
-// }
-// onFileSelected(event: any): void {
-//   if (event.target.files.length > 0) {
-//     this.selectedFile = event.target.files[0];
-//     console.log('Selected file:', this.selectedFile.name, 'Type:', this.selectedFile.type); // Debug log
-
-//     // Add file to descriptions array
-//     this.currentFileIndex = this.fileDescriptions.length;
-//     this.fileDescriptions.push({ file: this.selectedFile, description: '' });
-//     console.log('File descriptions:', this.fileDescriptions);
-
-//     // Convert file to Base64 without the "data:" prefix
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       const base64String = reader.result as string;
-
-//       // Remove the "data:" prefix if present
-//       if (base64String.includes(',')) {
-//         this.base64Output = base64String.split(',')[1];
-//       } else {
-//         this.base64Output = base64String;
-//       }
-
-//       console.log('Base64 Encoded String (No Prefix):', this.base64Output.slice(0, 50)); // Debug log
-//     };
-//     reader.readAsDataURL(this.selectedFile);
-//     this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
-//   } else {
-//     this.selectedFile = null; // Reset selectedFile if no file is selected
-//   }
-// }
 onFileSelected(event: any): void {
   if (event.target.files.length > 0) {
     this.selectedFile = event.target.files[0];
@@ -1517,13 +1309,19 @@ onFileSelected(event: any): void {
 }
 
 uploadFile(): void {
+  if(!this.getAllocationStatus){
+    this.globalMessagingService.displayErrorMessage('Warning','please make allocation first!');
+    return;
+  }
   if (!this.selectedFile || !this.base64Output) {
-    alert('No selected file');
+    //alert('No selected file');
+    this.globalMessagingService.displayErrorMessage('Error','No selected file found!');
     return;
   }
 
   if (!this.globalGetAllocation.length) {
-    alert('No fetched allocations');
+    this.globalMessagingService.displayErrorMessage('Error','No fetched allocations');
+   /// alert('No fetched allocations');
     return;
   }
 
@@ -1551,11 +1349,11 @@ uploadFile(): void {
       }
     });
 
-    console.log('Request payload:', requests);
+    //console.log('Request payload:', requests);
 
     this.receiptService.uploadFiles(requests).subscribe({
       next: (response) => {
-        console.log('Upload successful:', response);
+       // console.log('Upload successful:', response);
         this.globalDocId = response.docId;
         this.globalMessagingService.displaySuccessMessage('Success', 'Receipt uploaded successfully');
         this.selectedFile = null;
@@ -1637,7 +1435,7 @@ openFile(): void {
           this.globalMessagingService.displaySuccessMessage('Success', 'File deleted successfully');
           this.uploadedFile = null;
           this.decodedFileUrl = null;
-          console.log('success',response);
+         // console.log('success',response);
         },
         error: (error) => {
         console.error('error',error);
@@ -1645,7 +1443,7 @@ openFile(): void {
         }
       });
     } else {
-      alert('cannot find docId');
+      //alert('cannot find docId');
 
       this.globalMessagingService.displayErrorMessage('Error', 'No file selected for deletion');
     }
@@ -1696,12 +1494,13 @@ onRemoveFile(index: number): void {
 
 // The onClickClient method sets this.selectedClient and fetches transactions based on the selected client's details. This allows the UI to reflect the transactions specific to the selected client.
 onClickClient(selectedClient) {
-  // if (this.selectedClient?.code === selectedClient.code) {
-  //   return; // Avoid unnecessary API call
-  // }
+  if (this.selectedClient?.code === selectedClient.code) {
+    return; // Avoid unnecessary API call
+  }
 //  this.onReclicked=true;
   this.selectedClient = selectedClient; // Store the selected client
- console.log('SELECTED CLIENT',this.selectedClient);
+  this.isClientSelected = true; // Set flag when client is selected
+ //console.log('new SELECTED CLIENT',this.selectedClient);
   this.fetchTransactions(
     selectedClient.systemShortDesc,
     selectedClient.code,
@@ -1713,35 +1512,14 @@ onClickClient(selectedClient) {
   );
    // Ensure the allocation table is displayed
    this.allocation = true;
-  // this.onclicked=true;
- // console.log("selected client>>", selectedClient.accountCode);
+  
+  // Recalculate total allocated amount for the new client
+  this.calculateTotalAllocatedAmount();
   
 }
 
 
-// onClickClient(selectedClient) {
-//   // Check if the selected client is the same as the previously selected one
-//   if (this.selectedClient?.code === selectedClient.code) {
-//     this.fetchTransactions(
-//       selectedClient.systemShortDesc,
-//       selectedClient.code,
-//       selectedClient.accountCode,
-//       selectedClient.receiptType,
-//       selectedClient.shortDesc
-//     );
-//   } else {
-//     // If a new client is selected, reset allocations and fetch their transactions
-//     this.selectedClient = selectedClient;
-//     this.fetchTransactions(
-//       selectedClient.systemShortDesc,
-//       selectedClient.code,
-//       selectedClient.accountCode,
-//       selectedClient.receiptType,
-//       selectedClient.shortDesc
-//     );
-//     this.onclicked = true;
-//   }
-// }
+
 
 get allocatedAmountControls(): FormArray {
   return this.receiptingDetailsForm.get('allocatedAmount') as FormArray;
@@ -1770,9 +1548,10 @@ fetchTransactions(systemShortDesc: string,
           })
         );
       });
-
-      // For debugging
-      //console.log('Transactions:', this.transactions);
+    
+ // Recalculate total allocated amount
+ //this.calculateTotalAllocatedAmount();
+      
       //console.log('Form Controls:', this.allocatedAmountControls.value);
     },
     error: (err) => {
@@ -1793,7 +1572,7 @@ calculateTotalAllocatedAmount(): void {
     0
   );
 
-
+ // console.log('Recalculated Total Allocated Amount:', this.totalAllocatedAmount);
   //console.log('Total Allocated Amount:', this.totalAllocatedAmount);
 }
 
@@ -1812,6 +1591,12 @@ onCommissionCheckedChange(index: number, event: Event): void {
 
 
 allocate(): any {
+  //first check if the bank is selected!if not return false
+  if(!this.onBankSelected){
+    this.globalMessagingService.displayErrorMessage('Warning','Please Select bank first!');
+    return;
+  }
+  //otherwise continue with other validation
   const allocatedAmounts = this.allocatedAmountControls.value;
   const amountIssued = this.receiptingDetailsForm.get('amountIssued')?.value;
   const amountIssuedControl = this.receiptingDetailsForm.get('amountIssued');
@@ -1819,7 +1604,7 @@ allocate(): any {
  // console.log('Allocated Amounts:', allocatedAmounts);
   //console.log('Total Allocated Amount:', this.totalAllocatedAmount);
 
-  // Step 1: Check if 'amountIssued' is untouched or invalid
+  //Step 1: Check if 'amountIssued' is untouched or invalid
   if (!amountIssuedControl?.touched || !amountIssued) {
 
     this.globalMessagingService.displayErrorMessage('Error', 'Please enter the amount issued.');
@@ -1827,11 +1612,11 @@ allocate(): any {
   }
 
   // Step 2: Validate the total allocated amount against the issued amount
-  if (this.totalAllocatedAmount < amountIssued) {
-    this.globalMessagingService.displayErrorMessage('Error', 'Amount issued is not fully allocated.');
+  // if (this.totalAllocatedAmount < amountIssued) {
+  //   this.globalMessagingService.displayErrorMessage('Error', 'Amount issued is not fully allocated.');
     
-    return false; // Stop further execution
-  }
+  //   return false; // Stop further execution
+  // }
 
   if (this.totalAllocatedAmount > amountIssued) {
  
@@ -1856,10 +1641,10 @@ allocateAndPostAllocations(): void {
     const allocatedAmount = allocatedAmountControl?.value || 0;
     
     // For debugging
-    console.log(`Transaction ${index}:`, {
-      policyNumber: transaction.clientPolicyNumber,
-      allocatedAmount: allocatedAmount
-    });
+    // console.log(`Transaction ${index}:`, {
+    //   policyNumber: transaction.clientPolicyNumber,
+    //   allocatedAmount: allocatedAmount
+    // });
 
     return {
       transaction,
@@ -1921,19 +1706,20 @@ allocateAndPostAllocations(): void {
       this.allocation = false;
       this.globalMessagingService.displaySuccessMessage('Success', 'Allocations posted successfully');
        // Reset client selection and transactions
-       this.selectedClient = null;
+      // this.selectedClient = null;
        this.transactions = [];
        while (this.allocatedAmountControls.length > 0) {
          this.allocatedAmountControls.removeAt(0);
        }
        // Clear state after successful allocation
-      this.selectedClient = null;
+      //this.selectedClient = null;
       this.transactions = [];
       while (this.allocatedAmountControls.length !== 0) {
         this.allocatedAmountControls.removeAt(0);
       }
-      this.totalAllocatedAmount = 0; // Reset total allocated amount
+     // this.totalAllocatedAmount = 0; // Reset total allocated amount
       this.getAllocations();
+      this.selectedClient;
      
     },
     error: (err) => {
@@ -1946,12 +1732,15 @@ getAllocations(){
 
   this.receiptService.getAllocations(this.globalReceiptNumber,this.GlobalUser.id).subscribe({
     next:(response)=>{
+      this.selectedClient;
+      //console.log('selected client',this.selectedClient);
 //this.getAllocation=response.data;
 this.getAllocation = response.data.filter(allocation => 
   allocation.receiptParticularDetails.some(detail => detail.premiumAmount > 0));
 //console.log('allocated amounts',this.getAllocation);
 
 this.isAllocationCompleted = true;
+this.getAllocationStatus=true;
 this.allocationsReturned=this.getAllocation;
 this.globalGetAllocation=this.getAllocation;
 //console.log('getallocations>>',this.globalGetAllocation);
@@ -2093,21 +1882,11 @@ deleteAllocation(receiptDetailCode: number): void {
 //     }
 //   });
 // }
-// fetchParamStatus(){
-//   this.receiptService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
-//     next:(response)=>{
-//       //console.log('status',response.data);
-//       this.parameterStatus=response.data;
-//     },
-//     error:(err)=>{
-//       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
-//     }
-//   })
-// }
+
 fetchParamStatus(){
   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
     next:(response)=>{
-      //console.log('status',response.data);
+      
       this.parameterStatus=response.data;
       this.globalMessagingService.displaySuccessMessage('success','successfully checked params')
     },
@@ -2116,13 +1895,72 @@ fetchParamStatus(){
     }
   })
 }
+validateRequiredFields():any{
+  const requiredFields = [
+    
+    'amountIssued',
+    'bankAccount',
+    'paymentMode',
+    'narration',
+    'selectedBranch'
+  ];
+   let isValid =true;
+   const formData = this.receiptingDetailsForm;
+   requiredFields.forEach(field=>{
+    const control = formData.get(field);
+    if(control?.invalid)
+      {
+        control.markAsTouched();
+  isValid=false;
+   }
+});
+if (!isValid) {
+  this.globalMessagingService.displayErrorMessage(
+    'Error',
+    'Please fill in all required fields marked with *'
+  );
+}
+return isValid;
+}
+
+fetchReceiptValidationStatus(){
+  this.receiptService.validateReceipt(this.globalReceiptNumber,this.GlobalUser.id).subscribe({
+    next:(response)=>{
+//console.log(response.msg);
+    },
+    error:(error)=>{
+      this.globalMessagingService.displayErrorMessage('Failed:',error.err);
+    }
+  })
+}
 submitReceipt(): any {
+ // console.log('my SELECTED CLIENT',this.selectedClient);
+  if (!this.validateRequiredFields()) {
+    return;
+  }
+  const amountIssued=this.receiptingDetailsForm.get('amountIssued')?.value;
+  const amountIssuedControl=this.receiptingDetailsForm.get('amountIssued');
+ // console.log('amount issued',amountIssued);
+ // console.log('total allocated amount',this.totalAllocatedAmount);
+  //Step 1: Check if 'amountIssued' is untouched or invalid
+  if (!amountIssuedControl?.touched || !amountIssued) {
+
+    this.globalMessagingService.displayErrorMessage('Error', 'Please enter the amount issued.');
+    return false; // Stop further execution
+  }
+
+ // Step 2: Validate the total allocated amount against the issued amount
+  // if (this.totalAllocatedAmount < amountIssued) {
+  //   this.globalMessagingService.displayErrorMessage('Error', 'Amount issued is not fully allocated.');
+    
+  //   return false; // Stop further execution
+  // }
   
   // if (this.receiptingDetailsForm.invalid) {
   //   this.globalMessagingService.displayErrorMessage('Error', 'Please fill in all required fields');
   //   return;
   // }
-  console.log('my SELECTED CLIENT',this.selectedClient);
+ 
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
 
@@ -2155,10 +1993,10 @@ const receiptData: ReceiptSaveDTO={
     userCode: this.GlobalUser.id,
     narration: formValues.narration,
     insurerAccount: null,
-    receivedFrom: formValues.receivedFrom,
+    receivedFrom: formValues.receivedFrom || null,
     //grossOrNet: "G",
     grossOrNet: formValues.deductions || null,
-    sysShtDesc: this.selectedClient.systemShortDesc,
+    sysShtDesc: this.selectedClient?.systemShortDesc,
     receiptingPointId: this.receiptingPointId,
     receiptingPointAutoManual: this.receiptingPointAutoManual,
     //capitalInjection: "N",
@@ -2187,63 +2025,8 @@ const receiptData: ReceiptSaveDTO={
     bankAccountType: this.globalBankAccountVariable.type
   
 }
-  // const receiptData: ReceiptSaveDTO = {
-  //   receiptNo: String( this.globalReceiptNumber), // Ensure it's a number
-  //   receiptCode: String(formValues.receiptNumber), // Ensure it's a string
-  //   receiptDate: formValues.receiptDate ? new Date(formValues.receiptDate).toISOString().split('T')[0] : '', // Format date
-  //   amount: String(formValues.amountIssued || ''), // Ensure it's a number
-  //   paidBy: String(formValues.receivedFrom || ''),
-  //   currencyCode: String(formValues.currency || ''),
-  //   branchCode: String(1),
-  //   paymentMode: String(formValues.paymentMode || ''),
-  //   // paymentMemo: String(formValues.narration || ''),
-  //   paymentMemo: null,
-  //   docDate: formValues.documentDate ? new Date(formValues.documentDate).toISOString().split('T')[0] : '',
-  //   drawerBank: String(formValues.drawersBank || 'N/A'),
-  //   userCode: Number(this.GlobalUser.id),
-  //   narration: String(formValues.narration || ''),
-  //   // insurerAccount: String(formValues.insurerAccount || ''),
-  //   insurerAccount: null,
-  //   receivedFrom: String(formValues.receivedFrom || ''),
-  //   grossOrNet: String(formValues.deductions || 'Gross'),
-    
-  //   sysShtDesc: String(this.selectedClient?.shortDesc || null),
-  //   receiptingPointId: Number(this.receiptingPointId || 0),
-  //   receiptingPointAutoManual: String(this.receiptingPointAutoManual || ''),
-  //   capitalInjection: String(formValues.capitalInjection || ''),
-  //   // chequeNo: Number(formValues.chequeNumber || 0),
-  //   chequeNo:null,
-  //   ipfFinancier: String(formValues.ipfFinancier || null),
-  //   receiptSms: '',
-  //   receiptChequeType: String(formValues.chequeType || null),
-  //   vatInclusive: formValues.deductions ? 'Yes' : 'No' || null,
-  //   // rctbbrCode: String(formValues.branchCode || ''),
-  //   rctbbrCode: null,
-  //   // directType: 'Direct',
-  //   directType: null,
-  //   // pmBnkCode: Number(0),
-  //   pmBnkCode: null,
-  //   //dmsKey: String('' || null),
-  //   dmsKey:  null,
-  //   currencyRate: Number(formValues.exchangeRate || null),
-  //   // internalRemarks: String(formValues.narration || ''),
-  //   internalRemarks: formValues.narration || null,
-  //   // manualRef: String(formValues.manualRef || ''),
-  //  manualRef:formValues.manualRef || null,
-  //   bankAccountCode: String(this.selectedBankCode || ''),
-  //   grossOrNetAdminCharge: formValues.deductions ? 'Yes' : 'No' || '',
-  //   insurerAcc: Number(this.selectedClient.accountCode || null),
-  //   //grossOrNetWhtax: String(formValues.deductions || null),
-  //   grossOrNetWhtax: formValues.deductions || null,
-  //  // grossOrNetVat: String(formValues.deductions || null),
-  //  grossOrNetVat: formValues.deductions || null,
-  //   sysCode: Number(this.selectedClient.systemCode || 0),
-  //   bankAccountType: String(formValues.accountType || ''),
-  //   //receiptParticularDetailUpdateRequests
-  // };
-
-  // Log the payload for debugging
- // console.log('Receipt Save Payload:', JSON.stringify(receiptData, null, 2));
+console.log('receipt Data>',receiptData);
+  
 
   // Call the service to save the receipt
   this.receiptService.saveReceipt(receiptData).subscribe({
@@ -2282,6 +2065,9 @@ fetchPayments(orgCode:number){
 }
 
 confirmFormValidity():any{
+  if (!this.validateRequiredFields()) {
+    return;
+  }
   this.fetchParamStatus();
   
   if(this.parameterStatus=='N')
@@ -2294,10 +2080,7 @@ return true;
       return false;
      }
 
-    // }else{
-    //  // alert('no');
-    //   //confirm('are you sure to save receipt?');
-    //   return true;
+   
      }
 
 }
