@@ -1,0 +1,58 @@
+<div class="modal fade" id="clientSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg  modal-fade" >
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" #closebutton class="float-end btn-close"
+          data-bs-dismiss="modal" aria-label="Close"></button>
+        <p class="text-start" id="selectClient"> {{'gis.quotation.select_a_client' | translate}}</p>
+
+        <p-table
+          #dt1
+          (onLazyLoad)="lazyLoadClients($event)"
+          [autoLayout]="true"
+          [lazy]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="clientsData?.totalElements"
+          [value]="clientsData?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]=globalFilterFields
+          styleClass="p-datatable-sm">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.name' | translate}}</th>
+              <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.internal_id' | translate}}</th>
+            </tr>
+            <tr>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputInternalId($event)"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-clientData>
+            <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
+              <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
+              <td>{{ clientData.id }}</td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">{{'gis.quotation.no_client_found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <br>
+      </div>
+    </div>
+  </div>
+</div>

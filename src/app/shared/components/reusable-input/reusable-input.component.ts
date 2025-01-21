@@ -31,6 +31,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     </div>
   `,
   styleUrls: [],
+  standalone : false
 })
 export class ReusableInputComponent {
   @Input() modalId!: string;

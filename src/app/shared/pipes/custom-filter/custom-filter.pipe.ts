@@ -33,7 +33,8 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 
 @Pipe({
-  name: 'customFilter'
+  name: 'customFilter',
+  standalone : false
 })
 export class CustomFilterPipe implements PipeTransform {
 

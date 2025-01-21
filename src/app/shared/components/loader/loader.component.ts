@@ -7,6 +7,7 @@ import {LoaderService} from "../../services/loader.service";
   selector: 'tq-frontend-loader',
   templateUrl: './loader.component.html',
   styleUrls: ['./loader.component.scss'],
+  standalone : false
 })
 export class LoaderComponent implements OnInit, OnDestroy {
   showLoader$: Observable<boolean>;
