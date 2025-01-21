@@ -35,15 +35,25 @@
 
                             </div>
                             <div class="col-12 col-sm-4">
-                                <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                                    placeholder="Date to" [(ngModel)]="selectedDateFrom"
-                                    (ngModelChange)="onDateFromInputChange(selectedDateFrom)"
+                                <p-calendar 
+                                   
+                                    [dateFormat]="dateFormat" 
+                                    [showIcon]="true" 
+                                    [showButtonBar]="true"
+                                    placeholder="Date to"  
+                                    (onSelect)="onDateToInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar>
+                                <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+                                    placeholder="Date to" 
+                                    (ngModelChange)="onDateToInputChange($event)"
+                                    class="custom-calendar-height">
+                                </p-calendar> -->
                             </div>
                             <div class="col-12 col-sm-4">
-                                <select id="source-input" class="form-select form-control-sm mb-1">
-                                    <option value="" disabled selected>Source type</option>
+                                <select id="source-input" class="form-select form-control-sm mb-1"
+                                [(ngModel)]="selectedSource">
+                                    <option value="" >Source type</option>
                                     <option *ngFor="let source of sourceDetail" [value]="source.description">{{
                                         source.description }}</option>
                                 </select>
