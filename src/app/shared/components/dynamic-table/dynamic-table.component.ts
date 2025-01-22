@@ -17,7 +17,8 @@ export interface DynamicTableModalData<T> {
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
-  styleUrls: ['./dynamic-table.component.css']
+  styleUrls: ['./dynamic-table.component.css'],
+  standalone : false
 })
 export class DynamicTableComponent {
 

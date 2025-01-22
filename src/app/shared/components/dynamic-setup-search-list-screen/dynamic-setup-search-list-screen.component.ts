@@ -4,7 +4,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-dynamic-setup-search-list-screen',
   templateUrl: './dynamic-setup-search-list-screen.component.html',
-  styleUrls: ['./dynamic-setup-search-list-screen.component.css']
+  styleUrls: ['./dynamic-setup-search-list-screen.component.css'],
+  standalone : false
 })
 export class DynamicSetupSearchListScreenComponent {
 

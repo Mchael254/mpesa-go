@@ -1,7 +1,8 @@
 import { Directive, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appHideMessage]'
+  selector: '[appHideMessage]',
+  standalone : false
 })
 export class HideMessageDirective {
 

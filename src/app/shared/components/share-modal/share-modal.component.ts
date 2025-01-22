@@ -3,7 +3,8 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'app-share-modal',
   templateUrl: './share-modal.component.html',
-  styleUrls: ['./share-modal.component.css']
+  styleUrls: ['./share-modal.component.css'],
+  standalone : false
 })
 export class ShareModalComponent implements OnInit{
 

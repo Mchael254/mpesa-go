@@ -6,19 +6,20 @@ import { DynamicFormButtons } from '../../utils/dynamic.form.button';
 @Component({
   selector: 'app-dynamic-setup-wizard-welcome-screen',
   templateUrl: './dynamic-setup-wizard-welcome-screen.component.html',
-  styleUrls: ['./dynamic-setup-wizard-welcome-screen.component.css']
+  styleUrls: ['./dynamic-setup-wizard-welcome-screen.component.css'],
+  standalone : false
 })
 export class DynamicSetupWizardWelcomeScreenComponent {
       @Input() setupWizard: setupWizard[]
       @Input() setupListItem: setupListItem[]
       @Input() formContent: DynamicFormFields[]
-      page:String 
+      page:String
       active:boolean = true;
       cardTitle:String
       constructor(
-       
+
          public cdr: ChangeDetectorRef,
-        
+
       ) { }
 
       selectCard(card:String): void {
@@ -32,9 +33,9 @@ export class DynamicSetupWizardWelcomeScreenComponent {
           submit: { label: 'Save and Continue', visible: true, alignment: 'end' },
           back: { label: 'Second', visible: false, alignment: 'start' },
           center: { label: 'Center', visible: false, alignment: 'center' },
-  
+
         }
-      
+
     ]
-     
+
 }

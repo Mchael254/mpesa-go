@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'tq-frontend-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
+  standalone : false
 })
 export class NotificationsComponent implements OnInit {
   constructor() {}

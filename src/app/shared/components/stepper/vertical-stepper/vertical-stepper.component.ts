@@ -6,7 +6,8 @@ import {Step} from "../../../data/steps";
   selector: 'app-vertical-stepper',
   templateUrl: './vertical-stepper.component.html',
   styleUrls: ['./vertical-stepper.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone : false
 })
 export class VerticalStepperComponent {
   constructor(private router:Router, private route: ActivatedRoute){}
