@@ -33,6 +33,7 @@ import { CreateClientComponent } from './components/create-client/create-client.
 import { EntitiesModule } from '../../../entities/entities.module';
 import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
+import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { QuotationConversionComponent } from './components/quotation-conversion/
     CreateClientComponent,
     ReviseReuseQuotationComponent,
     QuotationConversionComponent,
+    QuotationInquiryComponent,
     
   ],
   imports: [

@@ -1,0 +1,144 @@
+<div class="container">
+    <p class="titleMain mt-3 ms-4">Quotations:Quotation enquiry</p>
+    <div class="container mx-2 mt-n1">
+        <div class="card mb-3" style=" position: relative;">
+            <div class="card-body ">
+                <div class="row mt-4">
+                    <div class="col-5">
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text " id="basic-addon1">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="search-input" class="form-control search-input"
+                                style="border-left: grey;" placeholder="Search by client, prospect or quotation no."
+                                aria-label="Username" aria-describedby="basic-addon1" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <p class=" mt-2 ms-1 filter-by-text">Filter by:</p>
+                <div class="row mb-4">
+                    <div class=" col-sm-2 col-12">
+                        <p-dropdown formControlName="productCode" name="productCode"
+                            [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
+                            (onChange)="onProductSelected($event.value)" placeholder=" "
+                            [filterBy]="'description'" placeholder="Product" [filter]="true"></p-dropdown>
+
+                    </div>
+                    <div class=" col-sm-2 col-12 ">
+
+                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Status"
+                            class="form-control-sm mb-1">
+                        </p-dropdown>
+                    </div>
+                    <div class="col-sm-2 col-12 ">
+                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Agent"
+                            class="form-control-sm mb-1">
+                        </p-dropdown>
+
+                    </div>
+                    <div class="col-sm-2 col-12 ">
+                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Contract"
+                            class="form-control-sm mb-1">
+                        </p-dropdown>
+
+                    </div>
+                    <div class="col-sm-2 col-12 ">
+                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+                        placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
+                        class="custom-calendar-height">
+                    </p-calendar>
+
+
+                    </div>
+                    <div class="col-sm-2 col-12 ">
+                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+                        placeholder="Date to" (onSelect)="onDateToInputChange($event)"
+                        class="custom-calendar-height">
+                    </p-calendar>
+
+                    </div>
+                    </div>
+                 
+                <div class="row mt-4 mb-4">
+                    <div class="col-6 d-flex justify-content-start">
+                        <button type="button" class="btn btn-primary " id="search-buttons"
+                            (click)="fetchGISQuotations()">
+                            Search</button>
+                        <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons">
+                            Clear search</button>
+                    </div>
+                    <div class="col-6">
+
+                    </div>
+                </div>
+                <!-- <p-table
+                #dt1
+                (onLazyLoad)="fetchGISQuotations($event)"
+                [autoLayout]="true"
+                [lazy]="true"
+                [paginator]="true"
+                [rowHover]="true"
+                [resizableColumns]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="tableDetails.totalElements"  
+                [value]="tableDetails.rows" 
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                responsiveLayout="stack"
+                [scrollable]="true"
+                scrollHeight="400px"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                styleClass="p-datatable-sm"> -->
+                <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate=" {first} - {last} of {totalRecords}"[responsiveLayout]="'scroll'"
+                    [resizableColumns]="true" [reorderableColumns]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Quotation no.</th>
+                            <th>Client </th>
+                            <th>Cover from</th>
+                            <th>Cover to</th>
+                            <th>Comments</th>
+                            <th>Expiry date</th>
+                            <th>Status</th>
+                            <th>Transaction date</th>
+                            <th></th>
+                            
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-quotation>
+                        <tr style="cursor: pointer">
+                            <td>{{quotation.quotationNumber}}</td>
+                            <td>{{quotation.clientName}}</td>
+                            <td>{{quotation.fromDate}}</td>
+                            <td>{{quotation.toDate}}</td>
+                            <td>{{quotation.comments}}</td>
+                            <td>{{quotation.expiryDate}}</td>
+                            <td>{{quotation.status}}</td>
+                            <td>{{quotation.quotDate}}</td>
+                            <td id="action-buttons">{{ "View quote" }}</td>
+                            
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="1"></td>
+
+                            <td colspan="10" style="padding:20px;padding-left: 340px;" id="empty">
+                                {{'gis.quotation.no_data_to_display' | translate}}</td>
+                        </tr>
+
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br>
+<br><br><br><br>

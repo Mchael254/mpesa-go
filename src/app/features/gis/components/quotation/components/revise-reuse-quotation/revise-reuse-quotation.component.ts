@@ -6,7 +6,6 @@ import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
-import { NeedAnalysisModule } from 'src/app/features/lms/ind/components/need-analysis/need-analysis.module';
 
 const log = new Logger('ReviseReuseQuotationComponent');
 
