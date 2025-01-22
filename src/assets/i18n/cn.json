@@ -888,7 +888,10 @@
       "end_date": "结束日期",
       "commission": "佣金",
       "converted": "已转换",
-      "policy_no": "保单号"
+      "policy_no": "保单号",
+      "agent_id": "代理人编号",
+      "select_an_agent": "选择代理人"
+
 
     },
     "policy": {

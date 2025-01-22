@@ -892,7 +892,10 @@
       "end_date": "Tarehe ya kumalizika",
       "commission": "Tume",
       "converted": "Imebadilishwa",
-      "policy_no": "Nambari ya sera"
+      "policy_no": "Nambari ya sera",
+      "agent_id": "Kitambulisho cha wakala",
+      "select_an_agent": "Chagua wakala"
+
 
     },
     "policy": {
