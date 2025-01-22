@@ -7,7 +7,8 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 
 @Pipe({
-  name: 'fileExtension'
+  name: 'fileExtension',
+  standalone : false
 })
 export class FileExtensionPipe implements PipeTransform {
 

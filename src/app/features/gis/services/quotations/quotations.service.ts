@@ -339,8 +339,8 @@ export class QuotationsService {
   //   return this.api.GET(`v2/quotation/search?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   // }
   searchQuotations(
-    pageNo: number,
-    pageSize: number,
+    pageNo: number = 0,        // Default value is 0
+    pageSize: number = 10,     // Default value is 10
     clientType?: string,
     clientCode?: number,
     quotPrsCode?: number,
@@ -352,19 +352,18 @@ export class QuotationsService {
     source?:string,
     clientName?:string
   ) {
-    // Create an object to hold parameters only if they are provided
-    const paramsObj: { [param: string]: string } = {};
-  
-    // Add mandatory parameters
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
     paramsObj['pageNo'] = pageNo.toString();
     paramsObj['pageSize'] = pageSize.toString();
-  
+
     // Add optional parameters if provided
     if (clientType) {
       paramsObj['clientType'] = clientType;
     }
     if (clientCode) {
-      paramsObj['clientCode'] = clientCode.toString();
+      paramsObj['clientCode'] = clientCode;
     }
     if (quotPrsCode) {
       paramsObj['quotPrsCode'] = quotPrsCode.toString();
@@ -393,9 +392,8 @@ export class QuotationsService {
   
     // Create HttpParams from the paramsObj
     const params = new HttpParams({ fromObject: paramsObj });
-  
-    // Make the API call
     return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
-  
+
+
 }

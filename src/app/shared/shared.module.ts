@@ -101,6 +101,7 @@ import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pi
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
 import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
+import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
 
 
 
@@ -212,6 +213,7 @@ const SERVICES = [
     ProposalLandingScreenComponent,
     PolicyLandingScreenComponent,
     DynamicDocumentModalComponent,
+    ClientSearchModalComponent
 
   ],
     imports: [
@@ -284,7 +286,8 @@ const SERVICES = [
     FileUploadModule,
     PdfViewerModule,
     DynamicDocumentModalComponent,
-    DropdownModule
+    DropdownModule,
+    ClientSearchModalComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

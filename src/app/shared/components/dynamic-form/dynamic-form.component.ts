@@ -6,7 +6,8 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
-  styleUrls: ['./dynamic-form.component.css']
+  styleUrls: ['./dynamic-form.component.css'],
+  standalone : false
 })
 export class DynamicFormComponent implements OnChanges{
 
