@@ -46,6 +46,8 @@ export class QuotationConversionComponent {
   pageSize: number = 19;
   clientName: string = '';
   clientCode: number;
+  agentName: string = '';
+  agentId: number;
   originalQuotationList: QuotationList[] = [];
 
 
@@ -95,19 +97,19 @@ export class QuotationConversionComponent {
     log.debug('Selected Client:', event);
 
     // Call fetchQuotations when the client code changes
-    this.fetchQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
+    this.fetchGISQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
   }
 
-  openClientSearch() {
-    const modal = document.getElementById('clientSearchModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.style.display = 'block';
-      document.body.classList.add('modal-open');
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      document.body.appendChild(backdrop);
-    }
+  onAgentSelected(event: { agentName: string; agentId: number }) {
+    this.agentName = event.agentName;
+    this.agentId = event.agentId;
+
+    // Optional: Log for debugging
+    log.debug('Selected Agent:', event);
+    log.debug("AgentId", this.agentId);
+
+    // Call fetchQuotations when the client code changes
+    this.fetchGISQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
   }
 
   myResetFunction(options: DropdownFilterOptions) {
@@ -127,53 +129,29 @@ export class QuotationConversionComponent {
   }
 
 
+  //fetch the quotations with specific serach parameters
   fetchGISQuotations(event: any) {
-    log.debug("FETCHING GIS QUOTATIONS LIST")
     const pageIndex = event.first / event.rows;
     const pageSize = event.rows;
 
-    // Call the API without sorting parameters
-    this.quotationService.searchQuotations(
-      pageIndex,
-      pageSize
-    ).pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          // Assuming response._embedded holds the list of quotations
-          this.gisQuotationList = response._embedded;
-          log.debug("GIS quotations list", this.gisQuotationList);
-
-          // Set the table data (including rows and totalElements)
-          this.tableDetails = {
-            rows: this.gisQuotationList,  // List of quotations to display
-            totalElements: this.gisQuotationList.length  // Total records (current page data length)
-          };
-          // this.updateFilteredOptions();
-
-          this.cdr.detectChanges();
-          // this.spinner.hide(); // Hide the loading spinner
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
-          // this.spinner.hide();
-        }
-      }
-    );
-  }
-
-  fetchQuotations(event: any) {
-    const pageIndex = event.first / event.rows;
-    const pageSize = event.rows;
+    // Determine search parameters based on available values
+    let searchParams: any = {};
+    if (this.agentId) {
+      searchParams.agentCode = this.agentId;
+    } else if (this.clientCode) {
+      searchParams.clientCode = this.clientCode;
+    }
+    log.debug("search parameters", searchParams);
 
     this.quotationService.searchQuotations(
       pageIndex,
       pageSize,
       undefined,
-      this.clientCode,
+      searchParams.clientCode,
       undefined,
       undefined,
       undefined,
-      undefined,
+      searchParams.agentCode,
       undefined,
     ).pipe(untilDestroyed(this))
       .subscribe({
@@ -213,17 +191,18 @@ export class QuotationConversionComponent {
       this.gisQuotationList = [...this.originalQuotationList];
     } else {
       this.gisQuotationList = this.originalQuotationList.filter(quote => {
-        const quoteDate = new Date(quote.quotDate); // Adjust property name based on your data structure
+        const recordFromDate = new Date(quote.fromDate); // Convert fromDate to Date object
+        const recordToDate = new Date(quote.toDate); // Convert toDate to Date object
 
         if (this.fromDate && this.toDate) {
           // Both dates selected
-          return quoteDate >= this.fromDate && quoteDate <= this.toDate;
+          return recordFromDate >= this.fromDate && recordToDate <= this.toDate;
         } else if (this.fromDate) {
           // Only from date selected
-          return quoteDate >= this.fromDate;
+          return recordFromDate >= this.fromDate;
         } else if (this.toDate) {
           // Only to date selected
-          return quoteDate <= this.toDate;
+          return recordToDate <= this.toDate;
         }
         return true;
       });
@@ -238,6 +217,7 @@ export class QuotationConversionComponent {
     this.cdr.detectChanges();
     log.debug('Filtered quotations:', this.tableDetails);
   }
+
 
   handleDateSelection(selectedDate: Date, type: 'from' | 'to'): void {
     if (type === 'from') {
@@ -260,6 +240,34 @@ export class QuotationConversionComponent {
       rows: this.gisQuotationList,
       totalElements: this.gisQuotationList.length
     };
+    this.cdr.detectChanges();
+  }
+
+  clearFilters() {
+    // Clear client
+    this.clientName = '';
+    this.clientCode = null;
+
+    // Clear agent
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear product
+    this.selectedProduct = null;
+
+    // Clear status
+    this.selectedStatus = null;
+
+    // Clear dates
+    this.clearDateFilters()
+
+    // Refresh the table with cleared filters
+    this.onTableLazyLoad({
+      first: 0,
+      rows: this.pageSize || 5
+    });
+
+    // Trigger change detection
     this.cdr.detectChanges();
   }
 

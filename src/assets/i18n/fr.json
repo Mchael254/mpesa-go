@@ -915,8 +915,9 @@
       "end_date": "Date de fin",
       "commission": "Commission",
       "converted": "Converti",
-      "policy_no": "Numéro de police"
-
+      "policy_no": "Numéro de police",
+      "agent_id": "ID de l'agent",
+      "select_an_agent": "Sélectionnez un agent"
 
     },
     "policy": {
