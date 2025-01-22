@@ -7,17 +7,7 @@ import { QuotationsService } from 'src/app/features/gis/services/quotations/quot
 import { QuotationList } from '../../data/quotationsDTO';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-
-interface Country {
-  name: string;
-  code: string;
-}
-
-interface Client {
-  id: string;
-  name: string;
-  type: string;
-}
+import { Logger } from '../../../../../../shared/services';
 
 interface Product {
   id: string;
@@ -28,6 +18,8 @@ interface Status {
   id: string;
   name: string;
 }
+
+const log = new Logger('QuotationConcersionComponent');
 
 @Component({
   selector: 'app-quotation-conversion',
@@ -42,8 +34,6 @@ export class QuotationConversionComponent {
   minDate: Date | undefined;
   quotationSubMenuList: SidebarMenu[];
 
-  selectedCountry: Country;
-  selectedClient: Client;
   selectedProduct: Product;
   selectedStatus: Status;
   filterValue = '';
@@ -53,9 +43,10 @@ export class QuotationConversionComponent {
     totalElements: 0 // Default total count
   };
   pageSize: number = 19;
+  clientName: string = '';
+  clientCode: number;
 
-  countries: Country[];
-  clients: Client[];
+
   products: Product[];
   status: Status[];
 
@@ -67,26 +58,6 @@ export class QuotationConversionComponent {
     public cdr: ChangeDetectorRef,
 
   ) {
-    this.countries = [
-      {name: 'Australia', code: 'AU'},
-      {name: 'Brazil', code: 'BR'},
-      {name: 'China', code: 'CN'},
-      {name: 'Egypt', code: 'EG'},
-      {name: 'France', code: 'FR'},
-      {name: 'Germany', code: 'DE'},
-      {name: 'India', code: 'IN'},
-      {name: 'Japan', code: 'JP'},
-      {name: 'Spain', code: 'ES'},
-      {name: 'United States', code: 'US'}
-    ];
-
-    this.clients = [
-      { id: 'C101', name: 'John Smith', type: 'Individual' },
-      { id: 'C102', name: 'Acme Corporation', type: 'Corporate' },
-      { id: 'C103', name: 'Jane Doe', type: 'Individual' },
-      { id: 'C104', name: 'Universal Traders Ltd', type: 'Corporate' },
-      { id: 'C105', name: 'Blue Ocean Logistics', type: 'Transportation' }
-    ];
 
     this.products = [
       { id: 'P001', name: 'Comprehensive Car Insurance' },
@@ -114,6 +85,29 @@ export class QuotationConversionComponent {
 
   ngOnDestroy(): void { }
 
+  onClientSelected(event: { clientName: string; clientCode: number }) {
+    this.clientName = event.clientName;
+    this.clientCode = event.clientCode;
+
+    // Optional: Log for debugging
+    log.debug('Selected Client:', event);
+
+    // Call fetchQuotations when the client code changes
+    this.fetchQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
+  }
+
+  openClientSearch() {
+    const modal = document.getElementById('clientSearchModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
+  }
+
   myResetFunction(options: DropdownFilterOptions) {
     options.reset();
     this.filterValue = '';
@@ -126,8 +120,13 @@ export class QuotationConversionComponent {
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
 
+  onTableLazyLoad(event: any) {
+    this.fetchGISQuotations(event);
+  }
+
+
   fetchGISQuotations(event: any) {
-    console.log("FETCHING GIS QUOTATIONS LIST")
+    log.debug("FETCHING GIS QUOTATIONS LIST")
     const pageIndex = event.first / event.rows;
     const pageSize = event.rows;
 
@@ -140,12 +139,14 @@ export class QuotationConversionComponent {
         next: (response: any) => {
           // Assuming response._embedded holds the list of quotations
           this.gisQuotationList = response._embedded;
+          log.debug("GIS quotations list", this.gisQuotationList);
 
           // Set the table data (including rows and totalElements)
           this.tableDetails = {
             rows: this.gisQuotationList,  // List of quotations to display
             totalElements: this.gisQuotationList.length  // Total records (current page data length)
           };
+          // this.updateFilteredOptions();
 
           this.cdr.detectChanges();
           // this.spinner.hide(); // Hide the loading spinner
@@ -157,4 +158,45 @@ export class QuotationConversionComponent {
       }
     );
   }
+
+  fetchQuotations(event: any) {
+    const pageIndex = event.first / event.rows;
+    const pageSize = event.rows;
+
+    this.quotationService.searchQuotations(
+      pageIndex,
+      pageSize,
+      undefined,
+      this.clientCode,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ).pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          if (response._embedded) {
+            this.tableDetails = {
+              rows: response._embedded,
+              totalElements: response._embedded.length
+            };
+          }
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to fetch quotations. Please try again later.'
+          );
+        }
+      }
+    );
+  }
+
+  formatFieldName(field: string): string {
+    // Replace underscores with spaces and capitalize first letters
+    return field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
+
 }

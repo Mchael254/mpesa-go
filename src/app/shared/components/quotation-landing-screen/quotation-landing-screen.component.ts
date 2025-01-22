@@ -20,6 +20,7 @@ import { Pagination } from '../../data/common/pagination';
   selector: 'app-quotation-landing-screen',
   templateUrl: './quotation-landing-screen.component.html',
   styleUrls: ['./quotation-landing-screen.component.css'],
+  standalone : false
 })
 export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 

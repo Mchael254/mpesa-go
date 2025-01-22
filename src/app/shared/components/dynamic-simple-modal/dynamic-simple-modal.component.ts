@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-dynamic-simple-modal',
   templateUrl: './dynamic-simple-modal.component.html',
-  styleUrls: ['./dynamic-simple-modal.component.css']
+  styleUrls: ['./dynamic-simple-modal.component.css'],
+  standalone : false
 })
 export class DynamicSimpleModalComponent {
   @Input() modalTitle: string;

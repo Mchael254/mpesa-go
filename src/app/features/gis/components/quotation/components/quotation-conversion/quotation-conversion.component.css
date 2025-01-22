@@ -76,7 +76,7 @@
 /* Custom styles for p-dropdown and p-calendar inputs */
 :host ::ng-deep .p-dropdown,
 :host ::ng-deep .p-calendar {
-  height: 42px !important;  /* Increased from 38px */
+  height: 38px !important;
 }
 
 :host ::ng-deep .p-dropdown .p-dropdown-label,
