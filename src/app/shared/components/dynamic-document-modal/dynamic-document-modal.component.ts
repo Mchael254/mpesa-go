@@ -3,7 +3,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 @Component({
   selector: 'app-dynamic-document-modal',
   templateUrl: './dynamic-document-modal.component.html',
-  styleUrls: ['./dynamic-document-modal.component.css']
+  styleUrls: ['./dynamic-document-modal.component.css'],
+  standalone : false
 })
 export class DynamicDocumentModalComponent {
   @Input() modalTitle: string;

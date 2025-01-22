@@ -5,7 +5,8 @@ import { DynamicFormFields } from '../../utils/dynamic.form.fields';
 @Component({
   selector: 'app-dynamic-setup-form-screen',
   templateUrl: './dynamic-setup-form-screen.component.html',
-  styleUrls: ['./dynamic-setup-form-screen.component.css']
+  styleUrls: ['./dynamic-setup-form-screen.component.css'],
+  standalone : false
 })
 export class DynamicSetupFormScreenComponent {
   // selected :any;
@@ -18,22 +19,22 @@ export class DynamicSetupFormScreenComponent {
   // ngOnInit(): void {
   //   this.createClassForm();
   // }
- 
-   
+
+
   //  isActive(item: any) {
   // }
   // cancel(){
 
   //  }
   //  createClassForm(){
-    
+
   //  }
 
   //  addParam(){
-    
+
   //  }
   //  updateParam(){
-   
+
   //  }
 
 
