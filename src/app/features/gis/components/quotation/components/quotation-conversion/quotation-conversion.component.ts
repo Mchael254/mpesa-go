@@ -27,9 +27,10 @@ const log = new Logger('QuotationConcersionComponent');
   styleUrls: ['./quotation-conversion.component.css']
 })
 export class QuotationConversionComponent {
-  dateFormat: any;
-  coverFrom: any;
-  coverTo: any;
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
+  minToDate: Date | null = null;
+  dateFormat: string = 'dd-mm-yy';
   todaysDate: string;
   minDate: Date | undefined;
   quotationSubMenuList: SidebarMenu[];
@@ -45,6 +46,7 @@ export class QuotationConversionComponent {
   pageSize: number = 19;
   clientName: string = '';
   clientCode: number;
+  originalQuotationList: QuotationList[] = [];
 
 
   products: Product[];
@@ -177,9 +179,15 @@ export class QuotationConversionComponent {
       .subscribe({
         next: (response: any) => {
           if (response._embedded) {
+
+            // Store the original data
+            this.originalQuotationList = [...response._embedded];
+            // Initialize filtered data with all data
+            this.gisQuotationList = [...this.originalQuotationList];
+
             this.tableDetails = {
-              rows: response._embedded,
-              totalElements: response._embedded.length
+              rows: this.gisQuotationList,
+              totalElements: this.gisQuotationList.length
             };
           }
           this.cdr.detectChanges();
@@ -197,6 +205,62 @@ export class QuotationConversionComponent {
   formatFieldName(field: string): string {
     // Replace underscores with spaces and capitalize first letters
     return field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  applyDateFilter(): void {
+    if (!this.fromDate && !this.toDate) {
+      // If no dates selected, show all data
+      this.gisQuotationList = [...this.originalQuotationList];
+    } else {
+      this.gisQuotationList = this.originalQuotationList.filter(quote => {
+        const quoteDate = new Date(quote.quotDate); // Adjust property name based on your data structure
+
+        if (this.fromDate && this.toDate) {
+          // Both dates selected
+          return quoteDate >= this.fromDate && quoteDate <= this.toDate;
+        } else if (this.fromDate) {
+          // Only from date selected
+          return quoteDate >= this.fromDate;
+        } else if (this.toDate) {
+          // Only to date selected
+          return quoteDate <= this.toDate;
+        }
+        return true;
+      });
+    }
+
+    // Update table data
+    this.tableDetails = {
+      rows: this.gisQuotationList,
+      totalElements: this.gisQuotationList.length
+    };
+
+    this.cdr.detectChanges();
+    log.debug('Filtered quotations:', this.tableDetails);
+  }
+
+  handleDateSelection(selectedDate: Date, type: 'from' | 'to'): void {
+    if (type === 'from') {
+      this.fromDate = selectedDate;
+      this.minToDate = this.fromDate;
+    } else {
+      this.toDate = selectedDate;
+    }
+    this.applyDateFilter();
+  }
+
+  clearDateFilters(): void {
+    this.fromDate = null;
+    this.toDate = null;
+    this.minToDate = null;
+
+    // Reset to original data
+    this.gisQuotationList = [...this.originalQuotationList];
+    this.tableDetails = {
+      rows: this.gisQuotationList,
+      totalElements: this.gisQuotationList.length
+    };
+    this.cdr.detectChanges();
   }
 
 }
