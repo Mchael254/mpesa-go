@@ -346,6 +346,7 @@ export class QuotationsService {
     quotPrsCode?: number,
     dateFrom?: string,
     dateTo?:string,
+    agentCode?: number,
     vPrsCode?: number,
     quote?: number,
     status?: string,
@@ -374,6 +375,9 @@ export class QuotationsService {
     if (dateTo) {
       paramsObj['dateTo'] = dateTo;
     }
+    if (agentCode) {
+      paramsObj['agentCode'] = agentCode;
+    }
     if (vPrsCode) {
       paramsObj['vPrsCode'] = vPrsCode.toString();
     }
@@ -389,7 +393,7 @@ export class QuotationsService {
     if (clientName) {
       paramsObj['clientName'] = clientName;
     }
-  
+
     // Create HttpParams from the paramsObj
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);

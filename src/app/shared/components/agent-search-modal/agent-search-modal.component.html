@@ -1,0 +1,61 @@
+<div class="modal fade" id="agentSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-fade">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" #closebutton class="float-end btn-close"
+          data-bs-dismiss="modal" aria-label="Close"></button>
+        <p class="text-start title" id="selectAgent">{{'gis.quotation.select_an_agent' | translate}}</p>
+
+        <p-table
+          #dt1
+          (onLazyLoad)="lazyLoadAgents($event)"
+          [autoLayout]="true"
+          [lazy]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="agentsData?.totalElements"
+          [value]="agentsData?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="globalFilterFields"
+          styleClass="p-datatable-sm">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.name' | translate}}</th>
+              <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.agent_id' | translate}}</th>
+              <th pSortableColumn="shortDesc" class="flexible-header">{{'gis.quotation.short_description' | translate}}</th>
+            </tr>
+            <tr>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputId($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputShortDesc($event)"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-agentData>
+            <tr [pSelectableRow]="true" (click)="loadAgentDetails(agentData.id)">
+              <td>{{ agentData.name }}</td>
+              <td>{{ agentData.id }}</td>
+              <td>{{ agentData.shortDesc }}</td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">{{'gis.quotation.no_agent_found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <br>
+      </div>
+    </div>
+  </div>
+</div>

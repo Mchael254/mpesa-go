@@ -21,6 +21,7 @@
               data-bs-toggle="modal"
               data-bs-target="#clientSearchModal"
               readonly
+              placeholder="Search by client"
             />
           </div>
 
@@ -28,6 +29,30 @@
           <app-client-search-modal
             (clientSelected)="onClientSelected($event)"
           ></app-client-search-modal>
+        </div>
+
+        <div class="col-md-3">
+          <!-- Search Type Dropdown -->
+          <div class="field mb-4 w-full">
+            <label for="search-type" class="quote-label required">
+              {{ 'gis.quotation.agent' | translate }}
+            </label><br>
+            <input
+              type="text"
+              id="quote-input"
+              class="form-select form-control form-control-sm mb-1"
+              [value]="agentName"
+              data-bs-toggle="modal"
+              data-bs-target="#agentSearchModal"
+              readonly
+              placeholder="Search by agent"
+            />
+          </div>
+
+          <!-- Client Search Modal Component -->
+          <app-agent-search-modal
+            (agentSelected)="onAgentSelected($event)"
+          ></app-agent-search-modal>
         </div>
       </div>
     <!-- Second Row -->
@@ -65,7 +90,7 @@
         <!-- Business Type Dropdown -->
         <div class="field mb-4 w-full">
           <label for="use-of-property" class="quote-label" id="use-of-property">
-            Select a product
+            <br>
           </label><br>
           <p-dropdown
             [options]="status"
@@ -74,7 +99,7 @@
             [filter]="true"
             filterBy="name"
             [showClear]="true"
-            placeholder="Select a product"
+            placeholder="Status"
             [style]="{'width':'100%', 'height':'38px'}">
             <ng-template pTemplate="selectedItem">
               <div class="business-type-item business-type-value" *ngIf="selectedStatus">
@@ -94,7 +119,7 @@
         <!-- Effective From Date -->
         <div class="field mb-4 w-full">
           <label for="cover-From" class="quote-label" id="cover-From">
-            Effective date from
+            <br>
           </label>
           <p-calendar
             name="withEffectiveFromDate"
@@ -115,7 +140,7 @@
         <!-- Effective To Date -->
         <div class="field mb-4 w-full">
           <label for="cover-To" class="quote-label" id="cover-To">
-            Effective date to
+            <br>
           </label>
           <p-calendar
             name="withEffectiveToDate"
@@ -131,6 +156,18 @@
           </p-calendar>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Add this right after the second row div -->
+  <div class="row mt-2">
+    <div class="col-12 d-flex justify-content-start">
+      <button
+        class="btn btn-primary"
+        (click)="clearFilters()"
+      >
+        {{ 'gis.quotation.clear' | translate }}
+      </button>
     </div>
   </div>
 
@@ -159,13 +196,10 @@
         <tr>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
-          <th>Sum Insured</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.premium' | translate}}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
-          <th>Date Created</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -173,13 +207,10 @@
         <tr style="cursor: pointer" >
           <td>{{ quotation?.quotationNumber || '' }}</td>
           <td>{{ quotation?.clientName || '' }}</td>
-          <td>{{ quotation?.sumInsured || 0 }}</td>
-          <td>{{ quotation?.premium || 0 }}</td>
           <td>{{ quotation?.agentShortDescription || '' }}</td>
-          <td>{{ quotation?.quotDate || '' | date:'short' }}</td>
+          <td>{{ quotation?.status || '' }}</td>
           <td>{{ quotation?.fromDate || '' }}</td>
           <td>{{ quotation?.toDate || '' }}</td>
-          <td>{{ quotation?.status || '' }}</td>
           <td>{{ "Process" }}</td>
         </tr>
       </ng-template>

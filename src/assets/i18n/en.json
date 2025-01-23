@@ -972,7 +972,9 @@
       "end_date" : "End date",
       "commission": "Commission",
       "converted": "Converted",
-      "policy_no": "Policy no."
+      "policy_no": "Policy no.",
+      "agent_id": "Agent id",
+      "select_an_agent": "Select an agent"
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
