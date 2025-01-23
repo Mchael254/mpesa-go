@@ -103,6 +103,7 @@ import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal
 import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
 import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
 import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
+import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
 
 
 
@@ -215,7 +216,8 @@ const SERVICES = [
     PolicyLandingScreenComponent,
     DynamicDocumentModalComponent,
     ClientSearchModalComponent,
-    AgentSearchModalComponent
+    AgentSearchModalComponent,
+    ProductSearchModalComponent
 
   ],
     imports: [
@@ -290,7 +292,8 @@ const SERVICES = [
     DynamicDocumentModalComponent,
     DropdownModule,
     ClientSearchModalComponent,
-    AgentSearchModalComponent
+    AgentSearchModalComponent,
+    ProductSearchModalComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

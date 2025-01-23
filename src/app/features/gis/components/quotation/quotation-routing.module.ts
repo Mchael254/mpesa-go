@@ -15,6 +15,7 @@ import { CoverTypesComparisonComponent } from './components/cover-types-comparis
 import { CreateClientComponent } from './components/create-client/create-client.component';
 import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
+import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 
 const routes: Routes = [
   {
@@ -63,7 +64,9 @@ const routes: Routes = [
   {
     path:'quotation-conversion',component:QuotationConversionComponent
   },
-
+  {
+    path:'quotation-enquiry',component:QuotationInquiryComponent
+  },
 ];
 
 @NgModule({
