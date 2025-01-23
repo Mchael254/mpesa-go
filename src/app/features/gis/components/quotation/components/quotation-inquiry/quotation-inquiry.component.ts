@@ -36,6 +36,8 @@ export class QuotationInquiryComponent {
     { label: 'Draft', value: 'Draft' }
   ];
   selectedStatus: string = ''; // Holds the selected value
+  productName: string = '';
+  productCode: number;
 
   constructor(
     public authService: AuthService,
@@ -121,6 +123,7 @@ export class QuotationInquiryComponent {
   fetchGISQuotations() {
     const clientType = null
     const clientCode = null
+    const productCode = this.productCode|| null
     const quotPrsCode = null
     const vPrsCode = null
     const quote = null
@@ -134,7 +137,7 @@ export class QuotationInquiryComponent {
     log.debug("Selected Date to:", this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10000, clientType, clientCode, quotPrsCode, dateFrom, dateTo, vPrsCode, quote, status, source, clientName)
+      .searchQuotations(0, 10000, clientType, clientCode, productCode,quotPrsCode, dateFrom, dateTo, vPrsCode, quote, status, source, clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -200,10 +203,31 @@ export class QuotationInquiryComponent {
 * @param {any} event - The event triggered by product selection.
 * @return {void}
 */
-  onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.code;
-    log.debug('Selected Product Code:', this.selectedProductCode);
+  // onProductSelected(selectedValue: any) {
+  //   this.selectedProductCode = selectedValue.code;
+  //   log.debug('Selected Product Code:', this.selectedProductCode);
 
 
+  // }
+  openClientSearch() {
+    const modal = document.getElementById('productSearchModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
+  }
+  onProductSelected(event: { productName: string; productCode: number }) {
+    this.productName = event.productName;
+    this.productCode = event.productCode;
+
+    // Optional: Log for debugging
+    log.debug('Selected Product:', event);
+
+    // Call fetchQuotations when the client code changes
+    this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
   }
 }

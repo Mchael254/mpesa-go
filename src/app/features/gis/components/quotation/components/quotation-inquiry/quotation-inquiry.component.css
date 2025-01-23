@@ -91,4 +91,7 @@ text-decoration-skip-ink: none;
       width: 18%;
       /* padding-right: 10px; */
   }
+  #quote-input{
+    height:35px;
+  }
 
