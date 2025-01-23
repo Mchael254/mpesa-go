@@ -6,7 +6,6 @@ import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
-import { NeedAnalysisModule } from 'src/app/features/lms/ind/components/need-analysis/need-analysis.module';
 
 const log = new Logger('ReviseReuseQuotationComponent');
 
@@ -107,6 +106,7 @@ export class ReviseReuseQuotationComponent {
   fetchGISQuotations() {
     const clientType= null
     const clientCode= null
+    const productCode = null
     const quotPrsCode= null
     const vPrsCode= null
     const quote= null
@@ -121,7 +121,7 @@ export class ReviseReuseQuotationComponent {
     log.debug("Selected Date to:",this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
+      .searchQuotations(0, 10,clientType,clientCode,productCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
