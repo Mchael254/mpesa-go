@@ -1,5 +1,5 @@
 <div class="container">
-    <p class="titleMain mt-3 ms-4">Quotations:Quotation enquiry</p>
+    <p class="titleMain mt-3 ms-4">Quotations:Quotation inquiry</p>
     <div class="container mx-2 mt-n1">
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body ">
@@ -20,48 +20,71 @@
                 </div>
                 <p class=" mt-2 ms-1 filter-by-text">Filter by:</p>
                 <div class="row mb-4">
-                    <div class=" col-sm-2 col-12">
-                        <p-dropdown formControlName="productCode" name="productCode"
+                    <div class=" col-sm-3 col-12">
+                        <!-- <p-dropdown formControlName="productCode" name="productCode"
                             [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
                             (onChange)="onProductSelected($event.value)" placeholder=" "
-                            [filterBy]="'description'" placeholder="Product" [filter]="true"></p-dropdown>
-
+                            [filterBy]="'description'" placeholder="Product" [filter]="true"></p-dropdown> -->
+                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                        [value]="productName | sentenceCase" data-bs-toggle="modal" data-bs-target="#productSearchModal"
+                            placeholder="Product" readonly  />
+                        <!-- Product Search Modal Component -->
+                        <app-product-search-modal (productSelected)="onProductSelected($event)">
+                        </app-product-search-modal>
                     </div>
-                    <div class=" col-sm-2 col-12 ">
+
+                    <div class=" col-sm-3 col-12 ">
 
                         <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Status"
                             class="form-control-sm mb-1">
                         </p-dropdown>
                     </div>
-                    <div class="col-sm-2 col-12 ">
+                    <div class="col-sm-3 col-12 ">
                         <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Agent"
                             class="form-control-sm mb-1">
                         </p-dropdown>
 
                     </div>
-                    <div class="col-sm-2 col-12 ">
+                    <div class="col-sm-3 col-12 ">
                         <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Contract"
                             class="form-control-sm mb-1">
                         </p-dropdown>
 
                     </div>
+                    <!-- <div class="col-sm-2 col-12 ">
+                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+                            placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
+                            class="custom-calendar-height">
+                        </p-calendar>
+
+
+                    </div>
                     <div class="col-sm-2 col-12 ">
                         <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                        placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
-                        class="custom-calendar-height">
-                    </p-calendar>
+                            placeholder="Date to" (onSelect)="onDateToInputChange($event)"
+                            class="custom-calendar-height">
+                        </p-calendar>
 
-
-                    </div>
-                    <div class="col-sm-2 col-12 ">
+                    </div> -->
+                </div>
+                <div class="row mb-4">
+                    <div class="col-sm-3 col-12 ">
                         <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                        placeholder="Date to" (onSelect)="onDateToInputChange($event)"
-                        class="custom-calendar-height">
-                    </p-calendar>
+                            placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
+                            class="custom-calendar-height">
+                        </p-calendar>
+
 
                     </div>
+                    
+                    <div class="col-sm-3 col-12 ">
+                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
+                            placeholder="Date to" (onSelect)="onDateToInputChange($event)"
+                            class="custom-calendar-height">
+                        </p-calendar>
+
                     </div>
-                 
+                </div>
                 <div class="row mt-4 mb-4">
                     <div class="col-6 d-flex justify-content-start">
                         <button type="button" class="btn btn-primary " id="search-buttons"
@@ -92,9 +115,9 @@
                 scrollHeight="400px"
                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
                 styleClass="p-datatable-sm"> -->
-                <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
-                [showCurrentPageReport]="true"
-                currentPageReportTemplate=" {first} - {last} of {totalRecords}"[responsiveLayout]="'scroll'"
+                <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
+                    scrollDirection="horizontal" [showCurrentPageReport]="true"
+                    currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
                     [resizableColumns]="true" [reorderableColumns]="true">
                     <ng-template pTemplate="header">
                         <tr>
@@ -107,7 +130,7 @@
                             <th>Status</th>
                             <th>Transaction date</th>
                             <th></th>
-                            
+
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-quotation>
@@ -121,7 +144,7 @@
                             <td>{{quotation.status}}</td>
                             <td>{{quotation.quotDate}}</td>
                             <td id="action-buttons">{{ "View quote" }}</td>
-                            
+
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">

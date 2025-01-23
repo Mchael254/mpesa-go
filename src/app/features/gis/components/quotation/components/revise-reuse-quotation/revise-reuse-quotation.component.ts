@@ -106,6 +106,7 @@ export class ReviseReuseQuotationComponent {
   fetchGISQuotations() {
     const clientType= null
     const clientCode= null
+    const productCode = null
     const quotPrsCode= null
     const vPrsCode= null
     const quote= null
@@ -120,7 +121,7 @@ export class ReviseReuseQuotationComponent {
     log.debug("Selected Date to:",this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
+      .searchQuotations(0, 10,clientType,clientCode,productCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {

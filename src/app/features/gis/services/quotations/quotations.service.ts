@@ -343,6 +343,7 @@ export class QuotationsService {
     pageSize: number = 10,     // Default value is 10
     clientType?: string,
     clientCode?: number,
+    productCode?:number,
     quotPrsCode?: number,
     dateFrom?: string,
     dateTo?:string,
@@ -365,6 +366,9 @@ export class QuotationsService {
     }
     if (clientCode) {
       paramsObj['clientCode'] = clientCode;
+    }
+    if (productCode) {
+      paramsObj['productCode'] = productCode;
     }
     if (quotPrsCode) {
       paramsObj['quotPrsCode'] = quotPrsCode.toString();
