@@ -197,6 +197,7 @@
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.premium' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
@@ -208,6 +209,7 @@
           <td>{{ quotation?.quotationNumber || '' }}</td>
           <td>{{ quotation?.clientName || '' }}</td>
           <td>{{ quotation?.agentShortDescription || '' }}</td>
+          <td>{{ quotation?.premium || 0 }}</td>
           <td>{{ quotation?.status || '' }}</td>
           <td>{{ quotation?.fromDate || '' }}</td>
           <td>{{ quotation?.toDate || '' }}</td>
