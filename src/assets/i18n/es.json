@@ -916,7 +916,10 @@
       "end_date": "Fecha de finalización",
       "commission": "Comisión",
       "converted": "Convertido",
-      "policy_no": "Número de póliza"
+      "policy_no": "Número de póliza",
+      "agent_id": "ID del agente",
+      "select_an_agent": "Seleccionar un agente"
+
 
     },
     "policy": {

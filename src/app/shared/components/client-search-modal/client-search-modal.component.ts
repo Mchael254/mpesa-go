@@ -13,7 +13,7 @@ import { Pagination } from '../../data/common/pagination';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
 
-const log = new Logger('QuotationConcersionComponent');
+const log = new Logger('clientSearchComponent');
 
 @Component({
   selector: 'app-client-search-modal',

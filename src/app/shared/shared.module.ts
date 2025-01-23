@@ -102,6 +102,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
 import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
 import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
+import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
 
 
 
@@ -213,7 +214,8 @@ const SERVICES = [
     ProposalLandingScreenComponent,
     PolicyLandingScreenComponent,
     DynamicDocumentModalComponent,
-    ClientSearchModalComponent
+    ClientSearchModalComponent,
+    AgentSearchModalComponent
 
   ],
     imports: [
@@ -287,7 +289,8 @@ const SERVICES = [
     PdfViewerModule,
     DynamicDocumentModalComponent,
     DropdownModule,
-    ClientSearchModalComponent
+    ClientSearchModalComponent,
+    AgentSearchModalComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

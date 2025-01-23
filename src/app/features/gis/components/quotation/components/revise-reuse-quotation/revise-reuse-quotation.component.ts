@@ -115,12 +115,13 @@ export class ReviseReuseQuotationComponent {
     const dateTo =this.selectedDateTo || null
     const source =this.selectedSource
     const clientName=null
+    const agentCode=null
 
     log.debug("Selected Date from:",this.selectedDateFrom)
     log.debug("Selected Date to:",this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,dateTo,vPrsCode,quote,status,source,clientName)
+      .searchQuotations(0, 10,clientType,clientCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
