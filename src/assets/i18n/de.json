@@ -888,7 +888,8 @@
       "converted": "Umgewandelt",
       "policy_no": "Policennummer",
       "agent_id": "Agenten-ID",
-      "select_an_agent": "Wählen Sie einen Agenten aus"
+      "select_an_agent": "Wählen Sie einen Agenten aus",
+      "search": "Zoeken"
 
     },
     "policy": {

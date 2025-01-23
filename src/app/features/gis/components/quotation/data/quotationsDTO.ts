@@ -388,7 +388,8 @@ export enum StatusEnum {
   Pending = 'Pending',
   None = 'None',
   Confirmed = 'Confirmed',
-  Draft = 'Draft'
+  Draft = 'Draft',
+  Accepted = 'Accepted'
 }
 
 export interface Status {

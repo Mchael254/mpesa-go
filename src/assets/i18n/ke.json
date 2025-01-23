@@ -894,9 +894,8 @@
       "converted": "Imebadilishwa",
       "policy_no": "Nambari ya sera",
       "agent_id": "Kitambulisho cha wakala",
-      "select_an_agent": "Chagua wakala"
-
-
+      "select_an_agent": "Chagua wakala",
+      "search" : "Tafuta"
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
