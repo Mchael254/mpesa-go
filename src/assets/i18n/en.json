@@ -974,7 +974,9 @@
       "converted": "Converted",
       "policy_no": "Policy no.",
       "agent_id": "Agent id",
-      "select_an_agent": "Select an agent"
+      "select_an_agent": "Select an agent",
+      "select_a_product":"Select a product",
+      "no_product_found":"No product found"
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
