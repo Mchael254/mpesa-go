@@ -35,16 +35,16 @@
     height: 35px;
 }
 #action-buttons{
-    color:rgba(0, 82, 155, 1); 
-    font-family: Roboto;
-font-size: 14px;
-font-weight: 600;
-line-height: 16.41px;
-text-align: left;
-text-decoration-line: underline;
-text-decoration-style: solid;
-text-underline-position: from-font;
-text-decoration-skip-ink: none;
+  color:rgba(0, 82, 155, 1);
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16.41px;
+  text-align: left;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
 
 }
 #search-buttons{

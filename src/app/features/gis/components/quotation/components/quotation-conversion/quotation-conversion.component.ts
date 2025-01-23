@@ -2,22 +2,14 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 import { MenuService } from 'src/app/features/base/services/menu.service';
-import { DropdownFilterOptions } from 'primeng/dropdown';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
-import { QuotationList } from '../../data/quotationsDTO';
+import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger } from '../../../../../../shared/services';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Products } from '../../../setups/data/gisDTO';
 
-interface Product {
-  id: string;
-  name: string;
-}
-
-interface Status {
-  id: string;
-  name: string;
-}
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -35,8 +27,10 @@ export class QuotationConversionComponent {
   minDate: Date | undefined;
   quotationSubMenuList: SidebarMenu[];
 
-  selectedProduct: Product;
   selectedStatus: Status;
+  selectedDateFrom: string;
+  selectedDateTo: string;
+  selectedSource: string;
   filterValue = '';
   gisQuotationList: QuotationList[] = [];
   tableDetails: any = {
@@ -49,10 +43,22 @@ export class QuotationConversionComponent {
   agentName: string = '';
   agentId: number;
   originalQuotationList: QuotationList[] = [];
+  productCode: number;
+  productList: Products[];
+  ProductDescriptionArray: any = [];
+  productName: string = '';
+  quotationNumber: string = '';
+  quoteNumber: string = "";
 
-
-  products: Product[];
-  status: Status[];
+  status: Status[] = [
+    { status: StatusEnum.Lapsed },
+    { status: StatusEnum.Confirmed },
+    { status: StatusEnum.Pending },
+    { status: StatusEnum.Rejected },
+    { status: StatusEnum.None },
+    { status: StatusEnum.Accepted },
+    { status: StatusEnum.Draft }
+  ];
 
   constructor(
     private menuService: MenuService,
@@ -60,30 +66,14 @@ export class QuotationConversionComponent {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
+    public productService: ProductsService,
 
-  ) {
-
-    this.products = [
-      { id: 'P001', name: 'Comprehensive Car Insurance' },
-      { id: 'P002', name: 'Homeowners Insurance' },
-      { id: 'P003', name: 'Health Insurance' },
-      { id: 'P004', name: 'Travel Insurance' },
-      { id: 'P005', name: 'Professional Liability Insurance' }
-    ];
-
-    this.status = [
-      { id: 'S001', name: 'Active' },
-      { id: 'S002', name: 'Pending' },
-      { id: 'S003', name: 'Expired' },
-      { id: 'S004', name: 'Lapsed' },
-      { id: 'S005', name: 'Cancelled' }
-    ];
-  }
+  ) { }
 
   ngOnInit(): void {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-
     this.dynamicSideBarMenu(this.quotationSubMenuList[3]);
+    this.fetchGISQuotations();
 
   }
 
@@ -97,7 +87,7 @@ export class QuotationConversionComponent {
     log.debug('Selected Client:', event);
 
     // Call fetchQuotations when the client code changes
-    this.fetchGISQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
+    this.fetchGISQuotations();
   }
 
   onAgentSelected(event: { agentName: string; agentId: number }) {
@@ -109,12 +99,7 @@ export class QuotationConversionComponent {
     log.debug("AgentId", this.agentId);
 
     // Call fetchQuotations when the client code changes
-    this.fetchGISQuotations({ first: 0, rows: 10 }); // You can adjust `first` and `rows` as need
-  }
-
-  myResetFunction(options: DropdownFilterOptions) {
-    options.reset();
-    this.filterValue = '';
+    this.fetchGISQuotations();
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
@@ -124,57 +109,64 @@ export class QuotationConversionComponent {
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
 
-  onTableLazyLoad(event: any) {
-    this.fetchGISQuotations(event);
+  onInputChange() {
+    this.quoteNumber = this.quotationNumber;
   }
 
-
   //fetch the quotations with specific serach parameters
-  fetchGISQuotations(event: any) {
-    const pageIndex = event.first / event.rows;
-    const pageSize = event.rows;
+  fetchGISQuotations() {
+    log.debug("Quotation Number entered:", this.quoteNumber);
+    const clientType = null
+    const clientCode = this.clientCode || null
+    const productCode = this.productCode || null
+    const agentCode = this.agentId || null
+    const quotationNumber = this.quoteNumber
+    const status = this.selectedStatus?.status || null;
+    const dateFrom = this.selectedDateFrom || null
+    const dateTo = this.selectedDateTo || null
+    const source = this.selectedSource
+    const clientName = null
 
-    // Determine search parameters based on available values
-    let searchParams: any = {};
-    if (this.agentId) {
-      searchParams.agentCode = this.agentId;
-    } else if (this.clientCode) {
-      searchParams.clientCode = this.clientCode;
-    }
-    log.debug("search parameters", searchParams);
+    log.debug("clientCode", clientCode);
+    log.debug("productCode", productCode);
+    log.debug("agentCode", agentCode);
+    log.debug("status", status);
+    log.debug("quote", quotationNumber);
 
-    this.quotationService.searchQuotations(
-      pageIndex,
-      pageSize,
-      undefined,
-      searchParams.clientCode,
-      undefined,
-      undefined,
-      undefined,
-      searchParams.agentCode,
-      undefined,
-    ).pipe(untilDestroyed(this))
+    log.debug("Selected Date from:", this.selectedDateFrom)
+    log.debug("Selected Date to:", this.selectedDateTo)
+
+    this.quotationService
+      .searchQuotations(
+        0,
+        10000,
+        clientType,
+        clientCode,
+        productCode,
+        dateFrom,
+        dateTo,
+        agentCode,
+        quotationNumber,
+        status,
+        source,
+        clientName )
+      .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          if (response._embedded) {
 
-            // Store the original data
-            this.originalQuotationList = [...response._embedded];
-            // Initialize filtered data with all data
-            this.gisQuotationList = [...this.originalQuotationList];
+        this.gisQuotationList = response._embedded;
 
-            this.tableDetails = {
-              rows: this.gisQuotationList,
-              totalElements: this.gisQuotationList.length
-            };
-          }
-          this.cdr.detectChanges();
+        // Store a copy of the original list when first fetching
+        if (this.originalQuotationList.length === 0) {
+          this.originalQuotationList = [...this.gisQuotationList];
+        }
+
+        log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
+
         },
         error: (error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to fetch quotations. Please try again later.'
-          );
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotation list. Try again later');
         }
       }
     );
@@ -185,48 +177,34 @@ export class QuotationConversionComponent {
     return field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
   }
 
-  applyDateFilter(): void {
-    if (!this.fromDate && !this.toDate) {
-      // If no dates selected, show all data
-      this.gisQuotationList = [...this.originalQuotationList];
-    } else {
-      this.gisQuotationList = this.originalQuotationList.filter(quote => {
-        const recordFromDate = new Date(quote.fromDate); // Convert fromDate to Date object
-        const recordToDate = new Date(quote.toDate); // Convert toDate to Date object
-
-        if (this.fromDate && this.toDate) {
-          // Both dates selected
-          return recordFromDate >= this.fromDate && recordToDate <= this.toDate;
-        } else if (this.fromDate) {
-          // Only from date selected
-          return recordFromDate >= this.fromDate;
-        } else if (this.toDate) {
-          // Only to date selected
-          return recordToDate <= this.toDate;
-        }
-        return true;
-      });
-    }
-
-    // Update table data
-    this.tableDetails = {
-      rows: this.gisQuotationList,
-      totalElements: this.gisQuotationList.length
-    };
-
-    this.cdr.detectChanges();
-    log.debug('Filtered quotations:', this.tableDetails);
+  formatDate(date: Date): string {
+    log.debug("Date (formatDate method):", date)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
-
-  handleDateSelection(selectedDate: Date, type: 'from' | 'to'): void {
-    if (type === 'from') {
-      this.fromDate = selectedDate;
-      this.minToDate = this.fromDate;
-    } else {
-      this.toDate = selectedDate;
+  onDateFromInputChange(date: any) {
+    log.debug('selected Date from raaw', date);
+    const selectedDateFrom = date;
+    if (selectedDateFrom) {
+      const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+      this.selectedDateFrom = SelectedFormatedDate
+      log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
+      // this.fetchGISQuotations()
     }
-    this.applyDateFilter();
+  }
+
+  onDateToInputChange(date: any) {
+    log.debug('selected Date To raaw', date);
+    const selectedDateTo = date;
+    if (selectedDateTo) {
+      const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
+      this.selectedDateTo = SelectedFormatedDateTo
+      log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
+      // this.fetchGISQuotations()
+    }
   }
 
   clearDateFilters(): void {
@@ -243,6 +221,46 @@ export class QuotationConversionComponent {
     this.cdr.detectChanges();
   }
 
+  loadAllproducts() {
+    const productDescription = [];
+    const modifiedArray = [];
+
+    this.productService.getAllProducts().subscribe((data) => {
+      this.productList = data;
+      log.info(this.productList, 'this is a product list');
+      this.productList.forEach((product) => {
+        // Access each product inside the callback function
+        let capitalizedDescription =
+          product.description.charAt(0).toUpperCase() +
+          product.description.slice(1).toLowerCase();
+        productDescription.push({
+          code: product.code,
+          description: capitalizedDescription,
+        });
+      });
+
+      // Combine the characters back into words
+      const combinedWords = productDescription.join(',');
+      this.ProductDescriptionArray.push(...productDescription);
+
+      // Now 'combinedWords' contains the result with words instead of individual characters
+      log.info('modified product description', this.ProductDescriptionArray);
+
+      this.cdr.detectChanges();
+    });
+  }
+
+  onProductSelected(event: { productName: string; productCode: number }) {
+    this.productName = event.productName;
+    this.productCode = event.productCode;
+
+    // Optional: Log for debugging
+    log.debug('Selected Product:', event);
+
+    // Call fetchQuotations when the client code changes
+    // this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
+  }
+
   clearFilters() {
     // Clear client
     this.clientName = '';
@@ -253,19 +271,24 @@ export class QuotationConversionComponent {
     this.agentId = null;
 
     // Clear product
-    this.selectedProduct = null;
+    this.productName = '';
+    this.productCode = null;
 
-    // Clear status
-    this.selectedStatus = null;
+    // Clear source
+    this.selectedSource = null;
 
     // Clear dates
     this.clearDateFilters()
 
-    // Refresh the table with cleared filters
-    this.onTableLazyLoad({
-      first: 0,
-      rows: this.pageSize || 5
-    });
+    // Clear quotation number
+    this.quotationNumber = '';
+    this.quoteNumber = '';
+
+    // Clear status to null
+    this.selectedStatus = null;
+
+    // Restore the original quotation list
+    this.gisQuotationList = [...this.originalQuotationList];
 
     // Trigger change detection
     this.cdr.detectChanges();

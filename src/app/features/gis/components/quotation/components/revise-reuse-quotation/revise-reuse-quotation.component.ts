@@ -6,6 +6,9 @@ import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { Router } from '@angular/router';
 
 const log = new Logger('ReviseReuseQuotationComponent');
 
@@ -25,6 +28,9 @@ export class ReviseReuseQuotationComponent {
   gisQuotationList: QuotationList[] = [];
   selectedDateTo: string;
   selectedSource:string;
+  quotationSubMenuList: SidebarMenu[];
+
+
   constructor(
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
@@ -32,8 +38,8 @@ export class ReviseReuseQuotationComponent {
     public globalMessagingService: GlobalMessagingService,
     public fb: FormBuilder,
     public quotationService: QuotationsService,
-
-
+    private menuService: MenuService,
+    private router: Router,
 
   ) { }
 
@@ -41,10 +47,17 @@ export class ReviseReuseQuotationComponent {
     this.getuser();
     this.loadAllQoutationSources();
     this.fetchGISQuotations();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[3]);
   }
   ngOnDestroy(): void { }
 
-
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
 
   /**
   * Retrieves user information from the authentication service.
@@ -107,9 +120,7 @@ export class ReviseReuseQuotationComponent {
     const clientType= null
     const clientCode= null
     const productCode = null
-    const quotPrsCode= null
-    const vPrsCode= null
-    const quote= null
+    const quotationNumber= null
     const status= "Confirmed"
     const dateFrom =this.selectedDateFrom || null
     const dateTo =this.selectedDateTo || null
@@ -121,7 +132,7 @@ export class ReviseReuseQuotationComponent {
     log.debug("Selected Date to:",this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10,clientType,clientCode,productCode,quotPrsCode,dateFrom,dateTo,agentCode,vPrsCode,quote,status,source,clientName)
+      .searchQuotations(0, 10,clientType,clientCode,productCode,dateFrom,dateTo,agentCode,quotationNumber,status,source,clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {

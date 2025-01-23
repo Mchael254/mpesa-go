@@ -289,67 +289,17 @@ export class QuotationsService {
     return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
-  // searchQuotations(
-  //   pageNo: number,
-  //   pageSize: number,
-  //   clientType: string,
-  //   clientCode: number,
-  //   quotPrsCode: number,
-  //   dateFrom: string,
-  //   vPrsCode: number,
-  //   quote: number,
-  //   status: string,
 
-
-  // ) {
-  //   // Create an object to hold parameters only if they are provided
-  //   const paramsObj: { [param: string]: string } = {};
-
-  //   // Add the mandatory parameter
-  //   paramsObj['pageNo'] = pageNo.toString();
-  //   paramsObj['pageSize'] = pageSize.toString();
-
-
-  //   // Add optional parameters if provided
-
-  //   if (clientType) {
-  //     paramsObj['clientType'] = clientType;
-  //   } if (clientCode) {
-  //     paramsObj['clientCode'] = clientCode.toString();;
-  //   }
-  //   if (quotPrsCode) {
-  //     paramsObj['quotPrsCode'] = quotPrsCode.toString();;
-  //   }
-  //   if (dateFrom) {
-  //     paramsObj['dateFrom'] = dateFrom;
-  //   }
-  //   if (vPrsCode) {
-  //     paramsObj['vPrsCode'] = vPrsCode.toString();;
-  //   }
-  //   if (quote) {
-  //     paramsObj['quote'] = quote.toString();;
-  //   }
-  //   if (status) {
-  //     paramsObj['status'] = status;
-  //   }
-  //   // Create HttpParams from the paramsObj
-  //   const params = new HttpParams({ fromObject: paramsObj });
-  //   // Make the API call
-
-  //   return this.api.GET(`v2/quotation/search?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-  // }
   searchQuotations(
     pageNo: number = 0,        // Default value is 0
     pageSize: number = 10,     // Default value is 10
     clientType?: string,
     clientCode?: number,
     productCode?:number,
-    quotPrsCode?: number,
     dateFrom?: string,
     dateTo?:string,
     agentCode?: number,
-    vPrsCode?: number,
-    quote?: number,
+    quotationNumber?: string,
     status?: string,
     source?:string,
     clientName?:string
@@ -370,9 +320,6 @@ export class QuotationsService {
     if (productCode) {
       paramsObj['productCode'] = productCode;
     }
-    if (quotPrsCode) {
-      paramsObj['quotPrsCode'] = quotPrsCode.toString();
-    }
     if (dateFrom) {
       paramsObj['dateFrom'] = dateFrom;
     }
@@ -382,11 +329,8 @@ export class QuotationsService {
     if (agentCode) {
       paramsObj['agentCode'] = agentCode;
     }
-    if (vPrsCode) {
-      paramsObj['vPrsCode'] = vPrsCode.toString();
-    }
-    if (quote) {
-      paramsObj['quote'] = quote.toString();
+    if (quotationNumber) {
+      paramsObj['quotationNumber'] = quotationNumber;
     }
     if (status) {
       paramsObj['status'] = status;
