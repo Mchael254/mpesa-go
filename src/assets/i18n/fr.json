@@ -315,7 +315,17 @@
     "ranking": "Classement",
     "agentName": "Nom de l'agent",
     "agentShortDesc": "Description courte de l'agent",
-    "code": "Code"
+    "code": "Code",
+    "reportFormat": "Format du rapport",
+    "HTML": "HTML",
+    "PDF": "PDF",
+    "Excel": "Excel",
+    "Word": "Word",
+    "print": "Imprimer",
+    "reportParams": "Paramètres du rapport",
+    "serviceReqReport": "Rapport de demande de service",
+    "sysReports": "Rapports système",
+    "directDebitReports": "Rapports de prélèvements automatiques"
   },
   "entities": {
     "account_number": "Numéro de compte",

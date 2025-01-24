@@ -353,7 +353,17 @@
     "ranking": "Ranking",
     "agentName": "Agent name",
     "agentShortDesc": "Agent short description",
-    "code": "Code"
+    "code": "Code",
+    "reportFormat": "Report format",
+    "HTML": "HTML",
+    "PDF":  "PDF",
+    "Excel": "Excel",
+    "Word":  "Word",
+    "print": "Print",
+    "reportParams": "Report parameters",
+    "serviceReqReport": "Service request report",
+    "sysReports": "System reports",
+    "directDebitReports": "Direct Debit reports"
   },
   "entities": {
     "account_number": "Account Number",
