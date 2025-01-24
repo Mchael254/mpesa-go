@@ -19,6 +19,7 @@ const log = new Logger('QuotationConcersionComponent');
   styleUrls: ['./quotation-conversion.component.css']
 })
 export class QuotationConversionComponent {
+
   fromDate: Date | null = null;
   toDate: Date | null = null;
   minToDate: Date | null = null;
@@ -86,8 +87,6 @@ export class QuotationConversionComponent {
     // Optional: Log for debugging
     log.debug('Selected Client:', event);
 
-    // Call fetchQuotations when the client code changes
-    this.fetchGISQuotations();
   }
 
   onAgentSelected(event: { agentName: string; agentId: number }) {
@@ -98,8 +97,6 @@ export class QuotationConversionComponent {
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
 
-    // Call fetchQuotations when the client code changes
-    this.fetchGISQuotations();
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
@@ -259,6 +256,15 @@ export class QuotationConversionComponent {
 
     // Call fetchQuotations when the client code changes
     // this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
+  }
+
+  setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
+    sessionStorage.setItem('quotationNum', quotationNumber);
+    sessionStorage.setItem('productCode', JSON.stringify(productCode));
+    sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
+    log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
+    log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
+    this.router.navigate(['/home/gis/quotation/quotation-summary'])
   }
 
   clearFilters() {
