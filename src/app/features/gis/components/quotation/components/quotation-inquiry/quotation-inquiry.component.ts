@@ -124,9 +124,8 @@ export class QuotationInquiryComponent {
     const clientType = null
     const clientCode = null
     const productCode = this.productCode|| null
-    const quotPrsCode = null
-    const vPrsCode = null
-    const quote = null
+    const agentCode = null
+    const quotationNumber = null
     const status = null
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
@@ -137,7 +136,7 @@ export class QuotationInquiryComponent {
     log.debug("Selected Date to:", this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10000, clientType, clientCode, productCode,quotPrsCode, dateFrom, dateTo, vPrsCode, quote, status, source, clientName)
+      .searchQuotations(0, 10000, clientType, clientCode, productCode, dateFrom, dateTo, agentCode, quotationNumber, status, source, clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {

@@ -917,8 +917,8 @@
       "converted": "Converti",
       "policy_no": "Numéro de police",
       "agent_id": "ID de l'agent",
-      "select_an_agent": "Sélectionnez un agent"
-
+      "select_an_agent": "Sélectionnez un agent",
+      "search" : "Rechercher"
     },
     "policy": {
       "underwriting_new_transaction": "Souscription : Nouvelle transaction",
