@@ -38,12 +38,20 @@ export interface ReportFileParams {
   user_required: string
 }
 
-export const ServiceDeskReports = [
-  { code: 1012, desc: 'Overdue Request' },
-  { code: 1016, desc: 'Requests Per Assignee' },
-  { code: 1014, desc: 'Requests Per Owner Type' },
-  { code: 101410, desc: 'Requests Per Reporter' },
-  { code: 1015, desc: 'Service Requests By Type' },
-  { code: 1013, desc: 'All Service Requests' },
-  { code: 1020, desc: 'Service request comments report' }
-];
+export interface SystemReportDto {
+  code: number,
+  system_code: number,
+  name: string,
+  description: string,
+  datafile: string,
+  application_level: string,
+  status: string,
+  rsm_code: number,
+  order: number,
+  print_srv_appl: string,
+  print_srvc_appl: string,
+  type: string,
+  visible: string,
+  short_description: string,
+  update: string
+}

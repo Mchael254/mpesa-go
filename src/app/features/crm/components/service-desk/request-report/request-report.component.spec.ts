@@ -6,7 +6,10 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {of} from "rxjs";
 import {ReportsService} from "../../../../../shared/services/reports/reports.service";
-import {ReportFileDTO, ReportFileParams, ServiceDeskReports} from "../../../../../shared/data/common/reports-dto";
+import {
+  ReportFileDTO,
+  SystemReportDto
+} from "../../../../../shared/data/common/reports-dto";
 
 const mockReportData: ReportFileDTO = {
   bytes: "",
@@ -24,16 +27,22 @@ const mockReportData: ReportFileDTO = {
 
 }
 
-const mockReportFileParams: ReportFileParams = {
-  active: "",
+const mockSystemReportData: SystemReportDto = {
+  application_level: "",
   code: 0,
-  desc: "",
+  datafile: "",
+  description: "",
   name: "",
-  prompt: "",
-  query_data: [],
-  rpt_code: 0,
+  order: 0,
+  print_srv_appl: "",
+  print_srvc_appl: "",
+  rsm_code: 0,
+  short_description: "",
+  status: "",
+  system_code: 0,
   type: "",
-  user_required: ""
+  update: "",
+  visible: ""
 
 }
 
@@ -47,9 +56,7 @@ export class MockGlobalMessageService {
 }
 
 export class MockReportService {
-  getReportDetails= jest.fn().mockReturnValue(of());
-  generateCRMReport = jest.fn().mockReturnValue(of());
-  getReportParameterDetails = jest.fn().mockReturnValue(of());
+  getReportsBySystem= jest.fn().mockReturnValue(of());
 }
 
 describe('RequestReportComponent', () => {
@@ -84,13 +91,14 @@ describe('RequestReportComponent', () => {
 
   test('should fetch report details', () => {
     const reportCode = 1;
-    const reportDetails = { ...mockReportData };
-    jest.spyOn(reportServiceStub, 'getReportDetails').mockReturnValue(of(reportDetails));
+    const applicationLevel = 'SYSR';
+    const reportDetails = { ...mockSystemReportData[0] };
+    jest.spyOn(reportServiceStub, 'getReportsBySystem').mockReturnValue(of(reportDetails));
 
-    component.fetchReportDetails(reportCode);
+    component.fetchReports(reportCode, applicationLevel);
 
-    expect(reportServiceStub.getReportDetails).toHaveBeenCalledWith(reportCode);
-    expect(component.reportData).toEqual(reportDetails);
+    expect(reportServiceStub.getReportsBySystem).toHaveBeenCalledWith(reportCode, applicationLevel);
+    expect(component.serviceRequestReportsData).toEqual(reportDetails);
   });
 
   test('should fetch report details on onReportSelect', () => {
@@ -98,53 +106,5 @@ describe('RequestReportComponent', () => {
     component.onReportSelect(report);
 
     expect(component.selectedReport).toEqual(report);
-  });
-
-  test('should generate report', () => {
-    const report = { ...mockReportData };
-    jest.spyOn(component, 'generateReport');
-    component.generateReport(report);
-
-    expect(component.generateReport).toHaveBeenCalledWith(report);
-  });
-
-  test('should close report download Modal', () => {
-    const modal = document.getElementById('reportDownloadModal');
-    modal.classList.add('show');
-    modal.style.display = 'block';
-
-    component.closeReportDownloadModal();
-
-    expect(modal.classList.contains('show')).toBe(false);
-    expect(modal.style.display).toBe('none');
-  });
-
-  test('should download file', () => {
-    const fileUrl = 'https://example.com/file.pdf';
-    const fileName = 'report.pdf';
-    const link = document.createElement('a');
-    jest.spyOn(document, 'createElement').mockReturnValue(link);
-    const clickSpy = jest.fn();
-    link.click = clickSpy;
-
-    component.download(fileUrl, fileName);
-
-    expect(document.createElement).toHaveBeenCalledWith('a');
-    expect(link.href).toBe(fileUrl);
-    expect(link.download).toBe(fileName);
-    expect(clickSpy).toHaveBeenCalledTimes(1);
-  });
-
-  test('should fetch report parameter details', () => {
-    const reportCode = 1;
-    const paramCode = 1;
-    const reportParameterDetails = { ...mockReportFileParams };
-    jest.spyOn(reportServiceStub, 'getReportParameterDetails').mockReturnValue(of(reportParameterDetails));
-
-    component.fetchReportDetails(reportCode);
-    component.fetchReportParameterDetails(paramCode);
-
-    expect(reportServiceStub.getReportParameterDetails).toHaveBeenCalledWith(reportCode, paramCode);
-    expect(component.reportParamData).toEqual(reportParameterDetails);
   });
 });

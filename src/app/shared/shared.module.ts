@@ -104,8 +104,7 @@ import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
 import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
 import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
 import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
-
-
+import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -217,7 +216,8 @@ const SERVICES = [
     DynamicDocumentModalComponent,
     ClientSearchModalComponent,
     AgentSearchModalComponent,
-    ProductSearchModalComponent
+    ProductSearchModalComponent,
+    DynamicReportsComponent
 
   ],
     imports: [
@@ -293,7 +293,8 @@ const SERVICES = [
     DropdownModule,
     ClientSearchModalComponent,
     AgentSearchModalComponent,
-    ProductSearchModalComponent
+    ProductSearchModalComponent,
+    DynamicReportsComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

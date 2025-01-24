@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {ApiService} from "../api/api.service";
-import {ReportFileDTO, ReportFileParams, ReportsDto} from "../../data/common/reports-dto";
+import {ReportFileDTO, ReportFileParams, ReportsDto, SystemReportDto} from "../../data/common/reports-dto";
 import {Observable} from "rxjs";
 import {HttpParams} from "@angular/common/http";
 import {UtilService} from "../util/util.service";
@@ -15,10 +15,6 @@ export class ReportsService {
     private api:ApiService,
     private utilService: UtilService
   ) { }
-
-  generateReport(payload: ReportsDto): Observable<ReportsDto>{
-    return this.api.POST(`reports`, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
-  }
 
   fetchReport(rpt_code: number){
     let payload = {
@@ -44,7 +40,7 @@ export class ReportsService {
     );
   }
 
-  generateCRMReport(data: any){
+  generateReport(data: any){
 
     return this.api.POSTBYTE(null, data, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
@@ -59,6 +55,21 @@ export class ReportsService {
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<ReportFileParams>(
       `${reportCode}/parameters/${rptpCode}`,
+      API_CONFIG.REPORT_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  getReportsBySystem(
+    system: number,
+    applicationLevel: string,
+  ): Observable<SystemReportDto[]> {
+    const params = new HttpParams()
+      .set('system', `${system}`)
+      .set('applicationLevel', `${applicationLevel}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.GET<SystemReportDto[]>(
+      '',
       API_CONFIG.REPORT_SERVICE_BASE_URL,
       paramObject
     );
