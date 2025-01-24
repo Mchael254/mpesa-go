@@ -860,6 +860,19 @@ export class MenuService {
         link: '/home/gis/quotation/quotation-conversion',
         value: 'QUOTATION'
       },
+
+      {
+        name: 'Revise/Reuse',
+        link: '/home/gis/quotation/revise-reuse-quote',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Enquiry',
+        link: '/home/gis/quotation/quotation-enquiry',
+        value: 'QUOTATION'
+      },
+
       // {
       //   name: 'Create Quotation',
       //   link: '',

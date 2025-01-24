@@ -213,7 +213,18 @@
           <td>{{quotation.status}}</td>
           <td>{{quotation.fromDate}}</td>
           <td>{{quotation.toDate}}</td>
-          <td id="action-buttons">{{ "View quote" }}</td>
+          <td id="action-buttons">
+            <button
+              class="action-buttons"
+              (click)="setQuotationNumber(
+                quotation.quotationNumber,
+                quotation.productCode,
+                quotation.clientCode
+              )"
+            >
+              {{ "View quote" }}
+            </button>
+          </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">

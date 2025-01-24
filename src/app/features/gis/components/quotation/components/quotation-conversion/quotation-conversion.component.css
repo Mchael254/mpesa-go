@@ -100,8 +100,8 @@
   align-items: center;
 }
 
-#action-buttons{
-  color:rgba(0, 82, 155, 1);
+.action-buttons {
+  color: rgba(0, 82, 155, 1);
   font-family: Roboto;
   font-size: 14px;
   font-weight: 600;
@@ -111,4 +111,9 @@
   text-decoration-style: solid;
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
-  }
+  border: none; /* Removes the border */
+  background: none; /* Removes the default button background */
+  padding: 0; /* Ensures no additional padding */
+  cursor: pointer; /* Makes the button visually interactive */
+}
+
