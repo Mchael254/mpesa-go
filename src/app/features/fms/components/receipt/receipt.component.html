@@ -703,9 +703,12 @@
         </div>
 
         <!-- Search Results Table -->
+         <!-- added a paginator -->
         <div class="row mt-3" *ngIf="clients.length > 0 ">
           <div class="col-md-12">
-            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped"
+            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
             selectionMode="single" 
             [(selection)]="selectedClient"
              dataKey="code">
@@ -813,6 +816,7 @@ balance}}</td>
   <div class="col-md-12">
     <p-table 
       [value]="getAllocation"
+
       responsiveLayout="scroll"
       class="table-striped"
       [paginator]="true"
