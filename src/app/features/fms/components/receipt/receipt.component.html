@@ -703,6 +703,7 @@
         </div>
 
         <!-- Search Results Table -->
+         <!-- added a paginator -->
         <div class="row mt-3" *ngIf="clients.length > 0 ">
           <div class="col-md-12">
             <p-table [value]="clients" responsiveLayout="scroll" class="table-striped" [paginator]="true"
@@ -815,6 +816,7 @@ balance}}</td>
   <div class="col-md-12">
     <p-table 
       [value]="getAllocation"
+
       responsiveLayout="scroll"
       class="table-striped"
       [paginator]="true"

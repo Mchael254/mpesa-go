@@ -2195,6 +2195,7 @@ this.receiptingDetailsForm.reset();
     this.isClientSelected = false;
     //this.allocation = false;
     //this.getAllocationStatus = false;
+    //activatedAllocationComplete flag
     this.isAllocationCompleted = false;
 
 // Clear client-related states
