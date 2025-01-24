@@ -290,7 +290,17 @@
     "ranking": "Cheo",
     "agentName": "Jina la Wakala",
     "agentShortDesc": "Maelezo mafupi ya Wakala",
-    "code": "Kodi"
+    "code": "Kodi",
+    "reportFormat": "Umbizo la ripoti",
+    "HTML": "HTML",
+    "PDF": "PDF",
+    "Excel": "Excel",
+    "Word": "Word",
+    "print": "Chapisha",
+    "reportParams": "Vigezo vya ripoti",
+    "serviceReqReport": "Ripoti ya maombi ya huduma",
+    "sysReports": "Ripoti za mfumo",
+    "directDebitReports": "Ripoti za Debiti ya Moja kwa Moja"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",
