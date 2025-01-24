@@ -2195,7 +2195,8 @@ this.receiptingDetailsForm.reset();
     this.isClientSelected = false;
     //this.allocation = false;
     //this.getAllocationStatus = false;
-    //this.isAllocationCompleted = false;
+    //activatedAllocationComplete flag
+    this.isAllocationCompleted = false;
 
 // Clear client-related states
 this.selectedClient = null;
@@ -2364,11 +2365,13 @@ GetReceipt(){
       const blob = new Blob([response], {type: blobType});
       this.filePath = window.URL.createObjectURL(blob);
 
+
       // this.fileName = report?.description;
       this.download(this.filePath,'test.pdf');
       //console.log('Report Response>>',response);
       // Disable the print button after successful download
 
+      
          // Reset states
          this.isReceiptSaved = false; // Disable the Print Receipt button
          this.isReceiptDownloading = false;
