@@ -54,73 +54,87 @@
             (agentSelected)="onAgentSelected($event)"
           ></app-agent-search-modal>
         </div>
-      </div>
+    </div>
+
     <!-- Second Row -->
-    <div class="row">
-      <div class="col-md-3">
-        <!-- Industry Dropdown -->
-        <div class="field mb-4 w-full">
+    <div class="row g-3 align-items-center mb-3">
+      <div class="col">
+        <!-- Products Dropdown -->
+        <div class="field">
           <label for="product" class="quote-label" id="product">
-            {{'gis.quotation.search_results' | translate}}
+            {{ 'gis.quotation.search_results' | translate }}
           </label><br>
-          <p-dropdown
-            [options]="products"
-            [(ngModel)]="selectedProduct"
-            optionLabel="name"
-            [filter]="true"
-            filterBy="name"
-            [showClear]="true"
-            placeholder="Select an product"
-            [style]="{'width':'100%', 'height':'38px'}">
-            <ng-template pTemplate="selectedItem">
-              <div class="industry-item industry-item-value" *ngIf="selectedProduct">
-                <div>{{selectedProduct.name}}</div>
-              </div>
-            </ng-template>
-            <ng-template let-industry pTemplate="item">
-              <div class="industry-item">
-                <div>{{industry.name}}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
+          <input
+            type="text"
+            id="quote-input"
+            class="form-select form-control form-control-sm mb-1"
+            [value]="productName"
+            data-bs-toggle="modal"
+            data-bs-target="#productSearchModal"
+            readonly
+            placeholder="Select a product"
+          />
+
+          <!-- Client Search Modal Component -->
+          <app-product-search-modal
+            (productSelected)="onProductSelected($event)">
+          </app-product-search-modal>
         </div>
       </div>
 
-      <div class="col-md-3">
-        <!-- Business Type Dropdown -->
-        <div class="field mb-4 w-full">
-          <label for="use-of-property" class="quote-label" id="use-of-property">
+      <div class="col">
+        <!-- Quotation Number Input -->
+        <div class="field">
+          <label for="quote-number" class="quote-label" id="quote-number">
             <br>
           </label><br>
-          <p-dropdown
+          <input
+            type="text"
+            id="quote-number-input"
+            class="form-control form-control-sm mb-1"
+            [(ngModel)]="quotationNumber"
+            (ngModelChange)="onInputChange()"
+            placeholder="Enter Quotation Number"
+            [style]="{ 'height': '38px' }"
+          />
+        </div>
+      </div>
+
+      <div class="col">
+        <!-- Status Type Dropdown -->
+        <div class="field">
+          <label for="product" class="quote-label" id="product">
+            <br>
+           </label><br>
+           <p-dropdown
             [options]="status"
             [(ngModel)]="selectedStatus"
-            optionLabel="name"
+            optionLabel="status"
             [filter]="true"
-            filterBy="name"
+            filterBy="status"
             [showClear]="true"
             placeholder="Status"
-            [style]="{'width':'100%', 'height':'38px'}">
+            [style]="{ 'width': '100%', 'height': '38px' }">
             <ng-template pTemplate="selectedItem">
               <div class="business-type-item business-type-value" *ngIf="selectedStatus">
-                <div>{{selectedStatus.name}}</div>
+                <div>{{ selectedStatus.status }}</div>
               </div>
             </ng-template>
             <ng-template let-status pTemplate="item">
               <div class="business-type-item">
-                <div>{{status.name}}</div>
+                <div>{{ status.status }}</div>
               </div>
             </ng-template>
           </p-dropdown>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col">
         <!-- Effective From Date -->
-        <div class="field mb-4 w-full">
-          <label for="cover-From" class="quote-label" id="cover-From">
+        <div class="field">
+          <label for="product" class="quote-label" id="product">
             <br>
-          </label>
+           </label><br>
           <p-calendar
             name="withEffectiveFromDate"
             [(ngModel)]="fromDate"
@@ -129,19 +143,19 @@
             [showButtonBar]="true"
             [placeholder]="'Select start date'"
             [minDate]="minDate"
-            (onSelect)="handleDateSelection($event, 'from')"
+            (onSelect)="onDateFromInputChange($event)"
             (onClear)="clearDateFilters()"
-            [style]="{'width':'100%', 'height':'38px'}">
+            [style]="{ 'width': '100%', 'height': '38px' }">
           </p-calendar>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col">
         <!-- Effective To Date -->
-        <div class="field mb-4 w-full">
-          <label for="cover-To" class="quote-label" id="cover-To">
+        <div class="field">
+          <label for="product" class="quote-label" id="product">
             <br>
-          </label>
+           </label><br>
           <p-calendar
             name="withEffectiveToDate"
             [(ngModel)]="toDate"
@@ -150,9 +164,9 @@
             [showButtonBar]="true"
             [placeholder]="'Select end date'"
             [minDate]="minToDate"
-            (onSelect)="handleDateSelection($event, 'to')"
+            (onSelect)="onDateToInputChange($event)"
             (onClear)="clearDateFilters()"
-            [style]="{'width':'100%', 'height':'38px'}">
+            [style]="{ 'width': '100%', 'height': '38px' }">
           </p-calendar>
         </div>
       </div>
@@ -162,10 +176,10 @@
   <!-- Add this right after the second row div -->
   <div class="row mt-2">
     <div class="col-12 d-flex justify-content-start">
-      <button
-        class="btn btn-primary"
-        (click)="clearFilters()"
-      >
+      <button class="btn btn-outline-primary me-2" (click)="fetchGISQuotations()">
+        {{ 'gis.quotation.search' | translate }}
+      </button>
+      <button class="btn btn-primary" (click)="clearFilters()">
         {{ 'gis.quotation.clear' | translate }}
       </button>
     </div>
@@ -174,44 +188,40 @@
   <!-- Table Section -->
   <div class="table-section mt-4 mb-3">
     <p class="title mb-3">{{ 'gis.quotation.product_details' | translate }}</p>
-    <p-table
-      #dt1
-      (onLazyLoad)="onTableLazyLoad($event)"
-      [autoLayout]="true"
-      [lazy]="true"
-      [paginator]="true"
-      [rowHover]="true"
-      [resizableColumns]="true"
-      [showCurrentPageReport]="true"
-      [rows]="pageSize || 5"
-      [totalRecords]="tableDetails.totalElements"
-      [value]="tableDetails.rows"
-      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-      responsiveLayout="stack"
-      [scrollable]="true"
-      scrollHeight="400px"
-      currentPageReportTemplate="{first} - {last} of {totalRecords}"
-      styleClass="p-datatable-sm">
+    <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
+      scrollDirection="horizontal" [showCurrentPageReport]="true"
+      currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
+      [resizableColumns]="true" [reorderableColumns]="true">
       <ng-template pTemplate="header">
         <tr>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
+          <th style="background-color: #f0f0f0">{{ 'gis.quotation.premium' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
           <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
-          <th>Action</th>
+          <th></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-quotation>
-        <tr style="cursor: pointer" >
-          <td>{{ quotation?.quotationNumber || '' }}</td>
-          <td>{{ quotation?.clientName || '' }}</td>
-          <td>{{ quotation?.agentShortDescription || '' }}</td>
-          <td>{{ quotation?.status || '' }}</td>
-          <td>{{ quotation?.fromDate || '' }}</td>
-          <td>{{ quotation?.toDate || '' }}</td>
-          <td>{{ "Process" }}</td>
+        <tr style="cursor: pointer">
+          <td>{{quotation.quotationNumber}}</td>
+          <td>{{quotation.clientName}}</td>
+          <td>{{quotation.agentShortDescription}}</td>
+          <td>{{quotation.premium || 0}}</td>
+          <td>{{quotation.status}}</td>
+          <td>{{quotation.fromDate}}</td>
+          <td>{{quotation.toDate}}</td>
+          <td id="action-buttons">{{ "View quote" }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="1"></td>
+
+          <td colspan="10" style="padding:20px;padding-left: 340px;" id="empty">
+            {{'gis.quotation.no_data_to_display' | translate}}</td>
         </tr>
       </ng-template>
     </p-table>

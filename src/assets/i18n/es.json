@@ -918,8 +918,8 @@
       "converted": "Convertido",
       "policy_no": "Número de póliza",
       "agent_id": "ID del agente",
-      "select_an_agent": "Seleccionar un agente"
-
+      "select_an_agent": "Seleccionar un agente",
+      "search" : "Buscar"
 
     },
     "policy": {

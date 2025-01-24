@@ -890,8 +890,8 @@
       "converted": "已转换",
       "policy_no": "保单号",
       "agent_id": "代理人编号",
-      "select_an_agent": "选择代理人"
-
+      "select_an_agent": "选择代理人",
+      "search" : "搜索"
 
     },
     "policy": {
