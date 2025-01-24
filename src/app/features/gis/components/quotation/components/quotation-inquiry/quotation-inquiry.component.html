@@ -26,8 +26,8 @@
                             (onChange)="onProductSelected($event.value)" placeholder=" "
                             [filterBy]="'description'" placeholder="Product" [filter]="true"></p-dropdown> -->
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
-                        [value]="productName | sentenceCase" data-bs-toggle="modal" data-bs-target="#productSearchModal"
-                            placeholder="Product" readonly  />
+                            [value]="productName | sentenceCase" data-bs-toggle="modal"
+                            data-bs-target="#productSearchModal" placeholder="Product" readonly />
                         <!-- Product Search Modal Component -->
                         <app-product-search-modal (productSelected)="onProductSelected($event)">
                         </app-product-search-modal>
@@ -36,15 +36,20 @@
                     <div class=" col-sm-3 col-12 ">
 
                         <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Status"
-                            class="form-control-sm mb-1">
+                            (onChange)="onStatusSelected($event.value)" class="form-control-sm mb-1">
                         </p-dropdown>
                     </div>
                     <div class="col-sm-3 col-12 ">
-                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Agent"
+                        <!-- <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Agent"
                             class="form-control-sm mb-1">
-                        </p-dropdown>
-
+                        </p-dropdown> -->
+                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                            [value]="agentName | sentenceCase" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
+                            placeholder="Agent" />
+                        <!-- Client Search Modal Component -->
+                        <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
                     </div>
+
                     <div class="col-sm-3 col-12 ">
                         <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Contract"
                             class="form-control-sm mb-1">
@@ -76,7 +81,7 @@
 
 
                     </div>
-                    
+
                     <div class="col-sm-3 col-12 ">
                         <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
                             placeholder="Date to" (onSelect)="onDateToInputChange($event)"
