@@ -48,7 +48,7 @@ export class ReviseReuseQuotationComponent {
     this.loadAllQoutationSources();
     this.fetchGISQuotations();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[3]);
+    this.dynamicSideBarMenu(this.quotationSubMenuList[4]);
   }
   ngOnDestroy(): void { }
 

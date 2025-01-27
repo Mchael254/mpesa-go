@@ -8,6 +8,9 @@ import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Products } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { Router } from '@angular/router';
 const log = new Logger('ReviseReuseQuotationComponent');
 
 @Component({
@@ -44,6 +47,7 @@ export class QuotationInquiryComponent {
   productCode: number;
   agentName: string = '';
   agentId: number;
+  quotationSubMenuList: SidebarMenu[];
 
   constructor(
     public authService: AuthService,
@@ -53,9 +57,8 @@ export class QuotationInquiryComponent {
     public fb: FormBuilder,
     public quotationService: QuotationsService,
     public productService: ProductsService,
-
-
-
+    public menuService: MenuService,
+    public router: Router
 
   ) { }
 
@@ -64,10 +67,17 @@ export class QuotationInquiryComponent {
     this.loadAllQoutationSources();
     this.fetchGISQuotations();
     this.loadAllproducts();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
   }
   ngOnDestroy(): void { }
 
-
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
 
   /**
   * Retrieves user information from the authentication service.
