@@ -987,7 +987,15 @@
       "select_an_agent": "Select an agent",
       "select_a_product":"Select a product",
       "no_product_found":"No product found",
-      "search": "Search"
+      "search": "Search",
+      "quotation_inquiry": "Quotations:Quotation inquiry",
+      "filter_by":"Filter by",
+      "clear_search":"Clear search",
+      "comments":"Comments",
+      "expiry_date":"Expiry date",
+      "transaction_date":"Transaction date",
+      "revise_reuse_quotation": "Quotations:Revise/Reuse Quotation"
+
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",

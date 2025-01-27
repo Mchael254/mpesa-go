@@ -3,7 +3,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
-import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
+import { QuotationList, Sources, Status, StatusEnum, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Products } from '../../../setups/data/gisDTO';
@@ -32,22 +32,25 @@ export class QuotationInquiryComponent {
   ProductDescriptionArray: any = [];
   selectedProduct: Products[];
   selectedProductCode: any;
-  statuses = [
-    { label: 'Confirmed', value: 'Confirmed' },
-    { label: 'Lapsed', value: 'Lapsed' },
-    { label: 'Draft', value: 'Draft' } ,
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Accepted', value: 'Accepted' },
-    { label: 'Rejected', value: 'Rejected' },
-    { label: 'None', value: 'None' },
-
-  ];
+  status: Status[] = [
+     { status: StatusEnum.Lapsed },
+     { status: StatusEnum.Confirmed },
+     { status: StatusEnum.Pending },
+     { status: StatusEnum.Rejected },
+     { status: StatusEnum.None },
+     { status: StatusEnum.Accepted },
+     { status: StatusEnum.Draft }
+   ];
   selectedStatus: string = ''; // Holds the selected value
   productName: string = '';
   productCode: number;
   agentName: string = '';
   agentId: number;
   quotationSubMenuList: SidebarMenu[];
+  clientName: string = '';
+  clientCode: number;
+  quotationNumber: string;
+
 
   constructor(
     public authService: AuthService,
@@ -60,15 +63,22 @@ export class QuotationInquiryComponent {
     public menuService: MenuService,
     public router: Router
 
+
+
+
+
+
   ) { }
 
   ngOnInit(): void {
     this.getuser();
     this.loadAllQoutationSources();
     this.fetchGISQuotations();
-    this.loadAllproducts();
-    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
+    // this.loadAllproducts();
+
+    // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    // this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
+    this.fetchGISQuotations();
   }
   ngOnDestroy(): void { }
 
@@ -138,21 +148,21 @@ export class QuotationInquiryComponent {
 
   fetchGISQuotations() {
     const clientType = null
-    const clientCode = null
-    const productCode = this.productCode|| null
-    const quotationNumber = null
+    const clientCode = this.clientCode || null
+    const productCode = this.productCode || null
+    const quotationNumber = this.quotationNumber || null
     const status = null
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
     const agentCode = this.agentId || null
     const source = this.selectedSource || null
-    const clientName = null
+    const clientName = this.clientName || null
 
     log.debug("Selected Date from:", this.selectedDateFrom)
     log.debug("Selected Date to:", this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10000, clientType, clientCode, productCode, dateFrom, dateTo,agentCode, status, source, clientName)
+      .searchQuotations(0, 10000, clientType, clientCode, productCode, dateFrom, dateTo, agentCode, quotationNumber, status, source, clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -262,7 +272,29 @@ export class QuotationInquiryComponent {
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
 
- 
-    this.fetchGISQuotations(); 
+
+    // this.fetchGISQuotations(); 
   }
+  onClientSelected(event: { clientName: string; clientCode: number }) {
+    this.clientName = event.clientName;
+    this.clientCode = event.clientCode;
+
+    // Optional: Log for debugging
+    log.debug('Selected Client:', event);
+
+    // Call fetchQuotations when the client code changes
+    // this.fetchGISQuotations();
+  }
+  onQuotationBlur(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    this.quotationNumber = inputElement.value;
+    log.debug('Quotation number:', this.quotationNumber);
+
+  }
+  // dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+  //   if (sidebarMenu.link.length > 0) {
+  //     this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+  //   }
+  //   this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  // }
 }

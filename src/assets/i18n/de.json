@@ -899,7 +899,14 @@
       "policy_no": "Policennummer",
       "agent_id": "Agenten-ID",
       "select_an_agent": "Wählen Sie einen Agenten aus",
-      "search": "Zoeken"
+      "search": "Zoeken",
+      "quotation_inquiry": "Angebote:Angebotsanfrage",
+      "filter_by": "Filtern nach",
+      "clear_search": "Suche löschen",
+      "comments": "Kommentare",
+      "expiry_date": "Ablaufdatum",
+      "transaction_date": "Transaktionsdatum",
+      "revise_reuse_quotation": "Angebote:Überarbeiten/Wiederverwenden des Angebots"
 
     },
     "policy": {
