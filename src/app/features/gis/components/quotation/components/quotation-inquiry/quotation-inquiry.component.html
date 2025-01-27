@@ -1,24 +1,38 @@
 <div class="container">
-    <p class="titleMain mt-3 ms-4">Quotations:Quotation inquiry</p>
+    <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.quotation_inquiry' | translate }}</p>
     <div class="container mx-2 mt-n1">
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body ">
                 <div class="row mt-4">
-                    <div class="col-5">
+                    <div class="col-3">
 
-                        <div class="input-group mb-3">
+                        <!-- <div class="input-group mb-3">
                             <span class="input-group-text " id="basic-addon1">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                             <input type="text" id="search-input" class="form-control search-input"
                                 style="border-left: grey;" placeholder="Search by client, prospect or quotation no."
                                 aria-label="Username" aria-describedby="basic-addon1" />
-                        </div>
+                        </div> -->
 
+                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                            [value]="clientName | sentenceCase" data-bs-toggle="modal"
+                            data-bs-target="#clientSearchModal" readonly placeholder="Client" />
+
+                        <!-- Client Search Modal Component -->
+                        <app-client-search-modal (clientSelected)="onClientSelected($event)"></app-client-search-modal>
                     </div>
-
+                    <div class="col-3">
+                        <input
+                        type="text"
+                        id="quote-number-input"
+                        class=" form-control form-control-sm mb-1"
+                        placeholder="Quotation number"
+                        (blur)="onQuotationBlur($event)"
+                      />
+                    </div>
                 </div>
-                <p class=" mt-2 ms-1 filter-by-text">Filter by:</p>
+                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }}:</p>
                 <div class="row mb-4">
                     <div class=" col-sm-3 col-12">
                         <!-- <p-dropdown formControlName="productCode" name="productCode"
@@ -28,6 +42,7 @@
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                             [value]="productName | sentenceCase" data-bs-toggle="modal"
                             data-bs-target="#productSearchModal" placeholder="Product" readonly />
+
                         <!-- Product Search Modal Component -->
                         <app-product-search-modal (productSelected)="onProductSelected($event)">
                         </app-product-search-modal>
@@ -35,7 +50,7 @@
 
                     <div class=" col-sm-3 col-12 ">
 
-                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Status"
+                        <p-dropdown [options]="status" [(ngModel)]="selectedStatus" placeholder="Status"
                             (onChange)="onStatusSelected($event.value)" class="form-control-sm mb-1">
                         </p-dropdown>
                     </div>
@@ -44,14 +59,14 @@
                             class="form-control-sm mb-1">
                         </p-dropdown> -->
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
-                            [value]="agentName | sentenceCase" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
-                            placeholder="Agent" />
+                            [value]="agentName | sentenceCase" data-bs-toggle="modal" data-bs-target="#agentSearchModal"
+                            readonly placeholder="Agent" />
                         <!-- Client Search Modal Component -->
                         <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
                     </div>
 
                     <div class="col-sm-3 col-12 ">
-                        <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Contract"
+                        <p-dropdown [options]="status" [(ngModel)]="selectedStatus" placeholder="Contract"
                             class="form-control-sm mb-1">
                         </p-dropdown>
 
@@ -94,9 +109,9 @@
                     <div class="col-6 d-flex justify-content-start">
                         <button type="button" class="btn btn-primary " id="search-buttons"
                             (click)="fetchGISQuotations()">
-                            Search</button>
+                             {{ 'gis.quotation.search' | translate }}</button>
                         <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons">
-                            Clear search</button>
+                            {{ 'gis.quotation.clear_search' | translate }}</button>
                     </div>
                     <div class="col-6">
 
@@ -126,14 +141,14 @@
                     [resizableColumns]="true" [reorderableColumns]="true">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Quotation no.</th>
-                            <th>Client </th>
-                            <th>Cover from</th>
-                            <th>Cover to</th>
-                            <th>Comments</th>
-                            <th>Expiry date</th>
-                            <th>Status</th>
-                            <th>Transaction date</th>
+                            <th>{{ 'gis.quotation.quotation_no' | translate }}</th>
+                            <th>{{ 'gis.quotation.client' | translate }} </th>
+                            <th>{{ 'gis.quotation.cover_from' | translate }}</th>
+                            <th>{{ 'gis.quotation.cover_to' | translate }}</th>
+                            <th>{{ 'gis.quotation.comments' | translate }}</th>
+                            <th>{{ 'gis.quotation.expiry_date' | translate }}</th>
+                            <th>{{ 'gis.quotation.status' | translate }}</th>
+                            <th>{{ 'gis.quotation.transaction_date' | translate }}</th>
                             <th></th>
 
                         </tr>
