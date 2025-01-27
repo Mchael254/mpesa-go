@@ -37,6 +37,7 @@ import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
 import { RequestReportComponent } from './components/service-desk/request-report/request-report.component';
 import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
 import {SystemReportsComponent} from "./components/system-reports/system-reports.component";
+import {ReportDefinitionComponent} from "./components/system-reports/report-definition/report-definition.component";
 
 const routes: Routes = [
   {
@@ -186,6 +187,10 @@ const routes: Routes = [
   {
     path: 'system-reports',
     component: SystemReportsComponent,
+  },
+  {
+    path: 'define-reports',
+    component: ReportDefinitionComponent,
   },
 ];
 

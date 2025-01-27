@@ -259,6 +259,10 @@ export class MenuService {
                 name: 'Reports',
                 link: '/home/crm/system-reports',
               },
+              {
+                name: 'Define Reports',
+                link: '/home/crm/define-reports',
+              },
             ],
             collapsed: true,
           },
