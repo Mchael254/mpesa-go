@@ -860,7 +860,6 @@ export class MenuService {
         link: '/home/gis/quotation/quotation-conversion',
         value: 'QUOTATION'
       },
-<<<<<<< Updated upstream
 
       {
         name: 'Revise/Reuse',
@@ -874,18 +873,6 @@ export class MenuService {
         value: 'QUOTATION'
       },
 
-=======
-      {
-        name: 'Inquiry',
-        link: '/home/gis/quotation/quotation-enquiry',
-        value: 'QUOTATION'
-      },
-      {
-        name: 'Revise/Reuse/',
-        link: '/home/gis/quotation/revise-reuse-quote',
-        value: 'Quotation'
-      }
->>>>>>> Stashed changes
       // {
       //   name: 'Create Quotation',
       //   link: '',
