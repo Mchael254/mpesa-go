@@ -69,6 +69,7 @@ Relationship Management) application. Each object has the following properties: 
       showSubItems: false,
       subItems: [
         { label: 'Reports', link: '/home/crm/system-reports' },
+        { label: 'Define Reports', link: '/home/crm/define-reports' },
       ],
     },
   ];
