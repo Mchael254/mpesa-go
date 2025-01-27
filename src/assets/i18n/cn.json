@@ -174,17 +174,16 @@
     "FMS": "FMS",
     "General Ledger": "总账",
     "Cashbook": "现金账簿",
-    "Creditors":"应付账款",
-    "Debtors":"应收账款",
+    "Creditors": "应付账款",
+    "Debtors": "应收账款",
     "Parameters": "参数",
     "Transactions": "交易",
     "Invoices/Cr Notes": "贷方发票/通知",
-    "Invoices/DR Notes":"借方发票/通知",
+    "Invoices/DR Notes": "借方发票/通知",
     "Inquiries": "查询",
     "Requisitions": "申请",
     "cheques": "支票",
     "pettyCash": "零用现金",
-
     "Cheque signing": "支票签署",
     "Campaigns": "活动",
     "Client Attributes": "客户属性",
@@ -901,8 +900,14 @@
       "policy_no": "保单号",
       "agent_id": "代理人编号",
       "select_an_agent": "选择代理人",
-      "search" : "搜索"
-
+      "search": "搜索",
+      "quotation_inquiry": "报价:报价查询",
+      "filter_by": "筛选依据",
+      "clear_search": "清除搜索",
+      "comments": "评论",
+      "expiry_date": "到期日期",
+      "transaction_date": "交易日期",
+      "revise_reuse_quotation": "报价:修改/重用报价"
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",
@@ -1135,7 +1140,6 @@
       "ref_no": "参考号",
       "risk_note": "风险提示",
       "uw_year": "核保年份",
-
       "select_risk_clauses": "选择风险条款",
       "peril": "危险",
       "limit_description": "限额描述",
@@ -1144,7 +1148,6 @@
       "excess_type": "超额类型",
       "peril_id": "ID",
       "previous": "以前",
-
       "select_required_documents": "选择所需文件",
       "edit_required_documents": "编辑所需文件",
       "certificates": "证书",
@@ -1180,7 +1183,6 @@
       "commission_amount": "佣金金额",
       "withholding_rate": "预扣率",
       "code": "代码",
-
       "select_risk_peril": "选择风险险种",
       "risk_service_list": "风险服务列表",
       "reassign": "重新分配",
@@ -1446,7 +1448,7 @@
         "body_mass_index": "身体质量指数 (您的)",
         "branch": "分行",
         "branch_required": "分行是必填项",
-        "cancel" : "取消",
+        "cancel": "取消",
         "choose_file": "选择文件",
         "citizenship": "国籍",
         "click_on_+_icon_to_add_record": "点击 + 图标添加记录",
@@ -1561,7 +1563,7 @@
         "relationship_trustee": "关系（受托人",
         "residence_country": "居住国家",
         "risky_occupation": "您的职业是否与任何特定的危险相关，或者您是否从事任何可能危险或涉及额外风险的活动、运动或爱好",
-        "save":"保存",
+        "save": "保存",
         "save_and_continue": "保存并继续",
         "select_bank": "选择银行",
         "select_bank_branch": "选择银行分行",
@@ -2026,57 +2028,55 @@
     "signSelect": "签署选择",
     "correction": "发送以更正",
     "reject": "拒绝",
-    "receipting":{
+    "receipting": {
       "capture_receipt": "捕获收据",
       "saveReceipt": "保存收据",
-     "printReceipt": "打印收据",
-     "cancel": "取消",
-     "captureReceipt": "捕获收据",
-     "chargesYesNo": "费用",
-     "capitalInjection": "资本注入",
-     "deductions": "扣除",
-     "chargeAmount": "费用金额",
-     "uploadFiles": "上传文件"
-   },
-   "allocation": {
-     "add_allocation": "添加分配",
-     "allocation_type": "分配类型",
-     "allocatedAmount": "已分配金额"
-   },
-     "client": {
-       "name": "客户姓名",
-       "date": "日期",
-       "narration": "说明",
-       "amount": "金额",
-       "allocationType": "分配类型",
-       "allocatedAmount": "已分配金额"
-   },
-
-       "receipt_authorization": {
-         "title": "Autorisation de reçus",
-         "normal_tab": "Reçus normaux",
-         "batch_tab": "Reçus en lot",
-         "select_all": "Sélectionner tout",
-         "authorize_all": "Autoriser tout",
-         "reject_all": "Rejeter tout",
-         "search":"搜索",
-         "receipt_no": "Numéro de reçu",
-         "policy_no": "Numéro de police",
-         "payment_memo": "Mémo de paiement",
-         "amount": "Montant",
-         "capture_date": "Date de capture",
-         "authorization_date":"授权日期",
-         "status": "Statut",
-         "actions":"操作",
-         "authorize": "Autoriser",
-         "reject": "Rejeter",
-         "rejection_remarks": "Remarques de rejet",
-         "close": "Fermer",
-         "statement_no": "Numéro de relevé",
-         "total_amount": "Montant total",
-         "send_sms_alerts": "Envoyer des alertes SMS"
-       }
-
+      "printReceipt": "打印收据",
+      "cancel": "取消",
+      "captureReceipt": "捕获收据",
+      "chargesYesNo": "费用",
+      "capitalInjection": "资本注入",
+      "deductions": "扣除",
+      "chargeAmount": "费用金额",
+      "uploadFiles": "上传文件"
+    },
+    "allocation": {
+      "add_allocation": "添加分配",
+      "allocation_type": "分配类型",
+      "allocatedAmount": "已分配金额"
+    },
+    "client": {
+      "name": "客户姓名",
+      "date": "日期",
+      "narration": "说明",
+      "amount": "金额",
+      "allocationType": "分配类型",
+      "allocatedAmount": "已分配金额"
+    },
+    "receipt_authorization": {
+      "title": "Autorisation de reçus",
+      "normal_tab": "Reçus normaux",
+      "batch_tab": "Reçus en lot",
+      "select_all": "Sélectionner tout",
+      "authorize_all": "Autoriser tout",
+      "reject_all": "Rejeter tout",
+      "search": "搜索",
+      "receipt_no": "Numéro de reçu",
+      "policy_no": "Numéro de police",
+      "payment_memo": "Mémo de paiement",
+      "amount": "Montant",
+      "capture_date": "Date de capture",
+      "authorization_date": "授权日期",
+      "status": "Statut",
+      "actions": "操作",
+      "authorize": "Autoriser",
+      "reject": "Rejeter",
+      "rejection_remarks": "Remarques de rejet",
+      "close": "Fermer",
+      "statement_no": "Numéro de relevé",
+      "total_amount": "Montant total",
+      "send_sms_alerts": "Envoyer des alertes SMS"
+    }
   },
   "campaignMngmt": {
     "campaigns": "活动",

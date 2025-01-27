@@ -65,7 +65,7 @@ const routes: Routes = [
     path:'quotation-conversion',component:QuotationConversionComponent
   },
   {
-    path:'quotation-enquiry',component:QuotationInquiryComponent
+    path:'i',component:QuotationInquiryComponent
   },
 ];
 

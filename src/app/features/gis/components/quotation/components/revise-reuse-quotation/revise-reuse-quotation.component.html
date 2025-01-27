@@ -1,5 +1,5 @@
 <div class="container">
-    <p class="titleMain mt-3 ms-4">Quotations:Revise/Reuse Quotation</p>
+    <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.revise_reuse_quotation' | translate }}  </p>
     <div class="container mx-2 mt-n1">
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body ">
@@ -18,7 +18,7 @@
                     </div>
 
                 </div>
-                <p class=" mt-2 ms-1 filter-by-text">Filter by:</p>
+                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }} :</p>
                 <div class="row">
                     <div class="col-sm-9">
                         <div class="row">
@@ -67,9 +67,9 @@
                     <div class="col-6 d-flex justify-content-start">
                         <button type="button" class="btn btn-primary " id="search-buttons"
                         (click)="fetchGISQuotations()">
-                            Search</button>
+                            {{ 'gis.quotation.search' | translate }} </button>
                             <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons">
-                                Clear search</button>
+                                 {{ 'gis.quotation.clear_search' | translate }} </button>
                     </div>
                     <div class="col-6">
 
@@ -97,14 +97,14 @@
                     [resizableColumns]="true" [reorderableColumns]="true">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Quotation no.</th>
-                            <th>Client </th>
-                            <th>Cover from</th>
-                            <th>Cover to</th>
-                            <th>Comments</th>
-                            <th>Expiry date</th>
-                            <th>Status</th>
-                            <th>Transaction date</th>
+                            <th>{{ 'gis.quotation.quotation_no' | translate }}</th>
+                            <th>{{ 'gis.quotation.client' | translate }} </th>
+                            <th>{{ 'gis.quotation.cover_from' | translate }}</th>
+                            <th>{{ 'gis.quotation.cover_to' | translate }}</th>
+                            <th>{{ 'gis.quotation.comments' | translate }}</th>
+                            <th>{{ 'gis.quotation.expiry_date' | translate }}</th>
+                            <th>{{ 'gis.quotation.status' | translate }}</th>
+                            <th>{{ 'gis.quotation.transaction_date' | translate }}</th>
                             <th></th>
                             <th></th>
                             <th></th>
