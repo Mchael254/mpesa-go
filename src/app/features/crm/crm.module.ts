@@ -52,6 +52,7 @@ import {
 import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
 import { RequestReportComponent } from './components/service-desk/request-report/request-report.component';
 import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
+import {SystemReportsComponent} from "./components/system-reports/system-reports.component";
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { ProspectsComponent } from './components/activity-management/prospects/p
     HierarchyComponent,
     RequestReportComponent,
     ProspectsComponent,
+    SystemReportsComponent
   ],
   imports: [
     CommonModule,
