@@ -28,6 +28,7 @@ interface FileItem {
   name: string;
   selected: boolean;
 }
+
 @Component({
   selector: 'app-quotation-summary',
   templateUrl: './quotation-summary.component.html',
@@ -85,24 +86,28 @@ export class QuotationSummaryComponent {
   totalSize : number = 0;
   totalSizePercent : number = 0;
   selectedDocumentType: string = '';
+  prodCodeString : string;
+  clientCodeString: string;
+
   constructor(
 
-    public sharedService:SharedQuotationsService,
-    public quotationService:QuotationsService,
+    public sharedService: SharedQuotationsService,
+    public quotationService: QuotationsService,
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
-    public  agentService:IntermediaryService,
-    public productService:ProductService,
-    public subclassService:SubclassesService,
-    public activatedRoute:ActivatedRoute,
-    public authService:AuthService,
+    public  agentService: IntermediaryService,
+    public productService: ProductService,
+    public subclassService: SubclassesService,
+    public activatedRoute: ActivatedRoute,
+    public authService: AuthService,
     private messageService: GlobalMessagingService,
-    public branchService:BranchService,
+    public branchService: BranchService,
     private spinner: NgxSpinnerService,
     public bankService:BankService,
     private fb: FormBuilder,
-    private config: PrimeNGConfig
-  ){}
+    private config: PrimeNGConfig,
+
+  ) {}
   public isCollapsibleOpen = false;
   public isRiskCollapsibleOpen = false;
   public makeQuotationReady = true;
@@ -119,23 +124,32 @@ export class QuotationSummaryComponent {
 
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
+    log.debug("Quotation number", this.quotationNumber);
 
     this.moreDetails=sessionStorage.getItem('quotationFormDetails')
 
     const storedData = sessionStorage.getItem('clientFormData');
     this.clientDetails=JSON.parse(storedData);
-    this.prodCode = JSON.parse(this.moreDetails).productCode
-    this.clientCode = JSON.parse(this.moreDetails).clientCode
+    if(this.moreDetails) {
+      this.prodCode = JSON.parse(this.moreDetails).productCode
+      this.clientCode = JSON.parse(this.moreDetails).clientCode
+      this.quotationDetails = JSON.parse(this.moreDetails)
+    } else {
+      this.prodCodeString = sessionStorage.getItem('productCode');
+      this.clientCodeString = sessionStorage.getItem('clientCode');
+      this.prodCode = JSON.parse(this.prodCodeString);
+      this.clientCode = JSON.parse(this.clientCodeString);
+    }
+
     this.getuser()
     this.getQuotationDetails(this.quotationNumber)
+    this.quotationDetails = this.quotationView;
     this.getProductDetails(this.prodCode)
     this.getProductClause(this.prodCode)
     this.externalClaimsExperience(this.clientCode)
     this.internalClaimsExperience(this.clientCode)
     this.getbranch()
-    this.quotationDetails = JSON.parse(this.moreDetails)
     this.spinner.show()
-
     this.getPremiumComputationDetails()
     log.debug("MORE DETAILS TEST",this.quotationDetails )
     this.getAgent();
@@ -147,53 +161,51 @@ export class QuotationSummaryComponent {
     this.createSmsForm();
     this.getDocumentTypes();
 
-
-
     this.menuItems = [
       {
         label: 'Claims Experience',
-
         items: [
-            {
-                label: 'External',
-                command: () => {
-                  this.external();
-              }
-      },
-      {
-        label: 'Internal',
-        command: () => {
-          this.internal();
+          {
+            label: 'External',
+            command: () => {
+              this.external();
+            }
+          },
+          {
+            label: 'Internal',
+            command: () => {
+              this.internal();
+            }
+          }
+        ]
       }
-}
-  ]
+    ]
+  }
 
-}]
+  external() {
+    this.showExternalClaims = true;
+    this.showInternalClaims = false;
 
   }
 
-external(){
-  this.showExternalClaims = true;
-  this.showInternalClaims = false;
+  internal() {
 
-}
-internal(){
+    this.showInternalClaims = true;
+    this.showExternalClaims = false;
+  }
 
-  this.showInternalClaims = true;
-  this.showExternalClaims = false;
-}
   /**
    * Retrieves quotation details based on the provided code.
    * @method getQuotationDetails
    * @param {string} code - The code of the quotation for which to retrieve details.
    * @return {void}
    */
-  getQuotationDetails(code){
-    this.quotationService.getQuotationDetails(code).subscribe(res=>{
-      this.quotationView = res
+  getQuotationDetails(code) {
+    this.quotationService.getQuotationDetails(code).subscribe(res => {
+      this.quotationView = res;
       log.debug("DETAILS TEST quotation data",this.quotationView )
       log.debug(code,"code")
-       // Extracts product details for each quotation product.
+      // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
       this.riskDetails = this.quotationView.riskInformation
 
@@ -204,41 +216,42 @@ internal(){
       //   this.agents = res
       //   log.debug(res)
       // })
-       // Extract risk information
-    this.riskDetails = this.quotationView.riskInformation;
-    this.taxDetails = this.quotationView.taxInformation;
-    log.debug(this.taxDetails);
+      // Extract risk information
+      this.riskDetails = this.quotationView.riskInformation;
+      this.taxDetails = this.quotationView.taxInformation;
+      log.debug(this.taxDetails);
 
-    // Set items in session storage from riskInformation
-    if (this.riskDetails && this.riskDetails.length > 0) {
-      const firstRisk = this.riskDetails[0];
-      const sectionDetails = firstRisk.sectionsDetails && firstRisk.sectionsDetails.length > 0
-        ? firstRisk.sectionsDetails[0]
-        : null;
+      // Set items in session storage from riskInformation
+      if (this.riskDetails && this.riskDetails.length > 0) {
+        const firstRisk = this.riskDetails[0];
+        const sectionDetails = firstRisk.sectionsDetails && firstRisk.sectionsDetails.length > 0
+          ? firstRisk.sectionsDetails[0]
+          : null;
 
-      if (sectionDetails) {
-        sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
-        sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
-        sessionStorage.setItem('sectionType', sectionDetails.rateType || '');
-        // sessionStorage.setItem('multiplierDivisionFactor', sectionDetails.rate.toString());
-        sessionStorage.setItem('rateType', sectionDetails.rateType || '');
-        // sessionStorage.setItem('divisionFactor', sectionDetails.freeLimit?.toString() || '');
-        // sessionStorage.setItem('limitAmount', sectionDetails.limitAmount?.toString() || '');
+        if (sectionDetails) {
+          sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
+          sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
+          sessionStorage.setItem('sectionType', sectionDetails.rateType || '');
+          // sessionStorage.setItem('multiplierDivisionFactor', sectionDetails.rate.toString());
+          sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+          // sessionStorage.setItem('divisionFactor', sectionDetails.freeLimit?.toString() || '');
+          // sessionStorage.setItem('limitAmount', sectionDetails.limitAmount?.toString() || '');
+        }
       }
-    }
-log.debug('SUM INSURED',this.sumInsured)
-    log.debug('Session storage values set for LIMITS:', {
-      premiumRate: sessionStorage.getItem('premiumRate'),
-      sectionType: sessionStorage.getItem('sectionType'),
-      sectionDescription: sessionStorage.getItem('sectionDescription'),
-      // multiplierDivisionFactor: sessionStorage.getItem('multiplierDivisionFactor'),
-      rateType: sessionStorage.getItem('rateType'),
-      // divisionFactor: sessionStorage.getItem('divisionFactor'),
-      limitAmount: this.sumInsured
-    });
+      log.debug('SUM INSURED',this.sumInsured)
+      log.debug('Session storage values set for LIMITS:', {
+        premiumRate: sessionStorage.getItem('premiumRate'),
+        sectionType: sessionStorage.getItem('sectionType'),
+        sectionDescription: sessionStorage.getItem('sectionDescription'),
+        // multiplierDivisionFactor: sessionStorage.getItem('multiplierDivisionFactor'),
+        rateType: sessionStorage.getItem('rateType'),
+        // divisionFactor: sessionStorage.getItem('divisionFactor'),
+        limitAmount: this.sumInsured
+      });
     })
   }
-  getAgent(){
+
+  getAgent() {
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
@@ -253,11 +266,12 @@ log.debug('SUM INSURED',this.sumInsured)
       }
     )
   }
-  getSections(data){
+
+  getSections(data) {
 
     this.riskDetails.forEach(el=>{
 
-      if(data===el.code){
+      if(data===el.code) {
         this.sections = el.sectionsDetails
         this.schedules = [el.scheduleDetails.level1]
       }
@@ -267,28 +281,29 @@ log.debug('SUM INSURED',this.sumInsured)
     log.debug(this.sections,"section Details")
 
   }
+
   /**
    * Navigates to the edit details page.
    * @method editDetails
    * @return {void}
    */
-  editDetails(){
+  editDetails() {
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
+
    /**
    * Retrieves product details based on the product code in the 'moreDetails' property.
    * @method getProductDetails
    * @return {void}
    */
-  getProductDetails(code){
+  getProductDetails(code) {
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
       log.debug("Product details", this.productDetails)
     })
-
-
   }
-  getbranch(){
+
+  getbranch() {
     log.debug(JSON.parse(this.moreDetails),"more  details")
     this.branchService.getBranchById(JSON.parse(this.moreDetails).branchCode).subscribe(data=>{
       this.branch = data
@@ -296,9 +311,8 @@ log.debug('SUM INSURED',this.sumInsured)
     })
   }
 
-
-  getAgents(){
-      /**
+  getAgents() {
+   /**
    * Retrieves agents using the AgentService.
    * Subscribes to the observable to handle the response.
    * Populates the 'agents' property with the content of the response.
@@ -310,31 +324,36 @@ log.debug('SUM INSURED',this.sumInsured)
 
     })
   }
+
   toggleProductDetails() {
     this.isCollapsibleOpen = !this.isCollapsibleOpen;
   }
+
   toggleRiskDetails() {
     this.isRiskCollapsibleOpen = !this.isRiskCollapsibleOpen;
   }
-  getProductClause(productCode){
+
+  getProductClause(productCode) {
     this.quotationService.getProductClauses(productCode).subscribe(res=>{
       this.clauses= res
       log.debug(this.clauses)
     })
   }
-     /**
+
+  /**
    * Retrieves the current user and stores it in the 'user' property.
    * @method getUser
    * @return {void}
-   */
-     getuser():void{
-      this.user = this.authService.getCurrentUserName()
-      this.quotationService.getUserProfile().subscribe(res=>{
-        this.userDetails = res
+  */
+  getuser():void {
+    this.user = this.authService.getCurrentUserName()
+    this.quotationService.getUserProfile().subscribe(res=>{
+      this.userDetails = res
 
-      })
-     }
-  makeReady(){
+    })
+  }
+
+  makeReady() {
     this.quotationService.makeReady(this.quotationCode,this.user).subscribe(
       {
         next: (res) => {
@@ -348,11 +367,10 @@ log.debug('SUM INSURED',this.sumInsured)
           this.messageService.displayErrorMessage('error', 'Failed to make ready')
         }
       }
-
     )
-
   }
-  authorise(){
+
+  authorise() {
     this.quotationService.authoriseQuotation(this.quotationCode,this.user).subscribe(
       {
         next: (res) => {
@@ -367,9 +385,9 @@ log.debug('SUM INSURED',this.sumInsured)
         }
       }
     )
-
   }
-  confirm(){
+
+  confirm() {
     this.quotationService.confirmQuotation(this.quotationCode,this.user).subscribe(
       {
         next: (res) => {
@@ -386,18 +404,18 @@ log.debug('SUM INSURED',this.sumInsured)
     )
   }
 
-  showCommunicationDetails(section){
+  showCommunicationDetails(section) {
     if(section === 'sms' ){
       this.showSms  = true
       this.showEmail = false
 
-    }else if(section === 'email'){
+    } else if(section === 'email') {
       this.showEmail = true
       this.showSms  = false
-
     }
   }
-  externalClaimsExperience(clientCode){
+
+  externalClaimsExperience(clientCode) {
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
        this.externalClaims = res
 
@@ -407,7 +425,8 @@ log.debug('SUM INSURED',this.sumInsured)
 
     })
   }
-  internalClaimsExperience(clientCode){
+
+  internalClaimsExperience(clientCode) {
     this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res=>{
       this.internalClaims = res
       this.internalTable = this.internalClaims.content
@@ -415,83 +434,81 @@ log.debug('SUM INSURED',this.sumInsured)
     })
   }
 
-  showExternals(){
+  showExternals() {
     this.showExternalClaims = !this.showExternalClaims
   }
-  showInternal(){
+
+  showInternal() {
     this.showInternalClaims = !this.showInternalClaims
   }
-  getPremiumComputationDetails(){
+
+  getPremiumComputationDetails() {
     this.quotationService.quotationUtils(this.quotationCode).subscribe({
-      next :(res) =>{
-       this.computationDetails = res
+      next :(res) => {
+        this.computationDetails = res
         this.computationDetails.underwritingYear = new Date().getFullYear();
-       // Modify the prorata field for all risks
-    this.computationDetails.risks.forEach((risk: any) => {
-      risk.prorata = 'F';
-      risk.limits.forEach((limit: any) => {
-         // Retrieve and log session storage values
-         const premiumRate = Number(sessionStorage.getItem('premiumRate'));
-         const sectionDescription = sessionStorage.getItem('sectionDescription');
-         const sectionType = sessionStorage.getItem('sectionType');
-         const multiplierDivisionFactor = 1
-         const rateType = "FXD"
-        //  const divisionFactor = sessionStorage.getItem('divisionFactor');
-         const limitAmount = this.sumInsured
+        // Modify the prorata field for all risks
+        this.computationDetails.risks.forEach((risk: any) => {
+          risk.prorata = 'F';
+          risk.limits.forEach((limit: any) => {
+            // Retrieve and log session storage values
+            const premiumRate = Number(sessionStorage.getItem('premiumRate'));
+            const sectionDescription = sessionStorage.getItem('sectionDescription');
+            const sectionType = sessionStorage.getItem('sectionType');
+            const multiplierDivisionFactor = 1
+            const rateType = "FXD"
+            //  const divisionFactor = sessionStorage.getItem('divisionFactor');
+            const limitAmount = this.sumInsured
 
 
-         log.debug('Retrieved values from session storage:', {
-           premiumRate,
-           sectionType,
-           multiplierDivisionFactor,
-           rateType,
-           sectionDescription,
-          //  divisionFactor,
-           limitAmount
-         });
-        // Update the fields you want to modify
-        limit.premiumRate = Number(sessionStorage.getItem('premiumRate'));
-        limit.description = sessionStorage.getItem('sectionDescription');
-        limit.sectionType = sessionStorage.getItem('sectionType');
-        limit.multiplierDivisionFactor = 1
-        limit.rateType = "FXD"
-        // limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
-        limit.limitAmount = this.sumInsured
-      });
-    });
-     log.debug("Latest COMPUTATION Details",this.computationDetails.risks)
-    },
-    error: (error: HttpErrorResponse) => {
+            log.debug('Retrieved values from session storage:', {
+              premiumRate,
+              sectionType,
+              multiplierDivisionFactor,
+              rateType,
+              sectionDescription,
+              //  divisionFactor,
+              limitAmount
+            });
+            // Update the fields you want to modify
+            limit.premiumRate = Number(sessionStorage.getItem('premiumRate'));
+            limit.description = sessionStorage.getItem('sectionDescription');
+            limit.sectionType = sessionStorage.getItem('sectionType');
+            limit.multiplierDivisionFactor = 1
+            limit.rateType = "FXD"
+            // limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
+            limit.limitAmount = this.sumInsured
+          });
+        });
+        log.debug("Latest COMPUTATION Details",this.computationDetails.risks)
+      },
+      error: (error: HttpErrorResponse) => {
       log.info(error);
       this.globalMessagingService.displayErrorMessage('Error', 'Error, you cannot compute premium, check quotation details and try again.' );
-
-    }    }
-    )
+      }
+    });
   }
+
    /**
    * Computes the premium for the current quotation and updates the quotation details.
    * @method computePremium
    * @return {void}
    */
-   computePremium(){
-
-    this.quotationService.computePremium(this.computationDetails).subscribe(
-   {
-    next:(res)=>{
-      this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
+  computePremium() {
+    this.quotationService.computePremium(this.computationDetails).subscribe({
+      next:(res) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
           this.premium = res
           log.debug(res)
       },
-    error : (error: HttpErrorResponse) => {
-      log.info(error);
-      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-
+      error : (error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
       }
-    }
-      )
+    })
   }
 
-  cancelQuotation(){
+  cancelQuotation() {
     sessionStorage.removeItem('clientFormData');
     sessionStorage.removeItem('quotationFormDetails');
     sessionStorage.removeItem('quotationCode');
@@ -499,11 +516,12 @@ log.debug('SUM INSURED',this.sumInsured)
     this.router.navigate(['/home/gis/quotation/quotations-client-details'])
     // this.router.navigate(['/home/gis/quotation/quotations-client-details'])
   }
-  editQuotations(){
+
+  editQuotations() {
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
-  createEmailForm(){
 
+  createEmailForm() {
     this.emailForm = this.fb.group({
       from: ['', [Validators.required, Validators.email]],
       clientCode: ['', Validators.required],
@@ -520,8 +538,8 @@ log.debug('SUM INSURED',this.sumInsured)
       bcc: ['', Validators.required],
     });
   }
-  createSmsForm(){
 
+  createSmsForm() {
     this.smsForm = this.fb.group({
       message: ['', Validators.required],
       recipients: ['', Validators.required],
@@ -529,134 +547,122 @@ log.debug('SUM INSURED',this.sumInsured)
     });
   }
 
-  emaildetails(){
+  emaildetails() {
     const currentDate = new Date();
     const current = currentDate.toISOString();
     log.debug(this.clientDetails)
     log.debug(this.emailForm.value)
+    const payload = {
+      address: [
+        this.emailForm.value.address,
+        this.emailForm.value.cc,
+        this.emailForm.value.bcc,
+      ].filter(email => email), // Filter out any empty values
+      clientCode: this.clientDetails.id,
+      emailAggregator: this.emailForm.value.emailAggregator,
+      from: this.userDetails.emailAddress,
+      fromName: this.emailForm.value.fromName,
+      message: this.emailForm.value.message,
+      sendOn: current,
+      status: this.emailForm.value.status,
+      subject: this.emailForm.value.subject,
+      systemCode: this.emailForm.value.systemCode,
+      systemModule: this.emailForm.value.systemModule,
 
-
-
-
-      const payload = {
-        address: [
-          this.emailForm.value.address,
-          this.emailForm.value.cc,
-          this.emailForm.value.bcc,
-        ].filter(email => email), // Filter out any empty values
-        clientCode: this.clientDetails.id,
-        emailAggregator: this.emailForm.value.emailAggregator,
-        from: this.userDetails.emailAddress,
-        fromName: this.emailForm.value.fromName,
-        message: this.emailForm.value.message,
-        sendOn: current,
-        status: this.emailForm.value.status,
-        subject: this.emailForm.value.subject,
-        systemCode: this.emailForm.value.systemCode,
-        systemModule: this.emailForm.value.systemModule,
-
-      };
-      this.quotationService.sendEmail(payload).subscribe(
-        {next:(res)=>{
+    };
+    this.quotationService.sendEmail(payload).subscribe({
+      next:(res) => {
         const response = res
         this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully' );
         log.debug(res)
-      },error : (error: HttpErrorResponse) => {
+      },
+      error : (error: HttpErrorResponse) => {
         log.info(error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-
-        }  })
-      log.debug('Submitted payload:',JSON.stringify(payload) );
+      }
+    })
+    log.debug('Submitted payload:',JSON.stringify(payload) );
   }
-sendSms(){
-  const payload = {
-    recipients: [
-      this.smsForm.value.recipients
-    ],
-    message:this.smsForm.value.message,
-    sender:this.smsForm.value.sender,
 
-
-  };
-  this.quotationService.sendSms(payload).subscribe(
-    {
-      next:(res)=>{
-        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully' );
-      },error : (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-
+  sendSms() {
+    const payload = {
+      recipients: [
+        this.smsForm.value.recipients
+      ],
+      message:this.smsForm.value.message,
+      sender:this.smsForm.value.sender,
+    };
+    this.quotationService.sendSms(payload).subscribe(
+      {
+        next:(res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully' );
+        },
+        error : (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
         }
+      }
+    )
+  }
 
-    }
-  )
-}
-
-  getLimits(productCode){
-    this.quotationService.assignProductLimits(productCode).subscribe(
-      {next:(res)=>{
-        this.quotationService.getLimits(productCode,'L').subscribe(
-          {next:(res)=>{
-
+  getLimits(productCode) {
+    this.quotationService.assignProductLimits(productCode).subscribe({
+      next:(res) => {
+        this.quotationService.getLimits(productCode,'L').subscribe({
+          next:(res) => {
             this.limits = res
             this.limitsList = this.limits._embedded
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
             log.debug(res)
           }
-
-          }
-        )
-      }
-    }
-    )
-
-  }
-  getExcesses(riskCode){
-    this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
-      next:(res)=>{
-        this.excesses = res
-            this.excessesList = this.excesses._embedded
-            log.debug("EXCESS LIST",this.excessesList)
-            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+        })
       }
     })
-
   }
-  loadAllSubclass(){
+
+  getExcesses(riskCode) {
+    this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
+      next:(res) => {
+        this.excesses = res
+        this.excessesList = this.excesses._embedded
+        log.debug("EXCESS LIST",this.excessesList)
+        this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+      }
+    })
+  }
+
+  loadAllSubclass() {
     return this.subclassService.getAllSubclasses().subscribe(data=>{
       this.allSubclassList=data;
       log.debug(this.allSubclassList," from the service All Subclass List");
-
     })
   }
-  getProductSubclass(code){
+
+  getProductSubclass(code) {
     this.productService.getProductSubclasses(code).subscribe(
       {
-        next:(res)=>{
+        next:(res) => {
           this.subclassList = res._embedded.product_subclass_dto_list;
           log.debug(this.subclassList, 'Product Subclass List');
-
-
           this.subclassList.forEach(element => {
             const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
             this.productSubclass  = matchingSubclasses // Merge matchingSubclasses into allMatchingSubclasses
           });
-
           log.debug("Retrieved Subclasses by code", this.productSubclass);
-              }
+        }
       }
     )
   }
 
-  getDocumentTypes(){
+  getDocumentTypes() {
     this.quotationService.documentTypes('C').pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-        next:(res)=>{
-          this.documentTypes = res
-
-        }
+      next:(res) => {
+        this.documentTypes = res
+      }
     })
   }
-  getRiskClauses(riskCode){
+
+  getRiskClauses(riskCode) {
     this.quotationService.getRiskClauses(riskCode).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next:(res)=>{
         this.riskClauses = res
@@ -664,25 +670,22 @@ sendSms(){
       }
     })
   }
+
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
-}
+  }
 
+  // start document upload functionality
+  onBrowseClick(): void {
+    this.fileInput.nativeElement.click();
+  }
 
-
-// start document upload functionality 
-
-
-onBrowseClick(): void {
-  this.fileInput.nativeElement.click();
-}
-
-onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    for (let i = 0; i < input.files.length; i++) {
-      const file = input.files[i];
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
         // Read the file as a data URL
         const reader = new FileReader();
         reader.onload = () => {
@@ -748,59 +751,53 @@ onFileSelected(event: Event): void {
             voucherNo: ""
           }
           this.quotationService.postDocuments(payload).subscribe({
-            next:(res)=>{
+            next:(res) => {
               this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
-            
             }
           })
         };
-         // Read the file as data URL
-         reader.readAsDataURL(file);  
-      // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+        // Read the file as data URL
+        reader.readAsDataURL(file);
+        // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+      }
     }
   }
-}
 
-downloadFile(fileItem: FileItem): void {
-  const url = window.URL.createObjectURL(fileItem.file);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileItem.name;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-  a.remove();
-}
-
-printFile(fileItem: FileItem): void {
-  // Implement your print logic here
-  log.debug('Print file:', fileItem.name);
-}
-
-deleteFile(index: number): void {
-  this.files.splice(index, 1);
-}
-onDocumentTypeChange(event: Event): void {
-  const selectElement = event.target as HTMLSelectElement;
-  const selectedId = +selectElement.value;
-  const selectedData = this.documentTypes.find(data => data.id === selectedId);
-  if (selectedData) {
-    this.selectedDocumentType = selectedData.description;
+  downloadFile(fileItem: FileItem): void {
+    const url = window.URL.createObjectURL(fileItem.file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileItem.name;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
   }
-}
 
-// end document upload functionality
+  printFile(fileItem: FileItem): void {
+    // Implement your print logic here
+    log.debug('Print file:', fileItem.name);
+  }
 
-onResize(event: any) {
-  this.modalHeight = event.height;
-}
+  deleteFile(index: number): void {
+    this.files.splice(index, 1);
+  }
+
+  onDocumentTypeChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedId = +selectElement.value;
+    const selectedData = this.documentTypes.find(data => data.id === selectedId);
+    if (selectedData) {
+      this.selectedDocumentType = selectedData.description;
+    }
+  }
+
+  // end document upload functionality
+  onResize(event: any) {
+    this.modalHeight = event.height;
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.complete();
   }
-
-
-
-
-
-
 }

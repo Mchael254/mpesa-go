@@ -13,10 +13,10 @@
               <a class="nav-link sub-title" data-bs-toggle="tab"  id="nav-authorization-tab" aria-controls="nav-authorization" data-bs-target="#nav-authorization">Authorization & Reports </a>
             </li>
           </ul>
-      
+
        </div>
-          
-    
+
+
     </div>
 
     <div class="tab-content" id="nav-tabContent">
@@ -27,9 +27,9 @@
             <!-- Quotation Details Card -->
             <div class="card mb-4">
                 <div class="card-body">
-                  
+
                     <p class="card-title mb-4">Details</p>
-                      
+
                        <div class="row">
                         <div class="col-md-4">
                             <div class="row">
@@ -40,7 +40,7 @@
                                     <p class="content">{{quotationNumber}}</p>
                                 </div>
                             </div>
-                          
+
                         </div>
                         <div class="col-md-4">
                             <div class="row">
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                         </div>
-        
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="row">
@@ -74,7 +74,7 @@
                                         <p class="content">{{branch?.name}}</p>
                                     </div>
                                 </div>
-                              
+
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
@@ -82,7 +82,7 @@
                                         <p class="label">Cover From</p>
                                     </div>
                                     <div class="col-8">
-                                        <p class="content">{{quotationDetails.withEffectiveFromDate}}</p>
+                                        <p class="content">{{quotationDetails?.withEffectiveFromDate}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -92,13 +92,13 @@
                                         <p class="label">Cover To</p>
                                     </div>
                                     <div class="col-8">
-                                        <p class="content">{{quotationDetails.withEffectiveToDate}}</p>
+                                        <p class="content">{{quotationDetails?.withEffectiveToDate}}</p>
                                     </div>
                                 </div>
                             </div>
                             </div>
-        
-        
+
+
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="row">
@@ -109,7 +109,7 @@
                                             <p class="content">{{quotationView?.currency}}</p>
                                         </div>
                                     </div>
-                                  
+
                                 </div>
                                 <div class="col-md-4">
                                     <div class="row">
@@ -117,7 +117,7 @@
                                             <p class="label">Prosper</p>
                                         </div>
                                         <div class="col-8">
-                                            <p class="content"> {{quotationDetails.proInterfaceType}}</p>
+                                            <p class="content"> {{quotationDetails?.proInterfaceType}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -127,12 +127,12 @@
                                             <p class="label">Introducer</p>
                                         </div>
                                         <div class="col-8">
-                                            <p class="content">{{quotationDetails.introducerCode}}</p>
+                                            <p class="content">{{quotationDetails?.introducerCode}}</p>
                                         </div>
                                     </div>
                                 </div>
                                 </div>
-        
+
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="row">
@@ -140,10 +140,10 @@
                                                 <p class="label">Expiry Date</p>
                                             </div>
                                             <div class="col-7">
-                                                <p class="content">{{quotationDetails.expiryDate}}</p>
+                                                <p class="content">{{quotationDetails?.expiryDate}}</p>
                                             </div>
                                         </div>
-                                      
+
                                     </div>
                                     <div class="col-md-4">
                                         <div class="row">
@@ -177,7 +177,7 @@
                                                     <p class="content" *ngIf="!premium"  >0.00</p>
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
                                         <div class="col-md-4">
                                             <div class="row">
@@ -200,8 +200,8 @@
                                             </div>
                                         </div> -->
                                         </div>
-                                   
-        
+
+
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <div class="row">
@@ -209,10 +209,10 @@
                                                     <p class="label">Internal Comments</p>
                                                 </div>
                                                 <div class="col-7">
-                                                    <p class="content">{{quotationDetails.internalComments}}</p>
+                                                    <p class="content">{{quotationDetails?.internalComments}}</p>
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
                                         <div class="col-md-6">
                                             <div class="row">
@@ -220,26 +220,26 @@
                                                     <p class="label">External Comments</p>
                                                 </div>
                                                 <div class="col-8">
-                                                    <p class="content">{{quotationDetails.comments}}</p>
+                                                    <p class="content">{{quotationDetails?.comments}}</p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
-                                           
+
                                         </div>
                                         </div>
-        
-        
+
+
                             <p class="cancel float-start" (click)="cancelQuotation()">Cancel Quotation</p>
                             <div class="float-end">
                                 <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit Details</button>
                                 <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
-                            </div>   
+                            </div>
                         </div>
-                  
-            </div>    
+
+            </div>
             <!-- Product Details Card -->
-            <div class="card mb-4">  
+            <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-3">
@@ -268,7 +268,7 @@
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </button>
                                 </div>
-                            </div>            
+                            </div>
                         </div>
                     </div>
                               <div class="collapse mt-4" id="productDetails">
@@ -284,7 +284,7 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-data>
-                                    <tr (click)="getLimits(data.code);getProductSubclass(data.code)">  
+                                    <tr (click)="getLimits(data.code);getProductSubclass(data.code)">
                                         <!-- <td>{{data.productShortDescription}}</td>
                                 <td>{{data.wef}}</td>
                                 <td>{{data.wet}}</td>
@@ -322,8 +322,8 @@
                             <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses" tabindex="0">
 
                                 <p-table
-                                 [value]="clauses" 
-                                 [tableStyle]="{ 'min-width': '50rem' }"  
+                                 [value]="clauses"
+                                 [tableStyle]="{ 'min-width': '50rem' }"
                                  styleClass="p-datatable-sm"
                                  [paginator]="true"
                                  [rows]="5"
@@ -334,7 +334,7 @@
                                             <th>ID</th>
                                             <th>Heading</th>
                                             <th>Wording</th>
-                                           
+
                                         </tr>
                                     </ng-template>
                                     <ng-template pTemplate="body" let-data>
@@ -380,7 +380,7 @@
                                                 <ul>
                                                     <li
                                                       *ngFor="let data of productSubclass"
-                                                      
+
                                                     >
                                                       {{ data.description }}
                                                     </li>
@@ -399,7 +399,7 @@
                                                             <th>Narration</th>
                                                             <th>Scl Desc</th>
                                                             <th>Value</th>
-                                                           
+
                                                         </tr>
                                                     </ng-template>
                                                     <ng-template pTemplate="body" let-data>
@@ -412,7 +412,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               
+
                             </div>
                             <div class="tab-pane fade" id="nav-similarities" role="tabpanel" aria-labelledby="nav-similarities" tabindex="0">
                                 <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
@@ -426,7 +426,7 @@
                                     </ng-template>
                                     <ng-template pTemplate="body" let-data>
                                         <tr>
-                                          
+
                                         </tr>
                                     </ng-template>
                                     </p-table>
@@ -434,11 +434,11 @@
                           </div>
                       </div>
                       </div>
-                      
+
             </div>
             <!-- Risk Details Card -->
             <div class="card mb-4">
-                <div class="card-body"> 
+                <div class="card-body">
                     <div class="row">
                         <div class="col-4">
                             <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#riskDetails" (click)="toggleRiskDetails()">Risk Details</p>
@@ -468,10 +468,10 @@
                                 </button>
                                 </div>
                             </div>
-                                
+
                         </div>
                     </div>
-                          
+
                           <div class="collapse mt-4" id="riskDetails">
                             <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'  styleClass="p-datatable-striped"  styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
@@ -481,7 +481,7 @@
                                     <th>Cover Type</th>
                                     <th>SI</th>
                                     <th>Premium</th>
-                                
+
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
@@ -514,10 +514,10 @@
                               </ul>
                               <div class="tab-content mb-4" id="nav-tabContent">
                                 <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections" tabindex="0">
-    
+
                                     <p-table
-                                     [value]="sections" 
-                                     [tableStyle]="{ 'min-width': '50rem' }"  
+                                     [value]="sections"
+                                     [tableStyle]="{ 'min-width': '50rem' }"
                                      styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
@@ -543,20 +543,20 @@
                                                 <td>{{data.freeLimit}}</td>
                                             </tr>
                                         </ng-template>
-                                      
+
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses" tabindex="0">
-                                   
 
 
-                                        <p-table 
+
+                                        <p-table
                 [value]="riskClauses"
-                dataKey="code" 
-                editMode="row" 
+                dataKey="code"
+                editMode="row"
                 [tableStyle]="{'min-width': '50rem'}"
                 styleClass="p-datatable-sm"
-                responsiveLayout="scroll" 
+                responsiveLayout="scroll"
                 class='ui-datatable'
                 [autoLayout]="true">
                 <ng-template pTemplate="header">
@@ -576,7 +576,7 @@
                           <td>
                             {{selectedClauseList.productDescription}}
                           </td>
-                         
+
                           <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
@@ -651,7 +651,7 @@
                               </div>
                           </div>
                           </div>
-                          
+
             </div>
             <!-- External Claims Experience -->
             <div class="card mb-4">
@@ -678,9 +678,9 @@
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                                 </div>
-                            
+
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="mb-4" *ngIf="showExternalClaims === true;">
@@ -692,7 +692,7 @@
                                     <th>Insurer</th>
                                     <th>Policy Number</th>
                                     <th>Year</th>
-                                   
+
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
@@ -707,10 +707,10 @@
                             <ng-template pTemplate="emptymessage">
                                 <tr>
                                   <td colspan="1"></td>
-                            
+
                                   <td colspan="4" style="padding:100px;padding-left: 350px;" id="empty">No records Found</td>
                                 </tr>
-                            
+
                               </ng-template>
                         </p-table>
                     </div>
@@ -737,16 +737,16 @@
                                   <td>{{data.recoveries}}</td>
                                   <td>{{data.salvages}}</td>
                                   <td>{{data.totalPayments}}</td>
-                                  <td>{{data.netPaid}}</td>       
+                                  <td>{{data.netPaid}}</td>
                                  </tr>
                             </ng-template>
                             <ng-template pTemplate="emptymessage">
                                 <tr>
                                   <td colspan="4"></td>
-                            
+
                                   <td colspan="5" style="padding:100px;padding-left:0px;" id="empty">No records Found</td>
                                 </tr>
-                            
+
                               </ng-template>
                         </p-table>
                     </div>
@@ -759,7 +759,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h6 class="mb-4">Choose Report</h6>
-    
+
                     <div class="form-check form-check-inline" id="report-checks">
                         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                         <label class="form-check-label" for="inlineCheckbox1">Quotation summary document</label>
@@ -781,13 +781,13 @@
                         <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
                         <label class="form-check-label" for="inlineCheckbox2">Quotation schedules</label>
                       </div>
-                     
-                
-    
-                    
-    
+
+
+
+
+
                 </div>
-              
+
                     <br>
                     <div class="float-end mb-3">
                         <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Download</button>
@@ -799,13 +799,13 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h6 class="mb-4">Communication</h6>
-    
-    
+
+
                     <div class="form-check form-check-inline">
-                       
+
                         <label style="margin-left:-24px">Send</label>
                       </div>
-    
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" (change)="showCommunicationDetails('email')" value="option1">
                         <label class="form-check-label" for="inlineRadio1">Email</label>
@@ -814,7 +814,7 @@
                         <input class="form-check-input" type="radio" name="inlineRadioOptions" (change)="showCommunicationDetails('sms')" id="inlineRadio2" value="option2">
                         <label class="form-check-label" for="inlineRadio2">SMS</label>
                       </div>
-                      <br><br> 
+                      <br><br>
 
 
 
@@ -840,18 +840,18 @@
                                 <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                               </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="float-end mb-3">
                         <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Cancel</button>
                         <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" data-bs-toggle="modal" data-bs-target="#smsModal">Okay</button>
-                       
+
                     </div>
 
                 </div>
-                  
-                
+
+
                 <div *ngIf="showEmail">
                     <div class="row ">
                         <div class="col-sm">
@@ -885,16 +885,16 @@
                     <div class="float-end mb-3">
                         <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Cancel</button>
                         <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" data-bs-toggle="modal" data-bs-target="#emailModal">Okay</button>
-                       
+
                     </div>
 
                 </div>
-                    
+
                 <!-- Email Modal -->
                 <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div  class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                      
+
                         <div class="modal-body">
                         <h6 class="mb-3">Details</h6>
                         <!-- Client and Agent -->
@@ -905,7 +905,7 @@
                                         <h6>Client</h6>
                                     </div>
                                     <div class="col-sm-8">
-                                        <p class="text-muted">{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
+                                        <p class="text-muted">{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -934,7 +934,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-4">
-                                
+
                             </div>
 
                         </div>
@@ -951,7 +951,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-2">
-                                
+
                             </div>
 
                         </div>
@@ -970,28 +970,28 @@
                                   <input type="text" class="form-control" formControlName="address" >
                                 </div>
                               </div>
-    
+
                               <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label" id="messageLabel">CC</label>
                                 <div class="col-sm-9">
                                   <input type="text" class="form-control" formControlName="cc"  >
                                 </div>
                               </div>
-    
+
                               <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label" id="messageLabel">BCC</label>
                                 <div class="col-sm-9">
                                   <input type="text" class="form-control" formControlName="bcc" >
                                 </div>
                               </div>
-    
+
                               <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label" id="messageLabel">Subject</label>
                                 <div class="col-sm-9">
                                   <input type="text" class="form-control" formControlName="subject" >
                                 </div>
                               </div>
-                              
+
                               <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label" id="messageLabel">Message</label>
                                 <div class="col-sm-9">
@@ -999,10 +999,10 @@
                                 </div>
                               </div>
                           </form>
-                         
+
                           <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="emaildetails()">Send Email</button>
                         </div>
-                    
+
                     </div>
                     </div>
                 </div>
@@ -1011,7 +1011,7 @@
 <div class="modal fade" id="smsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-       
+
         <div class="modal-body">
             <h6 class="mb-3">Details</h6>
             <!-- Client and Agent -->
@@ -1022,7 +1022,7 @@
                             <h6>Client</h6>
                         </div>
                         <div class="col-sm-8">
-                            <p class="text-muted">{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
+                            <p class="text-muted">{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
                         </div>
                     </div>
                 </div>
@@ -1051,7 +1051,7 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    
+
                 </div>
 
             </div>
@@ -1068,11 +1068,11 @@
                     </div>
                 </div>
                 <div class="col-sm-2">
-                    
+
                 </div>
 
             </div>
-            
+
               <h6 class="mb-3">Message Details</h6>
               <form [formGroup]="smsForm" >
 
@@ -1086,7 +1086,7 @@
                     <label class="col-sm-3 col-form-label" id="messageLabel">Sender Phone No.</label>
                     <div class="col-sm-9">
                       <input type="text" class="form-control" formControlName="sender" >
-                    </div>  
+                    </div>
                   </div>
 
                   <div class="mb-3 row">
@@ -1096,21 +1096,21 @@
                     </div>
                   </div>
 
-                  
 
-                
+
+
               </form>
-             
+
               <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="sendSms()">Send SMS</button>
             </div>
-        
-        
+
+
       </div>
     </div>
   </div>
                 </div>
-                
-    
+
+
             </div>
             <div class="card mb-4">
                 <div class="card-body">
@@ -1121,12 +1121,12 @@
                         </div>
                         <div class="col-auto">
                             <select class="form-select form-select-sm mb-1" id="quote-input"   placement="right" (change)="onDocumentTypeChange($event)" >
-                                <option [value]="" selected="true" disabled="disabled"></option> 
+                                <option [value]="" selected="true" disabled="disabled"></option>
                                 <option *ngFor="let data of documentTypes"  [value]="data.id">{{data.description}}</option>
-                            </select>    
+                            </select>
                         </div>
                         <div class="col-auto">
-                        
+
                         </div>
                       </div>
 
@@ -1136,18 +1136,18 @@
                                 <i class="pi pi-arrow-circle-up mb-4" style="font-size: 2.5rem"></i>
                             </div>
                             <p class="text-center">
-                                Drag and drop files to upload or 
+                                Drag and drop files to upload or
                                 <span class="browse-link" (click)="onBrowseClick()">browse</span>
                               </p>
                               <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
-                            
+
                         </div>
                       </div>
 
                       <div *ngIf="files.length > 0" class="file-list">
                         <h6>Uploaded Files</h6>
                         <div *ngFor="let file of files; let i = index" class="file-item">
-                           
+
                           <input type="checkbox" [(ngModel)]="file.selected">
                           <span class="file-name">{{ file.documentType }} - {{ file.name }}</span>
                           <span class="file-actions">
@@ -1157,19 +1157,19 @@
                           </span>
                         </div>
                       </div>
-                   
+
                 </div>
             </div>
         </div>
-       
+
 
       </div>
-  
-
-   
-  
 
 
-   
+
+
+
+
+
 
 </div>
