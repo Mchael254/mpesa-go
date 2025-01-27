@@ -46,15 +46,11 @@ export class QuotationInquiryComponent {
   productCode: number;
   agentName: string = '';
   agentId: number;
-<<<<<<< Updated upstream
   quotationSubMenuList: SidebarMenu[];
-=======
   clientName: string = '';
   clientCode: number;
   quotationNumber: string;
-  quotationSubMenuList: SidebarMenu[];
 
->>>>>>> Stashed changes
 
   constructor(
     public authService: AuthService,
@@ -66,14 +62,11 @@ export class QuotationInquiryComponent {
     public productService: ProductsService,
     public menuService: MenuService,
     public router: Router
-<<<<<<< Updated upstream
-=======
 
 
 
 
 
->>>>>>> Stashed changes
 
   ) { }
 
@@ -81,17 +74,11 @@ export class QuotationInquiryComponent {
     this.getuser();
     this.loadAllQoutationSources();
     this.fetchGISQuotations();
-<<<<<<< Updated upstream
-    this.loadAllproducts();
-    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
-=======
     // this.loadAllproducts();
 
     // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     // this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
     this.fetchGISQuotations();
->>>>>>> Stashed changes
   }
   ngOnDestroy(): void { }
 
@@ -304,10 +291,10 @@ export class QuotationInquiryComponent {
     log.debug('Quotation number:', this.quotationNumber);
 
   }
-  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
-    if (sidebarMenu.link.length > 0) {
-      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
-    }
-    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
-  }
+  // dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+  //   if (sidebarMenu.link.length > 0) {
+  //     this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+  //   }
+  //   this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  // }
 }
