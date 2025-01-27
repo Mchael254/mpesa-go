@@ -317,7 +317,7 @@ export class QuotationsService {
 
     })
 
-    return this.api.GET<riskClauses[]>(`v1/riskClauses/?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET<riskClauses[]>(`v1/riskClauses?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
