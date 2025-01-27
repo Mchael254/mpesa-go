@@ -160,7 +160,7 @@ cashbook: Array<{
       { label: 'Manage Receipts', link: '/home/fms/' },
       { label: 'Receipting', link: '/home/fms/receipt' },
       { label: 'Receipting Exceptions', link: '/home/fms/' },
-      { label: 'Receipt Authorization', link: '/home/fms/' },
+      { label: 'Receipt Authorization', link: '/home/fms/authorize' },
       { label: 'Receipt Upload', link: '/home/fms/' },
       { label: 'Premium Suspense', link: '/home/fms/' },
      

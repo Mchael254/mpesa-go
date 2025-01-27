@@ -53,14 +53,14 @@ getUsers(userId:number):Observable<UsersDTO[]>{
   }
  
    
-  getCurrencies(branchCode:number): Observable<{data:CurrencyDTO[]}> {
-    const params = new HttpParams().set('branchCode',`${branchCode}`);
-    return this.api.GET<{data:CurrencyDTO[]}>(
-      `currencies`,
-      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-      params
-    );
-    }
+  // getCurrencies(branchCode:number): Observable<{data:CurrencyDTO[]}> {
+  //   const params = new HttpParams().set('branchCode',`${branchCode}`);
+  //   return this.api.GET<{data:CurrencyDTO[]}>(
+  //     `currencies`,
+  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+  //     params
+  //   );
+  //   }
     getReceiptNumber(branchCode:number,userCode:number):Observable<ReceiptNumberDTO>{
       const params = new HttpParams().set('branchCode',`${branchCode}`).set('userCode',`${userCode}`);
       return this.api.GET<ReceiptNumberDTO>(
