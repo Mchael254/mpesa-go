@@ -264,7 +264,8 @@ export class QuotationConversionComponent {
     sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
     log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
     log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
-    this.router.navigate(['/home/gis/quotation/quotation-summary'])
+    log.debug(`Productcode ${productCode} has been saved to session storage.`);
+    this.router.navigate(['/home/gis/quotation/quotation-summary']);
   }
 
   clearFilters() {
