@@ -929,7 +929,14 @@
       "policy_no": "Número de póliza",
       "agent_id": "ID del agente",
       "select_an_agent": "Seleccionar un agente",
-      "search" : "Buscar"
+      "search" : "Buscar",
+      "quotation_inquiry": "Cotizaciones:Consulta de cotización",
+      "filter_by": "Filtrar por",
+      "clear_search": "Borrar búsqueda",
+      "comments": "Comentarios",
+      "expiry_date": "Fecha de vencimiento",
+      "transaction_date": "Fecha de transacción",
+      "revise_reuse_quotation": "Cotizaciones:Revisar/Reutilizar cotización"
 
     },
     "policy": {
