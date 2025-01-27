@@ -2,7 +2,7 @@ import { Component, OnInit,NgZone,ViewChild, ElementRef,Renderer2 } from '@angul
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import {NarrationDTO,ReceiptNumberDTO,GenericResponse,ReceiptingPointsDTO,Transaction,Receipt,Client, AccountTypeDTO, BanksDTO, ClientsDTO, ChargesDTO, TransactionDTO, ExchangeRateDTO, ChargeManagementDTO, AllocationDTO, ExistingChargesResponseDTO, UploadReceiptDocsDTO, ReceiptSaveDTO, ReceiptParticularDetailsDTO, GetAllocationDTO, DeleteAllocationResponseDTO, BranchDTO, UsersDTO, Allocation, ReceiptRequest, ReceiptUploadRequest, FileDescription} from '../../data/receipting-dto'
 import { Modal } from 'bootstrap';
-import * as bootstrap from 'bootstrap'; 
+import * as bootstrap from 'bootstrap';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { BrowserStorage } from 'src/app/shared/services/storage';
@@ -43,7 +43,7 @@ export class ReceiptComponent implements OnInit {
   organization: OrganizationDTO[];
   defaultOrgId: number;
   users:StaffDto;
-  branches:BranchDTO[]=[];  
+  branches:BranchDTO[]=[];
   organizationId: number;
   selectedCountryId: number | null = null;
   defaultCountryId: number;
@@ -51,13 +51,13 @@ export class ReceiptComponent implements OnInit {
   selectedBranchId:any;
 defaultBranchId:any;
 defaultBranchName:string;
-  
+
   // 1.3 Receipt capture Details
   globalReceiptNumber: number;
   globalReceiptNo: string;
   currentReceiptingPoint: any;
 drawersBanks:BankDTO[]=[];
-originalNarration: string | null = null; 
+originalNarration: string | null = null;
 
    // 1.4 Client & Transaction Details
    selectedClient: any;
@@ -88,8 +88,8 @@ NoCapitalInjection:string;
   isClientSelected: boolean = false;
   chargesEnabled: boolean = false;
   isAccountTypeSelected = false;
-  loading = false; 
-  isNarrationFromLov = false; 
+  loading = false;
+  isNarrationFromLov = false;
   backdatingEnabled = true; // Adjust this based on your logic
   isSaveBtnActive=true;
   isReceiptSaved=false;
@@ -126,8 +126,8 @@ editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of t
   chequeTypes = ['normal Cheque', 'pd Cheque'];
   filePath: string | null = null;
   // fileName: string | null = null;
- 
- 
+
+
 
 //Bank Details
 bankAccounts:BanksDTO[]=[];
@@ -135,13 +135,13 @@ globalBankAccountVariable:any;
 selectedBankCode:number;
 filteredBankAccounts: BanksDTO[] = [];
 bankSearchTerm: string = '';
-  
- 
- 
 
-   
- 
-   
+
+
+
+
+
+
 //currency details
 currencies:CurrencyDTO[]=[];
 defaultCurrencyId: number | null = null;
@@ -182,7 +182,7 @@ isReceiptDownloading = false; // Tracks if the report is being downloaded
   @ViewChild('fileDescriptionModal', { static: false }) fileDescriptionModal!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('printTemplate', { static: false }) printTemplate!: ReceiptComponent;
-  
+
 
 constructor(
   private fb: FormBuilder,
@@ -214,7 +214,7 @@ ngOnInit(): void {
     this.fetchNarrations();
 
 
- 
+
 
 
 
@@ -266,17 +266,17 @@ captureReceiptForm(){
       chargeAmount: [ ''],
       selectedChargeType:['', Validators.required],
       description: ['', Validators.required],
-    deductions: [''], 
+    deductions: [''],
     exchangeRate:['',[Validators.required, Validators.min(0)]],
     exchangeRates:[''],
    manualExchangeRate: ['', [Validators.required, Validators.min(0.01)]],
-    capitalInjection: [''], 
+    capitalInjection: [''],
     allocationType: [''],
     accountType: ['', Validators.required],
       searchCriteria: [{ value: '', disabled: true }, Validators.required],
       searchQuery: [{ value: '', disabled: true }, Validators.required],
       allocatedAmount: this.fb.array([]) // FormArray for allocated amounts
-   
+
   });
 }
 
@@ -298,10 +298,10 @@ fetchOrganization(){
     next:(data)=>{
       this.organization=data;
      // Set the default organization if it exists
-     
+
      const defaultOrg = this.organization.find(org => org.id === 2);
      if (defaultOrg) {
-    
+
        this.selectedOrganization = defaultOrg.name; // Set default organization
        this.defaultOrgId =  defaultOrg.id;
        this.defaultCountryId=defaultOrg.country.id;
@@ -313,7 +313,7 @@ fetchOrganization(){
        // Patch the form control with the default organization ID
        this.receiptingDetailsForm.patchValue({ organization: this.defaultOrgId });
        //this.receiptingDetailsForm.patchValue({organization:this.selectedOrganization});
-      
+
      } else {
        this.selectedOrganization = null; // Allow user to select from the list
      }
@@ -337,7 +337,7 @@ onOrganizationChange(event: any) {
   if (selectedOrgId) {
     // Find the selected organization object
     const selectedOrg = this.organization.find(org => org.id === selectedOrgId);
-    
+
     if (selectedOrg && selectedOrg.country) {
       // Store the country ID
       this.selectedCountryId = selectedOrg.country.id;
@@ -402,10 +402,10 @@ fetchBranches(organizationId: number){
       if(defaultBranch){
         this.defaultBranchName=defaultBranch.name;
         this.defaultBranchId=defaultBranch.id;
-        
+
         this.receiptingDetailsForm.patchValue({ selectedBranch:  this.defaultBranchId });
         this.fetchAccountTypes(this.GlobalUser.organizationId, this.defaultBranchId,this.GlobalUser.id);
-       
+
       }else{
         this.defaultBranchName= null;
       }
@@ -447,13 +447,13 @@ fetchManualExchangeRateParameter() {
   this.receiptService.getManualExchangeRateParameter('YES').subscribe({
     next: (response) => {
       this.manualExchangeRate = response.data;
-      
+
      // this.system = response.Systemshortdesc
     },
     error: (err) => {
 
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-     
+
     }
   });
 }
@@ -486,26 +486,26 @@ onBank(event: Event): void {
         this.receiptingDetailsForm.get('receiptingPoint')?.setValue(receiptingPoint.name);
         this.receiptingPointId=receiptingPoint.id;
         //console.log('receiptingPointId>',this.receiptingPointId);
-      
+
         //this.receiptingPointName=this.receiptingPointId[0].name;
- 
+
         this.receiptingPointAutoManual=receiptingPoint.autoManual;
        // console.log('receiptingPointManual>',this.receiptingPointAutoManual);
         // Optionally store the receiptingPoint for further use
         this.currentReceiptingPoint = receiptingPoint;
-     
+
        // console.log(this.currentReceiptingPoint.name);
       } else {
         this.globalMessagingService.displayErrorMessage('Error', 'No receipting point data found.');
       }
     },
     error: (err) => {
-      
+
       this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to fetch receipting points.');
     }
   });
  this.fetchReceiptNumber(this.defaultBranchId || this.selectedBranchId, this.GlobalUser.id);
- 
+
 
 }
 
@@ -544,14 +544,14 @@ fetchReceiptingPoints(){
           this.receiptingPoints = response.data;
        this.receiptingPointId=this.receiptingPoints[0].id;
       // console.log('receiptingPointId>',this.receiptingPointId);
-     
+
        this.receiptingPointName=this.receiptingPointId[0].name;
 
        this.receiptingPointAutoManual=this.receiptingPoints[0].autoManual;
       // console.log('receiptingPointManual>',this.receiptingPointAutoManual);
         },
         error: (err) => {
-            
+
           this.globalMessagingService.displayErrorMessage('Error', err.error.error);
         }
       });
@@ -567,9 +567,9 @@ get allocations(): FormArray {
 fetchNarrations() {
   this.receiptService.getNarrations().subscribe({
     next: (response) => {
-      this.narrations = response.data || []; 
+      this.narrations = response.data || [];
       this.filteredNarrations = [...this.narrations]; // Copy for display
-      
+
     },
     error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
@@ -584,7 +584,7 @@ fetchCurrencies() {
 
       // Find the default currency - using string literal 'Y' directly
       const defaultCurrency = currencies.find(curr => curr.currencyDefault === 'Y');
-      
+
       if (defaultCurrency) {
         this.defaultCurrencyId = defaultCurrency.id;
         this.defaultCurrencyName= defaultCurrency.symbol;
@@ -609,7 +609,7 @@ fetchCurrencies() {
 
 
 onCurrencyChanged(event: Event): void {
-   
+
   const selectedCurrencyCodes = (event.target as HTMLSelectElement).value;
   this.selectedCurrencyCode=Number(selectedCurrencyCodes);
   //this.selectedCurrencyCode=Number(event.target as HTMLSelectElement).valueOf;
@@ -639,7 +639,7 @@ fetchCurrencyRate(){
   this.currencyService.getCurrenciesRate(this.defaultCurrencyId)
   .subscribe({
     next: (rates) => {
-    
+
         // Filter rates matching the selected currency
       const matchingRates = rates.filter(rate => {
         // console.log('Comparing:', {
@@ -653,7 +653,7 @@ fetchCurrencyRate(){
       //console.log('Matching Rates:', matchingRates);
         if (matchingRates.length === 0) {
           // No rates found - show manual entry modal
-          
+
           this.showExchangeRateModal2();
         } else if (matchingRates.length === 1) {
           // Single rate found - use it directly
@@ -666,7 +666,7 @@ fetchCurrencyRate(){
         } else {
           // Multiple rates found - need to check dates
          // console.log('Multiple rates found - checking dates');
-          
+
           // Sort rates by effectiveDate in descending order (newest first)
           const validRates = matchingRates
             .filter(rate => {
@@ -678,7 +678,7 @@ fetchCurrencyRate(){
               // });
               return effectiveDate >= currentDate;
             })
-            .sort((a, b) => 
+            .sort((a, b) =>
               new Date(b.withEffectToDate).getTime() - new Date(a.withEffectToDate).getTime()
             );
             //console.log('Valid rates after date filtering:', validRates);
@@ -707,18 +707,18 @@ fetchCurrencyRate(){
 }
 
 fetchDefaultExchangeRate(): void {
-  
+
   this.receiptService.getExchangeRate(this.selectedCurrencyCode, this.GlobalUser.organizationId)
     .subscribe({
       next: (response) => {
-     
+
         this.exchangeRates = response.data; // `data` is now a string
-      
+
         this.showExchangeRateModal(); // Show modal with exchange rate
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-      
+
       }
     });
 }
@@ -731,15 +731,15 @@ this.manualExchangeRate=this.receiptingDetailsForm.get('manualExchangeRate')?.va
   // Update form first
 
   if (this.manualExchangeRate > 0) {
-   
+
     this.receiptingDetailsForm.patchValue({
       exchangeRate: this.exchangeRate
     });
-  
-  
 
-    
-   
+
+
+
+
     //console.log('Form value after update:', this.receiptingDetailsForm.get('exchangeRate')?.value);
     // Post the exchange rate
     this.receiptService.postManualExchangeRate(
@@ -828,10 +828,10 @@ fetchBanks(branchCode:number,currCode:number){
         this.bankAccounts = response.data;
       // console.log('this.bankAccounts',this.bankAccounts);
        this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
-        
+
        },
         error: (err) => {
-        
+
            this.globalMessagingService.displayErrorMessage('Error', err.error.error);
         }
       });
@@ -840,12 +840,12 @@ fetchBanks(branchCode:number,currCode:number){
  filterBanks(event: any) {
   const searchTerm = event.target.value.toLowerCase();
   this.bankSearchTerm = searchTerm;
-  
+
   if (!searchTerm) {
     this.filteredBankAccounts = this.bankAccounts;
   } else {
-    this.filteredBankAccounts = this.bankAccounts.filter(bank => 
-      bank.name.toLowerCase().includes(searchTerm) || 
+    this.filteredBankAccounts = this.bankAccounts.filter(bank =>
+      bank.name.toLowerCase().includes(searchTerm) ||
       bank.code.toString().includes(searchTerm)
     );
   }
@@ -895,62 +895,62 @@ showChargesModal(): void {
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-       
+
       },
     });
   }
 
   // Fetch existing charges
   fetchExistingCharges(receiptNo:number): void {
-    
+
     this.receiptService.getExistingCharges(receiptNo).subscribe({
       next: (response) => {
         this.chargeList = response.data;
-        
+
       //  console.log('Existing charges:', this.chargeList);
       },
       error: (err) => {
-       
+
         this.globalMessagingService.displayErrorMessage('Error', err.error.error);
       },
     });
   }
 
-  
-   
-    
-    
-  
+
+
+
+
+
     // Edit a charge
     editCharge(index: number): void {
       const charge = this.chargeList[index];
       this.editReceiptExpenseId = charge.id; // Store receiptExpenseId for this charge
       this.receiptChargeId = charge.receiptChargeId; // Store receiptChargeId if needed
-  
+
       // Populate the form with the charge details
       this.receiptingDetailsForm.patchValue({
         selectedChargeType: charge.receiptChargeName,
         chargeAmount: charge.amount,
       });
-  
+
       // Show the Submit button and hide Save button
       this.isSubmitButtonVisible = true;
       this.isSaveBtnActive = false;
     }
-  
+
     // Submit edited charge
     onEditSubmit(): void {
 
       const chargeAmount = this.receiptingDetailsForm.get('chargeAmount')?.value;
       const selectedChargeType = this.receiptingDetailsForm.get('selectedChargeType')?.value;
    // Populate the form with the charge details
-      
+
       if (!chargeAmount || !selectedChargeType || !this.editReceiptExpenseId || !this.receiptChargeId) {
-      
+
         this.globalMessagingService.displayWarningMessage('Warning:','All Fields are required');
         return;
       }
-  
+
       const payload = {
         addEdit: 'E',
         receiptExpenseId: this.editReceiptExpenseId, // Use the stored receiptExpenseId
@@ -959,16 +959,16 @@ showChargesModal(): void {
         receiptChargeAmount: chargeAmount, // Use the updated charge amount
         suspenseRct: 'N',
       };
-  
+
       this.receiptService.postChargeManagement(payload).subscribe({
         next: (response) => {
-       
-         
+
+
              // Update chargeAmount input field with saved value
-     
-          
+
+
           this.isSubmitButtonVisible = false; // Hide the Submit button after submission
-          
+
             // Reset the form to clear input fields
              // Update chargeAmount input field with edited value
       this.receiptingDetailsForm.patchValue({
@@ -977,15 +977,15 @@ showChargesModal(): void {
           // Optionally refresh the charge list or handle other UI updates'
           const modalElement = document.getElementById('chargesModal');
           const modalInstance = bootstrap.Modal.getInstance(modalElement!);
-          
+
           if (modalInstance) {
             modalInstance.hide();
-            
+
           }
           this.refreshCharges();
         },
         error: (err) => {
-         
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
             'Failed to update charge. Please try again.'
@@ -993,17 +993,17 @@ showChargesModal(): void {
         },
       });
       this.receiptingDetailsForm.patchValue(
-       
+
         chargeAmount,
       );
       this.isSaveBtnActive=true;
     }
-  
-  
+
+
   // Delete a charge
   deleteCharge(index: number): void {
     const charge = this.chargeList[index];
-    
+
     const payload = {
       addEdit: 'D',
       receiptExpenseId: charge.id,
@@ -1016,11 +1016,11 @@ showChargesModal(): void {
     this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
       //  console.log('Charge deleted successfully:', response);
-  
+
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
-        
+
         this.globalMessagingService.displayErrorMessage(
           'Error',
           'Failed to delete charge. Please try again.'
@@ -1037,13 +1037,13 @@ showChargesModal(): void {
 
   const selectedCharge = this.charges.find((charge) => charge.name === chargeType);
    this.receiptChargeId = selectedCharge.id; // Fetch the receiptChargeId
- 
+
   if(chargeAmount && chargeType){
     this.submitChargeManagement();
-   
+
   }else{
-    
-   
+
+
     this.globalMessagingService.displayErrorMessage('Error','all fields are required!');
   }
   this.fetchExistingCharges(this.globalReceiptNumber);
@@ -1076,15 +1076,15 @@ submitChargeManagement(): void {
     });
        if (modalInstance) {
          modalInstance.hide();
-        
+
        } else {
-       
+
        }
-   
-      
+
+
     },
     error: (err) => {
-     
+
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'Failed to post charge management. Please try again.'
@@ -1092,7 +1092,7 @@ submitChargeManagement(): void {
     },
   });
 }
-// Refresh charges list after add or edit 
+// Refresh charges list after add or edit
 refreshCharges(): void {
   // Call your service to fetch the updated charges
   this.fetchCharges();
@@ -1104,11 +1104,11 @@ fetchAccountTypes(orgCode:number,branchCode:number,userCode:number) {
       this.accountTypes = response.data || [];
      // console.log('response>>',response);
      this.accountTypeArray=response.data;
-    
+
     },
     error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-     
+
     },
   });
 }
@@ -1123,7 +1123,7 @@ onAccountTypeChange(): void {
 account.name===accountType
 
     );
-    
+
     this.receiptingDetailsForm.get('searchCriteria')?.enable();
     this.receiptingDetailsForm.get('searchQuery')?.enable();
   } else {
@@ -1133,73 +1133,73 @@ account.name===accountType
 }
 
 
-  
-  
-  
+
+
+
   onSearch(): void {
- 
-   
+
+
     const { accountType, searchCriteria, searchQuery } = this.receiptingDetailsForm.value;
-  
+
     if (!accountType || !searchCriteria || !searchQuery) {
-     
+
       this.globalMessagingService.displayErrorMessage('Error','Please provide all the required fields');
       return;
     }
-  
+
     const criteriaMapping = {
       clientName: 'CLIENT_NAME',
       policyNumber: 'POL_NO',
       accountNumber: 'ACC_NO',
       debitNote: 'DR_CR_NO',
     };
-  
+
     const apiSearchCriteria = criteriaMapping[searchCriteria];
     if (!apiSearchCriteria) {
-      
+
       this.globalMessagingService.displayErrorMessage('Error','Invalid search criteria selected');
       return;
     }
-  
+
     this.fetchClients(apiSearchCriteria, searchQuery.trim());
-  
+
   }
-  
+
   fetchClients(searchCriteria: string, searchValue: string): void {
     const accountType = this.receiptingDetailsForm.get('accountType')?.value;
     const selectedAccountType = this.accountTypes.find((type) => type.name === accountType);
-  
+
     if (selectedAccountType) {
       const { systemCode, accCode } = selectedAccountType;
       //this.loading = true;
-  
+
       this.receiptService.getClients(systemCode, accCode, searchCriteria, searchValue).subscribe({
         next: (response) => {
           this.clients = response.data || [];
         //console.log('Clients:', this.clients);
-         
+
 
           if (!this.clients.length) {
-            
+
             this.globalMessagingService.displayErrorMessage('Error','No clients found for the given criteria');
           }
         },
         error: (err) => {
-          
+
           this.globalMessagingService.displayErrorMessage('Error', err.error.error);
-         
+
         },
         complete: () => {
           this.loading = false;
         },
       });
     } else {
-     
+
       this.globalMessagingService.displayErrorMessage('Error','Invalid account type!');
     }
   }
-  
-  
+
+
 onNarrationDropdownChange(event: any): void {
   const selectedValue = event.target.value;
 
@@ -1238,7 +1238,7 @@ onPaymentModeSelected(): void {
 
 
 
- 
+
 
 updatePaymentModeFields(paymentMode: string): void {
   const chequeTypeModalElement = document.getElementById('chequeTypeModal');
@@ -1248,7 +1248,7 @@ updatePaymentModeFields(paymentMode: string): void {
 
   if (paymentMode === 'CASH') {
    // this.disablePaymentRef=true;
- 
+
      this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
      chequeTypeModal?.hide();
 
@@ -1273,7 +1273,7 @@ updatePaymentModeFields(paymentMode: string): void {
    this.receiptingDetailsForm.get('paymentRef')?.enable();
   }
 
- 
+
 }
 openChequeTypeModal(): void {
   const chequeTypeModal= document.getElementById('chequeTypeModal');
@@ -1304,7 +1304,7 @@ private resetChequeFields(chequeTypeModal: Modal | null): void {
   //   chequeTypeModalElement.style.display='block';
   // }
   chequeTypeModal?.hide();
-  
+
   this.receiptingDetailsForm.get('chequeType')?.disable();
   this.receiptingDetailsForm.patchValue({ chequeType: '' });
 }
@@ -1321,7 +1321,7 @@ this.globalMessagingService.displayErrorMessage('Error', 'Please select a cheque
   }
     // const ChequeTypeModal= new bootstrap.Modal(document.getElementById('chequeTypeModal')!);
     // ChequeTypeModal.hide();
-   
+
   }
 
 }
@@ -1342,7 +1342,7 @@ if (chequeType) {
 
   this.globalMessagingService.displayErrorMessage('Error', 'Please select a cheque type.');
   //this.globalMessagingService.displayWarningMessage('Warning', 'Please select a cheque type.');
- 
+
 }
 }
 
@@ -1353,7 +1353,7 @@ fetchDocByDocId(docId: string){
   this.dmsService.getDocumentById(docId).subscribe({
     next:(response)=>{
       this.uploadedFile = response;
-   
+
       this.globalMessagingService.displaySuccessMessage('Success','Doc retrieved successfullly');
 //console.log('doc data>>',response);
     },
@@ -1397,7 +1397,7 @@ onFileSelected(event: any): void {
 
     this.selectedFile = null; // Reset selectedFile if no file is selected
     this.isFileUploadButtonDisabled = false; // Keep "File Upload" button active
-    
+
   }
 }
 
@@ -1462,12 +1462,12 @@ uploadFile(): void {
         this.fetchDocByDocId(this.globalDocId);
       },
       error: (error) => {
-       
+
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload receipt');
       },
     });
   } catch (error) {
-    
+
     this.globalMessagingService.displayErrorMessage('Error', 'Error preparing file upload');
   }
 }
@@ -1512,7 +1512,7 @@ openFile(): void {
         URL.revokeObjectURL(downloadUrl); // Clean up the download URL
       }
     } catch (error) {
-     
+
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'Failed to process the file. The file might be corrupted or in an invalid format.'
@@ -1526,11 +1526,11 @@ openFile(): void {
 
  deleteFile() {
     if (this.uploadedFile && this.globalDocId) {
-     
-      
+
+
       this.dmsService.deleteDocumentById(this.globalDocId).subscribe({
         next: (response) => {
-          
+
           this.globalMessagingService.displaySuccessMessage('Success', 'File deleted successfully');
           this.uploadedFile = null;
           this.decodedFileUrl = null;
@@ -1563,11 +1563,11 @@ saveFileDescription(): void {
   if (this.currentFileIndex >= 0 && this.currentFileIndex < this.fileDescriptions.length) {
   if (description) { // Check if description is not empty
     this.fileDescriptions[this.currentFileIndex].description = description; // Update the description for the current file
- 
-    
+
+
     // Close the modal after saving the description
     this.closeFileModal();
-   
+
   } else {
     this.globalMessagingService.displayErrorMessage('Failed', 'Please enter file description');
   }
@@ -1579,16 +1579,16 @@ closeFileModal(): void {
   if (modalInstance) {
     modalInstance.hide();
   }
-  
+
 }
 
 
 onRemoveFile(index: number): void {
   this.fileDescriptions.splice(index, 1); // Remove the file from the array
-  
+
   this.isFileUploadButtonDisabled = false; // Re-enable "File Upload" button
   //console.log('File removed. Updated file descriptions:', this.fileDescriptions);
-  
+
 }
 
 
@@ -1596,7 +1596,7 @@ onRemoveFile(index: number): void {
 
 // The onClickClient method sets this.selectedClient and fetches transactions based on the selected client's details. This allows the UI to reflect the transactions specific to the selected client.
 onClickClient(selectedClient) {
- 
+
   if (this.selectedClient?.code === selectedClient.code) {
     return; // Avoid unnecessary API call
   }
@@ -1610,15 +1610,15 @@ onClickClient(selectedClient) {
     selectedClient.accountCode,
     selectedClient.receiptType,
     selectedClient.shortDesc,
-    
+
 
   );
    // Ensure the allocation table is displayed
    this.allocation = true;
-  
+
   // Recalculate total allocated amount for the new client
   this.calculateTotalAllocatedAmount();
-  
+
 }
 
 
@@ -1652,10 +1652,10 @@ fetchTransactions(systemShortDesc: string,
           })
         );
       });
-    
+
  // Recalculate total allocated amount
  //this.calculateTotalAllocatedAmount();
-      
+
       // Retain cumulative amount
       this.calculateTotalAllocatedAmount();
       //console.log('Form Controls:', this.allocatedAmountControls.value);
@@ -1741,8 +1741,8 @@ allocateAndPostAllocations(): void {
   const allocatedTransactionsData = this.transactions.map((transaction, index) => {
     const allocatedAmountControl = this.getFormControl(index, 'allocatedAmount');
     const allocatedAmount = allocatedAmountControl?.value || 0;
-    
-   
+
+
 
     return {
       transaction,
@@ -1831,7 +1831,7 @@ allocateAndPostAllocations(): void {
      // this.totalAllocatedAmount = 0; // Reset total allocated amount
       this.getAllocations();
       this.selectedClient;
-     
+
     },
     error: (err) => {
       //console.error('Error posting allocation:', err);
@@ -1845,8 +1845,8 @@ getAllocations(){
   this.receiptService.getAllocations(this.globalReceiptNumber,this.GlobalUser.id).subscribe({
     next:(response)=>{
       this.selectedClient;
-      
-this.getAllocation = response.data.filter(allocation => 
+
+this.getAllocation = response.data.filter(allocation =>
   allocation.receiptParticularDetails.some(detail => detail.premiumAmount > 0));
 
       // Calculate total allocated amount for previously posted allocations
@@ -1947,7 +1947,7 @@ deleteAllocation(receiptDetailCode: number): void {
 
 //           // Show success message
 //           this.globalMessagingService.displaySuccessMessage(
-//             'Success', 
+//             'Success',
 //             'Allocation deleted successfully'
 //           );
 
@@ -1955,7 +1955,7 @@ deleteAllocation(receiptDetailCode: number): void {
 //           this.getAllocations();
 //         } else {
 //           this.globalMessagingService.displayErrorMessage(
-//             'Error', 
+//             'Error',
 //             'Failed to delete allocation'
 //           );
 //         }
@@ -1968,19 +1968,19 @@ deleteAllocation(receiptDetailCode: number): void {
 //         );
 //       }
 //     });
-  
+
 // }
 
 
 
 validateRequiredFields():any{
   const requiredFields = [
-    
+
     'amountIssued',
     'bankAccount',
     'paymentMode',
     'narration',
-    
+
     'receivedFrom'
   ];
    let isValid =true;
@@ -2039,10 +2039,10 @@ return isValid;
 fetchParamStatus(){
   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
     next:(response)=>{
-      
+
       this.parameterStatus=response.data;
-      
-      
+
+
     },
     error:(err)=>{
       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
@@ -2070,14 +2070,14 @@ submitReceipt(): any {
   if (this.totalAllocatedAmount < amountIssued) {
     this.globalMessagingService.displayErrorMessage('Error', 'Amount issued is not fully allocated.');
     // this.globalMessagingService.displayInfoMessage('Total Allocated Amount is:',String(this.totalAllocatedAmount));
-   
+
     return false; // Stop further execution
   }
   if(this.totalAllocatedAmount > amountIssued){
     this.globalMessagingService.displayErrorMessage('Error','Total Allocated Amount Exceeds Amount Issued');
   //  this.globalMessagingService.displayInfoMessage('Total Allocated Amount is:',String(this.totalAllocatedAmount));
    return false;
-   
+
   }
  this.fetchParamStatus();
  console.log('receiptDoc>>',this.parameterStatus);
@@ -2085,13 +2085,13 @@ submitReceipt(): any {
     {
      // alert('jey');
      if(confirm('do you want to save receipt without uploading file?')==true){
-      
+
 return true;
      }else{
       return false;
      }
 
-   
+
      }
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
@@ -2113,14 +2113,14 @@ this.capitalInjection='Y'
     misc: Number(detail.miscAmount || 0)
   }));
 const receiptData: ReceiptSaveDTO={
-  
+
     receiptNo: String(this.globalReceiptNumber),
     receiptCode: formValues.receiptNumber,
     receiptDate: formValues.receiptDate ? new Date(formValues.receiptDate).toISOString().split('T')[0] : '',
     amount: String(formValues.amountIssued),  // Add decimal points for BigDecimal fields
     paidBy: formValues.receivedFrom ,
     currencyCode: String(this.defaultCurrencyId), // Add quotes to ensure it's treated as string before conversion
-   
+
    branchCode: String( this.defaultBranchId) || String(this.selectedBranchId),  // Add quotes to ensure it's treated as string before conversion
     paymentMode: formValues.paymentMode,
     paymentMemo: formValues.paymentRef || null,
@@ -2136,7 +2136,7 @@ const receiptData: ReceiptSaveDTO={
     sysShtDesc: this.selectedClient?.systemShortDesc,
     receiptingPointId: this.receiptingPointId,
     receiptingPointAutoManual: this.receiptingPointAutoManual,
-  
+
     // capitalInjection:  "N",
     capitalInjection: this.capitalInjection || this.NoCapitalInjection ,
     chequeNo: null,
@@ -2157,13 +2157,13 @@ const receiptData: ReceiptSaveDTO={
     insurerAcc: null,
     grossOrNetWhtax: null,
     grossOrNetVat: null,
-    
+
     sysCode: String(this.selectedClient.systemCode),
     bankAccountType: this.globalBankAccountVariable.type
-  
+
 }
 //console.log('receipt Data>',receiptData);
-  
+
 
   // Call the service to save the receipt
   this.receiptService.saveReceipt(receiptData).subscribe({
@@ -2171,7 +2171,7 @@ const receiptData: ReceiptSaveDTO={
       this.receiptResponse=response.data;
       this.globalMessagingService.displaySuccessMessage('Success', 'Receipt saved successfully');
         // Enable the print button after successful receipt submission
-        
+
       //this.uploadReport();
    this.isReceiptSaved=true;
  // Store current values of fields to preserve
@@ -2205,7 +2205,7 @@ this.clients = []; // Clear the searched clients array
 this.searchClients = []; // Clear search results
 this.searchQuery = ''; // Clear search query
 
-     
+
    // Reset account type related states
    this.isAccountTypeSelected = false;
    this.globalAccountTypeSelected = null;
@@ -2213,7 +2213,7 @@ this.searchQuery = ''; // Clear search query
    // Explicitly disable search fields
    this.receiptingDetailsForm.get('searchCriteria')?.disable();
    this.receiptingDetailsForm.get('searchQuery')?.disable();
- 
+
 
   // Reset other form-related states
   this.fileDescriptions = [];
@@ -2239,16 +2239,16 @@ this.searchQuery = ''; // Clear search query
     // Clear any error states
     Object.keys(this.receiptingDetailsForm.controls).forEach(key => {
       const control = this.receiptingDetailsForm.get(key);
-      if (control && key !== 'currency' && key !== 'organization' && 
+      if (control && key !== 'currency' && key !== 'organization' &&
           key !== 'branch' && key !== 'documentDate' && key !== 'receiptDate') {
         control.markAsUntouched();
         control.markAsPristine();
       }
     });
     //prepare receipt upload payload
-    
 
-    
+
+
     },
     error: (error) => {
       console.error('Error saving receipt:', error);
@@ -2266,32 +2266,32 @@ fetchPayments(orgCode:number){
   this.fmsService.getPaymentMethods(orgCode).subscribe({
     next:(response)=>{
       this.paymentModes = response.data;
-      
-    
+
+
     },
     error:(error)=>{
       this.globalMessagingService.displayErrorMessage('error','error fetching payments modes');
-      
+
     }
   })
 }
 
 confirmFormValidity():any{
- 
+
   this.fetchParamStatus();
-  
+
   if(this.parameterStatus=='N')
     {
      // alert('jey');
      if(confirm('do you want to save receipt without uploading file?')==true){
-      
+
       //this.fetchReceiptDetails();
 return true;
      }else{
       return false;
      }
 
-   
+
      }
 
 }
@@ -2320,8 +2320,8 @@ download(fileUrl: string, fileName: string): void {
   }
 }
 GetReceipt(){
- 
-  
+
+
   const reportPayload: ReportsDto = {
     encode_format: "RAW",
     params: [
@@ -2340,10 +2340,10 @@ GetReceipt(){
     rpt_code: 300,
     system: "CRM"
   };
-  this.reportService.generateCRMReport(reportPayload)
+  this.reportService.generateReport(reportPayload)
   .subscribe({
     next: (response) => {
-      
+
       const downloadOption='PDF';
       let blobType;
       switch (downloadOption) {
@@ -2378,7 +2378,7 @@ GetReceipt(){
     },
     error: (err) => {
       this.globalMessagingService.displayErrorMessage('Error', err.error.status);
-      
+
       this.isReceiptDownloading = false; // Re-enable the button in case of error
     }
   })

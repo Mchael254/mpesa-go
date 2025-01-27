@@ -257,7 +257,7 @@ export class MenuService {
             subList: [
               {
                 name: 'Reports',
-                link: '',
+                link: '/home/crm/system-reports',
               },
             ],
             collapsed: true,

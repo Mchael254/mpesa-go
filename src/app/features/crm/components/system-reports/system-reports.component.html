@@ -1,0 +1,45 @@
+<div class="base-content-section">
+  <div class="col-8">
+    <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'System Reports',
+        url: '/home/crm'
+      },
+      {
+        label: 'Reports',
+        url: '/home/crm/system-reports'
+      }
+    ]">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="container bg-white">
+    <div class="row">
+      <div class="col-lg-6 col-sm-12">
+        <app-dynamic-reports
+          [title]="'crm.sysReports' | translate"
+          [reportsToDisplay]="systemReportsData"
+          (onClickReport)="onReportSelect($event)">
+
+        </app-dynamic-reports>
+      </div>
+      <div class="col-lg-6 col-sm-12">
+        <ng-container *ngIf="directDebitReportsVisibility[0]?.value === 'Y'">
+          <app-dynamic-reports
+            [title]="'crm.directDebitReports' | translate"
+            [reportsToDisplay]="directDebitReportsData"
+            (onClickReport)="onReportSelect($event)">
+
+          </app-dynamic-reports>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

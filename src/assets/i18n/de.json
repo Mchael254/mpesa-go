@@ -286,7 +286,17 @@
     "ranking": "Rangfolge",
     "agentName": "Agentenname",
     "agentShortDesc": "Agenten Kurzbeschreibung",
-    "code": "Code"
+    "code": "Code",
+    "reportFormat": "Berichtsformat",
+    "HTML": "HTML",
+    "PDF": "PDF",
+    "Excel": "Excel",
+    "Word": "Word",
+    "print": "Drucken",
+    "reportParams": "Berichtsparameter",
+    "serviceReqReport": "Bericht über Serviceanfragen",
+    "sysReports": "Systemberichte",
+    "directDebitReports": "Berichte über Lastschriften"
   },
   "entities": {
     "account_number": "Kontonummer",

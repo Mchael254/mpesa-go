@@ -36,6 +36,7 @@ import { ServiceDeskDetailsComponent } from './components/service-desk/service-d
 import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
 import { RequestReportComponent } from './components/service-desk/request-report/request-report.component';
 import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
+import {SystemReportsComponent} from "./components/system-reports/system-reports.component";
 
 const routes: Routes = [
   {
@@ -181,6 +182,10 @@ const routes: Routes = [
   {
     path: 'prospects',
     component: ProspectsComponent,
+  },
+  {
+    path: 'system-reports',
+    component: SystemReportsComponent,
   },
 ];
 
