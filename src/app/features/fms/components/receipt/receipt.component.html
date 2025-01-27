@@ -10,16 +10,16 @@
       <select   class="form-control form-select text-black border-0 fw-medium font-size: 14px;"  id="organization" style="width: 67%;" formControlName="organization"  (change)="onOrganizationChange($event)"  >
      
        <label for="organization">Select</label>
-        <!-- <option *ngFor="let org of organization"    [value]="org.id" [selected]="org.id === 2">{{org.name}} </option> -->
+
         <option *ngFor="let org of organization" [value]="org.id" [selected]="org.id===2">{{ org.name }}</option>
       </select>
     </div>
     <div class="col-lg-3 d-flex">
    
-      <label  class="form-label text-black text-end align-content-center m-0" style="width: 50%;font-size: 16px;">{{'fms.branch' | translate }}: <span class="required"></span></label>
-      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;" formControlName="selectedBranch"  [class.is-invalid]="receiptingDetailsForm.get('paymentMode')?.invalid && receiptingDetailsForm.get('paymentMode')?.touched">
+      <label  class="form-label text-black text-end align-content-center m-0" style="width: 50%;font-size: 16px;">{{'fms.branch' | translate }}:</label>
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;" formControlName="selectedBranch"  (change)="onBranchChange($event)">
         <option value=""  >Select </option>
-        <option *ngFor="let branch of branches" [value]="branch.id"  >{{branch.name}}</option>
+        <option *ngFor="let branch of branches" [value]="branch.id" [selected]="branch.id===1" >{{branch.name}}</option>
        
       </select>
    
@@ -332,7 +332,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label for="receivedFrom" class="text-dark">{{'fms.receipting.received_from' | translate }}</label>
+              <label for="receivedFrom" class="text-dark">{{'fms.receipting.received_from' | translate }}<span class="required"></span></label>
               <input type="text" class="form-control" id="receivedFrom" formControlName="receivedFrom">
             </div>
           </div>
@@ -549,29 +549,37 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4 mb-2" *ngIf="uploadedFile" >
-            <p class="mb-1"><strong>File Name:</strong> {{ uploadedFile.docName }}</p>
-            <button class="btn btn-primary me-2" (click)="openFile()">
-              <i class="fas fa-eye"></i> Open
-            </button>
           
-          <!-- <div class="col-md-3" *ngIf="uploadedFile" > -->
-            <button class="btn btn-danger" (click)="deleteFile()">
-              <i class="fas fa-trash"></i> 
-            </button>
+          </div>
+          
+  
+     <div class="row" *ngIf="uploadedFile">
+      <div class="col-md-4" >
+        <div class="col-md-4 d-flex mb-2 mt-2  align-content-center"  style="height:50px"  >
+         
+
+          <p class="mb-1"><strong>File Name:</strong> {{uploadedFile.docName }}</p>
+          <div class="d-block ms-2 mt-1">
+          <button class="btn btn-primary me-2 mb-2  d-flex align-items-center" style="height:25px" (click)="openFile()">
+            <i class="fas fa-eye"></i> Open
+          </button>
+        
+        
+          <button class="btn btn-danger d-flex align-items-center" style="height:25px" (click)="deleteFile()">
+            <i class="fas fa-trash"></i> 
+          </button>
+        </div>
           </div>
         </div>
-  
+     </div>
 
-
-
+      
 <!-- Upload Button and Hidden File Input -->
  <div class="row mt-3">
 <div class="col-md-4">
-  <!-- <input type="file" id="fileInput" (change)="onFileSelected($event)" /> -->
-  <!-- <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;"> -->
+
   <input type="file" #fileInput (change)="onFileSelected($event)"  style="display: none;">
-  <button type="button" class="btn btn-primary" (click)="fileInput.click()">
+  <button type="button" class="btn btn-primary"  [disabled]="isFileUploadButtonDisabled" (click)="fileInput.click()">
     {{ 'fms.receipting.uploadFiles' | translate }}
   </button>
  
@@ -591,8 +599,8 @@
 <div class="col-md-4 mt-2"  *ngIf="fileDescriptions.length > 0">
   <button type="button" class="btn btn-success"  (click)="uploadFile()">post File</button>
 </div>
-
 </div>
+
 <!-- Modal for File Description -->
 <div id="fileDescriptionModal"  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -614,7 +622,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="saveFileDescription()">Save</button>
-        <!-- <button type="button" class="btn btn-secondary" (click)="closeFileModal()">Cancel</button> -->
+       
       </div>
     </div>
   </div>
@@ -695,9 +703,12 @@
         </div>
 
         <!-- Search Results Table -->
-        <div class="row mt-3" *ngIf="clients.length > 0">
+         <!-- added a paginator -->
+        <div class="row mt-3" *ngIf="clients.length > 0 ">
           <div class="col-md-12">
-            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped"
+            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
             selectionMode="single" 
             [(selection)]="selectedClient"
              dataKey="code">
@@ -728,7 +739,7 @@
           </div>
         </div>
 
-       
+       <!-- Transactions Table -->
         <div class="row mt-3"  id="allocationTable"  *ngIf="allocation">
           <h3 class="text-primary text-start fs-4 mt-2">Transactions</h3>
           <div class="col-md-12">
@@ -788,18 +799,24 @@ balance}}</td>
            
           </div>
         </div>
+        <!-- <div style="margin-right:20px; text-align: center; justify-content: center; align-items: center;">
+          Cumulative Allocated Amount: {{ totalAllocatedAmount }}
+        </div> -->
         <div *ngIf="allocatedAmountControls.length > 0 && allocation" class="d-flex justify-content-end">
-          <div style="margin-right:20px;text-align: center; justify-content:center;align-items: center;">Total Allocated Amount: {{ totalAllocatedAmount }}</div>
+          <div style="margin-right:20px;text-align: center; justify-content:center;align-items: center;">Total Allocated Amount: {{ totalAllocatedAmount }}<br>Remaining Balance: {{ getRemainingAmount() | number:'1.2-2' }}<br></div>
+
           <button class="btn btn-primary" (click)="allocate()">Allocate</button>
+          
         </div>
       
-    
+        
 <!-- Allocated Amounts Table -->
 <div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0 && !isReceiptSaved " class="row mt-3">
   <h3 class="text-primary text-start fs-4 mt-2">Allocations</h3>
   <div class="col-md-12">
     <p-table 
       [value]="getAllocation"
+
       responsiveLayout="scroll"
       class="table-striped"
       [paginator]="true"
@@ -845,103 +862,14 @@ balance}}</td>
 </div>
 
 
-       <!-- Receipt Preview Modal -->
-<div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-labelledby="receiptPreviewModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" *ngIf="globalReceiptDetails">
-        <!-- Company Header -->
-        <div class="text-center mb-4">
-          <h4>OFFICIAL RECEIPT</h4>
-        </div>
-
-        <!-- Receipt Details -->
-        <div class="row mb-3">
-          <div class="col-6">
-            <p><strong>Receipt No:</strong> {{globalReceiptDetails.receiptNumber}}</p>
-            <p><strong>Date:</strong> {{formatReturnedDate(globalReceiptDetails.receiptDate)}}</p>
-            <p><strong>Received From:</strong> {{globalReceiptDetails.receivedFrom}}</p>
-          </div>
-          <div class="col-6">
-            <p><strong>Branch:</strong> {{globalReceiptDetails.branchCode}}</p>
-            <p><strong>Currency:</strong> {{globalReceiptDetails.currencyCode}}</p>
-            <p><strong>Payment Mode:</strong> {{globalReceiptDetails.paymentMode}}</p>
-          </div>
-        </div>
-
-        <!-- Payment Details -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Description</th>
-                    <th class="text-end">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{{globalReceiptDetails.narration}}</td>
-                    <td class="text-end">{{formatAmount(globalReceiptDetails.amount)}}</td>
-                  </tr>
-                  <!-- Show charges if any -->
-                  <tr *ngIf="globalReceiptDetails.transactionCharge">
-                    <td>Transaction Charge</td>
-                    <td class="text-end">{{formatAmount(globalReceiptDetails.transactionCharge)}}</td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>Total Amount</th>
-                    <th class="text-end">{{formatAmount(globalReceiptDetails.amount)}}</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Details -->
-        <div class="row">
-          <div class="col-12">
-            <p><strong>Payment Reference:</strong> {{globalReceiptDetails.paymentMemo}}</p>
-            <p *ngIf="globalReceiptDetails.drawerBank"><strong>Drawer's Bank:</strong> {{globalReceiptDetails.drawerBank}}</p>
-            <p><strong>Captured By:</strong> {{globalReceiptDetails.capturedBy}}</p>
-            <p *ngIf="globalReceiptDetails.manualRef"><strong>Manual Reference:</strong> {{globalReceiptDetails.manualRef}}</p>
-          </div>
-        </div>
-
-        <!-- Terms and Conditions -->
-        <div class="row mt-4">
-          <div class="col-12">
-            <small class="text-muted">
-              This is a computer generated receipt and does not require a signature.
-              <br>
-              All payments are subject to realisation of cheques/drafts.
-            </small>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="printReceipt()">Print</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+    
 
         <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
-          <!-- <button type="button" class="btn btn-primary me-3" id="saveReceipt" [disabled]="!isClientSelected" (click)="submitReceipt()"
-          >Save Receipt</button> -->
+         
           <button type="button" class="btn btn-primary me-3" id="saveReceipt"  [disabled]="!isClientSelected"  (click)="submitReceipt()"
           >Save Receipt</button>
-          <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt" [disabled]="!isClientSelected" (click)="confirmFormValidity()"
+        
+        <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt" [disabled]="!isReceiptSaved || isReceiptDownloading" (click)="GetReceipt()"
           >Print Receipt
         </button>
           <!-- <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" >Cancel</button> -->

@@ -34,13 +34,19 @@ export class QuotationInquiryComponent {
   selectedProductCode: any;
   statuses = [
     { label: 'Confirmed', value: 'Confirmed' },
-    { label: 'Cancelled', value: 'Cancelled' },
     { label: 'Lapsed', value: 'Lapsed' },
-    { label: 'Draft', value: 'Draft' }
+    { label: 'Draft', value: 'Draft' } ,
+    { label: 'Pending', value: 'Pending' },
+    { label: 'Accepted', value: 'Accepted' },
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'None', value: 'None' },
+
   ];
   selectedStatus: string = ''; // Holds the selected value
   productName: string = '';
   productCode: number;
+  agentName: string = '';
+  agentId: number;
   quotationSubMenuList: SidebarMenu[];
 
   constructor(
@@ -134,19 +140,19 @@ export class QuotationInquiryComponent {
     const clientType = null
     const clientCode = null
     const productCode = this.productCode|| null
-    const agentCode = null
     const quotationNumber = null
     const status = null
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
-    const source = this.selectedSource
+    const agentCode = this.agentId || null
+    const source = this.selectedSource || null
     const clientName = null
 
     log.debug("Selected Date from:", this.selectedDateFrom)
     log.debug("Selected Date to:", this.selectedDateTo)
 
     this.quotationService
-      .searchQuotations(0, 10000, clientType, clientCode, productCode, dateFrom, dateTo, agentCode, quotationNumber, status, source, clientName)
+      .searchQuotations(0, 10000, clientType, clientCode, productCode, dateFrom, dateTo,agentCode, status, source, clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -238,5 +244,25 @@ export class QuotationInquiryComponent {
 
     // Call fetchQuotations when the client code changes
     this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
+  }
+
+  onStatusSelected(selectedValue: any) {
+
+    this.selectedStatus = selectedValue;
+
+    log.debug('Selected Status Code:', this.selectedStatus);
+
+
+  }
+  onAgentSelected(event: { agentName: string; agentId: number }) {
+    this.agentName = event.agentName;
+    this.agentId = event.agentId;
+
+    // Optional: Log for debugging
+    log.debug('Selected Agent:', event);
+    log.debug("AgentId", this.agentId);
+
+ 
+    this.fetchGISQuotations(); 
   }
 }
