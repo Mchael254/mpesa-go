@@ -157,7 +157,7 @@ export class QuotationSummaryComponent {
     this.externalClaimsExperience(this.clientCode);
     this.internalClaimsExperience(this.clientCode);
     // this.getPremiumComputationDetails();
-    this.getAgent();
+    // this.getAgent();
 
     log.debug("MORE DETAILS TEST",this.quotationDetails )
 
@@ -208,7 +208,7 @@ export class QuotationSummaryComponent {
    * @param {string} code - The code of the quotation for which to retrieve details.
    * @return {void}
    */
-  getQuotationDetails(code) {
+  getQuotationDetails(code: any) {
     this.quotationService.getQuotationDetails(code).subscribe(res => {
       this.quotationView = res;
       log.debug("DETAILS TEST quotation data", this.quotationView);
@@ -235,11 +235,11 @@ export class QuotationSummaryComponent {
       log.debug("Risk Details quotation-summary", this.riskDetails);
 
       // Handle multiple product codes
-      const proCodes = this.quotationView.quotationProducts.map(product => product.proCode);
+      const proCodes = this.quotationView.quotationProducts.map((product: { proCode: any; }) => product.proCode);
       log.debug("Product codes", proCodes);
 
       // Call functions for each product code
-      proCodes.forEach(proCode => {
+      proCodes.forEach((proCode) => {
         this.getProductDetails(proCode);
         this.getProductClause(proCode);
         this.getProductSubclass(proCode);
@@ -247,6 +247,7 @@ export class QuotationSummaryComponent {
 
       this.getbranch();
       this.getPremiumComputationDetails();
+      this.getAgent();
 
       this.taxDetails = this.quotationView.taxInformation;
       log.debug(this.taxDetails);
@@ -322,7 +323,7 @@ export class QuotationSummaryComponent {
    * @method getProductDetails
    * @return {void}
    */
-  getProductDetails(code) {
+  getProductDetails(code: number) {
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
       log.debug("Product details", this.productDetails)
