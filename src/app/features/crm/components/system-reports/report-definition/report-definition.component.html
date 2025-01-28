@@ -1,5 +1,5 @@
 <div class="base-content-section">
-  <div class="row me-4">
+  <div class="row">
     <div class="col-8">
       <app-dynamic-breadcrumb [breadCrumbItems]="[
       {
@@ -23,7 +23,7 @@
     </div>
     <div class="card border-0">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">Reports Definition</h6>
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.reportsDefinition' | translate}}</h6>
 
         <div class="row mb-3 w-100 p-2">
           <form [formGroup]="sortingForm" style="background: none; display: contents">
@@ -37,7 +37,7 @@
             </div>
 
             <div class="col-lg-2 col-sm-4 col-6">
-              <label class="transactionLabel">Module name:</label><br>
+              <label class="transactionLabel">{{ 'crm.moduleName' | translate }}:</label><br>
               <select class="form-control form-select" formControlName="module" id="module">
                 <option value="" selected>{{ 'entities.all' | translate }}</option>
                 <option value="123">123</option>
@@ -86,9 +86,9 @@
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="system">System <p-sortIcon field="system"></p-sortIcon></th>
-              <th pSortableColumn="name">Module name <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="description">Module description <p-sortIcon field="description"></p-sortIcon></th>
+              <th pSortableColumn="system">{{ 'entities.system' | translate }} <p-sortIcon field="system"></p-sortIcon></th>
+              <th pSortableColumn="name">{{ 'crm.moduleName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="description">{{ 'crm.moduleDesc' | translate }} <p-sortIcon field="description"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-module>
@@ -109,7 +109,7 @@
 
     <div class="card border-0 mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">Sub module</h6>
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.subModule' | translate }}</h6>
         <div class="row mb-3">
           <div class="col-12">
             <div class="float-end">
@@ -148,8 +148,8 @@
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="desc">Description <p-sortIcon field="desc"></p-sortIcon></th>
+              <th pSortableColumn="name">{{ 'crm.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="desc">{{ 'crm.description' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-subModule>
@@ -195,7 +195,7 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.system === 'Y'">
               <div class="col-md-12">
-                <label for="system" class="form-label">System</label>
+                <label for="system" class="form-label">{{ 'entities.system' | translate }}</label>
                 <p-dropdown
                   [options]="systems"
                   optionLabel="shortDesc"
@@ -217,7 +217,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.moduleName === 'Y'">
               <div class="col-md-12">
-                <label for="moduleName" class="form-label">Module name</label>
+                <label for="moduleName" class="form-label">{{ 'crm.moduleName' | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -232,7 +232,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.moduleDescription === 'Y'">
               <div class="col-md-12">
-                <label for="moduleDescription" class="form-label">Description</label>
+                <label for="moduleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
                 <input
                   type="number"
                   class="form-control"
@@ -250,7 +250,7 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveModuleDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -280,7 +280,7 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.subModuleName === 'Y'">
               <div class="col-md-12">
-                <label for="subModuleName" class="form-label">Name</label>
+                <label for="subModuleName" class="form-label">{{ 'crm.name' | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -295,7 +295,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.subModuleDescription === 'Y'">
               <div class="col-md-12">
-                <label for="subModuleDescription" class="form-label">Description</label>
+                <label for="subModuleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
                 <input
                   type="number"
                   class="form-control"
@@ -313,7 +313,7 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveSubModuleDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveSubModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
