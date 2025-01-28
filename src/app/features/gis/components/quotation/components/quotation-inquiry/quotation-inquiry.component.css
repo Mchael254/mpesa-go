@@ -94,4 +94,8 @@
   #quote-input{
     height:35px;
   }
+  #quote-number-input{
+    height:35px;
+    font-size: 1rem;
+  }
 

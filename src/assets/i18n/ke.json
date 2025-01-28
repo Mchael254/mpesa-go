@@ -905,7 +905,14 @@
       "policy_no": "Nambari ya sera",
       "agent_id": "Kitambulisho cha wakala",
       "select_an_agent": "Chagua wakala",
-      "search" : "Tafuta"
+      "search" : "Tafuta",
+      "quotation_inquiry": "Bei za Bima:Uchunguzi wa Bei ya Bima",
+      "filter_by": "Chuja kwa",
+      "clear_search": "Futa utafutaji",
+      "comments": "Maoni",
+      "expiry_date": "Tarehe ya kumalizika muda",
+      "transaction_date": "Tarehe ya muamala",
+      "revise_reuse_quotation": "Bei za Bima:Sahihisha/Tumia Tena Pendekezo la Bima"
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
