@@ -443,7 +443,7 @@ export class QuickQuoteFormComponent {
 
     log.debug("passedClientDetails", this.passedClientDetailsString)
 
-    if (this.passedClientDetailsString == "undefined") {
+    if (this.passedClientDetailsString == "undefined" || "null") {
       log.debug('New Client has been passed');
 
       const passedNewClientDetailsString = sessionStorage.getItem(
@@ -546,7 +546,7 @@ export class QuickQuoteFormComponent {
     this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
 
     // Handle client data population
-    if (this.passedClientDetailsString == "undefined") {
+    if (this.passedClientDetailsString == "undefined" || "null") {
       log.debug("New Client has been passed");
       const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
       this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);

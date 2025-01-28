@@ -106,16 +106,6 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">Prosper</p>
-                </div>
-                <div class="col-8">
-                  <p class="content"> {{quotationDetails?.proInterfaceType}}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
                   <p class="label">Introducer</p>
                 </div>
                 <div class="col-8">
@@ -262,12 +252,6 @@
               </ng-template>
               <ng-template pTemplate="body" let-data>
                 <tr (click)="getLimits(data.code);getProductSubclass(data.code)">
-                  <!-- <td>{{data.productShortDescription}}</td>
-                  <td>{{data.wef}}</td>
-                  <td>{{data.wet}}</td>
-                  <td>{{data.premium}}</td>
-                  <td>{{data.commission}}</td>
-                  <td>{{data.binder}}</td> -->
                   <td>{{data.description}}</td>
                   <td>{{data.withEffectFrom}}</td>
                   <td>{{data.withEffectTo}}</td>
