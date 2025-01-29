@@ -205,7 +205,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-quotation>
-        <tr style="cursor: pointer">
+        <tr [class.p-highlight]="quotation === selectedQuotation" (click)="onQuotationSelect(quotation)" style="cursor: pointer">
           <td>{{quotation.quotationNumber}}</td>
           <td>{{quotation.clientName}}</td>
           <td>{{quotation.agentShortDescription}}</td>
@@ -244,13 +244,16 @@
       <p class="title mb-3">{{'gis.quotation.quotation_products' | translate}}</p>
       <div>
         <button class="btn btn-outline-primary me-2">{{'gis.quotation.merge_to_policy' | translate}}</button>
-        <button class="btn btn-primary">{{'gis.quotation.convert_to_policy' | translate}}</button>
+        <button class="btn btn-primary" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
       </div>
     </div>
 
-    <p-table [tableStyle]="{ 'min-width': '50px' }">
+    <p-table   [value]="quotationProducts" [paginator]="true" [rows]="10" [scrollable]="true"
+    scrollDirection="horizontal" [showCurrentPageReport]="true"
+    currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
+    [resizableColumns]="true" [reorderableColumns]="true" [tableStyle]="{ 'min-width': '50px' }">
       <ng-template pTemplate="header">
-        <tr>
+        <tr >
           <th style="width: 50px; background-color: #f0f0f0">
             <input type="checkbox" id="selectAll" />
           </th>
@@ -266,19 +269,21 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-product>
-        <tr>
+        <tr [class.p-highlight]="product === selectedQuotationProduct"   style="cursor: pointer">
           <td>
-            <input type="checkbox" id="productCheckbox{{ product.id }}" />
+            <input type="checkbox" id="productCheckbox{{ product.id }}" 
+            (change)="onProductSelection($event, product)"/>
+            
           </td>
-          <td>Product</td>
-          <td>Start date</td>
-          <td>End date</td>
-          <td>Premium</td>
-          <td>Commission</td>
-          <td>FAP</td>
-          <td>Remarks</td>
-          <td>Converted</td>
-          <td>Policy no.</td>
+          <td>{{product.productShortDescription}}</td>
+          <td>{{product.wef}}</td>
+          <td>{{product.wet}}</td>
+          <td>{{product.premium}}</td>
+          <td>{{product.commission}}</td>
+          <td>{{product.fap}}</td>
+          <td>{{product.remarks}}</td>
+          <td>{{product.converted}}</td>
+          <td>{{product.policyNumber}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
