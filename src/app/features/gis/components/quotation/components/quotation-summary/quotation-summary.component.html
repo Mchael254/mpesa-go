@@ -615,7 +615,7 @@
               <div class="row">
                 <div class="col-3"></div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                    <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addClaim" (click)="fetchInsurers()">
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
@@ -625,8 +625,13 @@
                     </button>
                   </div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete"
+                      id="openClaimModalButtonDelete" [hidden]="true" data-bs-toggle="modal" data-bs-target="#deleteClaim"
+                    >
                       <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                      <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
                     </button>
                   </div>
               </div>
@@ -643,13 +648,13 @@
                   <th>Year</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-data>
-                <tr>
-                  <td>{{data.clientCode}}</td>
-                  <td>{{data.claimPaid}}</td>
-                  <td>{{data.insurer}}</td>
-                  <td>{{data.policyNo}}</td>
-                  <td>{{data.year}}</td>
+              <ng-template pTemplate="body" let-externalClaim>
+                <tr [class.p-highlight]="externalClaim === selectedClaim" (click)="onExternalClaimSelect(externalClaim)" style="cursor: default" >
+                  <td>{{externalClaim.clientCode}}</td>
+                  <td>{{externalClaim.claimPaid}}</td>
+                  <td>{{externalClaim.insurer}}</td>
+                  <td>{{externalClaim.policyNo}}</td>
+                  <td>{{externalClaim.year}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -660,6 +665,8 @@
               </ng-template>
             </p-table>
           </div>
+
+          <!-- internal-claims-experience -->
           <div class="mb-4" *ngIf="showExternalClaims === false;">
             <p-table [value]="internalTable" [tableStyle]="{ 'min-width': '50rem' }">
               <ng-template pTemplate="header">
@@ -674,16 +681,16 @@
                   <th>Net Paid</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-data>
-                <tr>
-                  <td>{{data.clientPolicyNo}}</td>
-                  <td>{{data.claimNo}}</td>
-                  <td>{{data.reserve}}</td>
-                  <td>{{data.totalReserve}}</td>
-                  <td>{{data.recoveries}}</td>
-                  <td>{{data.salvages}}</td>
-                  <td>{{data.totalPayments}}</td>
-                  <td>{{data.netPaid}}</td>
+              <ng-template pTemplate="body" let-internalClaim>
+                <tr [class.p-highlight]="internalClaim === selectedClaim" (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
+                  <td>{{internalClaim.client_policy_number}}</td>
+                  <td>{{internalClaim.claim_number}}</td>
+                  <td>{{internalClaim.outstanding_reserve}}</td>
+                  <td>{{internalClaim.total_reserve}}</td>
+                  <td>{{internalClaim.recoveries}}</td>
+                  <td>{{internalClaim.salvages}}</td>
+                  <td>{{internalClaim.total_payments}}</td>
+                  <td>{{internalClaim.net_paid}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -697,6 +704,97 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Claims Modal -->
+    <div class="modal fade" id="deleteClaim" tabindex="-1" role="dialog"
+      aria-labelledby="deleteClaim" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="deleteClaim">
+          <div class="modal-body ">
+            <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal" >
+                {{'gis.policy.yes_delete' | translate}}
+              </button>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+              <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">
+                {{'gis.policy.no_im_not' | translate}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Claims-experience Modal -->
+    <div class="modal fade" id="addClaim" tabindex="-1" role="dialog" aria-labelledby="addClaim" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Claims Experience</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-grid">
+                <div class="form-row mb-1">
+                  <label for="policyNo" class="form-label">Policy No.</label>
+                  <input type="text" class="form-control form-control-md" id="policyNo">
+                </div>
+                <div class="form-row mb-1">
+                  <label for="insurer" class="form-label">Insurer</label>
+                  <p-dropdown
+                    [options]="insurerNames"
+                    [(ngModel)]="selectedInsurer"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    placeholder="Select an Insurer"
+                    class="w-100 form-control-md custom-dropdown-height"
+                    (onChange)="onInsurerSelect($event)">
+                    <ng-template pTemplate="item" let-insurer>
+                      <div class="d-flex align-items-center">
+                        <div>{{ insurer.label }}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+                <div class="form-row mb-1">
+                  <label for="year" class="form-label">Year</label>
+                  <input type="text" class="form-control form-control-md" id="year">
+                </div>
+                <div class="form-row mb-1">
+                  <label for="riskDetails" class="form-label">Risk Details</label>
+                  <input type="text" class="form-control form-control-md" id="riskDetails">
+                </div>
+                <div class="form-row mb-1">
+                  <label for="lossRatio" class="form-label">Loss Ratio</label>
+                  <input type="text" class="form-control form-control-md" id="lossRatio">
+                </div>
+                <div class="form-row mb-1">
+                  <label for="claimPaid" class="form-label">Claim Paid</label>
+                  <select class="form-control form-control-md" id="claimPaid">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+                <div class="form-row mb-1">
+                  <label for="remarks" class="form-label">Remarks</label>
+                  <input type="text" class="form-control form-control-md" id="remarks">
+                </div>
+              </div>
+              <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-primary me-2">Save</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
 
     <div class="tab-pane fade" id="nav-authorization" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">

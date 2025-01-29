@@ -374,10 +374,14 @@ export class QuotationsService {
     return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
+
+  getInsurers(
+    page: number | null = 0,
+    size: number | null = 10,
+    sortList: string = 'createdDate',
+  ): Observable<Pagination<AgentDTO>>{
+
+    return this.api.GET<Pagination<AgentDTO>>(`agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+  }
 }
-
-
-
-
-
 

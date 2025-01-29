@@ -91,6 +91,10 @@ export class QuotationSummaryComponent {
   branchCode: number;
   limitAmount: number;
   quotationCodeString: string;
+  selectedClaim: any;
+  insurersList: any = [];
+  insurerNames: any;
+  selectedInsurer: { label: string; value: any } | null = null;
 
   constructor(
 
@@ -452,20 +456,17 @@ export class QuotationSummaryComponent {
 
   externalClaimsExperience(clientCode) {
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
-      this.externalClaims = res
-
-      this.externalTable = this.externalClaims.content
-
-      log.debug("external claims table", this.externalTable)
-
+      this.externalClaims = res;
+      this.externalTable = this.externalClaims.embedded;
+      log.debug("external claims table", this.externalTable);
     })
   }
 
   internalClaimsExperience(clientCode) {
     this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res=>{
-      this.internalClaims = res
-      this.internalTable = this.internalClaims.content
-      log.debug(this.internalTable)
+      this.internalClaims = res;
+      this.internalTable = this.internalClaims.embedded;
+      log.debug("internal-claims table", this.internalTable);
     })
   }
 
@@ -880,6 +881,42 @@ export class QuotationSummaryComponent {
     if (selectedData) {
       this.selectedDocumentType = selectedData.description;
     }
+  }
+
+  openClaimDeleteModal() {
+    log.debug("Selected Claim experience to delete", this.selectedClaim)
+    if (!this.selectedClaim) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a Claim experience to continue');
+    } else {
+      document.getElementById("openClaimModalButtonDelete").click();
+    }
+  }
+
+  onExternalClaimSelect(externalClaim: any): void {
+    this.selectedClaim = externalClaim;
+    log.debug('Selected external Claim item:', externalClaim);
+  }
+
+  onInternalClaimSelect(internalClaim: any): void {
+    this.selectedClaim = internalClaim;
+    log.debug('Selected internal Claim item:', internalClaim);
+  }
+
+  fetchInsurers() {
+    this.quotationService.getInsurers().subscribe({
+      next: (res) => {
+        this.insurersList = res.content; // Ensure you're accessing the `content` array
+        this.insurerNames = this.insurersList.map((insurer: { name: any; id: any; }) => ({
+          label: insurer.name,
+          value: insurer.id
+        }));// Map insurers to an array of objects with `label` and `value` properties
+        log.debug("INSURERS", this.insurersList);
+      }
+    })
+  }
+
+  onInsurerSelect(event: any) {
+    this.selectedInsurer = event.value;
   }
 
   // end document upload functionality
