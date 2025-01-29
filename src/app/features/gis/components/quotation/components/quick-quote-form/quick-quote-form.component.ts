@@ -236,6 +236,7 @@ export class QuickQuoteFormComponent {
   formattedCoverFromDate: any;
   coverFrom: any;
   passedClientDetailsString: string;
+  passedNewClientDetailsString: string;
 
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
@@ -441,17 +442,18 @@ export class QuickQuoteFormComponent {
       'passedClientDetails'
     );
 
+    this.passedNewClientDetailsString = sessionStorage.getItem("passedNewClientDetails");
+
     log.debug("passedClientDetails", this.passedClientDetailsString)
 
-    if (this.passedClientDetailsString == "undefined") {
+    if (this.passedClientDetailsString == "undefined" || "null") {
       log.debug('New Client has been passed');
 
-      const passedNewClientDetailsString = sessionStorage.getItem(
-        'passedNewClientDetails'
-      );
-      this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-      log.debug('Client Details:', this.passedNewClientDetails);
-    } else {
+      this.passedNewClientDetails = JSON.parse(this.passedNewClientDetailsString);
+      log.debug('new Client Details:', this.passedNewClientDetails);
+    }
+
+    if(this.passedNewClientDetails == "null" || "undefined") {
       log.debug('Existing Client has been passed');
       this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
     }
@@ -466,17 +468,14 @@ export class QuickQuoteFormComponent {
       log.debug('existing property id', this.existingPropertyIds);
     }
 
-    // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
-
-    this.passedQuotationCode =
-      this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+    this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
 
     log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
     // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
 
-    log.debug('Client Details:', this.PassedClientDetails);
+    log.debug('Existing Client Details:', this.PassedClientDetails);
     if (this.passedQuotation) {
       if (this.PassedClientDetails) {
         this.clientName =
@@ -541,50 +540,64 @@ export class QuickQuoteFormComponent {
     log.debug("isEditRiskk Details:", this.isEditRisk);
 
     /** THIS LINES OF CODES BELOW IS USED WHEN EDITING RISK ****/
-    const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
+    const passedQuotationDetailsString = sessionStorage.getItem(
+      'passedQuotationDetails'
+    );
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
-    this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
+    this.passedClientDetailsString = sessionStorage.getItem(
+      'passedClientDetails'
+    );
+
+    this.passedNewClientDetailsString = sessionStorage.getItem("passedNewClientDetails");
+
+    log.debug("passedClientDetails", this.passedClientDetailsString)
+
+    if (this.passedClientDetailsString == "undefined" || "null") {
+      log.debug('New Client has been passed');
+
+      this.passedNewClientDetails = JSON.parse(this.passedNewClientDetailsString);
+      log.debug('new Client Details:', this.passedNewClientDetails);
+    }
+
+    if(this.passedNewClientDetails == "null" || "undefined") {
+      log.debug('Existing Client has been passed');
+      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
+    }
 
     // Handle client data population
-    if (this.passedClientDetailsString == "undefined") {
-      log.debug("New Client has been passed");
-      const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
-      this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-      log.debug("Client Details:", this.passedNewClientDetails);
 
-      // Set new client data
-      if (this.passedNewClientDetails) {
-        this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
-        this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-        const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
-        this.newClientPhone = {
-            number: phoneNumberString,
-            internationalNumber: '',  // Left empty as it's not stored
-            nationalNumber: phoneNumberString,
-            e164Number: '',
-            countryCode: '',
-            dialCode: ''
-        };
-        this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
-        this.isNewClient = true;
-        this.toggleNewClient();
+    // Set new client data
+    if (this.passedNewClientDetails) {
+      this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
+      this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
+      const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
+      this.newClientPhone = {
+          number: phoneNumberString,
+          internationalNumber: '',  // Left empty as it's not stored
+          nationalNumber: phoneNumberString,
+          e164Number: '',
+          countryCode: '',
+          dialCode: ''
+      };
+      this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
+      this.isNewClient = true;
+      this.toggleNewClient();
 
-      }
-    } else {
-      log.debug("Existing Client has been passed");
-      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
+    }
 
-      // Set existing client data
-      if (this.PassedClientDetails) {
-        log.debug("edit client passed client details:", this.PassedClientDetails)
-        this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
-        this.clientEmail = this.PassedClientDetails.emailAddress;
-        this.clientPhone = this.PassedClientDetails.phoneNumber;
-        this.personalDetailsForm.patchValue(this.passedQuotation);
-        this.isNewClient = false;
-        this.toggleButton();
+    log.debug("Existing Client has been passed");
+    this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
 
-      }
+    // Set existing client data
+    if (this.PassedClientDetails) {
+      log.debug("edit client passed client details:", this.PassedClientDetails)
+      this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
+      this.clientEmail = this.PassedClientDetails.emailAddress;
+      this.clientPhone = this.PassedClientDetails.phoneNumber;
+      this.personalDetailsForm.patchValue(this.passedQuotation);
+      this.isNewClient = false;
+      this.toggleButton();
+
     }
 
     // Process quotation data

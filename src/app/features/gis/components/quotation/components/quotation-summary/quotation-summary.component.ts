@@ -88,6 +88,9 @@ export class QuotationSummaryComponent {
   selectedDocumentType: string = '';
   prodCodeString : string;
   clientCodeString: string;
+  branchCode: number;
+  limitAmount: number;
+  quotationCodeString: string;
 
   constructor(
 
@@ -121,42 +124,51 @@ export class QuotationSummaryComponent {
 
 
   ngOnInit(): void {
-
-    this.quotationCode=sessionStorage.getItem('quotationCode');
-    this.quotationNumber=sessionStorage.getItem('quotationNum');
+    this.quotationCodeString = sessionStorage.getItem('quotationCode');
+    this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number", this.quotationNumber);
 
-    this.moreDetails=sessionStorage.getItem('quotationFormDetails')
+    this.moreDetails = sessionStorage.getItem('quotationFormDetails');
+
+    if(this.quotationCodeString) {
+      this.quotationCode = this.quotationCodeString;
+    }
 
     const storedData = sessionStorage.getItem('clientFormData');
-    this.clientDetails=JSON.parse(storedData);
-    if(this.moreDetails) {
-      this.prodCode = JSON.parse(this.moreDetails).productCode
-      this.clientCode = JSON.parse(this.moreDetails).clientCode
-      this.quotationDetails = JSON.parse(this.moreDetails)
+    if (storedData) {
+      this.clientDetails = JSON.parse(storedData);
     } else {
-      this.prodCodeString = sessionStorage.getItem('productCode');
+      this.clientDetails = JSON.parse(sessionStorage.getItem('clientDetails'));
+    }
+
+    // Handle clientCode assignment
+    if (this.moreDetails) {
+      const parsedMoreDetails = JSON.parse(this.moreDetails);
+      this.quotationDetails = parsedMoreDetails;
+      this.prodCode = parsedMoreDetails.productCode;
+      this.clientCode = parsedMoreDetails.clientCode;
+    } else {
       this.clientCodeString = sessionStorage.getItem('clientCode');
-      this.prodCode = JSON.parse(this.prodCodeString);
       this.clientCode = JSON.parse(this.clientCodeString);
     }
 
-    this.getuser()
-    this.getQuotationDetails(this.quotationNumber)
-    this.quotationDetails = this.quotationView;
-    this.getProductDetails(this.prodCode)
-    this.getProductClause(this.prodCode)
-    this.externalClaimsExperience(this.clientCode)
-    this.internalClaimsExperience(this.clientCode)
-    this.getbranch()
-    this.spinner.show()
-    this.getPremiumComputationDetails()
-    log.debug("MORE DETAILS TEST",this.quotationDetails )
-    this.getAgent();
-    this.sumInsured =Number( sessionStorage.getItem('limitAmount'))
-    log.debug('SUM INSURED NGONIT',this.sumInsured)
+    this.getQuotationDetails(this.quotationNumber);
+    this.getuser();
+    this.externalClaimsExperience(this.clientCode);
+    this.internalClaimsExperience(this.clientCode);
+    // this.getPremiumComputationDetails();
+    // this.getAgent();
 
-    this.createEmailForm()
+    log.debug("MORE DETAILS TEST",this.quotationDetails )
+
+    this.limitAmount = Number(sessionStorage.getItem('limitAmount'));
+    log.debug('SUM INSURED NGONIT', this.limitAmount);
+
+    if(this.limitAmount) {
+      this.sumInsured = this.limitAmount;
+    }
+
+    this.createEmailForm();
     this.loadAllSubclass();
     this.createSmsForm();
     this.getDocumentTypes();
@@ -167,19 +179,15 @@ export class QuotationSummaryComponent {
         items: [
           {
             label: 'External',
-            command: () => {
-              this.external();
-            }
+            command: () => { this.external(); }
           },
           {
             label: 'Internal',
-            command: () => {
-              this.internal();
-            }
+            command: () => { this.internal(); }
           }
         ]
       }
-    ]
+    ];
   }
 
   external() {
@@ -200,28 +208,51 @@ export class QuotationSummaryComponent {
    * @param {string} code - The code of the quotation for which to retrieve details.
    * @return {void}
    */
-  getQuotationDetails(code) {
+  getQuotationDetails(code: any) {
     this.quotationService.getQuotationDetails(code).subscribe(res => {
       this.quotationView = res;
-      log.debug("DETAILS TEST quotation data",this.quotationView )
-      log.debug(code,"code")
-      // Extracts product details for each quotation product.
-      this.quotationProducts = this.quotationView.quotationProduct
-      this.riskDetails = this.quotationView.riskInformation
+      log.debug("DETAILS TEST quotation data", this.quotationView);
+      log.debug(code, "code");
 
-      // this.riskInfo.push(this.riskDetails.sectionsDetails)
-      this.taxDetails = this.quotationView.taxInformation
-      log.debug(this.taxDetails)
-      // this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(res=>{
-      //   this.agents = res
-      //   log.debug(res)
-      // })
-      // Extract risk information
+      // Set quotationDetails from response if not already set from moreDetails
+      if (!this.moreDetails) {
+        this.quotationDetails = this.quotationView;
+        log.debug("MORE DETAILS TEST quotationView",this.quotationDetails )
+      }
+
+      if(!this.limitAmount) {
+        this.sumInsured = this.quotationView.sumInsured;
+      }
+
+      if(!this.quotationCodeString) {
+        this.quotationCode = this.quotationView.riskInformation[0].quotationCode;
+        log.debug("quotaion code", this.quotationCode)
+      }
+
+      // Extract product details
+      this.quotationProducts = this.quotationView.quotationProduct;
       this.riskDetails = this.quotationView.riskInformation;
+      log.debug("Risk Details quotation-summary", this.riskDetails);
+
+      // Handle multiple product codes
+      const proCodes = this.quotationView.quotationProducts.map((product: { proCode: any; }) => product.proCode);
+      log.debug("Product codes", proCodes);
+
+      // Call functions for each product code
+      proCodes.forEach((proCode) => {
+        this.getProductDetails(proCode);
+        this.getProductClause(proCode);
+        this.getProductSubclass(proCode);
+      });
+
+      this.getbranch();
+      this.getPremiumComputationDetails();
+      this.getAgent();
+
       this.taxDetails = this.quotationView.taxInformation;
       log.debug(this.taxDetails);
 
-      // Set items in session storage from riskInformation
+      // Handle risk information and session storage
       if (this.riskDetails && this.riskDetails.length > 0) {
         const firstRisk = this.riskDetails[0];
         const sectionDetails = firstRisk.sectionsDetails && firstRisk.sectionsDetails.length > 0
@@ -232,23 +263,19 @@ export class QuotationSummaryComponent {
           sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
           sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
           sessionStorage.setItem('sectionType', sectionDetails.rateType || '');
-          // sessionStorage.setItem('multiplierDivisionFactor', sectionDetails.rate.toString());
           sessionStorage.setItem('rateType', sectionDetails.rateType || '');
-          // sessionStorage.setItem('divisionFactor', sectionDetails.freeLimit?.toString() || '');
-          // sessionStorage.setItem('limitAmount', sectionDetails.limitAmount?.toString() || '');
         }
       }
-      log.debug('SUM INSURED',this.sumInsured)
+
+      log.debug('SUM INSURED', this.sumInsured);
       log.debug('Session storage values set for LIMITS:', {
         premiumRate: sessionStorage.getItem('premiumRate'),
         sectionType: sessionStorage.getItem('sectionType'),
         sectionDescription: sessionStorage.getItem('sectionDescription'),
-        // multiplierDivisionFactor: sessionStorage.getItem('multiplierDivisionFactor'),
         rateType: sessionStorage.getItem('rateType'),
-        // divisionFactor: sessionStorage.getItem('divisionFactor'),
         limitAmount: this.sumInsured
       });
-    })
+    });
   }
 
   getAgent() {
@@ -267,9 +294,9 @@ export class QuotationSummaryComponent {
     )
   }
 
-  getSections(data) {
+  getSections(data: any) {
 
-    this.riskDetails.forEach(el=>{
+    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: { level1: any; }; })=>{
 
       if(data===el.code) {
         this.sections = el.sectionsDetails
@@ -296,7 +323,7 @@ export class QuotationSummaryComponent {
    * @method getProductDetails
    * @return {void}
    */
-  getProductDetails(code) {
+  getProductDetails(code: number) {
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
       log.debug("Product details", this.productDetails)
@@ -305,9 +332,17 @@ export class QuotationSummaryComponent {
 
   getbranch() {
     log.debug(JSON.parse(this.moreDetails),"more  details")
-    this.branchService.getBranchById(JSON.parse(this.moreDetails).branchCode).subscribe(data=>{
-      this.branch = data
-      log.debug(this.branch)
+
+    if(this.moreDetails) {
+      this.branchCode = JSON.parse(this.moreDetails).branchCode;
+    } else {
+      this.branchCode = this.quotationView.branchCode;
+    }
+    log.debug("Branch Code: ", this.branchCode);
+
+    this.branchService.getBranchById(this.branchCode).subscribe(data=>{
+      this.branch = data;
+      log.debug("Branch Details", this.branch);
     })
   }
 
@@ -417,11 +452,11 @@ export class QuotationSummaryComponent {
 
   externalClaimsExperience(clientCode) {
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
-       this.externalClaims = res
+      this.externalClaims = res
 
       this.externalTable = this.externalClaims.content
 
-      log.debug(this.externalTable)
+      log.debug("external claims table", this.externalTable)
 
     })
   }
@@ -443,6 +478,7 @@ export class QuotationSummaryComponent {
   }
 
   getPremiumComputationDetails() {
+    log.debug("Quotation code when computing premium", this.quotationCode);
     this.quotationService.quotationUtils(this.quotationCode).subscribe({
       next :(res) => {
         this.computationDetails = res
@@ -498,8 +534,8 @@ export class QuotationSummaryComponent {
     this.quotationService.computePremium(this.computationDetails).subscribe({
       next:(res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
-          this.premium = res
-          log.debug(res)
+          this.premium = res;
+          log.debug("premium", res);
       },
       error : (error: HttpErrorResponse) => {
         log.info(error);
@@ -620,15 +656,43 @@ export class QuotationSummaryComponent {
     })
   }
 
-  getExcesses(riskCode) {
-    this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
-      next:(res) => {
-        this.excesses = res
-        this.excessesList = this.excesses._embedded
-        log.debug("EXCESS LIST",this.excessesList)
-        this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+  getExcesses(riskCode: any) {
+    if (!this.prodCode || !riskCode) {
+      log.debug('Missing required parameters for getExcesses:', { prodCode: this.prodCode, riskCode });
+      return;
+    }
+
+    this.quotationService.getLimits(this.prodCode, 'E', riskCode)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (res) => {
+          this.excesses = res;
+          this.excessesList = this.excesses._embedded;
+          log.debug("EXCESS LIST", this.excessesList);
+          if (this.limits?.message) {
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message);
+          }
+        },
+        error: (error) => {
+          log.debug('Error fetching excesses:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses');
+        }
       }
-    })
+    );
+  }
+
+  handleRowClick(data: any) {
+    if (!data?.code) {
+      log.debug('Invalid data for row click:', data);
+      return;
+    }
+
+    log.debug('Row clicked with data:', data);
+
+    // Call all methods sequentially
+    this.getSections(data.code);
+    this.getExcesses(data.code);
+    this.getRiskClauses(data.code);
   }
 
   loadAllSubclass() {
@@ -638,21 +702,35 @@ export class QuotationSummaryComponent {
     })
   }
 
-  getProductSubclass(code) {
-    this.productService.getProductSubclasses(code).subscribe(
-      {
-        next:(res) => {
-          this.subclassList = res._embedded.product_subclass_dto_list;
-          log.debug(this.subclassList, 'Product Subclass List');
-          this.subclassList.forEach(element => {
-            const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
-            this.productSubclass  = matchingSubclasses // Merge matchingSubclasses into allMatchingSubclasses
-          });
-          log.debug("Retrieved Subclasses by code", this.productSubclass);
+  getProductSubclass(code: string): void {
+    this.productService.getProductSubclasses(code).subscribe({
+      next: (res) => {
+        this.subclassList = res._embedded.product_subclass_dto_list;
+        log.debug(this.subclassList, 'Product Subclass List');
+
+        // Ensure allSubclassList is initialized
+        if (!this.allSubclassList || !Array.isArray(this.allSubclassList)) {
+          log.error('allSubclassList is not initialized or not an array');
+          this.allSubclassList = []; // Initialize as an empty array if undefined
         }
+
+        this.productSubclass = []; // Initialize or reset productSubclass
+
+        this.subclassList.forEach(element => {
+          const matchingSubclasses = this.allSubclassList.filter(
+            subCode => subCode.code === element.sub_class_code
+          );
+          this.productSubclass = this.productSubclass.concat(matchingSubclasses); // Merge into productSubclass
+        });
+
+        log.debug("Retrieved Subclasses by code", this.productSubclass);
+      },
+      error: (err) => {
+        log.error("Error retrieving product subclasses", err);
       }
-    )
+    });
   }
+
 
   getDocumentTypes() {
     this.quotationService.documentTypes('C').pipe(takeUntil(this.ngUnsubscribe)).subscribe({
@@ -662,13 +740,25 @@ export class QuotationSummaryComponent {
     })
   }
 
-  getRiskClauses(riskCode) {
-    this.quotationService.getRiskClauses(riskCode).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-      next:(res)=>{
-        this.riskClauses = res
-        log.debug("RISK CLAUSES",this.riskClauses)
+  getRiskClauses(riskCode: number) {
+    if (!riskCode) {
+      log.debug('Missing riskCode for getRiskClauses');
+      return;
+    }
+
+    this.quotationService.getRiskClauses(riskCode)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (res) => {
+          this.riskClauses = res;
+          log.debug("RISK CLAUSES", this.riskClauses);
+        },
+        error: (error) => {
+          log.debug('Error fetching risk clauses:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch risk clauses');
+        }
       }
-    })
+    );
   }
 
   openHelperModal(selectedClause: any) {
