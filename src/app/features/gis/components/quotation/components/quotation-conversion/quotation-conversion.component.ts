@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 import { MenuService } from 'src/app/features/base/services/menu.service';
 import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
-import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
+import { QuotationDetails, QuotationList, QuotationProduct, Status, StatusEnum } from '../../data/quotationsDTO';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger } from '../../../../../../shared/services';
@@ -50,7 +50,7 @@ export class QuotationConversionComponent {
   productName: string = '';
   quotationNumber: string = '';
   quoteNumber: string = "";
-
+  selectedQuotation: QuotationList;
   status: Status[] = [
     { status: StatusEnum.Lapsed },
     { status: StatusEnum.Confirmed },
@@ -60,6 +60,9 @@ export class QuotationConversionComponent {
     { status: StatusEnum.Accepted },
     { status: StatusEnum.Draft }
   ];
+  quotationDetails: QuotationDetails;
+  quotationProducts: QuotationProduct[];
+  selectedQuotationProduct:QuotationProduct;
 
   constructor(
     private menuService: MenuService,
@@ -146,19 +149,19 @@ export class QuotationConversionComponent {
         quotationNumber,
         status,
         source,
-        clientName )
+        clientName)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
 
-        this.gisQuotationList = response._embedded;
+          this.gisQuotationList = response._embedded;
 
-        // Store a copy of the original list when first fetching
-        if (this.originalQuotationList.length === 0) {
-          this.originalQuotationList = [...this.gisQuotationList];
-        }
+          // Store a copy of the original list when first fetching
+          if (this.originalQuotationList.length === 0) {
+            this.originalQuotationList = [...this.gisQuotationList];
+          }
 
-        log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
+          log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
 
         },
         error: (error) => {
@@ -166,7 +169,7 @@ export class QuotationConversionComponent {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotation list. Try again later');
         }
       }
-    );
+      );
   }
 
   formatFieldName(field: string): string {
@@ -300,5 +303,53 @@ export class QuotationConversionComponent {
     // Trigger change detection
     this.cdr.detectChanges();
   }
+  onQuotationSelect(quotationItem: any): void {
+    this.selectedQuotation = quotationItem;
+    log.debug('Selected Quotation item:', this.selectedQuotation);
+    if (this.selectedQuotation) {
+      this.loadClientQuotation()
+    }
+  }
+  loadClientQuotation() {
+    log.debug("Load CLient quotation has been called")
+    const selectedQuotationNo = this.selectedQuotation.quotationNumber
+    this.quotationService.getClientQuotations(selectedQuotationNo).subscribe((data: QuotationDetails) => {
+      this.quotationDetails = data;
+      log.debug("Quotation Details:", this.quotationDetails)
+      this.quotationProducts = this.quotationDetails.quotationProducts
+
+    })
+  }
+  convertToPolicy(){
+    log.debug("Selected Quotation Product", this.selectedQuotationProduct)
+    if(!this.selectedQuotationProduct){
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
+    }else{
+      const selctedQuotationCode = this.selectedQuotationProduct.quotCode
+      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => { 
+        log.debug("Response after converting quote to a policy:", data)
+  
+      })
+    }
+    
+  }
+  onProductSelection(event: Event, product: any): void {
+    const checkbox = event.target as HTMLInputElement;
+
+    if (checkbox.checked) {
+      // Add the product to the selectedProducts array
+      this.selectedQuotationProduct= product;
+      log.debug('Product selected:', product);
+    } else {
+      // // Remove the product from the selectedProducts array
+      // this.selectedQuotationProduct = this.selectedQuotationProduct.filter(
+      //   (p) => p.id !== product.id
+      // );
+      // console.log('Product deselected:', product);
+    }
+
+   log.debug('Current selected products:', this.selectedQuotationProduct);
+  }
+
 
 }

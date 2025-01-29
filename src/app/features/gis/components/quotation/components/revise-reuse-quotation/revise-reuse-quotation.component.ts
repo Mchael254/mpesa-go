@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
+import { QuotationsService } from '../../../../services/quotations/quotations.service';
+import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
+import { MenuService } from '../../../../../base/services/menu.service';
 import { Router } from '@angular/router';
 
 const log = new Logger('ReviseReuseQuotationComponent');
