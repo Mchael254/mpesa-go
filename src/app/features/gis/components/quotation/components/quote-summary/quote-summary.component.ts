@@ -274,7 +274,7 @@ export class QuoteSummaryComponent {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
@@ -616,7 +616,7 @@ export class QuoteSummaryComponent {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
@@ -639,7 +639,7 @@ export class QuoteSummaryComponent {
     log.debug("isEditRisk:", this.isEditRisk)
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
-    log.debug("Selected Client Details", this.clientDetails);
+    log.debug("Selected Client Details", this.passedClientDetails);
     log.debug("Selected New Client Details", this.passedNewClientDetails);
 
     // this.router.navigate(['/home/gis/quotation/quick-quote'])

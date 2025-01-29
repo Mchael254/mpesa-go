@@ -216,25 +216,38 @@ export class QuotationsService {
   getProductClauses(productCode) {
     return this.api.GET(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
+
   deleteSchedule(level: any, riskCode: any, code: any) {
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   makeReady(quotationCode, user) {
     return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   confirmQuotation(quotationCode, user) {
     return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   authoriseQuotation(quotationCode, user) {
     return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  getExternalClaimsExperience(clientCode) {
-    return this.api.GET(`api/v1/external-claims-experiences?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
-  }
-  getInternalClaimsExperience(clientCode) {
-    return this.api.GET(`api/v1/internal-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+
+  getExternalClaimsExperience(
+    clientCode: any,
+    page: number | null = 0,
+    size: number | null = 10
+  ) {
+    return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 
+  getInternalClaimsExperience(
+    clientCode: any,
+    page: number | null = 0,
+    size: number | null = 10
+  ) {
+    return this.api.GET(`api/v2/internal-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
 
   getAgents(
     page: number | null = 0,
@@ -317,7 +330,7 @@ export class QuotationsService {
 
     })
 
-    return this.api.GET<riskClauses[]>(`v1/riskClauses/?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET<riskClauses[]>(`v1/riskClauses?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

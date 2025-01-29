@@ -18,7 +18,8 @@ import { ProductsService } from 'src/app/features/gis/components/setups/services
 @Component({
   selector: 'app-product-search-modal',
   templateUrl: './product-search-modal.component.html',
-  styleUrls: ['./product-search-modal.component.css']
+  styleUrls: ['./product-search-modal.component.css'],
+  standalone: false
 })
 export class ProductSearchModalComponent {
 
@@ -39,7 +40,7 @@ export class ProductSearchModalComponent {
   } = {
       code: null, productName: '',
     };
-  
+
   shortDescription: string;
 
   productList: Products[];
@@ -79,7 +80,7 @@ export class ProductSearchModalComponent {
    * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
    * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
   */
- 
+
   filter(event, pageIndex: number = 0, pageSize: number = 1000) {
     this.productList = null; // Initialize with an empty array or appropriate structure
     // let columnName;
@@ -126,7 +127,7 @@ export class ProductSearchModalComponent {
       });
     this.closebutton.nativeElement.click();
 
-   
+
   }
 
   /**
@@ -160,7 +161,7 @@ export class ProductSearchModalComponent {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['productName'] = value;
   }
-  
+
   lazyLoadProducts(event:LazyLoadEvent | TableLazyLoadEvent){
       // const pageIndex = event.first / event.rows;
       // const sortField = event.sortField;
@@ -171,8 +172,8 @@ export class ProductSearchModalComponent {
       const pageSize = event.rows; // Number of items per page
       const code = null
       const productName = null;
-  
-  
+
+
       if (this.isSearching) {
         const searchEvent = {
           target: {value: this.searchTerm}

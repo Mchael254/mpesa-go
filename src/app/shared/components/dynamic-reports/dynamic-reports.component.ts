@@ -28,7 +28,8 @@ const log = new Logger("DynamicReportsComponent");
 @Component({
   selector: 'app-dynamic-reports',
   templateUrl: './dynamic-reports.component.html',
-  styleUrls: ['./dynamic-reports.component.css']
+  styleUrls: ['./dynamic-reports.component.css'],
+  standalone: false
 })
 export class DynamicReportsComponent implements OnInit {
 
