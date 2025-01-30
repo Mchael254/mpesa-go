@@ -363,7 +363,16 @@
     "reportParams": "Report parameters",
     "serviceReqReport": "Service request report",
     "sysReports": "System reports",
-    "directDebitReports": "Direct Debit reports"
+    "directDebitReports": "Direct Debit reports",
+    "reportGroups": "Report groups",
+    "reportGroupDivision": "Report group division",
+    "divisionName": "Division name",
+    "divisionOrder": "Division order",
+    "saveDetails": "Save details",
+    "reportsDefinition": "Reports Definition",
+    "moduleName": "Module name",
+    "moduleDesc": "Module description",
+    "subModule": "Sub module"
   },
   "entities": {
     "account_number": "Account Number",
