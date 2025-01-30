@@ -204,6 +204,7 @@ export class PolicySummaryOtherDetailsComponent {
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
   modelYear: any;
+  convertedQuotebatchNo: number;
 
 
 
@@ -250,7 +251,10 @@ export class PolicySummaryOtherDetailsComponent {
   public riskPerils = false;
 
   ngOnInit(): void {
-
+    const convertedQuotationBatchNoString = sessionStorage.getItem('convertedQuoteBatchNo');
+    this.convertedQuotebatchNo = JSON.parse(convertedQuotationBatchNoString);
+    
+    log.debug("Converted Quote Batch no:",this.convertedQuotebatchNo)
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.userDetails = JSON.parse(passedUserDetailsString);
     log.debug("Passed User Details:", this.userDetails);
@@ -286,7 +290,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
     this.getPolicy();
 
-    this.policyService.policyUtils(this.policyDetails.batchNumber).subscribe({
+    this.policyService.policyUtils(this.policyDetails?.batchNumber || this.convertedQuotebatchNo).subscribe({
       next: (res) => {
         this.computationDetails = res
         log.debug('computation details', this.computationDetails)
@@ -345,7 +349,7 @@ export class PolicySummaryOtherDetailsComponent {
   //     });
   // }
   async getPolicy() {
-    this.batchNo = this.policyDetails.batchNumber;
+    this.batchNo = this.policyDetails?.batchNumber;
     console.debug("Batch No:", this.batchNo); // Changed from log.debug to console.debug
     if (this.batchNo) {
       console.debug("CALLED GET INSURED"); // Changed from log.debug to console.debug
@@ -354,7 +358,7 @@ export class PolicySummaryOtherDetailsComponent {
     }
 
     try {
-      const data: any = await this.policyService.getPolicy(this.batchNo)
+      const data: any = await this.policyService.getPolicy(this.batchNo || this.convertedQuotebatchNo)
         .pipe(untilDestroyed(this))
         .toPromise();
 
