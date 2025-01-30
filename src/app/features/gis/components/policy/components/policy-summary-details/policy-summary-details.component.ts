@@ -51,6 +51,7 @@ export class PolicySummaryDetailsComponent {
   policySummary:any;
   transactionType:any;
   renewalDate:any;
+  convertedQuotebatchNo:number;
 
   constructor(
     public policyService:PolicyService,
@@ -63,9 +64,13 @@ export class PolicySummaryDetailsComponent {
   ){}
 
   ngOnInit(): void {
+    const convertedQuotationBatchNoString = sessionStorage.getItem('convertedQuoteBatchNo');
+    this.convertedQuotebatchNo = JSON.parse(convertedQuotationBatchNoString);
+    log.debug("Converted Quote Batch no:",this.convertedQuotebatchNo)
     this.getUtil();
     // this.getPolicyDetails();
     this.getPolicy()
+   
   }
   ngOnDestroy(): void { }
 
@@ -78,7 +83,7 @@ export class PolicySummaryDetailsComponent {
    this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
    this.getPolicy();
 
-   this.policyService.policyUtils(this.policyDetails.batchNumber).subscribe({
+   this.policyService.policyUtils(this.policyDetails?.batchNumber || this.convertedQuotebatchNo).subscribe({
     next :(res) =>{
      this.computationDetails = res
      console.log( 'computation details',this.computationDetails)
@@ -101,10 +106,11 @@ computePremium(){
   })
 }
 getPolicy() {
-  this.batchNo = this.policyDetails.batchNumber;
-  log.debug("Batch No:", this.batchNo)
+  this.batchNo = this.policyDetails?.batchNumber;
+  const batchNo = this.batchNo || this.convertedQuotebatchNo
+  log.debug("Batch No:", batchNo)
   this.policyService
-    .getPolicy(this.batchNo)
+    .getPolicy(batchNo)
     .pipe(untilDestroyed(this))
     .subscribe({
       next: (data: any) => {
