@@ -326,7 +326,16 @@
     "reportParams": "Parámetros del informe",
     "serviceReqReport": "Informe de solicitud de servicio",
     "sysReports": "Informes del sistema",
-    "directDebitReports": "Informes de débito directo"
+    "directDebitReports": "Informes de débito directo",
+    "reportGroups": "Grupos de informes",
+    "reportGroupDivision": "División de grupo de informes",
+    "divisionName": "Nombre de la división",
+    "divisionOrder": "Orden de la división",
+    "saveDetails": "Guardar detalles",
+    "reportsDefinition": "Definición de informes",
+    "moduleName": "Nombre del módulo",
+    "moduleDesc": "Descripción del módulo",
+    "subModule": "Submódulo"
   },
   "entities": {
     "account_number": "Número de cuenta",

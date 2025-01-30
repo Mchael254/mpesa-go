@@ -1,0 +1,297 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'System Reports',
+        url: '/home/crm'
+      },
+      {
+        label: 'Report Group',
+        url: '/home/crm/report-group'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-sm-12 col-md-6">
+              <h6 class="text-dark">{{ 'crm.reportGroups' | translate }}</h6>
+            </div>
+
+            <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+              <div class="float-end">
+                <span
+                  class="icon-circle open-priority-level"
+                  (click)="openDefineReportGroupModal()"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </span>
+                <span
+                  class="icon-circle edit-priority-level">
+                  <i class="pi pi-pencil"></i>
+                </span>
+                <span
+                  class="icon-circle">
+                  <i class="fa-regular fa-trash-can"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div >
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            <p-table
+              #reportGroupTable
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reportGroupData?.length"
+              [value]="reportGroupData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              [(selection)]="selectedReportGroup"
+              selectionMode="single"
+              dataKey="id"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              [globalFilterFields]="['name']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="name">
+                    {{ 'crm.name' | translate }}
+                    <p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-reportGroup>
+                <tr [pSelectableRow]="reportGroup">
+                  <td>{{ reportGroup.name }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1">No Report Group Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col-sm-12 col-md-6">
+              <h6 class="text-dark">{{ 'crm.reportGroupDivision' | translate }}</h6>
+            </div>
+
+            <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+              <div class="float-end">
+                <span
+                  class="icon-circle open-activity-status-modal"
+                  (click)="openReportGroupDivisionModal()"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </span>
+                <span
+                  class="icon-circle edit-activity-status">
+                  <i class="pi pi-pencil"></i>
+                </span>
+                <span
+                  class="icon-circle">
+                  <i class="fa-regular fa-trash-can"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p-table
+              #reportGroupDivisionTable
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              [showCurrentPageReport]="true"
+              [rows]="pageSize || 5"
+              [totalRecords]="reportGroupDivisionData?.length"
+              [value]="reportGroupDivisionData"
+              [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+              responsiveLayout="stack"
+              [scrollable]="true"
+              [(selection)]="selectedReportGroupDivision"
+              selectionMode="single"
+              dataKey="id"
+              scrollHeight="400px"
+              currentPageReportTemplate="{first} - {last} of {totalRecords}"
+              [globalFilterFields]="['name', 'order']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="name">
+                    {{ 'crm.divisionName' | translate }}
+                    <p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="order">
+                    {{ 'crm.divisionOrder' | translate }}
+                    <p-sortIcon field="order"></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-reportGroupDivision>
+                <tr [pSelectableRow]="reportGroupDivision">
+                  <td>{{ reportGroupDivision.name }}</td>
+                  <td>{{ reportGroupDivision.order }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2">No Report Group Division Detail(s) Found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Report Group Definition Modal-->
+<div
+  class="modal fade"
+  #reportGroupDefinitionModal
+  id="reportGroupDefinitionModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel1">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'report group' : 'new report group' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeReportGroupModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="defineReportGroupForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.name === 'Y'">
+              <div class="col-md-12">
+                <label for="name" class="form-label">{{ 'crm.name' | translate }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  formControlName="name"
+                  [ngClass]="{ 'is-invalid': g['name']?.invalid && (g['name']?.dirty || g['name']?.touched) }"
+                />
+                <div *ngIf="g['name']?.invalid && (g['name']?.dirty || g['name']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['name']?.errors['required']">Sub module name is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveReportGroupDetails()">
+          {{ 'crm.saveDetails' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Report Group Division Modal-->
+<div
+  class="modal fade"
+  #reportGroupDivisionModal
+  id="reportGroupDivisionModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel2">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'division' : 'new division' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeReportGroupDivisionModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p-table
+          #divisionsTable
+          [autoLayout]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="divisionsData?.length"
+          [value]="divisionsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedDivision"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['name', 'order']"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name">
+                {{ 'crm.divisionName' | translate }}
+                <p-sortIcon field="name"></p-sortIcon>
+              </th>
+              <th pSortableColumn="order">
+                {{ 'crm.divisionOrder' | translate }}
+                <p-sortIcon field="order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-division>
+            <tr [pSelectableRow]="division">
+              <td>{{ division.name }}</td>
+              <td>{{ division.order }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2">No Report Group Division Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveReportGroupDivisionDetails()">
+          {{ 'crm.saveDetails' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

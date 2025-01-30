@@ -324,7 +324,16 @@
     "reportParams": "Paramètres du rapport",
     "serviceReqReport": "Rapport de demande de service",
     "sysReports": "Rapports système",
-    "directDebitReports": "Rapports de prélèvements automatiques"
+    "directDebitReports": "Rapports de prélèvements automatiques",
+    "reportGroups": "Groupes de rapports",
+    "reportGroupDivision": "Division du groupe de rapports",
+    "divisionName": "Nom de la division",
+    "divisionOrder": "Ordre de la division",
+    "saveDetails": "Enregistrer les détails",
+    "reportsDefinition": "Définition des rapports",
+    "moduleName": "Nom du module",
+    "moduleDesc": "Description du module",
+    "subModule": "Sous-module"
   },
   "entities": {
     "account_number": "Numéro de compte",

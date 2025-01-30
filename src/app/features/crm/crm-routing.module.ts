@@ -38,6 +38,7 @@ import { RequestReportComponent } from './components/service-desk/request-report
 import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
 import {SystemReportsComponent} from "./components/system-reports/system-reports.component";
 import {ReportDefinitionComponent} from "./components/system-reports/report-definition/report-definition.component";
+import {ReportGroupComponent} from "./components/system-reports/report-group/report-group.component";
 
 const routes: Routes = [
   {
@@ -191,6 +192,10 @@ const routes: Routes = [
   {
     path: 'define-reports',
     component: ReportDefinitionComponent,
+  },
+  {
+    path: 'report-group',
+    component: ReportGroupComponent,
   },
 ];
 

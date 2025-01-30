@@ -300,7 +300,16 @@
     "reportParams": "Vigezo vya ripoti",
     "serviceReqReport": "Ripoti ya maombi ya huduma",
     "sysReports": "Ripoti za mfumo",
-    "directDebitReports": "Ripoti za Debiti ya Moja kwa Moja"
+    "directDebitReports": "Ripoti za Debiti ya Moja kwa Moja",
+    "reportGroups": "Vikundi vya ripoti",
+    "reportGroupDivision": "Mgawanyo wa kikundi cha ripoti",
+    "divisionName": "Jina la mgawanyiko",
+    "divisionOrder": "Mpangilio wa mgawanyiko",
+    "saveDetails": "Hifadhi maelezo",
+    "reportsDefinition": "Ufafanuzi wa ripoti",
+    "moduleName": "Jina la moduli",
+    "moduleDesc": "Maelezo ya moduli",
+    "subModule": "Moduli ndogo"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",

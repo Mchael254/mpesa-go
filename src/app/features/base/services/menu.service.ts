@@ -263,6 +263,10 @@ export class MenuService {
                 name: 'Define Reports',
                 link: '/home/crm/define-reports',
               },
+              {
+                name: 'Report Group',
+                link: '/home/crm/report-group',
+              },
             ],
             collapsed: true,
           },

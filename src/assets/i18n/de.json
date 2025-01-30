@@ -296,7 +296,16 @@
     "reportParams": "Berichtsparameter",
     "serviceReqReport": "Bericht über Serviceanfragen",
     "sysReports": "Systemberichte",
-    "directDebitReports": "Berichte über Lastschriften"
+    "directDebitReports": "Berichte über Lastschriften",
+    "reportGroups": "Berichtsgruppen",
+    "reportGroupDivision": "Berichtsgruppenteilung",
+    "divisionName": "Abteilungsname",
+    "divisionOrder": "Abteilungsreihenfolge",
+    "saveDetails": "Details speichern",
+    "reportsDefinition": "Berichtsdefinition",
+    "moduleName": "Modulname",
+    "moduleDesc": "Modulbeschreibung",
+    "subModule": "Untermodul"
   },
   "entities": {
     "account_number": "Kontonummer",
