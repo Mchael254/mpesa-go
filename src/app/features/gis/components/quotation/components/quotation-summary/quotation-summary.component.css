@@ -152,75 +152,62 @@
     cursor: pointer;
   }
 
-  .form-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .form-label {
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .form-control-sm,
-  .form-select-sm,
-  p-dropdown {
+  .external-claim-input {
+    height: 38px;
     width: 100%;
-    height: 31px;
   }
 
-  /* PrimeNG dropdown specific styles */
+  :host ::ng-deep .modal-lg {
+    max-width: 800px;  /* Increased from default 500px */
+    width: 90%;
+  }
+
   :host ::ng-deep .p-dropdown {
-    height: 31px;
     width: 100%;
+    height: 38px;
   }
 
   :host ::ng-deep .p-dropdown .p-dropdown-label {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
+    padding-top: 0.4rem;
   }
 
-  :host ::ng-deep .compact-dropdown {
-    .p-dropdown-filter-container {
-      padding: 0.25rem;
-
-      input {
-        height: 31px;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-      }
-    }
-
-    .p-dropdown-item {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.875rem;
-    }
-  }
-
-  .small-text {
-    font-size: 0.875rem;
-  }
-
-  /* Ensure dropdown items are properly aligned */
-  :host ::ng-deep .p-dropdown-items {
-    padding: 0.25rem 0;
+  :host ::ng-deep .p-dropdown-panel {
+    /* Make dropdown panel width smaller */
+    max-width: 300px !important; /* Adjust this value as needed */
+    width: auto !important;
   }
 
   :host ::ng-deep .p-dropdown-item {
-    padding: 0.5rem 1rem;
+    /* Make option text smaller */
+    font-size: 0.875rem !important; /* Adjust this value as needed */
+    padding: 0.5rem 0.75rem !important; /* Optionally adjust padding for better spacing */
   }
 
-  .custom-dropdown-height .p-dropdown {
-    height: 40px; /* Increase the height */
-    line-height: 38px; /* Align the text vertically */
+  :host ::ng-deep .p-dropdown-filter {
+    /* Make search filter text smaller if needed */
+    font-size: 0.875rem !important;
+  }
+
+  :host ::ng-deep .p-dropdown-panel .p-dropdown-items {
+    padding: 0.25rem 0 !important; /* Reduce padding around the options list */
+  }
+
+  /* If you also want to adjust the selected item text size in the dropdown */
+  :host ::ng-deep .p-dropdown .p-dropdown-label {
+    font-size: 0.875rem !important;
+  }
+
+  :host ::ng-deep .modal-body {
+    padding: 1rem 2rem;
+  }
+
+  :host ::ng-deep .form-label {
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  :host ::ng-deep .form-control,
+  :host ::ng-deep .form-select,
+  :host ::ng-deep .p-dropdown {
+    margin-left: -0.3rem;  /* Pull inputs slightly to the left */
   }

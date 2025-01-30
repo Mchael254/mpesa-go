@@ -259,12 +259,12 @@ export interface RiskInformation {
   currencyCode: number;
   dateCoverFrom: string;
   dateCoverTo: string;
-  delSect: string; 
+  delSect: string;
   grossPremium: number;
   installmentPaymentPercentage: string;
   installmentPeriod: number;
   insureds: Insured;
-  ipuNcdCertNo: string; 
+  ipuNcdCertNo: string;
   loaded: string;
   logbook: string;
   logbookAvailable: string;
@@ -403,7 +403,7 @@ export interface PremiumFinanciers {
 }
 
 export interface CoinsuranceEdit{
-  
+
     agencyAccountCode: number,
     agentCode: number,
     batchNo: number,
@@ -417,7 +417,7 @@ export interface CoinsuranceEdit{
     optimalCommission: string,
     percentage: number,
     policyNo: string
-  
+
 }
 export interface Insured {
   code: number;
@@ -640,9 +640,9 @@ export interface SelectedSubclassClause {
   productCode: number;
   productShortDescription: string;
   subClassCode: number;
-  editable: string;   
+  editable: string;
   wording: string;
-  mandatory: any;    
+  mandatory: any;
   subclassDesc: string;
 }
 export interface RiskPeril {
@@ -694,19 +694,20 @@ export interface ClientDDdetails{
   clientCode: number;
 }
 export interface ExternalClaimExp {
+  account: string | null;
+  action: string;
   claimPaid: string;
   clientCode: number;
   code: number;
   damageAmount: number;
   insurer: string;
   lossAmount: number;
-  noAcc: string | null;
   otherAmount: number;
-  policyNo: string;
-  remarks: string;
+  policyNumber: string;
+  remark: string;
   riskDetails: string;
-  totalPaidAmount: number;
-  year: number;
+  tpAmount: number;
+  eceYear: number;
 }
 export interface RiskService {
   rssCode: number;
@@ -715,7 +716,7 @@ export interface RiskService {
   sclDesc: string;
   rssMandatory: string;
   rssRemarks: string | null;
-  rssDoneDate: string; 
+  rssDoneDate: string;
   rssDoneBy: string;
   rssSectCode: number;
   sectDesc: string;

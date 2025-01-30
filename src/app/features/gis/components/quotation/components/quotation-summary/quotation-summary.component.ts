@@ -36,6 +36,8 @@ interface FileItem {
 })
 export class QuotationSummaryComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('closebutton') closebutton;
+
   steps = quoteStepsData;
   quotationCode:any
   quotationNumber:any;
@@ -94,7 +96,9 @@ export class QuotationSummaryComponent {
   selectedClaim: any;
   insurersList: any = [];
   insurerNames: any;
-  selectedInsurer: { label: string; value: any } | null = null;
+  selectedInsurer: any = null;
+
+  insurersDetailsForm: FormGroup;
 
   constructor(
 
@@ -158,10 +162,11 @@ export class QuotationSummaryComponent {
 
     this.getQuotationDetails(this.quotationNumber);
     this.getuser();
-    this.externalClaimsExperience(this.clientCode);
-    this.internalClaimsExperience(this.clientCode);
+    this.getExternalClaimsExperience(this.clientCode);
+    this.getInternalClaimsExperience(this.clientCode);
     // this.getPremiumComputationDetails();
     // this.getAgent();
+    this.createInsurersForm()
 
     log.debug("MORE DETAILS TEST",this.quotationDetails )
 
@@ -454,7 +459,7 @@ export class QuotationSummaryComponent {
     }
   }
 
-  externalClaimsExperience(clientCode) {
+  getExternalClaimsExperience(clientCode: number) {
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
       this.externalClaims = res;
       this.externalTable = this.externalClaims.embedded;
@@ -462,7 +467,7 @@ export class QuotationSummaryComponent {
     })
   }
 
-  internalClaimsExperience(clientCode) {
+  getInternalClaimsExperience(clientCode: number) {
     this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res=>{
       this.internalClaims = res;
       this.internalTable = this.internalClaims.embedded;
@@ -906,17 +911,105 @@ export class QuotationSummaryComponent {
     this.quotationService.getInsurers().subscribe({
       next: (res) => {
         this.insurersList = res.content; // Ensure you're accessing the `content` array
-        this.insurerNames = this.insurersList.map((insurer: { name: any; id: any; }) => ({
-          label: insurer.name,
-          value: insurer.id
-        }));// Map insurers to an array of objects with `label` and `value` properties
         log.debug("INSURERS", this.insurersList);
       }
     })
   }
 
-  onInsurerSelect(event: any) {
+  onInsurerChange(event: any) {
+    // event.value will contain the selected insurer object
     this.selectedInsurer = event.value;
+    log.debug('Selected Insurer ID:', this.selectedInsurer.name);
+  }
+
+  createInsurersForm() {
+    this.insurersDetailsForm = this.fb.group({
+      action: [''],
+      claimPaid: ['', [Validators.required]],
+      clientCode: [''],
+      code: [''],
+      damageAmount: ['', [Validators.required]],
+      insurer: ['', [Validators.required]],
+      lossAmount: ['', [Validators.required]],
+      account: ['', [Validators.required]],
+      otherAmount: ['', [Validators.required]],
+      policyNumber: ['', [Validators.required]],
+      remark: ['', [Validators.required]],
+      riskDetails: ['', [Validators.required]],
+      tpAmount: ['', [Validators.required]],
+      eceYear: ['', [Validators.required]]
+    });
+  }
+
+  createExternalClaimExp() {
+    // Mark all fields as touched and validate the form
+    this.insurersDetailsForm.markAllAsTouched();
+    this.insurersDetailsForm.updateValueAndValidity();
+    if (this.insurersDetailsForm.invalid) {
+      log.debug('Form is invalid, will not proceed');
+      return;
+    } else {
+      log.debug("The valid form", this.insurersDetailsForm);
+    }
+    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
+      if (this.insurersDetailsForm.get(control).invalid) {
+        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
+      }
+    });
+
+
+    // If form is valid, proceed
+    log.debug('Form is valid, proceeding with premium computation...');
+
+    // Extract only the name of the insurer
+    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
+    log.debug("Client Code", this.clientCode)
+
+    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
+
+    log.debug('damageAmount (String):', damageAmountString);
+    const damageAmountInt = parseInt(damageAmountString);
+    log.debug('damageAmount (Integer):', damageAmountInt);
+
+    // Log and convert tpAmount
+    const totalPaidAmountString = this.insurersDetailsForm.get('tpAmount').value.replace(/,/g, '');
+    log.debug('tpAmount (String):', totalPaidAmountString);
+    const totalPaidAmountInt = parseInt(totalPaidAmountString);
+    log.debug('tpAmount (Integer):', totalPaidAmountInt);
+
+    // Log and convert otherAmount
+    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
+    log.debug('otherAmount (String):', otherAmountString);
+    const otherAmountInt = parseInt(otherAmountString);
+    log.debug('otherAmount (Integer):', otherAmountInt);
+
+    insurer.damageAmount = damageAmountInt;
+    insurer.tpAmount = totalPaidAmountInt;
+    insurer.otherAmount = otherAmountInt;
+    insurer.clientCode = this.clientCode;
+    insurer.action = "A";
+
+
+    this.closebutton.nativeElement.click();
+
+    log.debug("EXTERNAL CLAIMS FORM-ADDING", insurer)
+    this.quotationService
+      .addExternalClaimExp(insurer)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details added successfully');
+
+          log.debug("Response after adding external Claim Experience", response);
+          this.getExternalClaimsExperience(this.clientCode);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
+        }
+      }
+    );
   }
 
   // end document upload functionality
