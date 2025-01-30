@@ -297,7 +297,16 @@
     "reportParams": "报告参数",
     "serviceReqReport": "服务请求报告",
     "sysReports": "系统报告",
-    "directDebitReports": "直接扣款报告"
+    "directDebitReports": "直接扣款报告",
+    "reportGroups": "报告组",
+    "reportGroupDivision": "报告组分组",
+    "divisionName": "部门名称",
+    "divisionOrder": "部门顺序",
+    "saveDetails": "保存详细信息",
+    "reportsDefinition": "报告定义",
+    "moduleName": "模块名称",
+    "moduleDesc": "模块描述",
+    "subModule": "子模块"
   },
   "entities": {
     "account_number": "帐号",
