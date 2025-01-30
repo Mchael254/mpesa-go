@@ -86,6 +86,7 @@ export class QuoteSummaryComponent {
   reasonCancelled: string = '';
   cancelQuoteClicked: boolean = false;
   showQuoteActions: boolean = true;
+  batchNo: number;
 
 
   constructor(
@@ -662,6 +663,8 @@ convertToPolicy(){
 
   }else{
     // NAVIGATE TO POLICY SCREEN
+    log.debug("existing client convert to polict and navigate to policy summary screen")
+    this.convertQuoteToPolicy()
   }
 }
   updateQuoteStatus() {
@@ -692,5 +695,19 @@ convertToPolicy(){
       }
     );
   }
+  convertQuoteToPolicy(){
+    log.debug("Quotation Details",this.quotationDetails)
+    const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    log.debug("Quotation Code",this.quotationCode)
+    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => { 
+      log.debug("Response after converting quote to a policy:", data)
+      this.batchNo = data._embedded.batchNo
+      log.debug("Batch number",this.batchNo)
+      const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
+    sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+      this.router.navigate(['/home/gis/policy/policy-summary']);
 
+    })
+    
+  }
 }
