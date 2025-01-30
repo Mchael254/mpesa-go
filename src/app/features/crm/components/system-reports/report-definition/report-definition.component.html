@@ -1,0 +1,320 @@
+<div class="base-content-section">
+  <div class="row">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Administration',
+        url: '/home/crm'
+      },
+      {
+        label: 'CRM Setups',
+        url: '/home/crm',
+      },
+      {
+        label: 'System Reports',
+        url: '/home/crm'
+      },
+      {
+        label: 'Define Reports',
+        url: '/home/crm/define-reports'
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="card border-0">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.reportsDefinition' | translate}}</h6>
+
+        <div class="row mb-3 w-100 p-2">
+          <form [formGroup]="sortingForm" style="background: none; display: contents">
+            <div class="col-lg-2 col-sm-6 col-6 pe-4">
+              <label class="transactionLabel">{{ 'entities.system' | translate }}: </label>
+              <select formControlName="system" id="system" class="employeeSelect form-select">
+                <!--<option value="" disabled selected>Select option</option>
+                <option *ngFor="let systemData of systemsData" value="{{ systemData.id }}"> {{ systemData.shortDesc}}</option>-->
+                <option value="gis">GIS</option>
+              </select>
+            </div>
+
+            <div class="col-lg-2 col-sm-4 col-6">
+              <label class="transactionLabel">{{ 'crm.moduleName' | translate }}:</label><br>
+              <select class="form-control form-select" formControlName="module" id="module">
+                <option value="" selected>{{ 'entities.all' | translate }}</option>
+                <option value="123">123</option>
+              </select>
+            </div>
+          </form>
+          <div class="col-lg-8 col-sm-12">
+            <div class="float-lg-end">
+              <span class="icon-circle">
+                <i class="fa-solid fa-plus" (click)="openDefineModuleModal()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="pi pi-pencil"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="fa-regular fa-trash-can"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #modulesTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="modulesData?.length"
+          [value]="modulesData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]= "selectedModule"
+          selectionMode="single"
+          dataKey="id"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['system, description, name']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="system">{{ 'entities.system' | translate }} <p-sortIcon field="system"></p-sortIcon></th>
+              <th pSortableColumn="name">{{ 'crm.moduleName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="description">{{ 'crm.moduleDesc' | translate }} <p-sortIcon field="description"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-module>
+            <tr class="custom-table" [pSelectableRow]="module">
+              <td>{{module?.system | titlecase}}</td>
+              <td>{{module?.name | titlecase}}</td>
+              <td>{{module.description | titlecase}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Module Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card border-0 mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.subModule' | translate }}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <span class="icon-circle">
+                <i class="fa-solid fa-plus" (click)="openSubModuleModal()"></i>
+              </span>
+              <span class="icon-circle">
+                <i class="pi pi-pencil"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #subModulesTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="subModuleData?.length"
+          [value]="subModuleData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['campaign.campaignName']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name">{{ 'crm.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="desc">{{ 'crm.description' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-subModule>
+            <tr class="custom-table">
+              <td></td>
+              <td></td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2">No Sub Module Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Module Definition Modal-->
+<div
+  class="modal fade"
+  #moduleDefinitionModal
+  id="moduleDefinitionModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel2">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'module' : 'new module' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeDefineModuleModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="defineModuleForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.system === 'Y'">
+              <div class="col-md-12">
+                <label for="system" class="form-label">{{ 'entities.system' | translate }}</label>
+                <p-dropdown
+                  [options]="systems"
+                  optionLabel="shortDesc"
+                  optionValue="id"
+                  formControlName="system"
+                  id="system"
+                  [filter]="true"
+                  filterBy="shortDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
+                  [ngClass]="{ 'is-invalid': g['system']?.invalid && (g['system']?.dirty || g['system']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="g['system']?.invalid && (g['system']?.dirty || g['system']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['system']?.errors['required']">System is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.moduleName === 'Y'">
+              <div class="col-md-12">
+                <label for="moduleName" class="form-label">{{ 'crm.moduleName' | translate }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="moduleName"
+                  formControlName="moduleName"
+                  [ngClass]="{ 'is-invalid': g['moduleName']?.invalid && (g['moduleName']?.dirty || g['moduleName']?.touched) }"
+                />
+                <div *ngIf="g['moduleName']?.invalid && (g['moduleName']?.dirty || g['moduleName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['moduleName']?.errors['required']">Module name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.moduleDescription === 'Y'">
+              <div class="col-md-12">
+                <label for="moduleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="moduleDescription"
+                  formControlName="moduleDescription"
+                  [ngClass]="{ 'is-invalid': g['moduleDescription']?.invalid && (g['moduleDescription']?.dirty || g['moduleDescription']?.touched) }"
+                />
+                <div *ngIf="g['moduleDescription']?.invalid && (g['moduleDescription']?.dirty || g['moduleDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['moduleDescription']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Sub Module Definition Modal-->
+<div
+  class="modal fade"
+  #subModuleDefinitionModal
+  id="subModuleDefinitionModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-sm align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel1">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'sub module' : 'new sub module' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeSubModuleModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="defineSubModuleForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus.subModuleName === 'Y'">
+              <div class="col-md-12">
+                <label for="subModuleName" class="form-label">{{ 'crm.name' | translate }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="subModuleName"
+                  formControlName="subModuleName"
+                  [ngClass]="{ 'is-invalid': g['subModuleName']?.invalid && (g['subModuleName']?.dirty || g['subModuleName']?.touched) }"
+                />
+                <div *ngIf="g['subModuleName']?.invalid && (g['subModuleName']?.dirty || g['subModuleName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['subModuleName']?.errors['required']">Sub module name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.subModuleDescription === 'Y'">
+              <div class="col-md-12">
+                <label for="subModuleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="subModuleDescription"
+                  formControlName="subModuleDescription"
+                  [ngClass]="{ 'is-invalid': g['subModuleDescription']?.invalid && (g['subModuleDescription']?.dirty || g['subModuleDescription']?.touched) }"
+                />
+                <div *ngIf="g['subModuleDescription']?.invalid && (g['subModuleDescription']?.dirty || g['subModuleDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['subModuleDescription']?.errors['required']">Sub Module Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveSubModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
