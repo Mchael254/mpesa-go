@@ -335,7 +335,13 @@
     "reportsDefinition": "Definición de informes",
     "moduleName": "Nombre del módulo",
     "moduleDesc": "Descripción del módulo",
-    "subModule": "Submódulo"
+    "subModule": "Submódulo",
+    "allReports": "Todos los informes",
+    "reportName": "Nombre del informe",
+    "reportDesc": "Descripción del informe",
+    "assignedReport": "Informe asignado",
+    "add": "Agregar",
+    "remove": "Eliminar"
   },
   "entities": {
     "account_number": "Número de cuenta",
