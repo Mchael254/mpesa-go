@@ -79,7 +79,7 @@ export interface QuotationDetails {
   expiryDate: string;
   no: string;
   premium: number;
-  quotationProduct: QuotationProduct[];
+  quotationProducts: QuotationProduct[];
   riskInformation: RiskInformation[];
   status: string;
   taxInformation: TaxInformation[];

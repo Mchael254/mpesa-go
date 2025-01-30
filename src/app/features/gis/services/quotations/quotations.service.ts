@@ -295,14 +295,14 @@ export class QuotationsService {
     pageSize: number = 10,     // Default value is 10
     clientType?: string,
     clientCode?: number,
-    productCode?:number,
+    productCode?: number,
     dateFrom?: string,
-    dateTo?:string,
+    dateTo?: string,
     agentCode?: number,
     quotationNumber?: string,
     status?: string,
-    source?:string,
-    clientName?:string
+    source?: string,
+    clientName?: string
   ) {
     const paramsObj: { [param: string]: string | number } = {};
 
@@ -346,6 +346,18 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
+  convertQuoteToPolicy(
+    quotCode: number,
 
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
 
 }
