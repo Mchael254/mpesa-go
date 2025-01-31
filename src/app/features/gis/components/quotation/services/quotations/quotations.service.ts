@@ -239,11 +239,15 @@ export class QuotationsService {
     page: number | null = 0,
     size: number | null = 10
   ) {
-    return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+    return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 
   addExternalClaimExp(data: ExternalClaimExp) {
-    return this.api.POST(`api/v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL)
+    return this.api.POST(`api/v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
+
+  deleteExternalClaimExp(code: number) {
+    return this.api.DELETE(`api/v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 
   getInternalClaimsExperience(
@@ -251,7 +255,7 @@ export class QuotationsService {
     page: number | null = 0,
     size: number | null = 10
   ) {
-    return this.api.GET(`api/v2/internal-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+    return this.api.GET(`api/v2/internal-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 
 
