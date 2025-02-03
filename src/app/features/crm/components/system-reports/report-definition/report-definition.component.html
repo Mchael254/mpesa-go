@@ -167,6 +167,126 @@
         </p-table>
       </div>
     </div>
+
+    <div class="card border-0 mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.allReports' | translate }}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <button class="btn btn-primary" style="width: 100px" [disabled]="!selectedReport">
+                {{ 'crm.add' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #allReportsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="allReportsData?.length"
+          [value]="allReportsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedReport"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['code, name, desc']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
+              <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-report>
+            <tr class="custom-table" [pSelectableRow]="report">
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Report Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="card border-0 mt-3">
+      <div class="card-header bg-transparent float-start border-bottom-0">
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.assignedReport' | translate }}</h6>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
+              <button class="btn btn-primary" style="width: 100px" [disabled]="!selectedAssignedReport">
+                {{ 'crm.remove' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <p-table
+          #assignedReportsTable
+          [autoLayout]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="assignedReportsData?.length"
+          [value]="assignedReportsData"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          [(selection)]="selectedAssignedReport"
+          selectionMode="single"
+          dataKey="code"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]="['code, name, desc']"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
+              <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-report>
+            <tr class="custom-table" [pSelectableRow]="report">
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No Report Detail(s) Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
   </div>
 </div>
 

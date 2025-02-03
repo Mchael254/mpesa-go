@@ -31,6 +31,10 @@ export class ReportDefinitionComponent implements OnInit {
     subModuleDescription: 'Y'
   }
   groupId: string = 'reportDefinitionTab';
+  allReportsData: any;
+  selectedReport: any;
+  assignedReportsData: any;
+  selectedAssignedReport: any;
 
 
   constructor(

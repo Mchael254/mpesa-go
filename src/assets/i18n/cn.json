@@ -306,7 +306,13 @@
     "reportsDefinition": "报告定义",
     "moduleName": "模块名称",
     "moduleDesc": "模块描述",
-    "subModule": "子模块"
+    "subModule": "子模块",
+    "allReports": "所有报告",
+    "reportName": "报告名称",
+    "reportDesc": "报告描述",
+    "assignedReport": "分配的报告",
+    "add": "添加",
+    "remove": "移除"
   },
   "entities": {
     "account_number": "帐号",

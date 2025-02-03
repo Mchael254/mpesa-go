@@ -309,7 +309,13 @@
     "reportsDefinition": "Ufafanuzi wa ripoti",
     "moduleName": "Jina la moduli",
     "moduleDesc": "Maelezo ya moduli",
-    "subModule": "Moduli ndogo"
+    "subModule": "Moduli ndogo",
+    "allReports": "Ripoti zote",
+    "reportName": "Jina la ripoti",
+    "reportDesc": "Maelezo ya ripoti",
+    "assignedReport": "Ripoti iliyopewa",
+    "add": "Ongeza",
+    "remove": "Ondoa"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",
