@@ -20,6 +20,7 @@ import {BranchService} from "../../../../../../shared/services/setups/branch/bra
 import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
 import {Logger} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -93,10 +94,13 @@ export class QuotationSummaryComponent {
   branchCode: number;
   limitAmount: number;
   quotationCodeString: string;
-  selectedClaim: any;
+  selectedExternalClaimExp: any;
+  selectedIntetnalClaimExp: any;
   insurersList: any = [];
   insurerNames: any;
   selectedInsurer: any = null;
+  externalClaimExpCode: number;
+  clientName: any;
 
   insurersDetailsForm: FormGroup;
 
@@ -117,6 +121,7 @@ export class QuotationSummaryComponent {
     public bankService:BankService,
     private fb: FormBuilder,
     private config: PrimeNGConfig,
+    private clientService: ClientService,
 
   ) {}
   public isCollapsibleOpen = false;
@@ -166,7 +171,9 @@ export class QuotationSummaryComponent {
     this.getInternalClaimsExperience(this.clientCode);
     // this.getPremiumComputationDetails();
     // this.getAgent();
-    this.createInsurersForm()
+    this.createInsurersForm();
+    this.fetchInsurers();
+    this.loadClientDetails(this.clientCode);
 
     log.debug("MORE DETAILS TEST",this.quotationDetails )
 
@@ -197,6 +204,14 @@ export class QuotationSummaryComponent {
         ]
       }
     ];
+
+    // Add this to your existing ngOnInit
+    const modal = document.getElementById('addExternalClaimExperienceModal');
+    if (modal) {
+      modal.addEventListener('hidden.bs.modal', () => {
+        this.clearForm();
+      });
+    }
   }
 
   external() {
@@ -309,7 +324,7 @@ export class QuotationSummaryComponent {
 
       if(data===el.code) {
         this.sections = el.sectionsDetails
-        this.schedules = [el.scheduleDetails.level1]
+        this.schedules = [el.scheduleDetails?.level1]
       }
 
     })
@@ -889,8 +904,8 @@ export class QuotationSummaryComponent {
   }
 
   openClaimDeleteModal() {
-    log.debug("Selected Claim experience to delete", this.selectedClaim)
-    if (!this.selectedClaim) {
+    log.debug("Selected Claim experience to delete", this.selectedExternalClaimExp)
+    if (!this.selectedExternalClaimExp) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a Claim experience to continue');
     } else {
       document.getElementById("openClaimModalButtonDelete").click();
@@ -898,12 +913,12 @@ export class QuotationSummaryComponent {
   }
 
   onExternalClaimSelect(externalClaim: any): void {
-    this.selectedClaim = externalClaim;
-    log.debug('Selected external Claim item:', externalClaim);
+    this.selectedExternalClaimExp = externalClaim;
+    log.debug('Selected external Claim item:', this.selectedExternalClaimExp);
   }
 
   onInternalClaimSelect(internalClaim: any): void {
-    this.selectedClaim = internalClaim;
+    this.selectedIntetnalClaimExp = internalClaim;
     log.debug('Selected internal Claim item:', internalClaim);
   }
 
@@ -1012,6 +1027,190 @@ export class QuotationSummaryComponent {
     );
   }
 
+  editExternalClaimExp() {
+    // Mark all fields as touched and validate the form
+    this.insurersDetailsForm.markAllAsTouched();
+    this.insurersDetailsForm.updateValueAndValidity();
+    if (this.insurersDetailsForm.invalid) {
+      log.debug('Form is invalid, will not proceed');
+      return;
+    } else {
+      log.debug("The valid form", this.insurersDetailsForm);
+    }
+    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
+      if (this.insurersDetailsForm.get(control).invalid) {
+        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
+      }
+    });
+
+
+    // If form is valid, proceed
+    log.debug('Form is valid, proceeding with premium computation...');
+
+    // Extract only the name of the insurer
+    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
+    log.debug("Client Code", this.clientCode)
+
+    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
+
+    log.debug('damageAmount (String):', damageAmountString);
+    const damageAmountInt = parseInt(damageAmountString);
+    log.debug('damageAmount (Integer):', damageAmountInt);
+
+    // Log and convert tpAmount
+    const totalPaidAmountString = this.insurersDetailsForm.get('tpAmount').value.replace(/,/g, '');
+    log.debug('tpAmount (String):', totalPaidAmountString);
+    const totalPaidAmountInt = parseInt(totalPaidAmountString);
+    log.debug('tpAmount (Integer):', totalPaidAmountInt);
+
+    // Log and convert otherAmount
+    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
+    log.debug('otherAmount (String):', otherAmountString);
+    const otherAmountInt = parseInt(otherAmountString);
+    log.debug('otherAmount (Integer):', otherAmountInt);
+
+    insurer.damageAmount = damageAmountInt;
+    insurer.tpAmount = totalPaidAmountInt;
+    insurer.otherAmount = otherAmountInt;
+    insurer.clientCode = this.clientCode;
+    insurer.action = "E";
+    insurer.code = this.selectedExternalClaimExp.code;
+
+
+    this.closebutton.nativeElement.click();
+
+    log.debug("EXTERNAL CLAIMS FORM-EDITING", insurer)
+    this.quotationService
+      .addExternalClaimExp(insurer)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details edited successfully');
+
+          log.debug("Response after editing external Claim Experience", response);
+          this.getExternalClaimsExperience(this.clientCode);
+
+        },
+        error: (error) => {
+          log.debug("Error editing an external claim exp", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit external claim exp...Try again later');
+        }
+      }
+    );
+  }
+
+  deleteExternalClaimExperience() {
+
+    if(this.selectedExternalClaimExp.code) {
+      this.externalClaimExpCode = this.selectedExternalClaimExp.code;
+      log.debug('External claim exp code: ', this.externalClaimExpCode);
+    }
+
+    this.quotationService
+      .deleteExternalClaimExp(this.externalClaimExpCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting an external claim experience ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
+          this.getExternalClaimsExperience(this.clientCode);
+        },
+        error: (error) => {
+          log.debug('Error deleteing external claim exp', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete external claim exp...Try again later');
+        }
+      }
+    );
+  }
+
+  openExternalClaimExpEditModal() {
+    if(!this.selectedExternalClaimExp) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Please select an external claim experience to edit');
+    } else {
+      this.populateEditForm();
+    }
+  }
+
+  populateEditForm() {
+    // Find the matching insurer object from the insurersList
+    log.debug("InsurersList", this.insurersList);
+    const selectedInsurer = this.insurersList.find(
+      insurer => insurer.name === this.selectedExternalClaimExp.insurer
+    );
+
+    log.debug("selectedInsurer on edit", selectedInsurer);
+
+    // Format the numeric values with commas for display
+    const formatNumber = (num: number) => {
+      return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
+    };
+
+    // Map claimPaid value to match the dropdown options
+    const claimPaidValue = this.selectedExternalClaimExp.claimPaid === "Yes" ? "Y" : "N";
+
+    // Populate the form with the selected claim's data
+    this.insurersDetailsForm.patchValue({
+      policyNumber: this.selectedExternalClaimExp.policyNumber,
+      insurer: selectedInsurer, // Pass the full insurer object for p-dropdown
+      eceYear: this.selectedExternalClaimExp.eceYear,
+      riskDetails: this.selectedExternalClaimExp.riskDetails,
+      lossAmount: this.selectedExternalClaimExp.lossAmount,
+      claimPaid: claimPaidValue, // Corrected mapping
+      account: this.selectedExternalClaimExp.account,
+      damageAmount: formatNumber(this.selectedExternalClaimExp.damageAmount),
+      tpAmount: formatNumber(this.selectedExternalClaimExp.tpAmount),
+      otherAmount: formatNumber(this.selectedExternalClaimExp.otherAmount),
+      remark: this.selectedExternalClaimExp.remark
+    });
+  }
+
+  externalClaimExpAction() {
+    if(!this.selectedExternalClaimExp) {
+      this.createExternalClaimExp();
+    } else {
+      this.editExternalClaimExp();
+    }
+  }
+
+
+  clearForm() {
+    // Reset the form to its initial state
+    this.insurersDetailsForm.reset();
+
+    // Clear the selected claim
+    this.selectedExternalClaimExp = null;
+
+    // If you have any default values you want to set after clearing, you can do it here
+    // For example, if claimPaid should default to 'N':
+    this.insurersDetailsForm.patchValue({
+      claimPaid: 'N'
+    });
+  }
+
+  loadClientDetails(id) {
+    this.clientService.getClientById(id).subscribe((data) => {
+      this.clientDetails = data;
+      log.debug('Selected Client Details:', this.clientDetails);
+      const clientDetailsString = JSON.stringify(this.clientDetails);
+      sessionStorage.setItem('clientDetails', clientDetailsString);
+      this.saveclient();
+      this.closebutton.nativeElement.click();
+    });
+  }
+
+  /**
+   * Saves essential client details for further processing.
+   * - Assigns client ID, name, email, and phone from 'clientDetails'.
+   * @method saveClient
+   * @return {void}
+   */
+  saveclient() {
+    this.clientCode = Number(this.clientDetails.id);
+    this.clientName =
+      this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    sessionStorage.setItem('clientCode', this.clientCode);
+  }
+
   // end document upload functionality
   onResize(event: any) {
     this.modalHeight = event.height;
@@ -1019,5 +1218,12 @@ export class QuotationSummaryComponent {
 
   ngOnDestroy() {
     this.ngUnsubscribe.complete();
+
+    const modal = document.getElementById('addExternalClaimExperienceModal');
+    if (modal) {
+      modal.removeEventListener('hidden.bs.modal', () => {
+        this.clearForm();
+      });
+    }
   }
 }
