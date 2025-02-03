@@ -59,8 +59,8 @@ export class MenuService {
           { name: 'Edit Quotation', link: '/home/lms/quotation/list' },
           { name: 'Revise/Reuse Quotation', link: '/home/gis/quotation/revise-reuse-quote' },
           { name: 'Convert Quotation', link: '/home/gis/quotation/quotation-conversion' },
-          { name: 'Quotation Enquiry', link: '/home/gis/quotation/quotation-enquiry' },
-          { name: 'Quotation Sources', link: '' },
+          { name: 'Quotation Inquiry', link: '/home/gis/quotation/quotation-inquiry' },
+          { name: 'Quotation Sources', link: '/home/gis/quotation/quotation-sources' },
           { name: 'Quotation Numbers', link: '' },
           // { name: 'Quotation List', link: '/home/lms/quotation/list' },
         ],
@@ -876,8 +876,14 @@ export class MenuService {
       },
 
       {
-        name: 'Enquiry',
-        link: '/home/gis/quotation/quotation-enquiry',
+        name: 'Inquiry',
+        link: '/home/gis/quotation/quotation-inquiry',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Sources',
+        link: '/home/gis/quotation/quotation-sources',
         value: 'QUOTATION'
       },
 
