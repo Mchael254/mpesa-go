@@ -14,6 +14,7 @@ import { StringManipulation } from '../../../../../../features/lms/util/string_m
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
+import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -234,20 +235,25 @@ export class QuotationsService {
   }
 
   getExternalClaimsExperience(
-    clientCode: any,
+    clientCode: number,
     page: number | null = 0,
     size: number | null = 10
   ) {
     return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 
+  addExternalClaimExp(data: ExternalClaimExp) {
+    return this.api.POST(`api/v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
   getInternalClaimsExperience(
-    clientCode: any,
+    clientCode: number,
     page: number | null = 0,
     size: number | null = 10
   ) {
     return this.api.GET(`api/v2/internal-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
+
 
   getAgents(
     page: number | null = 0,
@@ -374,10 +380,14 @@ export class QuotationsService {
     return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
+
+  getInsurers(
+    page: number | null = 0,
+    size: number | null = 10,
+    sortList: string = 'createdDate',
+  ): Observable<Pagination<AgentDTO>>{
+
+    return this.api.GET<Pagination<AgentDTO>>(`agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+  }
 }
-
-
-
-
-
 

@@ -1159,7 +1159,7 @@
       "select": "Select",
       "short_description": "Short description",
       "no_data_to_display": "No data to display.",
-      "are_you_sure_you_want_to_delete": "Are you sure you want to delete?",
+      "are_you_sure_you_want_to_delete": "Are you sure you want to delete this Item?",
       "yes_delete": "Yes,delete",
       "no_im_not": "No, I'm not",
       "leader": "Leader",

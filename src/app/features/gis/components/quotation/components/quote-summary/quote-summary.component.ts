@@ -346,8 +346,6 @@ export class QuoteSummaryComponent {
 
   }
 
-
-
   getuser() {
     this.user = this.authService.getCurrentUserName()
     this.userDetails = this.authService.getCurrentUser();
@@ -369,8 +367,6 @@ export class QuoteSummaryComponent {
       systemCode: ['0', Validators.required],
       systemModule: ['NB', Validators.required],
       address: ['', Validators.required],
-      // cc: ['', Validators.required],
-      // bcc: ['', Validators.required],
     });
   }
   emaildetails() {
@@ -394,21 +390,6 @@ export class QuoteSummaryComponent {
     emailForm.subject = "Quotation Details";
     emailForm.systemCode = "0";
     emailForm.systemModule = "NB";
-    // emailForm.cc = this.selectedEmail;
-    // emailForm.bcc = this.selectedEmail;
-
-    // this.quotationService.sendEmail(emailForm).subscribe(
-    //   {
-    //     next: (res) => {
-    //       const response = res
-    //       this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-    //       log.debug(res)
-    //     }, error: (error: HttpErrorResponse) => {
-    //       log.info(error);
-    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-    //     }
-    //   })
     log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
@@ -430,18 +411,6 @@ export class QuoteSummaryComponent {
 
 
     };
-    // this.quotationService.sendSms(payload).subscribe(
-    //   {
-    //     next: (res) => {
-    //       this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-    //     }, error: (error: HttpErrorResponse) => {
-    //       log.info(error);
-    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-    //     }
-
-    //   }
-    // )
   }
   handleShare() {
     if (this.selectedOption === 'email') {
