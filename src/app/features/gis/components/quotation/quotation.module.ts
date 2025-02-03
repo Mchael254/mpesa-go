@@ -34,6 +34,7 @@ import { EntitiesModule } from '../../../entities/entities.module';
 import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
+import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { QuotationInquiryComponent } from './components/quotation-inquiry/quotat
     ReviseReuseQuotationComponent,
     QuotationConversionComponent,
     QuotationInquiryComponent,
+    QuotationSourcesComponent,
     
     
   ],

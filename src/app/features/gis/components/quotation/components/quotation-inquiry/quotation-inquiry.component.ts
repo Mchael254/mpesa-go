@@ -76,8 +76,8 @@ export class QuotationInquiryComponent {
     this.fetchGISQuotations();
     // this.loadAllproducts();
 
-    // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    // this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
     this.fetchGISQuotations();
   }
   ngOnDestroy(): void { }
@@ -273,7 +273,7 @@ export class QuotationInquiryComponent {
     log.debug("AgentId", this.agentId);
 
 
-    // this.fetchGISQuotations(); 
+    // this.fetchGISQuotations();
   }
   onClientSelected(event: { clientName: string; clientCode: number }) {
     this.clientName = event.clientName;
