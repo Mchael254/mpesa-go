@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/internal/Observable';
 import {HttpParams} from '@angular/common/http';
 
-import {SystemModule, SystemsDto} from '../../../data/common/systemsDto';
+import {SystemModule, SystemReportModule, SystemsDto} from '../../../data/common/systemsDto';
 import {ApiService} from '../../api/api.service';
 import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {SystemRole} from "../../../data/common/system-role";
@@ -10,12 +10,16 @@ import {ProcessArea} from "../../../data/common/process-area";
 import {ProcessSubArea} from "../../../data/common/process-sub-area";
 import {RoleArea} from "../../../data/common/role-area";
 import {of} from "rxjs";
+import {UtilService} from "../../util/util.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class SystemsService {
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private utilService: UtilService
+  ) {}
 
   getSystems(organizationId?: number): Observable<SystemsDto[]> {
     // Create an object to hold parameters only if they are provided
@@ -128,4 +132,40 @@ export class SystemsService {
     )
   }
 
+  getSystemReportModules(systemCode: number): Observable<SystemReportModule[]> {
+    const params = new HttpParams()
+      .set('systemCode', `${systemCode}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.GET<SystemReportModule[]>(
+      `system-report-modules`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
+    )
+  }
+
+  createSystemReportModule(data: SystemReportModule): Observable<SystemReportModule> {
+    return this.api.POST<SystemReportModule>(
+      `system-report-modules`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+    )
+  }
+
+  updateSystemReportModule(
+    moduleId: number,
+    data: SystemReportModule
+  ): Observable<SystemReportModule> {
+    return this.api.PUT<SystemReportModule>(
+      `system-report-modules/${moduleId}`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+    )
+  }
+
+  deleteSystemReportModule(id: number) {
+    return this.api.DELETE(
+      `system-report-modules/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    )
+  }
 }
