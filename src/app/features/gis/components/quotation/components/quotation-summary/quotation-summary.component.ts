@@ -20,6 +20,7 @@ import {BranchService} from "../../../../../../shared/services/setups/branch/bra
 import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
 import {Logger} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -99,6 +100,7 @@ export class QuotationSummaryComponent {
   insurerNames: any;
   selectedInsurer: any = null;
   externalClaimExpCode: number;
+  clientName: any;
 
   insurersDetailsForm: FormGroup;
 
@@ -119,6 +121,7 @@ export class QuotationSummaryComponent {
     public bankService:BankService,
     private fb: FormBuilder,
     private config: PrimeNGConfig,
+    private clientService: ClientService,
 
   ) {}
   public isCollapsibleOpen = false;
@@ -170,6 +173,7 @@ export class QuotationSummaryComponent {
     // this.getAgent();
     this.createInsurersForm();
     this.fetchInsurers();
+    this.loadClientDetails(this.clientCode);
 
     log.debug("MORE DETAILS TEST",this.quotationDetails )
 
@@ -1070,6 +1074,7 @@ export class QuotationSummaryComponent {
     insurer.otherAmount = otherAmountInt;
     insurer.clientCode = this.clientCode;
     insurer.action = "E";
+    insurer.code = this.selectedExternalClaimExp.code;
 
 
     this.closebutton.nativeElement.click();
@@ -1127,10 +1132,8 @@ export class QuotationSummaryComponent {
   }
 
   populateEditForm() {
-
     // Find the matching insurer object from the insurersList
     log.debug("InsurersList", this.insurersList);
-    log.debug("")
     const selectedInsurer = this.insurersList.find(
       insurer => insurer.name === this.selectedExternalClaimExp.insurer
     );
@@ -1142,6 +1145,9 @@ export class QuotationSummaryComponent {
       return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
     };
 
+    // Map claimPaid value to match the dropdown options
+    const claimPaidValue = this.selectedExternalClaimExp.claimPaid === "Yes" ? "Y" : "N";
+
     // Populate the form with the selected claim's data
     this.insurersDetailsForm.patchValue({
       policyNumber: this.selectedExternalClaimExp.policyNumber,
@@ -1149,7 +1155,7 @@ export class QuotationSummaryComponent {
       eceYear: this.selectedExternalClaimExp.eceYear,
       riskDetails: this.selectedExternalClaimExp.riskDetails,
       lossAmount: this.selectedExternalClaimExp.lossAmount,
-      claimPaid: this.selectedExternalClaimExp.claimPaid,
+      claimPaid: claimPaidValue, // Corrected mapping
       account: this.selectedExternalClaimExp.account,
       damageAmount: formatNumber(this.selectedExternalClaimExp.damageAmount),
       tpAmount: formatNumber(this.selectedExternalClaimExp.tpAmount),
@@ -1157,6 +1163,15 @@ export class QuotationSummaryComponent {
       remark: this.selectedExternalClaimExp.remark
     });
   }
+
+  externalClaimExpAction() {
+    if(!this.selectedExternalClaimExp) {
+      this.createExternalClaimExp();
+    } else {
+      this.editExternalClaimExp();
+    }
+  }
+
 
   clearForm() {
     // Reset the form to its initial state
@@ -1170,6 +1185,30 @@ export class QuotationSummaryComponent {
     this.insurersDetailsForm.patchValue({
       claimPaid: 'N'
     });
+  }
+
+  loadClientDetails(id) {
+    this.clientService.getClientById(id).subscribe((data) => {
+      this.clientDetails = data;
+      log.debug('Selected Client Details:', this.clientDetails);
+      const clientDetailsString = JSON.stringify(this.clientDetails);
+      sessionStorage.setItem('clientDetails', clientDetailsString);
+      this.saveclient();
+      this.closebutton.nativeElement.click();
+    });
+  }
+
+  /**
+   * Saves essential client details for further processing.
+   * - Assigns client ID, name, email, and phone from 'clientDetails'.
+   * @method saveClient
+   * @return {void}
+   */
+  saveclient() {
+    this.clientCode = Number(this.clientDetails.id);
+    this.clientName =
+      this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    sessionStorage.setItem('clientCode', this.clientCode);
   }
 
   // end document upload functionality
