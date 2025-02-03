@@ -176,11 +176,11 @@ export class ClientSearchModalComponent {
       this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     sessionStorage.setItem('clientCode', this.clientCode);
 
-  // Emit the clientName and clientCode as an object
-  this.clientSelected.emit({
-    clientName: this.clientName,
-    clientCode: this.clientCode,
-  });
+    // Emit the clientName and clientCode as an object
+    this.clientSelected.emit({
+      clientName: this.clientName,
+      clientCode: this.clientCode,
+    });
   }
 
   inputInternalId(event) {

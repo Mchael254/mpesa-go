@@ -615,12 +615,15 @@
               <div class="row">
                 <div class="col-3"></div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addExternalClaimExperienceModal" (click)="fetchInsurers()">
+                    <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addExternalClaimExperienceModal" >
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
-                  <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary"  title="Edit">
+                  <div class="col-sm-3">
+                    <button type="button" id="icon" class="btn btn-primary" title="Edit"
+                      [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
+                      [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
+                      (click)="openExternalClaimExpEditModal()">
                       <i class="fa-solid fa-pencil"></i>
                     </button>
                   </div>
@@ -649,8 +652,8 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-externalClaim>
-                <tr [class.p-highlight]="externalClaim === selectedClaim" (click)="onExternalClaimSelect(externalClaim)" style="cursor: default" >
-                  <td>{{externalClaim.clientCode}}</td>
+                <tr [class.p-highlight]="externalClaim === selectedExternalClaimExp" (click)="onExternalClaimSelect(externalClaim)" style="cursor: default" >
+                  <td>{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</td>
                   <td>{{externalClaim.claimPaid}}</td>
                   <td>{{externalClaim.insurer}}</td>
                   <td>{{externalClaim.policyNumber}}</td>
@@ -682,7 +685,7 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-internalClaim>
-                <tr [class.p-highlight]="internalClaim === selectedClaim" (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
+                <tr [class.p-highlight]="internalClaim === selectedIntetnalClaimExp" (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
                   <td>{{internalClaim.client_policy_number}}</td>
                   <td>{{internalClaim.claim_number}}</td>
                   <td>{{internalClaim.outstanding_reserve}}</td>
@@ -713,7 +716,7 @@
           <div class="modal-body ">
             <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
             <div class="d-flex justify-content-center mb-3">
-              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal" >
+              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal" (click)="deleteExternalClaimExperience()" >
                 {{'gis.policy.yes_delete' | translate}}
               </button>
             </div>
@@ -727,11 +730,12 @@
       </div>
     </div>
 
-    <div class="modal fade" id="addExternalClaimExperienceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Add External Claims Experience Modal -->
+    <div class="modal fade" id="addExternalClaimExperienceModal" tabindex="-1" aria-labelledby="addExternalClaimExperienceModal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-body">
-            <button type="button" #closebutton class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" #closebutton class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()"></button>
             <h5 class="modal-title" id="modalTitle">Define a new claims experience</h5>
 
             <form [formGroup]="insurersDetailsForm">
@@ -878,8 +882,8 @@
               </div>
 
               <div class="d-flex justify-content-end mt-2 mb-2">
-                <button type="button" class="btn btn-primary" #closebutton >Cancel</button>
-                <button type="button" class="btn btn-primary" #closebutton (click)="createExternalClaimExp()">Save</button>
+                <button type="button" class="btn btn-outline-primary mx-3" #closebutton data-bs-dismiss="modal" (click)="clearForm()">Cancel</button>
+                <button type="button" class="btn btn-primary" #closebutton (click)="externalClaimExpAction()">Save</button>
               </div>
             </form>
           </div>
