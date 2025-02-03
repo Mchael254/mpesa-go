@@ -13,3 +13,8 @@
 .transactionLabel{
   float: left;
 }
+.btn:disabled {
+  pointer-events: all;
+  cursor: not-allowed;
+  opacity: 0.40;
+}
