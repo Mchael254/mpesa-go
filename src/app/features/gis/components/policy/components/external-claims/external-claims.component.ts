@@ -142,7 +142,7 @@ export class ExternalClaimsComponent {
     });
 
 
-    // If form is valid, proceed 
+    // If form is valid, proceed
     console.log('Form is valid, proceeding with premium computation...');
 
     const insurer = this.insurersDetailsForm.value;
@@ -265,17 +265,17 @@ export class ExternalClaimsComponent {
 
     // Ensure the insurer matches the dropdown value
     this.insurersDetailsForm.patchValue({
-        policyNo: this.selectedExternalClaim.policyNo,
+        policyNo: this.selectedExternalClaim.policyNumber,
         insurer: selectedInsurer?.name || null, // Patch the dropdown with the correct name
-        year: this.selectedExternalClaim.year,
+        year: this.selectedExternalClaim.eceYear,
         riskDetails: this.selectedExternalClaim.riskDetails,
         lossAmount: this.selectedExternalClaim.lossAmount,
         claimPaid: this.selectedExternalClaim.claimPaid,
-        noAcc: this.selectedExternalClaim.noAcc,
+        noAcc: this.selectedExternalClaim.account,
         damageAmount: this.selectedExternalClaim.damageAmount,
-        totalPaidAmount: this.selectedExternalClaim.totalPaidAmount,
+        totalPaidAmount: this.selectedExternalClaim.tpAmount,
         otherAmount: this.selectedExternalClaim.otherAmount,
-        remarks: this.selectedExternalClaim.remarks,
+        remarks: this.selectedExternalClaim.remark,
     });
 
     log.debug("Form values after patching:", this.insurersDetailsForm.value);
@@ -297,7 +297,7 @@ export class ExternalClaimsComponent {
     });
 
 
-    // If form is valid, proceed 
+    // If form is valid, proceed
     console.log('Form is valid, proceeding with premium computation...');
 
     const insurer = this.insurersDetailsForm.value;
@@ -390,7 +390,7 @@ export class ExternalClaimsComponent {
           log.debug("Response after deleting External Claim Exp.", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted External Claim Exp.')
 
-          // Remove the deleted policy subclass clause from the policy subclass clause Details array 
+          // Remove the deleted policy subclass clause from the policy subclass clause Details array
           const index = this.externalClaimList.findIndex(claim => claim.code === this.selectedExternalClaim.code);
           if (index !== -1) {
             this.externalClaimList.splice(index, 1);

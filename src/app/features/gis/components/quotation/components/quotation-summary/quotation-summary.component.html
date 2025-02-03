@@ -76,7 +76,7 @@
                   <p class="label">Cover From</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails.withEffectiveFromDate ? quotationDetails.withEffectiveFromDate : quotationDetails.coverFrom}}</p>
+                  <p class="content">{{(quotationDetails?.withEffectiveFromDate || quotationDetails?.coverFrom)}}</p>
                 </div>
               </div>
             </div>
@@ -86,7 +86,7 @@
                   <p class="label">Cover To</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails.withEffectiveFromDate ? quotationDetails.withEffectiveFromDate : quotationDetails.coverTo}}</p>
+                  <p class="content">{{(quotationDetails?.withEffectiveToDate || quotationDetails?.coverTo)}}</p>
                 </div>
               </div>
             </div>
@@ -122,7 +122,7 @@
                   <p class="label">Expiry Date</p>
                 </div>
                 <div class="col-7">
-                  <p class="content">{{quotationDetails.expiryDate ? quotationDetails.withEffectiveFromDate : quotationDetails.coverTo}}</p>
+                  <p class="content">{{(quotationDetails?.withEffectiveToDate || quotationDetails?.coverTo)}}</p>
                 </div>
               </div>
             </div>
@@ -615,7 +615,7 @@
               <div class="row">
                 <div class="col-3"></div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                    <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addExternalClaimExperienceModal" (click)="fetchInsurers()">
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
@@ -625,8 +625,13 @@
                     </button>
                   </div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete"
+                      id="openClaimModalButtonDelete" [hidden]="true" data-bs-toggle="modal" data-bs-target="#deleteClaim"
+                    >
                       <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                      <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
                     </button>
                   </div>
               </div>
@@ -643,13 +648,13 @@
                   <th>Year</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-data>
-                <tr>
-                  <td>{{data.clientCode}}</td>
-                  <td>{{data.claimPaid}}</td>
-                  <td>{{data.insurer}}</td>
-                  <td>{{data.policyNo}}</td>
-                  <td>{{data.year}}</td>
+              <ng-template pTemplate="body" let-externalClaim>
+                <tr [class.p-highlight]="externalClaim === selectedClaim" (click)="onExternalClaimSelect(externalClaim)" style="cursor: default" >
+                  <td>{{externalClaim.clientCode}}</td>
+                  <td>{{externalClaim.claimPaid}}</td>
+                  <td>{{externalClaim.insurer}}</td>
+                  <td>{{externalClaim.policyNumber}}</td>
+                  <td>{{externalClaim.eceYear}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -660,6 +665,8 @@
               </ng-template>
             </p-table>
           </div>
+
+          <!-- internal-claims-experience -->
           <div class="mb-4" *ngIf="showExternalClaims === false;">
             <p-table [value]="internalTable" [tableStyle]="{ 'min-width': '50rem' }">
               <ng-template pTemplate="header">
@@ -674,16 +681,16 @@
                   <th>Net Paid</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-data>
-                <tr>
-                  <td>{{data.clientPolicyNo}}</td>
-                  <td>{{data.claimNo}}</td>
-                  <td>{{data.reserve}}</td>
-                  <td>{{data.totalReserve}}</td>
-                  <td>{{data.recoveries}}</td>
-                  <td>{{data.salvages}}</td>
-                  <td>{{data.totalPayments}}</td>
-                  <td>{{data.netPaid}}</td>
+              <ng-template pTemplate="body" let-internalClaim>
+                <tr [class.p-highlight]="internalClaim === selectedClaim" (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
+                  <td>{{internalClaim.client_policy_number}}</td>
+                  <td>{{internalClaim.claim_number}}</td>
+                  <td>{{internalClaim.outstanding_reserve}}</td>
+                  <td>{{internalClaim.total_reserve}}</td>
+                  <td>{{internalClaim.recoveries}}</td>
+                  <td>{{internalClaim.salvages}}</td>
+                  <td>{{internalClaim.total_payments}}</td>
+                  <td>{{internalClaim.net_paid}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -693,6 +700,188 @@
                 </tr>
               </ng-template>
             </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Claims Modal -->
+    <div class="modal fade" id="deleteClaim" tabindex="-1" role="dialog"
+      aria-labelledby="deleteClaim" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="deleteClaim">
+          <div class="modal-body ">
+            <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal" >
+                {{'gis.policy.yes_delete' | translate}}
+              </button>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+              <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">
+                {{'gis.policy.no_im_not' | translate}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addExternalClaimExperienceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" #closebutton class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title" id="modalTitle">Define a new claims experience</h5>
+
+            <form [formGroup]="insurersDetailsForm">
+              <div class="row mt-4">
+                <!-- Policy No -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="policyNumber" class="form-label external-claim-label col-3 mb-0 pe-2">Policy no.</label>
+                  <div class="col-8 ps-0">
+                    <input type="text" class="form-control external-claim-input" id="policyNumber" placeholder="" formControlName="policyNumber">
+                    <div *ngIf="insurersDetailsForm.get('policyNumber').hasError('required') && insurersDetailsForm.get('policyNumber').touched" class="form-text text-danger">
+                      Policy number is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Insurer -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="insurer" class="form-label external-claim-label col-3 mb-0 pe-2">Insurer</label>
+                  <div class="col-8 ps-0">
+                    <p-dropdown
+                      [options]="insurersList"
+                      formControlName="insurer"
+                      optionLabel="name"
+                      [filter]="true"
+                      filterBy="name"
+                      [showClear]="true"
+                      placeholder="Select an insurer"
+                      class="w-100 form-control-md custom-dropdown-height"
+                      (onChange)="onInsurerChange($event)"
+                      [style]="{ 'height': '38px' }">
+                      <ng-template pTemplate="item" let-insurer>
+                        <div class="d-flex align-items-center">
+                          <div>{{ insurer.name }}</div>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                    <div *ngIf="insurersDetailsForm.get('insurer').hasError('required') && insurersDetailsForm.get('insurer').touched" class="form-text text-danger">
+                      Insurer is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Year -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="eceYear" class="form-label external-claim-label col-3 mb-0 pe-2">Year</label>
+                  <div class="col-8 ps-0">
+                    <input type="number" class="form-control external-claim-input" id="eceYear" placeholder="" formControlName="eceYear">
+                    <div *ngIf="insurersDetailsForm.get('eceYear').hasError('required') && insurersDetailsForm.get('eceYear').touched" class="form-text text-danger">
+                      Year is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Risk Details -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="riskDetails" class="form-label external-claim-label col-3 mb-0 pe-2">Risk details</label>
+                  <div class="col-8 ps-0">
+                    <input type="text" class="form-control external-claim-input" id="riskDetails" placeholder="" formControlName="riskDetails">
+                    <div *ngIf="insurersDetailsForm.get('riskDetails').hasError('required') && insurersDetailsForm.get('riskDetails').touched" class="form-text text-danger">
+                      Risk details are required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Loss Ratio -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="lossRatio" class="form-label external-claim-label col-3 mb-0 pe-2">Loss ratio</label>
+                  <div class="col-8 ps-0">
+                    <input type="number" class="form-control external-claim-input" id="lossRatio" placeholder="" formControlName="lossAmount">
+                    <div *ngIf="insurersDetailsForm.get('lossAmount').hasError('required') && insurersDetailsForm.get('lossAmount').touched" class="form-text text-danger">
+                      Loss ratio is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Claim Paid -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="claimPaid" class="form-label external-claim-label col-3 mb-0 pe-2">Claim paid</label>
+                  <div class="col-8 ps-0">
+                    <select class="form-select" id="product-input" formControlName="claimPaid">
+                      <option value="Y">Yes</option>
+                      <option value="N">No</option>
+                    </select>
+                    <div *ngIf="insurersDetailsForm.get('claimPaid').hasError('required') && insurersDetailsForm.get('claimPaid').touched" class="form-text text-danger">
+                      Claim paid is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Account -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="account" class="form-label external-claim-label col-3 mb-0 pe-2">Account</label>
+                  <div class="col-8 ps-0">
+                    <input type="number" class="form-control external-claim-input" id="account" placeholder="" formControlName="account">
+                    <div *ngIf="insurersDetailsForm.get('account').hasError('required') && insurersDetailsForm.get('account').touched" class="form-text text-danger">
+                      Account is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Damage Amount -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="damageAmount" class="form-label external-claim-label col-3 mb-0 pe-2">Damage amount</label>
+                  <div class="col-8 ps-0">
+                    <input type="text" class="form-control external-claim-input" id="damageAmount" placeholder="" formControlName="damageAmount" appCommaFormat>
+                    <div *ngIf="insurersDetailsForm.get('damageAmount').hasError('required') && insurersDetailsForm.get('damageAmount').touched" class="form-text text-danger">
+                      Damage amount is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Third Party Amount -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="thirdPartyAmount" class="form-label external-claim-label col-3 mb-0 pe-2">Third party amount</label>
+                  <div class="col-8 ps-0">
+                    <input type="text" class="form-control external-claim-input" id="thirdPartyAmount" placeholder="" formControlName="tpAmount" appCommaFormat>
+                    <div *ngIf="insurersDetailsForm.get('tpAmount').hasError('required') && insurersDetailsForm.get('tpAmount').touched" class="form-text text-danger">
+                      Third party amount is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Other Amount -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="otherAmount" class="form-label external-claim-label col-3 mb-0 pe-2">Other amount</label>
+                  <div class="col-8 ps-0">
+                    <input type="text" class="form-control external-claim-input" id="otherAmount" placeholder="" formControlName="otherAmount" appCommaFormat>
+                    <div *ngIf="insurersDetailsForm.get('otherAmount').hasError('required') && insurersDetailsForm.get('otherAmount').touched" class="form-text text-danger">
+                      Other amount is required
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Remarks -->
+                <div class="mb-3 d-flex align-items-center">
+                  <label for="remark" class="form-label external-claim-label col-3 mb-0 pe-2">Remarks</label>
+                  <div class="col-8">
+                    <input type="text" class="form-control external-claim-input" id="remark" placeholder="" formControlName="remark">
+                    <div *ngIf="insurersDetailsForm.get('remark').hasError('required') && insurersDetailsForm.get('remark').touched" class="form-text text-danger">
+                      Remarks are required
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-2 mb-2">
+                <button type="button" class="btn btn-primary" #closebutton >Cancel</button>
+                <button type="button" class="btn btn-primary" #closebutton (click)="createExternalClaimExp()">Save</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
