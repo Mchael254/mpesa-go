@@ -21,39 +21,69 @@
     ]">
       </app-dynamic-breadcrumb>
     </div>
-    <div class="card border-0">
+    <div class="card">
+      <div class="card-header bg-transparent float-start border-bottom-0 mb-0">
+        <h6 class="float-start mt-3 fw-semibold text-primary">{{ 'crm.reportsDefinition' | translate}}</h6>
+      </div>
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="col-md-12">
+            <h6 class="float-start fw-semibold w-100">Systems</h6>
+            <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
+              <div class="form-div">
+                <form>
+                  <div class="row">
+                    <ng-container *ngFor="let system of systems">
+                      <div class="col-sm-4 my-2">
+                        <div class="form-check form-check-inline">
+                          <input
+                            class="form-check-input select-system"
+                            type="radio"
+                            name="system"
+                            value="{{ system.id }}"
+                            (click)="selectSystem(system)"
+                            [checked]="selectedSystem?.id === system.id"
+                          />
+                          <label class="form-check-label" for="{{ system.id }}">{{
+                              system.systemName | titlecase
+                            }}</label>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </form>
+              </div>
+            </ng-container>
+            <ng-template #showSystemsLoading>
+              <div class="my-5 mx-5">
+                <ngx-spinner
+                  type="ball-clip-rotate-multiple"
+                  [fullScreen]="false"
+                  color="#00529B"
+                  size="medium"
+                  bdColor="rgba(255, 255, 255, 0.966)"
+                ></ngx-spinner>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-0 mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.reportsDefinition' | translate}}</h6>
+        <h6 class="float-start mt-3 fw-semibold">Module</h6>
 
-        <div class="row mb-3 w-100 p-2">
-          <form [formGroup]="sortingForm" style="background: none; display: contents">
-            <div class="col-lg-2 col-sm-6 col-6 pe-4">
-              <label class="transactionLabel">{{ 'entities.system' | translate }}: </label>
-              <select formControlName="system" id="system" class="employeeSelect form-select">
-                <!--<option value="" disabled selected>Select option</option>
-                <option *ngFor="let systemData of systemsData" value="{{ systemData.id }}"> {{ systemData.shortDesc}}</option>-->
-                <option value="gis">GIS</option>
-              </select>
-            </div>
-
-            <div class="col-lg-2 col-sm-4 col-6">
-              <label class="transactionLabel">{{ 'crm.moduleName' | translate }}:</label><br>
-              <select class="form-control form-select" formControlName="module" id="module">
-                <option value="" selected>{{ 'entities.all' | translate }}</option>
-                <option value="123">123</option>
-              </select>
-            </div>
-          </form>
-          <div class="col-lg-8 col-sm-12">
-            <div class="float-lg-end">
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="float-end">
               <span class="icon-circle">
                 <i class="fa-solid fa-plus" (click)="openDefineModuleModal()"></i>
               </span>
               <span class="icon-circle">
-                <i class="pi pi-pencil"></i>
+                <i class="pi pi-pencil" (click)="editModule()"></i>
               </span>
               <span class="icon-circle">
-                <i class="fa-regular fa-trash-can"></i>
+                <i class="fa-regular fa-trash-can" (click)="deleteModule()"></i>
               </span>
             </div>
           </div>
@@ -81,19 +111,17 @@
           dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['system, description, name']"
+          [globalFilterFields]="['description, name']"
         >
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="system">{{ 'entities.system' | translate }} <p-sortIcon field="system"></p-sortIcon></th>
               <th pSortableColumn="name">{{ 'crm.moduleName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
               <th pSortableColumn="description">{{ 'crm.moduleDesc' | translate }} <p-sortIcon field="description"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-module>
             <tr class="custom-table" [pSelectableRow]="module">
-              <td>{{module?.system | titlecase}}</td>
               <td>{{module?.name | titlecase}}</td>
               <td>{{module.description | titlecase}}</td>
             </tr>
@@ -167,124 +195,191 @@
         </p-table>
       </div>
     </div>
-
-    <div class="card border-0 mt-3">
-      <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.allReports' | translate }}</h6>
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="float-end">
-              <button class="btn btn-primary" style="width: 100px" [disabled]="!selectedReport">
-                {{ 'crm.add' | translate }}
-              </button>
+  </div>
+  <div class="row">
+    <div class="col-lg-5 col-sm-12 p-0">
+      <div class="card border-0 mt-3">
+        <div class="card-header bg-transparent float-start border-bottom-0">
+          <h6 class="float-start mt-3 fw-semibold">{{ 'crm.allReports' | translate }}</h6>
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="float-end">
+                <button class="btn btn-primary">
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="card-body p-0">
+        <div class="card-body p-0">
 
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-        <p-table
-          #allReportsTable
-          [autoLayout]="true"
-          [paginator]="true"
-          [rowHover]="true"
-          [resizableColumns]="true"
-          [showCurrentPageReport]="true"
-          [rows]="pageSize || 10"
-          [totalRecords]="allReportsData?.length"
-          [value]="allReportsData"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          [scrollable]="true"
-          [(selection)]="selectedReport"
-          selectionMode="single"
-          dataKey="code"
-          scrollHeight="400px"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['code, name, desc']"
-        >
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            #allReportsTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="allReportsData?.length"
+            [value]="allReportsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            [(selection)]="selectedReport"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['code, name, desc']"
+          >
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
-              <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-report>
-            <tr class="custom-table" [pSelectableRow]="report">
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="3">No Report Detail(s) Found.</td>
-            </tr>
-          </ng-template>
-        </p-table>
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
+                <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-report>
+              <tr class="custom-table" [pSelectableRow]="report">
+                <td></td>
+                <td></td>
+                <td>
+                  <span title="{{report?.desc}}" (click)="toggleDropdown(report)">
+                    {{report?.desc?.substring(0,20) | titlecase }}
+                  </span>
+
+                  <ng-container *ngIf="!report.desc || showInputForReport === report">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="description"
+                    />
+                    <!--<p-dropdown
+                      [options]="completionRemarksData"
+                      optionLabel="remark"
+                      optionValue="remark"
+                      id="code"
+                      [filter]="true"
+                      filterBy="remark"
+                      [showClear]="true"
+                      [style]="{ 'width': '130px', 'height': '40px' }"
+                      placeholder="Select remark"
+                      appendTo="body"
+                      (onChange)="onDropdownChange($event, report)"
+                    >
+                      <ng-template let-remark pTemplate="item">
+                        <div title="{{remark.remark}}">{{ remark.remark.length > 10 ? remark.remark.substring(0, 28) + '...' : remark.remark }}</div>
+                      </ng-template>
+                    </p-dropdown>-->
+                  </ng-container>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3">No Report Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
     </div>
+    <!--<div class="col-lg-2 col-sm-12 text-center my-auto">
+      <button class="btn btn-primary mb-3" style="width: 103px" [disabled]="!selectedReport">
+        {{ 'crm.add' | translate }}
+        <i class="fa fa-arrow-right"></i>
+      </button>
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
+        <i class="fa fa-arrow-left"></i>
+        {{ 'crm.remove' | translate }}
+      </button>
+    </div>-->
+    <!-- Laptop View -->
+    <div class="col-lg-2 col-sm-12 text-center my-auto d-none d-lg-block">
+      <button class="btn btn-primary mb-3" style="width: 103px" [disabled]="!selectedReport">
+        {{ 'crm.add' | translate }}
+        <i class="fa fa-arrow-right"></i>
+      </button>
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
+        <i class="fa fa-arrow-left"></i>
+        {{ 'crm.remove' | translate }}
+      </button>
+    </div>
 
-    <div class="card border-0 mt-3">
-      <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.assignedReport' | translate }}</h6>
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="float-end">
-              <button class="btn btn-primary" style="width: 100px" [disabled]="!selectedAssignedReport">
-                {{ 'crm.remove' | translate }}
-              </button>
+    <!-- Phone View -->
+    <div class="col-lg-2 col-sm-12 text-center my-3 d-block d-lg-none">
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedReport">
+        {{ 'crm.add' | translate }}
+        <i class="fa fa-arrow-down"></i>
+      </button>
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
+        <i class="fa fa-arrow-up"></i>
+        {{ 'crm.remove' | translate }}
+      </button>
+    </div>
+
+    <div class="col-lg-5 col-sm-12 p-0">
+      <div class="card border-0 mt-3">
+        <div class="card-header bg-transparent float-start border-bottom-0">
+          <h6 class="float-start mt-3 fw-semibold">{{ 'crm.assignedReport' | translate }}</h6>
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="float-end">
+                <button class="btn btn-primary">
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="card-body p-0">
+        <div class="card-body p-0">
 
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-        <p-table
-          #assignedReportsTable
-          [autoLayout]="true"
-          [paginator]="true"
-          [rowHover]="true"
-          [resizableColumns]="true"
-          [showCurrentPageReport]="true"
-          [rows]="pageSize || 10"
-          [totalRecords]="assignedReportsData?.length"
-          [value]="assignedReportsData"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          [scrollable]="true"
-          [(selection)]="selectedAssignedReport"
-          selectionMode="single"
-          dataKey="code"
-          scrollHeight="400px"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['code, name, desc']"
-        >
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            #assignedReportsTable
+            [autoLayout]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 10"
+            [totalRecords]="assignedReportsData?.length"
+            [value]="assignedReportsData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            [(selection)]="selectedAssignedReport"
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['code, name, desc']"
+          >
 
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
-              <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-report>
-            <tr class="custom-table" [pSelectableRow]="report">
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="3">No Report Detail(s) Found.</td>
-            </tr>
-          </ng-template>
-        </p-table>
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
+                <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-report>
+              <tr class="custom-table" [pSelectableRow]="report">
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3">No Report Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
     </div>
   </div>
@@ -299,7 +394,7 @@
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
 >
-  <div class="modal-dialog modal-sm align-items-center">
+  <div class="modal-dialog align-items-center" style="width: 390px">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
         <h5 class="modal-title" id="exampleModalLabel2">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'module' : 'new module' }}</h5>
@@ -316,20 +411,14 @@
             <ng-container *ngIf="visibleStatus.system === 'Y'">
               <div class="col-md-12">
                 <label for="system" class="form-label">{{ 'entities.system' | translate }}</label>
-                <p-dropdown
-                  [options]="systems"
-                  optionLabel="shortDesc"
-                  optionValue="id"
-                  formControlName="system"
+                <input
+                  type="text"
+                  class="form-control"
                   id="system"
-                  [filter]="true"
-                  filterBy="shortDesc"
-                  [showClear]="true"
-                  [style]="{ width: '100%', height: '50%' }"
-                  placeholder="Select option"
+                  formControlName="system"
+                  [value]="selectedSystem?.systemName | titlecase"
                   [ngClass]="{ 'is-invalid': g['system']?.invalid && (g['system']?.dirty || g['system']?.touched) }"
-                >
-                </p-dropdown>
+                />
                 <div *ngIf="g['system']?.invalid && (g['system']?.dirty || g['system']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['system']?.errors['required']">System is required</div>
                 </div>
@@ -354,7 +443,7 @@
               <div class="col-md-12">
                 <label for="moduleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
                 <input
-                  type="number"
+                  type="text"
                   class="form-control"
                   id="moduleDescription"
                   formControlName="moduleDescription"
@@ -370,7 +459,7 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" id="saveModuleBtn" (click)="saveModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -438,3 +527,11 @@
     </div>
   </div>
 </div>
+
+<app-reusable-input
+  [modalId]="'moduleConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this module?'"
+  (confirmed)="confirmModuleDelete()"
+  #moduleConfirmationModal
+></app-reusable-input>
