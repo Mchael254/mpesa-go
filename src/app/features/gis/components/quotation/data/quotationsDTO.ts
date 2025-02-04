@@ -417,11 +417,10 @@ export interface UserDetails {
   orgDateFormat: string;
 
 }
-export interface Sources{
-  applicableModule: string;
+export interface Sources {
   code: number;
-  description: number;
-
+  description: string;
+  applicableModule: string;
 }
 
 
