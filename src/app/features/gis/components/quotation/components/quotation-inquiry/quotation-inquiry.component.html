@@ -163,7 +163,14 @@
                             <td>{{quotation.expiryDate}}</td>
                             <td>{{quotation.status}}</td>
                             <td>{{quotation.quotDate}}</td>
-                            <td id="action-buttons">{{ "View quote" }}</td>
+                            <td id="action-buttons"
+                              (click)="setQuotationNumber(
+                              quotation.quotationNumber,
+                              quotation.productCode,
+                              quotation.clientCode)"
+                            >
+                              {{ "View quote" }}
+                            </td>
 
                         </tr>
                     </ng-template>

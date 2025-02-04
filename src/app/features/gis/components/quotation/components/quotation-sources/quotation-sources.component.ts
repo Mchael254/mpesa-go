@@ -97,6 +97,7 @@ export class QuotationSourcesComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Source added successfully');
 
           log.debug("Response after adding source", response);
+          this.fetchSources();
 
         },
         error: (error) => {
@@ -127,13 +128,6 @@ export class QuotationSourcesComponent {
     );
   }
 
-  onSubmit() {
-    if (this.sourcesForm.valid) {
-      console.log(this.sourcesForm.value);
-      this.addSources();
-    }
-  }
-
   // Function to get the label for a given applicableModule value
   getApplicableModuleLabel(value: string): string {
     const module = this.applicableModules.find(m => m.value === value);
@@ -154,6 +148,22 @@ export class QuotationSourcesComponent {
     }
   }
 
+  openSourceEditModal() {
+    if(!this.selectedSource) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation source to continue');
+    } else {
+      this.populateForm();
+    }
+  }
+
+  sourceModalAction() {
+    if(!this.selectedSource) {
+      this.addSources();
+    } else {
+      this.editQuotationSource();
+    }
+  }
+
   deleteQuotationSource() {
     const code = this.selectedSource.code;
     log.debug("selected source item code", code);
@@ -171,6 +181,59 @@ export class QuotationSourcesComponent {
         error: (error) => {
           log.debug('Error deleteing a quotation source', error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete the quotation source...Try again later');
+        }
+      }
+    );
+  }
+
+  // Function to populate form fields with the provided object data
+  populateForm(): void {
+    this.sourcesForm.patchValue({
+      code: this.selectedSource.code,
+      description: this.selectedSource.description,
+      applicableModule: this.selectedSource.applicableModule
+    });
+  }
+
+  editQuotationSource() {
+
+    // Mark all fields as touched and validate the form
+    this.sourcesForm.markAllAsTouched();
+    this.sourcesForm.updateValueAndValidity();
+    if (this.sourcesForm.invalid) {
+      log.debug('Form is invalid, will not proceed');
+      return;
+    } else {
+      log.debug("The valid form", this.sourcesForm);
+    }
+    Object.keys(this.sourcesForm.controls).forEach(control => {
+      if (this.sourcesForm.get(control).invalid) {
+        log.debug(`${control} is invalid`, this.sourcesForm.get(control).errors);
+      }
+    });
+
+    // If form is valid, proceed
+    log.debug('Form is valid, proceeding with premium computation...');
+
+    // Extract only the form values
+    const source = { ...this.sourcesForm.value};
+
+    this.closebutton.nativeElement.click();
+
+    this.quotationService
+      .editQuotationSource(source)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Source edited successfully');
+
+          log.debug("Response after editing source", response);
+          this.fetchSources();
+
+        },
+        error: (error) => {
+          log.debug("Error editing a source", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit source...Try again later');
         }
       }
     );

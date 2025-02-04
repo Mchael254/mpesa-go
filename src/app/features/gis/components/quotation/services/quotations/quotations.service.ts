@@ -102,6 +102,15 @@ export class QuotationsService {
   }
 
   /**
+   * Deleted quotation sources using an HTTP PUT request.
+   * @method editQuotationSource
+   * @return {Observable<any>} - An observable of the response containing quotation sources.
+   */
+  editQuotationSource(data: Sources): Observable<any> {
+    return this.api.PUT<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  /**
     * Creates a new quotation using an HTTP POST request.
     * @method createQuotation
     * @param {quotationDTO} data - The data for creating the quotation.
