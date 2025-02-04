@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails } from '../../data/quotationsDTO';
+import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails, Sources } from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
 import { environment } from '../../../../../../../environments/environment';
@@ -81,6 +81,26 @@ export class QuotationsService {
 
     return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
+  /**
+   * Adds quotation sources using an HTTP POST request.
+   * @method addQuotationSources
+   */
+  addQuotationSources(data: Sources): Observable<any> {
+
+    return this.api.POST<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+
+  /**
+   * Deleted quotation sources using an HTTP DELETE request.
+   * @method deleteQuotationSource
+   * @return {Observable<any>} - An observable of the response containing quotation sources.
+   */
+  deleteQuotationSource(code: number): Observable<any> {
+    return this.api.DELETE(`v2/quotation-sources?code=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
   /**
     * Creates a new quotation using an HTTP POST request.
     * @method createQuotation
