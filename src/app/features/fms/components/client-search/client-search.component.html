@@ -1,0 +1,118 @@
+
+    <div class="container-fluid" >
+             
+       
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-custom">
+                Finance > CB-Receipting > Receipting > <span class="breadcrumb-text">{{'fms.receipting.Allocate_Receipt' | translate}}</span>
+            </div>
+            <div class="main-form">
+                <form [formGroup]="receiptingDetailsForm">
+        <h2 class="form-title">Account Selection</h2>
+        <div class="row mb-3 ">
+            <div class="col-md-2">
+                <label for="accountType" class="form-label fw-bold">Account type</label>
+                <div class="dropdown-container">
+                <select class="form-select" id="accountType"  formControlName="accountType"
+                class="form-control"
+                (change)="onAccountTypeChange()"
+                 > 
+                 <option value="">Select</option>
+                 <option *ngFor="let type of accountTypes" [value]="type.name">{{ type.name }}</option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+          </div>
+            </div>
+              <!-- Search Criteria Section -->
+            <div class="col-md-2">
+                <label for="searchCriteria" class="form-label fw-bold">Search criteria</label>
+                <div class="dropdown-container">
+                <select class="form-select" id="searchCriteria" formControlName="searchCriteria"
+              
+                [disabled]="!isAccountTypeSelected">
+                <option value="policyNumber">By Policy Number</option>
+                <option value="accountNumber">By Account Number</option>
+                <option value="debitNote">By Debit Note</option>
+                <option value="clientName">By Client Name</option>
+                </select>
+                <i class="pi pi-chevron-down dropdown-icon"></i>
+            </div>
+            </div>
+             <!-- Search Query Input -->
+            <div class="col-md-2">
+                <label for="search" class="form-label fw-bold">Search</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search" placeholder="Enter search term"
+                    formControlName="searchQuery"
+                     [disabled]="!isAccountTypeSelected"
+                    (keyup.enter)="onSearch()">
+                   
+                    <button
+                    type="button"
+                    class="btn "
+                    (click)="onSearch()"
+                    [disabled]="!isAccountTypeSelected"
+                  >
+                    <i class="fa fa-search text-primary"></i>
+                  </button>
+                </div>
+            </div>
+        </div>
+ <!-- Search Results Table -->
+   <!-- Search Results Table -->
+         <!-- added a paginator -->
+         <div class="row " *ngIf="clients.length > 0 ">
+            <div class="col-md-12">
+              <p-table [value]="clients" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+              [rows]="10"
+              [rowsPerPageOptions]="[5, 10, 20]"
+              selectionMode="single" 
+              [(selection)]="selectedClient"
+               dataKey="code">
+                <ng-template pTemplate="header">
+                  <tr >
+                    <th class="header-bg">Description</th>
+                    <th class="header-bg" style="min-width: 250px; white-space: nowrap;">Name</th>
+                    <th class="header-bg">Type</th>
+                    <th class="header-bg">Actions</th>
+                  
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-client let-i="rowIndex">
+                  <tr [pSelectableRow]="client" (click) = onClickClient(client)
+                  [class.selected-client-row]="selectedClient?.code === client.code"
+                  >
+                     
+                    <td>{{ client.
+                      systemShortDesc
+                       }}</td>
+                    <td>{{ client.name}}</td>
+                    <td>{{ client.receiptType }}</td>
+                   <td><button class="btn btn-secondary" (click)="onClickClient(client)">Select</button></td>
+                  
+                 
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="paginatorleft">
+                  Showing {{ first }} to {{ first + rows }} of {{ totalRecords }} entries
+                  
+              </ng-template>
+              </p-table>
+            </div>
+          </div>
+
+
+        </form>
+    </div>
+    
+         <!-- Action Buttons -->
+         <div class="btn-actions">
+            <div class="btn-back">
+                <button type="button" class="btn btn-link" (click)="onBack()">Back</button>
+            </div>
+            <div class="btn-next">
+            <button type="button" class="btn-primary-outline">Clear</button>
+            <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
+        </div></div>
+   
+</div>
