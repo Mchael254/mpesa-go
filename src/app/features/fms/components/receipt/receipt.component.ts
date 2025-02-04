@@ -111,6 +111,7 @@ globalDocId:string;
 description: string = '';
 isUploadDisabled: boolean = true; // Initialize as true (button is inactive by default)
 isFileUploadButtonDisabled: boolean = false; // Controls the "File Upload" button state
+fileIsUploaded=false;
 //1.7 charges details
 chargeAmount: number = 0;
 chargeTypes: string[]=[];
@@ -1459,6 +1460,7 @@ uploadFile(): void {
         this.fileDescriptions = [];
         this.currentFileIndex = 0;
         this.isFileUploadButtonDisabled = false; // Re-enable the "File Upload" button
+        this.fileIsUploaded=true;
         this.fetchDocByDocId(this.globalDocId);
       },
       error: (error) => {
@@ -2049,6 +2051,7 @@ fetchParamStatus(){
     }
   })
 }
+
 submitReceipt(): any {
  // console.log('my SELECTED CLIENT',this.selectedClient);
   if (!this.validateRequiredFields()) {
@@ -2093,6 +2096,7 @@ return true;
 
 
      }
+this.confirmFormValidity();
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
 const getCapitalInjectionStatus=formValues.capitalInjection;
@@ -2295,6 +2299,19 @@ return true;
      }
 
 }
+// fetchParamStatus(){
+//   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
+//     next:(response)=>{
+      
+//       this.parameterStatus=response.data;
+//       console.log(this.parameterStatus);
+      
+//     },
+//     error:(err)=>{
+//       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
+//     }
+//   })
+// }
 formatReturnedDate(date: string | Date): string {
   if (!date) return '';
   return new Date(date).toLocaleDateString();
