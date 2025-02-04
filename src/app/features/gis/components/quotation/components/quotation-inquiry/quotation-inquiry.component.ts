@@ -291,6 +291,16 @@ export class QuotationInquiryComponent {
     log.debug('Quotation number:', this.quotationNumber);
 
   }
+
+  setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
+    sessionStorage.setItem('quotationNum', quotationNumber);
+    sessionStorage.setItem('productCode', JSON.stringify(productCode));
+    sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
+    log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
+    log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
+    log.debug(`Productcode ${productCode} has been saved to session storage.`);
+    this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  }
   // dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
   //   if (sidebarMenu.link.length > 0) {
   //     this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
