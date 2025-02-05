@@ -1,10 +1,14 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {SystemReportModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
+import {Logger} from "../../../../../shared/services";
+import {ReusableInputComponent} from "../../../../../shared/components/reusable-input/reusable-input.component";
+
+const log = new Logger('ReportDefinitionComponent');
 
 @Component({
   selector: 'app-report-definition',
@@ -13,8 +17,8 @@ import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-f
 })
 export class ReportDefinitionComponent implements OnInit {
   sortingForm: FormGroup;
-  modulesData: any;
-  selectedModule: any;
+  modulesData: SystemReportModule[];
+  selectedModule: SystemReportModule;
   subModuleData: any;
   selectedSubModule: any;
   pageSize: 5;
@@ -35,7 +39,13 @@ export class ReportDefinitionComponent implements OnInit {
   selectedReport: any;
   assignedReportsData: any;
   selectedAssignedReport: any;
+  shouldShowSystems: boolean = false;
+  selectedSystem: SystemsDto;
 
+  showInputForReport: any;
+
+  @ViewChild('moduleConfirmationModal')
+  moduleConfirmationModal!: ReusableInputComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -46,24 +56,26 @@ export class ReportDefinitionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.createSortForm();
     this.createDefineModuleForm();
     this.createDefineSubModuleForm();
     this.getAllSystems();
   }
 
-  createSortForm() {
-    this.sortingForm = this.fb.group({
-      module: '',
-      system: ''
-    });
-  }
-
+  /**
+   * Creates the form group for defining a module.
+   *
+   * Retrieves the mandatory fields for the given group ID and adds validators
+   * to the form controls as needed.
+   *
+   * Additionally, it appends an asterisk to the labels of the controls that are
+   * marked as mandatory.
+   */
   createDefineModuleForm() {
     this.defineModuleForm = this.fb.group({
       moduleName: '',
       moduleDescription: '',
-      system: ''
+      system: new FormControl({value: '', disabled: true})
+      ,
     });
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       untilDestroyed(this)
@@ -91,6 +103,12 @@ export class ReportDefinitionComponent implements OnInit {
       });
   }
 
+  /**
+   * Creates the form group for defining a sub-module.
+   *
+   * Retrieves the mandatory fields for the given group ID and adds validators
+   * to the form controls as needed.
+   */
   createDefineSubModuleForm() {
     this.defineSubModuleForm = this.fb.group({
       subModuleName: '',
@@ -122,14 +140,26 @@ export class ReportDefinitionComponent implements OnInit {
       });
   }
 
+  /**
+   * Opens the "Define Module" modal. If a system is selected, shows the modal;
+   * otherwise, displays an error message.
+   */
   openDefineModuleModal() {
     const modal = document.getElementById('moduleDefinitionModal');
-    if (modal) {
+    if (modal && this.selectedSystem) {
       modal.classList.add('show');
       modal.style.display = 'block';
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No system is selected!'
+      );
     }
   }
 
+  /**
+   * Closes the "Define Module" modal.
+   */
   closeDefineModuleModal() {
     this.editMode = false;
     const modal = document.getElementById('moduleDefinitionModal');
@@ -139,6 +169,9 @@ export class ReportDefinitionComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the sub-module definition modal.
+   */
   openSubModuleModal() {
     const modal = document.getElementById('subModuleDefinitionModal');
     if (modal) {
@@ -147,6 +180,9 @@ export class ReportDefinitionComponent implements OnInit {
     }
   }
 
+  /**
+   * Hides the sub-module definition modal.
+   */
   closeSubModuleModal() {
     this.editMode = false;
     const modal = document.getElementById('subModuleDefinitionModal');
@@ -156,14 +192,109 @@ export class ReportDefinitionComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the module details. If the form is invalid, the function returns early.
+   * The function constructs a payload from the form values and determines whether
+   * to create a new module or update an existing one based on the editMode flag.
+   * Displays a success message on successful save or an error message on failure.
+   */
   saveModuleDetails() {
+    this.defineModuleForm.markAllAsTouched();
+    if (this.defineModuleForm.invalid) return;
 
+    const moduleFormValues = this.defineModuleForm.getRawValue();
+    const moduleCode = !this.editMode ? null : this.selectedModule?.id;
+
+    const saveModulePayload: SystemReportModule = {
+      id: moduleCode,
+      name: moduleFormValues?.moduleName,
+      description: moduleFormValues?.moduleDescription,
+      systemCode: this.selectedSystem?.id,
+      system: undefined,
+    };
+
+    log.info(saveModulePayload);
+
+    const systemsServiceCall = this.selectedModule
+      ? this.systemsService.updateSystemReportModule(this.selectedModule.id, saveModulePayload)
+      : this.systemsService.createSystemReportModule(saveModulePayload);
+
+    return systemsServiceCall.toPromise()
+      .then(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', this.selectedModule ? 'Successfully updated module' : 'Successfully created module');
+        this.defineModuleForm.reset();
+        this.closeDefineModuleModal();
+        this.getAllSystemReportModules();
+      })
+      .catch(error => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message || 'Error saving module');
+        throw error;
+      });
+  }
+
+  /**
+   * Edit the selected module, and open the define module modal. If no module is selected, display an error message.
+   */
+  editModule() {
+    this.editMode = !this.editMode;
+    if (this.selectedModule) {
+      this.openDefineModuleModal();
+      this.defineModuleForm.patchValue({
+        moduleName: this.selectedModule?.name,
+        moduleDescription: this.selectedModule?.description,
+        system: this.selectedSystem?.systemName
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No module is selected!'
+      );
+    }
+  }
+
+  /**
+   * Displays the confirmation modal when attempting to delete a module.
+   */
+  deleteModule() {
+    this.moduleConfirmationModal.show();
+  }
+
+  /**
+   * The function `confirmBankDelete()` checks if a module is selected, and if so,
+   * deletes it and displays a success message, otherwise it displays an error message.
+   */
+  confirmModuleDelete() {
+    if (this.selectedModule) {
+      const moduleId = this.selectedModule.id;
+      this.systemsService.deleteSystemReportModule(moduleId).subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a module'
+          );
+          this.selectedModule = null;
+          this.getAllSystemReportModules();
+        },
+        error => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No module is selected!'
+      );
+    }
   }
 
   saveSubModuleDetails() {
 
   }
 
+  /**
+   * Retrieves all available systems from the server and updates the component state.
+   * This function sets the `systems` property with the fetched data and toggles
+   * the `shouldShowSystems` flag to true. If an error occurs during fetching,
+   * an error message is displayed.
+   */
   getAllSystems() {
     this.systemsService.getSystems()
       .pipe(
@@ -172,6 +303,23 @@ export class ReportDefinitionComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.systems = data;
+          this.shouldShowSystems = true;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.shouldShowSystems = true;
+        }
+      })
+  }
+
+  /**
+   * Retrieves all systems from the server.
+   */
+  getAllSystemReportModules(systemId?: number) {
+    this.systemsService.getSystemReportModules(systemId || this.selectedSystem?.id)
+      .subscribe({
+        next: (data) => {
+          this.modulesData = data;
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
@@ -179,6 +327,34 @@ export class ReportDefinitionComponent implements OnInit {
       })
   }
 
+  /**
+   * Retrieve all system report modules for a given system.
+   * @param systemId The ID of the system to retrieve modules for. If not provided,
+   * the ID of the currently selected system is used.
+   */
+  selectSystem(system: SystemsDto): void {
+    this.selectedSystem = system;
+    this.getAllSystemReportModules();
+  }
+
+  /**
+   * Toggle the dropdown for a specific report. If the dropdown is already shown,
+   * hide it. Otherwise, show the dropdown for the clicked report.
+   * @param report The report to toggle the dropdown for.
+   */
+  toggleDropdown(report: any) {
+    if (this.showInputForReport === report) {
+      this.showInputForReport = null; // Hide the dropdown if already shown
+    } else {
+      this.showInputForReport = report; // Show the dropdown for the clicked exception
+    }
+  }
+
+  /**
+   * Toggle the dropdown for a specific report. If the dropdown is already shown,
+   * hide it. Otherwise, show the dropdown for the clicked report.
+   * @param report The report to toggle the dropdown for.
+   */
   get g() {
     return this.defineModuleForm.controls;
   }
