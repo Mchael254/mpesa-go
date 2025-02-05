@@ -307,10 +307,20 @@ export class QuoteSummaryComponent {
 
 
   convertToNormalQuote() {
-    if(this.passedClientDetails) {
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    if(this.passedNewClientDetails) {
+      //NAVIGATE TO CREATE CLIENT SCREEN
+      log.debug("Passed new client details:",this.passedNewClientDetails)
+      const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+      sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+      this.router.navigate(['/home/gis/quotation/create-client']);
+
+      const convertToNormalQuoteNewClient = true;
+      sessionStorage.setItem("convertToNormalQuoteNewClient", JSON.stringify(convertToNormalQuoteNewClient));
+
     } else {
-      this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+      // NAVIGATE TO QUOTATION summary
+      log.debug("existing client convert to normal quote and navigate to quotation summary screen");
+      this.convertQuoteToNormalQuote();
     }
   }
 
@@ -668,15 +678,37 @@ convertToPolicy(){
     log.debug("Quotation Details",this.quotationDetails)
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
     log.debug("Quotation Code",this.quotationCode)
-    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => { 
+    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
       log.debug("Batch number",this.batchNo)
       const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
-    sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+      sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
       this.router.navigate(['/home/gis/policy/policy-summary']);
 
     })
-    
+
+  }
+
+  convertQuoteToNormalQuote() {
+    log.debug("Quotation Details",this.quotationDetails);
+
+    const quotationNumber = this.quotationDetails?.quotOriginalQuotNo;
+    log.debug("Quotation Number",quotationNumber);
+
+    // Get the quotCode
+    const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    log.debug("Quotation Code",this.quotationCode);
+
+    // Call the API to convert quote to normal quote
+    this.quotationService
+      .convertToNormalQuote(quotationCode)
+      .subscribe((data:any) => {
+        log.debug("Response after converting quote to a normlaQuote:", data)
+
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+      }
+    );
   }
 }
