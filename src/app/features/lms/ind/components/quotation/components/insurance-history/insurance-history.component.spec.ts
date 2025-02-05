@@ -61,7 +61,7 @@ describe('InsuranceHistoryComponent', () => {
 
   // Initialization
   describe('Initialization', () => {
-    it('should initialize form groups correctly', () => {
+    test('should initialize form groups correctly', () => {
       expect(component.insuranceHistoryForm).toBeDefined();
       expect(component.insuranceHistoryFormOne).toBeDefined();
       expect(component.insuranceHistoryFormTwo).toBeDefined();
@@ -78,11 +78,19 @@ describe('InsuranceHistoryComponent', () => {
       component.ngOnInit();
       expect(spy).toHaveBeenCalled();
     });
+
+    test('should initialize forms and default values in the constructor', () => {
+      expect(component.insuranceHistoryForm).toBeDefined();
+      expect(component.insuranceHistoryFormOne).toBeDefined();
+      expect(component.insuranceHistoryFormTwo).toBeDefined();
+      expect(component.insuranceHistoryForm.get('question1')?.value).toBe('N');
+      expect(component.insuranceHistoryForm.get('question2')?.value).toBe('N');
+    });
   });
 
   // Form Validation
   describe('Form Validation', () => {
-    it('should mark "question1" as invalid when empty', () => {
+    test('should mark "question1" as invalid when empty', () => {
       component.insuranceHistoryForm.get('question1')?.setValue('');
       expect(component.insuranceHistoryForm.get('question1')?.valid).toBeFalsy();
     });
@@ -158,15 +166,102 @@ describe('InsuranceHistoryComponent', () => {
       expect(mockSpinnerService.hide).toHaveBeenCalledWith('ins_view');
     });
 
-    
+    test('should reset insuranceHistoryFormOne when addEmptyPolicyList is called', () => {
+      component.insuranceHistoryFormOne.patchValue({
+        policy_no: '12345',
+        provider: 'Test Provider',
+        premium: 500,
+        sum_assured: 1000,
+        cover_status: 'A',
+      });
+
+      component.addEmptyPolicyList();
+
+      expect(component.insuranceHistoryFormOne.value).toEqual({
+        policy_no: null,
+        provider: null,
+        premium: null,
+        sum_assured: null,
+        cover_status: null,
+        code: null,
+      });
+    });
+
+    test('should reset insuranceHistoryFormTwo when openAddPolicyTwoModal is called', () => {
+      component.insuranceHistoryFormTwo.patchValue({
+        policy_no: '67890',
+        provider: 'Another Provider',
+        premium: 300,
+        sum_assured: 1000,
+        cover_status: 'J',
+      });
+
+      component.openAddPolicyTwoModal();
+
+      expect(component.insuranceHistoryFormTwo.value).toEqual({
+        policy_no: null,
+        provider: null,
+        premium: null,
+        sum_assured: null,
+        cover_status: null,
+        code: null,
+       });
+    });
+
+    test('should filter cover status types correctly', () => {
+      component.coverStatusTypeList = [
+        { name: 'A', value: 'Active' },
+        { name: 'J', value: 'Junior' },
+      ];
+
+      const result = component.filterCoverStatusType('A');
+      expect(result).toEqual(['Active']);
+    });
+
+    test('should return empty array if no matching cover status is found', () => {
+      component.coverStatusTypeList = [
+        { name: 'A', value: 'Active' },
+        { name: 'J', value: 'Junior' },
+      ];
+
+      const result = component.filterCoverStatusType('Z');
+      expect(result).toEqual([]);
+    });
+
+    test('should delete a policy from policyListOne', () => {
+      const mockPolicy = { code: '12345', isEdit: false };
+      component.policyListOne.push(mockPolicy);
+
+      component.deletePolicyListOne(0);
+
+      expect(mockClientHistoryService.deleteInsuranceHistory).toHaveBeenCalledWith('12345');
+      expect(component.policyListOne.length).toBe(0);
+    });
+
+    test('should show error toast if deletePolicyListOne fails', () => {
+      const mockPolicy = { code: '12345', isEdit: false };
+      component.policyListOne.push(mockPolicy);
+
+      jest.spyOn(mockClientHistoryService, 'deleteInsuranceHistory').mockReturnValue(
+        throwError(() => new Error('Deletion failed'))
+      );
+
+      component.deletePolicyListOne(0);
+
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'Failed to Delete Data',
+        'INSURANCE HISTORY'
+      );
+    });
   });
 
   // Business Logic
   describe('Business Logic', () => {
     test('should add a new editable policy row to policyListOne', () => {
-      component.addEmptyPolicyList(component.policyListOne);
-      expect(component.policyListOne.length).toBe(1);
-      expect(component.policyListOne[0].isEdit).toBeTruthy();
+      component.addEmptyPolicyList();
+      expect(component.editingPolicy).toBeFalsy();
+      expect(component.editingIndex).toBeNull();
+      expect(component.showModal).toBeTruthy();
     });
 
     test('should save insurance history data for policyListOne', () => {
@@ -311,6 +406,18 @@ describe('InsuranceHistoryComponent', () => {
       expect(mockSpinnerService.show).toHaveBeenCalledWith('ins_view');
     });
 
+    test('should open modal and reset form when addEmptyPolicyList is called', () => {
+    component.addEmptyPolicyList();
+
+    expect(component.editingPolicy).toBeFalsy(); // Should not be editing an existing policy
+    expect(component.editingIndex).toBeNull(); // No index should be selected for editing
+
+    expect(component.insuranceHistoryFormOne.pristine).toBeTruthy(); // Form should be pristine
+    expect(component.insuranceHistoryFormOne.valid).toBeFalsy(); // Form should be invalid after reset
+
+    expect(component.showModal).toBeTruthy();
+  });
+
   });
 
   // UI Interaction
@@ -342,6 +449,34 @@ describe('InsuranceHistoryComponent', () => {
       component.cancelPolicyListTwo(0);
 
       expect(component.policyListTwo[0].isEdit).toBeFalsy();
+    });
+
+    //Modal Interaction
+    test('should show modal when addEmptyPolicyList is called', () => {
+      component.addEmptyPolicyList();
+      expect(component.showModal).toBeTruthy();
+      expect(component.editingPolicy).toBeFalsy();
+      expect(component.editingIndex).toBeNull();
+      expect(component.insuranceHistoryFormOne.pristine).toBeTruthy();
+    });
+
+    test('should show modal when openAddPolicyTwoModal is called', () => {
+      component.openAddPolicyTwoModal();
+      expect(component.showPolicyTwoModal).toBeTruthy();
+      expect(component.editingPolicyTwo).toBeFalsy();
+      expect(component.editingIndexTwo).toBeNull();
+      expect(component.insuranceHistoryFormTwo.pristine).toBeTruthy();
+    });
+
+    test('should close modals when closePolicyModal and closePolicyModalTwo are called', () => {
+      component.showModal = true;
+      component.showPolicyTwoModal = true;
+
+      component.closePolicyModal();
+      component.closePolicyModalTwo();
+
+      expect(component.showModal).toBeFalsy();
+      expect(component.showPolicyTwoModal).toBeFalsy();
     });
   });
 

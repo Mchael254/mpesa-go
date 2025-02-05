@@ -7,7 +7,8 @@ import {TableDetail} from "../../data/table-detail";
 @Component({
   selector: 'app-dynamic-setup-table-screen',
   templateUrl: './dynamic-setup-table-screen.component.html',
-  styleUrls: ['./dynamic-setup-table-screen.component.css']
+  styleUrls: ['./dynamic-setup-table-screen.component.css'],
+  standalone : false
 })
 export class DynamicSetupTableScreenComponent implements OnInit{
 

@@ -161,6 +161,8 @@ export class CoverTypesComparisonComponent {
 
   isAddededBenefitsCalled: boolean = false;
   premiumRates: PremiumRate[] = [];
+  sectionDetails: any;
+  existingRisk: any;
 
 
 
@@ -609,8 +611,6 @@ export class CoverTypesComparisonComponent {
   }
 
 
-
-
   // getClient() {
   //   this.clientService.getClientById(this.clientcode).subscribe(data => {
   //     this.clientDetails = data;
@@ -723,15 +723,15 @@ export class CoverTypesComparisonComponent {
     quoteForm.agentCode = 0;
     quoteForm.agentShortDescription = "DIRECT";
     quoteForm.branchCode = this.userBranchId;
-    quoteForm.bindCode = this.premiumPayload?.risks[0].binderDto.code;
+    quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
     quoteForm.clientCode = this.passedClientDetails?.id
     quoteForm.clientType = "I";
-    quoteForm.currencyCode = this.premiumPayload?.risks[0].binderDto.currencyCode;
+    quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
     quoteForm.currencySymbol = this.selectedCurrency;
-    quoteForm.productCode = this.premiumPayload?.product.code;
+    quoteForm.productCode = this.premiumPayload?.product?.code;
     quoteForm.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
-    quoteForm.withEffectiveFromDate = this.premiumPayload?.risks[0].withEffectFrom;
-    quoteForm.withEffectiveToDate = this.premiumPayload?.risks[0].withEffectTo;
+    quoteForm.withEffectiveFromDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
+    quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
 
     this.quotationService.createQuotation(quoteForm, this.user).subscribe(data => {
       this.quotationData = data;
@@ -1463,7 +1463,7 @@ export class CoverTypesComparisonComponent {
     this.isBenefitsDetailsOpen = false;
   }
   fetchLimitsOfLiability() {
-    const productCode = this.premiumPayload?.product.code
+    const productCode = this.premiumPayload?.product?.code
     log.debug("Product Code:", productCode)
     this.quotationService
       .getLimitsOfLiability(this.selectedSubclassCode)

@@ -3,7 +3,8 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'app-download-modal',
   templateUrl: './download-modal.component.html',
-  styleUrls: ['./download-modal.component.css']
+  styleUrls: ['./download-modal.component.css'],
+  standalone : false
 })
 export class DownloadModalComponent implements OnInit{
   ngOnInit(): void {

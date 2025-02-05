@@ -101,8 +101,10 @@ import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pi
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
 import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
-
-
+import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
+import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
+import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
+import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -212,6 +214,10 @@ const SERVICES = [
     ProposalLandingScreenComponent,
     PolicyLandingScreenComponent,
     DynamicDocumentModalComponent,
+    ClientSearchModalComponent,
+    AgentSearchModalComponent,
+    ProductSearchModalComponent,
+    DynamicReportsComponent
 
   ],
     imports: [
@@ -284,7 +290,11 @@ const SERVICES = [
     FileUploadModule,
     PdfViewerModule,
     DynamicDocumentModalComponent,
-    DropdownModule
+    DropdownModule,
+    ClientSearchModalComponent,
+    AgentSearchModalComponent,
+    ProductSearchModalComponent,
+    DynamicReportsComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

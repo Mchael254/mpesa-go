@@ -20,104 +20,13 @@
     ]">
     </app-dynamic-breadcrumb>
   </div>
-  <div class="card">
-    <div class="card-header bg-transparent float-start border-bottom-0">
-      <h6 class="float-start my-3 fw-semibold">Service request report</h6>
-    </div>
-    <div class="card-body pt-0" *ngFor="let report of reportsToDisplay">
-      <label class="text-decoration-underline reportList"
-             [class.selectedReport]="report === selectedReport"
-             (click)="onReportSelect(report)">
-        {{report.desc}}
-      </label>
-    </div>
-  </div>
+  <ng-container *ngIf="serviceRequestReportsData">
+    <app-dynamic-reports
+      [title]="'crm.serviceReqReport' | translate"
+      [reportsToDisplay]="serviceRequestReportsData"
+      (onClickReport)="onReportSelect($event)">
 
-</div>
+    </app-dynamic-reports>
+  </ng-container>
 
-
-<!-- Modal -->
-<div
-  class="modal fade"
-  #reportDownloadModal
-  id="reportDownloadModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header border-bottom-0">
-        <h1 class="modal-title fs-5 text-dark" id="exampleModalLabel">Report parameters</h1>
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          (click)="closeReportDownloadModal()">
-        </button>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="reportForm">
-          <div *ngFor="let param of reportData?.params; let i = index">
-            <div class="mb-3">
-              <label for="exampleFormControlInput1" class="form-label">{{param?.prompt}}</label>
-              <ng-container *ngIf="param?.type === 'LOV'; else showInput">
-                <select class="form-select" formControlName="{{param?.name}}">
-                  <option *ngFor="let option of reportParamData?.query_data" value="{{option.value}}">{{option.name}}</option>
-                </select>
-              </ng-container>
-              <ng-template #showInput>
-                <div *ngIf="param?.type === 'PLOV'; else defaultInput">
-                  <p-dropdown
-                    [options]="reportParamData?.query_data"
-                    optionLabel="name"
-                    optionValue="value"
-                    [showClear]="true"
-                    [filter]="true"
-                    filterBy="name"
-                    [style]="{ width: '100%', height: '50%' }"
-                    placeholder="Select option"
-                    formControlName="{{param?.name}}">
-
-                    <ng-template let-option pTemplate="item">
-                      <div class="d-flex align-items-center gap-2">
-<!--                        <div>{{ option?.value }}</div>-->
-                        <div>{{ option?.name | titlecase }}</div>
-                      </div>
-                    </ng-template>
-                  </p-dropdown>
-                  <div class="input-group mb-3">
-                  </div>
-                </div>
-                <ng-template #defaultInput>
-                  <input type="{{param?.type}}" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com"
-                         formControlName="{{param?.name}}">
-                </ng-template>
-              </ng-template>
-            </div>
-          </div>
-
-          <label class="text-dark w-100">Report format</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" formControlName="downloadOption" id="inlineRadio1" value="HTML">
-            <label class="form-check-label text-dark" for="inlineRadio1">HTML</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" formControlName="downloadOption" id="inlineRadio2" value="PDF">
-            <label class="form-check-label text-dark" for="inlineRadio2">PDF</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" formControlName="downloadOption" id="inlineRadio3" value="XLS">
-            <label class="form-check-label text-dark" for="inlineRadio3">Excel</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" formControlName="downloadOption" id="inlineRadio4" value="RTF">
-            <label class="form-check-label text-dark" for="inlineRadio3">Word</label>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="generateReport(this.selectedReport)">Print</button>
-      </div>
-    </div>
-  </div>
 </div>

@@ -8,18 +8,18 @@
       <label  class="form-label text-black align-content-center m-0" style="width: 50%;font-size: 16px;text-align:center">{{'fms.org' | translate }}:</label>
    
       <select   class="form-control form-select text-black border-0 fw-medium font-size: 14px;"  id="organization" style="width: 67%;" formControlName="organization"  (change)="onOrganizationChange($event)"  >
-       <!-- <option value=""  >Select </option> -->
+     
        <label for="organization">Select</label>
-        <!-- <option *ngFor="let organizations of organization"    [value]="organizations.id" [selected]="organizations.id === 2">{{organizations.name}} </option> -->
-        <option *ngFor="let org of organization" [value]="org.name">{{ org.name }}</option>
+
+        <option *ngFor="let org of organization" [value]="org.id" [selected]="org.id===2">{{ org.name }}</option>
       </select>
     </div>
     <div class="col-lg-3 d-flex">
    
       <label  class="form-label text-black text-end align-content-center m-0" style="width: 50%;font-size: 16px;">{{'fms.branch' | translate }}:</label>
-      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;" formControlName="selectedBranch">
+      <select class="form-control form-select text-black border-0 fw-medium font-size: 14px;" id="branch" style="width: 62%;" formControlName="selectedBranch"  (change)="onBranchChange($event)">
         <option value=""  >Select </option>
-        <option *ngFor="let branch of branches" [value]="branch.id"  >{{branch.name}}</option>
+        <option *ngFor="let branch of branches" [value]="branch.id" [selected]="branch.id===1" >{{branch.name}}</option>
        
       </select>
    
@@ -111,8 +111,8 @@
     <div class="modal-body">
      
       <div >
-        <label for="exchangeRateInput">Enter Exchange Rate:</label>
-        <p>1 {{ currencySymbolGlobal }} =</p>
+        <label for="exchangeRateInput">Enter Exchange Rate:<span class="required"></span></label>
+        <p>1 {{ defaultCurrencyName }} =</p>
         <input
           type="number"
           id="exchangeRateInput"
@@ -126,9 +126,9 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" 
+      <!-- <button type="button" 
       class="btn btn-secondary" 
-      (click)="closeModal2()">Cancel</button>
+      (click)="closeModal2()">Cancel</button> -->
       <button type="button" class="btn btn-primary" (click)="confirmExchangeRateValue()">OK</button>
     </div>
   </div>
@@ -169,12 +169,13 @@
 
 
 
-
+<!-- form validation -->
+<!-- [class.is-invalid]="receiptingDetailsForm.get('paymentMode')?.invalid && receiptingDetailsForm.get('paymentMode')?.touched" -->
           <!-- Payment Mode Dropdown -->
           <div class="col-md-4">
             <div class="form-group position-relative">
               <label for="paymentMode" class="text-dark">
-                {{ 'fms.receipting.payment_mode' | translate }}
+                {{ 'fms.receipting.payment_mode' | translate }} <span class="required"></span>
               </label>
               <div class="dropdown-container">
                 <select
@@ -182,10 +183,11 @@
                   class="form-control"
                   formControlName="paymentMode"
                   (change)="onPaymentModeSelected()"
+                  
                 >
-                  <option *ngFor="let paymentMode of paymentModes" [value]="paymentMode.desc">
+                  <option *ngFor="let paymentMode of paymentModes" [value]="paymentMode.code">
                    
-                    {{ paymentMode.desc }}
+                    {{ paymentMode.code }}
                   </option>
                 </select>
                 <i class="pi pi-chevron-down dropdown-icon"></i> <!-- PrimeNG icon -->
@@ -198,7 +200,7 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Select Cheque Type</h5>
+                  <h5 class="modal-title">Select Cheque Type<span class="required"></span></h5>
                   <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
                 </div>
                 <div class="modal-body">
@@ -219,11 +221,22 @@
 
           <div class="col-md-4">
             <div class="form-group position-relative">
-              <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }}</label>
+              <label for="bankAccount" class="text-dark">{{'fms.receipting.bank_account' | translate }} <span class="required"></span></label>
               <div class="dropdown-container">
-                <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBank($event)" >
-                <!-- <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBankSelected()"> -->
-                   <option *ngFor="let bank of bankAccounts" [value]="bank.code">{{bank.name}} - {{bank.name}}</option> 
+                 <!-- Add search input -->
+      <!-- <div class="search-wrapper">
+        <input
+          type="text"
+          class="form-control search-input"
+          [placeholder]="'Search banks...'"
+          (input)="filterBanks($event)"
+          [value]="bankSearchTerm"
+        >
+      </div> -->
+                <select id="bankAccount" class="form-control" formControlName="bankAccount" (change)="onBank($event)" 
+                >
+              
+                   <option *ngFor="let bank of bankAccounts" [value]="bank.code">{{bank.name}} - {{bank.type}}</option> 
                 </select>
                   
                 
@@ -264,7 +277,7 @@
 
           <div class="col-md-4">
             <div class="form-group position-relative">
-              <label for="drawersBank" class="text-dark">{{'fms.receipting.drawers_bank' | translate }}</label>
+              <label for="drawersBank" class="text-dark">{{'fms.receipting.drawers_bank' | translate }} </label>
               <div class="dropdown-container">
                 <select id="drawersBank" class="form-control" formControlName="drawersBank"
                   
@@ -276,13 +289,11 @@
             </div>
           </div>
         </div>
-        <!-- <select id="drawersBank" class="form-control" formControlName="drawersBank"
-        [disabled]="receiptingDetailsForm.get('paymentMode')?.value === 'CASH'"
-      > -->
+        
         <div class="row mt-3">
           <div class="col-md-4">
             <div class="form-group">
-              <label for="amountIssued" class="text-dark">{{'fms.receipting.amount_issued' | translate }}</label>
+              <label for="amountIssued" class="text-dark">{{'fms.receipting.amount_issued' | translate }} <span class="required"></span></label>
               <input type="number" class="form-control" id="amountIssued" formControlName="amountIssued">
             </div>
           </div>
@@ -294,19 +305,6 @@
             </div>
           </div>
 
-          <!-- <div class="col-md-4">
-            <div class="form-group">
-              <label for="receiptDate" class="text-dark">{{ 'fms.receipting.receipt_date' | translate }}</label>
-              <input
-                type="date"
-                class="form-control"
-                id="receiptDate"
-                formControlName="receiptDate"
-                [min]="minDate"
-                [disabled]="!backdatingEnabled && minDate === ''"
-              />
-            </div>
-          </div> -->
           <div class="col-md-4">
             <div class="form-group">
               <label for="receiptDate" class="text-dark">{{ 'fms.receipting.receipt_date' | translate }}</label>
@@ -327,13 +325,14 @@
         <div class="row mt-3">
           <div class="col-md-4">
             <div class="form-group">
-              <label for="documentDate" class="text-dark">{{'fms.receipting.document_date' | translate }}</label>
-              <input type="date" class="form-control" id="documentDate" formControlName="documentDate">
+              <label for="documentDate" class="text-dark">{{'fms.receipting.document_date' | translate }}<span class="required"></span></label>
+              <input type="date" class="form-control" id="documentDate" formControlName="documentDate" 
+              >
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label for="receivedFrom" class="text-dark">{{'fms.receipting.received_from' | translate }}</label>
+              <label for="receivedFrom" class="text-dark">{{'fms.receipting.received_from' | translate }}<span class="required"></span></label>
               <input type="text" class="form-control" id="receivedFrom" formControlName="receivedFrom">
             </div>
           </div>
@@ -497,7 +496,7 @@
           <div class="col-md-4">
             <div class="form-group position-relative">
               <label for="narration" class="text-dark">
-                {{ 'fms.receipting.narration' | translate }}
+                {{ 'fms.receipting.narration' | translate }} <span class="required"></span>
               </label>
               <div class="d-flex">
                 <!-- Dropdown Menu -->
@@ -527,8 +526,10 @@
                   formControlName="narration"
                   placeholder="Edit description"
                   (input)="onNarrationTextChange()"
+                 
                 ></textarea>
               </div>
+            
             </div>
           </div>
           
@@ -548,29 +549,37 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4" *ngIf="uploadedFile" >
-            <p class="mb-1"><strong>File Name:</strong> {{ uploadedFile.docName }}</p>
-            <button class="btn btn-primary me-2" (click)="openFile()">
-              <i class="fas fa-eye"></i> Open
-            </button>
           
-          <!-- <div class="col-md-3" *ngIf="uploadedFile" > -->
-            <button class="btn btn-danger" (click)="deleteFile()">
-              <i class="fas fa-trash"></i> Delete File
-            </button>
+          </div>
+          
+  
+     <div class="row" *ngIf="uploadedFile">
+      <div class="col-md-4" >
+        <div class="col-md-4 d-flex mb-2 mt-2  align-content-center"  style="height:50px"  >
+         
+
+          <p class="mb-1"><strong>File Name:</strong> {{uploadedFile.docName }}</p>
+          <div class="d-block ms-2 mt-1">
+          <button class="btn btn-primary me-2 mb-2  d-flex align-items-center" style="height:25px" (click)="openFile()">
+            <i class="fas fa-eye"></i> Open
+          </button>
+        
+        
+          <button class="btn btn-danger d-flex align-items-center" style="height:25px" (click)="deleteFile()">
+            <i class="fas fa-trash"></i> 
+          </button>
+        </div>
           </div>
         </div>
-  
+     </div>
 
-
-
+      
 <!-- Upload Button and Hidden File Input -->
  <div class="row mt-3">
 <div class="col-md-4">
-  <!-- <input type="file" id="fileInput" (change)="onFileSelected($event)" /> -->
-  <!-- <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;"> -->
+
   <input type="file" #fileInput (change)="onFileSelected($event)"  style="display: none;">
-  <button type="button" class="btn btn-primary" (click)="fileInput.click()">
+  <button type="button" class="btn btn-primary"  [disabled]="isFileUploadButtonDisabled" (click)="fileInput.click()">
     {{ 'fms.receipting.uploadFiles' | translate }}
   </button>
  
@@ -588,10 +597,10 @@
  
 </div>
 <div class="col-md-4 mt-2"  *ngIf="fileDescriptions.length > 0">
-  <button type="button" class="btn btn-success" (click)="uploadFile()">post File</button>
+  <button type="button" class="btn btn-success"  (click)="uploadFile()">post File</button>
+</div>
 </div>
 
-</div>
 <!-- Modal for File Description -->
 <div id="fileDescriptionModal"  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -602,7 +611,7 @@
       <div class="modal-body">
         <form [formGroup]="receiptingDetailsForm">
           <div class="form-group">
-            <label for="description">Enter File Description</label>
+            <label for="description">Enter File Description<span class="required"></span></label>
             <input id="description" placeholder="enter desc" type="text" class="form-control" formControlName="description" />
             
             <div *ngIf="receiptingDetailsForm.get('description')?.invalid && receiptingDetailsForm.get('description')?.touched" class="text-danger">
@@ -613,7 +622,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="saveFileDescription()">Save</button>
-        <!-- <button type="button" class="btn btn-secondary" (click)="closeFileModal()">Cancel</button> -->
+       
       </div>
     </div>
   </div>
@@ -669,7 +678,7 @@
       </div> -->
       
           <!-- Search Query Input -->
-          <div class="col-md-4">
+          <div class="col-md-4" >
             <label for="searchQuery" style="color: black;">Search:</label>
             <div class="input-group">
               <input
@@ -694,9 +703,12 @@
         </div>
 
         <!-- Search Results Table -->
-        <div class="row mt-3" *ngIf="clients.length > 0">
+         <!-- added a paginator -->
+        <div class="row mt-3" *ngIf="clients.length > 0 ">
           <div class="col-md-12">
-            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped"
+            <p-table [value]="clients" responsiveLayout="scroll" class="table-striped" [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
             selectionMode="single" 
             [(selection)]="selectedClient"
              dataKey="code">
@@ -709,7 +721,9 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-client let-i="rowIndex">
-                <tr [pSelectableRow]="client" (click) = onClickClient(client)>
+                <tr [pSelectableRow]="client" (click) = onClickClient(client)
+                [class.selected-client-row]="selectedClient?.code === client.code"
+                >
                    
                   <td>{{ client.
                     systemShortDesc
@@ -725,8 +739,9 @@
           </div>
         </div>
 
-       
-        <div class="row mt-3"  id="allocationTable">
+       <!-- Transactions Table -->
+        <div class="row mt-3"  id="allocationTable"  *ngIf="allocation">
+          <h3 class="text-primary text-start fs-4 mt-2">Transactions</h3>
           <div class="col-md-12">
             <p-table  *ngIf="allocatedAmountControls.length > 0 && allocation" [value]="transactions" responsiveLayout="scroll" class="table-striped" [paginator]="true"
             [rows]="5"
@@ -784,17 +799,24 @@ balance}}</td>
            
           </div>
         </div>
+        <!-- <div style="margin-right:20px; text-align: center; justify-content: center; align-items: center;">
+          Cumulative Allocated Amount: {{ totalAllocatedAmount }}
+        </div> -->
         <div *ngIf="allocatedAmountControls.length > 0 && allocation" class="d-flex justify-content-end">
-          <div style="margin-right:20px;text-align: center; justify-content:center;align-items: center;">Total Allocated Amount: {{ totalAllocatedAmount }}</div>
+          <div style="margin-right:20px;text-align: center; justify-content:center;align-items: center;">Total Allocated Amount: {{ totalAllocatedAmount }}<br>Remaining Balance: {{ getRemainingAmount() | number:'1.2-2' }}<br></div>
+
           <button class="btn btn-primary" (click)="allocate()">Allocate</button>
+          
         </div>
+      
         
-       
 <!-- Allocated Amounts Table -->
-<div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0 && !isReceiptSaved" class="row mt-3">
+<div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0 && !isReceiptSaved " class="row mt-3">
+  <h3 class="text-primary text-start fs-4 mt-2">Allocations</h3>
   <div class="col-md-12">
     <p-table 
       [value]="getAllocation"
+
       responsiveLayout="scroll"
       class="table-striped"
       [paginator]="true"
@@ -839,32 +861,21 @@ balance}}</td>
   </div>
 </div>
 
-        
-       
+
+    
 
         <div class="form-group d-flex justify-content-end align-items-end mt-5 mb-3">
-          <button type="button" class="btn btn-primary me-3" id="saveReceipt" (click)="submitReceipt()"
+         
+          <button type="button" class="btn btn-primary me-3" id="saveReceipt"  [disabled]="!isClientSelected"  (click)="submitReceipt()"
           >Save Receipt</button>
-          <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt" (click)="fetchReceiptDetails()"
-            >Print Receipt
-          </button>
+        
+        <button type="button" class="btn btn-secondary ml-2 me-3" id="printReceipt" [disabled]="!isReceiptSaved || isReceiptDownloading" (click)="GetReceipt()"
+          >Print Receipt
+        </button>
           <!-- <button type="button" class="btn btn-danger ml-2 me-3" id="cancel" >Cancel</button> -->
         </div>
 
-        <script>
-          // For using modal in javascript:
-          // get a reference to the modal
-          const receiptPreviewModalElement = document.getElementById('receiptPreviewModal');
-          // if found
-          if (receiptPreviewModalElement) {
-            // create a modal instance
-            const receiptPreviewModal = new bootstrap.Modal(receiptPreviewModalElement);
-            // Add a click listener for the button (replace this with your real click logic):
-            //   document.getElementById("printReceipt").addEventListener("click", function () {
-            //       receiptPreviewModal.show();
-            //   });
-          }
-        </script>
+  
 
       </form>
     </div>

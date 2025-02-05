@@ -133,6 +133,28 @@ export interface EftPaymentTypesDTO {
   chqPaymentType: string
 }
 
+export interface PaymentModesDTO{
+code: string;
+orgCode: number;
+description: string;
+clearingRequired: string;
+collectAccount: string;
+minAmount:  number;
+maxAmount:  number;
+sortOrder: number;
+grossReceiptingAllowed: string;
+documentRequired: string;
+amountEditable: string;
+rateApplicable: string;
+rate: number;
+accountNumber: string;
+isDefault: string;
+accountType: string;
+referenceUnique: string;
+referenceLength: number;
+emailApplicable: string;
+bankRateType: string
+}
 export interface EligibleAuthorizersDTO {
   signatoryType: string,
   userName: string,

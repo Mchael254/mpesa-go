@@ -86,6 +86,7 @@ export class QuoteSummaryComponent {
   reasonCancelled: string = '';
   cancelQuoteClicked: boolean = false;
   showQuoteActions: boolean = true;
+  batchNo: number;
 
 
   constructor(
@@ -274,7 +275,7 @@ export class QuoteSummaryComponent {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
@@ -287,6 +288,9 @@ export class QuoteSummaryComponent {
     this.fieldDisableState = true;
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
+
+    // Add a unique flag for add another risk navigation
+    sessionStorage.setItem('navigationSource', 'addAnotherRisk');
 
     log.debug("isAddRisk:", this.isAddRisk)
     log.debug("quotation number:", this.quotationNo)
@@ -302,7 +306,7 @@ export class QuoteSummaryComponent {
   }
 
 
-  acceptQuote() {
+  convertToNormalQuote() {
     if(this.passedClientDetails) {
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
     } else {
@@ -342,8 +346,6 @@ export class QuoteSummaryComponent {
 
   }
 
-
-
   getuser() {
     this.user = this.authService.getCurrentUserName()
     this.userDetails = this.authService.getCurrentUser();
@@ -365,8 +367,6 @@ export class QuoteSummaryComponent {
       systemCode: ['0', Validators.required],
       systemModule: ['NB', Validators.required],
       address: ['', Validators.required],
-      // cc: ['', Validators.required],
-      // bcc: ['', Validators.required],
     });
   }
   emaildetails() {
@@ -390,21 +390,6 @@ export class QuoteSummaryComponent {
     emailForm.subject = "Quotation Details";
     emailForm.systemCode = "0";
     emailForm.systemModule = "NB";
-    // emailForm.cc = this.selectedEmail;
-    // emailForm.bcc = this.selectedEmail;
-
-    // this.quotationService.sendEmail(emailForm).subscribe(
-    //   {
-    //     next: (res) => {
-    //       const response = res
-    //       this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-    //       log.debug(res)
-    //     }, error: (error: HttpErrorResponse) => {
-    //       log.info(error);
-    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-    //     }
-    //   })
     log.debug('Submitted payload:', JSON.stringify(emailForm));
   }
 
@@ -426,18 +411,6 @@ export class QuoteSummaryComponent {
 
 
     };
-    // this.quotationService.sendSms(payload).subscribe(
-    //   {
-    //     next: (res) => {
-    //       this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-    //     }, error: (error: HttpErrorResponse) => {
-    //       log.info(error);
-    //       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-    //     }
-
-    //   }
-    // )
   }
   handleShare() {
     if (this.selectedOption === 'email') {
@@ -613,7 +586,7 @@ export class QuoteSummaryComponent {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
@@ -630,11 +603,13 @@ export class QuoteSummaryComponent {
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
 
+    // Add a unique flag for edit risk navigation
+    sessionStorage.setItem('navigationSource', 'editRisk');
 
     log.debug("isEditRisk:", this.isEditRisk)
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
-    log.debug("Selected Client Details", this.clientDetails);
+    log.debug("Selected Client Details", this.passedClientDetails);
     log.debug("Selected New Client Details", this.passedNewClientDetails);
 
     // this.router.navigate(['/home/gis/quotation/quick-quote'])
@@ -657,6 +632,8 @@ convertToPolicy(){
 
   }else{
     // NAVIGATE TO POLICY SCREEN
+    log.debug("existing client convert to polict and navigate to policy summary screen")
+    this.convertQuoteToPolicy()
   }
 }
   updateQuoteStatus() {
@@ -687,5 +664,19 @@ convertToPolicy(){
       }
     );
   }
+  convertQuoteToPolicy(){
+    log.debug("Quotation Details",this.quotationDetails)
+    const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    log.debug("Quotation Code",this.quotationCode)
+    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => { 
+      log.debug("Response after converting quote to a policy:", data)
+      this.batchNo = data._embedded.batchNo
+      log.debug("Batch number",this.batchNo)
+      const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
+    sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+      this.router.navigate(['/home/gis/policy/policy-summary']);
 
+    })
+    
+  }
 }

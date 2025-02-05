@@ -31,6 +31,10 @@ import { NgxCurrencyDirective } from 'ngx-currency';
 import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
 import { CreateClientComponent } from './components/create-client/create-client.component';
 import { EntitiesModule } from '../../../entities/entities.module';
+import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
+import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
+import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
+import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +51,11 @@ import { EntitiesModule } from '../../../entities/entities.module';
     QuotationSummaryComponent,
     CoverTypesComparisonComponent,
     CreateClientComponent,
+    ReviseReuseQuotationComponent,
+    QuotationConversionComponent,
+    QuotationInquiryComponent,
+    QuotationSourcesComponent,
+    
     
   ],
   imports: [

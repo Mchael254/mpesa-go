@@ -7,6 +7,7 @@ import { SessionStorageService } from '../../services/session-storage/session-st
   selector: 'app-policy-landing-screen',
   templateUrl: './policy-landing-screen.component.html',
   styleUrls: ['./policy-landing-screen.component.css'],
+  standalone : false
 })
 export class PolicyLandingScreenComponent {
   @Input() LMS_IND: any[];

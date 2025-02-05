@@ -280,7 +280,7 @@
                                             <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
                                                 [formControlName]="field.name"
                                                 (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
-                                                placeholder="e.g KCA 345R" [ngModel]="parsedCarRegNo">
+                                                placeholder="e.g KCA 345R" [(ngModel)]="parsedCarRegNo">
 
 
                                             <div *ngIf="carRegNoHasError" class="form-text text-danger">
@@ -297,11 +297,8 @@
                                                 </div>
 
                                             </div>
-
-
-
-
                                         </div>
+
                                         <div *ngIf="field.name == 'modeOfTransport'">
                                             <label class="quote-label required" [for]="field.name">{{ field.label
                                                 }}</label>
@@ -350,11 +347,12 @@
 <br>
                                             <p-calendar
 
-                                            [(ngModel)]="selectedCoverToDate"
+                                            [(ngModel)]="passedCoverToDate"
                                             [dateFormat]="dateFormat"
                                             [showIcon]="true"
                                             [showButtonBar]="true"
                                             [minDate]="minDate"
+                                            [placeholder]="formattedCoverToDate"
                                             (onSelect)="onCoverToChange($event)">
                                           </p-calendar>
 

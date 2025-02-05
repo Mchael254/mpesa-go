@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails } from '../../data/quotationsDTO';
+import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails, Sources } from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
 import { environment } from '../../../../../../../environments/environment';
@@ -14,6 +14,7 @@ import { StringManipulation } from '../../../../../../features/lms/util/string_m
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
+import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,35 @@ export class QuotationsService {
 
     return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
+  /**
+   * Adds quotation sources using an HTTP POST request.
+   * @method addQuotationSources
+   */
+  addQuotationSources(data: Sources): Observable<any> {
+
+    return this.api.POST<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+
+  /**
+   * Deleted quotation sources using an HTTP DELETE request.
+   * @method deleteQuotationSource
+   * @return {Observable<any>} - An observable of the response containing quotation sources.
+   */
+  deleteQuotationSource(code: number): Observable<any> {
+    return this.api.DELETE(`v2/quotation-sources?code=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  /**
+   * Deleted quotation sources using an HTTP PUT request.
+   * @method editQuotationSource
+   * @return {Observable<any>} - An observable of the response containing quotation sources.
+   */
+  editQuotationSource(data: Sources): Observable<any> {
+    return this.api.PUT<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
   /**
     * Creates a new quotation using an HTTP POST request.
     * @method createQuotation
@@ -216,23 +246,45 @@ export class QuotationsService {
   getProductClauses(productCode) {
     return this.api.GET(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
+
   deleteSchedule(level: any, riskCode: any, code: any) {
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   makeReady(quotationCode, user) {
     return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   confirmQuotation(quotationCode, user) {
     return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+
   authoriseQuotation(quotationCode, user) {
     return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  getExternalClaimsExperience(clientCode) {
-    return this.api.GET(`api/v1/external-claims-experiences?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+
+  getExternalClaimsExperience(
+    clientCode: number,
+    page: number | null = 0,
+    size: number | null = 10
+  ) {
+    return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
-  getInternalClaimsExperience(clientCode) {
-    return this.api.GET(`api/v1/internal-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+
+  addExternalClaimExp(data: ExternalClaimExp) {
+    return this.api.POST(`api/v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
+
+  deleteExternalClaimExp(code: number) {
+    return this.api.DELETE(`api/v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
+
+  getInternalClaimsExperience(
+    clientCode: number,
+    page: number | null = 0,
+    size: number | null = 10
+  ) {
+    return this.api.GET(`api/v2/internal-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 
 
@@ -317,7 +369,7 @@ export class QuotationsService {
 
     })
 
-    return this.api.GET<riskClauses[]>(`v1/riskClauses/?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET<riskClauses[]>(`v1/riskClauses?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -361,10 +413,14 @@ export class QuotationsService {
     return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
+
+  getInsurers(
+    page: number | null = 0,
+    size: number | null = 10,
+    sortList: string = 'createdDate',
+  ): Observable<Pagination<AgentDTO>>{
+
+    return this.api.GET<Pagination<AgentDTO>>(`agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+  }
 }
-
-
-
-
-
 

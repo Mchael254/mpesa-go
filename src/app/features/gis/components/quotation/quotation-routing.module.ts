@@ -13,6 +13,10 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
 import { CreateClientComponent } from './components/create-client/create-client.component';
+import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
+import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
+import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
+import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 
 const routes: Routes = [
   {
@@ -24,7 +28,7 @@ const routes: Routes = [
   {
     path: 'quick-quote', component:QuickQuoteFormComponent
   },
- 
+
   //  {
   //   path: 'cover-type-details', component:CoverTypesDetailsComponent
   // },
@@ -54,7 +58,22 @@ const routes: Routes = [
   },
   {
     path:'create-client',component:CreateClientComponent
-  }
+  },
+  {
+    path:'revise-reuse-quote',component:ReviseReuseQuotationComponent
+  },
+  {
+    path:'quotation-conversion',component:QuotationConversionComponent
+  },
+  {
+    path:'quotation-sources',component:QuotationSourcesComponent
+  },
+  {
+    path:'quotation-inquiry',component:QuotationInquiryComponent
+  },
+  {
+    path:'i',component:QuotationInquiryComponent
+  },
 ];
 
 @NgModule({

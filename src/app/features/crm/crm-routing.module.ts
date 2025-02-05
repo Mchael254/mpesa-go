@@ -28,15 +28,17 @@ import { ActivitiesComponent } from './components/activity-management/activities
 import { ActivityTypesComponent } from './components/activity-management/activity-types/activity-types.component';
 import { PriorityLevelsActivityStatusComponent } from './components/activity-management/priority-levels-activity-status/priority-levels-activity-status.component';
 import { LeadSourcesStatusesComponent } from './components/lead-sources-statuses/lead-sources-statuses.component';
-import {RequestStatusComponent} from "./components/service-desk/request-status/request-status.component";
-import {RequestCategoriesComponent} from "./components/service-desk/request-categories/request-categories.component";
-import {RequestTrackingComponent} from "./components/service-desk/request-tracking/request-tracking.component";
-import {ServiceDeskComponent} from "./components/service-desk/service-desk.component";
-import {
-  ServiceDeskDetailsComponent
-} from "./components/service-desk/service-desk-details/service-desk-details.component";
-import {HierarchyComponent} from "./components/hierarchy/hierarchy.component";
-import {RequestReportComponent} from "./components/service-desk/request-report/request-report.component";
+import { RequestStatusComponent } from './components/service-desk/request-status/request-status.component';
+import { RequestCategoriesComponent } from './components/service-desk/request-categories/request-categories.component';
+import { RequestTrackingComponent } from './components/service-desk/request-tracking/request-tracking.component';
+import { ServiceDeskComponent } from './components/service-desk/service-desk.component';
+import { ServiceDeskDetailsComponent } from './components/service-desk/service-desk-details/service-desk-details.component';
+import { HierarchyComponent } from './components/hierarchy/hierarchy.component';
+import { RequestReportComponent } from './components/service-desk/request-report/request-report.component';
+import { ProspectsComponent } from './components/activity-management/prospects/prospects.component';
+import {SystemReportsComponent} from "./components/system-reports/system-reports.component";
+import {ReportDefinitionComponent} from "./components/system-reports/report-definition/report-definition.component";
+import {ReportGroupComponent} from "./components/system-reports/report-group/report-group.component";
 
 const routes: Routes = [
   {
@@ -178,6 +180,22 @@ const routes: Routes = [
   {
     path: 'request-report',
     component: RequestReportComponent,
+  },
+  {
+    path: 'prospects',
+    component: ProspectsComponent,
+  },
+  {
+    path: 'system-reports',
+    component: SystemReportsComponent,
+  },
+  {
+    path: 'define-reports',
+    component: ReportDefinitionComponent,
+  },
+  {
+    path: 'report-group',
+    component: ReportGroupComponent,
   },
 ];
 

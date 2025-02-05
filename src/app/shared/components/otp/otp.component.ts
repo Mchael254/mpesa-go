@@ -13,7 +13,8 @@ const log = new Logger('OtpVerificationComponent');
 @Component({
   selector: 'app-otp',
   templateUrl: './otp.component.html',
-  styleUrls: ['./otp.component.css']
+  styleUrls: ['./otp.component.css'],
+  standalone : false
 })
 export class OtpComponent implements OnInit, OnDestroy {
 
@@ -90,10 +91,10 @@ export class OtpComponent implements OnInit, OnDestroy {
       Object.keys(this.otpForm.controls).forEach((key, index) => {
         this.otpValue = this.otpValue + this.otpForm.controls[key].value;
       });
-      
+
       username = extras.username;
       email = extras.email;
-      
+
         this.authService.verifyResetOtp(username, parseInt(this.otpValue, 10), email)
         .subscribe({
           next: (data) => {

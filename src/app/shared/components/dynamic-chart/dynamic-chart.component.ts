@@ -6,7 +6,8 @@ const log = new Logger(`DynamicChartComponent`)
 @Component({
   selector: 'app-dynamic-chart',
   templateUrl: './dynamic-chart.component.html',
-  styleUrls: ['./dynamic-chart.component.css']
+  styleUrls: ['./dynamic-chart.component.css'],
+  standalone : false
 })
 export class DynamicChartComponent implements OnInit {
 
