@@ -46,31 +46,37 @@ export class MenuService {
 
     QUOTATION: [
       {
-        name: 'Actions',
+        name: 'Quotation Actions',
         nameSlug: 'actions',
         icon: 'fa-solid fa-gears',
         menuItems: [
           {
-            name: 'New Quote',
-            link: '',
+            name: 'Create Quotation',
+            link: '/home/gis/quotation/quick-quote',
             isModal: true,
             target: '#NewQuoteModal',
           },
-          { name: 'Need Analysis', link: '/home/lms/need-analysis' },
+          { name: 'Edit Quotation', link: '/home/lms/quotation/list' },
+          { name: 'Revise/Reuse Quotation', link: '/home/gis/quotation/revise-reuse-quote' },
+          { name: 'Convert Quotation', link: '/home/gis/quotation/quotation-conversion' },
+          { name: 'Quotation Inquiry', link: '/home/gis/quotation/quotation-inquiry' },
+          { name: 'Quotation Sources', link: '/home/gis/quotation/quotation-sources' },
+          { name: 'Quotation Numbers', link: '' },
+          // { name: 'Quotation List', link: '/home/lms/quotation/list' },
         ],
+        collapsed: true
+      },
+      // {
+      //   name: 'Quotation Management',
+      //   nameSlug: 'quotationManagement',
+      //   icon: 'fa-solid fa-quote-right',
+      //   menuItems: [
 
-        collapsed: true,
-      },
-      {
-        name: 'Quotation',
-        nameSlug: 'quotation',
-        icon: 'fa-solid fa-quote-right',
-        menuItems: [
-          { name: 'Quotation List', link: '/home/lms/quotation/list' },
-        ],
-        collapsed: true,
-      },
+      //   ],
+      //   collapsed: true
+      // }
     ],
+
     STAFF_PERF: [
       {
         name: 'My Employees',
@@ -251,7 +257,15 @@ export class MenuService {
             subList: [
               {
                 name: 'Reports',
-                link: '',
+                link: '/home/crm/system-reports',
+              },
+              {
+                name: 'Define Reports',
+                link: '/home/crm/define-reports',
+              },
+              {
+                name: 'Report Group',
+                link: '/home/crm/report-group',
               },
             ],
             collapsed: true,
@@ -351,7 +365,7 @@ export class MenuService {
               },
               {
                 name: 'Prospects',
-                link: '/home/crm',
+                link: '/home/crm/prospects',
               },
             ],
             collapsed: true,
@@ -575,100 +589,131 @@ export class MenuService {
     FMS: [
       {
         name: 'General Ledger',
-        
+
         nameSlug: 'general-ledger',
-       // icon: 'fa-solid fa-money-check',
-        
+        // icon: 'fa-solid fa-money-check',
+
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Inquiries', nameSlug:'gl-inquires',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Gl-Final Reports', nameSlug:'final-reports',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                       
-                        collapsed: true,
-                        
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Inquiries',
+            nameSlug: 'gl-inquires',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Gl-Final Reports',
+            nameSlug: 'final-reports',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+
+        collapsed: true,
       },
       {
         name: 'Cashbook',
-        
 
         nameSlug: 'cashbook',
         // icon: 'fa-solid fa-gears',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Requistions', nameSlug:'requistions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Cheques', nameSlug:'cheques',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Petty cash', nameSlug:'pettycash',subList:[
-        {name:'',link:''}
-                      ] },
-          { name:'Receipts', nameSlug:'receipting',subList:[
-{name:'Receipting',link:'/home/fms/receipt'}
-          ] },
-          
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Requistions',
+            nameSlug: 'requistions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Cheques',
+            nameSlug: 'cheques',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Petty cash',
+            nameSlug: 'pettycash',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Receipts',
+            nameSlug: 'receipting',
+            subList: [{ name: 'Receipting', link: '/home/fms/receipt' }],
+          },
         ],
         collapsed: true,
-        
       },
-    
+
       {
         name: 'Debtors',
         nameSlug: 'debtors',
         // icon: 'fa-solid fa-money-check',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Invoices/Cr Notes', nameSlug:'invoices-cr',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Inquires', nameSlug:'inquires',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                        collapsed: true,
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Invoices/Cr Notes',
+            nameSlug: 'invoices-cr',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Inquires',
+            nameSlug: 'inquires',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+        collapsed: true,
       },
       {
         name: 'Creditors',
         nameSlug: 'creditors',
         // icon: 'fa-solid fa-money-check',
         menuItems: [
-          { name:'Paramaters', nameSlug:'parameters',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Transactions', nameSlug:'transactions',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Invoices/DR Notes', nameSlug:'invoices-dr',subList:[
-            {name:'',link:''}
-                          ] },
-          { name:'Inquires', nameSlug:'inquires',subList:[
-            {name:'',link:''}
-                          ] },
-                        ],
-                        collapsed: true,
+          {
+            name: 'Paramaters',
+            nameSlug: 'parameters',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Transactions',
+            nameSlug: 'transactions',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Invoices/DR Notes',
+            nameSlug: 'invoices-dr',
+            subList: [{ name: '', link: '' }],
+          },
+          {
+            name: 'Inquires',
+            nameSlug: 'inquires',
+            subList: [{ name: '', link: '' }],
+          },
+        ],
+        collapsed: true,
       },
-  
     ],
   };
 
@@ -801,17 +846,57 @@ export class MenuService {
   quotationSubMenuList(): SidebarMenu[] {
     return [
       {
-        name: 'Create Quick Quote',
-        link: '/home/lms/quotation/list',
-        value: 'QUOTATION',
-      },
-      {
         name: 'View Quotations',
         link: '/home/lms/quotation/list',
-        value: 'QUOTATION',
+        value: 'QUOTATION'
       },
+
+      {
+        name: 'View Quotations',
+        link: '/home/gis/quotation/quick-quote',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Summary',
+        link: '/home/lms/quotation/list',
+        value: 'DEFAULT'
+      },
+
+      {
+        name: 'Conversion',
+        link: '/home/gis/quotation/quotation-conversion',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Revise/Reuse',
+        link: '/home/gis/quotation/revise-reuse-quote',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Inquiry',
+        link: '/home/gis/quotation/quotation-inquiry',
+        value: 'QUOTATION'
+      },
+
+      {
+        name: 'Sources',
+        link: '/home/gis/quotation/quotation-sources',
+        value: 'QUOTATION'
+      },
+
+      // {
+      //   name: 'Create Quotation',
+      //   link: '',
+      //   value: 'QUOTATION',
+      //   isModal: true,
+      //   target: '#NewQuoteModal'
+      // }
     ];
   }
+
 
   analyticsSubMenuList(): SidebarMenu[] {
     return [

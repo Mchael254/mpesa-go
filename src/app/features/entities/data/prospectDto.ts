@@ -12,8 +12,9 @@ export interface ProspectDto {
   mobileNumber: string;
   organizationId: number;
   otherNames: string;
+  partyCode: number;
   physicalAddress: string;
-  pin: string;
+  pinNumber: string;
   postalAddress: string;
   postalCode: number;
   surname: string;

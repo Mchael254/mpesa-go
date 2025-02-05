@@ -260,7 +260,7 @@ export class QuotationsService {
     );
   }
   getTaxes(
-    productCode : number,
+    productCode: number,
     subClassCode: number,
   ) {
     // Create an object to hold parameters only if they are provided
@@ -274,7 +274,7 @@ export class QuotationsService {
     return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  createQuotationDetails(quotationCode:any, data: premiumPayloadData ) {
+  createQuotationDetails(quotationCode: any, data: premiumPayloadData) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
@@ -289,4 +289,75 @@ export class QuotationsService {
     return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
+
+  searchQuotations(
+    pageNo: number = 0,        // Default value is 0
+    pageSize: number = 10,     // Default value is 10
+    clientType?: string,
+    clientCode?: number,
+    productCode?: number,
+    dateFrom?: string,
+    dateTo?: string,
+    agentCode?: number,
+    quotationNumber?: string,
+    status?: string,
+    source?: string,
+    clientName?: string
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['pageNo'] = pageNo.toString();
+    paramsObj['pageSize'] = pageSize.toString();
+
+    // Add optional parameters if provided
+    if (clientType) {
+      paramsObj['clientType'] = clientType;
+    }
+    if (clientCode) {
+      paramsObj['clientCode'] = clientCode;
+    }
+    if (productCode) {
+      paramsObj['productCode'] = productCode;
+    }
+    if (dateFrom) {
+      paramsObj['dateFrom'] = dateFrom;
+    }
+    if (dateTo) {
+      paramsObj['dateTo'] = dateTo;
+    }
+    if (agentCode) {
+      paramsObj['agentCode'] = agentCode;
+    }
+    if (quotationNumber) {
+      paramsObj['quotationNumber'] = quotationNumber;
+    }
+    if (status) {
+      paramsObj['status'] = status;
+    }
+    if (source) {
+      paramsObj['source'] = source;
+    }
+    if (clientName) {
+      paramsObj['clientName'] = clientName;
+    }
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+  convertQuoteToPolicy(
+    quotCode: number,
+
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
 }

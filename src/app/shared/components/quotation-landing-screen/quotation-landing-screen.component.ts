@@ -1,15 +1,26 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { GroupQuotationsListDTO } from 'src/app/features/lms/models';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { Logger, untilDestroyed } from '../../shared.module';
+import { QuotationList } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { Pagination } from '../../data/common/pagination';
+
+// const log = new Logger('QuotationLandingScreenComponent');
 
 @Component({
   selector: 'app-quotation-landing-screen',
   templateUrl: './quotation-landing-screen.component.html',
   styleUrls: ['./quotation-landing-screen.component.css'],
+  standalone : false
 })
 export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
@@ -26,18 +37,36 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   toDate: Date | null = null;
   minToDate: Date | null = null;
   selectedRowIndex: number;
+  gisQuotationList: QuotationList[] = [];
+  tableDetails: any = {
+    rows: [], // Initially empty array for rows
+    totalElements: 0 // Default total count
+  };
+  pageSize: number = 19;
+  quotationSubMenuList: SidebarMenu[];
+
+
   constructor(
-    private session_service: 
-    SessionStorageService, 
+    private session_service:
+      SessionStorageService,
     private router: Router,
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private messageService: MessageService,
+    private menuService: MenuService,
+    public quotationService: QuotationsService,
+    public globalMessagingService: GlobalMessagingService,
+    public cdr: ChangeDetectorRef,
+
+
   ) { }
 
   ngOnInit(): void {
     this.session_service.clear_store();
     this.getParams();
     this.getGroupQuotationsList();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+
+    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -45,6 +74,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.getGroupQuotationsList();
     }
   }
+  ngOnDestroy(): void { }
 
 
   selectLmsIndRow(i: any) {
@@ -52,7 +82,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       return;
     }
     this.session_service.set(SESSION_KEY.WEB_QUOTE_DETAILS, i)
-    let quote={};
+    let quote = {};
     quote['client_code'] = i['client_code'];
     quote['account_code'] = i['account_code'];
     quote['web_quote_code'] = i['code'];
@@ -64,8 +94,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
   }
 
-  selectNormalQuotation(){
-    let quote={};
+  selectNormalQuotation() {
+    let quote = {};
     quote['page'] = 'NEW';
     this.session_service.set(SESSION_KEY.QUOTE_DETAILS, quote);
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
@@ -110,7 +140,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.filteredLMS_GRP = []; // Handles undefined
       return;
     }
-    
+
     const inputElement = event.target as HTMLInputElement;
     const searchTerm = inputElement.value.toLowerCase().trim().replace(/,/g, '');
 
@@ -168,21 +198,21 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     return numericFields.includes(column);
   }
 
-   // Validate filter selections
+  // Validate filter selections
   validateFilter(): void {
     if (this.filterValue && !this.selectedColumn) {
-      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a option first.'});
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a option first.' });
       this.filterValue = '';
       return;
     }
 
     if (this.filterValue && this.isNumericField(this.selectedColumn) && !this.selectedCondition) {
-      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a condition first.'});
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a condition first.' });
       return;
     }
 
     if (this.filterValue && this.selectedColumn && this.isNumericField(this.selectedColumn) && !this.selectedCondition) {
-      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a condition for the numeric field.'});
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a condition for the numeric field.' });
       return;
     }
   }
@@ -285,8 +315,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
 
-
-
   clearFilters(): void {
     this.selectedColumn = null;
     this.selectedCondition = null;
@@ -302,14 +330,83 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   onQuotationTableRowClick(filteredLMS_GRP, index: number) {
     this.selectedRowIndex = index;
-    if(filteredLMS_GRP){
-      
+    if (filteredLMS_GRP) {
+
     }
   }
 
-  onProcess(){}
+  onProcess() { }
 
-  onReassign(){}
+  onReassign() { }
+
+  // fetchGISQuotations() {
+  //   this.quotationService
+  //     .searchQuotations()
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (response: any) => {
+
+  //         this.gisQuotationList = response._embedded
+  //         log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
+
+  //       },
+  //       error: (error) => {
+
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+  //       }
+  //     });
+  // }
+  fetchGISQuotations(event: any) {
+   console.log("FETCHING GIS QUOTATIONS LIST")
+    const pageIndex = event.first / event.rows;
+    const pageSize = event.rows;
+
+    // Call the API without sorting parameters
+    this.quotationService.searchQuotations(
+     pageIndex,
+      pageSize
+    ).pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          // Assuming response._embedded holds the list of quotations
+          this.gisQuotationList = response._embedded;
+
+
+
+          // Set the table data (including rows and totalElements)
+          this.tableDetails = {
+            rows: this.gisQuotationList,  // List of quotations to display
+            totalElements: this.gisQuotationList.length  // Total records (current page data length)
+          };
+
+          this.cdr.detectChanges();
+          // this.spinner.hide(); // Hide the loading spinner
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
+          // this.spinner.hide();
+        }
+      });
+  }
+
 
   onRevise(){}
+
+  onTabChange(event: any): void {
+    this.activeIndex = event.index; // Update the active index
+
+    if (this.activeIndex === 2) { // Index 2 corresponds to the "General" tab
+      this.dynamicSideBarMenu(this.quotationSubMenuList[0]);
+    } else {
+       // Clear or hide the sidebar menu
+       this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    }
+  }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
 }

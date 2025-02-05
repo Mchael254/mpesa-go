@@ -1,0 +1,162 @@
+.titleMain {
+  color: #000;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.card {
+  border: none;
+}
+
+.table-primary {
+  background-color: #e3f2fd;
+}
+
+.table-secondary {
+  background-color: #f8f9fa;
+}
+
+.btn-link {
+  color: #666;
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: normal;
+}
+
+
+.quote-label {
+  color: #000;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  line-height: normal;
+  padding-bottom: 7px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Reduce the width of the modal */
+.modal-dialog {
+  max-width: 450px;
+}
+
+/* Styling the form inside the modal */
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Label styling */
+.modal-body label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Increase vertical gap between heading and first label */
+.modal-body h5 {
+  margin-bottom: 20px;
+}
+
+/* Set all input fields to a fixed width */
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+/* Adjust text area height */
+.modal-body textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+/* Improve focus styles */
+.modal-body input:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Submit button aligned to the right */
+.modal-body .submit-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Submit button */
+.modal-body button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-body button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* Remove background from close button */
+.modal-body .btn-close {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+#icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ddebfa;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#icon i {
+  color: #004085;
+  font-size: 18px;
+}
+
+#icon:hover {
+  background-color: #b0d4f1;
+}
+
+#icon.btn-danger {
+  background-color: #f8d7da;
+}
+
+#icon.btn-danger i {
+  color: #721c24;
+}
+
+#icon.btn-danger:hover {
+  background-color: #f1b0b7;
+}
+
+
+

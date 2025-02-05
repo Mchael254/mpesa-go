@@ -399,13 +399,18 @@ export class PolicyService {
 
   }
   addExternalClaimExp(data: ExternalClaimExp) {
-    return this.api.POST(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+    return this.api.POST(`api/v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL)
 
   }
-  fetchExternalClaimExp(clientCode: number) {
-    return this.api.GET(`v2/external-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
+  fetchExternalClaimExp(
+    clientCode: number,
+    page: number | null = 0,
+    size: number | null = 10
+  ) {
+    return this.api.GET(`api/v2/external-claims-experience?clientCode=${clientCode}&pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
+
   editExternalClaimExp(data: ExternalClaimExp) {
     return this.api.PUT(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
@@ -426,7 +431,7 @@ export class PolicyService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<InternalClaimExp[]>(`v2/internal-claims-experiences?`, API_CONFIG.GIS_UNDERWRITING_BASE_URL, params);
+    return this.api.GET<InternalClaimExp[]>(`api/v2/internal-claims-experience?`, API_CONFIG.GIS_CLAIMS_BASE_URL, params);
 
   }
 

@@ -1,0 +1,136 @@
+<div class="container" style="max-width: 90%; margin: 0 auto;">
+  <p class="titleMain mt-3 ms-4">Quotation sources</p>
+
+  <div class="card p-4">
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col d-flex justify-content-between align-items-center">
+          <h6 class="fw-bold mb-0">Business sources</h6>
+          <div class="row">
+            <div class="col-3"></div>
+              <div class="col-sm-3" >
+                <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addSourcesModal" >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+              <div class="col-sm-3">
+                <button type="button" id="icon" class="btn btn-primary" title="Edit"
+                  [attr.data-bs-toggle]="selectedSource ? 'modal' : null"
+                  [attr.data-bs-target]="selectedSource ? '#addSourcesModal' : null"
+                  (click)="openSourceEditModal()">
+                  <i class="fa-solid fa-pencil"></i>
+                </button>
+              </div>
+              <div class="col-sm-3" >
+                <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete"
+                  id="openSourceDeleteButton" [hidden]="true" data-bs-toggle="modal" data-bs-target="#deleteSource"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+                <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                  <i class="fa-solid fa-trash-can" (click)="openSourceDeleteModal()" ></i>
+                </button>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add and edit Sources Modal -->
+      <div class="modal fade" id="addSourcesModal" tabindex="-1" role="dialog" aria-labelledby="addSourcesModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content" id="addSourcesModal">
+            <div class="modal-body">
+              <button type="button" #closebutton class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">X</button>
+              <h5 class="modal-title" id="modalTitle">Define a new Quotation Source</h5>
+
+              <form [formGroup]="sourcesForm" class="flex flex-col gap-4">
+                <div class="flex flex-col">
+                  <label for="description" class="mb-2">Description</label>
+                  <input
+                    id="description"
+                    formControlName="description"
+                    placeholder="Enter description"
+                    class="p-2 border rounded"
+                  />
+                </div>
+
+                <div class="flex flex-col">
+                  <label for="applicableModule" class="mb-2 required">Applicable Modules</label>
+                  <select
+                    id="applicableModule"
+                    formControlName="applicableModule"
+                    class="p-2 border rounded"
+                  >
+                    <option value="U">Underwriting</option>
+                    <option value="B">Both</option>
+                    <option value="Q">Quotations</option>
+                  </select>
+                </div>
+
+                <div class="submit-container">
+                  <button class="btn btn-primary" type="submit" (click)="sourceModalAction()">
+                    Save Details
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Claims Modal -->
+      <div class="modal fade" id="deleteSource" tabindex="-1" role="dialog"
+        aria-labelledby="deleteSource" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content" id="deleteSource">
+            <div class="modal-body ">
+              <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+              <div class="d-flex justify-content-center mb-3">
+                <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal" (click)="deleteQuotationSource()" >
+                  {{'gis.policy.yes_delete' | translate}}
+                </button>
+              </div>
+              <div class="d-flex justify-content-center mb-2">
+                <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">
+                  {{'gis.policy.no_im_not' | translate}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <p-table
+          [value]="sources"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass=" p-datatable-gridlines-none"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Description</th>
+              <th>Applicable Module</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-source>
+            <tr
+              [class.p-highlight]="source === selectedSource"
+              (click)="onSourceSelect(source)"
+              style="cursor: default; height: 40px;"
+            >
+              <td>{{source.description | sentenceCase}}</td>
+              <td>{{ getApplicableModuleLabel(source.applicableModule) | sentenceCase }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" style="padding:100px;padding-left: 350px;" id="empty">No records Found</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

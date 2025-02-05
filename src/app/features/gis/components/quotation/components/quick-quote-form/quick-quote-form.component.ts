@@ -73,6 +73,8 @@ import { OccupationDTO } from '../../../../../../shared/data/common/occupation-d
 import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -234,6 +236,7 @@ export class QuickQuoteFormComponent {
   formattedCoverFromDate: any;
   coverFrom: any;
   passedClientDetailsString: string;
+  passedNewClientDetailsString: string;
 
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
@@ -257,6 +260,7 @@ export class QuickQuoteFormComponent {
   vesselTypeList: VesselType[];
   selectedVesselTypeCode: any;
   isFormDataLoaded: boolean = false;
+  quotationSubMenuList: SidebarMenu[];
 
 
   filterObject: {
@@ -284,7 +288,7 @@ export class QuickQuoteFormComponent {
   idValue: string;
   taxList: any;
   newClientPhone: ClientPhone;
-
+  formattedCoverToDate:string;
   // headers: { key: string, translationKey: string }[] = [
   //   { key: 'name', translationKey: 'gis.quotation.name' },
   //   { key: 'email', translationKey: 'gis.quotation.email' },
@@ -321,7 +325,8 @@ export class QuickQuoteFormComponent {
     private datePipe: DatePipe,
     private occupationService: OccupationService,
     private vesselTypesService:VesselTypesService,
-    private spinner:NgxSpinnerService
+    private spinner:NgxSpinnerService,
+    private menuService: MenuService,
 
 
   ) {
@@ -350,6 +355,9 @@ export class QuickQuoteFormComponent {
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
+
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
 
     const QuickFormDetails = sessionStorage.getItem('riskFormData');
 
@@ -391,11 +399,36 @@ export class QuickQuoteFormComponent {
       isLazyLoaded: true
     }
 
-    sessionStorage.removeItem("clientDetails");
-    sessionStorage.removeItem("newClientDetails");
-    sessionStorage.removeItem('quotationNumber');
+    const navigationSource = sessionStorage.getItem('navigationSource');
+
+    // Clear fields only if the navigation is not from editRisk or addAnotherRisk
+    if (navigationSource !== 'editRisk' && navigationSource !== 'addAnotherRisk') {
+      sessionStorage.removeItem("clientDetails");
+      sessionStorage.removeItem("newClientDetails");
+      sessionStorage.removeItem('quotationNumber');
+      sessionStorage.removeItem('passedQuotationDetails');
+      sessionStorage.removeItem('passedClientDetails');
+      sessionStorage.removeItem('passedNewClientDetails');
+      sessionStorage.removeItem('passedSelectedRiskDetails');
+      sessionStorage.removeItem('isEditRisk');
+      sessionStorage.removeItem('isAddRisk');
+      sessionStorage.removeItem('passedQuotationNumber');
+      sessionStorage.removeItem('passedQuotationCode');
+    }
+
+    // Always clear the navigation source flag after use
+    sessionStorage.removeItem('navigationSource');
+
   }
   ngOnDestroy(): void { }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+    if (sidebarMenu.link.length > 0) {
+      this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    }
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  }
+
   addRisk() {
     this.loadAllCurrencies();
     log.debug("ADDING ANOTHER RISK TO THE SAME QUOTATION")
@@ -409,17 +442,18 @@ export class QuickQuoteFormComponent {
       'passedClientDetails'
     );
 
+    this.passedNewClientDetailsString = sessionStorage.getItem("passedNewClientDetails");
+
     log.debug("passedClientDetails", this.passedClientDetailsString)
 
-    if (this.passedClientDetailsString == "undefined") {
+    if (this.passedClientDetailsString == "undefined" || "null") {
       log.debug('New Client has been passed');
 
-      const passedNewClientDetailsString = sessionStorage.getItem(
-        'passedNewClientDetails'
-      );
-      this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-      log.debug('Client Details:', this.passedNewClientDetails);
-    } else {
+      this.passedNewClientDetails = JSON.parse(this.passedNewClientDetailsString);
+      log.debug('new Client Details:', this.passedNewClientDetails);
+    }
+
+    if(this.passedNewClientDetails == "null" || "undefined") {
       log.debug('Existing Client has been passed');
       this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
     }
@@ -434,17 +468,14 @@ export class QuickQuoteFormComponent {
       log.debug('existing property id', this.existingPropertyIds);
     }
 
-    // this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
-
-    this.passedQuotationCode =
-      this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+    this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
 
     log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
     // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
 
-    log.debug('Client Details:', this.PassedClientDetails);
+    log.debug('Existing Client Details:', this.PassedClientDetails);
     if (this.passedQuotation) {
       if (this.PassedClientDetails) {
         this.clientName =
@@ -509,54 +540,64 @@ export class QuickQuoteFormComponent {
     log.debug("isEditRiskk Details:", this.isEditRisk);
 
     /** THIS LINES OF CODES BELOW IS USED WHEN EDITING RISK ****/
-    const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
+    const passedQuotationDetailsString = sessionStorage.getItem(
+      'passedQuotationDetails'
+    );
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
-    this.passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
+    this.passedClientDetailsString = sessionStorage.getItem(
+      'passedClientDetails'
+    );
+
+    this.passedNewClientDetailsString = sessionStorage.getItem("passedNewClientDetails");
+
+    log.debug("passedClientDetails", this.passedClientDetailsString)
+
+    if (this.passedClientDetailsString == "undefined" || "null") {
+      log.debug('New Client has been passed');
+
+      this.passedNewClientDetails = JSON.parse(this.passedNewClientDetailsString);
+      log.debug('new Client Details:', this.passedNewClientDetails);
+    }
+
+    if(this.passedNewClientDetails == "null" || "undefined") {
+      log.debug('Existing Client has been passed');
+      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
+    }
 
     // Handle client data population
-    if (this.passedClientDetailsString == "undefined") {
-      log.debug("New Client has been passed");
-      const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
-      this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
-      log.debug("Client Details:", this.passedNewClientDetails);
 
-      // Set new client data
-      if (this.passedNewClientDetails) {
-        this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
-        this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
-        const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
-        this.newClientPhone = {
-            number: phoneNumberString,
-            internationalNumber: '',  // Left empty as it's not stored
-            nationalNumber: phoneNumberString,
-            e164Number: '',
-            countryCode: '',
-            dialCode: ''
-        };
-        this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
-        this.isNewClient = true;
-        this.toggleNewClient();
+    // Set new client data
+    if (this.passedNewClientDetails) {
+      this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
+      this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
+      const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
+      this.newClientPhone = {
+          number: phoneNumberString,
+          internationalNumber: '',  // Left empty as it's not stored
+          nationalNumber: phoneNumberString,
+          e164Number: '',
+          countryCode: '',
+          dialCode: ''
+      };
+      this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
+      this.isNewClient = true;
+      this.toggleNewClient();
 
-        // Set fields disable state for new client
-        sessionStorage.setItem('fieldsDisableState', 'true');
-      }
-    } else {
-      log.debug("Existing Client has been passed");
-      this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
+    }
 
-      // Set existing client data
-      if (this.PassedClientDetails) {
-        log.debug("edit client passed client details:", this.PassedClientDetails)
-        this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
-        this.clientEmail = this.PassedClientDetails.emailAddress;
-        this.clientPhone = this.PassedClientDetails.phoneNumber;
-        this.personalDetailsForm.patchValue(this.passedQuotation);
-        this.isNewClient = false;
-        this.toggleButton();
+    log.debug("Existing Client has been passed");
+    this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
 
-        // Set fields disable state for existing client
-        sessionStorage.setItem('fieldsDisableState', 'true');
-      }
+    // Set existing client data
+    if (this.PassedClientDetails) {
+      log.debug("edit client passed client details:", this.PassedClientDetails)
+      this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
+      this.clientEmail = this.PassedClientDetails.emailAddress;
+      this.clientPhone = this.PassedClientDetails.phoneNumber;
+      this.personalDetailsForm.patchValue(this.passedQuotation);
+      this.isNewClient = false;
+      this.toggleButton();
+
     }
 
     // Process quotation data
@@ -597,6 +638,12 @@ export class QuickQuoteFormComponent {
 
     this.premiumComputationRequest;
     this.loadAllCurrencies();
+
+    // Set the carRegNo value
+    const savedCarRegNo = JSON.parse(sessionStorage.getItem('carRegNo'));
+    if (savedCarRegNo) {
+      this.carRegNoValue = savedCarRegNo; // Set the carRegNoValue to the stored value
+    }
   }
 
   loadFormData() {
@@ -919,6 +966,7 @@ export class QuickQuoteFormComponent {
     log.debug(' Date format', this.dateFormat);
 
     const todaysDate = new Date(today);
+    log.debug(' todays date before being formatted', todaysDate);
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
@@ -944,7 +992,7 @@ export class QuickQuoteFormComponent {
   }
   onInputChange() {
     log.debug('Method called');
-    this.newClientData.inputClientZipCode = this.newClientPhone.dialCode;
+    this.newClientData.inputClientZipCode = this.newClientPhone?.dialCode;
     this.newClientData.inputClientPhone = this.newClientPhone.number
     // this.newClientData.inputClientPhone = this.newClientPhone
     log.debug('New User Data', this.newClientData);
@@ -1254,6 +1302,20 @@ export class QuickQuoteFormComponent {
         log.debug("DATA FROM COVERFROM:", data)
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
+        log.debug("cover date:", this.passedCoverToDate)
+ const passedCoverTo = new Date(this.passedCoverToDate)
+
+         // Extract the day, month, and year
+    const day = passedCoverTo.getDate();
+    const month = passedCoverTo.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = passedCoverTo.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    this.formattedCoverToDate = formattedDate
+    log.debug("formatted cover to  Date", this.formattedCoverToDate)
+
         // this.coverFrom =this.effectiveFromDate
         log.debug("DATe FROM DATA:", this.passedCoverToDate)
         this.selectedCoverToDate= this.passedCoverToDate

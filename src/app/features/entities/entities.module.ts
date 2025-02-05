@@ -49,6 +49,9 @@ import { EditLeadContactFormComponent } from './components/entity/view-entity/en
 import { EntityDocsComponent } from './components/entity/view-entity/entity-docs/entity-docs.component';
 import { ListProspectComponent } from './components/prospect/list-prospect/list-prospect.component';
 import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
+import { EditContactAddressFormComponent } from './components/entity/view-entity/entity-other-details/edit-contact-address-form/edit-contact-address-form.component';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -88,6 +91,7 @@ import { NewProspectComponent } from './components/prospect/new-prospect/new-pro
     EntityDocsComponent,
     ListProspectComponent,
     NewProspectComponent,
+    EditContactAddressFormComponent,
   ],
   imports: [
     CommonModule,
@@ -101,6 +105,7 @@ import { NewProspectComponent } from './components/prospect/new-prospect/new-pro
     StepsModule,
     TableModule,
     FormsModule,
+    NgxIntlTelInputModule,
   ],
   exports: [StaffModalComponent, NewClientComponent],
   providers: [DatePipe],

@@ -396,7 +396,7 @@ export interface ReceiptSaveDTO {
   insurerAcc: number;
   grossOrNetWhtax: string;
   grossOrNetVat: string;
-  sysCode: number;
+  sysCode: string;
   bankAccountType: string;
   receiptParticularDetailUpdateRequests?: {
     receiptParticularDetailCode: number;
