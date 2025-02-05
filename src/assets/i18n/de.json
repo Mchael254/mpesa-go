@@ -311,7 +311,9 @@
     "reportDesc": "Berichtsbeschreibung",
     "assignedReport": "Zugewiesener Bericht",
     "add": "Hinzufügen",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "systems": "Systeme",
+    "module": "Modul"
   },
   "entities": {
     "account_number": "Kontonummer",
