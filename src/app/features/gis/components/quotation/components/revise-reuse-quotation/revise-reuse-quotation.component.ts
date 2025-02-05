@@ -59,6 +59,16 @@ export class ReviseReuseQuotationComponent {
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
 
+  setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
+    sessionStorage.setItem('quotationNum', quotationNumber);
+    sessionStorage.setItem('productCode', JSON.stringify(productCode));
+    sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
+    log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
+    log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
+    log.debug(`Productcode ${productCode} has been saved to session storage.`);
+    this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  }
+
   /**
   * Retrieves user information from the authentication service.
   * - Sets the 'user' property with the current user's name.
