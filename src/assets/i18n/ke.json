@@ -315,7 +315,9 @@
     "reportDesc": "Maelezo ya ripoti",
     "assignedReport": "Ripoti iliyopewa",
     "add": "Ongeza",
-    "remove": "Ondoa"
+    "remove": "Ondoa",
+    "systems": "Mifumo",
+    "module": "Moduli"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",

@@ -28,7 +28,7 @@
       <div class="card-body">
         <div class="row mb-2">
           <div class="col-md-12">
-            <h6 class="float-start fw-semibold w-100">Systems</h6>
+            <h6 class="float-start fw-semibold w-100">{{ 'crm.systems' | translate }}</h6>
             <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
               <div class="form-div">
                 <form>
@@ -71,7 +71,7 @@
     </div>
     <div class="card border-0 mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">Module</h6>
+        <h6 class="float-start mt-3 fw-semibold">{{ 'crm.module' | translate}}</h6>
 
         <div class="row mb-3">
           <div class="col-12">
@@ -121,7 +121,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-module>
-            <tr class="custom-table" [pSelectableRow]="module">
+            <tr class="custom-table" [pSelectableRow]="module" (click)="onSelectModule(module)">
               <td>{{module?.name | titlecase}}</td>
               <td>{{module.description | titlecase}}</td>
             </tr>
@@ -145,7 +145,7 @@
                 <i class="fa-solid fa-plus" (click)="openSubModuleModal()"></i>
               </span>
               <span class="icon-circle">
-                <i class="pi pi-pencil"></i>
+                <i class="pi pi-pencil" (click)="editSubModule()"></i>
               </span>
             </div>
           </div>
@@ -168,22 +168,23 @@
           responsiveLayout="stack"
           [scrollable]="true"
           selectionMode="single"
-          dataKey="code"
+          [(selection)]= "selectedSubModule"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['campaign.campaignName']"
+          [globalFilterFields]="['name, description']"
         >
 
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="name">{{ 'crm.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="desc">{{ 'crm.description' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+              <th pSortableColumn="description">{{ 'crm.description' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-subModule>
-            <tr class="custom-table">
-              <td></td>
-              <td></td>
+            <tr class="custom-table" [pSelectableRow]="subModule">
+              <td>{{ subModule?.name | titlecase }}</td>
+              <td>{{ subModule?.description | titlecase }}</td>
 
             </tr>
           </ng-template>
@@ -205,7 +206,7 @@
             <div class="col-12">
               <div class="float-end">
                 <button class="btn btn-primary">
-                  Save
+                  {{ 'base.save' | translate }}
                 </button>
               </div>
             </div>
@@ -329,7 +330,7 @@
             <div class="col-12">
               <div class="float-end">
                 <button class="btn btn-primary">
-                  Save
+                  {{ 'base.save' | translate }}
                 </button>
               </div>
             </div>
@@ -506,7 +507,7 @@
               <div class="col-md-12">
                 <label for="subModuleDescription" class="form-label">{{ 'crm.description' | translate }}</label>
                 <input
-                  type="number"
+                  type="text"
                   class="form-control"
                   id="subModuleDescription"
                   formControlName="subModuleDescription"
@@ -522,7 +523,7 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveSubModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" id="saveSubModuleBtn" (click)="saveSubModuleDetails()">{{ 'crm.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>

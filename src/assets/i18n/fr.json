@@ -339,7 +339,9 @@
     "reportDesc": "Description du rapport",
     "assignedReport": "Rapport assigné",
     "add": "Ajouter",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "systems": "Systèmes",
+    "module": "Module"
   },
   "entities": {
     "account_number": "Numéro de compte",
