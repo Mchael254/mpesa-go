@@ -312,7 +312,9 @@
     "reportDesc": "报告描述",
     "assignedReport": "分配的报告",
     "add": "添加",
-    "remove": "移除"
+    "remove": "移除",
+    "systems": "系统",
+    "module": "模块"
   },
   "entities": {
     "account_number": "帐号",

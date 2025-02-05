@@ -24,3 +24,10 @@ export interface SystemReportModule {
   systemCode: number;
   system: SystemsDto;
 }
+
+export interface SystemReportSubModule {
+  id: number;
+  name: string;
+  description: string;
+  moduleId: number;
+}

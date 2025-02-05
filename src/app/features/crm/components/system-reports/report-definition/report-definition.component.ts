@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {SystemReportModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {SystemReportModule, SystemReportSubModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
@@ -19,8 +19,8 @@ export class ReportDefinitionComponent implements OnInit {
   sortingForm: FormGroup;
   modulesData: SystemReportModule[];
   selectedModule: SystemReportModule;
-  subModuleData: any;
-  selectedSubModule: any;
+  subModuleData: SystemReportSubModule[];
+  selectedSubModule: SystemReportSubModule;
   pageSize: 5;
   editMode: boolean = false;
   systems: SystemsDto[];
@@ -285,8 +285,62 @@ export class ReportDefinitionComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the submodule details. If the form is invalid, the function returns early.
+   * The function constructs a payload from the form values and determines whether
+   * to create a new submodule or update an existing one based on the editMode flag.
+   * Displays a success message on successful save or an error message on failure.
+   */
   saveSubModuleDetails() {
+    this.defineSubModuleForm.markAllAsTouched();
+    if (this.defineSubModuleForm.invalid) return;
 
+    const subModuleFormValues = this.defineSubModuleForm.getRawValue();
+    const subModuleCode = !this.editMode ? null : this.selectedSubModule?.id;
+
+    const saveSubModulePayload: SystemReportSubModule = {
+      id: subModuleCode,
+      name: subModuleFormValues?.subModuleName,
+      description: subModuleFormValues?.subModuleDescription,
+      moduleId: this.selectedModule?.id,
+    };
+
+    log.info(saveSubModulePayload);
+
+    const systemsServiceCall = this.selectedSubModule
+      ? this.systemsService.updateSystemReportSubModule(this.selectedSubModule.id, saveSubModulePayload)
+      : this.systemsService.createSystemReportSubModule(saveSubModulePayload);
+
+    return systemsServiceCall.toPromise()
+      .then(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', this.selectedSubModule ? 'Successfully updated sub module' : 'Successfully created sub module');
+        this.defineSubModuleForm.reset();
+        this.closeSubModuleModal();
+        this.getAllSystemReportSubModules(this.selectedModule?.id);
+      })
+      .catch(error => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message || 'Error saving sub module');
+        throw error;
+      });
+  }
+
+  /**
+   * Edits the selected submodule, and opens the define submodule modal. If no submodule is selected, display an error message.
+   */
+  editSubModule() {
+    this.editMode = !this.editMode;
+    if (this.selectedSubModule) {
+      this.openSubModuleModal();
+      this.defineSubModuleForm.patchValue({
+        subModuleName: this.selectedSubModule?.name,
+        subModuleDescription: this.selectedSubModule?.description,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No sub module is selected!'
+      );
+    }
   }
 
   /**
@@ -328,6 +382,23 @@ export class ReportDefinitionComponent implements OnInit {
   }
 
   /**
+   * Retrieves all system report submodules for a given module.
+   * @param moduleId The ID of the module to retrieve submodules for. If not provided,
+   * the ID of the currently selected module is used.
+   */
+  getAllSystemReportSubModules(moduleId?: number) {
+    this.systemsService.getSystemReportSubModules(moduleId || this.selectedModule?.id)
+      .subscribe({
+        next: (data) => {
+          this.subModuleData = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  /**
    * Retrieve all system report modules for a given system.
    * @param systemId The ID of the system to retrieve modules for. If not provided,
    * the ID of the currently selected system is used.
@@ -335,6 +406,15 @@ export class ReportDefinitionComponent implements OnInit {
   selectSystem(system: SystemsDto): void {
     this.selectedSystem = system;
     this.getAllSystemReportModules();
+  }
+
+  /**
+   * Handle the selection of a module.
+   * @param module The module that was selected.
+   */
+  onSelectModule(module: SystemReportModule): void {
+    this.selectedModule = module;
+    this.getAllSystemReportSubModules(this.selectedModule?.id);
   }
 
   /**
