@@ -447,7 +447,7 @@
               <div class="modal-content ps-4 pt-4 pe-4 pb-4 text-center">
                   <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
                   <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
-                  <p class="cancelQouteTitle">{{'gis.quotation.conversion_message' | translate}}</p>
+                  <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message' | translate}}</p>
 
                   <!-- Centered Button Layout with Vertical Stack and Restricted Width -->
                   <div class="d-flex flex-column gap-3">
@@ -470,9 +470,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content  ps-4 pt-4 pe-4">
                     <p class="cancelQouteTitle">{{'gis.quotation.provide_reason_for_cancellation' | translate}}</p>
-                    <p class="cancelQouteTitle">{{'gis.quotation.reason' | translate}}</p>
                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" required [(ngModel)]="reasonCancelled"></textarea>
-
 
                     <div class="row mt-4 mb-4">
                         <div class="col-4"></div>
