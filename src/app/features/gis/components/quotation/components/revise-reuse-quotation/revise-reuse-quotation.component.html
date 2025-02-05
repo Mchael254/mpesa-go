@@ -23,29 +23,29 @@
                     <div class="col-sm-9">
                         <div class="row">
                             <div class=" col-sm-4 col-12">
-                                <p-calendar 
-                                   
-                                    [dateFormat]="dateFormat" 
-                                    [showIcon]="true" 
+                                <p-calendar
+
+                                    [dateFormat]="dateFormat"
+                                    [showIcon]="true"
                                     [showButtonBar]="true"
-                                    placeholder="Date from"  
+                                    placeholder="Date from"
                                     (onSelect)="onDateFromInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar>
 
                             </div>
                             <div class="col-12 col-sm-4">
-                                <p-calendar 
-                                   
-                                    [dateFormat]="dateFormat" 
-                                    [showIcon]="true" 
+                                <p-calendar
+
+                                    [dateFormat]="dateFormat"
+                                    [showIcon]="true"
                                     [showButtonBar]="true"
-                                    placeholder="Date to"  
+                                    placeholder="Date to"
                                     (onSelect)="onDateToInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar>
                                 <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                                    placeholder="Date to" 
+                                    placeholder="Date to"
                                     (ngModelChange)="onDateToInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar> -->
@@ -85,8 +85,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="tableDetails.totalElements"  
-                [value]="tableDetails.rows" 
+                [totalRecords]="tableDetails.totalElements"
+                [value]="tableDetails.rows"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
@@ -120,7 +120,18 @@
                             <td>{{quotation.expiryDate}}</td>
                             <td>{{quotation.status}}</td>
                             <td>{{quotation.quotDate}}</td>
-                            <td  id="action-buttons">{{ "View quote" }}</td>
+                            <td  id="action-buttons">
+                              <button
+                                id="action-buttons"
+                                (click)="setQuotationNumber(
+                                  quotation.quotationNumber,
+                                  quotation.productCode,
+                                  quotation.clientCode
+                                )"
+                              >
+                                {{ "View quote" }}
+                              </button>
+                            </td>
                             <td id="action-buttons">{{ "Revise " }}</td>
                             <td id="action-buttons">{{ "Reuse" }}</td>
                         </tr>

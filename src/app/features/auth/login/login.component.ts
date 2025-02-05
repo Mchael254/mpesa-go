@@ -57,6 +57,26 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.createForm();
     this.isAuthenticated$ = this.authService.isAuthenticated;
+
+    // Handle autofill
+    const usernameField = document.getElementById('emailAddress');
+    const passwordField = document.getElementById('password');
+
+    // Add listeners for both fields
+    usernameField?.addEventListener('animationstart', (e) => {
+      if (e.animationName === 'onAutoFillStart') {
+        this.loginForm.get('username').updateValueAndValidity();
+        this.cdr.detectChanges();
+      }
+    });
+
+    passwordField?.addEventListener('animationstart', (e) => {
+      if (e.animationName === 'onAutoFillStart') {
+        this.loginForm.get('password').updateValueAndValidity();
+        this.cdr.detectChanges();
+      }
+    });
+
     // Set default values for login form fields from local storage
     const loginDetails = JSON.parse(this.localStorageService.getItem('loginDetails'));
     if (loginDetails) {
@@ -65,6 +85,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         password: loginDetails.password,
         rememberMe: true
       });
+      // Trigger validation after setting values
+      this.loginForm.updateValueAndValidity();
+      this.cdr.detectChanges();
     }
 
 
@@ -85,11 +108,67 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @memberof LoginComponent
    */
   createForm() {
-      this.loginForm = this.fb.group({
-        username: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        rememberMe: ['']
-      });
+    // Create password validators
+    const passwordValidators = [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/)
+    ];
+
+    this.loginForm = this.fb.group({
+      username: ['', [
+        Validators.required,
+        Validators.email,
+        Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
+      ]],
+      password: ['', passwordValidators],
+      rememberMe: ['']
+    });
+
+    // Add value change subscriptions
+    this.loginForm.get('username').valueChanges.subscribe(() => {
+      if (this.loginForm.get('username').value) {
+        this.loginForm.get('username').markAsTouched();
+      }
+    });
+
+    this.loginForm.get('password').valueChanges.subscribe(() => {
+      if (this.loginForm.get('password').value) {
+        this.loginForm.get('password').markAsTouched();
+      }
+    });
+  }
+
+  // helper methods for error messages
+  getErrorMessage(controlName: string): string {
+    const control = this.loginForm.get(controlName);
+
+    if (!control?.errors || !control.touched) {
+      return '';
+    }
+
+    if (controlName === 'username') {
+      if (control.errors['required']) {
+        return 'Email address is required';
+      }
+      if (control.errors['email'] || control.errors['pattern']) {
+        return 'Please enter a valid email address';
+      }
+    }
+
+    if (controlName === 'password') {
+      if (control.errors['required']) {
+        return 'Password is required';
+      }
+      if (control.errors['minlength']) {
+        return 'Password must be at least 8 characters long';
+      }
+      if (control.errors['pattern']) {
+        return 'Password must contain at least one number and one special character';
+      }
+    }
+
+    return '';
   }
 
   /**
@@ -105,6 +184,16 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @returns void
    */
   fetchUserTenants(): void {
+    // Check if form is valid before proceeding
+    if (this.loginForm.invalid) {
+      // Mark all fields as touched to trigger validation messages
+      Object.keys(this.loginForm.controls).forEach(key => {
+        const control = this.loginForm.get(key);
+        control.markAsTouched();
+      });
+      return; // Exit the method if form is invalid
+    }
+
     this.isLoading = true;
     const rawData = this.loginForm.getRawValue();
     const authenticationData: UserCredential = {
@@ -112,6 +201,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: rawData.password,
     };
     this.authService.fetchUserTenants(authenticationData, (tenants) => {
+      if (this.errorOccurred) {
+        this.tenants = []; // Clear tenants array on error
+      } else {
+        this.tenants = tenants; // Only set tenants on success
+      }
 
       log.info(`user tenants >>>`, tenants);
       this.tenants = tenants;
@@ -156,6 +250,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = true
     this.errorOccurred = false;
     this.errorMessage = '';
+
+    if (this.loginForm.invalid) {
+      this.isLoading = false;
+      return;
+    }
 
     const rawData = this.loginForm.getRawValue();
     const authenticationData: UserCredential = {
@@ -215,19 +314,35 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.errorMessage = 'Error Occured, please try again';
           this.cdr.detectChanges()
         }
+      } else {
+        this.handleAuthError('Authentication failed. Please try again.');
       }
       this.isLoading = false;
     },(msg) => {
-      // log.info(`Pushing error message ${JSON.stringify(msg)}`);
-      if(msg != null){
-        this.errorOccurred = true;
-        this.errorMessage = msg.detail;
-        // log.debug('Reached here',this.errorOccurred, this.errorMessage);
-        this.cdr.detectChanges()
-      }
+      this.handleAuthError('Invalid username or password. Please try again.');
       this.isLoading = false;
 
     });
+  }
+
+  handleAuthError(errorMessage: string) {
+    this.errorOccurred = true;
+    this.errorMessage = errorMessage;
+    this.tenants = []; // Clear tenants array to keep form visible
+
+    // Preserve the entered username
+    const currentUsername = this.loginForm.get('username').value;
+
+    // Reset only the password field
+    this.loginForm.patchValue({
+      password: ''
+    });
+
+    // Re-mark fields as untouched but keep the username
+    this.loginForm.get('password').markAsUntouched();
+
+    // Ensure change detection runs
+    this.cdr.detectChanges();
   }
 
   isTenantIdPresent(): boolean {
@@ -251,19 +366,20 @@ export class LoginComponent implements OnInit, OnDestroy {
     //generate and send otp
     this.authService.sentVerificationOtp(username, 'email')
       .subscribe(data =>{
-          if(data==true){
-            // log.info('OTP Sent to Email');
-            // log.info('Routing to OTO Verification Page');
-            this.router.navigate(['/auth/otp'],
-              {queryParams: {referrer: 'password-reset'}})
-              .then(r => {
-              });
-          }
-          else{
-            // log.error('OTP Not Sent');
-            return;
-          }
-        });
+        if(data==true){
+          // log.info('OTP Sent to Email');
+          // log.info('Routing to OTO Verification Page');
+          this.router.navigate(['/auth/otp'],
+            {queryParams: {referrer: 'password-reset'}})
+            .then(r => {
+            });
+        }
+        else{
+          // log.error('OTP Not Sent');
+          return;
+        }
+      }
+    );
   }
 
   /**
