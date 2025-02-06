@@ -29,7 +29,11 @@ export class ReviseReuseQuotationComponent {
   selectedDateTo: string;
   selectedSource:string;
   quotationSubMenuList: SidebarMenu[];
-
+  clientName: string = '';
+  clientCode: number;
+  quotationNumber: string;
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
 
   constructor(
     public authService: AuthService,
@@ -90,9 +94,9 @@ export class ReviseReuseQuotationComponent {
   }
   onDateFromInputChange(date: any) {
     log.debug('selected Date from raaw', date);
-    const selectedDateFrom = date;
-    if(selectedDateFrom){
-    const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+    this.fromDate = date;
+    if(this.fromDate){
+    const SelectedFormatedDate = this.formatDate(this.fromDate)
     this.selectedDateFrom=SelectedFormatedDate
     log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
     // this.fetchGISQuotations()
@@ -101,9 +105,9 @@ export class ReviseReuseQuotationComponent {
 
   onDateToInputChange(date: any) {
     log.debug('selected Date To raaw', date);
-    const selectedDateTo = date;
-    if(selectedDateTo){
-    const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
+    this.toDate = date;
+    if(this.toDate){
+    const SelectedFormatedDateTo = this.formatDate(this.toDate)
     this.selectedDateTo=SelectedFormatedDateTo
     log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
     // this.fetchGISQuotations()
@@ -125,17 +129,25 @@ export class ReviseReuseQuotationComponent {
       log.debug(this.sourceList, 'Source list');
     });
   }
+  onSourceSelected(selectedValue: any) {
+
+    this.selectedSource = selectedValue;
+
+    log.debug('Selected Source:', this.selectedSource);
+
+
+  }
 
   fetchGISQuotations() {
     const clientType= null
-    const clientCode= null
+    const clientCode = this.clientCode || null
     const productCode = null
-    const quotationNumber= null
+    const quotationNumber= this.quotationNumber || null
     const status= "Confirmed"
     const dateFrom =this.selectedDateFrom || null
     const dateTo =this.selectedDateTo || null
     const source =this.selectedSource
-    const clientName=null
+    const clientName = this.clientName || null
     const agentCode=null
 
     log.debug("Selected Date from:",this.selectedDateFrom)
@@ -163,5 +175,51 @@ export class ReviseReuseQuotationComponent {
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+  onClientSelected(event: { clientName: string; clientCode: number }) {
+    this.clientName = event.clientName;
+    this.clientCode = event.clientCode;
+
+    // Optional: Log for debugging
+    log.debug('Selected Client:', event);
+
+    // Call fetchQuotations when the client code changes
+    // this.fetchGISQuotations();
+  }
+  onQuotationBlur(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    this.quotationNumber = inputElement.value;
+    log.debug('Quotation number:', this.quotationNumber);
+
+  }
+  clearDateFilters(): void {
+    this.selectedDateFrom = null;
+    this.selectedDateTo = null;
+    this.fromDate = null
+    this.toDate = null
+    this.cdr.detectChanges();
+  }
+  clearFilters() {
+    // Clear client
+    this.clientName = '';
+    this.clientCode = null;
+
+   
+    // Clear source
+    this.selectedSource = null;
+
+    // Clear date from
+    this.selectedDateFrom = null;
+    this.clearDateFilters();
+
+    // Clear date to
+    this.selectedDateTo = null;
+
+
+    // Clear quotation number
+    this.quotationNumber = '';
+    // Clear status to null
+   this.fetchGISQuotations()    // Trigger change detection
+    this.cdr.detectChanges();
   }
 }

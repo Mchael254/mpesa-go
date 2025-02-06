@@ -73,6 +73,7 @@ export class QuotationDetailsComponent {
   resultFromCampaign: any;
   showCampaignField: boolean = false;
   campaignList: any;
+  clientId: number;
 
 
 
@@ -110,7 +111,12 @@ export class QuotationDetailsComponent {
 
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
-    const clientFormDetails = sessionStorage.getItem('clientFormData');
+    const clientFormDetails = sessionStorage.getItem('clientPayload');
+    log.debug("Client form details:",clientFormDetails)
+    const clientCode = sessionStorage.getItem('clientCode');
+    this.clientId =JSON.parse(clientCode)
+    log.debug("Client Id:",this.clientId)
+
     log.debug(quotationFormDetails)
 
     if (quotationFormDetails) {
@@ -121,9 +127,11 @@ export class QuotationDetailsComponent {
     }
     if(clientFormDetails){
       const clientData = JSON.parse(clientFormDetails)
-      this.quotationForm.controls['clientCode'].setValue(clientData.id);
+      log.debug("Client form details:",clientData)
+
+      this.quotationForm.controls['clientCode'].setValue(this.clientId);
       this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
-      this.quotationForm.controls['clientType'].setValue(clientData.clientTypeId);
+      this.quotationForm.controls['clientType'].setValue(clientData.category);
     }
 
     log.debug(this.quotationForm.value)

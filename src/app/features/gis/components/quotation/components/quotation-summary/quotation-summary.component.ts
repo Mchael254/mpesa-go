@@ -21,6 +21,7 @@ import {BankService} from "../../../../../../shared/services/setups/bank/bank.se
 import {Logger} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { LimitsOfLiability } from '../../data/quotationsDTO';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -103,6 +104,11 @@ export class QuotationSummaryComponent {
   clientName: any;
 
   insurersDetailsForm: FormGroup;
+  selectedClause: any;
+  limitsOfLiabilityList: LimitsOfLiability[] = [];
+  selectedSubclassCode: number;
+  activeTab: string = 'clauses'; 
+
 
   constructor(
 
@@ -264,10 +270,11 @@ export class QuotationSummaryComponent {
 
       // Call functions for each product code
       proCodes.forEach((proCode) => {
-        this.getProductDetails(proCode);
+        // this.getProductDetails(proCode);
         this.getProductClause(proCode);
         this.getProductSubclass(proCode);
       });
+      this.productDetails= this.quotationView.quotationProducts
 
       this.getbranch();
       this.getPremiumComputationDetails();
@@ -1226,4 +1233,32 @@ export class QuotationSummaryComponent {
       });
     }
   }
+  onSubclassClick(subclassCode: number): void {
+   log.debug('Clicked Subclass Code:', subclassCode);
+   this.selectedSubclassCode=subclassCode
+   if(this.selectedSubclassCode){
+    this.fetchLimitsOfLiability()
+   }
+    // Perform any action you need with subclassCode
+  }
+  fetchLimitsOfLiability() {
+      this.quotationService
+        .getLimitsOfLiability(this.selectedSubclassCode)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (response: any) => {
+  
+            this.limitsOfLiabilityList = response._embedded
+            log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+  
+          },
+          error: (error) => {
+  
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+          }
+        });
+    }
+    setActiveTab(tab: string) {
+      this.activeTab = tab;
+    }
 }
