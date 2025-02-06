@@ -10,8 +10,19 @@ export class QuotationsClientDetailsComponent {
   steps = quoteStepsData;
   clientData: PassedClientDto;
 
-    constructor(
+  constructor(
 
-  ){}
+  ) { }
+  ngOnInit() {
+    // Constructing the route using array of route segments
+    const normalQuoteTimeStamp = new Date().getTime(); // Get current timestamp
+    const queryParams = {  normalQuoteTimeStamp: normalQuoteTimeStamp };
 
+    console.log("Normal quote Time Stamp", normalQuoteTimeStamp);
+    console.log("Query Parameters", queryParams);
+
+    const timestampString = JSON.stringify(normalQuoteTimeStamp);
+    sessionStorage.setItem('normalQuoteTimeStamp', timestampString);
+    console.log("Passed Time Stamp(GIS)", timestampString);
+  }
 }

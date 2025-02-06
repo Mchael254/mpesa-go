@@ -42,7 +42,7 @@
 
           <ng-template pTemplate="body" let-agentData>
             <tr [pSelectableRow]="true" (click)="loadAgentDetails(agentData.id)">
-              <td>{{ agentData.name }}</td>
+              <td>{{ agentData.name | sentenceCase}}</td>
               <td>{{ agentData.id }}</td>
               <td>{{ agentData.shortDesc }}</td>
             </tr>

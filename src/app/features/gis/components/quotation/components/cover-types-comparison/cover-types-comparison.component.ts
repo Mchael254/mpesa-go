@@ -163,6 +163,7 @@ export class CoverTypesComparisonComponent {
   premiumRates: PremiumRate[] = [];
   sectionDetails: any;
   existingRisk: any;
+  isReturnToQuickQuote: boolean;
 
 
 
@@ -187,6 +188,7 @@ export class CoverTypesComparisonComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public globalMessagingService: GlobalMessagingService,
     public premiumRateService: PremiumRateService,
+    public spinner:NgxSpinnerService,
 
   ) { }
   public isClauseDetailsOpen = false;
@@ -962,6 +964,7 @@ export class CoverTypesComparisonComponent {
     }
   }
   selectCoverNew() {
+    this.spinner.show()
     log.debug("PASSED QUOTATION NUMBER WHEN ADDING OR EDITING ADDITIONAL RISK:", this.passedNumber);
     log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
     log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
@@ -1047,7 +1050,7 @@ export class CoverTypesComparisonComponent {
       this.createQuotation();
       this.getQuotationNumber();
   }
-
+  this.spinner.hide()
 
   }
 
@@ -1120,8 +1123,8 @@ export class CoverTypesComparisonComponent {
 
       },
       error: (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, you cannot compute premium, check quotation details and try again.');
+        log.info("Error from the DB",error.error.message);
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
   }
@@ -1285,7 +1288,7 @@ export class CoverTypesComparisonComponent {
         },
         error: (error: HttpErrorResponse) => {
           log.info(error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
 
         }
       }
@@ -1427,7 +1430,10 @@ export class CoverTypesComparisonComponent {
     this.isBenefitsDetailsOpen = !this.isBenefitsDetailsOpen;
   }
   getLimits(index: number) {
-    return this.premiumPayload.risks[index]?.limits || [];
+    log.debug("index from get limits",index)
+    log.debug("index from get limits selected covertype",this.selectedCoverType)
+    log.debug("Premium payload",this.premiumPayload.risks)
+    return this.premiumPayload.risks.filter(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)[index]?.limits || [];
   }
 
   openHelperModal(selectedClause: any) {
@@ -1450,7 +1456,7 @@ export class CoverTypesComparisonComponent {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
@@ -1477,7 +1483,7 @@ export class CoverTypesComparisonComponent {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
@@ -1735,6 +1741,26 @@ export class CoverTypesComparisonComponent {
       }
       );
   }
+  navigateToQuickQuote(){
+    log.debug("Navigate to quick quote screen")
+    this.isReturnToQuickQuote = true;
+      // Add a unique flag for add another risk navigation
+      sessionStorage.setItem('navigationSource', 'isReturnToQuickQuote');
 
+    const passedisReturnToQuickQuoteString = JSON.stringify(this.isReturnToQuickQuote);
+    sessionStorage.setItem('isReturnToQuickQuote', passedisReturnToQuickQuoteString);
+    
+    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+    log.debug("New client detail(covertype:",this.passedNewClientDetails)
+
+    
+    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
+    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
+    log.debug("Existing client detail(covertype:",this.passedClientDetails)
+
+    this.router.navigate(['/home/gis/quotation/quick-quote']);
+
+  }
 }
 

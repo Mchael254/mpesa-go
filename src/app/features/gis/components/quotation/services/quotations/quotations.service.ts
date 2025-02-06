@@ -119,8 +119,7 @@ export class QuotationsService {
     */
   createQuotation(data: quotationDTO, user) {
     console.log("Data", JSON.stringify(data))
-    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-
+    return this.api.POST(`v2/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   /**
    * Retrieves quotations based on specified parameters using an HTTP GET request.
@@ -421,6 +420,21 @@ export class QuotationsService {
   ): Observable<Pagination<AgentDTO>>{
 
     return this.api.GET<Pagination<AgentDTO>>(`agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+  }
+  getLimitsOfLiability(
+
+    subclassCode: number,
+    scheduleType: string = 'L'
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['subclassCode'] = subclassCode?.toString();
+    paramsObj['scheduleType'] = scheduleType;
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 }
 
