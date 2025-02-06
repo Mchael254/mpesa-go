@@ -106,6 +106,16 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
+                  <p class="label">Proposer</p>
+                </div>
+                <div class="col-8">
+                  <p class="content">{{quotationDetails?.introducerCode}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="row">
+                <div class="col-4">
                   <p class="label">Introducer</p>
                 </div>
                 <div class="col-8">
@@ -169,6 +179,17 @@
                 </div>
               </div>
             </div>
+            <div class="col-md-4">
+              <div class="row">
+                <div class="col-4">
+                  <p class="label">Comm amt.</p>
+                </div>
+                <div class="col-8">
+                  <p class="content">{{sumInsured| number:'1.2-2' }}</p>
+                </div>
+              </div>
+            </div>
+            
           </div>
 
           <div class="row mb-3">
@@ -210,36 +231,33 @@
         <div class="card-body">
           <div class="row">
             <div class="col-3">
-              <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p>
+              <!-- <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p> -->
+              <p class="card-title mt-2" >Product Details</p>
             </div>
-            <div class="col-9 d-flex justify-content-end">
+            <div class="col-9 d-flex justify-content-end" id="navigationIcons">
               <div class="row">
                 <div class="col-sm-3"></div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
+                <div class="col-sm-3" >
                   <button type="button" id="icon" class="btn btn-primary"  title="Add">
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
+                <div class="col-sm-3" >
                   <button type="button" id="icon" class="btn btn-primary"  title="Edit">
                     <i class="fa-solid fa-pencil"></i>
                   </button>
                 </div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
+                <div class="col-sm-3" >
                   <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
                 </div>
-                <div class="col-sm-4" *ngIf="!isCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()" [attr.aria-expanded]="!isCollapsibleOpen">
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
-          <div class="collapse mt-4" id="productDetails">
-            <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+          <div class="mt-3" id="productDetails">
+            <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }"  >
               <ng-template pTemplate="header">
                 <tr>
                   <th>Product</th>
@@ -252,131 +270,169 @@
               </ng-template>
               <ng-template pTemplate="body" let-data>
                 <tr (click)="getLimits(data.code);getProductSubclass(data.code)">
-                  <td>{{data.description}}</td>
-                  <td>{{data.withEffectFrom}}</td>
-                  <td>{{data.withEffectTo}}</td>
-                  <td>{{data.minimumPremium}}</td>
-                  <td>{{data.commissionRate}}</td>
-                  <td>{{data.doesCashBackApply}}</td>
+                  <td>{{data.productShortDescription}}</td>
+                  <td>{{data.wef}}</td>
+                  <td>{{data.wet}}</td>
+                  <td>{{data.premium}}</td>
+                  <td>{{data.commission}}</td>
+                  <td>{{data.binder}}</td>
                 </tr>
               </ng-template>
             </p-table>
-            <br>
-            <ul class="nav nav-underline mb-4">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-clauses">Clauses</a>
-              </li>
-              <br>
-              <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
-              </li>
-              <br>
-              <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of Liability</a>
-              </li>
-              <br>
-              <li class="nav-item">
-                  <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-similarities">Similar Quotes</a>
-                </li>
-            </ul>
+             <!-- TABS  -->
+             <div class="row mt-3 mb-3">
+              <div class="col-7">
+                <ul class="nav nav-underline ">
+                  <li class="nav-item">
+                    <a class="nav-link active" [class.active]="activeTab === 'clauses'" (click)="setActiveTab('clauses')" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-clauses">Clauses</a>
+                  </li>
+                  <br>
+                  <li class="nav-item">
+                    <a class="nav-link" [class.active]="activeTab === 'taxes'" (click)="setActiveTab('taxes')" data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
+                  </li>
+                  <br>
+                  <li class="nav-item">
+                    <a class="nav-link" [class.active]="activeTab === 'limits'" (click)="setActiveTab('limits')" data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of Liability</a>
+                  </li>
+                  <br>
+                  <li class="nav-item">
+                      <a class="nav-link" [class.active]="activeTab === 'similarQuotes'" (click)="setActiveTab('similarQuotes')" data-bs-toggle="tab" data-bs-target="#nav-similarQuotes">Similar Quotes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="col-5 d-flex justify-content-end" id="navigationIcons">
+                <div class="row" *ngIf="activeTab === 'clauses' || activeTab === 'taxes' || activeTab === 'limits'">
+                  <div class="col-sm-3"></div>
+                  <div class="col-sm-3" >
+                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="col-sm-3" >
+                    <button type="button" id="icon" class="btn btn-primary"  title="Edit">
+                      <i class="fa-solid fa-pencil"></i>
+                    </button>
+                  </div>
+                  <div class="col-sm-3" >
+                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          
+             
             <div class="tab-content mb-4" id="nav-tabContent">
               <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses" tabindex="0">
+               
+                
                 <p-table
                   [value]="clauses"
                   [tableStyle]="{ 'min-width': '50rem' }"
-                  styleClass="p-datatable-sm"
+                  
                   [paginator]="true"
                   [rows]="5"
                   [showCurrentPageReport]="true"
-                  currentPageReportTemplate="{first} to {last} of {totalRecords}">
+                  currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                  class='ui-datatable'>
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>ID</th>
-                      <th>Heading</th>
-                      <th>Wording</th>
+                      <th class="flexible-header">ID</th>
+                      <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.wording' | translate}}</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td>{{data.shortDescription}}</td>
-                      <td>{{data.heading}}</td>
-                      <td style=" white-space: nowrap;
+                      <td class="flexible-header">{{data.shortDescription}}</td>
+                      <td class="flexible-header">{{data.heading | sentenceCase }}</td>
+                      <td class="flexible-header" style=" white-space: nowrap;
                       overflow: hidden;
                       text-overflow: ellipsis;
                       max-width:300px;
-                      overflow-y: auto;">{{data.wording}}</td>
+                      overflow-y: auto;">{{data.wording | sentenceCase }}</td>
                     </tr>
                   </ng-template>
                 </p-table>
               </div>
               <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
-                <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }"  class='ui-datatable'>
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>Amount</th>
-                      <th>Description</th>
-                      <th>Quotation Rate</th>
-                      <th>Rate Type</th>
+                      <th class="flexible-header">Amount</th>
+                      <th class="flexible-header">Description</th>
+                      <th class="flexible-header">Quotation Rate</th>
+                      <th class="flexible-header">Rate Type</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td>{{data.taxAmount}}</td>
-                      <td>{{data.description}}</td>
-                      <td>{{data.quotationRate}}</td>
-                      <td>{{data.rateType}}</td>
+                      <td class="flexible-header">{{data.taxAmount | number:'1.2-2'}}</td>
+                      <td class="flexible-header">{{data.rateDescription}}</td>
+                      <td class="flexible-header">{{data.quotationRate}}</td>
+                      <td class="flexible-header">{{data.rateType}}</td>
                     </tr>
                   </ng-template>
                 </p-table>
               </div>
               <div class="tab-pane fade " id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
                 <div class="row">
-                  <div class="col">
-                    <div class="card" style="border:0px">
-                      <div class="card-body">
-                        <h6>Product  Subclass </h6>
+                  <div class="col-3">
+                    <div >
+                        
                         <div class="listing">
-                          <ul>
+                          <p class="subclass-title">{{'gis.quotation.subclass' | translate}} </p>
+                          <ul class="scrollable-list">
                             <li
-                              *ngFor="let data of productSubclass"
+                              *ngFor="let data of productSubclass"  (click)="onSubclassClick(data.code)"
                             >
-                              {{ data.description }}
+                              {{ data.description | sentenceCase}}
                             </li>
                           </ul>
                         </div>
-                      </div>
+                      
                     </div>
                   </div>
-                  <div class="col">
-                    <div class="card" style="border:0px">
-                      <div class="card-body">
-                        <p-table [value]="limitsList" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                  <div class="col-9">
+                   
+                    
+                        <p-table [value]="limitsOfLiabilityList" [tableStyle]="{ 'min-width': '50rem' }"  class='ui-datatable' >
                           <ng-template pTemplate="header">
                             <tr>
-                              <th>Narration</th>
-                              <th>Scl Desc</th>
-                              <th>Value</th>
+                              <th class="flexible-header">{{'gis.quotation.narration' | translate}}</th>
+                              <th class="flexible-header">Scl Desc</th>
+                              <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
                             </tr>
                           </ng-template>
                           <ng-template pTemplate="body" let-data>
                             <tr>
-                              <td>{{data.narration}}</td>
+                              <td class="flexible-header" style=" white-space: nowrap;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+                              max-width:300px;
+                              overflow-y: auto;">{{data.narration}}</td>
+                              <td class="flexible-header">{{data.subclassCode}}</td>
+                              <td class="flexible-header">{{data.value}}</td>
                             </tr>
                           </ng-template>
                         </p-table>
-                      </div>
-                    </div>
+                   
                   </div>
                 </div>
               </div>
-              <div class="tab-pane fade" id="nav-similarities" role="tabpanel" aria-labelledby="nav-similarities" tabindex="0">
-                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+              <div class="tab-pane fade" id="nav-similarQuotes" role="tabpanel" aria-labelledby="nav-similarities" tabindex="0">
+                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  class='ui-datatable'>
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>Amount</th>
-                      <th>Description</th>
-                      <th>Quotation Rate</th>
-                      <th>Rate Type</th>
+                      <th class="flexible-header">{{'gis.quotation.quotation_number' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.client' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.cover_from' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.cover_to' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.branch' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.agent' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.product' | translate}}</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>

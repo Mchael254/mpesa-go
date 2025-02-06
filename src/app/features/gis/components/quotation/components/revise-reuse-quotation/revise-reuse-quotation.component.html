@@ -1,62 +1,80 @@
 <div class="container">
     <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.revise_reuse_quotation' | translate }}  </p>
     <div class="container mx-2 mt-n1">
+
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body ">
-                <div class="row mt-4">
-                    <div class="col-5">
+                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }} :</p>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text " id="basic-addon1">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </span>
-                            <input type="text" id="search-input" class="form-control search-input"
-                                style="border-left: grey;" placeholder="Search by client, prospect or quotation no."
-                                aria-label="Username" aria-describedby="basic-addon1" />
-                        </div>
+                <div class="row mt-4 mb-4">
+                    <div class="col-sm-3  col-12">
 
+                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                            [value]="clientName | sentenceCase" data-bs-toggle="modal"
+                            data-bs-target="#clientSearchModal" readonly placeholder="Client" />
+
+                        <!-- Client Search Modal Component -->
+                        <app-client-search-modal (clientSelected)="onClientSelected($event)"></app-client-search-modal>
+                    </div>
+                    <div class="col-sm-3  col-12">
+                        <input type="text" id="quote-number-input" class=" form-control form-control-sm mb-1"
+                            placeholder="Quotation number" [(ngModel)]="quotationNumber"
+                            (blur)="onQuotationBlur($event)" />
                     </div>
 
                 </div>
-                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }} :</p>
                 <div class="row">
                     <div class="col-sm-9">
                         <div class="row">
                             <div class=" col-sm-4 col-12">
-                                <p-calendar
-
-                                    [dateFormat]="dateFormat"
-                                    [showIcon]="true"
+                                <p-calendar 
+                                   
+                                    [dateFormat]="dateFormat" 
+                                    [showIcon]="true" 
                                     [showButtonBar]="true"
                                     placeholder="Date from"
                                     (onSelect)="onDateFromInputChange($event)"
                                     class="custom-calendar-height">
-                                </p-calendar>
-
+                                </p-calendar> -->
+                                <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                                [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
+                                (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()"
+                                class="custom-calendar-height">
+                            </p-calendar>
                             </div>
                             <div class="col-12 col-sm-4">
-                                <p-calendar
-
-                                    [dateFormat]="dateFormat"
-                                    [showIcon]="true"
+                                <p-calendar 
+                                   
+                                    [dateFormat]="dateFormat" 
+                                    [showIcon]="true" 
                                     [showButtonBar]="true"
                                     placeholder="Date to"
                                     (onSelect)="onDateToInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar>
                                 <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                                    placeholder="Date to"
+                                    placeholder="Date to" 
                                     (ngModelChange)="onDateToInputChange($event)"
                                     class="custom-calendar-height">
                                 </p-calendar> -->
+                                <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
+                                [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
+                                (onSelect)="onDateToInputChange($event)"
+                                (onClear)="clearDateFilters()"
+                                class="custom-calendar-height" >
+                            </p-calendar>
                             </div>
                             <div class="col-12 col-sm-4">
-                                <select id="source-input" class="form-select form-control-sm mb-1"
+                                <!-- <select id="source-input" class="form-select form-control-sm mb-1"
                                 [(ngModel)]="selectedSource">
                                     <option value="" >Source type</option>
                                     <option *ngFor="let source of sourceDetail" [value]="source.description">{{
                                         source.description }}</option>
-                                </select>
+                                </select> -->
+                                <p-dropdown [options]="sourceDetail" optionLabel="description" optionValue="description" [filter]="true"
+                                filterBy="description" placeholder="Quotation source" [(ngModel)]="selectedSource"
+                                (onChange)="onSourceSelected($event.value)" class="form-control-sm mb-1 custom-dropdown">
+                            </p-dropdown>
 
                             </div>
                         </div>
@@ -68,8 +86,9 @@
                         <button type="button" class="btn btn-primary " id="search-buttons"
                         (click)="fetchGISQuotations()">
                             {{ 'gis.quotation.search' | translate }} </button>
-                            <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons">
-                                 {{ 'gis.quotation.clear_search' | translate }} </button>
+                            <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons"
+                            (click)="clearFilters()">
+                                 {{ 'gis.quotation.clear' | translate }} </button>
                     </div>
                     <div class="col-6">
 
@@ -85,8 +104,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="tableDetails.totalElements"
-                [value]="tableDetails.rows"
+                [totalRecords]="tableDetails.totalElements"  
+                [value]="tableDetails.rows" 
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
@@ -97,7 +116,7 @@
                     [resizableColumns]="true" [reorderableColumns]="true">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>{{ 'gis.quotation.quotation_no' | translate }}</th>
+                            <th>{{ 'gis.quotation.quotation_number' | translate }}</th>
                             <th>{{ 'gis.quotation.client' | translate }} </th>
                             <th>{{ 'gis.quotation.cover_from' | translate }}</th>
                             <th>{{ 'gis.quotation.cover_to' | translate }}</th>
@@ -113,10 +132,10 @@
                     <ng-template pTemplate="body" let-quotation>
                         <tr style="cursor: pointer">
                             <td>{{quotation.quotationNumber}}</td>
-                            <td>{{quotation.clientName}}</td>
+                            <td>{{quotation.clientName |sentenceCase}}</td>
                             <td>{{quotation.fromDate}}</td>
                             <td>{{quotation.toDate}}</td>
-                            <td>{{quotation.comments}}</td>
+                            <td>{{quotation.comments |sentenceCase}}</td>
                             <td>{{quotation.expiryDate}}</td>
                             <td>{{quotation.status}}</td>
                             <td>{{quotation.quotDate}}</td>

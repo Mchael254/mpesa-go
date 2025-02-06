@@ -3,17 +3,10 @@
     <div class="container mx-2 mt-n1">
         <div class="card mb-3" style=" position: relative;">
             <div class="card-body ">
-                <div class="row mt-4">
-                    <div class="col-3">
+                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }}:</p>
 
-                        <!-- <div class="input-group mb-3">
-                            <span class="input-group-text " id="basic-addon1">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </span>
-                            <input type="text" id="search-input" class="form-control search-input"
-                                style="border-left: grey;" placeholder="Search by client, prospect or quotation no."
-                                aria-label="Username" aria-describedby="basic-addon1" />
-                        </div> -->
+                <div class="row mt-2 mb-4">
+                    <div class="col-sm-3  col-12">
 
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                             [value]="clientName | sentenceCase" data-bs-toggle="modal"
@@ -22,23 +15,34 @@
                         <!-- Client Search Modal Component -->
                         <app-client-search-modal (clientSelected)="onClientSelected($event)"></app-client-search-modal>
                     </div>
-                    <div class="col-3">
-                        <input
-                        type="text"
-                        id="quote-number-input"
-                        class=" form-control form-control-sm mb-1"
-                        placeholder="Quotation number"
-                        (blur)="onQuotationBlur($event)"
-                      />
+                    <div class="col-sm-3  col-12">
+                        <input type="text" id="quote-number-input" class=" form-control form-control-sm mb-1"
+                            placeholder="Quotation number" [(ngModel)]="quotationNumber"
+                            (blur)="onQuotationBlur($event)" />
+                    </div>
+                    <div class="col-sm-3 col-12 ">
+                      
+                        <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                            [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
+                            (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()"
+                            class="custom-calendar-height">
+                        </p-calendar>
+                    </div>
+
+                    <div class="col-sm-3 col-12 ">
+                        
+                        <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
+                            [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
+                            (onSelect)="onDateToInputChange($event)"
+                            (onClear)="clearDateFilters()"
+                            class="custom-calendar-height" >
+                        </p-calendar>
+
                     </div>
                 </div>
-                <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }}:</p>
-                <div class="row mb-4">
+                <div class="row  mt-2 mb-4">
                     <div class=" col-sm-3 col-12">
-                        <!-- <p-dropdown formControlName="productCode" name="productCode"
-                            [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
-                            (onChange)="onProductSelected($event.value)" placeholder=" "
-                            [filterBy]="'description'" placeholder="Product" [filter]="true"></p-dropdown> -->
+
                         <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                             [value]="productName | sentenceCase" data-bs-toggle="modal"
                             data-bs-target="#productSearchModal" placeholder="Product" readonly />
@@ -50,9 +54,11 @@
 
                     <div class=" col-sm-3 col-12 ">
 
-                        <p-dropdown [options]="status" [(ngModel)]="selectedStatus" placeholder="Status"
-                            (onChange)="onStatusSelected($event.value)" class="form-control-sm mb-1">
+                        <p-dropdown [options]="status" optionLabel="status" optionValue="status" [filter]="true"
+                            filterBy="status" placeholder="Status" [(ngModel)]="selectedStatus"
+                            (onChange)="onStatusSelected($event.value)" class="form-control-sm mb-1 custom-dropdown">
                         </p-dropdown>
+
                     </div>
                     <div class="col-sm-3 col-12 ">
                         <!-- <p-dropdown [options]="statuses" [(ngModel)]="selectedStatus" placeholder="Agent"
@@ -71,81 +77,53 @@
                         </p-dropdown>
 
                     </div>
-                    <!-- <div class="col-sm-2 col-12 ">
-                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                            placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
-                            class="custom-calendar-height">
-                        </p-calendar>
-
-
-                    </div>
-                    <div class="col-sm-2 col-12 ">
-                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                            placeholder="Date to" (onSelect)="onDateToInputChange($event)"
-                            class="custom-calendar-height">
-                        </p-calendar>
-
-                    </div> -->
+                   
                 </div>
-                <div class="row mb-4">
+                <!-- <div class="row mb-4">
                     <div class="col-sm-3 col-12 ">
-                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                            placeholder="Date from" (onSelect)="onDateFromInputChange($event)"
-                            class="custom-calendar-height">
+                      
+                        <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                            [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
+                            (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()">
                         </p-calendar>
-
-
                     </div>
 
                     <div class="col-sm-3 col-12 ">
-                        <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                            placeholder="Date to" (onSelect)="onDateToInputChange($event)"
-                            class="custom-calendar-height">
+                        
+                        <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
+                            [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
+                            (onSelect)="onDateToInputChange($event)"
+                            (onClear)="clearDateFilters()" >
                         </p-calendar>
 
                     </div>
-                </div>
+                </div> -->
                 <div class="row mt-4 mb-4">
                     <div class="col-6 d-flex justify-content-start">
                         <button type="button" class="btn btn-primary " id="search-buttons"
                             (click)="fetchGISQuotations()">
-                             {{ 'gis.quotation.search' | translate }}</button>
-                        <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons">
-                            {{ 'gis.quotation.clear_search' | translate }}</button>
+                            {{ 'gis.quotation.search' | translate }}</button>
+                        <button type="button" class="btn btn-outline-primary ms-2 " id="search-buttons"
+                            (click)="clearFilters()">
+                            {{ 'gis.quotation.clear' | translate }}</button>
                     </div>
                     <div class="col-6">
 
                     </div>
                 </div>
-                <!-- <p-table
-                #dt1
-                (onLazyLoad)="fetchGISQuotations($event)"
-                [autoLayout]="true"
-                [lazy]="true"
-                [paginator]="true"
-                [rowHover]="true"
-                [resizableColumns]="true"
-                [showCurrentPageReport]="true"
-                [rows]="pageSize || 5"
-                [totalRecords]="tableDetails.totalElements"
-                [value]="tableDetails.rows"
-                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-                responsiveLayout="stack"
-                [scrollable]="true"
-                scrollHeight="400px"
-                currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                styleClass="p-datatable-sm"> -->
+
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
                 <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
                     scrollDirection="horizontal" [showCurrentPageReport]="true"
-                    currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
                     [resizableColumns]="true" [reorderableColumns]="true">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>{{ 'gis.quotation.quotation_no' | translate }}</th>
+                            <th>{{ 'gis.quotation.quotation_number' | translate }}</th>
                             <th>{{ 'gis.quotation.client' | translate }} </th>
                             <th>{{ 'gis.quotation.cover_from' | translate }}</th>
                             <th>{{ 'gis.quotation.cover_to' | translate }}</th>
-                            <th>{{ 'gis.quotation.comments' | translate }}</th>
+                            <!-- <th>{{ 'gis.quotation.comments' | translate }}</th> -->
                             <th>{{ 'gis.quotation.expiry_date' | translate }}</th>
                             <th>{{ 'gis.quotation.status' | translate }}</th>
                             <th>{{ 'gis.quotation.transaction_date' | translate }}</th>
@@ -156,20 +134,22 @@
                     <ng-template pTemplate="body" let-quotation>
                         <tr style="cursor: pointer">
                             <td>{{quotation.quotationNumber}}</td>
-                            <td>{{quotation.clientName}}</td>
+                            <td>{{quotation.clientName |sentenceCase}}</td>
                             <td>{{quotation.fromDate}}</td>
                             <td>{{quotation.toDate}}</td>
-                            <td>{{quotation.comments}}</td>
+                            <!-- <td style=" white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width:300px;
+                            overflow-y: auto;">{{quotation.comments}}</td> -->
                             <td>{{quotation.expiryDate}}</td>
                             <td>{{quotation.status}}</td>
                             <td>{{quotation.quotDate}}</td>
-                            <td id="action-buttons"
-                              (click)="setQuotationNumber(
+                            <td id="action-buttons" (click)="setQuotationNumber(
                               quotation.quotationNumber,
                               quotation.productCode,
-                              quotation.clientCode)"
-                            >
-                              {{ "View quote" }}
+                              quotation.clientCode)">
+                                {{ "View quote" }}
                             </td>
 
                         </tr>
@@ -184,6 +164,9 @@
 
                     </ng-template>
                 </p-table>
+
+
+
             </div>
         </div>
     </div>

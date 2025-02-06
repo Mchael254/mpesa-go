@@ -1,9 +1,9 @@
 .titleMain {
     color: #000;
     font-family: Roboto;
-    font-size: 12px;
+    font-size: 16px;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 500;
     line-height: normal;
 }
 
@@ -56,6 +56,7 @@
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;
     height: 35px;
+    margin-left: -8px;
     }
     ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder{
     padding:3px;
@@ -98,4 +99,6 @@
     height:35px;
     font-size: 1rem;
   }
+
+
 
