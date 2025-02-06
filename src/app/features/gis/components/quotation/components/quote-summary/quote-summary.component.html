@@ -89,7 +89,7 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-product let-i="index">
                         <tr>
-                            <td>{{ product.productShortDescription}}</td>
+                            <td>{{ product.productShortDescription | sentenceCase}}</td>
                             <td class="text-start" appCommaFormat> {{product.totalSumInsured |
                                 number }}</td>
                             <td class="text-start" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
@@ -176,7 +176,7 @@
                     <ng-template pTemplate="body" let-risk>
                         <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
                             <td>{{ risk.propertyId }}</td>
-                            <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription}}</td>
+                            <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
                             <!-- <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td> -->
 
                             <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
@@ -257,9 +257,9 @@
 
                             <ng-template pTemplate="body" let-data let-ri="rowIndex">
                                 <tr [pSelectableRow]="data">
-                                    <td>{{ data.group }}</td>
+                                    <td>{{ data.calculationGroup }}</td>
                                     <td>{{ data.rowNumber }}</td>
-                                    <td>{{ data.sectionShortDescription }}</td>
+                                    <td>{{ data.sectionDescription |sentenceCase}}</td>
                                     <td>{{ data.description }}</td>
                                     <td appCommaFormat>{{ data.limitAmount | number }}</td>
                                     <td>{{ data.rate }}</td>
