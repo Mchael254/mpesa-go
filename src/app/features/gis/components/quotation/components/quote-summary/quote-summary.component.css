@@ -72,6 +72,16 @@ line-height: normal;
     font-weight: 600;
     line-height: 24px;
 }
+
+.cancelQouteParagraph{
+  color: #000;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
 .btn{
     /* border-radius: 4px; */
 border: 1px solid #00529B;
@@ -242,9 +252,9 @@ border: 1px solid #00529B;
   margin-right: 0;  /* Remove margin on the last item to avoid extra space */
 }
 .center-message {
-  text-align: center; 
+  text-align: center;
   vertical-align: middle;
-  padding: 20px; 
+  padding: 20px;
 }
 #compute{
   color: #FFF;
