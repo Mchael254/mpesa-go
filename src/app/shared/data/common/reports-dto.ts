@@ -1,8 +1,8 @@
 export interface ReportsDto {
-  encode_format: string,
+  encodeFormat: string,
   params: params[],
-  report_format: string,
-  rpt_code: number,
+  reportFormat: string,
+  rptCode: number,
   system: string
 }
 
@@ -13,17 +13,17 @@ export interface params {
 
 export interface ReportFileDTO {
   bytes: string,
-  data_file: string,
-  error_msg: string,
-  output_file: string,
+  dataFile: string,
+  errorMsg: string,
+  outputFile: string,
   params: ReportFileParams[],
-  report_format: string,
-  report_name: string,
-  rpt_code: number,
-  rpt_prnt_srv_appl: string,
-  rpt_tmpl_code: number,
-  style_file: string,
-  template_file: string
+  reportFormat: string,
+  reportName: string,
+  rptCode: number,
+  rptPrntSrvAppl: string,
+  rptTmplCode: number,
+  styleFile: string,
+  templateFile: string
 }
 
 export interface ReportFileParams {
@@ -32,26 +32,26 @@ export interface ReportFileParams {
   desc: string,
   name: string,
   prompt: string,
-  query_data: params[],
-  rpt_code: 0,
+  queryData: params[],
+  rptCode: 0,
   type: string,
-  user_required: string
+  userRequired: string
 }
 
 export interface SystemReportDto {
   code: number,
-  system_code: number,
+  systemCode: number,
   name: string,
   description: string,
   datafile: string,
-  application_level: string,
+  applicationLevel: string,
   status: string,
-  rsm_code: number,
+  rsmCode: number,
   order: number,
-  print_srv_appl: string,
-  print_srvc_appl: string,
+  printSrvAppl: string,
+  printSrvcAppl: string,
   type: string,
   visible: string,
-  short_description: string,
+  shortDescription: string,
   update: string
 }
