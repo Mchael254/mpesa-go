@@ -36,7 +36,7 @@ export const environment = {
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
-    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
+    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/report'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
     [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.NONE_BASE_URL, 'api'],

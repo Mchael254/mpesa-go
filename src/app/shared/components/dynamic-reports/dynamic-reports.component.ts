@@ -162,7 +162,7 @@ export class DynamicReportsComponent implements OnInit {
   filterParameters(name: string, reportFileParams: ReportFileParams[]) {
     return reportFileParams
       .filter(param => param?.name === name)
-      .map(value => value.query_data)
+      .map(value => value.queryData)
   }
 
   /**
