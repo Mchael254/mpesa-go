@@ -951,7 +951,14 @@
       "comments": "Comentarios",
       "expiry_date": "Fecha de vencimiento",
       "transaction_date": "Fecha de transacción",
-      "revise_reuse_quotation": "Cotizaciones:Revisar/Reutilizar cotización"
+      "revise_reuse_quotation": "Cotizaciones:Revisar/Reutilizar cotización",
+      "quotation_sources": "Fuentes de cotización",
+      "business_sources": "Fuentes de negocio",
+      "define_a_new_quotation_source": "Definir una nueva fuente de cotización",
+      "applicable_modules": "Módulos aplicables",
+      "underwriting": "Suscripción",
+      "both": "Ambos",
+      "quotations": "Cotizaciones"
 
     },
     "policy": {

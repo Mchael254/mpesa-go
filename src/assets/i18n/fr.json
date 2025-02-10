@@ -949,7 +949,15 @@
       "comments": "Commentaires",
       "expiry_date": "Date d'expiration",
       "transaction_date": "Date de transaction",
-      "revise_reuse_quotation": "Devis:Réviser/Réutiliser le devis"
+      "revise_reuse_quotation": "Devis:Réviser/Réutiliser le devis",
+      "quotation_sources": "Sources de devis",
+      "business_sources": "Sources commerciales",
+      "define_a_new_quotation_source": "Définir une nouvelle source de devis",
+      "applicable_modules": "Modules applicables",
+      "underwriting": "Souscription",
+      "both": "Les deux",
+      "quotations": "Devis"
+
     },
     "policy": {
       "underwriting_new_transaction": "Souscription : Nouvelle transaction",

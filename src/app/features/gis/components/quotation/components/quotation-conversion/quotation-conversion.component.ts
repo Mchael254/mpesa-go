@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
+import { MenuService } from '../../../../../base/services/menu.service';
+import { QuotationsService } from '../../../../../gis/services/quotations/quotations.service';
 import { QuotationDetails, QuotationList, QuotationProduct, Status, StatusEnum } from '../../data/quotationsDTO';
-import { untilDestroyed } from 'src/app/shared/shared.module';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { Logger } from '../../../../../../shared/services';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { Products } from '../../../setups/data/gisDTO';
@@ -326,12 +326,12 @@ export class QuotationConversionComponent {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
     }else{
       const selctedQuotationCode = this.selectedQuotationProduct.quotCode
-      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => { 
+      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => {
         log.debug("Response after converting quote to a policy:", data)
-  
+
       })
     }
-    
+
   }
   onProductSelection(event: Event, product: any): void {
     const checkbox = event.target as HTMLInputElement;

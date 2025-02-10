@@ -1,18 +1,20 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import {Logger} from "../../../../../../shared/services";
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { QuotationList, Sources, Status, StatusEnum, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationsService } from '../../../../../../features/gis/services/quotations/quotations.service';
 import { Products } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from '../../../../../../features/base/model/sidebar.menu';
+import { MenuService } from '../../../../../../features/base/services/menu.service';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-const log = new Logger('ReviseReuseQuotationComponent');
+
+const log = new Logger('QuotationInquiryComponent');
 
 @Component({
   selector: 'app-quotation-inquiry',
