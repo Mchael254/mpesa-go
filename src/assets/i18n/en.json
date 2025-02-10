@@ -344,7 +344,6 @@
     "overrideCommAllowed": "Override comm allowed",
     "WEF": "WEF",
     "WET": "WET",
-
     "prevSubdivHeads": "Previous subdivision heads",
     "accountType": "Account type",
     "headAccountType": "Head account type",
@@ -378,7 +377,9 @@
     "reportDesc": "Report description",
     "assignedReport": "Assigned report",
     "add": "Add",
-    "remove": "Remove"
+    "remove": "Remove",
+    "systems": "Systems",
+    "module": "Module"
   },
   "entities": {
     "account_number": "Account Number",

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/internal/Observable';
 import {HttpParams} from '@angular/common/http';
 
-import {SystemModule, SystemReportModule, SystemsDto} from '../../../data/common/systemsDto';
+import {SystemModule, SystemReportModule, SystemReportSubModule, SystemsDto} from '../../../data/common/systemsDto';
 import {ApiService} from '../../api/api.service';
 import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {SystemRole} from "../../../data/common/system-role";
@@ -166,6 +166,36 @@ export class SystemsService {
     return this.api.DELETE(
       `system-report-modules/${id}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    )
+  }
+
+  getSystemReportSubModules(moduleId: number): Observable<SystemReportSubModule[]> {
+    const params = new HttpParams()
+      .set('moduleId', `${moduleId}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.GET<SystemReportSubModule[]>(
+      `system-report-submodules`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
+    )
+  }
+
+  createSystemReportSubModule(data: SystemReportSubModule): Observable<SystemReportSubModule> {
+    return this.api.POST<SystemReportSubModule>(
+      `system-report-submodules`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+    )
+  }
+
+  updateSystemReportSubModule(
+    moduleId: number,
+    data: SystemReportSubModule
+  ): Observable<SystemReportSubModule> {
+    return this.api.PUT<SystemReportSubModule>(
+      `system-report-submodules/${moduleId}`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
     )
   }
 }

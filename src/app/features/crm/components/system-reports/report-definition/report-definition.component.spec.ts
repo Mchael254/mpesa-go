@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportDefinitionComponent } from './report-definition.component';
+import {ReportDefinitionComponent} from './report-definition.component';
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
 import {of} from "rxjs";
@@ -13,7 +13,7 @@ import {SharedModule} from "../../../../../shared/shared.module";
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {TableModule} from "primeng/table";
 import {TranslateModule} from "@ngx-translate/core";
-import {SystemReportModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {SystemReportModule, SystemReportSubModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
 
 export class MockGlobalMessageService {
   displayErrorMessage = jest.fn((summary, detail) => {
@@ -29,11 +29,14 @@ export class MockMandatoryService {
 }
 
 export class MockSystemsService {
-  getSystemReportModules = jest.fn().mockReturnValue(of());
+  getSystemReportModules = jest.fn().mockReturnValue(of(mockReportModule));
   createSystemReportModule = jest.fn().mockReturnValue(of());
   updateSystemReportModule = jest.fn().mockReturnValue(of());
   deleteSystemReportModule = jest.fn().mockReturnValue(of());
-  getSystems = jest.fn().mockReturnValue(of());
+  getSystems = jest.fn().mockReturnValue(of(mockSystem));
+  getSystemReportSubModules = jest.fn().mockReturnValue(of(mockReportSubModule));
+  createSystemReportSubModule = jest.fn().mockReturnValue(of());
+  updateSystemReportSubModule = jest.fn().mockReturnValue(of());
 }
 const mockSystem: SystemsDto[] = [
   {
@@ -53,6 +56,14 @@ const mockReportModule: SystemReportModule[] = [
   }
 ]
 
+const mockReportSubModule: SystemReportSubModule[] = [
+  {
+    "id": 1,
+    "name": "Sub module one",
+    "description": "Description for sub module",
+    "moduleId": 354,
+  }
+];
 
 describe('ReportDefinitionComponent', () => {
   let component: ReportDefinitionComponent;
@@ -144,6 +155,14 @@ describe('ReportDefinitionComponent', () => {
     expect(systemsServiceStub.createSystemReportModule.call.length).toBe(1);
   });
 
+  test('should save submodule', () => {
+    const button = fixture.debugElement.nativeElement.querySelector('#saveSubModuleBtn');
+    button.click();
+    fixture.detectChanges();
+    expect(systemsServiceStub.createSystemReportSubModule.call).toBeTruthy();
+    expect(systemsServiceStub.createSystemReportSubModule.call.length).toBe(1);
+  });
+
   test('should open the product define module modal and set form values when a module is selected', () => {
     const mockSelectedModule = mockReportModule[0];
     component.selectedModule = mockSelectedModule;
@@ -163,6 +182,24 @@ describe('ReportDefinitionComponent', () => {
     });
   });
 
+  test('should open the product define sub module modal and set form values when a sub module is selected', () => {
+    const mockSelectedSubModule = mockReportSubModule[0];
+    component.selectedSubModule = mockSelectedSubModule;
+    const spyOpenDefineSubModuleModal = jest.spyOn(component, 'openSubModuleModal');
+    const patchValueSpy = jest.spyOn(
+      component.defineSubModuleForm,
+      'patchValue'
+    );
+
+    component.editSubModule();
+
+    expect(spyOpenDefineSubModuleModal).toHaveBeenCalled();
+    expect(patchValueSpy).toHaveBeenCalledWith({
+      subModuleName: mockSelectedSubModule.name,
+      subModuleDescription: mockSelectedSubModule.description,
+    });
+  });
+
   test('should display an error message when no module is selected during edit', () => {
     component.selectedModule = null;
 
@@ -171,6 +208,17 @@ describe('ReportDefinitionComponent', () => {
     expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith(
       'Error',
       'No module is selected!'
+    );
+  });
+
+  test('should display an error message when no sub module is selected during edit', () => {
+    component.selectedSubModule = null;
+
+    component.editSubModule();
+
+    expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith(
+      'Error',
+      'No sub module is selected!'
     );
   });
 
@@ -208,5 +256,36 @@ describe('ReportDefinitionComponent', () => {
     component.getAllSystemReportModules(systemId);
     expect(systemsServiceStub.getSystemReportModules).toHaveBeenCalled();
     expect(component.modulesData).toEqual(mockReportModule);
+  });
+
+  test('should fetch submodules data', () => {
+    jest.spyOn(systemsServiceStub,'getSystemReportSubModules');
+    const moduleId = mockReportModule[0].id;
+    component.getAllSystemReportSubModules(moduleId);
+    expect(systemsServiceStub.getSystemReportSubModules).toHaveBeenCalled();
+    expect(component.subModuleData).toEqual(mockReportSubModule);
+  });
+
+  test('should set selectedModule and fetch its sub-modules', () => {
+    const getAllSystemReportSubModulesSpy = jest.spyOn(component, 'getAllSystemReportSubModules');
+
+    component.onSelectModule(mockReportModule[0]);
+
+    expect(component.selectedModule).toEqual(mockReportModule[0]);
+    expect(getAllSystemReportSubModulesSpy).toHaveBeenCalledWith(mockReportModule[0].id);
+  });
+  test('should toggle dropdown visibility', () => {
+    const mockReport = { id: 1, name: 'Test Report' };
+    const anotherReport = { id: 2, name: 'Another Report' };
+
+    component.showInputForReport = null;
+    component.toggleDropdown(mockReport);
+    expect(component.showInputForReport).toEqual(mockReport);
+
+    component.toggleDropdown(mockReport);
+    expect(component.showInputForReport).toBeNull();
+
+    component.toggleDropdown(anotherReport);
+    expect(component.showInputForReport).toEqual(anotherReport);
   });
 });
