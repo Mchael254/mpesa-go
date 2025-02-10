@@ -1009,7 +1009,14 @@
       "comments":"Comments",
       "expiry_date":"Expiry date",
       "transaction_date":"Transaction date",
-      "revise_reuse_quotation": "Quotations:Revise/Reuse Quotation"
+      "revise_reuse_quotation": "Quotations:Revise/Reuse Quotation",
+      "quotation_sources": "Quotation sources",
+      "business_sources": "Business sources",
+      "define_a_new_quotation_source" : "Define a new Quotation source",
+      "applicable_modules" : "Applicable modules",
+      "underwriting" : "Underwriting",
+      "both" : "Both",
+      "quotations" : "Quotations"
 
   },
     "policy": {
