@@ -15,6 +15,7 @@ import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
 import { ClientSearchComponent } from './components/client-search/client-search.component';
 import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
+import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
 
 
 
@@ -29,7 +30,8 @@ import { ClientAllocationComponent } from './components/client-allocation/client
     
     ReceiptCaptureComponent,
     ClientSearchComponent,
-    ClientAllocationComponent
+    ClientAllocationComponent,
+    ReceiptPreviewComponent
     
    
   ],
@@ -43,6 +45,7 @@ import { ClientAllocationComponent } from './components/client-allocation/client
         ReactiveFormsModule,
         TranslateModule,
         SharedModule,
+        
     ]
 })
 export class FmsModule { }
