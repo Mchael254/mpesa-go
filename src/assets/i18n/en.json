@@ -1016,7 +1016,10 @@
       "applicable_modules" : "Applicable modules",
       "underwriting" : "Underwriting",
       "both" : "Both",
-      "quotations" : "Quotations"
+      "quotations" : "Quotations",
+      "select_a_policy" : "Select a policy",
+      "policy_ID" : "PolicyId",
+      "no_policy_found" : "No Policy Found"
 
   },
     "policy": {

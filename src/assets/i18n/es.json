@@ -958,7 +958,10 @@
       "applicable_modules": "Módulos aplicables",
       "underwriting": "Suscripción",
       "both": "Ambos",
-      "quotations": "Cotizaciones"
+      "quotations": "Cotizaciones",
+      "select_a_policy": "Seleccionar una póliza",
+      "policy_ID": "ID de la póliza",
+      "no_policy_found": "No se encontró ninguna póliza"
 
     },
     "policy": {
