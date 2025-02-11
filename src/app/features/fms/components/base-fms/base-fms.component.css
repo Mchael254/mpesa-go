@@ -3,6 +3,86 @@
     height: 350px;
     overflow: hidden;
   } */
+  .top-bar {
+    
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    height: 35px; /* Set a fixed height */
+}
+/* Override for dropdowns inside the .top-bar */
+.top-bar .dropdown-icon {
+    right: 2px !important; /* Increase the right spacing only for top-bar */
+}
+.top-select {
+    display: flex;
+    align-items: center;
+    margin-right: 60px;
+    
+    font-size: 13px;
+    color: #333;
+    /* FMS Info bar */
+
+
+
+}
+.org{
+    margin-left: 20px;
+}
+
+.top-select span {
+    margin-right: 4px;
+}
+
+.top-select select {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: #333;
+    padding-right: 16px;
+   
+    background-repeat: no-repeat;
+    background-position: right center;
+    appearance: none;
+}
+
+
+/* Add this new class to hide the scrollbar but keep functionality */
+.top-bar::-webkit-scrollbar {
+    display: none;
+}
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+select.form-control {
+  
+ 
+  width: 100%;
+  padding-right: 30px; /* Ensure space for icon */
+  appearance: none; /* Removes default dropdown arrow */
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+
+  pointer-events: none; /* Prevent interaction */
+  color: #555; 
+}
+
   .fixed-height-card {
     height: 350px;
     overflow-y: auto; /* Add vertical scrolling */
