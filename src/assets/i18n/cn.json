@@ -924,7 +924,15 @@
       "comments": "评论",
       "expiry_date": "到期日期",
       "transaction_date": "交易日期",
-      "revise_reuse_quotation": "报价:修改/重用报价"
+      "revise_reuse_quotation": "报价:修改/重用报价",
+      "quotation_sources": "报价来源",
+      "business_sources": "业务来源",
+      "define_a_new_quotation_source": "定义新的报价来源",
+      "applicable_modules": "适用模块",
+      "underwriting": "核保",
+      "both": "两者",
+      "quotations": "报价"
+
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",

@@ -929,7 +929,15 @@
       "comments": "Maoni",
       "expiry_date": "Tarehe ya kumalizika muda",
       "transaction_date": "Tarehe ya muamala",
-      "revise_reuse_quotation": "Bei za Bima:Sahihisha/Tumia Tena Pendekezo la Bima"
+      "revise_reuse_quotation": "Bei za Bima:Sahihisha/Tumia Tena Pendekezo la Bima",
+      "quotation_sources": "Vyanzo vya nukuu",
+      "business_sources": "Vyanzo vya biashara",
+      "define_a_new_quotation_source": "Tafsiri chanzo kipya cha nukuu",
+      "applicable_modules": "Moduli zinazotumika",
+      "underwriting": "Uandikaji wa bima",
+      "both": "Vyote viwili",
+      "quotations": "Nukuu"
+
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",

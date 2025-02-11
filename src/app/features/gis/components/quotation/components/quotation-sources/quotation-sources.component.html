@@ -1,12 +1,12 @@
 <div class="container">
-  <p class="titleMain mt-3 ms-4">Quotation sources</p>
+  <p class="titleMain mt-3 ms-4">{{'gis.quotation.quotation_sources' | translate}}</p>
   <div class="container mx-2 mt-n1">
 
   <div class="card mb-3" style=" position: relative;">
     <div class="card-body">
       <div class="row mb-3">
         <div class="col d-flex justify-content-between align-items-center">
-          <h6 class="fw-bold mb-0">Business sources</h6>
+          <h6 class="fw-bold mb-0"> {{'gis.quotation.business_sources' | translate}}</h6>
           <div class="row">
             <div class="col-3"></div>
               <div class="col-sm-3" >
@@ -42,36 +42,36 @@
           <div class="modal-content" id="addSourcesModal">
             <div class="modal-body">
               <button type="button" #closebutton class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" (click)="clearForm()">X</button>
-              <h5 class="modal-title" id="modalTitle">Define a new quotation source</h5>
+              <h5 class="modal-title" id="modalTitle">{{'gis.quotation.define_a_new_quotation_source' | translate}}</h5>
 
               <form [formGroup]="sourcesForm" class="flex flex-col gap-4">
                 <div class="flex flex-col">
-                  <label for="description" class="mb-2">Description</label>
+                  <label for="description" class="mb-2">{{'gis.quotation.description' | translate}}</label>
                   <input
                     id="description"
                     formControlName="description"
-                    
+
                     class="p-2 border rounded"
                   />
                 </div>
 
                 <div class="flex flex-col">
-                  <label for="applicableModule" class="mb-2 required">Applicable modules</label>
+                  <label for="applicableModule" class="mb-2 required">{{'gis.quotation.applicable_modules' | translate}}</label>
                   <select
                     id="applicableModule"
                     formControlName="applicableModule"
                     class="form-select form-control-sm mb-1"
                   >
-                    <option value="U">Underwriting</option>
-                    <option value="B">Both</option>
-                    <option value="Q">Quotations</option>
+                    <option value="U">{{'gis.quotation.underwriting' | translate}}</option>
+                    <option value="B">{{'gis.quotation.both' | translate}}</option>
+                    <option value="Q">{{'gis.quotation.quotations' | translate}}</option>
                   </select>
                 </div>
 
                 <div class="submit-container">
-                
-                  <button type="button" class="btn btn-primary " id="search-buttons"
-                  (click)="sourceModalAction()"> Save Details</button>
+
+                  <button type="button" class="btn btn-primary" id="search-buttons"
+                  (click)="sourceModalAction()"> {{'gis.quotation.save_details' | translate}}</button>
 
                 </div>
 
@@ -112,8 +112,8 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Description</th>
-              <th>Applicable module</th>
+              <th>{{'gis.quotation.description' | translate}}</th>
+              <th>{{'gis.quotation.applicable_modules' | translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-source>

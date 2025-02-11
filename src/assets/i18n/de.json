@@ -923,7 +923,14 @@
       "comments": "Kommentare",
       "expiry_date": "Ablaufdatum",
       "transaction_date": "Transaktionsdatum",
-      "revise_reuse_quotation": "Angebote:Überarbeiten/Wiederverwenden des Angebots"
+      "revise_reuse_quotation": "Angebote:Überarbeiten/Wiederverwenden des Angebots",
+      "quotation_sources": "Angebotsquellen",
+      "business_sources": "Geschäftsquellen",
+      "define_a_new_quotation_source": "Eine neue Angebotsquelle definieren",
+      "applicable_modules": "Anwendbare Module",
+      "underwriting": "Zeichnung",
+      "both": "Beide",
+      "quotations": "Angebote"
 
     },
     "policy": {
