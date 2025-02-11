@@ -3,36 +3,36 @@ export interface GenericResponse<F> {
   msg: string;
   success: boolean;
 }
-export interface UsersDTO{
+export interface UsersDTO {
   id: number;
-    name: string;
-    username: string;
-    emailAddress: string;
-    dateOfBirth: Date;
-    status: string;
-    userType:string;
-    telNo: number;
-    phoneNumber: string;
-    otherPhone:  number;
-    personelRank: number;
-    countryCode:  number;
-    townCode:  number;
-    physicalAddress:  string;
-    postalCode:  number;
-    departmentCode:  number;
-    activatedBy: string;
-    updateBy: string;
-    dateCreated: Date;
-    profilePicture: string | null;
-    organizationId: number;
-    organizationGroupId:  number;
-    supervisorId:  number;
-    branchId:  number;
-    gender: string;
-    pinNumber: number;
-    idNumber: number;
+  name: string;
+  username: string;
+  emailAddress: string;
+  dateOfBirth: Date;
+  status: string;
+  userType: string;
+  telNo: number;
+  phoneNumber: string;
+  otherPhone: number;
+  personelRank: number;
+  countryCode: number;
+  townCode: number;
+  physicalAddress: string;
+  postalCode: number;
+  departmentCode: number;
+  activatedBy: string;
+  updateBy: string;
+  dateCreated: Date;
+  profilePicture: string | null;
+  organizationId: number;
+  organizationGroupId: number;
+  supervisorId: number;
+  branchId: number;
+  gender: string;
+  pinNumber: number;
+  idNumber: number;
 }
-export interface BranchDTO{
+export interface BranchDTO {
   bnsCode: number;
   countryId: number;
   countryName: string;
@@ -44,7 +44,7 @@ export interface BranchDTO{
   managerAllowed: string;
   managerId: number;
   managerName: string;
- managerSeqNo: string;
+  managerSeqNo: string;
   name: string;
   organizationId: number;
   overrideCommissionAllowed: string;
@@ -67,16 +67,16 @@ export interface DeleteAllocationResponseDTO {
   success: boolean;
   data: any; // Adjust the type if you have a specific structure for the data
 }
-export interface CurrencyDTO{
+export interface CurrencyDTO {
   code: number;
   symbol: string;
   desc: string;
   roundOff: number;
 }
-export interface ExchangeRateDTO{
-  data:string;
+export interface ExchangeRateDTO {
+  data: string;
 }
-export interface ReceiptNumberDTO{
+export interface ReceiptNumberDTO {
   bankAccountCode: number;
   bankAccountBranchCode: number;
   bankAccountName: string;
@@ -86,9 +86,8 @@ export interface ReceiptNumberDTO{
   receiptingPointAutoManual: string;
   branchReceiptNumber: number;
   receiptNumber: string;
-  
 }
-export interface ManualExchangeRateDTO{
+export interface ManualExchangeRateDTO {
   data: string;
 }
 // DTO for the response schema
@@ -102,29 +101,29 @@ export interface ManualExchangeRateResponseDTO {
 //   bankName: string;
 // branchName: string | null;
 // refCode: string | null;
-// code: number; 
+// code: number;
 // }
 
-export interface NarrationDTO{
-  code:number;
-  narration:string;
+export interface NarrationDTO {
+  code: number;
+  narration: string;
 }
-export interface ReceiptingPointsDTO{
+export interface ReceiptingPointsDTO {
   id: number;
-    name: string;
-    
-    autoManual: string;
-    printerName: string | null;
-    userRestricted: string;
+  name: string;
+
+  autoManual: string;
+  printerName: string | null;
+  userRestricted: string;
 }
-export interface BanksDTO{
+export interface BanksDTO {
   code: number;
   branchCode: number;
   name: string;
   type: string;
   defaultBank: string;
 }
-export interface PaymentModesDTO{
+export interface PaymentModesDTO {
   code: string;
   desc: string;
   clearingRequired: string;
@@ -142,9 +141,8 @@ export interface PaymentModesDTO{
   refLength: number;
   emailApplicable: string;
   bnkRateType: string;
-
 }
-export interface ChargesDTO{
+export interface ChargesDTO {
   id: number;
   name: string;
   accNo: string;
@@ -157,7 +155,7 @@ export interface ChargesDTO{
       amount: number;
       receiptNo: number;
     }
-    ]
+  ];
 }
 export interface ChargeManagementDTO {
   addEdit: string;
@@ -172,12 +170,12 @@ export interface ChargeManagementDTO {
 //   success: boolean;
 //   data: any[]; // Replace `any[]` with the specific type if known
 // }
-export interface ExistingChargesResponseDTO{
-  id: number,
-  receiptChargeId: number,
-  amount: number,
-  receiptNO: number,
-  receiptChargeName: string
+export interface ExistingChargesResponseDTO {
+  id: number;
+  receiptChargeId: number;
+  amount: number;
+  receiptNO: number;
+  receiptChargeName: string;
 }
 export interface UploadReceiptDocsDTO {
   originalFilename: string;
@@ -188,29 +186,29 @@ export interface UploadReceiptDocsDTO {
   uploadedFiles: string[];
 }
 
-export interface AccountTypeDTO{
-      branchCode: number;
-      userCode: number;
-      code: number;
-      systemCode: number;
-      accCode: number;
-      name: string;
-      coaAccNumber: string;
-      coaAccOrgCode: number;
-      coaBranchCode: number;
-      receiptBank: number;
-      chequeBank: number;
-      subClass: string;
-      active: string;
-      receiptAccount: string;
-      restrictGrossDebitRcpt: string;
-      vatApplicable: string;
-      rateApplicable: number;
-      actTypeShtDesc: string;
-      systemName: string;
+export interface AccountTypeDTO {
+  branchCode: number;
+  userCode: number;
+  code: number;
+  systemCode: number;
+  accCode: number;
+  name: string;
+  coaAccNumber: string;
+  coaAccOrgCode: number;
+  coaBranchCode: number;
+  receiptBank: number;
+  chequeBank: number;
+  subClass: string;
+  active: string;
+  receiptAccount: string;
+  restrictGrossDebitRcpt: string;
+  vatApplicable: string;
+  rateApplicable: number;
+  actTypeShtDesc: string;
+  systemName: string;
 }
 
-export interface ClientsDTO{
+export interface ClientsDTO {
   tableUsed: string;
   code: number;
   accountCode: number;
@@ -221,45 +219,44 @@ export interface ClientsDTO{
   systemShortDesc: string;
   receiptType: string;
 }
-export interface TransactionDTO{
-systemShortDescription: string;
-      transactionNumber: number;
-      transactionDate: Date;
-      referenceNumber: string;
-      transactionType: string;
-      clientCode: number;
-      amount: number;
-      balance: number;
-      commission: number;
-      withholdingTax: number;
-      transactionLevy: number;
-      serviceDuty: number;
-      settlementAmount: number;
-      narrations: string;
-      accountCode: string;
-      clientPolicyNumber: string;
-      receiptType: string;
-      extras: number;
-      policyHolderFund: number;
-      agentDiscount: number;
-      policyBatchNumber: number;
-      propertyCode: number;
-      clientName: string;
-      vat: number;
-      commissionPayable: number;
-      vatPayable: number;
-      healthFund: number;
-      roadSafetyFund: number;
-      clientVatAmount: number;
-      certificateCharge: number;
-      motorLevy: number;
-      originalInstallmentPremium: number;
-      outstandingPremiumBalance: number;
-      nextInstallmentNumber: number;
-      paidToDate: Date;
-      transmissionReferenceNumber: string;
+export interface TransactionDTO {
+  systemShortDescription: string;
+  transactionNumber: number;
+  transactionDate: Date;
+  referenceNumber: string;
+  transactionType: string;
+  clientCode: number;
+  amount: number;
+  balance: number;
+  commission: number;
+  withholdingTax: number;
+  transactionLevy: number;
+  serviceDuty: number;
+  settlementAmount: number;
+  narrations: string;
+  accountCode: string;
+  clientPolicyNumber: string;
+  receiptType: string;
+  extras: number;
+  policyHolderFund: number;
+  agentDiscount: number;
+  policyBatchNumber: number;
+  propertyCode: number;
+  clientName: string;
+  vat: number;
+  commissionPayable: number;
+  vatPayable: number;
+  healthFund: number;
+  roadSafetyFund: number;
+  clientVatAmount: number;
+  certificateCharge: number;
+  motorLevy: number;
+  originalInstallmentPremium: number;
+  outstandingPremiumBalance: number;
+  nextInstallmentNumber: number;
+  paidToDate: Date;
+  transmissionReferenceNumber: string;
 }
-
 
 export interface ReceiptParticular {
   receiptNumber: number;
@@ -295,45 +292,42 @@ export interface ReceiptParticularDetail {
 }
 
 export interface GroupBusinessAccount {
-    accountNumber: string; // Primary key for this data type
-    accountName: string; 
-    businessUnit: string; // Assuming you need to connect to a business unit 
-    balance: number;
-    currency: string; 
-   
-  }
-  export interface GlAccount {
-    accountNumber: string;
-    accountName: string;
-    description: string;
-    balance: number;
-    currency: string; 
-    // Add any other relevant GL Account properties 
-  }
-
+  accountNumber: string; // Primary key for this data type
+  accountName: string;
+  businessUnit: string; // Assuming you need to connect to a business unit
+  balance: number;
+  currency: string;
+}
+export interface GlAccount {
+  accountNumber: string;
+  accountName: string;
+  description: string;
+  balance: number;
+  currency: string;
+  // Add any other relevant GL Account properties
+}
 
 export interface Client {
-    clientName: string;
-    policyNumber: string;
-    debitNote: string;
-    accountNumber: string;
-    amountInsured: number;
-    allocatedAmount: number;
-    
-  }
+  clientName: string;
+  policyNumber: string;
+  debitNote: string;
+  accountNumber: string;
+  amountInsured: number;
+  allocatedAmount: number;
+}
 export interface Transaction {
-    detailProperty1?: string;
-    detailProperty2?: string;
-    id?: number;
-    clientName: string;
-    amount?: number;
-    allocatedAmount?: string;
-    narration?:string;
-    policyNumber?:number;
+  detailProperty1?: string;
+  detailProperty2?: string;
+  id?: number;
+  clientName: string;
+  amount?: number;
+  allocatedAmount?: string;
+  narration?: string;
+  policyNumber?: number;
 
-    date?:Date
-  }
-  
+  date?: Date;
+}
+
 export interface Receipt {
   amountIssued: number;
   openCheque: string;
@@ -356,7 +350,7 @@ export interface Receipt {
   deductions: string;
   capitalInjection: string;
   receiptNumber?: string;
-  transactions: Transaction[]; 
+  transactions: Transaction[];
 }
 export interface ReceiptSaveDTO {
   receiptNo: number | string;
@@ -384,7 +378,7 @@ export interface ReceiptSaveDTO {
   receiptSms: string;
   receiptChequeType: string;
   vatInclusive: string;
-  rctbbrCode: string;
+  rctbbrCode: number;
   directType: string;
   pmBnkCode: number;
   dmsKey: string;
@@ -396,7 +390,7 @@ export interface ReceiptSaveDTO {
   insurerAcc: number;
   grossOrNetWhtax: string;
   grossOrNetVat: string;
-  sysCode: string;
+  sysCode: number;
   bankAccountType: string;
   receiptParticularDetailUpdateRequests?: {
     receiptParticularDetailCode: number;
@@ -404,8 +398,6 @@ export interface ReceiptSaveDTO {
     loan: number;
     pension: number;
   }[];
-
-  
 }
 export interface ReceiptParticularDetailsDTO {
   policyNumber: string;
@@ -502,84 +494,84 @@ export interface GetAllocationResponseDTO {
   success: boolean;
   data: AllocationDTO[];
 }
-export interface printDTO{
+export interface printDTO {
   receiptNumber: number;
-    receiptDate:Date;
-    captureDate: Date;
-    capturedBy: number;
-    amount: number;
-    paymentMode: string;
-    paymentMemo: string;
-    paidBy: string;
-    documentDate: Date;
-    description: string;
-    printed: string;
-    applicationSource: number;
-    accountCode: number;
-    accountType: string;
-    branchCode: number;
-    accountShortDescription: string;
-    currencyCode: number;
-    bankAccCode: number;
-    cancelled: string;
-    commission: number;
-    batchCode: number;
-    branchReceiptNumber: number;
-    branchReceiptCode: string;
-    drawersBank: string;
-    accountTypeId: string;
-    bankBranchCode: number;
-    receiptType: string;
-    cancelledBy: number;
-    cbPosted: string;
-    sourcePosted: string;
-    netGrossFlag: string;
-    glAccount: string;
-    parentNumber: number;
-    cancelledDate: Date;
-    voucherNumber: number;
-    reverseVoucherNumber: number;
-    bankChargeAmount: number;
-    clientChargeAmount: number;
-    vatCertificateNumber: string;
+  receiptDate: Date;
+  captureDate: Date;
+  capturedBy: number;
+  amount: number;
+  paymentMode: string;
+  paymentMemo: string;
+  paidBy: string;
+  documentDate: Date;
+  description: string;
+  printed: string;
+  applicationSource: number;
+  accountCode: number;
+  accountType: string;
+  branchCode: number;
+  accountShortDescription: string;
+  currencyCode: number;
+  bankAccCode: number;
+  cancelled: string;
+  commission: number;
+  batchCode: number;
+  branchReceiptNumber: number;
+  branchReceiptCode: string;
+  drawersBank: string;
+  accountTypeId: string;
+  bankBranchCode: number;
+  receiptType: string;
+  cancelledBy: number;
+  cbPosted: string;
+  sourcePosted: string;
+  netGrossFlag: string;
+  glAccount: string;
+  parentNumber: number;
+  cancelledDate: Date;
+  voucherNumber: number;
+  reverseVoucherNumber: number;
+  bankChargeAmount: number;
+  clientChargeAmount: number;
+  vatCertificateNumber: string;
   policyType: string;
-    remarks: string;
-    agentCode: number;
-    receivedFrom: string;
-    collectionAccountCode: number;
-    cleared: string;
-    divisionCode: number;
-    clearedBy: number;
-    clearedDate:string;
-    batchRecordId: number;
-    multiOrg: string;
-    sourceOrganization: number;
-    multiOrgAmount: number;
-    directReceipt: string;
-    insurerAccount: number;
-    receiptingPointId: number;
-    fixedExchangeRate: string;
-    fixedExchangeCurrencyRate: number;
-    manualReference: string;
-    banked: string;
-    unallocatedAmount: number;
-    grossAmount: number;
-    capitalInjectionFlag: string;
-    cancelSourcePosted: string;
-    ipfFinancier: string;
-    ipfNumber: number;
-    ocqNumber: number;
-    smsNotification: string;
-    currencyRate: number;
-    isPostDatedCheque: string;
-    postDatedChequeNotification: string;
-    acknowledgementPrinted: string;
-   uniqueVal: number;
-    raiseException: string;
-    exceptionAuthorizedBy: number;
-    exceptionAuthDate: string;
-    loadIndicator: string;
-    authorizationStatus: string
+  remarks: string;
+  agentCode: number;
+  receivedFrom: string;
+  collectionAccountCode: number;
+  cleared: string;
+  divisionCode: number;
+  clearedBy: number;
+  clearedDate: string;
+  batchRecordId: number;
+  multiOrg: string;
+  sourceOrganization: number;
+  multiOrgAmount: number;
+  directReceipt: string;
+  insurerAccount: number;
+  receiptingPointId: number;
+  fixedExchangeRate: string;
+  fixedExchangeCurrencyRate: number;
+  manualReference: string;
+  banked: string;
+  unallocatedAmount: number;
+  grossAmount: number;
+  capitalInjectionFlag: string;
+  cancelSourcePosted: string;
+  ipfFinancier: string;
+  ipfNumber: number;
+  ocqNumber: number;
+  smsNotification: string;
+  currencyRate: number;
+  isPostDatedCheque: string;
+  postDatedChequeNotification: string;
+  acknowledgementPrinted: string;
+  uniqueVal: number;
+  raiseException: string;
+  exceptionAuthorizedBy: number;
+  exceptionAuthDate: string;
+  loadIndicator: string;
+  authorizationStatus: string;
 }
 export interface ReceiptUploadRequest {
   docType: string;

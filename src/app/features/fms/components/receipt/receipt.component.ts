@@ -1817,7 +1817,7 @@ allocateAndPostAllocations(): void {
     next: (response) => {
       this.allocation = false;
       this.globalMessagingService.displaySuccessMessage('Success', 'Allocations posted successfully');
-      //console.log('allocation payload:',allocationData);
+      console.log('allocation payload:',allocationData);
        // Reset client selection and transactions
       // this.selectedClient = null;
        this.transactions = [];
@@ -2082,21 +2082,21 @@ submitReceipt(): any {
    return false;
 
   }
- this.fetchParamStatus();
- console.log('receiptDoc>>',this.parameterStatus);
-  if(this.parameterStatus=='N')
-    {
-     // alert('jey');
-     if(confirm('do you want to save receipt without uploading file?')==true){
+//  this.fetchParamStatus();
+//  console.log('receiptDoc>>',this.parameterStatus);
+//   if(this.parameterStatus=='N')
+//     {
+//      // alert('jey');
+//      if(confirm('do you want to save receipt without uploading file?')==true){
 
-return true;
-     }else{
-      return false;
-     }
+// return true;
+//      }else{
+//       return false;
+//      }
 
 
-     }
-this.confirmFormValidity();
+//      }
+// this.confirmFormValidity();
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
 const getCapitalInjectionStatus=formValues.capitalInjection;
@@ -2148,7 +2148,7 @@ const receiptData: ReceiptSaveDTO={
     receiptSms: "Y",
     receiptChequeType: formValues.chequeType || null,
     vatInclusive: null,
-    rctbbrCode: String( this.defaultBranchId) || String(this.selectedBranchId) ,
+    rctbbrCode: Number( this.defaultBranchId) || Number(this.selectedBranchId) ,
     directType: null,
     pmBnkCode: null,
     dmsKey: null,
@@ -2162,7 +2162,7 @@ const receiptData: ReceiptSaveDTO={
     grossOrNetWhtax: null,
     grossOrNetVat: null,
 
-    sysCode: String(this.selectedClient.systemCode),
+    sysCode: Number(this.selectedClient.systemCode),
     bankAccountType: this.globalBankAccountVariable.type
 
 }
