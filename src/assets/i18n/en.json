@@ -2720,6 +2720,15 @@
       "charges": "Receipt charges",
       "capitalInjection": "Capital Injection",
       "deductions": "Deductions",
+      "back":"Back",
+      "clear":"Clear",
+      "next":"Next",
+      "mpesaCode":"Mpesa Code",
+      "cheque":"Cheque",
+      "eftNo":"Eft_No",
+      "yes":"Yes",
+      "no":"No",
+      "editDescription":"edit Description",
       "chargeAmount": "Charge amount"
     },
     "allocation": {

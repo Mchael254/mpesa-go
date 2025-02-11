@@ -2625,6 +2625,15 @@
       "capitalInjection": "Injection de capital",
       "deductions": "Déductions",
       "chargeAmount": "Montant des frais",
+      "back":"Retour",
+      "clear":"Effacer",
+      "next":"Suivant",
+      "mpesaCode":"Code Mpesa",
+      "cheque":"Chèque",
+      "eftNo":"N° de virement",
+      "yes":"Oui",
+      "no":"Non",
+      "editDescription":"Modifier la description",
       "uploadFiles": "Télécharger des fichiers"
     },
     "allocation": {

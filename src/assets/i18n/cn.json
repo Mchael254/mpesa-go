@@ -2063,7 +2063,17 @@
       "capitalInjection": "资本注入",
       "deductions": "扣除",
       "chargeAmount": "费用金额",
+      "back":"返回",
+      "clear":"清除",
+      "next":"下一个",
+      "mpesaCode":"M-Pesa 代码",
+      "cheque":"支票",
+      "eftNo":"电子转账号",
+      "yes":"是",
+      "no":"不是 ",
+      "editDescription":"编辑描述",
       "uploadFiles": "上传文件"
+
     },
     "allocation": {
       "add_allocation": "添加分配",
