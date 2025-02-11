@@ -57,13 +57,13 @@
   
     <div class="card">
    
-      <div class="card-body ">
+      <div class="card-body " >
         <div class="row my-3 mx-3">
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent header">General Ledger</div>
-              <div class="card-body">
-                <div class="custom-list list">
+              <div class="card-body ">
+                <div class="custom-list list " >
                   <div *ngFor="let item of GLledger" (click)="toggleItem(item)" [class.active]="item.showSubItems">
                     <a [routerLink]="item.link" *ngIf="item.link">
                       <i *ngIf="item.showSubItems" class="fa fa-chevron-down"></i>
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">CashBook</div>
               <div class="card-body">
                 <div class="custom-list list">
@@ -114,7 +114,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">Creditors</div>
               <div class="card-body">
                 <div class="custom-list list">
@@ -141,7 +141,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">Debtors</div>
               <div class="card-body">
                 <div class="custom-list list">
