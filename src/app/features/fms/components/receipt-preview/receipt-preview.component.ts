@@ -1,0 +1,142 @@
+/**
+ * @fileOverview This file contains the `ReceiptPreviewComponent`, which is responsible for displaying a preview of a generated receipt.
+ * It fetches the receipt data, generates a report using the `ReportsService`, and provides a download link.
+ */
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
+import { ReportDto, ReportsDto } from 'src/app/shared/data/common/reports-dto';
+import { Logger } from 'src/app/shared/services';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { ReportsService } from 'src/app/shared/services/reports/reports.service';
+import { ReceiptDataService } from '../../services/receipt-data.service';
+
+const log = new Logger('ReceiptPreviewComponent');
+
+/**
+ * @Component({
+ *   selector: 'app-receipt-preview',
+ *   templateUrl: './receipt-preview.component.html',
+ *   styleUrls: ['./receipt-preview.component.css']
+ * })
+ *
+ * The `ReceiptPreviewComponent` fetches receipt data, generates a PDF report using the `ReportsService`,
+ * and displays a link allowing the user to download the generated receipt.
+ */
+@Component({
+  selector: 'app-receipt-preview',
+  templateUrl: './receipt-preview.component.html',
+  styleUrls: ['./receipt-preview.component.css'],
+})
+export class ReceiptPreviewComponent implements OnInit {
+  /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
+  receiptResponse: any;
+
+  /** @property {string | null} filePath - The path to the generated receipt file (PDF), or null if not yet generated.*/
+  filePath: string | null = null;
+
+  /** @property {number} orgId - The ID of the organization for which the receipt is generated. */
+  orgId: number;
+
+  /** @property {any} documentData - Currently unused, but could contain more complex data associated with the receipt document. */
+  documentData: any;
+
+  /**
+   * Constructs a new `ReceiptPreviewComponent`.
+   * @param {ReportsService} reportService - The service used to generate reports (e.g., the receipt PDF).
+   * @param {GlobalMessagingService} globalMessagingService - The service used to display messages to the user.
+   * @param {Router} router - The Angular Router service, used for navigation.
+   * @param {ReceiptDataService} receiptDataService - The service used to manage receipt data across the application.
+   */
+  constructor(
+    private reportService: ReportsService,
+    private globalMessagingService: GlobalMessagingService,
+    private router: Router,
+    private receiptDataService: ReceiptDataService
+  ) {}
+
+  /**
+   * Lifecycle hook called once the component is initialized.
+   * Retrieves receipt number and organization ID from localStorage and calls `getReceipt` to generate the receipt preview.
+   * @returns {void}
+   */
+  ngOnInit(): void {
+    let receiptResponse = localStorage.getItem('receiptResponse');
+    this.receiptResponse = Number(receiptResponse);
+    console.log('receipt', this.receiptResponse);
+    let receiptNo = localStorage.getItem('receiptNo');
+    this.receiptResponse = Number(receiptNo);
+    console.log('receiptNo>>', this.receiptResponse);
+    let globalOrgId = localStorage.getItem('OrgId');
+    this.orgId = Number(globalOrgId);
+    this.getReceipt();
+  }
+
+  /**
+   * Generates the receipt report by calling the `ReportsService`.
+   * Builds the `ReportDto` payload with the receipt number and organization ID and subscribes to the result.
+   * On success, it creates a Blob from the response and sets the `filePath` to the Blob's URL.
+   * On error, it displays an error message using the `GlobalMessagingService`.
+   * @returns {void}
+   */
+  getReceipt(): void {
+    const reportPayload: ReportDto = {
+      encodeFormat: 'RAW',
+      params: [
+        {
+          name: 'UP_RCT_NO',
+          value: String(this.receiptResponse), // Use the receiptNumber
+        },
+        {
+          name: 'UP_ORG_CODE',
+          value: String(this.orgId), // Use the orgId
+        },
+      ],
+      reportFormat: 'PDF',
+      rptCode: 300,
+      system: 'CRM',
+    };
+
+    this.reportService.generateReport(reportPayload).subscribe({
+      next: (response) => {
+        log.info('Report Response:', response);
+
+        // Create a Blob from the response
+        const blob = new Blob([response], { type: 'application/pdf' });
+        this.filePath = window.URL.createObjectURL(blob);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.status
+        );
+      },
+    });
+  }
+
+  /**
+   * Triggers a download of the file at the given URL.
+   * Creates a temporary `<a>` element, sets its `href` and `download` attributes, and simulates a click to start the download.
+   * @param {string} fileUrl - The URL of the file to download.
+   * @param {string} fileName - The name to use for the downloaded file.
+   * @returns {void}
+   */
+  download(fileUrl: string, fileName: string): void {
+    if (fileUrl) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = fileName;
+      link.click();
+    }
+  }
+
+  /**
+   * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
+   * @returns {void}
+   */
+  onBack() {
+    this.receiptDataService.clearReceiptData(); // Clear but keep currency
+    this.router.navigate(['/home/fms/screen1']); // Navigate to the next screen
+  }
+}
