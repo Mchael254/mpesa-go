@@ -7,6 +7,7 @@ import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
 import { ClientSearchComponent } from './components/client-search/client-search.component';
 import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
+import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
 
 
 const routes: Routes = [
@@ -38,7 +39,10 @@ const routes: Routes = [
     path:'allocation',
     component:ClientAllocationComponent
   },
- 
+ {
+  path:'receipt-preview',
+  component:ReceiptPreviewComponent
+ }
 ];
 
 @NgModule({
