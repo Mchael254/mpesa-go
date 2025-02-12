@@ -40,7 +40,7 @@
 
           <ng-template pTemplate="body" let-clientData>
             <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
-              <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
+              <td>{{ clientData.firstName + ' ' + clientData.lastName | sentenceCase}}</td>
               <td>{{ clientData.id }}</td>
             </tr>
           </ng-template>

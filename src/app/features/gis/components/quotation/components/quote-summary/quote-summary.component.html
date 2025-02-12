@@ -81,22 +81,22 @@
                     <ng-template pTemplate="header">
                         <tr>
                             <th>{{'gis.quotation.product' | translate}}</th>
-                            <th> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
-                            <th>{{ 'gis.quotation.total_taxes' | translate }}</th>
-                            <th>{{'gis.quotation.premium' | translate}}</th>
-                            <th>{{'gis.quotation.total_premium' | translate}}</th>
+                            <th class="text-center"> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
+                            <th class="text-center">{{ 'gis.quotation.total_taxes' | translate }}</th>
+                            <th class="text-center">{{'gis.quotation.premium' | translate}}</th>
+                            <th class="text-center">{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-product let-i="index">
                         <tr>
-                            <td>{{ product.productShortDescription}}</td>
-                            <td class="text-start" appCommaFormat> {{product.totalSumInsured |
+                            <td>{{ product.productShortDescription | sentenceCase}}</td>
+                            <td class="text-center" appCommaFormat> {{product.totalSumInsured |
                                 number }}</td>
-                            <td class="text-start" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
+                            <td class="text-center" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
-                            <td class="text-start" appCommaFormat>{{premiumAmount | number }}</td>
-                            <td class="text-start" appCommaFormat>{{ product.premium |
+                            <td class="text-center" appCommaFormat>{{premiumAmount | number }}</td>
+                            <td class="text-center" appCommaFormat>{{ product.premium |
                                 number }}</td>
                         </tr>
 
@@ -112,85 +112,82 @@
                 <!-- RISK DETAILS -->
 
                 <div class="row mt-5">
-                    <div class="col-sm-3 ">
-                        <p class="title">{{'gis.policy.risk_details'|translate}}</p>
+                  <div class="col-sm-3 ">
+                    <p class="title">{{'gis.policy.risk_details'|translate}}</p>
+                  </div>
+                  <div class="col-sm-9 d-flex justify-content-end">
+                    <div class="row mb-2" *ngIf="showQuoteActions">
+                      <div class="col-2"></div>
 
+                      <!-- Add Button -->
+                      <div class="col-sm-3">
+                        <button type="button" id="icon" class="btn btn-success" title="Add" (click)="addAnotherRisk()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </div>
+
+                      <!-- Edit Button -->
+                      <div class="col-sm-3">
+                        <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                            <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
+                        </button>
+                      </div>
+
+                      <!-- Delete Button (Disabled if only one risk exists) -->
+                      <div class="col-sm-3">
+                        <button
+                          type="button"
+                          id="icon"
+                          class="btn btn-primary"
+                          title="Delete"
+                          (click)="openRiskDeleteModal()"
+                          [disabled]="quotationDetails?.riskInformation?.length <= 1">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
                     </div>
-                    <div class="col-sm-9 d-flex justify-content-end">
-                        <div class="row  mb-2" *ngIf="showQuoteActions">
-
-                            <!-- <div class="col-sm-3"></div> -->
-                            <div class="col-2">
-
-                            </div>
-                            <div class="col-sm-3 ">
-                                <button type="button" id="icon" class="btn btn-success" title="add"
-                                    (click)="addAnotherRisk()">
-                                    <i class="fa-solid fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="col-sm-3">
-                              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                id="openRiskModalButtonEdit" [hidden]="true"
-                                title="Delete">
-                              </button>
-                              <button type="button" id="icon" class="btn btn-primary" title="Edit">
-                                  <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
-                              </button>
-
-                            </div>
-
-                            <div class="col-sm-3">
-                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                    id="openRiskModalButtonDelete" [hidden]="true" data-bs-target="#deleteRisk"
-                                    title="Delete">
-                                </button>
-                                <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                                    <i class="fa-solid fa-trash-can" (click)="openRiskDeleteModal()"></i>
-                                </button>
-                                <!-- <button id="openModalButtonDelete" [hidden]="true"  data-bs-toggle="modal" data-bs-target="#deletePremium" >deletes</button>
-                                    <a class="nav-link" id="links"  (click)="openDeleteModal()">Delete</a>
-                                    <i class="fa-solid fa-trash-can"  id="icon" (click)="openDeleteModal()"></i> -->
-                            </div>
-
-
-                        </div>
-
-                    </div>
+                  </div>
                 </div>
 
-                <p-table [value]="quotationDetails?.riskInformation" dataKey="code" selectionMode="single"
-                    [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedRisk" responsiveLayout="scroll"
-                    [autoLayout]="true" [paginator]="true" [rows]="4" [showCurrentPageReport]="true"
-                    currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable">
+                <p-table
+                  [value]="quotationDetails?.riskInformation"
+                  dataKey="code"
+                  selectionMode="single"
+                  [tableStyle]="{'min-width': '50rem'}"
+                  [(selection)]="selectedRisk"
+                  responsiveLayout="scroll"
+                  [autoLayout]="true"
+                  [paginator]="quotationDetails?.riskInformation?.length > 3"
+                  [rows]="4"
+                  [showCurrentPageReport]="quotationDetails?.riskInformation?.length > 3"
+                  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  class="ui-datatable"
+                >
+                  <ng-template pTemplate="header">
+                      <tr>
+                          <th> {{ 'gis.policy.property_id' | translate }}</th>
+                          <th> {{ 'gis.quotation.cover_type' | translate }}</th>
+                          <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
+                          <th> {{ 'gis.quotation.description' | translate }}</th>
+                      </tr>
+                  </ng-template>
 
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th> {{ 'gis.policy.property_id' | translate }}</th>
-                            <th> {{ 'gis.quotation.cover_type' | translate }}</th>
-                            <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
-                            <th> {{ 'gis.quotation.description' | translate }}</th>
-                        </tr>
-                    </ng-template>
+                  <ng-template pTemplate="body" let-risk>
+                      <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
+                          <td>{{ risk.propertyId }}</td>
+                          <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
+                          <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                          <td>{{ risk.sectionsDetails[0]?.description }}</td>
+                      </tr>
+                  </ng-template>
 
-                    <ng-template pTemplate="body" let-risk>
-                        <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
-                            <td>{{ risk.propertyId }}</td>
-                            <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription}}</td>
-                            <!-- <td>{{ risk.sectionsDetails[0]?.limitAmount | number  }}</td> -->
-
-                            <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
-
-                            <td>{{ risk.sectionsDetails[0]?.description }}</td>
-                        </tr>
-                    </ng-template>
-
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="4" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
-                        </tr>
-                    </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                      <tr>
+                          <td colspan="4" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
+                      </tr>
+                  </ng-template>
                 </p-table>
+
                 <!-- Delete Risk Modal -->
                 <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
                     aria-labelledby="deleteRisk" aria-hidden="true">
@@ -257,9 +254,9 @@
 
                             <ng-template pTemplate="body" let-data let-ri="rowIndex">
                                 <tr [pSelectableRow]="data">
-                                    <td>{{ data.group }}</td>
+                                    <td>{{ data.calculationGroup }}</td>
                                     <td>{{ data.rowNumber }}</td>
-                                    <td>{{ data.sectionShortDescription }}</td>
+                                    <td>{{ data.sectionDescription |sentenceCase}}</td>
                                     <td>{{ data.description }}</td>
                                     <td appCommaFormat>{{ data.limitAmount | number }}</td>
                                     <td>{{ data.rate }}</td>
@@ -437,7 +434,7 @@
         <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
             <button type="button" class="btn btn-primary me-3"
                 id="btnConvertPolicy" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
-            <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-toggle="modal" data-bs-target="#convertQuote">
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#convertQuote" >
                 {{'gis.quotation.convert_to_normal_quote' | translate}}</button>
         </div>
 
@@ -447,7 +444,7 @@
               <div class="modal-content ps-4 pt-4 pe-4 pb-4 text-center">
                   <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
                   <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
-                  <p class="cancelQouteTitle">{{'gis.quotation.conversion_message' | translate}}</p>
+                  <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message' | translate}}</p>
 
                   <!-- Centered Button Layout with Vertical Stack and Restricted Width -->
                   <div class="d-flex flex-column gap-3">
@@ -457,7 +454,7 @@
                     </button>
 
                     <!-- Confirm Conversion Button -->
-                    <button type="button" class="btn btn-primary w-100" (click)="convertToNormalQuote()">
+                    <button type="button" class="btn btn-primary w-100" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
                         {{'gis.quotation.confirm_conversion' | translate}}
                     </button>
                 </div>
@@ -470,9 +467,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content  ps-4 pt-4 pe-4">
                     <p class="cancelQouteTitle">{{'gis.quotation.provide_reason_for_cancellation' | translate}}</p>
-                    <p class="cancelQouteTitle">{{'gis.quotation.reason' | translate}}</p>
                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" required [(ngModel)]="reasonCancelled"></textarea>
-
 
                     <div class="row mt-4 mb-4">
                         <div class="col-4"></div>

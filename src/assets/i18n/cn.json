@@ -312,7 +312,9 @@
     "reportDesc": "报告描述",
     "assignedReport": "分配的报告",
     "add": "添加",
-    "remove": "移除"
+    "remove": "移除",
+    "systems": "系统",
+    "module": "模块"
   },
   "entities": {
     "account_number": "帐号",
@@ -922,7 +924,19 @@
       "comments": "评论",
       "expiry_date": "到期日期",
       "transaction_date": "交易日期",
-      "revise_reuse_quotation": "报价:修改/重用报价"
+      "revise_reuse_quotation": "报价:修改/重用报价",
+      "quotation_sources": "报价来源",
+      "business_sources": "业务来源",
+      "define_a_new_quotation_source": "定义新的报价来源",
+      "applicable_modules": "适用模块",
+      "underwriting": "核保",
+      "both": "两者",
+      "quotations": "报价",
+      "select_a_policy": "选择保单",
+      "policy_ID": "保单编号",
+      "no_policy_found": "未找到保单"
+
+
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",

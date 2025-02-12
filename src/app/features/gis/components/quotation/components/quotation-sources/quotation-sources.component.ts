@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
+import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import {Logger} from "../../../../../../shared/services";
-import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import { Sources } from '../../data/quotationsDTO';
 
@@ -21,8 +21,8 @@ export class QuotationSourcesComponent {
 
   quotationSubMenuList: SidebarMenu[];
   sourcesForm: FormGroup;
-  sources: any;
-  selectedSource: any;
+  sources: Sources[];
+  selectedSource: Sources;
 
   applicableModules = [
     { value: 'Q' , label: 'Quotation'},

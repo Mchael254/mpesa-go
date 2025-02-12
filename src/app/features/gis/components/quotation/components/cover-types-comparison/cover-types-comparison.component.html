@@ -1,4 +1,6 @@
 <div class="container">
+  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
   <p class="titleMain mt-3">{{ 'gis.quotation.quotation_covertypes' | translate }}</p>
   <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
 
@@ -41,9 +43,9 @@
                     [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
                     class="radio-btn" />
                   <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription
-                    }}</span><br />
+                   | sentenceCase }}</span><br />
                   <small class="cover-premium">
-                    Basic Premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
+                    Basic premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
                   </small>
                 </label>
               </div>
@@ -82,66 +84,56 @@
                     </div>
                     <div class="collapse" id="clauseDetails" [class.show]="isClauseDetailsOpen">
 
-
-
-                      <p-table [value]="clauseList" dataKey="code" selectionMode="single"
-                        [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause" responsiveLayout="scroll"
-                        [autoLayout]="true" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
-                        currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                        class='ui-datatable' styleClass="p-datatable-sm">
+                      <p-table
+                        [value]="clauseList"
+                        dataKey="code"
+                        selectionMode="single"
+                        [tableStyle]="{'min-width': '50rem'}"
+                        [(selection)]="selectedClause"
+                        responsiveLayout="scroll"
+                        [autoLayout]="true"
+                        [paginator]="clauseList?.length > 5"
+                        [rows]="5"
+                        [showCurrentPageReport]="clauseList?.length > 5"
+                        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                        class="ui-datatable">
 
                         <ng-template pTemplate="header">
-                          <tr>
-                            <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
-                            <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
-                            <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
-                            <th class="flexible-header"></th>
-                            <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
-
-
-
-                          </tr>
+                            <tr>
+                                <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
+                                <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
+                                <th class="flexible-header"></th>
+                                <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
+                            </tr>
                         </ng-template>
+
                         <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
-                          <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause"
-                            class="custom-row">
+                            <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause" class="custom-row">
+                                <td class="flexible-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
+                                    pTooltip="{{clauseList.heading }}" tooltipPosition="top">
+                                    {{ clauseList.heading | sentenceCase }}
+                                </td>
+                                <td class="flexible-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px;">
+                                    {{ clauseList.wording | sentenceCase }}
+                                </td>
+                                <td class="flexible-header">
+                                    <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
+                                        icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+                                </td>
+                                <td class="flexible-header">{{ clauseList.isMandatory }}</td>
+                            </tr>
 
-
-                            <td class="flexible-header" style=" white-space: nowrap;
-                              overflow: hidden;
-                              text-overflow: ellipsis;
-                              overflow-y: auto;
-                              max-width: 250px;" pTooltip="{{clauseList.heading }}" tooltipPosition="top">
-                              {{clauseList.heading}}
-                            </td>
-                            <td class="flexible-header"
-                              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                              {{clauseList.wording}}
-                            </td>
-                            <td class="flexible-header">
-                              <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
-                                icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                            </td>
-                            <td class="flexible-header">{{clauseList.isMandatory}}</td>
-
-
-
-
-
-
-                          </tr>
-                          <!-- Modal for each row -->
-                          <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
-                            [style]="{ 'width': '700px'}">
-                            <ng-container *ngIf="clauseList">
-                              <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
-                                (onResize)="onResize($event)">
-                                <p>{{ clauseList.wording }}</p>
-                              </div>
-                            </ng-container>
-                          </p-dialog>
+                            <!-- Modal for each row -->
+                            <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}">
+                                <ng-container *ngIf="clauseList">
+                                    <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
+                                        <p>{{ clauseList.wording }}</p>
+                                    </div>
+                                </ng-container>
+                            </p-dialog>
                         </ng-template>
-                      </p-table>
+                    </p-table>
+
                     </div>
                   </div>
                 </div>
@@ -172,10 +164,18 @@
                       </div>
                     </div>
                     <div class="collapse" id="limitsOfLiabilityDetails" [class.show]="isLimitsDetailsOpen">
-                      <p-table #dt1 [value]="limitsOfLiabilityList" dataKey="code" selectionMode="single"
-                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="true" [rows]="5"
-                        [showCurrentPageReport]="true" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                        [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm">
+                      <p-table
+                        #dt1
+                        [value]="limitsOfLiabilityList"
+                        dataKey="code"
+                        selectionMode="single"
+                        [tableStyle]="{ 'min-width': '50rem' }"
+                        responsiveLayout="scroll"
+                        [paginator]="limitsOfLiabilityList?.length > 5"
+                        [rows]="5"
+                        [showCurrentPageReport]="limitsOfLiabilityList?.length > 5"
+                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                        [autoLayout]="true" class='ui-datatable' >
                         <ng-template pTemplate="header">
                           <tr>
                             <th> {{'gis.quotation.narration' | translate}}</th>
@@ -189,7 +189,7 @@
                                   text-overflow: ellipsis;
                                   overflow-y: auto;
                                   max-width: 250px;" pTooltip="{{limits.narration }}" tooltipPosition="top">
-                              {{limits.narration}}</td>
+                              {{limits.narration|sentenceCase}}</td>
                             <td>{{limits.value |number}} </td>
                           </tr>
                         </ng-template>
@@ -235,9 +235,9 @@
                     <div class="collapse" id="excessDetails" [class.show]="isExcessDetailsOpen">
 
                       <p-table #dt1 [value]="excessesList" dataKey="code" selectionMode="single"
-                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="true" [rows]="5"
-                        [showCurrentPageReport]="true" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                        [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm">
+                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="excessesList?.length > 5" [rows]="5"
+                        [showCurrentPageReport]="excessesList?.length > 5" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                        [autoLayout]="true" class='ui-datatable' >
                         <ng-template pTemplate="header">
                           <tr>
                             <th> {{'gis.quotation.narration' | translate}}</th>
@@ -251,7 +251,7 @@
                                 text-overflow: ellipsis;
                                 overflow-y: auto;
                                 max-width: 250px;" pTooltip="{{limits.narration }}" tooltipPosition="top">
-                              {{limits.narration}}</td>
+                              {{limits.narration|sentenceCase}}</td>
                             <td>{{limits.value |number}} </td>
                           </tr>
                         </ng-template>
@@ -324,7 +324,7 @@
     </div>
     <div class="float-start mb-4 ">
 
-      <a class="btn btn-link">
+      <a class="btn btn-link" (click)="navigateToQuickQuote()">
         {{'gis.quotation.back' | translate}}
       </a>
     </div>
@@ -348,7 +348,7 @@
 
       <p-table [value]="temporaryPremiumList" id="clientTable" dataKey="code"
         [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
-        [resizableColumns]="true" styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable'
+        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable'
         [autoLayout]="true" [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
         [showCurrentPageReport]="true" currentPageReportTemplate="{first} - {last} of {totalRecords}">
         <ng-template pTemplate="header">
@@ -366,7 +366,7 @@
               <input type="checkbox" [checked]="isSectionChecked(section)">
 
             </td>
-            <td>{{ section.sectionShortDescription }}</td>
+            <td>{{ section.sectionShortDescription |sentenceCase }}</td>
             <!-- <td [pEditableColumn]="section.freeLimit" pEditableColumnField="freeLimit">
                     <p-cellEditor >
                       <ng-template pTemplate="input">

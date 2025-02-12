@@ -30,19 +30,19 @@ export class ReportsService {
       "system": "GIS"
     }
 
-    return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
+    return this.api.POSTBYTE('reports', payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 
   getReportDetails(rptCode: number): Observable<ReportFileDTO> {
     return this.api.GET<ReportFileDTO>(
-      `${rptCode}`,
+      `reports/${rptCode}`,
       API_CONFIG.REPORT_SERVICE_BASE_URL,
     );
   }
 
   generateReport(data: any){
 
-    return this.api.POSTBYTE(null, data, API_CONFIG.REPORT_SERVICE_BASE_URL);
+    return this.api.POSTBYTE('reports', data, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 
   getReportParameterDetails(
@@ -54,7 +54,7 @@ export class ReportsService {
       .set('pattern', `${pattern}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<ReportFileParams>(
-      `${reportCode}/parameters/${rptpCode}`,
+      `reports/${reportCode}/parameters/${rptpCode}`,
       API_CONFIG.REPORT_SERVICE_BASE_URL,
       paramObject
     );
@@ -69,9 +69,30 @@ export class ReportsService {
       .set('applicationLevel', `${applicationLevel}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<SystemReportDto[]>(
-      '',
+      'reports',
       API_CONFIG.REPORT_SERVICE_BASE_URL,
       paramObject
     );
+  }
+
+  getAssignedOrUnassignedReports(
+    subModuleCode: number,
+  ): Observable<SystemReportDto[]> {
+    const params = new HttpParams()
+      .set('subModuleCode', `${subModuleCode}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.GET<SystemReportDto[]>(
+      'reports-setup/assigned-unassigned',
+      API_CONFIG.REPORT_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  assignOrUnassignReport(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `reports-setup/assign-unassign-report`,
+      JSON.stringify(data),
+      API_CONFIG.REPORT_SERVICE_BASE_URL,
+    )
   }
 }

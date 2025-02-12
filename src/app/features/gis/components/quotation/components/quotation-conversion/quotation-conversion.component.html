@@ -1,299 +1,327 @@
-<div class="container" style="max-width: 90%; margin: 0 auto;">
+<div class="container">
   <!-- Page Title -->
-  <p class="titleMain mt-3 mb-5">Quotations: {{ 'gis.quotation.quotation_conversion' | translate }}</p>
+  <p class="titleMain mt-3 ms-4">Quotations: {{ 'gis.quotation.quotation_conversion' | translate }}</p>
+  <div class="container mx-2 mt-n1">
+    <div class="card mb-3" style=" position: relative;">
+      <div class="card-body ">
+        <!-- Input Fields Section -->
+        <p class=" mt-2 ms-1 filter-by-text">{{ 'gis.quotation.filter_by' | translate }}:</p>
 
-  <!-- Input Fields Section -->
-  <div class="input-section p-4 mb-4" style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-    <!-- First Row -->
-    <div class="row">
-      <div class="row">
-        <div class="col-md-3">
-          <!-- Search Type Dropdown -->
-          <div class="field mb-4 w-full">
-            <label for="search-type" class="quote-label required">
-              {{ 'gis.quotation.client' | translate }}
-            </label><br>
-            <input
-              type="text"
-              id="quote-input"
-              class="form-select form-control form-control-sm mb-1"
-              [value]="clientName"
-              data-bs-toggle="modal"
-              data-bs-target="#clientSearchModal"
-              readonly
-              placeholder="Search by client"
-            />
+        <!-- First Row -->
+        <div class="row mb-2">
+          <div class="col-sm-3 col-12">
+            <!-- Search Type Dropdown -->
+            <div class="field mb-4 w-full">
+              <!-- <label for="search-type" class="quote-label required">
+                    {{ 'gis.quotation.client' | translate }}
+                  </label><br> -->
+              <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                [value]="clientName" data-bs-toggle="modal" data-bs-target="#clientSearchModal" readonly
+                placeholder="Client" />
+            </div>
+
+            <!-- Client Search Modal Component -->
+            <app-client-search-modal (clientSelected)="onClientSelected($event)"></app-client-search-modal>
+          </div>
+          <div class="col-sm-3 col-12">
+            <!-- Search Type Dropdown -->
+            <div class="field mb-4 w-full">
+              <!-- <label for="search-type" class="quote-label required">
+                    {{ 'gis.quotation.agent' | translate }}
+                  </label><br> -->
+              <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                [value]="agentName" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
+                placeholder="Agent" />
+            </div>
+
+            <!-- Client Search Modal Component -->
+            <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
+          </div>
+          <div class="col-sm-3 col-12">
+            <!-- Products Dropdown -->
+            <div class="field">
+              <!-- <label for="product" class="quote-label" id="product">
+                    {{ 'gis.quotation.search_results' | translate }}
+                  </label><br> -->
+              <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                [value]="productName" data-bs-toggle="modal" data-bs-target="#productSearchModal" readonly
+                placeholder="Product" />
+
+              <!-- Client Search Modal Component -->
+              <app-product-search-modal (productSelected)="onProductSelected($event)">
+              </app-product-search-modal>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Row -->
+        <div class="row g-3 align-items-center mb-4">
+
+
+          <div class="col-sm-3 col-12">
+            <!-- Quotation Number Input -->
+            <div class="field">
+              <!-- <label for="quote-number" class="quote-label" id="quote-number">
+                    <br>
+                  </label><br> -->
+              <input type="text" id="quote-number-input" class="form-control form-control-sm mb-1"
+                [(ngModel)]="quotationNumber" (ngModelChange)="onInputChange()" placeholder="Quotation Number"
+                [style]="{ 'height': '38px' }" />
+            </div>
           </div>
 
-          <!-- Client Search Modal Component -->
-          <app-client-search-modal
-            (clientSelected)="onClientSelected($event)"
-          ></app-client-search-modal>
-        </div>
-
-        <div class="col-md-3">
-          <!-- Search Type Dropdown -->
-          <div class="field mb-4 w-full">
-            <label for="search-type" class="quote-label required">
-              {{ 'gis.quotation.agent' | translate }}
-            </label><br>
-            <input
-              type="text"
-              id="quote-input"
-              class="form-select form-control form-control-sm mb-1"
-              [value]="agentName"
-              data-bs-toggle="modal"
-              data-bs-target="#agentSearchModal"
-              readonly
-              placeholder="Search by agent"
-            />
+          <div class="col-sm-3 col-12">
+            <!-- Status Type Dropdown -->
+            <div class="field">
+              <!-- <label for="product" class="quote-label" id="product">
+                    <br>
+                  </label><br> -->
+              <p-dropdown [options]="status" [(ngModel)]="selectedStatus" optionLabel="status" [filter]="true"
+                filterBy="status" [showClear]="true" placeholder="Status"
+                [style]="{ 'width': '100%', 'height': '38px' }">
+                <ng-template pTemplate="selectedItem">
+                  <div class="business-type-item business-type-value" *ngIf="selectedStatus">
+                    <div>{{ selectedStatus.status }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-status pTemplate="item">
+                  <div class="business-type-item">
+                    <div>{{ status.status }}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
           </div>
 
-          <!-- Client Search Modal Component -->
-          <app-agent-search-modal
-            (agentSelected)="onAgentSelected($event)"
-          ></app-agent-search-modal>
+          <div class="col-sm-3 col-12">
+            <!-- Effective From Date -->
+            <div class="field">
+              <!-- <label for="product" class="quote-label" id="product">
+                    <br>
+                  </label><br> -->
+              <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'" [minDate]="minDate"
+                (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()"
+                [style]="{ 'width': '100%', 'height': '38px' }">
+              </p-calendar>
+            </div>
+          </div>
+
+          <div class="col-sm-3 col-12">
+            <!-- Effective To Date -->
+            <div class="field">
+              <!-- <label for="product" class="quote-label" id="product">
+                    <br>
+                  </label><br> -->
+              <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
+                [showButtonBar]="true" [placeholder]="'Date to'" [minDate]="minToDate"
+                (onSelect)="onDateToInputChange($event)" (onClear)="clearDateFilters()"
+                [style]="{ 'width': '100%', 'height': '38px' }">
+              </p-calendar>
+            </div>
+          </div>
         </div>
-    </div>
 
-    <!-- Second Row -->
-    <div class="row g-3 align-items-center mb-3">
-      <div class="col">
-        <!-- Products Dropdown -->
-        <div class="field">
-          <label for="product" class="quote-label" id="product">
-            {{ 'gis.quotation.search_results' | translate }}
-          </label><br>
-          <input
-            type="text"
-            id="quote-input"
-            class="form-select form-control form-control-sm mb-1"
-            [value]="productName"
-            data-bs-toggle="modal"
-            data-bs-target="#productSearchModal"
-            readonly
-            placeholder="Select a product"
-          />
 
-          <!-- Client Search Modal Component -->
-          <app-product-search-modal
-            (productSelected)="onProductSelected($event)">
-          </app-product-search-modal>
+        <!-- Add this right after the second row div -->
+        <div class="row mt-2">
+          <div class="col-12 d-flex justify-content-start">
+            <button class="btn btn-primary me-2" (click)="fetchGISQuotations()">
+              {{ 'gis.quotation.search' | translate }}
+            </button>
+            <button class="btn btn-outline-primary" (click)="clearFilters()">
+              {{ 'gis.quotation.clear' | translate }}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div class="col">
-        <!-- Quotation Number Input -->
-        <div class="field">
-          <label for="quote-number" class="quote-label" id="quote-number">
-            <br>
-          </label><br>
-          <input
-            type="text"
-            id="quote-number-input"
-            class="form-control form-control-sm mb-1"
-            [(ngModel)]="quotationNumber"
-            (ngModelChange)="onInputChange()"
-            placeholder="Enter Quotation Number"
-            [style]="{ 'height': '38px' }"
-          />
-        </div>
-      </div>
-
-      <div class="col">
-        <!-- Status Type Dropdown -->
-        <div class="field">
-          <label for="product" class="quote-label" id="product">
-            <br>
-           </label><br>
-           <p-dropdown
-            [options]="status"
-            [(ngModel)]="selectedStatus"
-            optionLabel="status"
-            [filter]="true"
-            filterBy="status"
-            [showClear]="true"
-            placeholder="Status"
-            [style]="{ 'width': '100%', 'height': '38px' }">
-            <ng-template pTemplate="selectedItem">
-              <div class="business-type-item business-type-value" *ngIf="selectedStatus">
-                <div>{{ selectedStatus.status }}</div>
-              </div>
+        <!-- Table Section -->
+        <div class="table-section mt-4 mb-3">
+          <p class="title mb-3">Results</p>
+          <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
+            scrollDirection="horizontal" [showCurrentPageReport]="true"
+            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
+            [resizableColumns]="true" [reorderableColumns]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.premium' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
+                <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
+                <th></th>
+              </tr>
             </ng-template>
-            <ng-template let-status pTemplate="item">
-              <div class="business-type-item">
-                <div>{{ status.status }}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
-        </div>
-      </div>
-
-      <div class="col">
-        <!-- Effective From Date -->
-        <div class="field">
-          <label for="product" class="quote-label" id="product">
-            <br>
-           </label><br>
-          <p-calendar
-            name="withEffectiveFromDate"
-            [(ngModel)]="fromDate"
-            [dateFormat]="dateFormat"
-            [showIcon]="true"
-            [showButtonBar]="true"
-            [placeholder]="'Select start date'"
-            [minDate]="minDate"
-            (onSelect)="onDateFromInputChange($event)"
-            (onClear)="clearDateFilters()"
-            [style]="{ 'width': '100%', 'height': '38px' }">
-          </p-calendar>
-        </div>
-      </div>
-
-      <div class="col">
-        <!-- Effective To Date -->
-        <div class="field">
-          <label for="product" class="quote-label" id="product">
-            <br>
-           </label><br>
-          <p-calendar
-            name="withEffectiveToDate"
-            [(ngModel)]="toDate"
-            [dateFormat]="dateFormat"
-            [showIcon]="true"
-            [showButtonBar]="true"
-            [placeholder]="'Select end date'"
-            [minDate]="minToDate"
-            (onSelect)="onDateToInputChange($event)"
-            (onClear)="clearDateFilters()"
-            [style]="{ 'width': '100%', 'height': '38px' }">
-          </p-calendar>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add this right after the second row div -->
-  <div class="row mt-2">
-    <div class="col-12 d-flex justify-content-start">
-      <button class="btn btn-outline-primary me-2" (click)="fetchGISQuotations()">
-        {{ 'gis.quotation.search' | translate }}
-      </button>
-      <button class="btn btn-primary" (click)="clearFilters()">
-        {{ 'gis.quotation.clear' | translate }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Table Section -->
-  <div class="table-section mt-4 mb-3">
-    <p class="title mb-3">{{ 'gis.quotation.product_details' | translate }}</p>
-    <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
-      scrollDirection="horizontal" [showCurrentPageReport]="true"
-      currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
-      [resizableColumns]="true" [reorderableColumns]="true">
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.quotation_number' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.client' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.agent' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.premium' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.status' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_from' | translate }}</th>
-          <th style="background-color: #f0f0f0">{{ 'gis.quotation.cover_to' | translate }}</th>
-          <th></th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-quotation>
-        <tr [class.p-highlight]="quotation === selectedQuotation" (click)="onQuotationSelect(quotation)" style="cursor: pointer">
-          <td>{{quotation.quotationNumber}}</td>
-          <td>{{quotation.clientName}}</td>
-          <td>{{quotation.agentShortDescription}}</td>
-          <td>{{quotation.premium || 0}}</td>
-          <td>{{quotation.status}}</td>
-          <td>{{quotation.fromDate}}</td>
-          <td>{{quotation.toDate}}</td>
-          <td id="action-buttons">
-            <button
-              class="action-buttons"
-              (click)="setQuotationNumber(
+            <ng-template pTemplate="body" let-quotation>
+              <tr [class.p-highlight]="quotation === selectedQuotation" (click)="onQuotationSelect(quotation)"
+                style="cursor: pointer">
+                <td>{{quotation.quotationNumber}}</td>
+                <td>{{quotation.clientName |sentenceCase}}</td>
+                <td>{{quotation.agentShortDescription |sentenceCase}}</td>
+                <td>{{quotation.premium || 0}}</td>
+                <td>{{quotation.status}}</td>
+                <td>{{quotation.fromDate}}</td>
+                <td>{{quotation.toDate}}</td>
+                <td id="action-buttons">
+                  <button class="action-buttons" (click)="setQuotationNumber(
                 quotation.quotationNumber,
                 quotation.productCode,
                 quotation.clientCode
-              )"
-            >
-              {{ "View quote" }}
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="1"></td>
+              )">
+                    {{ "View quote" }}
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="1"></td>
 
-          <td colspan="10" style="padding:20px;padding-left: 340px;" id="empty">
-            {{'gis.quotation.no_data_to_display' | translate}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+                <td colspan="10" style="padding:20px;padding-left: 340px;" id="empty">
+                  {{'gis.quotation.no_data_to_display' | translate}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
 
-  <!-- Quotation Products Section -->
-  <div class="quotation-products-section mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <p class="title mb-3">{{'gis.quotation.quotation_products' | translate}}</p>
-      <div>
-        <button class="btn btn-outline-primary me-2">{{'gis.quotation.merge_to_policy' | translate}}</button>
-        <button class="btn btn-primary" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
+        <!-- Quotation Products Section -->
+        <div class="quotation-products-section mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="title mb-3">{{'gis.quotation.quotation_products' | translate}}</p>
+            <div>
+              <button
+                class="btn btn-outline-primary me-2"
+                (click)="openPolicyModal()"
+              >
+                {{'gis.quotation.merge_to_policy' | translate}}
+              </button>
+              <button class="btn btn-primary" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' |
+                translate}}</button>
+            </div>
+          </div>
+
+          <p-table [value]="quotationProducts" [scrollable]="true"
+            scrollDirection="horizontal" [showCurrentPageReport]="true"
+            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
+            [resizableColumns]="true" [reorderableColumns]="true" [tableStyle]="{ 'min-width': '50px' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 50px; background-color: #f0f0f0">
+                  <input type="checkbox" id="selectAll" />
+                </th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.product' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.start_date' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.end_date' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.premium' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.commission' | translate}}</th>
+                <th style="background-color: #f0f0f0">FAP</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.remarks' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.converted' | translate}}</th>
+                <th style="background-color: #f0f0f0">{{'gis.quotation.policy_no' | translate}}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-product>
+              <tr [class.p-highlight]="product === selectedQuotationProduct" style="cursor: pointer">
+                <td>
+                  <input type="checkbox" id="productCheckbox{{ product.id }}"
+                    (change)="onProductSelection($event, product)" />
+
+                </td>
+                <td>{{product.productShortDescription}}</td>
+                <td>{{product.wef}}</td>
+                <td>{{product.wet}}</td>
+                <td>{{product.premium}}</td>
+                <td>{{product.commission}}</td>
+                <td>{{product.fap}}</td>
+                <td>{{product.remarks}}</td>
+                <td>{{product.converted}}</td>
+                <td>{{product.policyNumber}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="10" class="text-center py-4">
+                  {{'gis.quotation.no_data' | translate}}
+                </td>
+              </tr>
+            </ng-template>
+            <br/><br/><br/><br/>
+          </p-table>
+
+        </div>
+
       </div>
     </div>
-
-    <p-table   [value]="quotationProducts" [paginator]="true" [rows]="10" [scrollable]="true"
-    scrollDirection="horizontal" [showCurrentPageReport]="true"
-    currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
-    [resizableColumns]="true" [reorderableColumns]="true" [tableStyle]="{ 'min-width': '50px' }">
-      <ng-template pTemplate="header">
-        <tr >
-          <th style="width: 50px; background-color: #f0f0f0">
-            <input type="checkbox" id="selectAll" />
-          </th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.product' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.start_date' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.end_date' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.premium' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.commission' | translate}}</th>
-          <th style="background-color: #f0f0f0">FAP</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.remarks' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.converted' | translate}}</th>
-          <th style="background-color: #f0f0f0">{{'gis.quotation.policy_no' | translate}}</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-product>
-        <tr [class.p-highlight]="product === selectedQuotationProduct"   style="cursor: pointer">
-          <td>
-            <input type="checkbox" id="productCheckbox{{ product.id }}" 
-            (change)="onProductSelection($event, product)"/>
-            
-          </td>
-          <td>{{product.productShortDescription}}</td>
-          <td>{{product.wef}}</td>
-          <td>{{product.wet}}</td>
-          <td>{{product.premium}}</td>
-          <td>{{product.commission}}</td>
-          <td>{{product.fap}}</td>
-          <td>{{product.remarks}}</td>
-          <td>{{product.converted}}</td>
-          <td>{{product.policyNumber}}</td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="10" class="text-center py-4">
-            {{'gis.quotation.no_data' | translate}}
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-
   </div>
+
+  <!-- Policy selection modal -->
+  <div
+    class="modal fade" id="policySearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    [class.show]="showModal" [class.modal-open]="showModal">
+    <div class="modal-dialog modal-dialog-centered modal-md  modal-fade" >
+      <div class="modal-content">
+
+        <div class="modal-body">
+          <button type="button" #closebutton class="float-end btn-close"
+            data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+          <p class="text-start title" id="selectClient"> {{'gis.quotation.select_a_policy' | translate}}</p>
+
+          <p-table
+            #dt1
+            [autoLayout]="true"
+            [lazy]="true"
+            [paginator]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [value]="policyData"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]=globalFilterFields
+            styleClass="p-datatable-sm">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.policy_ID' | translate}}</th>
+              </tr>
+              <tr>
+                <th><input type="text" class="form-control" (input)="inputPolicyNumber($event)"></th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-policyData>
+              <tr [pSelectableRow]="true" (click)="loadPolicyDetails(policyData)">
+                <td>{{ policyData.policyNumber }}</td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4">{{'gis.quotation.no_policy_found' | translate}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <br>
+
+          <div class="justify-content-end">
+            <button class="btn btn-outline-primary me-2" (click)="mergeQuoteToPolicy()" >{{'gis.quotation.merge_to_policy' | translate}}</button>
+            <button
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              (click)="closeModal()"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

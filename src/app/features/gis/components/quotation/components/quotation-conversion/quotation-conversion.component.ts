@@ -1,14 +1,16 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
+import { MenuService } from '../../../../../base/services/menu.service';
+import { QuotationsService } from '../../../../../gis/services/quotations/quotations.service';
 import { QuotationDetails, QuotationList, QuotationProduct, Status, StatusEnum } from '../../data/quotationsDTO';
-import { untilDestroyed } from 'src/app/shared/shared.module';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { Logger } from '../../../../../../shared/services';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { Products } from '../../../setups/data/gisDTO';
+import  { QuotationsService as Q2 } from '../../services/quotations/quotations.service';
+import { Policy } from '../../../policy/data/policy-dto';
 
 
 const log = new Logger('QuotationConcersionComponent');
@@ -63,6 +65,11 @@ export class QuotationConversionComponent {
   quotationDetails: QuotationDetails;
   quotationProducts: QuotationProduct[];
   selectedQuotationProduct:QuotationProduct;
+  policyData: Policy[];
+  selectedPolicy: Policy;
+  globalFilterFields = ['policyNumber'];
+  policyNumber: number;
+  showModal: boolean = false;
 
   constructor(
     private menuService: MenuService,
@@ -71,6 +78,7 @@ export class QuotationConversionComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     public productService: ProductsService,
+    public quotationsService: Q2
 
   ) { }
 
@@ -326,12 +334,12 @@ export class QuotationConversionComponent {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
     }else{
       const selctedQuotationCode = this.selectedQuotationProduct.quotCode
-      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => { 
+      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => {
         log.debug("Response after converting quote to a policy:", data)
-  
+
       })
     }
-    
+
   }
   onProductSelection(event: Event, product: any): void {
     const checkbox = event.target as HTMLInputElement;
@@ -349,6 +357,52 @@ export class QuotationConversionComponent {
     }
 
    log.debug('Current selected products:', this.selectedQuotationProduct);
+  }
+
+  openPolicyModal(): void {
+    if (this.selectedQuotationProduct) {
+      this.showModal = true;
+      document.body.classList.add('modal-open'); // Prevents background scrolling
+    } else {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
+    }
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    document.body.classList.remove('modal-open');
+  }
+
+  fetchPolicies() {
+    log.debug("fetch policies");
+    const productCode = this.selectedQuotationProduct.product;
+    const quotationCode = this.selectedQuotationProduct.quotCode;
+
+
+    this.quotationsService.getPolicies(quotationCode, productCode)
+      .subscribe((data: Policy[]) => {
+        log.debug("Response after fetching policies:", data);
+
+        this.policyData = data;
+      }
+    );
+  }
+
+  loadPolicyDetails(policyData) {
+    log.debug("load policy details");
+
+    this.selectedPolicy = policyData;
+  }
+
+  inputPolicyNumber(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.policyNumber = Number(value);
+  }
+
+  mergeQuoteToPolicy() {
+    log.debug("merge to policy button clicked");
+
+
   }
 
 
