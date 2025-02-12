@@ -6,7 +6,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
-import { ReportDto, ReportsDto } from 'src/app/shared/data/common/reports-dto';
+import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
 import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
@@ -81,7 +81,7 @@ export class ReceiptPreviewComponent implements OnInit {
    * @returns {void}
    */
   getReceipt(): void {
-    const reportPayload: ReportDto = {
+    const reportPayload: ReportsDto = {
       encodeFormat: 'RAW',
       params: [
         {

@@ -25,7 +25,6 @@ import { filter } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';
-import { ReportDto, ReportsDto } from 'src/app/shared/data/common/reports-dto';
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
