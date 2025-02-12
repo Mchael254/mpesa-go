@@ -157,6 +157,7 @@
               </div>
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-4">
               <div class="row">
@@ -164,7 +165,7 @@
                   <p class="label">Premium</p>
                 </div>
                 <div class="col-7">
-                  <p class="content" *ngIf="premium"  >{{premium.premiumAmount| number:'1.2-2'}}</p>
+                  <p class="content" *ngIf="premium" appCommaFormat >{{ premium.premiumAmount }}</p>
                   <p class="content" *ngIf="!premium"  >0.00</p>
                 </div>
               </div>
@@ -175,7 +176,7 @@
                   <p class="label">Sum Insured</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{sumInsured| number:'1.2-2' }}</p>
+                  <p class="content" appCommaFormat >{{ sumInsured }}</p>
                 </div>
               </div>
             </div>
@@ -185,11 +186,11 @@
                   <p class="label">Comm amt.</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{sumInsured| number:'1.2-2' }}</p>
+                  <p class="content" appCommaFormat >{{ sumInsured }}</p>
                 </div>
               </div>
             </div>
-            
+
           </div>
 
           <div class="row mb-3">
@@ -252,7 +253,7 @@
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
                 </div>
-                
+
               </div>
             </div>
           </div>
@@ -273,7 +274,7 @@
                   <td>{{data.productShortDescription}}</td>
                   <td>{{data.wef}}</td>
                   <td>{{data.wet}}</td>
-                  <td>{{data.premium}}</td>
+                  <td appCommaFormat >{{data.premium}}</td>
                   <td>{{data.commission}}</td>
                   <td>{{data.binder}}</td>
                 </tr>
@@ -318,20 +319,20 @@
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </div>
-                  
+
                 </div>
               </div>
             </div>
-          
-             
+
+
             <div class="tab-content mb-4" id="nav-tabContent">
               <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses" tabindex="0">
-               
-                
+
+
                 <p-table
                   [value]="clauses"
                   [tableStyle]="{ 'min-width': '50rem' }"
-                  
+
                   [paginator]="true"
                   [rows]="5"
                   [showCurrentPageReport]="true"
@@ -369,7 +370,7 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">{{data.taxAmount | number:'1.2-2'}}</td>
+                      <td class="flexible-header" appCommaFormat >{{ data.taxAmount  }}</td>
                       <td class="flexible-header">{{data.rateDescription}}</td>
                       <td class="flexible-header">{{data.quotationRate}}</td>
                       <td class="flexible-header">{{data.rateType}}</td>
@@ -381,7 +382,7 @@
                 <div class="row">
                   <div class="col-3">
                     <div >
-                        
+
                         <div class="listing">
                           <p class="subclass-title">{{'gis.quotation.subclass' | translate}} </p>
                           <ul class="scrollable-list">
@@ -392,12 +393,12 @@
                             </li>
                           </ul>
                         </div>
-                      
+
                     </div>
                   </div>
                   <div class="col-9">
-                   
-                    
+
+
                         <p-table [value]="limitsOfLiabilityList" [tableStyle]="{ 'min-width': '50rem' }"  class='ui-datatable' >
                           <ng-template pTemplate="header">
                             <tr>
@@ -418,7 +419,7 @@
                             </tr>
                           </ng-template>
                         </p-table>
-                   
+
                   </div>
                 </div>
               </div>
@@ -500,8 +501,8 @@
                   <td>{{data?.quotationRiskNo || '-'}}</td>
                   <td>{{data?.propertyId || '-'}}</td>
                   <td>{{data?.coverTypeShortDescription || '-'}}</td>
-                  <td>{{data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
-                  <td>{{data?.sectionsDetails[0]?.premium || 0 }}</td>
+                  <td appCommaFormat >{{data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
+                  <td appCommaFormat >{{data?.sectionsDetails[0]?.premium || 0 }}</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -547,11 +548,11 @@
                       <td>{{data.rowNumber}}</td>
                       <td>{{data.calculationGroup}}</td>
                       <td>{{data.sectionShortDescription}}</td>
-                      <td>{{data.limitAmount}}</td>
-                      <td>{{data.premium}}</td>
+                      <td appCommaFormat >{{data.limitAmount}}</td>
+                      <td appCommaFormat >{{data.premium}}</td>
                       <td>{{data.rateType}}</td>
                       <td>{{data.rate}}</td>
-                      <td>{{data.freeLimit}}</td>
+                      <td appCommaFormat >{{data.freeLimit}}</td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -748,8 +749,8 @@
                   <td>{{internalClaim.total_reserve}}</td>
                   <td>{{internalClaim.recoveries}}</td>
                   <td>{{internalClaim.salvages}}</td>
-                  <td>{{internalClaim.total_payments}}</td>
-                  <td>{{internalClaim.net_paid}}</td>
+                  <td appCommaFormat >{{internalClaim.total_payments}}</td>
+                  <td appCommaFormat >{{internalClaim.net_paid}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">

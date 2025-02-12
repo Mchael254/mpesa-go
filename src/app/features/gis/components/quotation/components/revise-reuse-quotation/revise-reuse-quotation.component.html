@@ -27,15 +27,7 @@
                     <div class="col-sm-9">
                         <div class="row">
                             <div class=" col-sm-4 col-12">
-                                <p-calendar 
-                                   
-                                    [dateFormat]="dateFormat" 
-                                    [showIcon]="true" 
-                                    [showButtonBar]="true"
-                                    placeholder="Date from"
-                                    (onSelect)="onDateFromInputChange($event)"
-                                    class="custom-calendar-height">
-                                </p-calendar> -->
+
                                 <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
                                 [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
                                 (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()"
@@ -43,20 +35,7 @@
                             </p-calendar>
                             </div>
                             <div class="col-12 col-sm-4">
-                                <p-calendar 
-                                   
-                                    [dateFormat]="dateFormat" 
-                                    [showIcon]="true" 
-                                    [showButtonBar]="true"
-                                    placeholder="Date to"
-                                    (onSelect)="onDateToInputChange($event)"
-                                    class="custom-calendar-height">
-                                </p-calendar>
-                                <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                                    placeholder="Date to" 
-                                    (ngModelChange)="onDateToInputChange($event)"
-                                    class="custom-calendar-height">
-                                </p-calendar> -->
+
                                 <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
                                 [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
                                 (onSelect)="onDateToInputChange($event)"
@@ -104,8 +83,8 @@
                 [resizableColumns]="true"
                 [showCurrentPageReport]="true"
                 [rows]="pageSize || 5"
-                [totalRecords]="tableDetails.totalElements"  
-                [value]="tableDetails.rows" 
+                [totalRecords]="tableDetails.totalElements"
+                [value]="tableDetails.rows"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                 responsiveLayout="stack"
                 [scrollable]="true"
