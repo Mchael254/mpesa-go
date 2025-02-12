@@ -107,7 +107,9 @@ export class QuotationSummaryComponent {
   selectedClause: any;
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   selectedSubclassCode: number;
-  activeTab: string = 'clauses'; 
+  activeTab: string = 'clauses';
+  conversionFlag: boolean = false;
+  conversionFlagString: string;
 
 
   constructor(
@@ -146,6 +148,15 @@ export class QuotationSummaryComponent {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number", this.quotationNumber);
+
+    this.conversionFlagString = sessionStorage.getItem("conversionFlag");
+    this.conversionFlag = JSON.parse(this.conversionFlagString);
+    log.debug("conversion flag:", this.conversionFlag);
+
+    if(this.conversionFlag) {
+      this.globalMessagingService.displaySuccessMessage('Success', 'Conversion completed succesfully' );
+      sessionStorage.removeItem("conversionFlag");
+    }
 
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
@@ -1247,13 +1258,13 @@ export class QuotationSummaryComponent {
         .pipe(untilDestroyed(this))
         .subscribe({
           next: (response: any) => {
-  
+
             this.limitsOfLiabilityList = response._embedded
             log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
-  
+
           },
           error: (error) => {
-  
+
             this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
           }
         });

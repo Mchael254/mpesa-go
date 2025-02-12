@@ -983,6 +983,7 @@
       "convert_quote":"Convert quote",
       "confirm_conversion": "Confirm conversion",
       "conversion_message":"You are about to convert a quick quote to a normal quote",
+      "conversion_message_policy":"You are about to convert a quick quote to a policy",
       "convert_to_normal_quote": "Convert to normal quote",
       "convert_to_policy":"Convert to policy",
       "search_results": "Search results",

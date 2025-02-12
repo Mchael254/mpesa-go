@@ -46,3 +46,97 @@
   width: 100%;
   cursor: pointer;
 }
+
+/* Base button styles */
+.btn-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 0;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.6s ease;
+  margin-left: 8px;
+
+}
+
+.btn-toggle[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Collapse animation */
+ .collapse {
+  transition: all 0.6s ease-in-out;
+}
+
+/* Option 4: Using attribute selector */
+[data-sidebar-collapse]:not(.show) {
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+.collapse.show {
+  height: auto;
+}
+
+/* Menu item styles */
+.menu-item-container {
+  border-radius: 4px;
+  margin: 2px 0;
+  transition: background-color 0.1s ease;
+}
+
+.menu-item-container:hover {
+  background-color: #f0f0f0;
+}
+
+.menu-link {
+  display: block;
+  padding: 8px 12px;
+  color: #000;
+  text-decoration: none;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+}
+
+.menu-link:hover {
+  font-weight: 600;
+  color: #000;
+}
+
+.menu-link.active {
+  font-weight: 600;
+  background-color: #e8e8e8;
+  color: #000;
+}
+
+/* Navigation structure */
+.btn-toggle-nav {
+  margin-left: 1.25rem;
+}
+
+.menu-title {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* Ensure all text stays black */
+.menu-link,
+.dropdown-arrow,
+.btn-toggle:hover,
+.menu-link:hover,
+.menu-link.active {
+  color: #000;
+}
+
