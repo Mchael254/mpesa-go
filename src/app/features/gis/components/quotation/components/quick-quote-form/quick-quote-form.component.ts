@@ -655,6 +655,7 @@ export class QuickQuoteFormComponent {
       this.carRegNoValue = savedCarRegNo; // Set the carRegNoValue to the stored value
     }
   }
+
   navigationFromCoverTypes(){
     log.debug("NAVIGATION FROM COVERTYPES METHOD");
     const passedisReturnToQuickQuoteString = sessionStorage.getItem('isReturnToQuickQuote');
@@ -768,6 +769,7 @@ export class QuickQuoteFormComponent {
     }
     this.loadForm()
   }
+
   loadFormData() {
 
     if (!this.isEditRisk) {
@@ -868,6 +870,7 @@ export class QuickQuoteFormComponent {
           this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
           // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
           this.selectedSubclassCode = filteredsubclassCode;
+          log.debug("selectedSubclassCode above",this.selectedSubclassCode);
           this.fetchTaxes();
         }, 1000);
 
@@ -948,10 +951,9 @@ export class QuickQuoteFormComponent {
       log.debug('Client details', this.passedExistingClientDetails);
 
   }
+
+
   loadForm() {
-
-   
-
     // Check fields disable state when loading form
     this.checkFieldsDisableState();
 
@@ -1125,7 +1127,7 @@ export class QuickQuoteFormComponent {
       log.debug('Client details', this.passedExistingClientDetails);
 
   }
- 
+
 
   /**
    * Loads all products by making an HTTP GET request to the ProductService.

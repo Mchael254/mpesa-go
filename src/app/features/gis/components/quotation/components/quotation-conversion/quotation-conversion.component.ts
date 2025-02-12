@@ -9,6 +9,8 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { Logger } from '../../../../../../shared/services';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { Products } from '../../../setups/data/gisDTO';
+import  { QuotationsService as Q2 } from '../../services/quotations/quotations.service';
+import { Policy } from '../../../policy/data/policy-dto';
 
 
 const log = new Logger('QuotationConcersionComponent');
@@ -63,6 +65,11 @@ export class QuotationConversionComponent {
   quotationDetails: QuotationDetails;
   quotationProducts: QuotationProduct[];
   selectedQuotationProduct:QuotationProduct;
+  policyData: Policy[];
+  selectedPolicy: Policy;
+  globalFilterFields = ['policyNumber'];
+  policyNumber: number;
+  showModal: boolean = false;
 
   constructor(
     private menuService: MenuService,
@@ -71,6 +78,7 @@ export class QuotationConversionComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     public productService: ProductsService,
+    public quotationsService: Q2
 
   ) { }
 
@@ -349,6 +357,52 @@ export class QuotationConversionComponent {
     }
 
    log.debug('Current selected products:', this.selectedQuotationProduct);
+  }
+
+  openPolicyModal(): void {
+    if (this.selectedQuotationProduct) {
+      this.showModal = true;
+      document.body.classList.add('modal-open'); // Prevents background scrolling
+    } else {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
+    }
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    document.body.classList.remove('modal-open');
+  }
+
+  fetchPolicies() {
+    log.debug("fetch policies");
+    const productCode = this.selectedQuotationProduct.product;
+    const quotationCode = this.selectedQuotationProduct.quotCode;
+
+
+    this.quotationsService.getPolicies(quotationCode, productCode)
+      .subscribe((data: Policy[]) => {
+        log.debug("Response after fetching policies:", data);
+
+        this.policyData = data;
+      }
+    );
+  }
+
+  loadPolicyDetails(policyData) {
+    log.debug("load policy details");
+
+    this.selectedPolicy = policyData;
+  }
+
+  inputPolicyNumber(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.policyNumber = Number(value);
+  }
+
+  mergeQuoteToPolicy() {
+    log.debug("merge to policy button clicked");
+
+
   }
 
 

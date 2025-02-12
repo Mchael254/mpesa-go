@@ -931,7 +931,11 @@
       "applicable_modules": "适用模块",
       "underwriting": "核保",
       "both": "两者",
-      "quotations": "报价"
+      "quotations": "报价",
+      "select_a_policy": "选择保单",
+      "policy_ID": "保单编号",
+      "no_policy_found": "未找到保单"
+
 
     },
     "policy": {
