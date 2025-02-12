@@ -12,6 +12,7 @@ import {WebAdmin} from "../../data/web-admin";
 import {TqClient} from "../../data/tq-client";
 import {HttpParams} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 
 // import { format, subYears } from 'date-fns';
 
@@ -185,17 +186,28 @@ export class UtilService {
    * @param {PortalClient} portalClient
    * @returns {string}
    */
-  getFullName(portalClient?: TqClient): string {
-    if (this.isEmpty(portalClient)) {
+  // getFullName(portalClient?: TqClient): string {
+  //   if (this.isEmpty(portalClient)) {
+  //     return '';
+  //   }
+
+  //   return this.getClientFullName({
+  //     type: portalClient!.clntType,
+  //     surname: portalClient!.clntSurname,
+  //     name: portalClient!.clntName,
+  //     otherNames: portalClient!.clntOtherNames,
+  //   });
+  // }
+
+  getFullName(client?: ClientDTO): string {
+    if (this.isEmpty(client)) {
       return '';
     }
-
-    return this.getClientFullName({
-      type: portalClient!.clntType,
-      surname: portalClient!.clntSurname,
-      name: portalClient!.clntName,
-      otherNames: portalClient!.clntOtherNames,
-    });
+    let fullName = '';
+    const firstName = (client.firstName || '').trim();
+    const lastName = (client.lastName || '').trim();
+    return (
+      fullName + firstName ? firstName : '' + ' ' + lastName ? lastName : '');
   }
 
   /**

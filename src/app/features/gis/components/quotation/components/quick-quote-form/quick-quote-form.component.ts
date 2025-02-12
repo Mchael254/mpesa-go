@@ -9,9 +9,10 @@ import {
 } from '@angular/forms';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { Logger } from '../../../../../../shared/services';
+import { Logger, UtilService } from '../../../../../../shared/services';
 import { BinderService } from '../../../setups/services/binder/binder.service';
-import { QuotationsService } from '../../../../services/quotations/quotations.service';
+// import { QuotationsService } from '../../../../services/quotations/quotations.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
@@ -330,6 +331,7 @@ export class QuickQuoteFormComponent {
     private vesselTypesService:VesselTypesService,
     private spinner:NgxSpinnerService,
     private menuService: MenuService,
+    public utilService: UtilService
 
 
   ) {
@@ -2390,13 +2392,16 @@ export class QuickQuoteFormComponent {
           this.router.navigate(['/home/gis/quotation/cover-type-details']);
         },
         error: (error: HttpErrorResponse) => {
-          log.info(error);
-          this.ngxSpinner.hide();
+          // log.info(error);
+          // this.ngxSpinner.hide();
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Premium Computation Failed'
-          );
+          // this.globalMessagingService.displayErrorMessage(
+          //   'Error',
+          //   'Premium Computation Failed'
+          // );
+          log.info("Error from the DB",error.error.message);
+          this.ngxSpinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         },
       });
   }
