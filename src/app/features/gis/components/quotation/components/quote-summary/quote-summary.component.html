@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
-                <div class="row ">
+                <!-- <div class="row ">
                     <div class="col-6">
                     </div>
                     <div class="col-6 d-flex justify-content-end" *ngIf="showQuoteActions">
@@ -14,67 +14,79 @@
                             <button class="btn btn-primary" type="submit" >
                                 Reassign quote</button>
                     </div>
-                </div>
+                </div> -->
                 <p class="title mt-2">{{'gis.quotation.quote_details' | translate}}</p>
-                <div class="row ">
-                    <div class="col-lg-4 col-12">
-                        <div class="row" style="display: flex; align-items: center;">
-                            <div style="flex: 1;">
-                                <p class="summary-label">{{ 'gis.quotation.quote_number' | translate }}:</p>
-                            </div>
-                            <div style="flex: 2;">
-                                <p class="summary-value">{{ quotationNo }}</p>
-                            </div>
-                        </div>
 
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-5">
+                        <p class="summary-label">{{ 'gis.quotation.quote_number' | translate }}:</p>
+                      </div>
+                      <div class="col-7">
+                        <p class="summary-value">{{ quotationNo }}</p>
+                      </div>
                     </div>
-                    <div class="col-lg-5 col-12">
-                        <div class="row" style="display: flex; align-items:flex-start;">
-                            <div style="flex: 2;">
-                                <p class="summary-label">{{ 'gis.quotation.contact_information' | translate }}:</p>
-                            </div>
-                            <div style="flex: 3; margin-left: -60px">
-                                <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
-                                <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}
-                                </p>
-                                <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">
-                                    {{ 'gis.quotation.no_contact_information_available' | translate }}</p>
-                            </div>
-                        </div>
-
+                  </div>
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-5">
+                        <p class="summary-label">{{ 'gis.quotation.contact_information' | translate }}:</p>
+                      </div>
+                      <div class="col-7">
+                        <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
+                        <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}</p>
+                        <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">
+                          {{ 'gis.quotation.no_contact_information_available' | translate }}
+                        </p>
+                      </div>
                     </div>
-                    <div class="col-lg-3 col-12">
-
-                        <div class="row" *ngIf="selectedClientName" style="display: flex; align-items: center;">
-                            <div style="flex: 1;">
-                                <p class="summary-label"> {{ 'gis.quotation.name' | translate }}:</p>
-                            </div>
-                            <div class="clientName" style="flex: 9; margin-left: -10px;">
-                                <p class="summary-value  ">{{ selectedClientName }}</p>
-                            </div>
-                        </div>
-
+                  </div>
+                  <div class="col-md-4">
+                    <div class="row" *ngIf="selectedClientName">
+                      <div class="col-4">
+                        <p class="summary-label">{{ 'gis.quotation.name' | translate }}:</p>
+                      </div>
+                      <div class="col-8">
+                        <p class="summary-value">{{ selectedClientName }}</p>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                <div class="row ">
-                    <div class="col-lg-4 col-12">
-                        <div class="row" style="display: flex; align-items:flex-start;">
-                            <div style="flex: 2;">
-                                <p class="summary-label">{{ 'gis.quotation.effective_date' | translate }}:</p>
-                            </div>
-                            <div style="flex: 2; margin-left: -100px">
-                                <p class="summary-value">{{ coverFrom | date: 'MMMM d, yyyy' }}</p>
 
-                            </div>
-                        </div>
-
-
-
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-5">
+                        <p class="summary-label">{{ 'gis.quotation.effective_date' | translate }}:</p>
+                      </div>
+                      <div class="col-7">
+                        <p class="summary-value">{{ coverFrom | date: 'MMMM d, yyyy' }}</p>
+                      </div>
                     </div>
-                    <div class="col-lg-6 col-12">
-
+                  </div>
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-5">
+                        <p class="summary-label">{{ 'gis.quotation.cover_to' | translate }}:</p>
+                      </div>
+                      <div class="col-7">
+                        <p class="summary-value">{{ coverTo | date: 'MMMM d, yyyy' }}</p>
+                      </div>
                     </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-4">
+                        <p class="summary-label">{{ 'gis.quotation.premium' | translate }}:</p>
+                      </div>
+                      <div class="col-8">
+                        <p class="summary-value" appCommaFormat>{{ quotationDetails?.quotationProducts[0].premium }}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
                 <!-- PRODUCT DETAILS -->
                 <p class="title mt-4">{{'gis.quotation.product_details' | translate}}</p>
                 <p-table [value]="quotationDetails?.quotationProducts"[tableStyle]="{ 'min-width': '608px' }">
@@ -166,18 +178,26 @@
                   <ng-template pTemplate="header">
                       <tr>
                           <th> {{ 'gis.policy.property_id' | translate }}</th>
+                          <th> {{ 'gis.policy.subclass' | translate }}</th>
                           <th> {{ 'gis.quotation.cover_type' | translate }}</th>
                           <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
+                          <th> {{'gis.quotation.premium' | translate}}</th>
                           <th> {{ 'gis.quotation.description' | translate }}</th>
+                          <th> {{ 'gis.quotation.cover_from' | translate }}</th>
+                          <th> {{ 'gis.quotation.cover_to' | translate }}</th>
                       </tr>
                   </ng-template>
 
                   <ng-template pTemplate="body" let-risk>
                       <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
                           <td>{{ risk.propertyId }}</td>
+                          <td>{{ risk.subclassDescription | sentenceCase }}</td>
                           <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
                           <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
-                          <td>{{ risk.sectionsDetails[0]?.description }}</td>
+                          <td appCommaFormat>{{ risk.premium | number }}</td>
+                          <td>{{ risk.propertyId + ' - ' + risk.subclassDescription }}</td>
+                          <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
+                          <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
                       </tr>
                   </ng-template>
 
@@ -247,8 +267,10 @@
                                     <th>{{ 'gis.policy.description' | translate }}</th>
                                     <th>{{ 'gis.policy.limit_amount' | translate }}</th>
                                     <th>{{ 'gis.policy.premium_rate' | translate }}</th>
+                                    <th>{{ 'gis.policy.rate_type' | translate }}</th>
                                     <th>{{ 'gis.policy.div_factor' | translate }}</th>
                                     <th>{{ 'gis.policy.premium' | translate }}</th>
+
                                 </tr>
                             </ng-template>
 
@@ -261,6 +283,7 @@
                                     <td appCommaFormat>{{ data.limitAmount | number }}</td>
                                     <td>{{ data.rate }}</td>
                                     <td>{{ data.rateType }}</td>
+                                    <td>{{ data.divisionFactor }}</td>
                                     <td>{{ data.premium | number }}</td>
                                 </tr>
                             </ng-template>
@@ -275,8 +298,8 @@
 
                         <p-table [value]="clauseList" dataKey="code" selectionMode="single"
                             [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
-                            responsiveLayout="scroll" [autoLayout]="true" [paginator]="true" [rows]="5"
-                            [showCurrentPageReport]="true"
+                            responsiveLayout="scroll" [autoLayout]="true" [paginator]="clauseList?.length > 5" [rows]="5"
+                            [showCurrentPageReport]="clauseList?.length > 5"
                             currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
                             class='ui-datatable' styleClass="p-datatable-sm">
 
@@ -348,8 +371,8 @@
                     <div class="tab-pane fade mt-4" id="pills-limits-of-liability" role="tabpanel"
                         aria-labelledby="pills-home-tab">
                         <p-table #dt1 [value]="limitsOfLiabilityList" dataKey="code" selectionMode="single"
-                            [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="true"
-                            [rows]="5" [showCurrentPageReport]="true"
+                            [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="limitsOfLiabilityList?.length > 5"
+                            [rows]="5" [showCurrentPageReport]="limitsOfLiabilityList?.length > 5"
                             currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
                             class='ui-datatable' styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
@@ -389,7 +412,7 @@
                         selectionMode="single"
                         [tableStyle]="{ 'min-width': '50rem' }"
                         responsiveLayout="scroll"
-                        [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                        [paginator]="excessesList?.length > 5" [rows]="5" [showCurrentPageReport]="excessesList?.length > 5"
                         currentPageReportTemplate=" {first} - {last} of {totalRecords}"
                         [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm"
                       >
@@ -432,8 +455,8 @@
                 data-bs-target="#shareQuote" id="btnCancelQuote" *ngIf="showQuoteActions"> {{'gis.quotation.share_quote' | translate}}</button>
         </div>
         <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
-            <button type="button" class="btn btn-primary me-3"
-                id="btnConvertPolicy" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
+            <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#convertQuoteToPolicy"
+                id="btnConvertPolicy" >{{'gis.quotation.convert_to_policy' | translate}}</button>
             <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#convertQuote" >
                 {{'gis.quotation.convert_to_normal_quote' | translate}}</button>
         </div>
@@ -441,26 +464,43 @@
        <!-- Convert Quote Modal -->
         <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content ps-4 pt-4 pe-4 pb-4 text-center">
-                  <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
-                  <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
-                  <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message' | translate}}</p>
+            <div class="modal-content ps-2 pt-2 pe-2 pb-2 text-center">
+              <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
+              <p class="cancelQouteTitle ">{{'gis.quotation.convert_quote' | translate}}</p>
+              <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message' | translate}}</p>
 
-                  <!-- Centered Button Layout with Vertical Stack and Restricted Width -->
-                  <div class="d-flex flex-column gap-3">
-                    <!-- Close Button -->
-                    <button type="button" class="btn btn-outline-primary w-100" id="closeBtn" data-bs-dismiss="modal">
-                        {{'gis.quotation.close' | translate}}
-                    </button>
-
-                    <!-- Confirm Conversion Button -->
-                    <button type="button" class="btn btn-primary w-100" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
-                        {{'gis.quotation.confirm_conversion' | translate}}
-                    </button>
-                </div>
-              </div>
+              <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
+                <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
+                  {{'gis.policy.cancel' | translate}}
+                </button>
+                <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
+                  {{'gis.quotation.convert_to_normal_quote' | translate}}
+                </button>
+            </div>
+            </div>
           </div>
         </div>
+
+        <!-- Convert Quote to policy Modal -->
+        <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content ps-2 pt-2 pe-2 pb-2 text-center">
+              <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
+              <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
+              <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message_policy' | translate}}</p>
+
+              <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
+                <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
+                  {{'gis.policy.cancel' | translate}}
+                </button>
+                <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToPolicy()" >
+                  {{'gis.quotation.convert_to_policy' | translate}}
+                </button>
+            </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Cancel Quote Modal -->
         <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">

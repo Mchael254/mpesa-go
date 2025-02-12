@@ -2323,7 +2323,7 @@ GetReceipt(){
 
 
   const reportPayload: ReportsDto = {
-    encode_format: "RAW",
+    encodeFormat: "RAW",
     params: [
       {
         name: "UP_RCT_NO",
@@ -2336,8 +2336,8 @@ GetReceipt(){
         // value:'2'
       }
     ],
-    report_format: "PDF",
-    rpt_code: 300,
+    reportFormat: "PDF",
+    rptCode: 300,
     system: "CRM"
   };
   this.reportService.generateReport(reportPayload)
@@ -2371,7 +2371,7 @@ GetReceipt(){
       //console.log('Report Response>>',response);
       // Disable the print button after successful download
 
-      
+
          // Reset states
          this.isReceiptSaved = false; // Disable the Print Receipt button
          this.isReceiptDownloading = false;

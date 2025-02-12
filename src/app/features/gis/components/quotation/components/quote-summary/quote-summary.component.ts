@@ -677,7 +677,11 @@ export class QuoteSummaryComponent {
   convertQuoteToPolicy(){
     log.debug("Quotation Details",this.quotationDetails)
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
-    log.debug("Quotation Code",this.quotationCode)
+    log.debug("Quotation Code",this.quotationCode);
+
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
     this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
@@ -696,6 +700,9 @@ export class QuoteSummaryComponent {
     const quotationNumber = this.quotationDetails?.quotOriginalQuotNo;
     log.debug("Quotation Number",quotationNumber);
     sessionStorage.setItem("quotationNum", quotationNumber);
+
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
     // Get the quotCode
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
