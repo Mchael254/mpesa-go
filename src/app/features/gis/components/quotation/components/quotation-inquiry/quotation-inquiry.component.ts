@@ -1,17 +1,20 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import {Logger} from "../../../../../../shared/services";
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { QuotationList, Sources, Status, StatusEnum, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationsService } from '../../../../../../features/gis/services/quotations/quotations.service';
 import { Products } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from '../../../../../../features/base/model/sidebar.menu';
+import { MenuService } from '../../../../../../features/base/services/menu.service';
 import { Router } from '@angular/router';
-const log = new Logger('ReviseReuseQuotationComponent');
+import { NgxSpinnerService } from 'ngx-spinner';
+
+const log = new Logger('QuotationInquiryComponent');
 
 @Component({
   selector: 'app-quotation-inquiry',
@@ -23,6 +26,8 @@ export class QuotationInquiryComponent {
   userDetails: any;
   dateFormat: string;
   selectedDateFrom: string;
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
   sourceList: any;
   sourceDetail: Sources[] = [];
   gisQuotationList: QuotationList[] = [];
@@ -41,8 +46,8 @@ export class QuotationInquiryComponent {
      { status: StatusEnum.Accepted },
      { status: StatusEnum.Draft }
    ];
-  selectedStatus: string = ''; // Holds the selected value
-  productName: string = '';
+   selectedStatus: string | null = null;
+   productName: string = '';
   productCode: number;
   agentName: string = '';
   agentId: number;
@@ -50,7 +55,7 @@ export class QuotationInquiryComponent {
   clientName: string = '';
   clientCode: number;
   quotationNumber: string;
-
+  isLoading: boolean = false; // Declare and initialize isLoading
 
   constructor(
     public authService: AuthService,
@@ -61,7 +66,8 @@ export class QuotationInquiryComponent {
     public quotationService: QuotationsService,
     public productService: ProductsService,
     public menuService: MenuService,
-    public router: Router
+    public router: Router,
+    public spinner:NgxSpinnerService,
 
 
 
@@ -78,7 +84,6 @@ export class QuotationInquiryComponent {
 
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
-    this.fetchGISQuotations();
   }
   ngOnDestroy(): void { }
 
@@ -110,9 +115,9 @@ export class QuotationInquiryComponent {
   }
   onDateFromInputChange(date: any) {
     log.debug('selected Date from raaw', date);
-    const selectedDateFrom = date;
-    if (selectedDateFrom) {
-      const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+    this.fromDate = date;
+    if ( this.fromDate) {
+      const SelectedFormatedDate = this.formatDate(this.fromDate)
       this.selectedDateFrom = SelectedFormatedDate
       log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
       // this.fetchGISQuotations()
@@ -121,9 +126,9 @@ export class QuotationInquiryComponent {
 
   onDateToInputChange(date: any) {
     log.debug('selected Date To raaw', date);
-    const selectedDateTo = date;
-    if (selectedDateTo) {
-      const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
+    this.toDate = date;
+    if (this.toDate) {
+      const SelectedFormatedDateTo = this.formatDate(this.toDate)
       this.selectedDateTo = SelectedFormatedDateTo
       log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
       // this.fetchGISQuotations()
@@ -147,11 +152,13 @@ export class QuotationInquiryComponent {
   }
 
   fetchGISQuotations() {
+    this.spinner.show();
+
     const clientType = null
     const clientCode = this.clientCode || null
     const productCode = this.productCode || null
     const quotationNumber = this.quotationNumber || null
-    const status = null
+    const status = this.selectedStatus || null
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
     const agentCode = this.agentId || null
@@ -169,11 +176,11 @@ export class QuotationInquiryComponent {
 
           this.gisQuotationList = response._embedded
           log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
-
+          this.spinner.hide();
         },
         error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotation list. Try again later');
+          this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
@@ -260,7 +267,7 @@ export class QuotationInquiryComponent {
 
     this.selectedStatus = selectedValue;
 
-    log.debug('Selected Status Code:', this.selectedStatus);
+    log.debug('Selected Status:', this.selectedStatus);
 
 
   }
@@ -301,10 +308,43 @@ export class QuotationInquiryComponent {
     log.debug(`Productcode ${productCode} has been saved to session storage.`);
     this.router.navigate(['/home/gis/quotation/quotation-summary']);
   }
-  // dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
-  //   if (sidebarMenu.link.length > 0) {
-  //     this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
-  //   }
-  //   this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
-  // }
+
+  clearDateFilters(): void {
+    this.selectedDateFrom = null;
+    this.selectedDateTo = null;
+    this.fromDate = null
+    this.toDate = null
+    this.cdr.detectChanges();
+  }
+  clearFilters() {
+    // Clear client
+    this.clientName = '';
+    this.clientCode = null;
+
+    // Clear agent
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear product
+    this.productName = '';
+    this.productCode = null;
+
+    // Clear source
+    this.selectedSource = null;
+
+    // Clear date from
+    this.selectedDateFrom = null;
+    this.clearDateFilters();
+
+    // Clear date to
+    this.selectedDateTo = null;
+
+
+    // Clear quotation number
+    this.quotationNumber = '';
+    // Clear status to null
+    this.selectedStatus = null;
+   this.fetchGISQuotations()    // Trigger change detection
+    this.cdr.detectChanges();
+  }
 }

@@ -4,12 +4,12 @@ import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
-import { GroupQuotationsListDTO } from 'src/app/features/lms/models';
-import { MenuService } from 'src/app/features/base/services/menu.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { GroupQuotationsListDTO } from '../../../features/lms/models';
+import { MenuService } from '../../../features/base/services/menu.service';
+import { SidebarMenu } from '../../../features/base/model/sidebar.menu';
+import { QuotationsService } from '../../../features/gis/services/quotations/quotations.service';
 import { Logger, untilDestroyed } from '../../shared.module';
-import { QuotationList } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Pagination } from '../../data/common/pagination';

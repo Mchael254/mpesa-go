@@ -146,6 +146,8 @@ export class NewClientComponent implements OnInit {
     }
   ];
   timeStamp: any;
+  normalQuoteTimeStamp: any;
+
   isLoading: boolean = false;
   documentPayload: any;
   selectedFile: File;
@@ -216,6 +218,10 @@ export class NewClientComponent implements OnInit {
     const passedTimestampString = sessionStorage.getItem('Timestamp');
     this.timeStamp = JSON.parse(passedTimestampString);
     log.info("Passed Timestamp (CRM):", this.timeStamp)
+
+    const normalQuoteTimestampString = sessionStorage.getItem('normalQuoteTimeStamp');
+    this.normalQuoteTimeStamp = JSON.parse(normalQuoteTimestampString);
+    log.info("Passed Normal QuoteTimestamp (CRM):", this.normalQuoteTimeStamp)
   }
 
   /**
@@ -776,11 +782,14 @@ export class NewClientComponent implements OnInit {
 
       }
       log.info(saveClient)
+      const clientPayload = JSON.stringify(saveClient);
+      sessionStorage.setItem('clientPayload', clientPayload);
+
       this.clientsService.saveClientDetails(saveClient)
         .pipe(
           takeUntil(this.destroyed$),
         )
-        .subscribe(clientData => {
+        .subscribe((clientData:any) => {
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
           this.onClickSaveClient.emit();
@@ -793,10 +802,30 @@ export class NewClientComponent implements OnInit {
 
               this.router.navigate(['/home/gis/policy/policy-product']);
 
+            } else if (this.normalQuoteTimeStamp) {
+              log.debug("BACK TO GIS - Quotation details screen:")
+
+              this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
             } else {
+              this.router.navigate(['/home/gis/policy/policy-product']);
               log.debug("BACK TO CRM:")
 
               this.router.navigate(['home/entity/client/list']);
+            }
+          } else {
+            if (this.normalQuoteTimeStamp) {
+              log.debug("BACK TO GIS - Quotation details screen:")
+              const clientId = clientData.id
+              log.debug("Client id", clientId)
+              const clientCode = JSON.stringify(clientId);
+              sessionStorage.setItem('clientCode', clientCode);
+
+              this.router.navigate(['/home/gis/quotation/quotation-details']);
+
               //   this.router.navigate(['/home/lms/grp/quotation/quick']);
               //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
 

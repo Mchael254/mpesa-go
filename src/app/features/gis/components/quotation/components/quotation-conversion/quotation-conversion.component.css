@@ -1,9 +1,9 @@
 .titleMain{
   color: #000;
-  font-family: Lato;
+  font-family: Roboto;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 }
 
@@ -116,4 +116,19 @@
   padding: 0; /* Ensures no additional padding */
   cursor: pointer; /* Makes the button visually interactive */
 }
-
+.filter-by-text {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 18.75px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+#quote-number-input{
+  height:35px;
+  font-size: 1rem;
+}
+.card {
+  border: none;
+}

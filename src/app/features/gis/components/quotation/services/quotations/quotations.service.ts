@@ -119,8 +119,7 @@ export class QuotationsService {
     */
   createQuotation(data: quotationDTO, user) {
     console.log("Data", JSON.stringify(data))
-    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-
+    return this.api.POST(`v2/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   /**
    * Retrieves quotations based on specified parameters using an HTTP GET request.
@@ -414,13 +413,93 @@ export class QuotationsService {
 
   }
 
-  getInsurers(
+   /**
+   * Fetches a paginated list of insurers with optional sorting.
+   *
+   * @param page - The page number for pagination (default is 0).
+   * @param size - The number of records per page (default is 10).
+   * @param sortList - The field used for sorting the results (default is 'createdDate').
+   * @returns An observable containing paginated insurer data.
+   */
+   getInsurers(
     page: number | null = 0,
     size: number | null = 10,
     sortList: string = 'createdDate',
-  ): Observable<Pagination<AgentDTO>>{
+  ): Observable<Pagination<AgentDTO>> {
 
-    return this.api.GET<Pagination<AgentDTO>>(`agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+    // Sends a GET request to retrieve insurers based on pagination and sorting criteria.
+    return this.api.GET<Pagination<AgentDTO>>(
+      `agents?accountTypeId=5&order=desc&page=${page}&size=${size}&sortListFields=${sortList}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
+
+  /**
+   * Retrieves the limits of liability based on subclass code and schedule type.
+   *
+   * @param subclassCode - The subclass code (mandatory).
+   * @param scheduleType - The schedule type (default is 'L').
+   * @returns An observable containing the liability limits data.
+   */
+  getLimitsOfLiability(
+    subclassCode: number,
+    scheduleType: string = 'L'
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+
+    // Add the mandatory parameter
+    paramsObj['subclassCode'] = subclassCode?.toString();
+    paramsObj['scheduleType'] = scheduleType;
+
+    // Convert the object into URL parameters
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    // Sends a GET request to fetch limits of liability
+    return this.api.GET(
+      `v2/limits-of-liability/subclass?`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL,
+      params
+    );
+  }
+
+  /**
+   * Merges a quotation into an existing policy.
+   *
+   * @param quotProductCode - The product code of the quotation.
+   * @param batchNo - The batch number of the quotation.
+   * @returns An observable confirming the merge action.
+   */
+  mergeToPolicy(
+    quotProductCode: number,
+    batchNo: number
+  ) {
+    // Sends a POST request to merge a quotation into an existing policy
+    return this.api.POST(
+      `v1/quotation/merge-to-existing-policy?batchNo=${batchNo}&quotationProductCode=${quotProductCode}`,
+      null,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
+
+  /**
+   * Retrieves mergeable policies for a given quotation and product code.
+   *
+   * @param quotationCode - The unique code of the quotation.
+   * @param productCode - The product code associated with the quotation.
+   * @returns An observable containing the list of mergeable policies.
+   */
+  getPolicies(
+    quotationCode: number,
+    productCode: number
+  ) {
+    // Sends a GET request to fetch mergeable policies based on quotation and product code
+    return this.api.GET(
+      `/v2/quotation-policy/mergeable?quotationCode=${quotationCode}&productCode=${productCode}`,
+      null,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
+
 }
 

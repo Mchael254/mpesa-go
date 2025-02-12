@@ -16,3 +16,18 @@ export interface SystemModule {
   systemId: number;
   systemName: string;
 }
+
+export interface SystemReportModule {
+  id: number;
+  name: string;
+  description: string;
+  systemCode: number;
+  system: SystemsDto;
+}
+
+export interface SystemReportSubModule {
+  id: number;
+  name: string;
+  description: string;
+  moduleId: number;
+}

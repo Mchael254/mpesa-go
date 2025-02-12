@@ -311,7 +311,9 @@
     "reportDesc": "Berichtsbeschreibung",
     "assignedReport": "Zugewiesener Bericht",
     "add": "Hinzufügen",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "systems": "Systeme",
+    "module": "Modul"
   },
   "entities": {
     "account_number": "Kontonummer",
@@ -921,7 +923,18 @@
       "comments": "Kommentare",
       "expiry_date": "Ablaufdatum",
       "transaction_date": "Transaktionsdatum",
-      "revise_reuse_quotation": "Angebote:Überarbeiten/Wiederverwenden des Angebots"
+      "revise_reuse_quotation": "Angebote:Überarbeiten/Wiederverwenden des Angebots",
+      "quotation_sources": "Angebotsquellen",
+      "business_sources": "Geschäftsquellen",
+      "define_a_new_quotation_source": "Eine neue Angebotsquelle definieren",
+      "applicable_modules": "Anwendbare Module",
+      "underwriting": "Zeichnung",
+      "both": "Beide",
+      "quotations": "Angebote",
+      "select_a_policy": "Wählen Sie eine Police aus",
+      "policy_ID": "Police-ID",
+      "no_policy_found": "Keine Police gefunden"
+
 
     },
     "policy": {

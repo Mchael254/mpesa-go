@@ -360,4 +360,17 @@ export class QuotationsService {
     return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
+  convertToNormalQuote(
+    quotCode: number,
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
 }
