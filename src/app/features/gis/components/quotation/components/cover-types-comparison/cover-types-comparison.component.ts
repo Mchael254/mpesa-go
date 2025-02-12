@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, SimpleChanges, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -9,12 +9,14 @@ import { ClientService } from '../../../../../entities/services/client/client.se
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuotationsService } from '../../../../services/quotations/quotations.service';
+// import { QuotationsService } from '../../../../services/quotations/quotations.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
+
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
-import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection, UserDetails } from '../../data/quotationsDTO'
 import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -25,6 +27,7 @@ import { PremiumRateService } from '../../../setups/services/premium-rate/premiu
 import { Router } from '@angular/router';
 
 const log = new Logger('CoverTypesComparisonComponent');
+declare var bootstrap: any; // Ensure Bootstrap is available
 
 @Component({
   selector: 'app-cover-types-comparison',
@@ -97,6 +100,7 @@ export class CoverTypesComparisonComponent {
   quotationNo: string;
   passedQuotationSource: any;
   quotationForm: FormGroup;
+  quotationFormNew: FormGroup;
 
 
   riskDetailsForm: FormGroup;
@@ -138,6 +142,7 @@ export class CoverTypesComparisonComponent {
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
   @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
+  @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
   clauseList: Clause[] = []
@@ -164,6 +169,14 @@ export class CoverTypesComparisonComponent {
   sectionDetails: any;
   existingRisk: any;
   isReturnToQuickQuote: boolean;
+  userOrgDetails: UserDetails;
+  userCode: number;
+  organizationId: number;
+  exchangeRate: number;
+  passedQuotationData: any;
+  isEditQuotationDetail: boolean = false;
+  storedQuotationNo: string;
+  storedQuotationCode: number;
 
 
 
@@ -188,7 +201,7 @@ export class CoverTypesComparisonComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public globalMessagingService: GlobalMessagingService,
     public premiumRateService: PremiumRateService,
-    public spinner:NgxSpinnerService,
+    public spinner: NgxSpinnerService,
 
   ) { }
   public isClauseDetailsOpen = false;
@@ -209,7 +222,7 @@ export class CoverTypesComparisonComponent {
     this.premiumPayload = JSON.parse(premiumComputationRequestString);
 
 
-    log.debug("PREMIUM PAYLOAD", this.premiumPayload);
+    log.debug("PREMIUM PAYLOAD on ngonit", this.premiumPayload);
     const limits = this.premiumPayload?.risks
     this.extractSectionCodes(limits);
 
@@ -310,9 +323,31 @@ export class CoverTypesComparisonComponent {
     const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
     sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
 
+    const passedQuotationDetailsString = sessionStorage.getItem(
+      'quotationDetails'
+    );
+    this.passedQuotationData = JSON.parse(passedQuotationDetailsString);
+    log.debug("Passed Quotation Details", this.passedQuotationData)
+    if (this.passedQuotationData) {
+      this.isEditQuotationDetail = true
+      this.storedQuotationCode= this.passedQuotationData._embedded[0].quotationCode;
+      this.storedQuotationNo= this.passedQuotationData._embedded[0].quotationNumber;
+
+      
+    }
+
+
   }
   ngOnDestroy(): void { }
-
+  // ngOnChanges(changes: SimpleChanges) {
+  //   if (changes['temporaryPremiumList']) {
+  //     this.checkAndOpenModal();
+  //   }
+  // }
+  // ngAfterViewInit() {
+  //   // Ensure the modal element is available after view initialization
+  //   console.log("Modal element initialized:", this.addMoreBenefitsModal);
+  // }
   openModal() {
     this.isModalOpen = true;
   }
@@ -534,7 +569,7 @@ export class CoverTypesComparisonComponent {
         clearInterval(interval); // Stop the polling once data is available
 
         log.debug('Premium Rates:', this.premiumList);
-         this.premiumRates= this.premiumList;
+        this.premiumRates = this.premiumList;
 
         if (this.premiumRates.length !== this.passedSections.length) {
           log.error("Number of premium rates doesn't match the number of sections");
@@ -567,9 +602,24 @@ export class CoverTypesComparisonComponent {
         limitAmount: null,
       };
 
-      // Find corresponding premium rate for the section or use default values
-      const premiumRate = this.premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate;
+      //       // Find corresponding premium rate for the section or use default values
+      //       const premiumRate = this.premiumRates.find(rate => rate.sectionCode === section.sectionCode) || defaultPremiumRate;
+      // log.debug("premium rate for a specific section",premiumRate)
+      // Debugging logs
+      this.premiumRates = this.premiumList
+      log.debug("premium rates list", this.premiumRates)
+      log.debug("premium  list", this.premiumList)
+      log.debug("Current Section Code:", section.sectionCode);
+      log.debug("Available Section Codes in Premium Rates:", this.premiumRates.map(rate => rate.sectionCode));
 
+      // Ensure matching section code is found
+      const premiumRate = this.premiumRates.find(rate => String(rate.sectionCode) === String(section.sectionCode)) || defaultPremiumRate;
+
+      if (premiumRate === defaultPremiumRate) {
+        log.error(`No matching premium rate found for section: ${section.sectionCode}`);
+      }
+
+      log.debug("premium rate for a specific section", premiumRate);
       return {
         calcGroup: 1,
         code: section.code,
@@ -630,38 +680,38 @@ export class CoverTypesComparisonComponent {
 
 
 
-  createQuotationForm() {
-    this.quotationForm = this.fb.group({
-      actionType: [''],
-      addEdit: [''],
-      agentCode: [''],
-      agentShortDescription: [''],
-      bdivCode: [''],
-      bindCode: [''],
-      branchCode: [''],
-      clientCode: [''],
-      clientType: [''],
-      coinLeaderCombined: [''],
-      consCode: [''],
-      currencyCode: [''],
-      currencySymbol: [''],
-      fequencyOfPayment: [''],
-      isBinderPolicy: [''],
-      paymentMode: [''],
-      proInterfaceType: [''],
-      productCode: [''],
-      source: [''],
-      withEffectiveFromDate: [''],
-      withEffectiveToDate: [''],
-      multiUser: [''],
-      comments: [''],
-      internalComments: [''],
-      introducerCode: [''],
-      dateRange: [''],
-      RFQDate: [''],
-      expiryDate: ['']
-    })
-  }
+  // createQuotationForm() {
+  //   this.quotationForm = this.fb.group({
+  //     actionType: [''],
+  //     addEdit: [''],
+  //     agentCode: [''],
+  //     agentShortDescription: [''],
+  //     bdivCode: [''],
+  //     bindCode: [''],
+  //     branchCode: [''],
+  //     clientCode: [''],
+  //     clientType: [''],
+  //     coinLeaderCombined: [''],
+  //     consCode: [''],
+  //     currencyCode: [''],
+  //     currencySymbol: [''],
+  //     fequencyOfPayment: [''],
+  //     isBinderPolicy: [''],
+  //     paymentMode: [''],
+  //     proInterfaceType: [''],
+  //     productCode: [''],
+  //     source: [''],
+  //     withEffectiveFromDate: [''],
+  //     withEffectiveToDate: [''],
+  //     multiUser: [''],
+  //     comments: [''],
+  //     internalComments: [''],
+  //     introducerCode: [''],
+  //     dateRange: [''],
+  //     RFQDate: [''],
+  //     expiryDate: ['']
+  //   })
+  // }
 
   /**
     * Creates and initializes the risk details form using Angular FormBuilder.
@@ -705,6 +755,11 @@ export class CoverTypesComparisonComponent {
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails?.branchId;
     log.debug("Branch Id", this.userBranchId);
+    this.userCode = this.userDetails.code
+    log.debug('User Code ', this.userCode);
+    if (this.userCode) {
+      this.fetchUserOrgId()
+    }
   }
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies().subscribe(data => {
@@ -722,6 +777,7 @@ export class CoverTypesComparisonComponent {
   }
   createQuotation() {
     const quoteForm = this.quotationForm.value;
+
     quoteForm.agentCode = 0;
     quoteForm.agentShortDescription = "DIRECT";
     quoteForm.branchCode = this.userBranchId;
@@ -736,6 +792,64 @@ export class CoverTypesComparisonComponent {
     quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
 
     this.quotationService.createQuotation(quoteForm, this.user).subscribe(data => {
+      this.quotationData = data;
+      this.quotationCode = this.quotationData._embedded[0].quotationCode;
+      this.quotationNo = this.quotationData._embedded[0].quotationNumber;
+      log.debug("Quotation results:", this.quotationData)
+      log.debug("Quotation Number", this.quotationNo);
+      log.debug("Quotation Code", this.quotationCode);
+
+      const quotationDetailString = JSON.stringify(this.quotationData);
+      sessionStorage.setItem('quotationDetails', quotationDetailString);
+      if (this.quotationNo) {
+        const quotationNumberString = JSON.stringify(this.quotationNo);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
+      }
+      this.createQuotationRisk();
+
+    })
+  }
+  createQuotationNew() {
+    const quoteForm = this.quotationForm.value;
+    quoteForm.user = this.user;
+    quoteForm.policyData.wefDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
+    quoteForm.policyData.wetDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
+    quoteForm.policyData.productCode = this.premiumPayload?.product?.code;
+    quoteForm.policyData.binderPolicy = "";
+    quoteForm.policyData.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
+    quoteForm.policyData.branchCode = this.userBranchId;
+    quoteForm.policyData.action = "A";
+    quoteForm.policyData.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
+    quoteForm.policyData.currencyRate = this.exchangeRate;
+    quoteForm.policyData.agentCode = 0;
+    quoteForm.policyData.agentShortDescription = "DIRECT";
+    quoteForm.policyData.introducerCode = "";
+    quoteForm.policyData.internalComments = "";
+    quoteForm.policyData.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
+    quoteForm.policyData.clientCode = this.passedClientDetails?.id
+    quoteForm.policyData.polPropHoldingCoPrpCode = "";
+    quoteForm.policyData.chequeRequisition = "";
+    quoteForm.policyData.divisionCode = "";
+    quoteForm.policyData.polSubAgnCode = "";
+    quoteForm.policyData.clientType = "I";
+    quoteForm.policyData.quotPrsCode = "";
+    quoteForm.policyData.polMktrAgnCode = "";
+
+
+
+    // quoteForm.agentShortDescription = "DIRECT";
+    // quoteForm.branchCode = this.userBranchId;
+    // quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
+    // quoteForm.clientCode = this.passedClientDetails?.id
+    // quoteForm.clientType = "I";
+    // quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
+    // quoteForm.currencySymbol = this.selectedCurrency;
+    // quoteForm.productCode = this.premiumPayload?.product?.code;
+    // quoteForm.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
+    // quoteForm.withEffectiveFromDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
+    // quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
+
+    this.quotationService.processQuotation(quoteForm).subscribe(data => {
       this.quotationData = data;
       this.quotationCode = this.quotationData._embedded[0].quotationCode;
       this.quotationNo = this.quotationData._embedded[0].quotationNumber;
@@ -1005,53 +1119,62 @@ export class CoverTypesComparisonComponent {
     //     this.createQuotation();
     //     this.getQuotationNumber();
     // }
-    if(this.isAddededBenefitsCalled == true){
+    if(this.isEditQuotationDetail == true){
+      log.debug("EDITING QUOTATION DETAILS: 2ND STEPPER WAS CLICKED")
+      log.debug("EDITING QUOTATION DETAILS Method called")
+      this.editQuotation();
+      this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+
+    }else{
+    if (this.isAddededBenefitsCalled == true) {
       log.debug(" A BENEFIT HAS BEEN ADDED");
-      log.debug("Quotation Number:",this.quotationNo)
+      log.debug("Quotation Number:", this.quotationNo)
       const quotationNumberString = JSON.stringify(this.quotationNo);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
       this.loadClientQuotation()
       log.debug("NAVIGATING TO POLICY SUMMARY");
       this.router.navigate(['/home/gis/quotation/quote-summary']);
 
-     if(this.passedNumber) {
-      // Both passedNumber and additional benefit have been added
-      log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
-      log.debug("NAVIGATING TO POLICY SUMMARY");
-      this.router.navigate(['/home/gis/quotation/quote-summary']);
-  }} else if (!this.isAddededBenefitsCalled && this.passedNumber) {
+      if (this.passedNumber) {
+        // Both passedNumber and additional benefit have been added
+        log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
+        log.debug("NAVIGATING TO POLICY SUMMARY");
+        // this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }
+    } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
       // PassedNumber exists, but no additional benefit has been added
       log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
       log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
 
       if (this.isEditRisk) {
-          log.debug("UPDATING EXISTING QUOTATION RISK");
-          this.UpdateQuotationRisk();
-          sessionStorage.removeItem('isEditRisk');
+        log.debug("UPDATING EXISTING QUOTATION RISK");
+        this.UpdateQuotationRisk();
+        sessionStorage.removeItem('isEditRisk');
 
-      const quotationNumberString = JSON.stringify(this.passedNumber);
-      sessionStorage.setItem('quotationNumber', quotationNumberString);
+        const quotationNumberString = JSON.stringify(this.passedNumber);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
       } else if (this.isAddRisk) {
-          log.debug("ADDING ANOTHER QUOTATION RISK");
-          this.createQuotationRisk();
-          sessionStorage.removeItem('isAddRisk');
+        log.debug("ADDING ANOTHER QUOTATION RISK");
+        this.createQuotationRisk();
+        sessionStorage.removeItem('isAddRisk');
 
-      const quotationNumberString = JSON.stringify(this.passedNumber);
-      sessionStorage.setItem('quotationNumber', quotationNumberString);
+        const quotationNumberString = JSON.stringify(this.passedNumber);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
       } else {
-          log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
+        log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
       }
 
       const quotationNumberString = JSON.stringify(this.passedNumber);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
-  } else {
+    } else {
       // Quotation data is empty, create a new quotation
       log.debug("QUOTATION DATA IS EMPTY AND NO EXTRA BENEFIT HAS BEEN ADDED");
       this.createQuotation();
       this.getQuotationNumber();
+    }
+    this.spinner.hide()
   }
-  this.spinner.hide()
-
   }
 
   // selectQuote(){
@@ -1123,7 +1246,7 @@ export class CoverTypesComparisonComponent {
 
       },
       error: (error: HttpErrorResponse) => {
-        log.info("Error from the DB",error.error.message);
+        log.info("Error from the DB", error.error.message);
         this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
@@ -1156,7 +1279,8 @@ export class CoverTypesComparisonComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
           this.premiums = res.premiumAmount;
           log.debug('Premium computation response:', this.premiums)
-          const newriskLevelPremiums = this.riskLevelPremiums;
+          log.debug('Premium computation response:', res)
+          const newriskLevelPremiums = res.riskLevelPremiums;
           this.newRiskLevelPremiums = newriskLevelPremiums;
           log.debug('newRiskLevelPremiums:', this.newRiskLevelPremiums)
 
@@ -1206,18 +1330,19 @@ export class CoverTypesComparisonComponent {
           log.debug(JSON.stringify(this.premiumPayload, null, 2));
           log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
 
-          if(this.isAddededBenefitsCalled){
+          if (this.isAddededBenefitsCalled) {
             log.debug("Do not navigate to quote summary")
+            this.loadClientQuotation();
             // this.router.navigate(['/home/gis/quotation/quote-summary']);
 
-          }else{
-            if(this.premiumPayload){
+          } else {
+            if (this.premiumPayload) {
               log.debug("if statement put on premium payload")
               this.loadClientQuotation();
               this.router.navigate(['/home/gis/quotation/quote-summary']);
 
             }
-            if(this.premiums){
+            if (this.premiums) {
               log.debug("if statement put on premiums")
 
               this.loadClientQuotation();
@@ -1230,6 +1355,40 @@ export class CoverTypesComparisonComponent {
             log.debug("just CKECING IF IT EXISTS", this.taxInformation)
 
             log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
+            //   const quotationNumberString = JSON.stringify(this.passedNumber);
+            //   sessionStorage.setItem('quotationNumber', quotationNumberString);
+            //   //   const quotationNumberString = JSON.stringify(this.quotationNo);
+            // // sessionStorage.setItem('quotationNumber', quotationNumberString ||this.passedNumber.toString());
+            // // sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+            // sessionStorage.setItem(
+            //   'quickQuotationNum',
+            //   (this.quotationNo || this.passedNumber.toString())
+            // );
+            // // sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString()||this.passedQuotationCode);
+            // sessionStorage.setItem(
+            //   'quickQuotationCode',
+            //   (this.quotationCode?.toString() || this.passedQuotationCode.toString())
+            // );
+
+
+            this.router.navigate(['/home/gis/quotation/quote-summary']);
+            // this.loadClientQuotation();
+
+          }
+          // if(this.premiums){
+          //   log.debug("if statement put on premiums (TEST)")
+
+          //   this.loadClientQuotation();
+          //   this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+
+          // }
+
+          log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
+          log.debug("just CKECING IF IT EXISTS", this.taxInformation)
+
+
+          log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
           //   const quotationNumberString = JSON.stringify(this.passedNumber);
           //   sessionStorage.setItem('quotationNumber', quotationNumberString);
           //   //   const quotationNumberString = JSON.stringify(this.quotationNo);
@@ -1246,41 +1405,7 @@ export class CoverTypesComparisonComponent {
           // );
 
 
-            this.router.navigate(['/home/gis/quotation/quote-summary']);
-            // this.loadClientQuotation();
-
-          }
-          if(this.premiums){
-            log.debug("if statement put on premiums")
-
-            this.loadClientQuotation();
-            this.router.navigate(['/home/gis/quotation/quote-summary']);
-
-
-          }
-
-          log.debug("just CKECING IF IT EXISTS", this.quotationDetails)
-          log.debug("just CKECING IF IT EXISTS", this.taxInformation)
-
-
-          log.debug("NAVIGATING TO QUOTATION SUMMARY AFTER CREATING A QUOTE FROM SCRATCH, ADDING NEW RISK OR EDITING RISK,")
-        //   const quotationNumberString = JSON.stringify(this.passedNumber);
-        //   sessionStorage.setItem('quotationNumber', quotationNumberString);
-        //   //   const quotationNumberString = JSON.stringify(this.quotationNo);
-        // // sessionStorage.setItem('quotationNumber', quotationNumberString ||this.passedNumber.toString());
-        // // sessionStorage.setItem('quickQuotationNum', this.quotationNo);
-        // sessionStorage.setItem(
-        //   'quickQuotationNum',
-        //   (this.quotationNo || this.passedNumber.toString())
-        // );
-        // // sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString()||this.passedQuotationCode);
-        // sessionStorage.setItem(
-        //   'quickQuotationCode',
-        //   (this.quotationCode?.toString() || this.passedQuotationCode.toString())
-        // );
-
-
-          this.router.navigate(['/home/gis/quotation/quote-summary']);
+          // this.router.navigate(['/home/gis/quotation/quote-summary']);
           // this.loadClientQuotation();
 
 
@@ -1430,9 +1555,9 @@ export class CoverTypesComparisonComponent {
     this.isBenefitsDetailsOpen = !this.isBenefitsDetailsOpen;
   }
   getLimits(index: number) {
-    log.debug("index from get limits",index)
-    log.debug("index from get limits selected covertype",this.selectedCoverType)
-    log.debug("Premium payload",this.premiumPayload.risks)
+    log.debug("index from get limits", index)
+    log.debug("index from get limits selected covertype", this.selectedCoverType)
+    log.debug("Premium payload", this.premiumPayload.risks)
     return this.premiumPayload.risks.filter(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)[index]?.limits || [];
   }
 
@@ -1686,7 +1811,7 @@ export class CoverTypesComparisonComponent {
     }
 
     let quotationCode;
-    if(this.quotationData) {
+    if (this.quotationData) {
       this.quotationCode = this.quotationData._embedded[0].quotationCode;
       quotationCode = Number(this.quotationCode);
     } else {
@@ -1741,26 +1866,203 @@ export class CoverTypesComparisonComponent {
       }
       );
   }
-  navigateToQuickQuote(){
+  navigateToQuickQuote() {
     log.debug("Navigate to quick quote screen")
     this.isReturnToQuickQuote = true;
-      // Add a unique flag for add another risk navigation
-      sessionStorage.setItem('navigationSource', 'isReturnToQuickQuote');
+    // Add a unique flag for add another risk navigation
+    sessionStorage.setItem('navigationSource', 'isReturnToQuickQuote');
 
     const passedisReturnToQuickQuoteString = JSON.stringify(this.isReturnToQuickQuote);
     sessionStorage.setItem('isReturnToQuickQuote', passedisReturnToQuickQuoteString);
-    
+
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-    log.debug("New client detail(covertype:",this.passedNewClientDetails)
+    log.debug("New client detail(covertype:", this.passedNewClientDetails)
 
-    
+
     const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
-    log.debug("Existing client detail(covertype:",this.passedClientDetails)
+    log.debug("Existing client detail(covertype:", this.passedClientDetails)
 
     this.router.navigate(['/home/gis/quotation/quick-quote']);
 
+  }
+  //   openAdditionalBenefitsModal() {
+  //     log.debug("openADDITIONAL BENEFITS METHOD HAS BEEN CALLED")
+  //     log.debug("Temporay premium list",this.temporaryPremiumList)
+  //     if (this.temporaryPremiumList && this.temporaryPremiumList.length > 0) {
+  //       let modal = new bootstrap.Modal(this.addMoreBenefitsModal.nativeElement);
+  //       modal.show();
+  //     }
+  // }
+  // checkAndOpenModal() {
+  //   console.log("Checking temporaryPremiumList:", this.temporaryPremiumList);
+  //   if (this.temporaryPremiumList && this.temporaryPremiumList.length > 0) {
+  //     let modal = new bootstrap.Modal(this.addMoreBenefitsModal.nativeElement);
+  //     modal.show();
+  //   }
+  // }
+
+  // openAdditionalBenefitsModal() {
+  //   console.log("openAdditionalBenefitsModal called");
+  //   this.checkAndOpenModal();
+  // }
+  openAdditionalBenefitsModal() {
+    if (!this.temporaryPremiumList) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Temporary list loading ');
+    } else {
+      document.getElementById("openAdditionalBenefitsModalButton").click();
+
+    }
+  }
+
+  createQuotationFormNew() {
+    this.quotationFormNew = this.fb.group({
+      quotationCode: [''],
+      quotationNo: [''],
+      user: [''],
+      quotStage: [''],
+      policyData: this.fb.array([
+        this.fb.group({
+          wefDate: [''],
+          wetDate: [''],
+          productCode: [''],
+          binderPolicy: [''],
+          bindCode: [''],
+          branchCode: [''],
+          action: [''],
+          currencyCode: [''],
+          currencyRate: [''],
+          agentCode: [''],
+          agentShortDescription: [''],
+          introducerCode: [''],
+          internalComments: [''],
+          source: [''],
+          clientCode: [''],
+          polPropHoldingCoPrpCode: [''],
+          chequeRequisition: [false],
+          divisionCode: [''],
+          polSubAgnCode: [''],
+          clientType: [''],
+          quotPrsCode: [''],
+          polMktrAgnCode: [''],
+          comments: [''],
+          gisPolicyNumber: [''],
+          polPipPfCode: [''],
+          endorsementStatus: [''],
+          polEnforceSfParam: [''],
+          polCrDateNotified: [''],
+          multiUser: [''],
+          unitCode: [''],
+          locationCode: ['']
+        })
+      ])
+    });
+  }
+  createQuotationForm() {
+    this.quotationForm = this.fb.group({
+      actionType: ['',],
+      addEdit: [''],
+      agentCode: ['', Validators.required],
+      agentShortDescription: [''],
+      bdivCode: [''],
+      bindCode: [''],
+      branchCode: ['', Validators.required],
+      clientCode: ['', Validators.required],
+      clientType: [''],
+      coinLeaderCombined: [''],
+      consCode: [''],
+      currencyCode: ['', Validators.required],
+      currencySymbol: [''],
+      fequencyOfPayment: [''],
+      isBinderPolicy: [''],
+      paymentMode: [''],
+      proInterfaceType: [''],
+      productCode: ['', Validators.required],
+      source: ['', Validators.required],
+      withEffectiveFromDate: ['', Validators.required],
+      withEffectiveToDate: ['', Validators.required],
+      multiUser: [''],
+      comments: [''],
+      internalComments: [''],
+      introducerCode: [''],
+      dateRange: [''],
+      RFQDate: ['', Validators.required],
+      expiryDate: ['', Validators.required]
+    })
+  }
+  fetchUserOrgId() {
+    this.quotationService
+      .getUserOrgId(this.userCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.userOrgDetails = response
+          log.debug("User Organization Details  ", this.userOrgDetails);
+          this.organizationId = this.userOrgDetails.organizationId
+          if (this.organizationId) {
+            this.fetchExchangeRate()
+          }
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+        }
+      });
+  }
+  fetchExchangeRate() {
+    const currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
+    this.quotationService
+      .getExchangeRates(currencyCode, this.organizationId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.exchangeRate = response
+          log.debug("Exchange rate  ", this.exchangeRate);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+  }
+  editQuotation(){
+    const quoteForm = this.quotationForm.value;
+
+    quoteForm.agentCode = 0;
+    quoteForm.agentShortDescription = "DIRECT";
+    quoteForm.branchCode = this.userBranchId;
+    quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
+    quoteForm.clientCode = this.passedClientDetails?.id
+    quoteForm.clientType = "I";
+    quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
+    quoteForm.currencySymbol = this.selectedCurrency;
+    quoteForm.productCode = this.premiumPayload?.product?.code;
+    quoteForm.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
+    quoteForm.withEffectiveFromDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
+    quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
+
+    this.quotationService
+    .updateQuotationDetails(this.user,this.storedQuotationCode,this.storedQuotationNo,quoteForm)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+
+        this.userOrgDetails = response
+        log.debug("User Organization Details  ", this.userOrgDetails);
+        this.organizationId = this.userOrgDetails.organizationId
+        if (this.organizationId) {
+          this.fetchExchangeRate()
+        }
+      },
+      error: (error) => {
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+      }
+    });
   }
 }
 

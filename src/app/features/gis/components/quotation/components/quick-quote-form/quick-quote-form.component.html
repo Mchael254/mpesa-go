@@ -476,7 +476,8 @@
 
                                     <ng-template pTemplate="body" let-clientData>
                                       <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
-                                        <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
+                                        
+                                        <td>{{ utilService.getFullName(clientData)  }}</td>
                                         <td>{{ clientData.emailAddress }}</td>
                                         <td>{{ clientData.phoneNumber }}</td>
                                         <td>{{ clientData.idNumber }}</td>
