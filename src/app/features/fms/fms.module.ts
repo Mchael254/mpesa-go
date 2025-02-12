@@ -12,6 +12,12 @@ import {SharedModule} from "../../shared/shared.module";
 import { ReceiptComponent } from './components/receipt/receipt.component';
 import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
 import { BaseFmsComponent } from './components/base-fms/base-fms.component';
+import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
+import { ClientSearchComponent } from './components/client-search/client-search.component';
+import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
+import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
+
+
 
 
 
@@ -21,6 +27,12 @@ import { BaseFmsComponent } from './components/base-fms/base-fms.component';
     ReceiptComponent,
     ReceiptAuthorizationComponent,
     BaseFmsComponent,
+    
+    ReceiptCaptureComponent,
+    ClientSearchComponent,
+    ClientAllocationComponent,
+    ReceiptPreviewComponent
+    
    
   ],
     imports: [
@@ -33,6 +45,7 @@ import { BaseFmsComponent } from './components/base-fms/base-fms.component';
         ReactiveFormsModule,
         TranslateModule,
         SharedModule,
+        
     ]
 })
 export class FmsModule { }

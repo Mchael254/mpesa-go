@@ -2630,6 +2630,15 @@
       "capitalInjection": "Inyección de Capital",
       "deductions": "Deducciones",
       "chargeAmount": "Monto del Cargo",
+      "back":"Atrás",
+      "clear":"Limpiar",
+      "next":"Siguiente",
+      "mpesaCode":"Código de Mpesa",
+      "cheque":"Cheque",
+      "eftNo":"Eft_No",
+      "yes":"Sí",
+      "no":"No",
+      "editDescription":"Editar descripción",
       "uploadFiles": "Cargar Archivos"
     },
 

@@ -5,6 +5,13 @@ export interface ReportsDto {
   rptCode: number,
   system: string
 }
+export interface ReportDto {
+  encodeFormat: string,
+  params: params[],
+  reportFormat: string,
+  rptCode: number,
+  system: string
+}
 
 export interface params {
   name: string,
