@@ -2038,6 +2038,16 @@ return isValid;
 //     }
 //   })
 // }
+/**
+ *
+ *
+ * @memberof ReceiptComponent
+ */
+/**
+ *
+ *
+ * @memberof ReceiptComponent
+ */
 fetchParamStatus(){
   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
     next:(response)=>{
@@ -2340,7 +2350,7 @@ GetReceipt(){
 
 
   const reportPayload: ReportsDto = {
-    encode_format: "RAW",
+    encodeFormat: "RAW",
     params: [
       {
         name: "UP_RCT_NO",
@@ -2353,8 +2363,8 @@ GetReceipt(){
         // value:'2'
       }
     ],
-    report_format: "PDF",
-    rpt_code: 300,
+    reportFormat: "PDF",
+    rptCode: 300,
     system: "CRM"
   };
   this.reportService.generateReport(reportPayload)
