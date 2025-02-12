@@ -958,7 +958,11 @@
       "applicable_modules": "Modules applicables",
       "underwriting": "Souscription",
       "both": "Les deux",
-      "quotations": "Devis"
+      "quotations": "Devis",
+      "select_a_policy": "Sélectionnez une police",
+      "policy_ID": "ID de la police",
+      "no_policy_found": "Aucune police trouvée"
+
 
     },
     "policy": {
