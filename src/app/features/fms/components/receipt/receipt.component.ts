@@ -2398,7 +2398,7 @@ GetReceipt(){
       //console.log('Report Response>>',response);
       // Disable the print button after successful download
 
-      
+
          // Reset states
          this.isReceiptSaved = false; // Disable the Print Receipt button
          this.isReceiptDownloading = false;
