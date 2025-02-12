@@ -2096,6 +2096,15 @@
     "capitalInjection": "Uingizaji wa Mtaji",
     "deductions": "Vikwazo",
     "chargeAmount": "Kiasi cha Malipo",
+    "back":"Rudi",
+    "clear":"Futa",
+    "next":"Ifuatayo",
+    "mpesaCode":"Nambari ya Mpesa",
+    "cheque":"Cheki",
+    "eftNo":"Nambari ya EFT",
+    "yes":"Ndio",
+    "no":"Hapana",
+    "editDescription":"Hariri Maelezo",
     "uploadFiles": "Pakia Faili"
     },
     "allocation": {

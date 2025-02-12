@@ -4,6 +4,12 @@ import {ChequeAuthorizationComponent} from "./cheque-authorization/cheque-author
 import { ReceiptComponent } from './components/receipt/receipt.component';
 import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
 import { BaseFmsComponent } from './components/base-fms/base-fms.component';
+import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
+import { ClientSearchComponent } from './components/client-search/client-search.component';
+import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
+import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
+
+
 const routes: Routes = [
   {
     path:'',
@@ -20,7 +26,23 @@ const routes: Routes = [
   {
     path:'authorize',
     component:ReceiptAuthorizationComponent
-  }
+  },
+  {
+    path:'client',
+    component:ClientSearchComponent
+  },
+  {
+    path:'screen1',
+    component:ReceiptCaptureComponent
+  },
+  {
+    path:'allocation',
+    component:ClientAllocationComponent
+  },
+ {
+  path:'receipt-preview',
+  component:ReceiptPreviewComponent
+ }
 ];
 
 @NgModule({
