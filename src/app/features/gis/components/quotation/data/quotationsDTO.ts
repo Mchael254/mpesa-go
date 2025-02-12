@@ -422,6 +422,77 @@ export interface Sources {
   description: string;
   applicableModule: string;
 }
+export interface PolicyData {
+  wefDate: string;
+  wetDate: string;
+  productCode: number;
+  binderPolicy: string;
+  bindCode: number;
+  branchCode: number;
+  action: string;
+  currencyCode: number;
+  currencyRate: number;
+  agentCode: number;
+  agentShortDescription: string;
+  introducerCode: number;
+  internalComments: string;
+  source: string;
+  clientCode: number;
+  polPropHoldingCoPrpCode: number;
+  chequeRequisition: boolean;
+  divisionCode: number;
+  polSubAgnCode: number;
+  clientType: string;
+  quotPrsCode: number;
+  polMktrAgnCode: number;
+  comments: string;
+  gisPolicyNumber: string;
+  polPipPfCode: number;
+  endorsementStatus: string;
+  polEnforceSfParam: string;
+  polCrDateNotified: string;
+  multiUser: string;
+  unitCode: number;
+  locationCode: number;
+}
+
+export interface QuotationPayload {
+  quotationCode: number;
+  quotationNo: string;
+  policyData: PolicyData[];
+  user: string;
+  quotStage: string;
+}
+export interface UserDetails {
+  id: number;
+  name: string;
+  username: string;
+  emailAddress: string;
+  dateOfBirth: string | null;
+  status: string;
+  userType: string;
+  telNo: string;
+  phoneNumber: string;
+  otherPhone: string | null;
+  personelRank: string;
+  countryCode: number;
+  townCode: number | null;
+  physicalAddress: string | null;
+  postalCode: string | null;
+  departmentCode: string | null;
+  activatedBy: string | null;
+  updateBy: string;
+  dateCreated: string;
+  profilePicture: string | null;
+  organizationId: number;
+  organizationGroupId: number | null;
+  supervisorId: number | null;
+  branchId: number;
+  gender: string | null;
+  pinNumber: string | null;
+  idNumber: string | null;
+}
+
 
 
 

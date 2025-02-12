@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { Logger, untilDestroyed } from '../../../../../../shared/shared.module';
+import { Logger, untilDestroyed, UtilService } from '../../../../../../shared/shared.module';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ClientService } from '../../../../../entities/services/client/client.service';
@@ -104,6 +104,7 @@ export class QuoteSummaryComponent {
     public router: Router,
     private ngZone: NgZone,
     public globalMessagingService: GlobalMessagingService,
+    public utilService:UtilService
 
 
   ) {
@@ -140,7 +141,7 @@ export class QuoteSummaryComponent {
 
     if (this.passedClientDetails) {
       log.info("EXISTING CLIENT")
-      this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
+      this.selectedClientName = this.utilService.getFullName(this.passedNewClientDetails)
       this.selectedEmail = this.passedClientDetails?.emailAddress;
       this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
     } else {
@@ -619,6 +620,10 @@ export class QuoteSummaryComponent {
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
 
     this.router.navigate(['/home/gis/quotation/create-client']);
+  const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+  sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+
+  this.router.navigate(['/home/gis/quotation/create-client']);
 
 
 
