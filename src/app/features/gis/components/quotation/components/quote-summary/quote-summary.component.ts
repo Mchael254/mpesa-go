@@ -180,6 +180,10 @@ export class QuoteSummaryComponent {
   }
   ngOnDestroy(): void { }
 
+  formatString(str: string): string {
+    return str.replace(/\s+/g, '-');
+  }
+
   loadClientQuotation() {
     log.debug("Load CLient quotation has been called")
     this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data => {

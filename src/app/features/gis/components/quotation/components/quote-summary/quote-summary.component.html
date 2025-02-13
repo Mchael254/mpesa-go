@@ -31,7 +31,7 @@
                   <div class="col-md-4">
                     <div class="row">
                       <div class="col-5">
-                        <p class="summary-label">{{ 'gis.quotation.contact_information' | translate }}:</p>
+                        <p class="summary-label whitespace-nowrap overflow-hidden text-ellipsis">{{ 'gis.quotation.contact_information' | translate }}:</p>
                       </div>
                       <div class="col-7">
                         <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
@@ -217,7 +217,7 @@
                           <td>{{ risk.subclass.sclDescription | sentenceCase }}</td>
                           <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
                           <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
-                              {{ risk.propertyId + risk.subclass.sclDescription }}
+                            {{ formatString(risk.propertyId + '_' + risk.subclass.sclDescription) }}
                           </td>
                           <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
                           <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
