@@ -135,7 +135,7 @@
                   'gis.quotation.currency'
                     | translate
                 }}</label><br>
-              <p-dropdown formControlName="currencyCode" name="currencyCode" [options]="currencyList"
+              <p-dropdown formControlName="currency" name="currency" [options]="currencyList"
                           optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
                           [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
             </div>
