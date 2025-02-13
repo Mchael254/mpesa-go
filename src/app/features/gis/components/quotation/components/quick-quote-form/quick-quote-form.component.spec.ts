@@ -614,7 +614,7 @@ describe('QuickQuoteFormComponent', () => {
         { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
         { provide: MessageService },
         { provide: DatePipe },
-        
+
 
 
 
@@ -706,20 +706,20 @@ describe('QuickQuoteFormComponent', () => {
   });
   it('should toggle the button', () => {
     // Initial state
-    expect(component.new).toBeFalsy(); // Assuming initially it's false
+    expect(component.newClient).toBeFalsy(); // Assuming initially it's false
 
     // Call the method to toggle the button
     component.toggleButton();
 
     // Verify that the property is toggled
-    expect(component.new).toBeTruthy();
+    expect(component.newClient).toBeTruthy();
   });
   it('should toggle to a new client', fakeAsync(() => {
     // Mock resetClientData method
     jest.spyOn(component, 'resetClientData').mockImplementation(() => { });
 
     // Set initial state
-    component.new = true;
+    component.newClient = true;
     component.clientName = 'John Doe';
 
     // Call the method to toggle to a new client
@@ -737,7 +737,7 @@ describe('QuickQuoteFormComponent', () => {
       console.log('clientName:', component.clientName); // Ensure it's now an empty string
 
       // Check the component state and assertions
-      expect(component.new).toBeFalsy();
+      expect(component.newClient).toBeFalsy();
       expect(component.clientName).toEqual(''); // Assert that clientName is reset
       expect(component.resetClientData).toHaveBeenCalled(); // Ensure resetClientData was called
     });
@@ -1385,7 +1385,7 @@ describe('QuickQuoteFormComponent', () => {
 
   //   // expect(result).toHaveLength(2); // Using Jest's directly without TypeScript interference
   //   expect(result[0].calculationGroup).toEqual(1); // Assuming the first section is not an additional limit
-  //   expect(result[1].calculationGroup).toEqual(2); 
+  //   expect(result[1].calculationGroup).toEqual(2);
   // });
   it('should create risk section and handle success', () => {
 
@@ -1662,33 +1662,33 @@ describe('QuickQuoteFormComponent', () => {
         { id: 2, name: 'Client 2' },
       ],
     };
-  
+
     // Mock getClients to return an observable with mock data
     jest.spyOn(clientService, 'getClients').mockReturnValue(of(mockClientData)as any);
-  
+
     // Set up the spy on console.debug before calling the method
     const logSpy = jest.spyOn(console, 'debug').mockImplementation();
-  
+
     // Call the method
     component.loadAllClients();
-  
+
     // Simulate the passage of time for asynchronous operations
     tick();  // This ensures the observable completes
-  
+
     // Check that getClients was called with the expected arguments
     expect(clientService.getClients).toHaveBeenCalledWith(0, 100);
-  
+
     // Verify that clientList and clientData are updated correctly
     expect(component.clientList).toEqual(mockClientData);
     expect(component.clientData).toEqual(mockClientData.content);
-  
+
     // Verify that the log.debug method was called with the expected values
     expect(logSpy).toHaveBeenCalledWith('CLIENT DATA:', mockClientData);
     expect(logSpy).toHaveBeenCalledWith('CLIENT DATA:', mockClientData.content);
   }));
-  
 
-  
+
+
 
 
 

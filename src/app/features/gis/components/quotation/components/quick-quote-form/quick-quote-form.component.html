@@ -8,7 +8,7 @@
       <div class="card-body">
         <div class="d-inline me-4">
           <input class="form-check-input me-2 mt-2"
-                 (click)="toggleNewClient()"
+                 (click)="toggleButton()"
                  type="radio"
                  name="flexRadioDefault"
                  id="newClient"
@@ -24,7 +24,6 @@
                  type="radio"
                  name="flexRadioDefault"
                  id="existingClient"
-                 [checked]="!isNewClient"
                  [disabled]="isFieldDisabled('radio')">
           <label class="form-check-label mb-4 mt-2" for="existingClient">
             {{ 'gis.quotation.existing_client' | translate }}
@@ -32,7 +31,7 @@
         </div>
 
         <div class="row mb-4" [formGroup]='quickQuoteForm'>
-          <div class="col-sm-4 col-6">
+          <div class="col-sm-4 col-6" *ngIf="newClient;else existingClient">
             <label for="name" class=" quote-label" id="name">{{
                 'gis.quotation.name' |
                   translate
@@ -43,6 +42,20 @@
                    (blur)="onInputChange()"
             >
           </div>
+          <ng-template #existingClient>
+            <div class=" col-sm-4 col-6">
+              <label for="Client" class="required quote-label" id="Client"> {{'gis.quotation.client' |
+                translate}}</label>
+              <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+                     [(ngModel)]="clientName"
+                     [disabled]="isFieldDisabled('other')"
+                     data-bs-toggle="modal"
+                     data-bs-target="#clientModal"
+                     readonly
+              >
+
+            </div>
+          </ng-template>
           <div class=" col-sm-4 col-6">
             <label for="Email" class="quote-label" id="Email"> {{
                 'gis.quotation.email_address' |
@@ -53,7 +66,7 @@
                    formControlName="emailAddress"
             >
           </div>
-          <div class="col-sm-4 col-6" *ngIf="!new">
+          <div class="col-sm-4 col-6">
             <label for="Phone" class="quote-label" id="Phone"> {{
                 'gis.quotation.phone_number' |
                   translate
@@ -263,7 +276,7 @@
           </ng-template>
 
           <ng-template pTemplate="body" let-clientData>
-            <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
+            <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData)">
               <td>{{ utilService.getFullName(clientData)  }}</td>
               <td>{{ clientData.emailAddress }}</td>
               <td>{{ clientData.phoneNumber }}</td>
