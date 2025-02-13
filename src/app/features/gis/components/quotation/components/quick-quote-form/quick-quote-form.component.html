@@ -44,8 +44,10 @@
           </div>
           <ng-template #existingClient>
             <div class=" col-sm-4 col-6">
-              <label for="Client" class="required quote-label" id="Client"> {{'gis.quotation.client' |
-                translate}}</label>
+              <label for="Client" class="required quote-label" id="Client"> {{
+                  'gis.quotation.client' |
+                    translate
+                }}</label>
               <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                      [(ngModel)]="clientName"
                      [disabled]="isFieldDisabled('other')"
@@ -65,6 +67,11 @@
                    [disabled]="isFieldDisabled('email')"
                    formControlName="emailAddress"
             >
+            <div
+              *ngIf="quickQuoteForm.get('emailAddress').hasError('email') && quickQuoteForm.get('emailAddress').touched"
+              class="form-text text-danger">
+              {{ 'gis.quotation.invalid_email_address' | translate }}
+            </div>
           </div>
           <div class="col-sm-4 col-6">
             <label for="Phone" class="quote-label" id="Phone"> {{
@@ -101,7 +108,7 @@
                 }}</label><br>
               <p-dropdown formControlName="product" name="product"
                           [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
-                           placeholder=" " [filterBy]="'description'"
+                          placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
                 *ngIf="quickQuoteForm.get('product').hasError('required') && quickQuoteForm.get('product').touched"
@@ -118,7 +125,7 @@
                 }}</label><br>
               <p-dropdown formControlName="subClass" name="subclassCode"
                           [options]="allMatchingSubclasses" optionLabel="description" dataKey="code"
-                          (onChange)="onSubclassSelected($event)" placeholder=" " [filterBy]="'description'"
+                          placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
                 *ngIf="quickQuoteForm.get('subClass').hasError('required') && quickQuoteForm.get('subClass').touched"
@@ -173,7 +180,8 @@
                     <input *ngSwitchCase="'text'" type="text" id="quote-input" class="form-control form-control-sm"
                            [formControlName]="field.name" [disabled]="field.disabled">
                     <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
-                           [formControlName]="field.name" [disabled]="field.disabled" currencyMask [options]='currencyObj'>
+                           [formControlName]="field.name" [disabled]="field.disabled" currencyMask
+                           [options]='currencyObj'>
                     <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [name]="field.name"
                                 [dateFormat]="dateFormat" inputStyleClass='form-control' [showButtonBar]='true'
                                 [dataType]="'string'" [style]="{ width: '100%' }"
@@ -181,7 +189,7 @@
                     <ng-container *ngSwitchCase="'select'">
                       <ng-container *ngIf="field.name === 'yearOfManufacture'">
                         <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                                      [filter]="true"></p-dropdown>
+                                    [filter]="true"></p-dropdown>
                       </ng-container>
                       <ng-container *ngIf="field.name === 'vesselType'">
                         <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
@@ -203,6 +211,14 @@
                     </ng-container>
                   </ng-container>
                 </div>
+              </div>
+              <div *ngIf="quickQuoteForm.get(field.name).hasError('required') && quickQuoteForm.get(field.name).touched"
+                   class="form-text text-danger">
+                {{ field.label }} is required
+              </div>
+              <div *ngIf="quickQuoteForm.get(field.name).hasError('pattern') && quickQuoteForm.get(field.name).touched"
+                   class="form-text text-danger">
+                {{ field.label }} is invalid
               </div>
             </ng-container>
           </ng-container>
@@ -293,7 +309,7 @@
 
           <ng-template pTemplate="body" let-clientData>
             <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData)">
-              <td>{{ utilService.getFullName(clientData)  }}</td>
+              <td>{{ utilService.getFullName(clientData) }}</td>
               <td>{{ clientData.emailAddress }}</td>
               <td>{{ clientData.phoneNumber }}</td>
               <td>{{ clientData.idNumber }}</td>

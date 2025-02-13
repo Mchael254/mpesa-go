@@ -101,7 +101,7 @@ export class QuickQuoteFormComponent {
   formData: {
     type: string;
     name: string;
-    required: string
+    isMandatory: string
     disabled: boolean;
     readonly: boolean
     regexPattern: string
@@ -434,7 +434,6 @@ export class QuickQuoteFormComponent {
         currency.currencyDefault === 'Y'
       })
       log.debug("Default currency", defaultCurrency)
-      this.selectedSubclassCode = value.code;
       this.quickQuoteForm.get('currency').setValue(defaultCurrency)
       log.debug("Product value changed", value)
       this.selectedProductCode = value.code
@@ -446,6 +445,7 @@ export class QuickQuoteFormComponent {
     this.quickQuoteForm.get('subClass').valueChanges.pipe(
       untilDestroyed(this)
     ).subscribe((value) => {
+      this.selectedSubclassCode = value.code;
       log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
       const selectedSubclassCodeString = JSON.stringify(
         this.selectedSubclassCode
@@ -1235,12 +1235,6 @@ export class QuickQuoteFormComponent {
       this.quickQuoteForm.get('emailAddress').setValue('');
       this.quickQuoteForm.get('phoneNumber').setValue('');
     }
-    /* if (!this.isFieldDisabled('radio')) {
-       this.newClient = true;
-       this.isNewClient = false;
-       this.readonlyClient = false;
-       this.checkFieldsDisableState();
-     }*/
   }
 
   /**
@@ -1496,9 +1490,11 @@ export class QuickQuoteFormComponent {
     this.selectedCountry = this.clientDetails.country;
     sessionStorage.setItem('clientDetails', JSON.stringify(this.clientDetails));
     this.getCountries();
-    this.saveclient();
-    log.debug('Selected Client:', client);
-    this.quickQuoteForm.get('clientName').setValue(this.utilService.getFullName(this.clientDetails));
+   // this.saveclient();
+
+    let fullName = this.utilService.getFullName(this.clientDetails);
+    log.debug('Selected Client fullname::::', fullName);
+    this.quickQuoteForm.get('clientName').setValue(fullName);
     this.quickQuoteForm.get('emailAddress').setValue(this.clientDetails.emailAddress);
     this.quickQuoteForm.get('phoneNumber').setValue(this.clientDetails.mobileNumber);
     this.closebutton.nativeElement.click();
@@ -1958,12 +1954,16 @@ export class QuickQuoteFormComponent {
               Validators.required,
               Validators.pattern(new RegExp(field.regexPattern)),
             ]);
-
+            const validators = [];
+            if (field.isMandatory === 'Y') {
+              validators.push(Validators.required);
+            }
+            if (field.regexPattern) {
+              validators.push(Validators.pattern(field.regexPattern));
+            }
             log.debug('Control', this.control);
             this.dynamicForm.addControl(field.name, this.control);
-            // this.dynamicRegexPattern = field.regexPattern;
-            // this.dynamicRegexPattern = this.regexPattern;
-            // log.debug("Regex", field.regexPattern);
+            this.quickQuoteForm.addControl(field.name, new FormControl('', validators));
             this.additionalDetails.addControl(field.name, this.fb.control(''));
             for (const controlName in this.additionalDetails.controls) {
               if (this.additionalDetails.controls.hasOwnProperty(controlName)) {
@@ -2513,15 +2513,6 @@ export class QuickQuoteFormComponent {
       });
   }
 
-  onEmailInputChange() {
-    if (!this.emailPattern.test(this.newClientData.inputClientEmail)) {
-      console.error('Invalid email format');
-      // You can also set a custom error state here if needed
-    } else {
-      log.debug("input email", this.newClientData.inputClientEmail);
-      sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
-    }
-  }
 
   isEmailOrPhoneValid(): boolean {
     const email1Valid = !!this.newClientData.inputClientEmail; // Check if new client email has a value
@@ -2611,7 +2602,6 @@ export class QuickQuoteFormComponent {
 
 
   onCoverToChange(event: Date): void {
-    console.log('selected Cover to date raaaaaw:', event);
     const selectedCoverToDate = event;
     log.debug('selected cover to date', selectedCoverToDate);
 
