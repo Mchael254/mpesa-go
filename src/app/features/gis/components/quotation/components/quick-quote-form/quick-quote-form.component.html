@@ -99,12 +99,12 @@
                   'gis.quotation.product' |
                     translate
                 }}</label><br>
-              <p-dropdown formControlName="product" name="productCode"
+              <p-dropdown formControlName="product" name="product"
                           [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
-                          (onChange)="onProductSelected($event)" placeholder=" " [filterBy]="'description'"
+                           placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
-                *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
+                *ngIf="quickQuoteForm.get('product').hasError('required') && quickQuoteForm.get('product').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.product_is_required' | translate }}
               </div>
@@ -121,7 +121,7 @@
                           (onChange)="onSubclassSelected($event)" placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
-                *ngIf="personalDetailsForm.get('subclassCode').hasError('required') && personalDetailsForm.get('subclassCode').touched"
+                *ngIf="quickQuoteForm.get('subClass').hasError('required') && quickQuoteForm.get('subClass').touched"
                 class="form-text text-danger">
                 {{ 'gis.policy.subclass_is_required' | translate }}
               </div>
@@ -145,7 +145,7 @@
               <br>
               <label for="cover-From" class="quote-label required" id="cover-From">
                 {{ 'gis.quotation.effective_date' | translate }}</label><br>
-              <p-calendar formControlName="effectiveDate" name="withEffectiveFromDate"
+              <p-calendar formControlName="effectiveDate" name="effectiveDate"
                           [dateFormat]="dateFormat"
                           inputStyleClass='form-control'
                           [showButtonBar]='true'
@@ -155,7 +155,7 @@
                           (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
               </p-calendar>
               <div
-                *ngIf="personalDetailsForm.get('withEffectiveFromDate').hasError('required') && personalDetailsForm.get('withEffectiveFromDate').touched"
+                *ngIf="quickQuoteForm.get('effectiveDate').hasError('required') && quickQuoteForm.get('effectiveDate').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.effective_date_is_required' | translate }}
               </div>
@@ -181,9 +181,25 @@
                     <ng-container *ngSwitchCase="'select'">
                       <ng-container *ngIf="field.name === 'yearOfManufacture'">
                         <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                                    optionLabel="label" optionValue="value" [filter]="true"></p-dropdown>
+                                      [filter]="true"></p-dropdown>
                       </ng-container>
-
+                      <ng-container *ngIf="field.name === 'vesselType'">
+                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
+                                    optionLabel="name" dataKey="code"
+                                    [filter]="true"></p-dropdown>
+                      </ng-container>
+                      <ng-container *ngIf="field.name === 'modeOfTransport'">
+                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
+                                    optionLabel="description" dataKey="code"
+                                    [filterBy]="'description'"
+                                    [filter]="true"></p-dropdown>
+                      </ng-container>
+                      <ng-container *ngIf="field.name === 'occupation'">
+                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
+                                    optionLabel="name" dataKey="id"
+                                    [filterBy]="'name'"
+                                    [filter]="true"></p-dropdown>
+                      </ng-container>
                     </ng-container>
                   </ng-container>
                 </div>

@@ -229,6 +229,32 @@ export class QuickQuoteFormComponent {
   selectedoccupationCode: any;
   selectedCoverToDate: any;
   vesselTypeList: VesselType[];
+  modeOfTransport: [
+    {
+      code: 1,
+      description: 'Air'
+    },
+    {
+      code: 2,
+      description :'By sea'
+    },
+    {
+      code: 3,
+      description :'By road'
+    },
+    {
+      code: 4,
+      description :'By sea road'
+    },
+    {
+      code: 5,
+      description :'By sea rail road'
+    },
+    {
+      code: 6,
+      description :'By air road'
+    }
+  ]
   selectedVesselTypeCode: any;
   isFormDataLoaded: boolean = false;
   quotationSubMenuList: SidebarMenu[];
@@ -399,6 +425,16 @@ export class QuickQuoteFormComponent {
       subClass: ['', [Validators.required]],
       effectiveDate: [new Date(), [Validators.required]],
       currency: ['', [Validators.required]]
+    })
+    this.quickQuoteForm.get('product').valueChanges.pipe(
+      untilDestroyed(this)
+    ).subscribe((value) => {
+      log.debug("Product value changed", value)
+      this.selectedProductCode = value.code
+      this.getProductSubclass(value.code)
+      this.LoadAllFormFields(this.selectedProductCode);
+      this.getProductExpiryPeriod();
+      this.getCoverToDate();
     })
   }
 
