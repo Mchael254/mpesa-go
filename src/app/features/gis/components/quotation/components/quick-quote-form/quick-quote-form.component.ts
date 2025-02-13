@@ -1647,8 +1647,14 @@ export class QuickQuoteFormComponent {
       this.subClassList.forEach((element) => {
         const matchingSubclasses = this.allSubclassList.filter(
           (subCode) => subCode.code === element.sub_class_code
-        );
-        this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
+        ).map((value) => {
+          let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+          return {
+            ...value,
+            description: capitalizedDescription
+          }
+        });
+        this.allMatchingSubclasses.push(...matchingSubclasses);
       });
 
       log.debug('Retrieved Subclasses by code', this.allMatchingSubclasses);
@@ -1769,22 +1775,14 @@ export class QuickQuoteFormComponent {
    */
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies()
-      /*   .pipe(
-           map((value) => {
-             let capitalizedDescription =
-               value.name.charAt(0).toUpperCase() +
-               value.name.slice(1).toLowerCase();
-             return {
-               ...value,
-               name: capitalizedDescription
-             }
-           }),
-           tap((value) => {
-             log.debug("Currencies through the stream", value)
-           })
-         )*/
       .subscribe((data) => {
-        this.currencyList = data;
+        this.currencyList = data.map((value) => {
+          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+          return {
+            ...value,
+            name: capitalizedDescription
+          }
+        });
         log.info(this.currencyList, 'this is a currency list');
         const defaultCurrency = this.currencyList.find(
           (currency) => currency.currencyDefault == 'Y'
