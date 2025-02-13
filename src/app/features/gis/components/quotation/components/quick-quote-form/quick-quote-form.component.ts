@@ -229,32 +229,33 @@ export class QuickQuoteFormComponent {
   selectedoccupationCode: any;
   selectedCoverToDate: any;
   vesselTypeList: VesselType[];
-  modeOfTransport: [
+  modeOfTransport: { code: number, description: string }[] = [
     {
       code: 1,
       description: 'Air'
     },
     {
       code: 2,
-      description :'By sea'
+      description: 'By sea'
     },
     {
       code: 3,
-      description :'By road'
+      description: 'By road'
     },
     {
       code: 4,
-      description :'By sea road'
+      description: 'By sea road'
     },
     {
       code: 5,
-      description :'By sea rail road'
+      description: 'By sea rail road'
     },
     {
       code: 6,
-      description :'By air road'
+      description: 'By air road'
     }
   ]
+
   selectedVesselTypeCode: any;
   isFormDataLoaded: boolean = false;
   quotationSubMenuList: SidebarMenu[];
