@@ -1,20 +1,28 @@
 import { Injectable } from '@angular/core';
-import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
-import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { Clause, quotationDTO, quotationRisk, RegexPattern, riskSection, scheduleDetails, Sources } from '../../data/quotationsDTO';
+import {
+  PremiumComputationRequest,
+  quotationDTO,
+  quotationRisk,
+  RegexPattern,
+  riskSection,
+  scheduleDetails,
+  Sources
+} from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
-import { environment } from '../../../../../../../environments/environment';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { riskClauses } from '../../../setups/data/gisDTO';
-import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
-import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
+import { SESSION_KEY } from '../../../../../lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
 import { ExternalClaimExp } from '../../../policy/data/policy-dto';
+import {ClientDTO} from "../../../../../entities/data/ClientDTO";
+import {UtilService} from "../../../../../../shared/services";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +42,8 @@ export class QuotationsService {
     private appConfig: AppConfigService,
     private http: HttpClient,
     private session_storage: SessionStorageService,
-    private api: ApiService
+    private api: ApiService,
+    private utilService: UtilService
   ) { }
   /**
   * Base URL for quotation services obtained from application configuration.
@@ -89,6 +98,65 @@ export class QuotationsService {
   addQuotationSources(data: Sources): Observable<any> {
 
     return this.api.POST<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  premiumComputationEngine(payload: PremiumComputationRequest): Observable<any> {
+    return this.api.POST<any[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION,);
+
+    console.log("Premium Payload after", payload)
+
+  }
+
+  getFormFields(shortDescription: any): Observable<any> {
+
+    return this.api.GET<any>(`api/v1/forms?shortDescription=${shortDescription}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+
+  searchClients(
+    columnName: string = null,
+    columnValue: string = null,
+    page: number,
+    size: number = 5,
+    name: string,
+    idNumber: string = null,
+  ): Observable<Pagination<ClientDTO>> {
+    const params = new HttpParams()
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`)
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('idNumber', `${idNumber}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
+
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<Pagination<ClientDTO>>(
+      `clients`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  getTaxes(
+    productCode: number,
+    subClassCode: number,
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['productCode'] = productCode.toString();
+    paramsObj['subClassCode'] = subClassCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
 
@@ -409,7 +477,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
 
