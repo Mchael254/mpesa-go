@@ -1490,7 +1490,7 @@ export class QuickQuoteFormComponent {
     this.selectedCountry = this.clientDetails.country;
     sessionStorage.setItem('clientDetails', JSON.stringify(this.clientDetails));
     this.getCountries();
-   // this.saveclient();
+    // this.saveclient();
 
     let fullName = this.utilService.getFullName(this.clientDetails);
     log.debug('Selected Client fullname::::', fullName);
@@ -2295,7 +2295,7 @@ export class QuickQuoteFormComponent {
     log.info("Submitted form {}", this.quickQuoteForm)
     this.ngxSpinner.show();
     log.debug("Cover to", this.selectedCoverToDate)
-    this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
+  /*  this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
     this.personalDetailsForm.get('withEffectiveToDate').setValue(this.passedCoverToDate || this.selectedCoverToDate);
     this.personalDetailsForm.get('withEffectiveFromDate').setValue(this.effectiveFromDate);
     if (this.selectedBranchCode) {
@@ -2306,7 +2306,7 @@ export class QuickQuoteFormComponent {
       this.personalDetailsForm
         .get('branchCode')
         .setValue(this.filteredBranchCodeNumber);
-    }
+    }*/
 
     // Mark all fields as touched and validate the form
     this.personalDetailsForm.markAllAsTouched();
@@ -2322,32 +2322,17 @@ export class QuickQuoteFormComponent {
         'Error',
         'Provide either a valid phone number or email to proceed.'
       );
-
       return;
     }
-
-    // Log form validity for debugging
-    log.debug('Form Valid:', this.personalDetailsForm.valid);
-    log.debug('Form Values:', this.personalDetailsForm.value);
-
-
-    Object.keys(this.personalDetailsForm.controls).forEach((control) => {
-      if (this.personalDetailsForm.get(control).invalid) {
+    for (let controlsKey in this.quickQuoteForm.controls) {
+      if (this.quickQuoteForm.get(controlsKey).invalid) {
         log.debug(
-          `${control} is invalid`,
-          this.personalDetailsForm.get(control).errors
+          `${controlsKey} is invalid`,
+          this.quickQuoteForm.get(controlsKey).errors
         );
       }
-    });
-    if (this.personalDetailsForm.invalid || this.dynamicForm.invalid) {
-      this.dynamicForm.markAllAsTouched()
-      this.dynamicForm.updateValueAndValidity();
-      log.debug('Form is invalid, will not proceed');
-      // this.ngxSpinner.hide();
-      //  return;
     }
 
-    // If form is valid, proceed with the premium computation logic
     log.debug('Form is valid, proceeding with premium computation...');
     sessionStorage.setItem('product', this.selectedProductCode);
 
@@ -2395,8 +2380,6 @@ export class QuickQuoteFormComponent {
           log.debug('Data', data);
           const premiumResponseString = JSON.stringify(data);
           sessionStorage.setItem('premiumResponse', premiumResponseString);
-
-          // this.sharedService.setPremiumResponse(data);
           this.router.navigate(['/home/gis/quotation/cover-type-details']);
         },
         error: (error: HttpErrorResponse) => {
@@ -2515,31 +2498,14 @@ export class QuickQuoteFormComponent {
 
 
   isEmailOrPhoneValid(): boolean {
-    const email1Valid = !!this.newClientData.inputClientEmail; // Check if new client email has a value
-    const email2Valid = !!this.clientEmail; // Check if existing client email has a value
-    const phone1Valid = !!this.newClientData.inputClientPhone; // Check if new client phone has a value
-    const phone2Valid = !!this.clientPhone; // Check if existing client phone has a value
-
-    // Debugging to verify values
-    log.debug({
-      email1Valid,
-      email2Valid,
-      phone1Valid,
-      phone2Valid,
-      'Input Phone 1': this.newClientData.inputClientPhone,
-      'Input Phone 2': this.clientPhone,
-    });
-
-    // Return true if any field has a value
-    return phone1Valid || phone2Valid || email1Valid || email2Valid;
+    if (this.quickQuoteForm.get('emailAddress').invalid && this.quickQuoteForm.get('phoneNumber').invalid) {
+      return false;
+    }
+    if (!this.quickQuoteForm.get('email') && !this.quickQuoteForm.get('phoneNumber')) {
+      return false;
+    }
+    return true;
   }
-
-
-  validateEmail(email: string): boolean {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
-  }
-
   onDateInputChange(date: any) {
     log.debug('selected Effective date raaaaaw', date);
     this.selectedEffectiveDate = date;

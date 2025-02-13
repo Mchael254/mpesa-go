@@ -2226,7 +2226,7 @@
         "reason": "Reason",
         "policy_details": "Policy details",
         "policy_number": "Policy number",
-        "effective_date": "Effective date",
+        "effective_date": "Cover from",
         "branch": "Branch",
         "group_name": "Group name",
         "with_effect_to": "With effect to",

@@ -49,7 +49,6 @@
                     translate
                 }}</label>
               <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
-                     [(ngModel)]="clientName"
                      [disabled]="isFieldDisabled('other')"
                      data-bs-toggle="modal"
                      data-bs-target="#clientModal"
@@ -88,13 +87,14 @@
                                   formControlName="phoneNumber"
                                   [selectedCountryISO]="CountryISO.Kenya"
                                   [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                  [phoneValidation]="true" [(ngModel)]="newClientPhone"
+                                  [phoneValidation]="true"
                                   [numberFormat]="PhoneNumberFormat.National"
                                   (ngModelChange)="onPhoneInputChange()"
               >
               </ngx-intl-tel-input>
-              <div *ngIf="newClientPhoneInput?.errors?.['validatePhoneNumber']?.['valid'] === false"
-                   class="form-text text-danger">
+              <div
+                *ngIf="quickQuoteForm.get('phoneNumber').hasError('validatePhoneNumber') && quickQuoteForm.get('phoneNumber').touched"
+                class="form-text text-danger">
                 {{ 'gis.quotation.invalid_phone_format' | translate }}
               </div>
             </div>
@@ -145,6 +145,11 @@
               <p-dropdown formControlName="currency" name="currency" [options]="currencyList"
                           optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
                           [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
+              <div
+                *ngIf="quickQuoteForm.get('currency').hasError('required') && quickQuoteForm.get('currency').touched"
+                class="form-text text-danger">
+                {{ 'gis.policy.currency_is_required' | translate }}
+              </div>
             </div>
           </div>
           <div class="col-sm-4 col-6">
@@ -177,6 +182,18 @@
                   <label for="{{i}}{{field.name}}" class="quote-label">{{ field.label | translate }}</label>
                   <br>
                   <ng-container [ngSwitch]="field.type">
+                    <ng-container *ngSwitchCase="'text'">
+                      <ng-container *ngIf="field.name==='carRegNo';else inputField">
+                        <input type="text" id="quote-input" class="form-control form-control-sm"
+                               (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
+                               [formControlName]="field.name" [disabled]="field.disabled">
+<
+                      </ng-container>
+                      <ng-template #inputField>
+                        <input type="text" id="quote-input" class="form-control form-control-sm"
+                               [formControlName]="field.name" [disabled]="field.disabled">
+                      </ng-template>
+                    </ng-container>
                     <input *ngSwitchCase="'text'" type="text" id="quote-input" class="form-control form-control-sm"
                            [formControlName]="field.name" [disabled]="field.disabled">
                     <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
