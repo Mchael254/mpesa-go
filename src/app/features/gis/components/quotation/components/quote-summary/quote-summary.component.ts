@@ -141,7 +141,7 @@ export class QuoteSummaryComponent {
 
     if (this.passedClientDetails) {
       log.info("EXISTING CLIENT")
-      this.selectedClientName = this.utilService.getFullName(this.passedNewClientDetails)
+      this.selectedClientName = this.utilService.getFullName(this.passedClientDetails)
       this.selectedEmail = this.passedClientDetails?.emailAddress;
       this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
     } else {
