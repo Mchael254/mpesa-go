@@ -430,12 +430,32 @@ export class QuickQuoteFormComponent {
     this.quickQuoteForm.get('product').valueChanges.pipe(
       untilDestroyed(this)
     ).subscribe((value) => {
+      const defaultCurrency = this.currencyList.find((currency) => {
+        currency.currencyDefault === 'Y'
+      })
+      log.debug("Default currency", defaultCurrency)
+      this.selectedSubclassCode = value.code;
+      this.quickQuoteForm.get('currency').setValue(defaultCurrency)
       log.debug("Product value changed", value)
       this.selectedProductCode = value.code
       this.getProductSubclass(value.code)
       this.LoadAllFormFields(this.selectedProductCode);
       this.getProductExpiryPeriod();
       this.getCoverToDate();
+    })
+    this.quickQuoteForm.get('subClass').valueChanges.pipe(
+      untilDestroyed(this)
+    ).subscribe((value) => {
+      log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
+      const selectedSubclassCodeString = JSON.stringify(
+        this.selectedSubclassCode
+      );
+      sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
+      this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
+      this.loadAllBinders(this.selectedSubclassCode);
+      this.loadSubclassSectionCovertype(this.selectedSubclassCode);
+      this.fetchRegexPattern();
+      this.fetchTaxes();
     })
   }
 
@@ -1809,6 +1829,8 @@ export class QuickQuoteFormComponent {
             nullable: true,
             align: 'left',
           };
+
+          this.quickQuoteForm.get('currencyCode').setValue(defaultCurrency)
         }
 
         this.cdr.detectChanges();
