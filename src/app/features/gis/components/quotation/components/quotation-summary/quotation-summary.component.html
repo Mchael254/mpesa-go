@@ -43,7 +43,7 @@
                   <p class="label">Client</p>
                 </div>
                 <div class="col-8">
-                  <p class="content" >{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
+                  <p class="content">{{ clientDetails?.inputClientName || clientDetails?.firstName + " " + clientDetails?.lastName }}</p>
                 </div>
               </div>
             </div>
@@ -109,7 +109,7 @@
                   <p class="label">Proposer</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.introducerCode}}</p>
+                  <p class="content">{{quotationDetails?.introducerCode || "null"}}</p>
                 </div>
               </div>
             </div>
@@ -119,7 +119,7 @@
                   <p class="label">Introducer</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.introducerCode}}</p>
+                  <p class="content">{{quotationDetails?.introducerCode || "null" }}</p>
                 </div>
               </div>
             </div>
@@ -142,7 +142,7 @@
                   <p class="label">Status</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationView?.quotStatus}}</p>
+                  <p class="content">{{quotationView?.quotStatus || "null" }}</p>
                 </div>
               </div>
             </div>
@@ -152,7 +152,7 @@
                   <p class="label">Source</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationView?.source?.description}}</p>
+                  <p class="content">{{quotationView?.source?.description || "null" }}</p>
                 </div>
               </div>
             </div>
@@ -200,7 +200,7 @@
                   <p class="label">Internal Comments</p>
                 </div>
                 <div class="col-7">
-                  <p class="content">{{quotationDetails?.internalComments}}</p>
+                  <p class="content">{{quotationDetails?.internalComments || "null" }}</p>
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@
                   <p class="label">External Comments</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.comments}}</p>
+                  <p class="content">{{quotationDetails?.comments || "null" }}</p>
                 </div>
               </div>
             </div>
