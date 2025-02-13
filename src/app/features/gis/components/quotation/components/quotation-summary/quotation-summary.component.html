@@ -162,18 +162,19 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-5">
-                  <p class="label">Premium</p>
+                  <p class="label ">Premium</p>
                 </div>
                 <div class="col-7">
-                  <p class="content" *ngIf="premium" appCommaFormat >{{ premium.premiumAmount }}</p>
-                  <p class="content" *ngIf="!premium"  >0.00</p>
+                  <p class="content " *ngIf="premium" appCommaFormat >{{ premium.premiumAmount }}</p>
+                  <p class="content" *ngIf="!premium" appCommaFormat >{{ quotationView?.quotPremium }}</p>
+                  <p class="content" *ngIf="!premium && !quotationView?.quotPremium"  >0.00</p>
                 </div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">Sum Insured</p>
+                  <p class="label ">Sum Insured</p>
                 </div>
                 <div class="col-8">
                   <p class="content" appCommaFormat >{{ sumInsured }}</p>
@@ -183,17 +184,17 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">Comm amt.</p>
+                  <p class="label ">Comm amt.</p>
                 </div>
                 <div class="col-8">
-                  <p class="content" appCommaFormat >{{ sumInsured }}</p>
+                  <p class="content" appCommaFormat >{{ marketerCommissionAmount || "null" }}</p>
                 </div>
               </div>
             </div>
 
           </div>
 
-          <div class="row mb-3">
+          <div class="row mb-">
             <div class="col-md-4">
               <div class="row">
                 <div class="col-5">
@@ -204,7 +205,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
                   <p class="label">External Comments</p>
@@ -214,7 +215,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
               <!--  -->
             </div>
           </div>
@@ -264,9 +265,9 @@
                   <th>Product</th>
                   <th>Cover From</th>
                   <th>Cover To</th>
-                  <th>Premium</th>
                   <th>Commission</th>
                   <th>Binder</th>
+                  <th class="text-end">Premium</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
@@ -274,9 +275,9 @@
                   <td>{{data.productShortDescription}}</td>
                   <td>{{data.wef}}</td>
                   <td>{{data.wet}}</td>
-                  <td appCommaFormat >{{data.premium}}</td>
                   <td>{{data.commission}}</td>
                   <td>{{data.binder}}</td>
+                  <td appCommaFormat class="text-end">{{data.premium}}</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -362,18 +363,18 @@
                 <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }"  class='ui-datatable'>
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="flexible-header">Amount</th>
                       <th class="flexible-header">Description</th>
                       <th class="flexible-header">Quotation Rate</th>
                       <th class="flexible-header">Rate Type</th>
+                      <th class="flexible-header text-end">Amount</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header" appCommaFormat >{{ data.taxAmount  }}</td>
                       <td class="flexible-header">{{data.rateDescription}}</td>
                       <td class="flexible-header">{{data.quotationRate}}</td>
                       <td class="flexible-header">{{data.rateType}}</td>
+                      <td class="flexible-header text-end" appCommaFormat >{{ data.taxAmount  }}</td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -489,8 +490,8 @@
                   <th>ID</th>
                   <th>Description</th>
                   <th>Cover Type</th>
-                  <th>SI</th>
-                  <th>Premium</th>
+                  <th class="text-end">SI</th>
+                  <th class="text-end">Premium</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
@@ -501,8 +502,8 @@
                   <td>{{data?.quotationRiskNo || '-'}}</td>
                   <td>{{data?.propertyId || '-'}}</td>
                   <td>{{data?.coverTypeShortDescription || '-'}}</td>
-                  <td appCommaFormat >{{data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
-                  <td appCommaFormat >{{data?.sectionsDetails[0]?.premium || 0 }}</td>
+                  <td appCommaFormat class="text-end">{{data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
+                  <td appCommaFormat class="text-end">{{data?.sectionsDetails[0]?.premium || 0 }}</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -536,11 +537,11 @@
                       <th>Row Num</th>
                       <th>Group</th>
                       <th>Section Description</th>
-                      <th>Section Limit</th>
-                      <th>Premium</th>
                       <th>Rate Type</th>
                       <th>Section Rate</th>
-                      <th>Free Limit</th>
+                      <th class="text-end">Section Limit</th>
+                      <th class="text-end">Premium</th>
+                      <th class="text-end">Free Limit</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
@@ -548,11 +549,11 @@
                       <td>{{data.rowNumber}}</td>
                       <td>{{data.calculationGroup}}</td>
                       <td>{{data.sectionShortDescription}}</td>
-                      <td appCommaFormat >{{data.limitAmount}}</td>
-                      <td appCommaFormat >{{data.premium}}</td>
                       <td>{{data.rateType}}</td>
                       <td>{{data.rate}}</td>
-                      <td appCommaFormat >{{data.freeLimit}}</td>
+                      <td appCommaFormat class="text-end">{{data.limitAmount}}</td>
+                      <td appCommaFormat class="text-end">{{data.premium}}</td>
+                      <td appCommaFormat class="text-end">{{data.freeLimit}}</td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -671,29 +672,49 @@
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
                 <div class="col-3"></div>
-                  <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#addExternalClaimExperienceModal" >
-                      <i class="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                  <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Edit"
-                      [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
-                      [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
-                      (click)="openExternalClaimExpEditModal()">
-                      <i class="fa-solid fa-pencil"></i>
-                    </button>
-                  </div>
-                  <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete"
-                      id="openClaimModalButtonDelete" [hidden]="true" data-bs-toggle="modal" data-bs-target="#deleteClaim"
-                    >
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                    <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                      <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
-                    </button>
-                  </div>
+                <div class="col-sm-3">
+                  <button type="button"
+                          id="icon"
+                          class="btn btn-primary"
+                          title="Add"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addExternalClaimExperienceModal"
+                          [disabled]="!showExternalClaims">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button type="button"
+                          id="icon"
+                          class="btn btn-primary"
+                          title="Edit"
+                          [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
+                          [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
+                          (click)="openExternalClaimExpEditModal()"
+                          [disabled]="!showExternalClaims">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                </div>
+                <div class="col-sm-3">
+                  <button type="button"
+                          id="icon"
+                          class="btn btn-danger me-2"
+                          title="Delete"
+                          id="openClaimModalButtonDelete"
+                          [hidden]="true"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteClaim"
+                          [disabled]="!showExternalClaims">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                  <button type="button"
+                          id="icon"
+                          class="btn btn-primary"
+                          title="Delete"
+                          [disabled]="!showExternalClaims">
+                    <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -702,19 +723,19 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>Client</th>
-                  <th>Claim Paid</th>
                   <th>Insurer</th>
                   <th>Policy Number</th>
                   <th>Year</th>
+                  <th class="text-end">Claim Paid</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-externalClaim>
                 <tr [class.p-highlight]="externalClaim === selectedExternalClaimExp" (click)="onExternalClaimSelect(externalClaim)" style="cursor: default" >
                   <td>{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</td>
-                  <td>{{externalClaim.claimPaid}}</td>
                   <td>{{externalClaim.insurer}}</td>
                   <td>{{externalClaim.policyNumber}}</td>
                   <td>{{externalClaim.eceYear}}</td>
+                  <td class="text-end">{{externalClaim.claimPaid}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -737,8 +758,8 @@
                   <th>Total Reserve</th>
                   <th>Recoveries</th>
                   <th>Salvages</th>
-                  <th>Total Payments</th>
-                  <th>Net Paid</th>
+                  <th class="text-end">Total Payments</th>
+                  <th class="text-end">Net Paid</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-internalClaim>
@@ -749,8 +770,8 @@
                   <td>{{internalClaim.total_reserve}}</td>
                   <td>{{internalClaim.recoveries}}</td>
                   <td>{{internalClaim.salvages}}</td>
-                  <td appCommaFormat >{{internalClaim.total_payments}}</td>
-                  <td appCommaFormat >{{internalClaim.net_paid}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.total_payments}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.net_paid}}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
