@@ -164,12 +164,14 @@ export class QuotationSummaryComponent {
       this.quotationCode = this.quotationCodeString;
     }
 
-    const storedData = sessionStorage.getItem('clientFormData');
-    if (storedData) {
-      this.clientDetails = JSON.parse(storedData);
-    } else {
-      this.clientDetails = JSON.parse(sessionStorage.getItem('clientDetails'));
-    }
+    this.clientDetails = JSON.parse(
+      sessionStorage.getItem('clientFormData') ||
+      sessionStorage.getItem('clientDetails') ||
+      sessionStorage.getItem('newClientDetails') ||
+      'null'
+    );
+
+    log.debug("client-Details quotation summary", this.clientDetails);
 
     // Handle clientCode assignment
     if (this.moreDetails) {

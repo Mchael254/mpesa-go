@@ -21,12 +21,14 @@ export class CreateClientComponent {
   passedQuotationCode: string;
   quotationCode: number;
   batchNo: any;
+  convertToNormalQuoteFlag: string;
+  convertToPolicyFlag: string;
 
   constructor(
-        public quotationService: QuotationsService,
-        public router: Router,
-        
-    
+    public quotationService: QuotationsService,
+    public router: Router,
+
+
   ) {
 
   }
@@ -44,7 +46,7 @@ export class CreateClientComponent {
     );
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
     log.debug("Passed Quotation Details",this.passedQuotation)
-    
+
 
     const inputClientName = this.passedNewClientDetails.inputClientName;
     const inputClientEmail = this.passedNewClientDetails.inputClientEmail;
@@ -78,10 +80,51 @@ export class CreateClientComponent {
 
     })
   }
+
+  convertQuoteToNormalQuote() {
+    log.debug("Quotation Details",this.passedQuotation);
+
+    const quotationNumber = this.passedQuotation?.quotOriginalQuotNo;
+    log.debug("Quotation Number",quotationNumber);
+    sessionStorage.setItem("quotationNum", quotationNumber);
+
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
+    // Get the quotCode
+    const quotationCode = this.passedQuotation?.quotationProducts[0]?.quotCode;
+    log.debug("Quotation Code",this.quotationCode);
+
+
+    // Call the API to convert quote to normal quote
+    this.quotationService
+      .convertToNormalQuote(quotationCode)
+      .subscribe((data:any) => {
+        log.debug("Response after converting quote to a normlaQuote:", data)
+
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+      }
+    );
+  }
+
   handleSaveClient(eventData: any) {
     log.debug('Event received in Component B:', eventData);
-    if(eventData){
-      this.convertToPolicy()
+
+    if(eventData) {
+      this.convertToNormalQuoteFlag = sessionStorage.getItem("convertToNormalQuoteFlag") || "";
+      this.convertToPolicyFlag = sessionStorage.getItem("convertToPolicyFlag") || "";
+
+      log.debug("convertToNormalQuoteFlag", this.convertToNormalQuoteFlag);
+      log.debug("convertToPolicyFlag", this.convertToPolicyFlag);
+
+      if(this.convertToPolicyFlag) {
+        this.convertToPolicy();
+        sessionStorage.removeItem("convertToPolicyFlag");
+      } else if (this.convertToNormalQuoteFlag) {
+        this.convertQuoteToNormalQuote();
+        sessionStorage.removeItem("convertToNormalQuoteFlag");
+      }
     }
   }
 }

@@ -61,7 +61,7 @@ export class MenuService {
           { name: 'Convert Quotation', link: '/home/gis/quotation/quotation-conversion' },
           { name: 'Quotation Inquiry', link: '/home/gis/quotation/quotation-inquiry' },
           { name: 'Quotation Sources', link: '/home/gis/quotation/quotation-sources' },
-          { name: 'Quotation Numbers', link: '' },
+          // { name: 'Quotation Numbers', link: '' },
           // { name: 'Quotation List', link: '/home/lms/quotation/list' },
         ],
         collapsed: true
