@@ -43,12 +43,12 @@
                     </div>
                   </div>
                   <div class="col-md-4">
-                    <div class="row" *ngIf="selectedClientName">
+                    <div class="row" >
                       <div class="col-4">
                         <p class="summary-label">{{ 'gis.quotation.name' | translate }}:</p>
                       </div>
                       <div class="col-8">
-                        <p class="summary-value">{{ selectedClientName }}</p>
+                        <p class="summary-value" >{{ selectedClientName || 'gis.quotation.no_contact_information_available' }}</p>
                       </div>
                     </div>
                   </div>
@@ -87,28 +87,49 @@
                   </div>
                 </div>
 
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="row">
+                      <div class="col-5">
+                        <p class="summary-label">{{ 'gis.quotation.expiry_date' | translate }}:</p>
+                      </div>
+                      <div class="col-7">
+                        <p class="summary-value">{{ coverTo | date: 'MMMM d, yyyy' }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <!-- Empty div for alignment -->
+                  </div>
+                  <div class="col-md-4">
+                    <!-- Empty div for alignment -->
+                  </div>
+                </div>
+
+
+
                 <!-- PRODUCT DETAILS -->
                 <p class="title mt-4">{{'gis.quotation.product_details' | translate}}</p>
                 <p-table [value]="quotationDetails?.quotationProducts"[tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>{{'gis.quotation.product' | translate}}</th>
-                            <th class="text-center"> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
-                            <th class="text-center">{{ 'gis.quotation.total_taxes' | translate }}</th>
-                            <th class="text-center">{{'gis.quotation.premium' | translate}}</th>
-                            <th class="text-center">{{'gis.quotation.total_premium' | translate}}</th>
+                            <th class="text-end"> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
+                            <th class="text-end">{{ 'gis.quotation.total_taxes' | translate }}</th>
+                            <th class="text-end">{{'gis.quotation.premium' | translate}}</th>
+                            <th class="text-end">{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-product let-i="index">
                         <tr>
-                            <td>{{ product.productShortDescription | sentenceCase}}</td>
-                            <td class="text-center" appCommaFormat> {{product.totalSumInsured |
+                            <td>{{ product.productName | sentenceCase}}</td>
+                            <td class="text-end" appCommaFormat> {{product.totalSumInsured |
                                 number }}</td>
-                            <td class="text-center" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
+                            <td class="text-end" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
                                 {{ totalTaxes | number }}
                             </td>
-                            <td class="text-center" appCommaFormat>{{premiumAmount | number }}</td>
-                            <td class="text-center" appCommaFormat>{{ product.premium |
+                            <td class="text-end" appCommaFormat>{{premiumAmount | number }}</td>
+                            <td class="text-end" appCommaFormat>{{ product.premium |
                                 number }}</td>
                         </tr>
 
@@ -165,48 +186,52 @@
                   [value]="quotationDetails?.riskInformation"
                   dataKey="code"
                   selectionMode="single"
-                  [tableStyle]="{'min-width': '50rem'}"
+                  [tableStyle]="{'min-width': '80rem'}"
                   [(selection)]="selectedRisk"
                   responsiveLayout="scroll"
-                  [autoLayout]="true"
+                  [autoLayout]="false"
                   [paginator]="quotationDetails?.riskInformation?.length > 3"
                   [rows]="4"
                   [showCurrentPageReport]="quotationDetails?.riskInformation?.length > 3"
                   currentPageReportTemplate="{first} - {last} of {totalRecords}"
                   class="ui-datatable"
-                >
+                  [scrollable]="true"
+              >
                   <ng-template pTemplate="header">
                       <tr>
-                          <th> {{ 'gis.policy.property_id' | translate }}</th>
-                          <th> {{ 'gis.policy.subclass' | translate }}</th>
-                          <th> {{ 'gis.quotation.cover_type' | translate }}</th>
-                          <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
-                          <th> {{'gis.quotation.premium' | translate}}</th>
-                          <th> {{ 'gis.quotation.description' | translate }}</th>
-                          <th> {{ 'gis.quotation.cover_from' | translate }}</th>
-                          <th> {{ 'gis.quotation.cover_to' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.policy.property_id' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.policy.subclass' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_type' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.quotation.description' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_from' | translate }}</th>
+                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_to' | translate }}</th>
+                          <th class="text-end" style="white-space: nowrap;"> {{ 'gis.quotation.sum_insured' | translate }}</th>
+                          <th class="text-end" style="white-space: nowrap;"> {{'gis.quotation.premium' | translate}}</th>
                       </tr>
                   </ng-template>
 
                   <ng-template pTemplate="body" let-risk>
                       <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
                           <td>{{ risk.propertyId }}</td>
-                          <td>{{ risk.subclassDescription | sentenceCase }}</td>
+                          <td>{{ risk.subclass.sclDescription | sentenceCase }}</td>
                           <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
-                          <td appCommaFormat>{{ risk.sectionsDetails[0]?.limitAmount }}</td>
-                          <td appCommaFormat>{{ risk.premium | number }}</td>
-                          <td>{{ risk.propertyId + ' - ' + risk.subclassDescription }}</td>
+                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                              {{ risk.propertyId + risk.subclass.sclDescription }}
+                          </td>
                           <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
                           <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
+                          <td appCommaFormat class="text-end">{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                          <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
                       </tr>
                   </ng-template>
 
                   <ng-template pTemplate="emptymessage">
                       <tr>
-                          <td colspan="4" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
+                          <td colspan="8" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
                       </tr>
                   </ng-template>
-                </p-table>
+              </p-table>
+
 
                 <!-- Delete Risk Modal -->
                 <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
@@ -265,11 +290,11 @@
                                     <th>{{ 'gis.policy.row_no' | translate }}</th>
                                     <th>{{ 'gis.policy.short_desc' | translate }}</th>
                                     <th>{{ 'gis.policy.description' | translate }}</th>
-                                    <th>{{ 'gis.policy.limit_amount' | translate }}</th>
                                     <th>{{ 'gis.policy.premium_rate' | translate }}</th>
                                     <th>{{ 'gis.policy.rate_type' | translate }}</th>
                                     <th>{{ 'gis.policy.div_factor' | translate }}</th>
-                                    <th>{{ 'gis.policy.premium' | translate }}</th>
+                                    <th class="text-end">{{ 'gis.policy.limit_amount' | translate }}</th>
+                                    <th class="text-end">{{ 'gis.policy.premium' | translate }}</th>
 
                                 </tr>
                             </ng-template>
@@ -279,12 +304,12 @@
                                     <td>{{ data.calculationGroup }}</td>
                                     <td>{{ data.rowNumber }}</td>
                                     <td>{{ data.sectionDescription |sentenceCase}}</td>
-                                    <td>{{ data.description }}</td>
-                                    <td appCommaFormat>{{ data.limitAmount | number }}</td>
+                                    <td>{{ data.sectionDescription }}</td>
                                     <td>{{ data.rate }}</td>
                                     <td>{{ data.rateType }}</td>
-                                    <td>{{ data.divisionFactor }}</td>
-                                    <td>{{ data.premium | number }}</td>
+                                    <td>{{ data.rateDivisionFactor }}</td>
+                                    <td appCommaFormat class="text-end">{{ data.limitAmount | number }}</td>
+                                    <td appCommaFormat class="text-end" >{{ data.premium | number }}</td>
                                 </tr>
                             </ng-template>
                         </p-table>

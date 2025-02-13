@@ -170,7 +170,7 @@ export class QuotationsService {
     return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
-  
+
   /**
  * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
  * @method updateRiskSection
@@ -658,6 +658,19 @@ export class QuotationsService {
     // Create HttpParams from the paramsObj
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  convertToNormalQuote(
+    quotCode: number,
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
   updateQuotationDetails(user:string,quotationCode:number,quotationNumber:string,data:quotationDTO){
