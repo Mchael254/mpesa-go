@@ -418,6 +418,9 @@ export class QuickQuoteFormComponent {
       sessionStorage.removeItem("clientDetails");
       sessionStorage.removeItem("newClientDetails");
       sessionStorage.removeItem('quotationNumber');
+      sessionStorage.removeItem('quickQuotationNum');
+      sessionStorage.removeItem('quotationNum');
+      sessionStorage.removeItem('quotationDetails');
       sessionStorage.removeItem('passedQuotationDetails');
       sessionStorage.removeItem('passedClientDetails');
       sessionStorage.removeItem('passedNewClientDetails');

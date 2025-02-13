@@ -619,11 +619,13 @@ export class QuoteSummaryComponent {
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
 
-    this.router.navigate(['/home/gis/quotation/create-client']);
-  const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
-  sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+    const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+    sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-  this.router.navigate(['/home/gis/quotation/create-client']);
+    const convertToPolicyFlag = "convertToPolicy";
+    sessionStorage.setItem('convertToPolicyFlag', convertToPolicyFlag);
+
+    this.router.navigate(['/home/gis/quotation/create-client']);
 
 
 
@@ -641,6 +643,12 @@ export class QuoteSummaryComponent {
 
       const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
       sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+
+      const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+      sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+
+      const convertToNormalQuoteFlag = "convertToNormalQuote";
+      sessionStorage.setItem('convertToNormalQuoteFlag', convertToNormalQuoteFlag);
 
       this.router.navigate(['/home/gis/quotation/create-client']);
 
