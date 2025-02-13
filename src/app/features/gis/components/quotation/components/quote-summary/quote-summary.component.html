@@ -48,7 +48,8 @@
                         <p class="summary-label">{{ 'gis.quotation.name' | translate }}:</p>
                       </div>
                       <div class="col-8">
-                        <p class="summary-value" >{{ selectedClientName || 'gis.quotation.no_contact_information_available' }}</p>
+                        <p class="summary-value" *ngIf="selectedClientName" >{{ selectedClientName }}</p>
+                        <p class="summary-value" *ngIf="!selectedClientName" >{{ "null" }}</p>
                       </div>
                     </div>
                   </div>
