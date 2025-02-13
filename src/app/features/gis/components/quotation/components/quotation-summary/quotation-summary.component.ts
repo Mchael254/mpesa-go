@@ -102,6 +102,8 @@ export class QuotationSummaryComponent {
   selectedInsurer: any = null;
   externalClaimExpCode: number;
   clientName: any;
+  marketerCommissionAmount: number;
+
 
   insurersDetailsForm: FormGroup;
   selectedClause: any;
@@ -271,6 +273,9 @@ export class QuotationSummaryComponent {
         this.quotationCode = this.quotationView.riskInformation[0].quotationCode;
         log.debug("quotaion code", this.quotationCode)
       }
+
+      this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
+      log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
 
       // Extract product details
       this.quotationProducts = this.quotationView.quotationProduct;
