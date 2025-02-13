@@ -113,9 +113,6 @@ export class QuotationsService {
   getClientQuotations(quotationNo) {
     return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  // computePremium(quotationCode) {
-  //   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium?quotationCode=${quotationCode}`, {});
-  // }
   computePremium(quotationCode) {
     const params = new HttpParams().set('quotationCode', quotationCode);
     return this.api.POST(`api/v1/premium-computation/${quotationCode}`, null, API_CONFIG.PREMIUM_COMPUTATION);

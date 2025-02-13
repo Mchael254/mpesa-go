@@ -1,525 +1,293 @@
 <div class="container">
-    <p class="titleMain mt-3">{{'gis.quotation.quotation_data_entry' | translate}}</p>
-    <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
-    <div class="container mx-2 mt-n1">
-        <div class="card mb-3" style=" position: relative;">
-            <ngx-spinner name="quickQuoteScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
-                size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
-            <div class="card-body">
-              <div class="d-inline me-4">
-                <input class="form-check-input me-2 mt-2"
-                       (click)="toggleNewClient()"
-                       type="radio"
-                       name="flexRadioDefault"
-                       id="newClient"
-                       [checked]="isNewClient"
-                       [disabled]="isFieldDisabled('radio')">
-                <label class="form-check-label mb-4 mt-2" for="newClient">
-                    {{'gis.quotation.new_client' | translate}}
-                </label>
+  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_data_entry' | translate }}</p>
+  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+  <div class="container mx-2 mt-n1">
+    <div class="card mb-3" style=" position: relative;">
+      <ngx-spinner name="quickQuoteScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
+                   size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
+      <div class="card-body">
+        <div class="d-inline me-4">
+          <input class="form-check-input me-2 mt-2"
+                 (click)="toggleNewClient()"
+                 type="radio"
+                 name="flexRadioDefault"
+                 id="newClient"
+                 [checked]="isNewClient"
+                 [disabled]="isFieldDisabled('radio')">
+          <label class="form-check-label mb-4 mt-2" for="newClient">
+            {{ 'gis.quotation.new_client' | translate }}
+          </label>
+        </div>
+        <div class="d-inline ms-4">
+          <input class="form-check-input me-2 ms-4 mt-2"
+                 (click)="toggleButton()"
+                 type="radio"
+                 name="flexRadioDefault"
+                 id="existingClient"
+                 [checked]="!isNewClient"
+                 [disabled]="isFieldDisabled('radio')">
+          <label class="form-check-label mb-4 mt-2" for="existingClient">
+            {{ 'gis.quotation.existing_client' | translate }}
+          </label>
+        </div>
+
+        <div class="row mb-4" [formGroup]='quickQuoteForm'>
+          <div class="col-sm-4 col-6">
+            <label for="name" class=" quote-label" id="name">{{
+                'gis.quotation.name' |
+                  translate
+              }}</label>
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                   formControlName="clientName"
+                   [disabled]="isFieldDisabled('other')"
+                   (blur)="onInputChange()"
+            >
+          </div>
+          <div class=" col-sm-4 col-6">
+            <label for="Email" class="quote-label" id="Email"> {{
+                'gis.quotation.email_address' |
+                  translate
+              }}</label>
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                   [disabled]="isFieldDisabled('email')"
+                   formControlName="emailAddress"
+            >
+          </div>
+          <div class="col-sm-4 col-6" *ngIf="!new">
+            <label for="Phone" class="quote-label" id="Phone"> {{
+                'gis.quotation.phone_number' |
+                  translate
+              }}</label>
+            <div class="input-group">
+              <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
+                                  [preferredCountries]="preferredCountries"
+                                  [enableAutoCountrySelect]="true"
+                                  [enablePlaceholder]="true"
+                                  [searchCountryFlag]="true"
+                                  [selectFirstCountry]="true"
+                                  formControlName="phoneNumber"
+                                  [selectedCountryISO]="CountryISO.Kenya"
+                                  [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                  [phoneValidation]="true" [(ngModel)]="newClientPhone"
+                                  [numberFormat]="PhoneNumberFormat.National"
+                                  (ngModelChange)="onPhoneInputChange()"
+              >
+              </ngx-intl-tel-input>
+              <div *ngIf="newClientPhoneInput?.errors?.['validatePhoneNumber']?.['valid'] === false"
+                   class="form-text text-danger">
+                {{ 'gis.quotation.invalid_phone_format' | translate }}
               </div>
-              <div class="d-inline ms-4">
-                  <input class="form-check-input me-2 ms-4 mt-2"
-                        (click)="toggleButton()"
-                        type="radio"
-                        name="flexRadioDefault"
-                        id="existingClient"
-                        [checked]="!isNewClient"
-                        [disabled]="isFieldDisabled('radio')">
-                  <label class="form-check-label mb-4 mt-2" for="existingClient">
-                      {{'gis.quotation.existing_client' | translate}}
-                  </label>
-              </div>
-
-
-                <!-- ROW 1 -->
-                <div class="row mb-4">
-                    <div class="col-sm-4 col-6" *ngIf="!new">
-                        <label for="name" class=" quote-label" id="name">{{'gis.quotation.name' |
-                            translate}}</label>
-
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                          [(ngModel)]="newClientData.inputClientName"
-                          [disabled]="isFieldDisabled('other')"
-                          (blur)="onInputChange()"
-                        >
-
-                    </div>
-                    <div class=" col-sm-4 col-6" *ngIf="new">
-                        <label for="Client" class="required quote-label" id="Client"> {{'gis.quotation.client' |
-                            translate}}</label>
-
-
-                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
-                          [(ngModel)]="clientName"
-                          [disabled]="isFieldDisabled('other')"
-                          data-bs-toggle="modal"
-                          data-bs-target="#clientModal"
-                          readonly
-                        >
-
-                    </div>
-                    <div class=" col-sm-4 col-6 " *ngIf="!new">
-                        <label for="Email" class="quote-label" id="Email"> {{'gis.quotation.email_address' |
-                            translate}}</label>
-
-                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()"> -->
-
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-
-                            [(ngModel)]="newClientData.inputClientEmail"
-                            [disabled]="isFieldDisabled('email')"
-                            #emailInput="ngModel"
-                            [pattern]="emailPattern"
-                            (ngModelChange)="onEmailInputChange()"
-                            required
-                          >
-
-                        <div *ngIf="emailInput.invalid && emailInput.dirty" class="error-message">
-                            <span *ngIf="emailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
-                                translate}}</span>
-                            <span *ngIf="emailInput.errors?.['pattern']">{{'gis.quotation.invalid_email_format' | translate}} </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-sm-4 col-6 " *ngIf="new">
-                        <label for=">Email" class="quote-label" id=">Email"> {{'gis.quotation.email_address' |
-                            translate}} </label>
-                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail" disabled> -->
-
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail"
-                            [disabled]="isFieldDisabled('email')"
-                            #clientEmailInput="ngModel"
-                          >
-                        <div *ngIf="clientEmailInput.invalid && clientEmailInput.dirty" class="error-message">
-                            <span *ngIf="clientEmailInput.errors?.['required']">{{'lms.quotation.email_is_required' |
-                                translate}}</span>
-                            <span *ngIf="!validateEmail(clientEmail)">{{'gis.quotation.invalid_email_format' | translate}} </span>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-6" *ngIf="!new">
-                        <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
-                            translate}}</label>
-
-                        <div class="input-group">
-                            <div class="input-group">
-                                <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
-                                    [preferredCountries]="preferredCountries"
-                                    [enableAutoCountrySelect]="true"
-                                    [enablePlaceholder]="true"
-                                    [searchCountryFlag]="true"
-                                    [selectFirstCountry]="true"
-                                    [selectedCountryISO]="CountryISO.Kenya"
-                                    [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                    [phoneValidation]="true" [(ngModel)]="newClientPhone"
-                                    [numberFormat]="PhoneNumberFormat.National" #newClientPhoneInput="ngModel"
-                                    (ngModelChange)="onPhoneInputChange()"
-                                    [disabled]="isFieldDisabled('other')"
-                                  >
-                                </ngx-intl-tel-input>
-                                <div *ngIf="newClientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
-                                    class="form-text text-danger">
-                                    {{'gis.quotation.invalid_phone_format' | translate}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-4 col-6" *ngIf="new">
-                        <label for="Phone" class="quote-label" id="Phone"> {{'gis.quotation.phone_number' |
-                            translate}}</label>
-                        <div class="input-group">
-                            <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
-                                [preferredCountries]="preferredCountries"
-                                [enableAutoCountrySelect]="true"
-                                [enablePlaceholder]="true"
-                                [searchCountryFlag]="true"
-                                [selectFirstCountry]="true"
-                                [selectedCountryISO]="CountryISO.Kenya"
-                                [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                [phoneValidation]="true"
-                                [(ngModel)]="clientPhone"
-                                #clientPhoneInput="ngModel"
-                                [numberFormat]="PhoneNumberFormat.National"
-                                (ngModelChange)="onPhoneInputChange()"
-                                [disabled]="isFieldDisabled('other')"
-                            >
-                            </ngx-intl-tel-input>
-                            <div *ngIf="clientPhoneInput.errors?.['validatePhoneNumber']?.['valid'] === false"
-                                class="form-text text-danger">
-                                {{'gis.quotation.invalid_phone_format' | translate}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <form [formGroup]="personalDetailsForm" class="mb-3">
-
-                    <!-- ROW 2 -->
-                    <div class="row mb-4">
-                        <div class="col-sm-4 col-6">
-                            <label for="product" class="quote-label required" id="product">{{'gis.quotation.product' |
-                                translate}}</label><br>
-                            <p-dropdown formControlName="productCode" name="productCode"
-                                [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
-                                (onChange)="onProductSelected($event.value)" placeholder=" " [filterBy]="'description'"
-                                [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
-
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
-                                class="form-text text-danger">
-                                {{'gis.quotation.product_is_required' | translate}}
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-6">
-                            <label for="use-of-property" class="quote-label required" id="use-of-property">
-                                {{'gis.quotation.use_of_property' | translate}}</label>
-                            <select class="form-select form-control-sm " id="quote-select"
-                                (change)="onSubclassSelected($event)" formControlName="subclassCode" name="subclassCode"
-                                placeholder="parsedSubclassDesc">
-                                <option value=""></option>
-                                <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
-                                    {{subclass.description | sentenceCase}}</option>
-                            </select>
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('subclassCode').hasError('required') && personalDetailsForm.get('subclassCode').touched"
-                                class="form-text text-danger">
-                                {{'gis.policy.subclass_is_required' | translate}}
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-6">
-                            <label for="cover-From" class="quote-label required" id="cover-From">
-                                {{'gis.quotation.effective_date' | translate}}</label>
-                            <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-                            <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1 "
-                                formControlName="withEffectiveFromDate" [(ngModel)]="coverFromDate"
-                                (ngModelChange)="getCoverToDate()"> -->
-
-
-                            <p-calendar formControlName="withEffectiveFromDate" name="withEffectiveFromDate"
-                                [dateFormat]="dateFormat" [showIcon]="true" [showButtonBar]="true"
-                                [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
-                                [(ngModel)]="selectedEffectiveDate"
-                                (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
-                            </p-calendar>
-
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('withEffectiveFromDate').hasError('required') && personalDetailsForm.get('withEffectiveFromDate').touched"
-                                class="form-text text-danger">
-                                {{'gis.quotation.effective_date_is_required' | translate}}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ROW 3 -->
-                    <div class="row mb-4">
-                        <div class="col-sm-4 col-6">
-                            <label for="currency" class="required quote-label" id="currency">{{'gis.quotation.currency'
-                                | translate}}</label>
-
-
-                            <p-dropdown formControlName="currencyCode" name="currencyCode" [options]="currencyList"
-                                optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
-                                [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
-                            <!-- Display error message under the field -->
-                            <!-- <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
-                                class="form-text text-danger">
-                                Currency is required.
-                            </div> -->
-                        </div>
-                    </div>
-
-
-                    <!-- ROW 5 -->
-                    <div *ngIf="formData && selectedProductCode" class="row mb-4">
-                        <div class="col-12 ">
-                            <div class="row mb-4">
-                                <div class="col-sm-4 col-6" *ngFor="let field of formData">
-                                    <form [formGroup]="dynamicForm">
-                                        <div
-                                            *ngIf="field.name !== 'yearOfManufacture' && field.name !== 'selfDeclaredValue' && field.name !== 'carRegNo' && field.name !== 'modeOfTransport' && field.name !== 'value'
-                                            && field.name !== 'occupation' && field.name !== 'coverTo' && field.name !== 'vesselType'">
-                                            <label class="quote-label" [for]="field.name">{{ field.label }}</label>
-                                            <input [type]="field.type" [formControlName]="field.name" id="quote-input"
-                                                class="form-control form-control-sm mb-1 col-md-8">
-                                        </div>
-                                        <div *ngIf="field.name == 'yearOfManufacture'">
-                                            <label class="quote-label required" [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <select id="yearOfManufacture" id="quote-input"
-                                                class="form-select form-control-sm mb-1" [formControlName]="field.name"
-                                                [ngModel]="parsedYearOfManufacture">
-                                                <option></option>
-                                                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-                                            </select>
-                                        </div>
-                                        <div *ngIf="field.name == 'selfDeclaredValue'">
-                                            <label class="quote-label required" [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <!-- <input type="text" id="quote-input"
-                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                appCommaFormat [ngModel]="parsedSumInsured"> -->
-                                            <input type="text" id="quote-input"
-                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
-
-                                            <!-- <input type="text" id="quote-input"
-                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                currencyMask [options]='currencyObj' (input)="handleInput($event)"> -->
-
-                                        </div>
-                                        <div *ngIf="field.name == 'carRegNo'">
-                                            <label class="quote-label " [for]="field.name">{{ field.label }}</label>
-                                            <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
-                                                [formControlName]="field.name"
-                                                (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
-                                                placeholder="e.g KCA 345R" [(ngModel)]="parsedCarRegNo">
-
-
-                                            <div *ngIf="carRegNoHasError" class="form-text text-danger">
-                                                <div *ngIf="!carRegNoValue.match(dynamicRegexPattern)">
-                                                    {{'gis.quotation.please_enter_valid_reg_no' | translate}}
-                                                </div>
-                                                <!-- <div *ngIf="existingPropertyIds.includes(carRegNoValue)">
-                                                    THIS PROPERTY ID IS DUPLICATED
-                                                </div> -->
-                                                <div
-                                                    *ngIf="existingPropertyIds && existingPropertyIds.includes(carRegNoValue)">
-
-                                                    {{'gis.quotation.this_property_id_is_duplicated' | translate}}
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div *ngIf="field.name == 'modeOfTransport'">
-                                            <label class="quote-label required" [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <select id="modeOfTransport" id="quote-input"
-                                                class="form-select form-control-sm mb-1" [formControlName]="field.name"
-                                                [ngModel]="parsedYearOfManufacture">
-                                                <option></option>
-                                                <option value=""> {{'gis.policy.by_sea' | translate}}</option>
-                                                <option value=""> {{'gis.policy.by_air' | translate}}</option>
-                                                <option value=""> {{'gis.policy.by_road' | translate}}</option>
-                                                <option value=""> {{'gis.policy.by_sea_rail_road' | translate}}</option>
-                                                <option value=""> {{'gis.policy.by_sea_road' | translate}}</option>
-                                                <option value=""> {{'gis.policy.by_air_road' | translate}}</option>
-                                                <option value=""> {{'gis.policy.not_applicable' | translate}}</option>
-                                                <option value=""> {{'gis.policy.none' | translate}}</option>
-                                            </select>
-                                        </div>
-                                        <div *ngIf="field.name == 'value'">
-                                            <label class="quote-label required" [for]="field.name">{{ field.label
-                                                }}</label>
-
-                                            <input type="text" id="quote-input"
-                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                [ngModel]="parsedSumInsured" currencyMask [options]='currencyObj'>
-
-                                            <!-- <input type="text" id="quote-input"
-                                                class="form-control form-control-sm mb-1" [formControlName]="field.name"
-                                                currencyMask [options]='currencyObj' (input)="handleInput($event)"> -->
-
-                                        </div>
-                                        <div *ngIf="field.name == 'occupation'">
-                                            <label class="quote-label " [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <p-dropdown [options]="occupationData" optionLabel="name" dataKey="id"
-                                                (onChange)="onOccupationSelected($event.value)" placeholder=" "
-                                                [filterBy]="'name'" [filter]="true"></p-dropdown>
-                                        </div>
-                                        <div *ngIf="field.name == 'coverTo'">
-                                            <label class="quote-label " [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <!-- <p-calendar [dateFormat]="dateFormat" [showIcon]="true"
-                                                [showButtonBar]="true" [minDate]="minDate"
-                                                [(ngModel)]="selectedCoverToDate"
-                                                (ngModelChange)="onCoverToInputChange(selectedCoverToDate);">
-                                            </p-calendar> -->
-<br>
-                                            <p-calendar
-
-                                            [(ngModel)]="passedCoverToDate"
-                                            [dateFormat]="dateFormat"
-                                            [showIcon]="true"
-                                            [showButtonBar]="true"
-                                            [minDate]="minDate"
-                                            [placeholder]="formattedCoverToDate"
-                                            (onSelect)="onCoverToChange($event)">
-                                          </p-calendar>
-
-                                        </div>
-                                        <div *ngIf="field.name == 'vesselType'">
-                                            <label class="quote-label " [for]="field.name">{{ field.label
-                                                }}</label>
-                                            <p-dropdown [options]="vesselTypeList" optionLabel="name" dataKey="code"
-                                                (onChange)="onVesselTypeSelected($event.value)" placeholder=" "
-                                                [filterBy]="'name'" [filter]="true"></p-dropdown>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-
-                    <!-- Client Modal -->
-                    <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-lg  modal-fade" >
-                            <div class="modal-content">
-
-                                <div class="modal-body">
-                                    <button type="button" #closebutton class="float-end btn-close"
-                                        data-bs-dismiss="modal" aria-label="Close"></button>
-                                    <p class="text-start" id="selectClient"> {{'gis.quotation.select_a_client' |
-                                        translate}}</p>
-
-                                    <!-- <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
-                                        selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
-                                        responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
-                                        [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
-                                        [showCurrentPageReport]="true"
-                                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                                        [globalFilterFields]="['idNumber', 'emailAddress','lastName','emailAddress']">
-                                        <ng-template pTemplate="caption">
-
-                                            <div class="flex">
-                                                <span class="p-input-icon-left ml-auto">
-                                                    <i class="pi pi-search search-icon"></i>
-                                                    <input class="search-input" pInputText type="text"
-                                                        (input)="applyFilterGlobal($event, 'contains')"
-                                                        placeholder="Search" />
-                                                </span>
-                                            </div>
-
-
-                                        </ng-template>
-                                        <ng-template pTemplate="header">
-
-                                            <tr id="product">
-                                                <th> {{'gis.quotation.id_no' | translate}}</th>
-                                                <th> {{'gis.quotation.name' | translate}}</th>
-                                                <th> {{'gis.quotation.email' | translate}}</th>
-
-                                            </tr>
-                                        </ng-template>
-
-                                        <ng-template let-clientData pTemplate="body">
-                                            <tr id="productData" [pSelectableRow]=""
-                                                (click)="loadClientDetails(clientData.id);">
-
-                                                <td>
-                                                    {{clientData.idNumber}}
-                                                </td>
-                                                <td>
-                                                    {{clientData.firstName+" "+clientData.lastName}}
-                                                </td>
-                                                <td>
-                                                    {{clientData.emailAddress}}
-                                                </td>
-                                            </tr>
-                                        </ng-template>
-
-                                    </p-table> -->
-                                    <p-table
-                                    #dt1
-                                    (onLazyLoad)="lazyLoadClients($event)"
-                                    [autoLayout]="true"
-                                    [lazy]="true"
-                                    [paginator]="true"
-                                    [rowHover]="true"
-                                    [resizableColumns]="true"
-                                    [showCurrentPageReport]="true"
-                                    [rows]="pageSize || 5"
-                                    [totalRecords]="clientsData?.totalElements"
-                                    [value]="clientsData?.content"
-                                   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-                                   responsiveLayout="stack"
-                                   [scrollable]="true"
-                                   scrollHeight="400px"
-                                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                                    [globalFilterFields]=globalFilterFields
-                                    styleClass="p-datatable-sm">
-
-
-
-                                    <ng-template pTemplate="header">
-                                      <tr>
-                                        <th pSortableColumn="name" class="flexible-header">{{'gis.quotation.name' | translate}}</th>
-                                        <th pSortableColumn="emailAddress" class="flexible-header">{{'gis.quotation.email' | translate}}</th>
-                                        <th pSortableColumn="phoneNumber" class="flexible-header">{{'gis.quotation.phone_number' | translate}}</th>
-                                        <th pSortableColumn="idNumber" class="flexible-header">{{'gis.quotation.id_no' | translate}}</th>
-                                        <th pSortableColumn="pinNumber" class="flexible-header">{{'gis.quotation.pin' | translate}}</th>
-                                        <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.internal_id' | translate}}</th>
-
-                                      </tr>
-                                      <tr>
-                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)"></th>
-                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputEmail($event)"></th>
-                                        <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPhone($event)"></th>
-                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputIdNumber($event)"></th>
-                                        <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPin($event)"></th>
-                                        <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputInternalId($event)"></th>
-
-                                      </tr>
-                                    </ng-template>
-
-                                    <ng-template pTemplate="body" let-clientData>
-                                      <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
-                                        <td>{{ clientData.firstName + ' ' + clientData.lastName }}</td>
-                                        <td>{{ clientData.emailAddress }}</td>
-                                        <td>{{ clientData.phoneNumber }}</td>
-                                        <td>{{ clientData.idNumber }}</td>
-                                        <td>{{ clientData.pinNumber }}</td>
-                                        <td>{{ clientData.id }}</td>
-
-
-                                      </tr>
-                                    </ng-template>
-
-                                    <ng-template pTemplate="emptymessage">
-                                      <tr>
-                                        <td colspan="4">{{'gis.quotation.no_client_found' | translate}}</td>
-                                      </tr>
-                                    </ng-template>
-                                  </p-table>
-
-
-
-
-
-                                    <br>
-                                </div>
-
-
-
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-
             </div>
+          </div>
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm">
+              <br>
+              <label for="product" class="quote-label required" id="product">{{
+                  'gis.quotation.product' |
+                    translate
+                }}</label><br>
+              <p-dropdown formControlName="product" name="productCode"
+                          [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
+                          (onChange)="onProductSelected($event)" placeholder=" " [filterBy]="'description'"
+                          [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
+              <div
+                *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched"
+                class="form-text text-danger">
+                {{ 'gis.quotation.product_is_required' | translate }}
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm">
+              <br>
+              <label for="use-of-property" class="quote-label required" id="use-of-property">{{
+                  'gis.quotation.use_of_property' | translate
+                }}</label><br>
+              <p-dropdown formControlName="subClass" name="subclassCode"
+                          [options]="allMatchingSubclasses" optionLabel="description" dataKey="code"
+                          (onChange)="onSubclassSelected($event)" placeholder=" " [filterBy]="'description'"
+                          [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
+              <div
+                *ngIf="personalDetailsForm.get('subclassCode').hasError('required') && personalDetailsForm.get('subclassCode').touched"
+                class="form-text text-danger">
+                {{ 'gis.policy.subclass_is_required' | translate }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm">
+              <br>
+              <label for="currency" class="required quote-label" id="currency">{{
+                  'gis.quotation.currency'
+                    | translate
+                }}</label><br>
+              <p-dropdown formControlName="currencyCode" name="currencyCode" [options]="currencyList"
+                          optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
+                          [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
+            </div>
+          </div>
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm form-control-sm">
+              <br>
+              <label for="cover-From" class="quote-label required" id="cover-From">
+                {{ 'gis.quotation.effective_date' | translate }}</label><br>
+              <p-calendar formControlName="effectiveDate" name="withEffectiveFromDate"
+                          [dateFormat]="dateFormat"
+                          inputStyleClass='form-control'
+                          [showButtonBar]='true'
+                          [style]="{ width: '100%' }"
+                          [dataType]="'string'"
+                          [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
+                          (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
+              </p-calendar>
+              <div
+                *ngIf="personalDetailsForm.get('withEffectiveFromDate').hasError('required') && personalDetailsForm.get('withEffectiveFromDate').touched"
+                class="form-text text-danger">
+                {{ 'gis.quotation.effective_date_is_required' | translate }}
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="formData && selectedProductCode">
+            <ng-container *ngFor="let field of formData; let i = index">
+              <div class="col-sm-4 col-6 dynamic-field">
+                <div class="form-group form-group-sm">
+                  <br>
+                  <label for="{{i}}{{field.name}}" class="quote-label">{{ field.label | translate }}</label>
+                  <br>
+                  <ng-container [ngSwitch]="field.type">
+                    <input *ngSwitchCase="'text'" type="text" id="quote-input" class="form-control form-control-sm"
+                           [formControlName]="field.name" [disabled]="field.disabled">
+                    <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
+                           [formControlName]="field.name" [disabled]="field.disabled" currencyMask [options]='currencyObj'>
+                    <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [name]="field.name"
+                                [dateFormat]="dateFormat" inputStyleClass='form-control' [showButtonBar]='true'
+                                [dataType]="'string'" [style]="{ width: '100%' }"
+                                [placeholder]="field.placeholder"></p-calendar>
+                    <ng-container *ngSwitchCase="'select'">
+                      <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
+                                    optionLabel="label" optionValue="value" [filter]="true"></p-dropdown>
+                      </ng-container>
+
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+
         </div>
         <div class="row ">
-            <div class="col-6"></div>
-            <div class="col-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
+          <div class="col-6"></div>
+          <div class="col-6 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
                     (click)="computePremiumV2();saveFormState()">
-                    {{'gis.quotation.compute' | translate}}</button>
-            </div>
+              {{ 'gis.quotation.compute' | translate }}
+            </button>
+          </div>
         </div>
+        <br>
+      </div>
     </div>
+  </div>
 </div>
-<br>
-<br><br><br><br>
+
+
+<div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg  modal-fade">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" #closebutton class="float-end btn-close"
+                data-bs-dismiss="modal" aria-label="Close"></button>
+        <p class="text-start" id="selectClient"> {{
+            'gis.quotation.select_a_client' |
+              translate
+          }}</p>
+        <p-table
+          #dt1
+          (onLazyLoad)="lazyLoadClients($event)"
+          [autoLayout]="true"
+          [lazy]="true"
+          [paginator]="true"
+          [rowHover]="true"
+          [resizableColumns]="true"
+          [showCurrentPageReport]="true"
+          [rows]="pageSize || 5"
+          [totalRecords]="clientsData?.totalElements"
+          [value]="clientsData?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          [scrollable]="true"
+          scrollHeight="400px"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]=globalFilterFields
+          styleClass="p-datatable-sm">
+
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name" class="flexible-header">{{ 'gis.quotation.name' | translate }}</th>
+              <th pSortableColumn="emailAddress"
+                  class="flexible-header">{{ 'gis.quotation.email' | translate }}
+              </th>
+              <th pSortableColumn="phoneNumber"
+                  class="flexible-header">{{ 'gis.quotation.phone_number' | translate }}
+              </th>
+              <th pSortableColumn="idNumber" class="flexible-header">{{ 'gis.quotation.id_no' | translate }}
+              </th>
+              <th pSortableColumn="pinNumber" class="flexible-header">{{ 'gis.quotation.pin' | translate }}
+              </th>
+              <th pSortableColumn="id" class="flexible-header">{{ 'gis.quotation.internal_id' | translate }}
+              </th>
+
+            </tr>
+            <tr>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
+                         (input)="inputName($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
+                         (input)="inputEmail($event)"></th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
+                         (input)="inputPhone($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
+                         (input)="inputIdNumber($event)"></th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
+                         (input)="inputPin($event)"></th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
+                         (input)="inputInternalId($event)"></th>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-clientData>
+            <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData.id)">
+              <td>{{ utilService.getFullName(clientData)  }}</td>
+              <td>{{ clientData.emailAddress }}</td>
+              <td>{{ clientData.phoneNumber }}</td>
+              <td>{{ clientData.idNumber }}</td>
+              <td>{{ clientData.pinNumber }}</td>
+              <td>{{ clientData.id }}</td>
+
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">{{ 'gis.quotation.no_client_found' | translate }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+
+        <br>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+

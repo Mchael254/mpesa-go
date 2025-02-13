@@ -352,12 +352,6 @@ export class CoverTypesComparisonComponent {
   }
 
 
-  // passedClient(data: any) {
-  //   log.debug("client Code;", data);
-  //   this.clientcode = data;
-  //   this.getClient();
-  // }
-
 
 
 
@@ -421,24 +415,7 @@ export class CoverTypesComparisonComponent {
     })
 
   }
-  // findTemporaryPremium(){
-  //   const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
-  //   const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
-  //   const sections = this.passedMandatorySections;
 
-  //   // Create an array to store observables returned by each service call
-  //   const observables = sections?.map(section => {
-  //     return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
-  //   });
-
-  //   // Use forkJoin to wait for all observables to complete
-  //   forkJoin(observables).subscribe(data => {
-  //     // data is an array containing the results of each service call
-  //     this.temporaryPremiumList = data.flat(); // Flatten the array if needed
-  //     this.cdr.detectChanges();
-  //     log.debug("Premium List", this.temporaryPremiumList)
-  //   });
-  // }
   findTemporaryPremium() {
     // Check if the temporary premium list has been updated for the same coverTypeCode
     log.debug("Last updated Covertype:", this.lastUpdatedCoverTypeCode)
@@ -933,14 +910,6 @@ export class CoverTypesComparisonComponent {
         // Navigate to policy summary after creating the quotation risk
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       }
-      // // Create a new quotation risk
-      // this.createQuotationRisk();
-
-      // const quotationNumberString = JSON.stringify(this.passedNumber);
-      // sessionStorage.setItem('quotationNumber', quotationNumberString);
-
-      // // Navigate to quotation summary
-      // this.router.navigate(['/home/gis/quotation/quote-summary']);
 
     } else {
       // If passedNumber doesn't exist, check the quotation data and handle accordingly
@@ -1749,12 +1718,12 @@ export class CoverTypesComparisonComponent {
 
     const passedisReturnToQuickQuoteString = JSON.stringify(this.isReturnToQuickQuote);
     sessionStorage.setItem('isReturnToQuickQuote', passedisReturnToQuickQuoteString);
-    
+
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
     log.debug("New client detail(covertype:",this.passedNewClientDetails)
 
-    
+
     const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
     log.debug("Existing client detail(covertype:",this.passedClientDetails)

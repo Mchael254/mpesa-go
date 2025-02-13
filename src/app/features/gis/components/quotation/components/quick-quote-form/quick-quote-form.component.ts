@@ -1,80 +1,58 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormControl,
-  Validators,
-  ValidatorFn,
-  AbstractControl,
-} from '@angular/forms';
-import { LazyLoadEvent, MessageService } from 'primeng/api';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { Logger } from '../../../../../../shared/services';
-import { BinderService } from '../../../setups/services/binder/binder.service';
-import { QuotationsService } from '../../../../services/quotations/quotations.service';
-import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { ClientService } from '../../../../../entities/services/client/client.service';
+import {ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {LazyLoadEvent} from 'primeng/api';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {Logger, UtilService} from '../../../../../../shared/services';
+import {BinderService} from '../../../setups/services/binder/binder.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
+
+import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
+import {ClientService} from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
-import { ProductService } from '../../../../services/product/product.service';
 import {
   Binders,
   Premiums,
   Products,
   Sections,
   Subclass,
+  subclassCoverTypes,
+  subclassCoverTypeSection,
   Subclasses,
   VesselType,
-  subclassCoverTypeSection,
-  subclassCoverTypes,
-  subclassSection,
 } from '../../../setups/data/gisDTO';
-import { AuthService } from '../../../../../../shared/services/auth.service';
-import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Calendar } from 'primeng/calendar';
-import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { SectionsService } from '../../../setups/services/sections/sections.service';
-import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
-import { CountryDto } from '../../../../../../shared/data/common/countryDto';
-import { Table, TableLazyLoadEvent } from 'primeng/table';
-import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
+import {AuthService} from '../../../../../../shared/services/auth.service';
+import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
+import {Calendar} from 'primeng/calendar';
+import {SectionsService} from '../../../setups/services/sections/sections.service';
+import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
+import {CountryDto} from '../../../../../../shared/data/common/countryDto';
+import {Table, TableLazyLoadEvent} from 'primeng/table';
 import {
-  ClientBranchesDto,
-  ClientDTO,
-} from '../../../../../entities/data/ClientDTO';
-import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
+  SubClassCoverTypesSectionsService
+} from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
+import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
+import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
+import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
 
-import { NgxSpinnerService } from 'ngx-spinner';
-import {
-  Clause,
-  ClientPhone,
-  Limit,
-  PremiumComputationRequest,
-  Risk,
-  Tax,
-} from '../../data/quotationsDTO';
-import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {ClientPhone, Limit, PremiumComputationRequest, Risk, Tax,} from '../../data/quotationsDTO';
+import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom, tap } from 'rxjs';
-import { DatePipe } from '@angular/common';
-import { NgxCurrencyConfig } from 'ngx-currency';
-import {
-  CountryISO,
-  PhoneNumberFormat,
-  SearchCountryField,
-} from 'ngx-intl-tel-input';
-import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
-import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
-import { Pagination } from '../../../../../../shared/data/common/pagination';
-import { TableDetail } from '../../../../../../shared/data/table-detail';
-import { MenuService } from 'src/app/features/base/services/menu.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import {firstValueFrom, tap} from 'rxjs';
+import {NgxCurrencyConfig} from 'ngx-currency';
+import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
+import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
+import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
+import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
+import {Pagination} from '../../../../../../shared/data/common/pagination';
+import {TableDetail} from '../../../../../../shared/data/table-detail';
+import {MenuService} from 'src/app/features/base/services/menu.service';
+import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -84,7 +62,7 @@ const log = new Logger('QuickQuoteFormComponent');
   styleUrls: ['./quick-quote-form.component.css'],
 })
 export class QuickQuoteFormComponent {
-  @ViewChild('calendar', { static: true }) calendar: Calendar;
+  @ViewChild('calendar', {static: true}) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
@@ -96,7 +74,6 @@ export class QuickQuoteFormComponent {
 
   subClassList: Subclass[];
   allSubclassList: Subclasses[];
-  filteredSubclass: Subclass[];
   selectedSubclassCode: any;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
@@ -121,7 +98,16 @@ export class QuickQuoteFormComponent {
   selectedCurrencyCode: any;
 
   formContent: any;
-  formData: any;
+  formData: {
+    type: string;
+    name: string;
+    required: string
+    disabled: boolean;
+    readonly: boolean
+    regexPattern: string
+    placeholder: string;
+    label: string
+  }[];
   dynamicForm: FormGroup;
   control: any;
   personalDetailsForm: FormGroup;
@@ -137,12 +123,10 @@ export class QuickQuoteFormComponent {
   clientName: any;
   clientEmail: any;
   clientPhone: any;
-  clientZipCode: any;
   newClientData = {
     inputClientName: '',
     inputClientZipCode: '',
     inputClientPhone: '',
-    // inputClientPhone: {} as ClientPhone,
     inputClientEmail: '',
   };
   countryList: CountryDto[];
@@ -156,17 +140,11 @@ export class QuickQuoteFormComponent {
   coverTypeDesc: any;
 
   quotationNo: any;
-  quotationData: any;
   quotationCode: any;
-  quotationNumbers = [];
-  quotationCodes = [];
-  quotationRiskData: any;
   riskCode: any;
 
   sectionArray: any;
-  sectionList: subclassSection[];
   selectedSectionList: any;
-  filteredSectionList: subclassSection[];
   section: Sections;
 
   steps = stepData;
@@ -177,14 +155,12 @@ export class QuickQuoteFormComponent {
   dateFormat: any;
   branchList: OrganizationBranchDto[];
   selectedBranchCode: any;
-  selectedBranchDescription: any;
   branchDescriptionArray: any = [];
 
   coverFromDate: any;
   coverToDate: string;
   passedCoverToDate: any;
   years: number[] = [];
-  selectedYear: number;
 
   carRegNoValue: string;
   dynamicRegexPattern: string;
@@ -200,14 +176,11 @@ export class QuickQuoteFormComponent {
   isAddRisk: boolean;
 
   premiumComputationRequest: PremiumComputationRequest;
-  riskPremiumDto: Risk[] = [];
   expiryPeriod: any;
   propertyId: any;
   premiumList: Premiums[] = [];
   allPremiumRate: Premiums[] = [];
   additionalLimit = [];
-  // addedBenefit:subclassCoverTypes;
-  addedBenefitsList: [] = [];
   @ViewChild('dt1') dt1: Table | undefined;
   component: {
     code: number;
@@ -233,7 +206,6 @@ export class QuickQuoteFormComponent {
   currencyDelimiter: any;
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
-  formattedCoverFromDate: any;
   coverFrom: any;
   passedClientDetailsString: string;
   passedNewClientDetailsString: string;
@@ -252,7 +224,6 @@ export class QuickQuoteFormComponent {
   selectedEffectiveDate: any;
   effectiveFromDate: string;
   todaysDate: string;
-  clientPhoneInput: any;
   isEditRisk: boolean;
   occupationData: OccupationDTO[];
   selectedoccupationCode: any;
@@ -262,11 +233,15 @@ export class QuickQuoteFormComponent {
   isFormDataLoaded: boolean = false;
   quotationSubMenuList: SidebarMenu[];
 
+  quickQuoteForm: FormGroup;
+  additionalDetails: FormGroup
+  newClient: boolean = false;
+
 
   filterObject: {
-    name:string, idNumber:string,
+    name: string, idNumber: string,
   } = {
-    name:'',  idNumber:'',
+    name: '', idNumber: '',
   };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
@@ -274,37 +249,28 @@ export class QuickQuoteFormComponent {
   isSearching = false;
   searchTerm = '';
   cols = [
-    { field: 'clientFullName', header: 'Name' },
-    { field: 'emailAddress', header: 'Email' },
-    { field: 'phoneNumber', header: 'Phone number' },
-    { field: 'idNumber', header: 'ID number' },
-    { field: 'pinNumber', header: 'Pin' },
-    { field: 'id', header: 'ID' },
+    {field: 'clientFullName', header: 'Name'},
+    {field: 'emailAddress', header: 'Email'},
+    {field: 'phoneNumber', header: 'Phone number'},
+    {field: 'idNumber', header: 'ID number'},
+    {field: 'pinNumber', header: 'Pin'},
+    {field: 'id', header: 'ID'},
   ];
-  globalFilterFields = ['idNumber', 'firstName','lastName','emailAddress'];
+  globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
   emailValue: string;
   phoneValue: string;
   pinValue: string;
   idValue: string;
   taxList: any;
   newClientPhone: ClientPhone;
-  formattedCoverToDate:string;
+  formattedCoverToDate: string;
 
   isReturnToQuickQuote: boolean;
-
-  // headers: { key: string, translationKey: string }[] = [
-  //   { key: 'name', translationKey: 'gis.quotation.name' },
-  //   { key: 'email', translationKey: 'gis.quotation.email' },
-  //   { key: 'phoneNumber', translationKey: 'gis.quotation.phone_number' },
-  //   { key: 'id_no', translationKey: 'gis.quotation.id_no' },
-  //   { key: 'pinNumber', translationKey: 'gis.quotation.pin_number' },
-
-
-  // ];
 
 
   constructor(
     public fb: FormBuilder,
+    public utilService: UtilService,
     public branchService: BranchService,
     public productService: ProductsService,
     public binderService: BinderService,
@@ -313,25 +279,19 @@ export class QuickQuoteFormComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public subclassService: SubclassesService,
     public currencyService: CurrencyService,
-    private gisService: ProductService,
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
-    private messageService: MessageService,
     private clientService: ClientService,
-    public sharedService: SharedQuotationsService,
     public sectionService: SectionsService,
     public countryService: CountryService,
     private router: Router,
     private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
-    private datePipe: DatePipe,
     private occupationService: OccupationService,
-    private vesselTypesService:VesselTypesService,
-    private spinner:NgxSpinnerService,
+    private vesselTypesService: VesselTypesService,
+    private spinner: NgxSpinnerService,
     private menuService: MenuService,
-
-
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -405,7 +365,7 @@ export class QuickQuoteFormComponent {
     const passedisReturnToQuickQuoteString = sessionStorage.getItem('isReturnToQuickQuote');
     this.isReturnToQuickQuote = JSON.parse(passedisReturnToQuickQuoteString);
     log.debug("isReturnToQuickQuote Details:", this.isReturnToQuickQuote);
-    if(this.isReturnToQuickQuote){
+    if (this.isReturnToQuickQuote) {
       this.navigationFromCoverTypes()
     }
 
@@ -428,9 +388,24 @@ export class QuickQuoteFormComponent {
 
     // Always clear the navigation source flag after use
     sessionStorage.removeItem('navigationSource');
-
+    this.createQuickQuiteForm();
+    this.additionalDetails = this.fb.group({});
   }
-  ngOnDestroy(): void { }
+
+  createQuickQuiteForm() {
+    this.quickQuoteForm = this.fb.group({
+      clientName: ['',],
+      emailAddress: ['', [Validators.email]],
+      phoneNumber: [''],
+      product: ['', [Validators.required]],
+      subClass: ['', [Validators.required]],
+      effectiveDate: [new Date(), [Validators.required]],
+      currency: ['', [Validators.required]]
+    })
+  }
+
+  ngOnDestroy(): void {
+  }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
@@ -463,7 +438,7 @@ export class QuickQuoteFormComponent {
       log.debug('new Client Details:', this.passedNewClientDetails);
     }
 
-    if(this.passedNewClientDetails == "null" || "undefined") {
+    if (this.passedNewClientDetails == "null" || "undefined") {
       log.debug('Existing Client has been passed');
       this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
     }
@@ -488,10 +463,7 @@ export class QuickQuoteFormComponent {
     log.debug('Existing Client Details:', this.PassedClientDetails);
     if (this.passedQuotation) {
       if (this.PassedClientDetails) {
-        this.clientName =
-          this.PassedClientDetails.firstName +
-          ' ' +
-          this.PassedClientDetails.lastName;
+        this.clientName = this.utilService.getFullName(this.PassedClientDetails)
         this.clientEmail = this.PassedClientDetails.emailAddress;
         this.clientPhone = this.PassedClientDetails.phoneNumber;
         this.personalDetailsForm.patchValue(this.passedQuotation);
@@ -505,12 +477,12 @@ export class QuickQuoteFormComponent {
           this.passedNewClientDetails?.inputClientEmail;
         const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
         this.newClientPhone = {
-            number: phoneNumberString,
-            internationalNumber: '',  // Left empty as it's not stored
-            nationalNumber: phoneNumberString,
-            e164Number: '',
-            countryCode: '',
-            dialCode: ''
+          number: phoneNumberString,
+          internationalNumber: '',  // Left empty as it's not stored
+          nationalNumber: phoneNumberString,
+          e164Number: '',
+          countryCode: '',
+          dialCode: ''
         };
         this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
         this.isNewClient = true;
@@ -569,7 +541,7 @@ export class QuickQuoteFormComponent {
       log.debug('new Client Details:', this.passedNewClientDetails);
     }
 
-    if(this.passedNewClientDetails == "null" || "undefined") {
+    if (this.passedNewClientDetails == "null" || "undefined") {
       log.debug('Existing Client has been passed');
       this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
     }
@@ -582,12 +554,12 @@ export class QuickQuoteFormComponent {
       this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
       const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
       this.newClientPhone = {
-          number: phoneNumberString,
-          internationalNumber: '',  // Left empty as it's not stored
-          nationalNumber: phoneNumberString,
-          e164Number: '',
-          countryCode: '',
-          dialCode: ''
+        number: phoneNumberString,
+        internationalNumber: '',  // Left empty as it's not stored
+        nationalNumber: phoneNumberString,
+        e164Number: '',
+        countryCode: '',
+        dialCode: ''
       };
       this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
       this.isNewClient = true;
@@ -656,7 +628,7 @@ export class QuickQuoteFormComponent {
     }
   }
 
-  navigationFromCoverTypes(){
+  navigationFromCoverTypes() {
     log.debug("NAVIGATION FROM COVERTYPES METHOD");
     const passedisReturnToQuickQuoteString = sessionStorage.getItem('isReturnToQuickQuote');
     this.isReturnToQuickQuote = JSON.parse(passedisReturnToQuickQuoteString);
@@ -682,7 +654,7 @@ export class QuickQuoteFormComponent {
       log.debug('new Client Details:', this.passedNewClientDetails);
     }
 
-    if(this.passedNewClientDetails == "null" || "undefined") {
+    if (this.passedNewClientDetails == "null" || "undefined") {
       log.debug('Existing Client has been passed');
       this.PassedClientDetails = JSON.parse(this.passedClientDetailsString);
     }
@@ -695,12 +667,12 @@ export class QuickQuoteFormComponent {
       this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
       const phoneNumberString = this.passedNewClientDetails.inputClientPhone; // Treat as a string
       this.newClientPhone = {
-          number: phoneNumberString,
-          internationalNumber: '',  // Left empty as it's not stored
-          nationalNumber: phoneNumberString,
-          e164Number: '',
-          countryCode: '',
-          dialCode: ''
+        number: phoneNumberString,
+        internationalNumber: '',  // Left empty as it's not stored
+        nationalNumber: phoneNumberString,
+        e164Number: '',
+        countryCode: '',
+        dialCode: ''
       };
       this.selectedZipCode = this.passedNewClientDetails?.inputClientZipCode;
       this.isNewClient = true;
@@ -870,7 +842,7 @@ export class QuickQuoteFormComponent {
           this.loadCovertypeBySubclassCode(filteredSubclassCodeNumber);
           // this.loadSubclassSectionCovertype(filteredSubclassCodeNumber)
           this.selectedSubclassCode = filteredsubclassCode;
-          log.debug("selectedSubclassCode above",this.selectedSubclassCode);
+          log.debug("selectedSubclassCode above", this.selectedSubclassCode);
           this.fetchTaxes();
         }, 1000);
 
@@ -943,12 +915,12 @@ export class QuickQuoteFormComponent {
           .catch((error) => {
             log.error('Error in loading subclass section cover type:', error);
           });
-        }
       }
+    }
 
-      const storedClientDetailsString = sessionStorage.getItem('clientDetails');
-      this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
-      log.debug('Client details', this.passedExistingClientDetails);
+    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
+    this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
+    log.debug('Client details', this.passedExistingClientDetails);
 
   }
 
@@ -1119,12 +1091,12 @@ export class QuickQuoteFormComponent {
           .catch((error) => {
             log.error('Error in loading subclass section cover type:', error);
           });
-        }
       }
+    }
 
-      const storedClientDetailsString = sessionStorage.getItem('clientDetails');
-      this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
-      log.debug('Client details', this.passedExistingClientDetails);
+    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
+    this.passedExistingClientDetails = JSON.parse(storedClientDetailsString);
+    log.debug('Client details', this.passedExistingClientDetails);
 
   }
 
@@ -1167,11 +1139,13 @@ export class QuickQuoteFormComponent {
       this.cdr.detectChanges();
     });
   }
-   // Method to check and set fields disable state from session storage
+
+  // Method to check and set fields disable state from session storage
   checkFieldsDisableState() {
     const disableState = sessionStorage.getItem('fieldsDisableState');
     this.isFieldsDisabled = disableState === 'true';
   }
+
   /**
    * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
    * This method is typically used to reset form fields or client-related data in the component.
@@ -1184,6 +1158,7 @@ export class QuickQuoteFormComponent {
     this.clientPhone = '';
     this.filteredCountry = '';
   }
+
   /* Toggles between a new and existing client */
   /**
    * Toggles the 'new' state to true.
@@ -1199,6 +1174,7 @@ export class QuickQuoteFormComponent {
       this.checkFieldsDisableState();
     }
   }
+
   /**
    * Toggles the 'new' state to false and resets client-related data.
    * This method is commonly used to switch from a 'new' client state to a default state and clear client input fields.
@@ -1240,6 +1216,7 @@ export class QuickQuoteFormComponent {
       }
     }
   }
+
   /**
    * Retrieves user information from the authentication service.
    * - Sets the 'user' property with the current user's name.
@@ -1268,11 +1245,12 @@ export class QuickQuoteFormComponent {
     log.debug(' Date format', this.dateFormat);
 
     const todaysDate = new Date(today);
+    this.selectedEffectiveDate = todaysDate
     log.debug(' todays date before being formatted', todaysDate);
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -1288,14 +1266,16 @@ export class QuickQuoteFormComponent {
 
     this.fetchBranches();
   }
+
   onZipCodeSelected(event: any) {
     this.selectedZipCode = event.target.value;
     log.debug('Selected Zip Code:', this.selectedZipCode);
   }
+
   onInputChange() {
     log.debug('Method called');
     this.newClientData.inputClientZipCode = this.newClientPhone?.dialCode;
-    this.newClientData.inputClientPhone = this.newClientPhone.number
+    this.newClientData.inputClientPhone = this.newClientPhone?.number
     // this.newClientData.inputClientPhone = this.newClientPhone
     log.debug('New User Data', this.newClientData);
     const newClientDetailsString = JSON.stringify(this.newClientData);
@@ -1351,6 +1331,7 @@ export class QuickQuoteFormComponent {
         log.info('modified Branch description', this.branchDescriptionArray);
       });
   }
+
   // onBranchSelected(selectedValue: any) {
   //   this.selectedBranchCode = selectedValue.code;
   //   log.debug("Branch Code:", this.selectedBranchCode)
@@ -1387,8 +1368,6 @@ export class QuickQuoteFormComponent {
     this.countryService.getCountries().subscribe((data) => {
       this.countryList = data;
       log.debug('Country List', this.countryList);
-      const testCountry = 'KENYA';
-      // const clientCountry= this.clientDetails.
       if (this.selectedCountry) {
         this.filteredCountry = this.countryList.filter(
           (prefix) => prefix.id == this.selectedCountry
@@ -1402,6 +1381,7 @@ export class QuickQuoteFormComponent {
       }
     });
   }
+
   /**
    * Creates a form group using Angular FormBuilder (fb).
    * - Defines form controls for client details.
@@ -1436,6 +1416,7 @@ export class QuickQuoteFormComponent {
       withEffectFromDate: [''],
     });
   }
+
   /**
    * Creates a form group for personal details using Angular FormBuilder (fb).
    * - Defines form controls for various personal details.
@@ -1499,6 +1480,7 @@ export class QuickQuoteFormComponent {
       this.closebutton.nativeElement.click();
     });
   }
+
   /**
    * Saves essential client details for further processing.
    * - Assigns client ID, name, email, and phone from 'clientDetails'.
@@ -1513,6 +1495,7 @@ export class QuickQuoteFormComponent {
     this.clientPhone = this.clientDetails.phoneNumber;
     sessionStorage.setItem('clientCode', this.clientCode);
   }
+
   /**
    * Handles the selection of a product.
    * - Retrieves the selected product code from the event.
@@ -1523,7 +1506,7 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.code;
+    this.selectedProductCode = selectedValue.value.code;
     log.debug('Selected Product Code:', this.selectedProductCode);
 
     this.getProductSubclass(this.selectedProductCode);
@@ -1534,6 +1517,7 @@ export class QuickQuoteFormComponent {
     this.getProductExpiryPeriod();
     this.getCoverToDate();
   }
+
   /**
    * Retrieves cover to date based on the selected product and cover from date.
    * - Checks if 'coverFromDate' is available.
@@ -1573,29 +1557,16 @@ export class QuickQuoteFormComponent {
         log.debug(" SELECTED FORMATTED DATE:", SelectedFormatedDate)
 
         this.effectiveFromDate = SelectedFormatedDate
-        log.debug("effective date from selected date:",this.effectiveFromDate)
+        log.debug("effective date from selected date:", this.effectiveFromDate)
 
         // this.coverFrom = SelectedFormatedDate
         // log.debug("COVER FROM selected date", this.coverFrom)
       } else {
         this.effectiveFromDate = formattedCoverFromDate
-        log.debug("effective date from todays date:",this.effectiveFromDate)
+        log.debug("effective date from todays date:", this.effectiveFromDate)
         // this.coverFrom = formattedCoverFromDate
         // log.debug("COVER FROM todays date", this.coverFrom)
       }
-
-
-
-
-      // if (SelectedFormatedDate) {
-      //   this.effectiveFromDate = SelectedFormatedDate
-      //   this.coverFrom = SelectedFormatedDate
-      //   log.debug("COVER FROM selected date", this.coverFrom)
-      // } else {
-      //   this.effectiveFromDate = formattedCoverFromDate
-      //   this.coverFrom = formattedCoverFromDate
-      //   log.debug("COVER FROM todays date", this.coverFrom)
-      // }
       log.debug("selected Effective date raw format", this.selectedEffectiveDate)
       const selectedDateString = JSON.stringify(this.effectiveFromDate);
       sessionStorage.setItem('selectedDate', selectedDateString);
@@ -1605,48 +1576,36 @@ export class QuickQuoteFormComponent {
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
         log.debug("cover date:", this.passedCoverToDate)
- const passedCoverTo = new Date(this.passedCoverToDate)
+        const passedCoverTo = new Date(this.passedCoverToDate)
 
-         // Extract the day, month, and year
-    const day = passedCoverTo.getDate();
-    const month = passedCoverTo.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    const year = passedCoverTo.getFullYear();
+        // Extract the day, month, and year
+        const day = passedCoverTo.getDate();
+        const month = passedCoverTo.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+        const year = passedCoverTo.getFullYear();
 
-    // Format the date in 'dd-Month-yyyy' format
-    const formattedDate = `${day}-${month}-${year}`;
+        // Format the date in 'dd-Month-yyyy' format
+        const formattedDate = `${day}-${month}-${year}`;
 
-    this.formattedCoverToDate = formattedDate
-    log.debug("formatted cover to  Date", this.formattedCoverToDate)
+        this.formattedCoverToDate = formattedDate
+        log.debug("formatted cover to  Date", this.formattedCoverToDate)
 
         // this.coverFrom =this.effectiveFromDate
         log.debug("DATe FROM DATA:", this.passedCoverToDate)
-        this.selectedCoverToDate= this.passedCoverToDate
+        this.selectedCoverToDate = this.passedCoverToDate
         this.getPremiumRates();
 
       })
     }
   }
+
   formatDate(date: Date): string {
     log.debug("Date (formatDate method):", date)
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
+    const year = date?.getFullYear();
+    const month = String(date?.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date?.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 
-  // getProductExpiryPeriod() {
-  //   if (this.selectedProductCode && this.productList) {
-  //     this.selectedProduct = this.productList.filter(product => product.code == this.selectedProductCode);
-  //     log.debug("Selected Product", this.selectedProduct);
-  //     if (this.selectedProduct != null && this.selectedProduct.length > 0) {
-  //       this.expiryPeriod = this.selectedProduct[0].expires;
-  //       log.debug("Expiry period", this.expiryPeriod)
-  //     } else {
-  //       this.expiryPeriod = "N";
-  //     }
-
-  //   }
-  // }
 
   getProductExpiryPeriod() {
     log.debug('SELECTED PRODUCTC CODE', this.selectedProductCode);
@@ -1677,6 +1636,7 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   getProductSubclass(code: number) {
+    this.allMatchingSubclasses = []
     this.productService.getProductSubclasses(code).subscribe((data) => {
       this.subClassList = data._embedded.product_subclass_dto_list;
       log.debug(this.subClassList, 'Product Subclass List');
@@ -1689,10 +1649,20 @@ export class QuickQuoteFormComponent {
       });
 
       log.debug('Retrieved Subclasses by code', this.allMatchingSubclasses);
+      /* this.allMatchingSubclasses = this.allMatchingSubclasses.map((value) => {
+         let capitalizedDescription =
+           value.description.charAt(0).toUpperCase() +
+           value.description.slice(1).toLowerCase();
+         return {
+           ...value,
+           description: capitalizedDescription
+         }
+       })*/
 
       this.cdr.detectChanges();
     });
   }
+
   /**
    * Loads all product subclasses from SubclassService.
    * - Subscribes to 'getAllSubclasses' observable and updates 'allSubclassList'.
@@ -1708,16 +1678,6 @@ export class QuickQuoteFormComponent {
     });
   }
 
-  // loadAllSubclass(): Observable<any> {
-  //   return this.subclassService.getAllSubclasses().pipe(
-  //     tap(data => {
-  //       this.allSubclassList = data;
-  //       log.debug(this.allSubclassList, "All Subclass List");
-  //       this.cdr.detectChanges();
-  //     })
-  //   );
-  // }
-
   /**
    * Handles the selection of a subclass.
    * - Retrieves the selected subclass code from the event.
@@ -1728,11 +1688,11 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   onSubclassSelected(event: any) {
-    const selectedValue = event.target.value; // Get the selected value
-    this.selectedSubclassCode = selectedValue;
+    log.debug(`Selected value: ${JSON.stringify(event.value)}`);
+    //  const selectedValue = event.target.value; // Get the selected value
+    this.selectedSubclassCode = event.value.code;
     // Perform your action based on the selected value
-    log.debug(`Selected value: ${selectedValue}`);
-    log.debug(this.selectedSubclassCode, 'Sekected Subclass Code');
+    log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     const selectedSubclassCodeString = JSON.stringify(
       this.selectedSubclassCode
     );
@@ -1744,6 +1704,7 @@ export class QuickQuoteFormComponent {
     this.fetchRegexPattern();
     this.fetchTaxes();
   }
+
   /**
    * Loads binders for the selected subclass.
    * - Subscribes to 'getAllBindersQuick' from BinderService.
@@ -1768,6 +1729,7 @@ export class QuickQuoteFormComponent {
       this.cdr.detectChanges();
     });
   }
+
   /**
    * Handles the selection of a binder.
    * - Retrieves the selected binder code from the event.
@@ -1792,6 +1754,7 @@ export class QuickQuoteFormComponent {
     log.debug('Selected Binder:', this.selectedBinder);
     log.debug('Selected Currency Code:', this.currencyCode);
   }
+
   /**
    * Loads all currencies and selects based on the currency code.
    * - Subscribes to 'getAllCurrencies' from CurrencyService.
@@ -1802,46 +1765,55 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   loadAllCurrencies() {
-    this.currencyService.getAllCurrencies().subscribe((data) => {
-      this.currencyList = data;
-      log.info(this.currencyList, 'this is a currency list');
-      // const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
-      const defaultCurrency = this.currencyList.find(
-        (currency) => currency.currencyDefault == 'Y'
-      );
-      if (defaultCurrency) {
-        log.debug('DEFAULT CURRENCY', defaultCurrency);
-        this.defaultCurrencyName = defaultCurrency.name;
-        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-        this.defaultCurrencySymbol = defaultCurrency.symbol;
-        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+    this.currencyService.getAllCurrencies()
+      /*   .pipe(
+           map((value) => {
+             let capitalizedDescription =
+               value.name.charAt(0).toUpperCase() +
+               value.name.slice(1).toLowerCase();
+             return {
+               ...value,
+               name: capitalizedDescription
+             }
+           }),
+           tap((value) => {
+             log.debug("Currencies through the stream", value)
+           })
+         )*/
+      .subscribe((data) => {
+        this.currencyList = data;
+        log.info(this.currencyList, 'this is a currency list');
+        const defaultCurrency = this.currencyList.find(
+          (currency) => currency.currencyDefault == 'Y'
+        );
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrencyName = defaultCurrency.name;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-        // Set the default value in the form control
-        this.personalDetailsForm
-          .get('currencyCode')
-          ?.setValue(this.defaultCurrencyName);
-        this.currencyObj = {
-          prefix: this.defaultCurrencySymbol + ' ',
-          allowNegative: false,
-          allowZero: false,
-          decimal: '.',
-          precision: 0,
-          thousands: this.currencyDelimiter,
-          suffix: '',
-          nullable: true,
-          align: 'left',
-        };
-      }
+          // Set the default value in the form control
+          this.personalDetailsForm
+            .get('currencyCode')
+            ?.setValue(this.defaultCurrencyName);
+          this.currencyObj = {
+            prefix: this.defaultCurrencySymbol + ' ',
+            allowNegative: false,
+            allowZero: false,
+            decimal: '.',
+            precision: 0,
+            thousands: this.currencyDelimiter,
+            suffix: '',
+            nullable: true,
+            align: 'left',
+          };
+        }
 
-      // this.selectedCurrency = curr[0].name
-      // log.debug("Selected Currency:", this.selectedCurrency);
-      // this.selectedCurrencyCode = curr[0].id;
-      // log.debug("Selected Currency code:", this.selectedCurrencyCode);
-      // this.personalDetailsForm.get('currencyCode').setValue(this.selectedCurrencyCode);
-
-      this.cdr.detectChanges();
-    });
+        this.cdr.detectChanges();
+      });
   }
+
   onCurrencySelected(selectedValue: any) {
     this.selectedCurrencyCode = selectedValue.id;
     log.debug(
@@ -1866,6 +1838,7 @@ export class QuickQuoteFormComponent {
       align: 'left',
     };
   }
+
   /**
    * Loads cover types for the provided subclass code.
    * - Subscribes to 'getSubclassCovertypeBySCode' from SubclassCoverTypesService.
@@ -1893,6 +1866,7 @@ export class QuickQuoteFormComponent {
         this.cdr.detectChanges();
       });
   }
+
   /**
    * Loads all quotation sources.
    * - Subscribes to 'getAllQuotationSources' from QuotationService.
@@ -1920,6 +1894,7 @@ export class QuickQuoteFormComponent {
     const quotationSourceString = JSON.stringify(this.selectedSource);
     sessionStorage.setItem('quotationSource', quotationSourceString);
   }
+
   /**
    * Loads form fields dynamically based on the selected product code.
    * - Subscribes to 'getFormFields' observable from QuotationService.
@@ -1939,6 +1914,7 @@ export class QuickQuoteFormComponent {
       this.quotationService
         .getFormFields(formFieldDescription)
         .subscribe((data) => {
+          this.formData = []
           this.formContent = data;
           log.debug(this.formContent, 'Form-content'); // Debugging: Check the received data
           this.formData = this.formContent[0].fields;
@@ -1965,10 +1941,17 @@ export class QuickQuoteFormComponent {
             // this.dynamicRegexPattern = field.regexPattern;
             // this.dynamicRegexPattern = this.regexPattern;
             // log.debug("Regex", field.regexPattern);
+            this.additionalDetails.addControl(field.name, this.fb.control(''));
+            for (const controlName in this.additionalDetails.controls) {
+              if (this.additionalDetails.controls.hasOwnProperty(controlName)) {
+                this.quickQuoteForm.addControl(controlName, this.additionalDetails.get(controlName)!);
+              }
+            }
           });
         });
     }
   }
+
   updateCarRegNoValue(event: Event) {
     const input = event.target as HTMLInputElement; // Type assertion to HTMLInputElement
     this.carRegNoValue = input.value; // Set the value directly
@@ -2064,10 +2047,10 @@ export class QuickQuoteFormComponent {
         log.debug("NOT MANDATORY", notMandatorySections);
         this.getCoverToDate();
 
-      if (this.mandatorySections.length > 0) {
-        this.selectedSectionList = this.mandatorySections[0];
-        log.debug('Selected Section', this.selectedSectionList);
-      }
+        if (this.mandatorySections?.length > 0) {
+          this.selectedSectionList = this.mandatorySections[0];
+          log.debug('Selected Section', this.selectedSectionList);
+        }
 
         const mandatorySectionsString = JSON.stringify(this.mandatorySections);
         sessionStorage.setItem('mandatorySections', mandatorySectionsString);
@@ -2075,6 +2058,7 @@ export class QuickQuoteFormComponent {
 
       });
   }
+
   getSectionByCode() {
     this.sectionService
       .getSectionByCode(this.selectedSectionList.sectionCode)
@@ -2096,6 +2080,7 @@ export class QuickQuoteFormComponent {
   applyFilterGlobal($event, stringVal) {
     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
+
   /**
    * Populates the 'years' property with the list of cover years.
    * - Subscribes to 'getYearOfManufacture' observable from ProductService.
@@ -2109,10 +2094,11 @@ export class QuickQuoteFormComponent {
       this.years = data._embedded[0]['List of cover years'];
     });
   }
+
   /***********************NEW PREMIUM COMPUTATION*******************************/
   getPremiumRates() {
     log.debug('MANDA SEC', this.mandatorySections);
-    for (let i = 0; i < this.mandatorySections.length; i++) {
+    for (let i = 0; i < this.mandatorySections?.length; i++) {
       this.selectedSectionList = this.mandatorySections[i];
       log.debug('SELECTED SECTIONS', this.selectedSectionList);
       const selectedSectionCode = this.selectedSectionList.sectionCode;
@@ -2150,7 +2136,7 @@ export class QuickQuoteFormComponent {
         subclassSection: {
           code: this.selectedSubclassCode,
         },
-        itemDescription:this.carRegNoValue || propertyId,
+        itemDescription: this.carRegNoValue || propertyId,
         noClaimDiscountLevel: 0,
         subclassCoverTypeDto: {
           subclassCode: this.selectedSubclassCode,
@@ -2233,7 +2219,6 @@ export class QuickQuoteFormComponent {
           }
 
         })
-
     ).flatMap(item => item)
     log.debug("Added Limit", this.additionalLimit)
 
@@ -2282,15 +2267,14 @@ export class QuickQuoteFormComponent {
 
     return response;
   }
+
   computePremiumV2() {
+    log.info("Submitted form {}", this.quickQuoteForm)
     this.ngxSpinner.show();
     log.debug("Cover to", this.selectedCoverToDate)
     this.personalDetailsForm.get('productCode').setValue(this.selectedProductCode);
     this.personalDetailsForm.get('withEffectiveToDate').setValue(this.passedCoverToDate || this.selectedCoverToDate);
     this.personalDetailsForm.get('withEffectiveFromDate').setValue(this.effectiveFromDate);
-    // if (this.) {
-
-    // }
     if (this.selectedBranchCode) {
       this.personalDetailsForm
         .get('branchCode')
@@ -2323,11 +2307,7 @@ export class QuickQuoteFormComponent {
     log.debug('Form Valid:', this.personalDetailsForm.valid);
     log.debug('Form Values:', this.personalDetailsForm.value);
 
-    if (this.personalDetailsForm.invalid) {
-      log.debug('Form is invalid, will not proceed');
-      this.ngxSpinner.hide();
-      return;
-    }
+
     Object.keys(this.personalDetailsForm.controls).forEach((control) => {
       if (this.personalDetailsForm.get(control).invalid) {
         log.debug(
@@ -2336,6 +2316,13 @@ export class QuickQuoteFormComponent {
         );
       }
     });
+    if (this.personalDetailsForm.invalid || this.dynamicForm.invalid) {
+      this.dynamicForm.markAllAsTouched()
+      this.dynamicForm.updateValueAndValidity();
+      log.debug('Form is invalid, will not proceed');
+      // this.ngxSpinner.hide();
+      //  return;
+    }
 
     // If form is valid, proceed with the premium computation logic
     log.debug('Form is valid, proceeding with premium computation...');
@@ -2352,14 +2339,14 @@ export class QuickQuoteFormComponent {
       interfaceType: null,
       frequencyOfPayment: "A",
       quotationStatus: "Draft",
-      transactionStatus:"NB",
+      transactionStatus: "NB",
       /**Setting Product Details**/
       product: {
         code: this.selectedProductCode,
         expiryPeriod: this.expiryPeriod,
       },
       /**Setting Tax Details**/
-      taxes:this.setTax(),
+      taxes: this.setTax(),
 
       currency: {
         rate: 1.25 /**TODO: Fetch from API */,
@@ -2395,11 +2382,12 @@ export class QuickQuoteFormComponent {
 
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Premium Computation Failed'
+            error.error.message
           );
         },
       });
   }
+
   onCreateRiskSection() {
     log.debug('Selected Sections:', this.passedSections);
 
@@ -2414,7 +2402,7 @@ export class QuickQuoteFormComponent {
       return;
     }
 
-    const payload = this.passedSections.map((section, index) => {
+    this.sectionArray = this.passedSections.map((section, index) => {
       const premiumRate = premiumRates[index]; // Get the corresponding premium rate for the current section
 
       return {
@@ -2438,8 +2426,6 @@ export class QuickQuoteFormComponent {
       };
     });
 
-    this.sectionArray = payload;
-
     this.quotationService
       .createRiskSection(this.riskCode, this.sectionArray)
       .subscribe((data) => {
@@ -2458,16 +2444,13 @@ export class QuickQuoteFormComponent {
         // this.computeQuotePremium();
       });
   }
+
   saveFormState() {
     log.debug('SAVE FORM STATE METHOD HAS BEEN CALLED');
     sessionStorage.setItem(
       'personalDetails',
       JSON.stringify(this.personalDetailsForm.value)
     );
-
-    // sessionStorage.setItem('sumInsured', JSON.stringify(this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '')));
-    // sessionStorage.setItem('yearOfManufacture', JSON.stringify(this.dynamicForm.get('yearOfManufacture').value));
-    // sessionStorage.setItem('carRegNo', JSON.stringify(this.dynamicForm.get('carRegNo').value));
 
     const selfDeclaredValue = this.dynamicForm.get('selfDeclaredValue').value;
     const yearOfManufacture = this.dynamicForm.get('yearOfManufacture').value;
@@ -2486,9 +2469,8 @@ export class QuickQuoteFormComponent {
     sessionStorage.setItem('carRegNo', JSON.stringify(carRegNo));
     log.debug('carRegNo:', carRegNo);
 
-    // const formData = this.personalDetailsForm.value;
-    // sessionStorage.setItem('formState', JSON.stringify(formData));
   }
+
   fetchRegexPattern() {
     this.quotationService
       .getRegexPatterns(this.selectedSubclassCode)
@@ -2507,6 +2489,7 @@ export class QuickQuoteFormComponent {
         },
       });
   }
+
   onEmailInputChange() {
     if (!this.emailPattern.test(this.newClientData.inputClientEmail)) {
       console.error('Invalid email format');
@@ -2538,20 +2521,22 @@ export class QuickQuoteFormComponent {
   }
 
 
-
   validateEmail(email: string): boolean {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   }
+
   onDateInputChange(date: any) {
     log.debug('selected Effective date raaaaaw', date);
     this.selectedEffectiveDate = date;
     log.debug('selected Effective date', this.selectedEffectiveDate);
   }
+
   transformToUpperCase(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     inputElement.value = inputElement.value.toUpperCase();
   }
+
   onPhoneInputChange() {
     console.log('Client Phone:', this.clientPhone);
 
@@ -2562,13 +2547,13 @@ export class QuickQuoteFormComponent {
   }
 
 
- /**
+  /**
    * Fetches occupation data based on the provided organization ID and
    *  updates the component's occupationData property.
    * @param organizationId The organization ID used to retrieve occupation data.
    */
- getOccupation(organizationId: number) {
-  this.occupationService
+  getOccupation(organizationId: number) {
+    this.occupationService
       .getOccupations(organizationId)
       .pipe(untilDestroyed(this))
       .subscribe({
@@ -2584,7 +2569,8 @@ export class QuickQuoteFormComponent {
         },
       });
 
-}
+  }
+
   /**
    * Handles the selection of occupation.
    * - Retrieves the selected occupation code from the event.
@@ -2600,11 +2586,7 @@ export class QuickQuoteFormComponent {
 
   }
 
-  onCoverToInputChange(date: any) {
-    log.debug('selected Cover to date raaaaaw', date);
-    this.selectedCoverToDate = date;
-    log.debug('selected cover to date', this.selectedCoverToDate);
-  }
+
   onCoverToChange(event: Date): void {
     console.log('selected Cover to date raaaaaw:', event);
     const selectedCoverToDate = event;
@@ -2615,17 +2597,18 @@ export class QuickQuoteFormComponent {
       log.debug(" SELECTED FORMATTED DATE:", SelectedFormatedDate)
 
       this.selectedCoverToDate = SelectedFormatedDate
-      log.debug("Cover  to date  :",this.selectedCoverToDate)
+      log.debug("Cover  to date  :", this.selectedCoverToDate)
     }
 
   }
-   /**
+
+  /**
    * Fetches vessel types data based on the provided organization ID and
    *  updates the component's vessel types property.
    * @param organizationId The organization ID used to retrieve vessel types.
    */
- getVesselTypes(organizationId: number) {
-  this.vesselTypesService
+  getVesselTypes(organizationId: number) {
+    this.vesselTypesService
       .getVesselTypes(organizationId)
       .pipe(untilDestroyed(this))
       .subscribe({
@@ -2641,7 +2624,8 @@ export class QuickQuoteFormComponent {
         },
       });
 
-}
+  }
+
   /**
    * Handles the selection of vessel type.
    * - Retrieves the selected vessel type code from the event.
@@ -2655,23 +2639,25 @@ export class QuickQuoteFormComponent {
     log.debug('Selected vessel type Code:', this.selectedVesselTypeCode);
 
   }
+
 // SEARCHING CLIENT USING KYC
-getClients(pageIndex: number,
-  pageSize: number,
-  sortField: any = 'createdDate',
-  sortOrder: string = 'desc') {
-return this.clientService
-.getClients(pageIndex, pageSize, sortField, sortOrder)
-.pipe(
-untilDestroyed(this),
-);
-}
+  getClients(pageIndex: number,
+             pageSize: number,
+             sortField: any = 'createdDate',
+             sortOrder: string = 'desc') {
+    return this.clientService
+      .getClients(pageIndex, pageSize, sortField, sortOrder)
+      .pipe(
+        untilDestroyed(this),
+      );
+  }
+
   /**
    * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
    * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
    * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
    */
-  lazyLoadClients(event:LazyLoadEvent | TableLazyLoadEvent){
+  lazyLoadClients(event: LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
@@ -2683,8 +2669,7 @@ untilDestroyed(this),
         target: {value: this.searchTerm}
       };
       this.filter(searchEvent, pageIndex, pageSize);
-    }
-    else {
+    } else {
       this.getClients(pageIndex, pageSize, sortField, sortOrder)
         .pipe(
           untilDestroyed(this),
@@ -2692,7 +2677,7 @@ untilDestroyed(this),
         )
         .subscribe(
           (data: Pagination<ClientDTO>) => {
-            data.content.forEach( client => {
+            data.content.forEach(client => {
               client.clientTypeName = client.clientType.clientTypeName;
               client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
               // as the null value for lastName is handled  using the logical OR (||) operator
@@ -2709,25 +2694,21 @@ untilDestroyed(this),
         );
     }
   }
-filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
-  this.clientsData = null; // Initialize with an empty array or appropriate structure
-  let columnName ;
-  let columnValue;
-  /*const value = (event.target as HTMLInputElement).value.toLowerCase();
 
-  log.info('myvalue>>>', value)
-
-    this.searchTerm = value;*/
-    if(this.emailValue){
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.clientsData = null; // Initialize with an empty array or appropriate structure
+    let columnName;
+    let columnValue;
+    if (this.emailValue) {
       columnName = "emailAddress";
       columnValue = this.emailValue
-    }else if(this.phoneValue){
+    } else if (this.phoneValue) {
       columnName = "phoneNumber";
       columnValue = this.phoneValue
-    }else if(this.pinValue){
+    } else if (this.pinValue) {
       columnName = "pinNumber";
       columnValue = this.pinValue
-    }else if(this.idValue){
+    } else if (this.idValue) {
       columnName = "id";
       columnValue = this.idValue
     }
@@ -2737,86 +2718,88 @@ filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
     this.spinner.show();
     this.quotationService
       .searchClients(
-        columnName,columnValue,
+        columnName, columnValue,
         pageIndex, pageSize,
         this.filterObject?.name,
         this.filterObject?.idNumber,
-
       )
       .subscribe((data) => {
-        this.clientsData = data;
-        this.spinner.hide();
-      },
+          this.clientsData = data;
+          this.spinner.hide();
+        },
         error => {
           this.spinner.hide();
         });
-}
+  }
 
-inputName(event) {
+  inputName(event) {
 
-  const value = (event.target as HTMLInputElement).value;
-  this.filterObject['name'] = value;
-}
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
 
-inputEmail(event) {
+  inputEmail(event) {
 
-  const value = (event.target as HTMLInputElement).value;
-  this.emailValue=value
-  // this.filterObject['emailAddress'] = value;
-}
-inputPhone(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.emailValue = value
+    // this.filterObject['emailAddress'] = value;
+  }
 
-  const value = (event.target as HTMLInputElement).value;
-    this.phoneValue=value
+  inputPhone(event) {
 
-  // this.filterObject['phoneNumber'] = value;
-}
-inputIdNumber(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.phoneValue = value
 
-  const value = (event.target as HTMLInputElement).value;
-  this.filterObject['idNumber'] = value;
-}
+    // this.filterObject['phoneNumber'] = value;
+  }
 
+  inputIdNumber(event) {
 
-
-inputPin(event) {
-
-  const value = (event.target as HTMLInputElement).value;
-  this.pinValue=value
-
-  // this.filterObject['pinNumber'] = value;
-}
-inputInternalId(event) {
-
-  const value = (event.target as HTMLInputElement).value;
-  this.idValue=value
-
-  // this.filterObject['id'] = value;
-}
-fetchTaxes() {
-  this.quotationService
-    .getTaxes(this.selectedProductCode,this.selectedSubclassCode)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-
-        this.taxList = response._embedded
-        log.debug("Tax List ", this.taxList);
-
-      },
-      error: (error) => {
-
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
-      }
-    });
-}
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['idNumber'] = value;
+  }
 
 
-setTax(): Tax[] {
-  log.debug("Tax List when setting the payload", this.taxList);
+  inputPin(event) {
 
-  // Map the tax list to the desired format
-  const taxList: Tax[] = this.taxList.map((item) => {
+    const value = (event.target as HTMLInputElement).value;
+    this.pinValue = value
+
+    // this.filterObject['pinNumber'] = value;
+  }
+
+  inputInternalId(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.idValue = value
+
+    // this.filterObject['id'] = value;
+  }
+
+  fetchTaxes() {
+    this.quotationService
+      .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.taxList = response._embedded
+          log.debug("Tax List ", this.taxList);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+        }
+      });
+  }
+
+
+  setTax(): Tax[] {
+    log.debug("Tax List when setting the payload", this.taxList);
+
+    // Map the tax list to the desired format
+    const taxList: Tax[] = this.taxList.map((item) => {
       return {
         taxRate: String(item.taxRate), // Convert to string to match Tax interface
         code: String(item.code),
@@ -2825,10 +2808,10 @@ setTax(): Tax[] {
         applicationLevel: String(item.applicationLevel),
         taxRateType: String(item.taxRateType),
       };
-  });
+    });
 
-  log.debug("Tax List after mapping the payload", taxList);
-  return taxList; // Explicitly returning the list
-}
+    log.debug("Tax List after mapping the payload", taxList);
+    return taxList; // Explicitly returning the list
+  }
 
 }
