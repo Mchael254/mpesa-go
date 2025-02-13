@@ -82,7 +82,7 @@ export class QuickQuoteFormComponent {
   binderListDetails: any;
   selectedBinderCode: any;
   selectedBinder: Binders;
-  new: boolean = false;
+  newClient: boolean = true;
   isNewClient: boolean = true;
   readonlyClient: boolean = false;
   isFieldsDisabled: boolean = false;
@@ -235,7 +235,6 @@ export class QuickQuoteFormComponent {
 
   quickQuoteForm: FormGroup;
   additionalDetails: FormGroup
-  newClient: boolean = false;
 
 
   filterObject: {
@@ -314,7 +313,6 @@ export class QuickQuoteFormComponent {
     this.LoadAllFormFields(this.selectedProductCode);
     this.dynamicForm = this.fb.group({});
     this.createPersonalDetailsForm();
-    this.createForm();
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
@@ -1167,12 +1165,25 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   toggleButton() {
-    if (!this.isFieldDisabled('radio')) {
-      this.new = true;
-      this.isNewClient = false;
-      this.readonlyClient = false;
-      this.checkFieldsDisableState();
+    this.newClient = !this.newClient
+    if (!this.newClient) {
+      this.quickQuoteForm.get('clientName').disable();
+      this.quickQuoteForm.get('emailAddress').disable();
+      this.quickQuoteForm.get('phoneNumber').disable();
+    } else {
+      this.quickQuoteForm.get('clientName').enable();
+      this.quickQuoteForm.get('emailAddress').enable();
+      this.quickQuoteForm.get('phoneNumber').enable();
+      this.quickQuoteForm.get('clientName').setValue('');
+      this.quickQuoteForm.get('emailAddress').setValue('');
+      this.quickQuoteForm.get('phoneNumber').setValue('');
     }
+    /* if (!this.isFieldDisabled('radio')) {
+       this.newClient = true;
+       this.isNewClient = false;
+       this.readonlyClient = false;
+       this.checkFieldsDisableState();
+     }*/
   }
 
   /**
@@ -1184,7 +1195,7 @@ export class QuickQuoteFormComponent {
 
   toggleNewClient() {
     if (!this.isFieldDisabled('radio')) {
-      this.new = false;
+      this.newClient = false;
       this.isNewClient = true;
       this.readonlyClient = false;
       this.checkFieldsDisableState();
@@ -1196,7 +1207,7 @@ export class QuickQuoteFormComponent {
   toggleReadonlyClient() {
     this.readonlyClient = true;
     this.isNewClient = false;
-    this.new = false;
+    this.newClient = false;
   }
 
   // Helper method to determine if email field should be disabled
@@ -1289,17 +1300,8 @@ export class QuickQuoteFormComponent {
    * @method getBranch
    * @return {void}
    */
-  // getbranch() {
-  //   this.branchService.getBranch().subscribe(data => {
-  //     this.branchList = data;
-  //     log.debug("Branch List", this.branchList);
-  //     const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
-  //     log.debug("branch", branch)
-  //   })
-  // }
   fetchBranches(organizationId?: number, regionId?: number) {
     const branchDescription = [];
-
     this.branchService
       .getAllBranches(organizationId, regionId)
       .pipe(untilDestroyed(this))
@@ -1382,40 +1384,6 @@ export class QuickQuoteFormComponent {
     });
   }
 
-  /**
-   * Creates a form group using Angular FormBuilder (fb).
-   * - Defines form controls for client details.
-   * @method createForm
-   * @return {void}
-   */
-  createForm() {
-    this.clientForm = this.fb.group({
-      accountId: [''],
-      branchCode: [''],
-      category: [''],
-      clientTitle: [''],
-      clientTitleId: [''],
-      clientTypeId: [''],
-      country: [''],
-      createdBy: [''],
-      dateOfBirth: [''],
-      emailAddress: [''],
-      firstName: [''],
-      gender: [''],
-      id: [''],
-      idNumber: [''],
-      lastName: [''],
-      modeOfIdentity: [''],
-      occupationId: [''],
-      passportNumber: [''],
-      phoneNumber: [''],
-      physicalAddress: [''],
-      pinNumber: [''],
-      shortDescription: [''],
-      status: [''],
-      withEffectFromDate: [''],
-    });
-  }
 
   /**
    * Creates a form group for personal details using Angular FormBuilder (fb).
@@ -1465,20 +1433,18 @@ export class QuickQuoteFormComponent {
    * @param {number} id - ID of the client to load.
    * @return {void}
    */
-  loadClientDetails(id) {
-    this.clientService.getClientById(id).subscribe((data) => {
-      this.clientDetails = data;
-      this.clientType = this.clientDetails.clientType.clientTypeName;
-      log.debug('Selected Client Details:', this.clientDetails);
-      const clientDetailsString = JSON.stringify(this.clientDetails);
-      sessionStorage.setItem('clientDetails', clientDetailsString);
-      log.debug('Selected code client:', this.clientType);
-      this.selectedCountry = this.clientDetails.country;
-      log.debug('Selected client country:', this.selectedCountry);
-      this.getCountries();
-      this.saveclient();
-      this.closebutton.nativeElement.click();
-    });
+  loadClientDetails(client: ClientDTO) {
+    this.clientDetails = client;
+    this.clientType = this.clientDetails.clientType.clientTypeName;
+    this.selectedCountry = this.clientDetails.country;
+    sessionStorage.setItem('clientDetails', JSON.stringify(this.clientDetails));
+    this.getCountries();
+    this.saveclient();
+    log.debug('Selected Client:', client);
+    this.quickQuoteForm.get('clientName').setValue(this.utilService.getFullName(this.clientDetails));
+    this.quickQuoteForm.get('emailAddress').setValue(this.clientDetails.emailAddress);
+    this.quickQuoteForm.get('phoneNumber').setValue(this.clientDetails.mobileNumber);
+    this.closebutton.nativeElement.click();
   }
 
   /**
