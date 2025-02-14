@@ -429,6 +429,30 @@ export class QuickQuoteFormComponent {
       sessionStorage.removeItem('isAddRisk');
       sessionStorage.removeItem('passedQuotationNumber');
       sessionStorage.removeItem('passedQuotationCode');
+      // sessionStorage.removeItem('agentDetails');
+      // sessionStorage.removeItem('agentId');
+      sessionStorage.removeItem('carRegNo');
+      sessionStorage.removeItem('clientCode');
+      sessionStorage.removeItem('initialPremium');
+      // sessionStorage.removeItem('premiumRate');
+      // sessionStorage.removeItem('mandatorySections');
+      // sessionStorage.removeItem('personalDetails');
+      sessionStorage.removeItem('premiumComputationRequest');
+      sessionStorage.removeItem('premiumResponse');
+      sessionStorage.removeItem('product');
+      sessionStorage.removeItem('productCode');
+      sessionStorage.removeItem('quickQuotationCode');
+      // sessionStorage.removeItem('rateType');
+      // sessionStorage.removeItem('sectionDescription');
+      // sessionStorage.removeItem('sectionType');
+      // sessionStorage.removeItem('selectedDate');
+      // sessionStorage.removeItem('selectedSubclassCode');
+      // sessionStorage.removeItem('showQuoteActions');
+      // sessionStorage.removeItem('store_');
+      // sessionStorage.removeItem('subclassCoverType');
+      sessionStorage.removeItem('sumInsured');
+      sessionStorage.removeItem('sumInsuredValue');
+      // sessionStorage.removeItem('yearOfManufacture');
     }
 
     // Always clear the navigation source flag after use

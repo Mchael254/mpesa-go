@@ -189,7 +189,7 @@ export class QuoteSummaryComponent {
     this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data => {
       this.quotationDetails = data;
       log.debug("Quotation Details:", this.quotationDetails)
-      this.quotationNo = this.quotationDetails.quotOriginalQuotNo;
+      this.quotationNo = this.quotationDetails.quotationNo;
       log.debug("Quotation Number:", this.quotationNo)
       if (this.quotationDetails) {
         log.info("CALCULATE TAXES XALLED")
@@ -714,7 +714,7 @@ export class QuoteSummaryComponent {
   convertQuoteToNormalQuote() {
     log.debug("Quotation Details",this.quotationDetails);
 
-    const quotationNumber = this.quotationDetails?.quotOriginalQuotNo;
+    const quotationNumber = this.quotationDetails?.quotationNo;
     log.debug("Quotation Number",quotationNumber);
     sessionStorage.setItem("quotationNum", quotationNumber);
 
