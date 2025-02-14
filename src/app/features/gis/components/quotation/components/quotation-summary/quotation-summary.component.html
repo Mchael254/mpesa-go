@@ -166,8 +166,8 @@
                 </div>
                 <div class="col-7">
                   <p class="content " *ngIf="premium" appCommaFormat >{{ premium.premiumAmount }}</p>
-                  <p class="content" *ngIf="!premium" appCommaFormat >{{ quotationView?.quotPremium }}</p>
-                  <p class="content" *ngIf="!premium && !quotationView?.quotPremium"  >0.00</p>
+                  <p class="content" *ngIf="!premium" appCommaFormat >{{ quotationView?.premium }}</p>
+                  <p class="content" *ngIf="!premium && !quotationView?.premium"  >0.00</p>
                 </div>
               </div>
             </div>
@@ -679,7 +679,7 @@
                           title="Add"
                           data-bs-toggle="modal"
                           data-bs-target="#addExternalClaimExperienceModal"
-                          [disabled]="!showExternalClaims">
+                          [hidden]="!showExternalClaims">
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
@@ -691,7 +691,7 @@
                           [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
                           [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
                           (click)="openExternalClaimExpEditModal()"
-                          [disabled]="!showExternalClaims">
+                          [hidden]="!showExternalClaims">
                     <i class="fa-solid fa-pencil"></i>
                   </button>
                 </div>
@@ -704,14 +704,14 @@
                           [hidden]="true"
                           data-bs-toggle="modal"
                           data-bs-target="#deleteClaim"
-                          [disabled]="!showExternalClaims">
+                        >
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
                   <button type="button"
                           id="icon"
                           class="btn btn-primary"
                           title="Delete"
-                          [disabled]="!showExternalClaims">
+                          [hidden]="!showExternalClaims">
                     <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
                   </button>
                 </div>

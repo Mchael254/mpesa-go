@@ -15,8 +15,8 @@ import { SessionStorageService } from '../../../../../../shared/services/session
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
 import { ExternalClaimExp } from '../../../policy/data/policy-dto';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { UtilService } from 'src/app/shared/services';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { UtilService } from '../../../../../../shared/services/util/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -618,7 +618,7 @@ export class QuotationsService {
       .set('riskCode', riskCode.toString());
 
     // Call the API with the payload and query parameters
-    return this.api.POST(`/v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.POST(`v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   updateQuotationRisk(data: EditRisk) {
