@@ -83,16 +83,26 @@ export class QuotationInquiryComponent {
     // this.loadAllproducts();
 
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
+
+    // Ensure that the list has at least 6 elements before accessing index 5
+    if (this.quotationSubMenuList && this.quotationSubMenuList.length > 5) {
+      this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
+    } else if (this.quotationSubMenuList.length < 6) {
+      log.debug('Insufficient sub-menu items.');
+    }
   }
   ngOnDestroy(): void { }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
-    if (sidebarMenu.link.length > 0) {
+    // Check if sidebarMenu.link is a string and has a length
+    if (sidebarMenu.link && sidebarMenu.link.length > 0) {
       this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+    } else {
+      console.warn('Invalid or empty link in sidebar menu:', sidebarMenu);
     }
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
+
 
   /**
   * Retrieves user information from the authentication service.
@@ -143,11 +153,17 @@ export class QuotationInquiryComponent {
  * @return {void}
  */
   loadAllQoutationSources() {
-    this.quotationService.getAllQuotationSources().subscribe((data) => {
-      this.sourceList = data;
-      this.sourceDetail = data.content;
-      log.debug(this.sourceDetail, 'Source list');
-      log.debug(this.sourceList, 'Source list');
+    this.quotationService.getAllQuotationSources().subscribe(
+      {next: (data) => {
+        this.sourceList = data || [];
+        this.sourceDetail = data.content;
+        log.debug(this.sourceDetail, 'Source list');
+        log.debug(this.sourceList, 'Source list');
+      },
+      error: (error) => {
+        log.debug('Failed to fetch quotation sources:', error);
+        this.sourceDetail = []; // Handle error case by defaulting to an empty array
+      }
     });
   }
 
@@ -185,12 +201,17 @@ export class QuotationInquiryComponent {
       });
   }
   formatDate(date: Date): string {
-    log.debug("Date (formatDate method):", date)
+    if (!date || isNaN(date.getTime())) {
+      return ''; // Return an empty string if date is null, undefined, or invalid
+    }
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const day = String(date.getDate()).padStart(2, '0');
+
     return `${year}-${month}-${day}`;
   }
+
   /**
  * Loads all products by making an HTTP GET request to the ProductService.
  * Retrieves a list of products and updates the component's productList property.
@@ -272,6 +293,11 @@ export class QuotationInquiryComponent {
 
   }
   onAgentSelected(event: { agentName: string; agentId: number }) {
+    if (!event) {
+      log.debug('Received null or undefined event in onAgentSelected');
+      return;
+    }
+
     this.agentName = event.agentName;
     this.agentId = event.agentId;
 
@@ -283,6 +309,10 @@ export class QuotationInquiryComponent {
     // this.fetchGISQuotations();
   }
   onClientSelected(event: { clientName: string; clientCode: number }) {
+    if (!event) {
+      log.debug('Received null or undefined event in onAgentSelected');
+      return;
+    }
     this.clientName = event.clientName;
     this.clientCode = event.clientCode;
 
@@ -300,14 +330,29 @@ export class QuotationInquiryComponent {
   }
 
   setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
-    sessionStorage.setItem('quotationNum', quotationNumber);
-    sessionStorage.setItem('productCode', JSON.stringify(productCode));
-    sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
-    log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
-    log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
-    log.debug(`Productcode ${productCode} has been saved to session storage.`);
-    this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    if (quotationNumber && quotationNumber.trim() !== '') {
+      sessionStorage.setItem('quotationNum', quotationNumber);
+
+      if (productCode != null) {
+        sessionStorage.setItem('productCode', productCode.toString());
+      } else {
+        log.warn('Invalid productCode:', productCode);
+      }
+
+      if (clientCode != null) {
+        sessionStorage.setItem('clientCode', clientCode.toString());
+      } else {
+        log.warn('Invalid clientCode:', clientCode);
+      }
+
+      log.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
+      log.debug(`ClientCode ${clientCode} has been saved to session storage.`);
+      log.debug(`ProductCode ${productCode} has been saved to session storage.`);
+
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    }
   }
+
 
   clearDateFilters(): void {
     this.selectedDateFrom = null;

@@ -103,6 +103,7 @@ export class QuotationSummaryComponent {
   externalClaimExpCode: number;
   clientName: any;
   marketerCommissionAmount: number;
+  subClassCodes: number[] = [];
 
 
   insurersDetailsForm: FormGroup;
@@ -276,6 +277,10 @@ export class QuotationSummaryComponent {
 
       this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
       log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
+
+      this.subClassCodes = this.quotationView.riskInformation.map(risk => risk.subclass?.sclCode);
+      log.debug("Subclass Codes:", this.subClassCodes);
+
 
       // Extract product details
       this.quotationProducts = this.quotationView.quotationProduct;
@@ -754,28 +759,45 @@ export class QuotationSummaryComponent {
         this.subclassList = res._embedded.product_subclass_dto_list;
         log.debug(this.subclassList, 'Product Subclass List');
 
-        // Ensure allSubclassList is initialized
+        // Validate allSubclassList
         if (!this.allSubclassList || !Array.isArray(this.allSubclassList)) {
           log.error('allSubclassList is not initialized or not an array');
-          this.allSubclassList = []; // Initialize as an empty array if undefined
+          this.allSubclassList = [];
+          return; // Exit early if no valid data to match against
         }
 
-        this.productSubclass = []; // Initialize or reset productSubclass
+        // Reset productSubclass array
+        this.productSubclass = [];
 
-        this.subclassList.forEach(element => {
-          const matchingSubclasses = this.allSubclassList.filter(
-            subCode => subCode.code === element.sub_class_code
-          );
-          this.productSubclass = this.productSubclass.concat(matchingSubclasses); // Merge into productSubclass
-        });
+        // Get user's subclass codes as numbers for consistent comparison
+        const userSubclassCodes = this.subClassCodes.map(code => Number(code));
+        log.debug('User subclass codes:', userSubclassCodes);
 
-        log.debug("Retrieved Subclasses by code", this.productSubclass);
+        // Filter subclasses that match the user's codes
+        this.productSubclass = this.subclassList
+          .filter(element => userSubclassCodes.includes(element.sub_class_code))
+          .map(element => {
+            // Find the matching detailed subclass info from allSubclassList
+            const matchingSubclass = this.allSubclassList.find(
+              subClass => subClass.code === element.sub_class_code
+            );
+
+            if (!matchingSubclass) {
+              log.debug(`No matching subclass found for code: ${element.sub_class_code}`);
+            }
+
+            return matchingSubclass;
+          })
+          .filter(Boolean); // Remove any undefined entries
+
+        log.debug("Retrieved matching subclasses:", this.productSubclass);
       },
       error: (err) => {
         log.error("Error retrieving product subclasses", err);
       }
     });
   }
+
 
 
   getDocumentTypes() {
