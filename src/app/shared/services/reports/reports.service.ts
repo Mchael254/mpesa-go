@@ -95,4 +95,17 @@ export class ReportsService {
       API_CONFIG.REPORT_SERVICE_BASE_URL,
     )
   }
+
+  updateReportDetails(reportCode: number, description: string): Observable<any> {
+    const params = new HttpParams()
+      .set('reportCode', `${reportCode}`)
+      .set('description', `${description}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.POST<any>(
+      `reports-setup/update`,
+      null,
+      API_CONFIG.REPORT_SERVICE_BASE_URL,
+      paramObject
+    )
+  }
 }
