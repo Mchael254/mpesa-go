@@ -12,8 +12,7 @@
                  type="radio"
                  name="flexRadioDefault"
                  id="newClient"
-                 [checked]="isNewClient"
-                 [disabled]="isFieldDisabled('radio')">
+                 [checked]="isNewClient">
           <label class="form-check-label mb-4 mt-2" for="newClient">
             {{ 'gis.quotation.new_client' | translate }}
           </label>
@@ -23,12 +22,12 @@
                  (click)="toggleButton()"
                  type="radio"
                  name="flexRadioDefault"
-                 id="existingClient"
-                 [disabled]="isFieldDisabled('radio')">
+                 id="existingClient">
           <label class="form-check-label mb-4 mt-2" for="existingClient">
             {{ 'gis.quotation.existing_client' | translate }}
           </label>
         </div>
+
 
         <div class="row mb-4" [formGroup]='quickQuoteForm'>
           <div class="col-sm-4 col-6" *ngIf="newClient;else existingClient">
@@ -48,12 +47,18 @@
                   'gis.quotation.client' |
                     translate
                 }}</label>
-              <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
+              <input type="text" formControlName="clientName" id="quote-input"
+                     class="form-select form-control form-control-sm mb-1"
                      [disabled]="isFieldDisabled('other')"
                      data-bs-toggle="modal"
                      data-bs-target="#clientModal"
                      readonly
               >
+              <div
+                *ngIf="quickQuoteForm?.get('clientName').hasError('email') && quickQuoteForm?.get('clientName').touched && !newClient"
+                class="form-text text-danger">
+                {{ 'gis.quotation.client_is_required' | translate }}
+              </div>
 
             </div>
           </ng-template>
@@ -67,7 +72,7 @@
                    formControlName="emailAddress"
             >
             <div
-              *ngIf="quickQuoteForm.get('emailAddress').hasError('email') && quickQuoteForm.get('emailAddress').touched"
+              *ngIf="quickQuoteForm?.get('emailAddress').hasError('email') && quickQuoteForm?.get('emailAddress').touched"
               class="form-text text-danger">
               {{ 'gis.quotation.invalid_email_address' | translate }}
             </div>
@@ -93,7 +98,7 @@
               >
               </ngx-intl-tel-input>
               <div
-                *ngIf="quickQuoteForm.get('phoneNumber').hasError('validatePhoneNumber') && quickQuoteForm.get('phoneNumber').touched"
+                *ngIf="quickQuoteForm?.get('phoneNumber').hasError('validatePhoneNumber') && quickQuoteForm?.get('phoneNumber').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.invalid_phone_format' | translate }}
               </div>
@@ -111,7 +116,7 @@
                           placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
-                *ngIf="quickQuoteForm.get('product').hasError('required') && quickQuoteForm.get('product').touched"
+                *ngIf="quickQuoteForm?.get('product').hasError('required') && quickQuoteForm?.get('product').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.product_is_required' | translate }}
               </div>
@@ -128,7 +133,7 @@
                           placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
-                *ngIf="quickQuoteForm.get('subClass').hasError('required') && quickQuoteForm.get('subClass').touched"
+                *ngIf="quickQuoteForm?.get('subClass').hasError('required') && quickQuoteForm?.get('subClass').touched"
                 class="form-text text-danger">
                 {{ 'gis.policy.subclass_is_required' | translate }}
               </div>
@@ -146,7 +151,7 @@
                           optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
                           [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
               <div
-                *ngIf="quickQuoteForm.get('currency').hasError('required') && quickQuoteForm.get('currency').touched"
+                *ngIf="quickQuoteForm?.get('currency').hasError('required') && quickQuoteForm?.get('currency').touched"
                 class="form-text text-danger">
                 {{ 'gis.policy.currency_is_required' | translate }}
               </div>
@@ -167,7 +172,7 @@
                           (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
               </p-calendar>
               <div
-                *ngIf="quickQuoteForm.get('effectiveDate').hasError('required') && quickQuoteForm.get('effectiveDate').touched"
+                *ngIf="quickQuoteForm?.get('effectiveDate').hasError('required') && quickQuoteForm?.get('effectiveDate').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.effective_date_is_required' | translate }}
               </div>
@@ -187,15 +192,12 @@
                         <input type="text" id="quote-input" class="form-control form-control-sm"
                                (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
                                [formControlName]="field.name" [disabled]="field.disabled">
-<
                       </ng-container>
                       <ng-template #inputField>
                         <input type="text" id="quote-input" class="form-control form-control-sm"
                                [formControlName]="field.name" [disabled]="field.disabled">
                       </ng-template>
                     </ng-container>
-                    <input *ngSwitchCase="'text'" type="text" id="quote-input" class="form-control form-control-sm"
-                           [formControlName]="field.name" [disabled]="field.disabled">
                     <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
                            [formControlName]="field.name" [disabled]="field.disabled" currencyMask
                            [options]='currencyObj'>
@@ -228,15 +230,18 @@
                     </ng-container>
                   </ng-container>
                 </div>
+                <div
+                  *ngIf="quickQuoteForm?.get(field.name).hasError('required') && quickQuoteForm?.get(field.name).touched"
+                  class="form-text text-danger">
+                  {{ field.label }} is required
+                </div>
+                <div
+                  *ngIf="quickQuoteForm?.get(field.name).hasError('pattern') && quickQuoteForm?.get(field.name).touched"
+                  class="form-text text-danger">
+                  {{ field.label }} is invalid
+                </div>
               </div>
-              <div *ngIf="quickQuoteForm.get(field.name).hasError('required') && quickQuoteForm.get(field.name).touched"
-                   class="form-text text-danger">
-                {{ field.label }} is required
-              </div>
-              <div *ngIf="quickQuoteForm.get(field.name).hasError('pattern') && quickQuoteForm.get(field.name).touched"
-                   class="form-text text-danger">
-                {{ field.label }} is invalid
-              </div>
+
             </ng-container>
           </ng-container>
 
@@ -245,7 +250,7 @@
           <div class="col-6"></div>
           <div class="col-6 d-flex justify-content-end">
             <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
-                    (click)="computePremiumV2();saveFormState()">
+                    (click)="computePremiumV2()">
               {{ 'gis.quotation.compute' | translate }}
             </button>
           </div>

@@ -193,8 +193,13 @@ export class UtilService {
     let fullName = '';
     const firstName = (client.firstName || '').trim();
     const lastName = (client.lastName || '').trim();
-    return (
-      fullName + firstName ? firstName : '' + ' ' + lastName ? lastName : '');
+    if (firstName){
+      fullName += firstName;
+    }
+    if (lastName){
+      fullName += ' ' + lastName;
+    }
+    return fullName;
   }
 
   /**
