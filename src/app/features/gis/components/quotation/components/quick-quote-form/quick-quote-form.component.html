@@ -148,8 +148,8 @@
                     | translate
                 }}</label><br>
               <p-dropdown formControlName="currency" name="currency" [options]="currencyList"
-                          optionLabel="name" dataKey="id" (onChange)="onCurrencySelected($event.value)"
-                          [filterBy]="'name'" [filter]="true" [placeholder]="defaultCurrencyName"></p-dropdown>
+                          optionLabel="name" [dataKey]="'id'"
+                          [filterBy]="'name'" [filter]="true" ></p-dropdown>
               <div
                 *ngIf="quickQuoteForm?.get('currency').hasError('required') && quickQuoteForm?.get('currency').touched"
                 class="form-text text-danger">
@@ -168,8 +168,7 @@
                           [showButtonBar]='true'
                           [style]="{ width: '100%' }"
                           [dataType]="'string'"
-                          [placeholder]="coverFrom ? coverFrom : todaysDate" [minDate]="minDate"
-                          (ngModelChange)="onDateInputChange(selectedEffectiveDate);getCoverToDate()">
+                          [placeholder]="" [minDate]="minDate">
               </p-calendar>
               <div
                 *ngIf="quickQuoteForm?.get('effectiveDate').hasError('required') && quickQuoteForm?.get('effectiveDate').touched"

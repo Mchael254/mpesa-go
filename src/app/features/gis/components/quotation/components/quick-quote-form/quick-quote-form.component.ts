@@ -12,7 +12,7 @@ import stepData from '../../data/steps.json';
 import {
   Binders,
   Premiums,
-  Products,
+  Products, QuickQuoteData,
   Sections,
   Subclass,
   subclassCoverTypes,
@@ -390,7 +390,7 @@ export class QuickQuoteFormComponent {
     this.isReturnToQuickQuote = JSON.parse(passedisReturnToQuickQuoteString);
     log.debug("isReturnToQuickQuote Details:", this.isReturnToQuickQuote);
     if (this.isReturnToQuickQuote) {
-      this.navigationFromCoverTypes()
+      //this.navigationFromCoverTypes()
     }
 
     const navigationSource = sessionStorage.getItem('navigationSource');
@@ -412,8 +412,13 @@ export class QuickQuoteFormComponent {
 
     // Always clear the navigation source flag after use
     sessionStorage.removeItem('navigationSource');
+
     this.createQuickQuiteForm();
     this.additionalDetails = this.fb.group({});
+    const storedData: QuickQuoteData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
+    if (storedData) {
+      log.debug("Existing data>>>>", storedData)
+    }
   }
 
   createQuickQuiteForm() {
@@ -423,17 +428,16 @@ export class QuickQuoteFormComponent {
       phoneNumber: [''],
       product: ['', [Validators.required]],
       subClass: ['', [Validators.required]],
-      effectiveDate: [new Date(), [Validators.required]],
+      effectiveDate: ['', [Validators.required]],
       currency: ['', [Validators.required]]
     })
     this.quickQuoteForm.get('product').valueChanges.pipe(
       untilDestroyed(this)
     ).subscribe((value) => {
-      const defaultCurrency = this.currencyList.find((currency) => {
-        currency.currencyDefault === 'Y'
-      })
+      const defaultCurrency = this.currencyList.find(currency =>  currency.currencyDefault === 'Y')
       log.debug("Default currency", defaultCurrency)
       this.quickQuoteForm.get('currency').setValue(defaultCurrency)
+      this.quickQuoteForm.get('effectiveDate').setValue(new Date())
       log.debug("Product value changed", value)
       this.selectedProductCode = value.code
       this.getProductSubclass(value.code)
@@ -456,6 +460,7 @@ export class QuickQuoteFormComponent {
       this.fetchRegexPattern();
       this.fetchTaxes();
       this.getPremiumRates()
+
     })
     this.quickQuoteForm.get('effectiveDate').valueChanges.pipe(
       untilDestroyed(this)
@@ -463,7 +468,43 @@ export class QuickQuoteFormComponent {
       .subscribe((value) => {
         this.selectedEffectiveDate = new Date(value)
         this.getCoverToDate()
+        log.debug('selected Effective date raaaaaw', this.selectedEffectiveDate);
       })
+    this.quickQuoteForm.get('phoneNumber').valueChanges.pipe(
+
+    ).subscribe((value) => {
+      console.log('Client Phone:', this.clientPhone);
+      console.log('New Client Phone:', this.newClientData.inputClientPhone);
+      this.onInputChange();
+      console.log('New input Client Phone:', this.newClientData.inputClientPhone);
+      sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
+    })
+    this.quickQuoteForm.get('currency').valueChanges.pipe(
+
+    ).subscribe((value) => {
+      this.selectedCurrencyCode = value.id;
+      log.debug(
+        'Selecetd currency from the dropdown:',
+        this.selectedCurrencyCode
+      );
+      const selectedCurrency = this.currencyList.find(
+        (currency) => currency.id == this.selectedCurrencyCode
+      );
+      log.debug('Selected Currency', selectedCurrency);
+      this.selectedCurrencySymbol = selectedCurrency.symbol;
+      log.debug('Selected Currency symbol', this.selectedCurrencySymbol);
+      this.currencyObj = {
+        prefix: this.selectedCurrencySymbol,
+        allowNegative: false,
+        allowZero: false,
+        decimal: '.',
+        precision: 0,
+        thousands: this.currencyDelimiter,
+        suffix: ' ',
+        nullable: true,
+        align: 'left',
+      };
+    })
   }
 
   ngOnDestroy(): void {
@@ -1847,7 +1888,7 @@ export class QuickQuoteFormComponent {
       decimal: '.',
       precision: 0,
       thousands: this.currencyDelimiter,
-      suffix: '',
+      suffix: ' ',
       nullable: true,
       align: 'left',
     };
@@ -1940,7 +1981,7 @@ export class QuickQuoteFormComponent {
           // Add new form controls for each product-specific field
           this.formData.forEach((field) => {
             if (field.name === 'carRegNo') {
-              field.regexPattern = this.dynamicRegexPattern;
+              field.regexPattern = this.regexPattern;
             }
             this.control = new FormControl('', [
               Validators.required,
@@ -2041,7 +2082,6 @@ export class QuickQuoteFormComponent {
           section => section.subClassCode == code && section.isMandatory == null
         );
         log.debug("NOT MANDATORY", notMandatorySections);
-        this.getCoverToDate();
 
         if (this.mandatorySections?.length > 0) {
           this.selectedSectionList = this.mandatorySections[0];
@@ -2057,7 +2097,7 @@ export class QuickQuoteFormComponent {
 
   getSectionByCode() {
     this.sectionService
-      .getSectionByCode(this.selectedSectionList.sectionCode)
+      .getSectionByCode(this.selectedSectionList?.sectionCode)
       .subscribe((data) => {
         this.section = data;
         log.debug('Section', this.section);
@@ -2261,7 +2301,7 @@ export class QuickQuoteFormComponent {
     log.debug('Section items', sectionsForCovertype);
     log.debug('limit items', response);
 
-    response =  response.filter(
+    response = response.filter(
       (item, index, self) =>
         index === self.findIndex((t) => t.section.code === item.section.code)
     );
@@ -2283,6 +2323,20 @@ export class QuickQuoteFormComponent {
       log.debug('Form is valid, proceeding with premium computation...');
       sessionStorage.setItem('product', this.selectedProductCode);
       this.saveFormState()
+      const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+      const quickQuoteData: QuickQuoteData = {
+        effectiveDateFrom: quickQuoteDataModel.effectiveDate,
+        carRegNumber: quickQuoteDataModel.carRegNo,
+        yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
+        clientName: quickQuoteDataModel.clientName,
+        clientEmail: quickQuoteDataModel.emailAddress,
+        selectedProductCode: quickQuoteDataModel.product?.code,
+        selectedSubclassCode: quickQuoteDataModel.subClass?.code,
+        selectedCurrency: quickQuoteDataModel.currency?.code,
+        declaredValue: quickQuoteDataModel.selfDeclaredValue,
+        clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number
+      }
+      sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
       this.premiumComputationRequest = {
         dateWithEffectFrom: this.effectiveFromDate,
         dateWithEffectTo: this.passedCoverToDate,
@@ -2443,7 +2497,7 @@ export class QuickQuoteFormComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.regexPattern = response._embedded.riskIdFormat;
+          this.regexPattern = response._embedded?.riskIdFormat;
           log.debug('New Regex Pattern', this.regexPattern);
           this.dynamicRegexPattern = this.regexPattern;
         },
@@ -2468,11 +2522,6 @@ export class QuickQuoteFormComponent {
 
   }
 
-  onDateInputChange(date: any) {
-    log.debug('selected Effective date raaaaaw', date);
-    this.selectedEffectiveDate = date;
-    log.debug('selected Effective date', this.selectedEffectiveDate);
-  }
 
   transformToUpperCase(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
@@ -2723,7 +2772,6 @@ export class QuickQuoteFormComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-
           this.taxList = response._embedded
           log.debug("Tax List ", this.taxList);
 
