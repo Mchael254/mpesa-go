@@ -336,9 +336,9 @@ export class QuickQuoteFormComponent {
     this.getCountries();
 
     this.loadAllQoutationSources();
-    this.LoadAllFormFields(this.selectedProductCode);
-    this.dynamicForm = this.fb.group({});
-    this.createPersonalDetailsForm();
+    //this.LoadAllFormFields(this.selectedProductCode);
+    // this.dynamicForm = this.fb.group({});
+    //this.createPersonalDetailsForm();
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
@@ -420,14 +420,32 @@ export class QuickQuoteFormComponent {
       log.debug("Existing data>>>>", storedData)
       this.selectedProductCode = storedData.product.code
       this.selectedSubclassCode = storedData.subClass.code
+      this.LoadAllFormFields(this.selectedProductCode);
+      this.getProductSubclass(this.selectedProductCode)
+      this.getProductExpiryPeriod();
+      this.getCoverToDate();
       this.quickQuoteForm.patchValue({
         clientName: storedData.clientName,
         emailAddress: storedData.clientEmail,
         phoneNumber: storedData.clientPhoneNumber,
         product: storedData.product,
         subClass: storedData.subClass,
+        currency: storedData.currency.id,
+       // selfDeclaredValue: storedData.declaredValue,
+        yearOfManufacture: storedData.yearOfManufacture,
+      //  carRegNo: storedData.carRegNumber,
         effectiveDate: new Date(storedData.effectiveDateFrom)
       })
+      setTimeout(() => {
+        this.quickQuoteForm.patchValue({
+          product: {code: storedData.product.code},
+        });
+      });
+      /* setTimeout(() => {
+         this.quickQuoteForm.patchValue({
+           subClass: { code: storedData.subClass.code },
+         });
+       });*/
     }
   }
 
@@ -444,7 +462,7 @@ export class QuickQuoteFormComponent {
     this.quickQuoteForm.get('product').valueChanges.pipe(
       untilDestroyed(this)
     ).subscribe((value) => {
-      const defaultCurrency = this.currencyList.find(currency => currency.currencyDefault === 'Y')
+      const defaultCurrency = this.currencyList?.find(currency => currency.currencyDefault === 'Y')
       log.debug("Default currency here", defaultCurrency)
       this.quickQuoteForm.get('currency').setValue(defaultCurrency)
       this.quickQuoteForm.get('effectiveDate').setValue(new Date())
@@ -1833,6 +1851,9 @@ export class QuickQuoteFormComponent {
    */
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies()
+      .pipe(
+        untilDestroyed(this)
+      )
       .subscribe((data) => {
         this.currencyList = data.map((value) => {
           let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
@@ -1842,34 +1863,14 @@ export class QuickQuoteFormComponent {
           }
         });
         log.info(this.currencyList, 'this is a currency list');
-        const defaultCurrency = this.currencyList.find(
-          (currency) => currency.currencyDefault == 'Y'
-        );
+        const defaultCurrency = this.currencyList.find(currency => currency.currencyDefault == 'Y');
         if (defaultCurrency) {
           log.debug('DEFAULT CURRENCY', defaultCurrency);
           this.defaultCurrencyName = defaultCurrency.name;
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           this.defaultCurrencySymbol = defaultCurrency.symbol;
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-
-          // Set the default value in the form control
-          this.personalDetailsForm
-            .get('currencyCode')
-            ?.setValue(this.defaultCurrencyName);
-          this.currencyObj = {
-            prefix: this.defaultCurrencySymbol + ' ',
-            allowNegative: false,
-            allowZero: false,
-            decimal: '.',
-            precision: 0,
-            thousands: this.currencyDelimiter,
-            suffix: '',
-            nullable: true,
-            align: 'left',
-          };
         }
-
-        this.cdr.detectChanges();
       });
   }
 
@@ -1980,7 +1981,7 @@ export class QuickQuoteFormComponent {
           log.debug(this.formData, 'formData is defined here');
 
           // Clear existing form controls
-          this.removeFormControls();
+          //  this.removeFormControls();
 
           // Add new form controls for each product-specific field
           this.formData.forEach((field) => {
