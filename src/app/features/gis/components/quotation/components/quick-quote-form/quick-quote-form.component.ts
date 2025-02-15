@@ -418,6 +418,16 @@ export class QuickQuoteFormComponent {
     const storedData: QuickQuoteData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
     if (storedData) {
       log.debug("Existing data>>>>", storedData)
+      this.selectedProductCode = storedData.product.code
+      this.selectedSubclassCode = storedData.subClass.code
+      this.quickQuoteForm.patchValue({
+        clientName: storedData.clientName,
+        emailAddress: storedData.clientEmail,
+        phoneNumber: storedData.clientPhoneNumber,
+        product: storedData.product,
+        subClass: storedData.subClass,
+        effectiveDate: new Date(storedData.effectiveDateFrom)
+      })
     }
   }
 
@@ -434,8 +444,8 @@ export class QuickQuoteFormComponent {
     this.quickQuoteForm.get('product').valueChanges.pipe(
       untilDestroyed(this)
     ).subscribe((value) => {
-      const defaultCurrency = this.currencyList.find(currency =>  currency.currencyDefault === 'Y')
-      log.debug("Default currency", defaultCurrency)
+      const defaultCurrency = this.currencyList.find(currency => currency.currencyDefault === 'Y')
+      log.debug("Default currency here", defaultCurrency)
       this.quickQuoteForm.get('currency').setValue(defaultCurrency)
       this.quickQuoteForm.get('effectiveDate').setValue(new Date())
       log.debug("Product value changed", value)
@@ -483,18 +493,12 @@ export class QuickQuoteFormComponent {
 
     ).subscribe((value) => {
       this.selectedCurrencyCode = value.id;
-      log.debug(
-        'Selecetd currency from the dropdown:',
-        this.selectedCurrencyCode
-      );
-      const selectedCurrency = this.currencyList.find(
-        (currency) => currency.id == this.selectedCurrencyCode
-      );
+      const selectedCurrency = this.currencyList.find(currency => currency.id == this.selectedCurrencyCode);
       log.debug('Selected Currency', selectedCurrency);
       this.selectedCurrencySymbol = selectedCurrency.symbol;
       log.debug('Selected Currency symbol', this.selectedCurrencySymbol);
       this.currencyObj = {
-        prefix: this.selectedCurrencySymbol,
+        prefix: this.selectedCurrencySymbol + ' ',
         allowNegative: false,
         allowZero: false,
         decimal: '.',
@@ -2330,9 +2334,9 @@ export class QuickQuoteFormComponent {
         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
         clientName: quickQuoteDataModel.clientName,
         clientEmail: quickQuoteDataModel.emailAddress,
-        selectedProductCode: quickQuoteDataModel.product?.code,
-        selectedSubclassCode: quickQuoteDataModel.subClass?.code,
-        selectedCurrency: quickQuoteDataModel.currency?.code,
+        product: quickQuoteDataModel.product,
+        subClass: quickQuoteDataModel.subClass,
+        currency: quickQuoteDataModel.currency,
         declaredValue: quickQuoteDataModel.selfDeclaredValue,
         clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number
       }

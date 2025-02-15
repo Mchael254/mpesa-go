@@ -82,27 +82,24 @@
                 'gis.quotation.phone_number' |
                   translate
               }}</label>
-            <div class="input-group">
-              <ngx-intl-tel-input [cssClass]="'form-control form-control-sm mb-1'"
-                                  [preferredCountries]="preferredCountries"
-                                  [enableAutoCountrySelect]="true"
-                                  [enablePlaceholder]="true"
-                                  [searchCountryFlag]="true"
-                                  [selectFirstCountry]="true"
-                                  formControlName="phoneNumber"
-                                  [selectedCountryISO]="CountryISO.Kenya"
-                                  [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                  [phoneValidation]="true"
-                                  [numberFormat]="PhoneNumberFormat.National"
-                                  (ngModelChange)="onPhoneInputChange()"
-              >
-              </ngx-intl-tel-input>
+            <!--<div class="input-group">-->
+            <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
+                                [preferredCountries]="preferredCountries"
+                                [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+                                [searchCountryFlag]="true"
+                                [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                [selectFirstCountry]="false"
+                                [style]="{ width: '100%' }"
+                                [selectedCountryISO]="CountryISO.Kenya"
+                                [phoneValidation]="true" [separateDialCode]="true"
+                                [numberFormat]="PhoneNumberFormat.National" formControlName="phoneNumber">
+            </ngx-intl-tel-input>
               <div
                 *ngIf="quickQuoteForm?.get('phoneNumber').hasError('validatePhoneNumber') && quickQuoteForm?.get('phoneNumber').touched"
                 class="form-text text-danger">
                 {{ 'gis.quotation.invalid_phone_format' | translate }}
               </div>
-            </div>
+            <!--</div>-->
           </div>
           <div class="col-sm-4 col-6">
             <div class="form-group form-group-sm">
@@ -158,7 +155,7 @@
             </div>
           </div>
           <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm form-control-sm">
+            <div class="form-group form-group-sm">
               <br>
               <label for="cover-From" class="quote-label required" id="cover-From">
                 {{ 'gis.quotation.effective_date' | translate }}</label><br>
