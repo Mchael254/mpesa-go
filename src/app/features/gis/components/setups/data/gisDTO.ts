@@ -994,9 +994,9 @@ export interface QuickQuoteData {
   clientEmail: string;
   clientPhoneNumber: string
   carRegNumber: string;
-  selectedProductCode: number
-  selectedSubclassCode: number;
-  selectedCurrency: any;
+  product: any
+  subClass: any;
+  currency: any;
   effectiveDateFrom: Date
   declaredValue: number
 
