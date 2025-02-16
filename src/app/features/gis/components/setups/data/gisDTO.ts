@@ -1002,7 +1002,7 @@ export interface QuickQuoteData {
 
 }
 
-export interface subclassCoverTypes {
+export interface SubclassCoverTypes {
   code: number,
   coverTypeCode: number,
   coverTypeShortDescription: string,
@@ -1021,6 +1021,11 @@ export interface subclassCoverTypes {
   installmentPeriod: string,
   surveyEvaluationRequired: string,
   organizationCode: string
+}
+export interface SubclassCoverTypesResponse{
+  _embedded: any[]
+  message: string;
+  status: string
 }
 
 export interface subclassCoverTypeToClauses {
