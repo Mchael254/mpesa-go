@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
@@ -15,7 +15,7 @@ import {
   Products, QuickQuoteData,
   Sections,
   Subclass,
-  subclassCoverTypes,
+  SubclassCoverTypes,
   subclassCoverTypeSection,
   Subclasses,
   VesselType,
@@ -43,7 +43,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, from, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -53,6 +53,7 @@ import {Pagination} from '../../../../../../shared/data/common/pagination';
 import {TableDetail} from '../../../../../../shared/data/table-detail';
 import {MenuService} from 'src/app/features/base/services/menu.service';
 import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
+import {concatMap} from "rxjs/operators";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -61,7 +62,7 @@ const log = new Logger('QuickQuoteFormComponent');
   templateUrl: './quick-quote-form.component.html',
   styleUrls: ['./quick-quote-form.component.css'],
 })
-export class QuickQuoteFormComponent {
+export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   @ViewChild('calendar', {static: true}) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
@@ -135,7 +136,7 @@ export class QuickQuoteFormComponent {
   mobilePrefix: any;
   selectedZipCode: any;
 
-  subclassCoverType: subclassCoverTypes[] = [];
+  subclassCoverType: SubclassCoverTypes[] = [];
   coverTypeCode: any;
   coverTypeDesc: any;
 
@@ -337,7 +338,6 @@ export class QuickQuoteFormComponent {
 
     this.loadAllQoutationSources();
     //this.LoadAllFormFields(this.selectedProductCode);
-    // this.dynamicForm = this.fb.group({});
     //this.createPersonalDetailsForm();
     this.getuser();
     this.loadAllSubclass();
@@ -414,6 +414,7 @@ export class QuickQuoteFormComponent {
     sessionStorage.removeItem('navigationSource');
 
     this.createQuickQuiteForm();
+    log.debug("QUICK QUOTE FORM", this.quickQuoteForm)
     this.additionalDetails = this.fb.group({});
     const storedData: QuickQuoteData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
     if (storedData) {
@@ -424,6 +425,7 @@ export class QuickQuoteFormComponent {
       this.getProductSubclass(this.selectedProductCode)
       this.getProductExpiryPeriod();
       this.getCoverToDate();
+      // this.loadSubclassSectionCovertype(this.selectedSubclassCode)
       this.quickQuoteForm.patchValue({
         clientName: storedData.clientName,
         emailAddress: storedData.clientEmail,
@@ -431,14 +433,14 @@ export class QuickQuoteFormComponent {
         product: storedData.product,
         subClass: storedData.subClass,
         currency: storedData.currency.id,
-       // selfDeclaredValue: storedData.declaredValue,
+        selfDeclaredValue: storedData.declaredValue,
         yearOfManufacture: storedData.yearOfManufacture,
-      //  carRegNo: storedData.carRegNumber,
+        carRegNo: storedData.carRegNumber,
         effectiveDate: new Date(storedData.effectiveDateFrom)
       })
       setTimeout(() => {
         this.quickQuoteForm.patchValue({
-          product: {code: storedData.product.code},
+          product: this.ProductDescriptionArray.find(value => value.code === storedData.product.code)
         });
       });
       /* setTimeout(() => {
@@ -458,74 +460,6 @@ export class QuickQuoteFormComponent {
       subClass: ['', [Validators.required]],
       effectiveDate: ['', [Validators.required]],
       currency: ['', [Validators.required]]
-    })
-    this.quickQuoteForm.get('product').valueChanges.pipe(
-      untilDestroyed(this)
-    ).subscribe((value) => {
-      const defaultCurrency = this.currencyList?.find(currency => currency.currencyDefault === 'Y')
-      log.debug("Default currency here", defaultCurrency)
-      this.quickQuoteForm.get('currency').setValue(defaultCurrency)
-      this.quickQuoteForm.get('effectiveDate').setValue(new Date())
-      log.debug("Product value changed", value)
-      this.selectedProductCode = value.code
-      this.getProductSubclass(value.code)
-      this.LoadAllFormFields(this.selectedProductCode);
-      this.getProductExpiryPeriod();
-      this.getCoverToDate();
-    })
-    this.quickQuoteForm.get('subClass').valueChanges.pipe(
-      untilDestroyed(this)
-    ).subscribe((value) => {
-      this.selectedSubclassCode = value.code;
-      log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
-      const selectedSubclassCodeString = JSON.stringify(
-        this.selectedSubclassCode
-      );
-      sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
-      this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-      this.loadAllBinders(this.selectedSubclassCode);
-      this.loadSubclassSectionCovertype(this.selectedSubclassCode);
-      this.fetchRegexPattern();
-      this.fetchTaxes();
-      this.getPremiumRates()
-
-    })
-    this.quickQuoteForm.get('effectiveDate').valueChanges.pipe(
-      untilDestroyed(this)
-    )
-      .subscribe((value) => {
-        this.selectedEffectiveDate = new Date(value)
-        this.getCoverToDate()
-        log.debug('selected Effective date raaaaaw', this.selectedEffectiveDate);
-      })
-    this.quickQuoteForm.get('phoneNumber').valueChanges.pipe(
-
-    ).subscribe((value) => {
-      console.log('Client Phone:', this.clientPhone);
-      console.log('New Client Phone:', this.newClientData.inputClientPhone);
-      this.onInputChange();
-      console.log('New input Client Phone:', this.newClientData.inputClientPhone);
-      sessionStorage.setItem("newClientDetails", JSON.stringify(this.newClientData));
-    })
-    this.quickQuoteForm.get('currency').valueChanges.pipe(
-
-    ).subscribe((value) => {
-      this.selectedCurrencyCode = value.id;
-      const selectedCurrency = this.currencyList.find(currency => currency.id == this.selectedCurrencyCode);
-      log.debug('Selected Currency', selectedCurrency);
-      this.selectedCurrencySymbol = selectedCurrency.symbol;
-      log.debug('Selected Currency symbol', this.selectedCurrencySymbol);
-      this.currencyObj = {
-        prefix: this.selectedCurrencySymbol + ' ',
-        allowNegative: false,
-        allowZero: false,
-        decimal: '.',
-        precision: 0,
-        thousands: this.currencyDelimiter,
-        suffix: ' ',
-        nullable: true,
-        align: 'left',
-      };
     })
   }
 
@@ -593,7 +527,7 @@ export class QuickQuoteFormComponent {
         this.clientPhone = this.PassedClientDetails.phoneNumber;
         this.personalDetailsForm.patchValue(this.passedQuotation);
         this.isNewClient = false;
-        this.toggleButton();
+        // this.toggleButton();
       } else {
         log.debug('NEW CLIENT ADD ANOTHER RISK');
         this.newClientData.inputClientName =
@@ -633,7 +567,7 @@ export class QuickQuoteFormComponent {
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
       log.debug(parsedData, "pARSED dATA");
-      this.personalDetailsForm.patchValue(parsedData);
+      //   this.personalDetailsForm.patchValue(parsedData);
     }
 
     this.premiumComputationRequest;
@@ -701,9 +635,9 @@ export class QuickQuoteFormComponent {
       this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
       this.clientEmail = this.PassedClientDetails.emailAddress;
       this.clientPhone = this.PassedClientDetails.phoneNumber;
-      this.personalDetailsForm.patchValue(this.passedQuotation);
+      //   this.personalDetailsForm.patchValue(this.passedQuotation);
       this.isNewClient = false;
-      this.toggleButton();
+      // this.toggleButton();
 
     }
 
@@ -740,7 +674,7 @@ export class QuickQuoteFormComponent {
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
       log.debug(parsedData);
-      this.personalDetailsForm.patchValue(parsedData);
+      // this.personalDetailsForm.patchValue(parsedData);
     }
 
     this.premiumComputationRequest;
@@ -814,9 +748,9 @@ export class QuickQuoteFormComponent {
       this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
       this.clientEmail = this.PassedClientDetails.emailAddress;
       this.clientPhone = this.PassedClientDetails.phoneNumber;
-      this.personalDetailsForm.patchValue(this.passedQuotation);
+      //   this.personalDetailsForm.patchValue(this.passedQuotation);
       this.isNewClient = false;
-      this.toggleButton();
+      // this.toggleButton();
 
     }
 
@@ -853,7 +787,7 @@ export class QuickQuoteFormComponent {
     if (quickQuoteFormDetails) {
       const parsedData = JSON.parse(quickQuoteFormDetails);
       log.debug(parsedData);
-      this.personalDetailsForm.patchValue(parsedData);
+      // this.personalDetailsForm.patchValue(parsedData);
     }
 
     this.premiumComputationRequest;
@@ -908,7 +842,7 @@ export class QuickQuoteFormComponent {
     if (savedData) {
       const parsedPersonalDetailsData = JSON.parse(savedData);
 
-      this.personalDetailsForm.patchValue(JSON.parse(savedData));
+      //  this.personalDetailsForm.patchValue(JSON.parse(savedData));
       /**BRANCH */
       const filteredBranchCode = parsedPersonalDetailsData.branchCode;
       this.filteredBranchCodeNumber = parseInt(filteredBranchCode);
@@ -1085,7 +1019,7 @@ export class QuickQuoteFormComponent {
     if (savedData) {
       const parsedPersonalDetailsData = JSON.parse(savedData);
 
-      this.personalDetailsForm.patchValue(JSON.parse(savedData));
+      // this.personalDetailsForm.patchValue(JSON.parse(savedData));
       /**BRANCH */
       const filteredBranchCode = parsedPersonalDetailsData.branchCode;
       this.filteredBranchCodeNumber = parseInt(filteredBranchCode);
@@ -1237,17 +1171,19 @@ export class QuickQuoteFormComponent {
     const productDescription = [];
     const modifiedArray = [];
 
-    this.productService.getAllProducts().subscribe((data) => {
+    this.productService.getAllProducts().pipe(
+      untilDestroyed(this)
+    ).subscribe((data) => {
       this.productList = data;
       log.info(this.productList, 'this is a product list');
       this.productList.forEach((product) => {
         // Access each product inside the callback function
-        let capitalizedDescription =
-          product.description.charAt(0).toUpperCase() +
-          product.description.slice(1).toLowerCase();
+        /* let capitalizedDescription =
+           product.description.charAt(0).toUpperCase() +
+           product.description.slice(1).toLowerCase();*/
         productDescription.push({
           code: product.code,
-          description: capitalizedDescription,
+          description: this.capitalizeWord(product.description),
         });
       });
 
@@ -1257,11 +1193,11 @@ export class QuickQuoteFormComponent {
 
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
-      if (this.isFormDataLoaded) {
+      /* if (this.isFormDataLoaded) {
 
-        this.loadFormData();
-      }
-      this.cdr.detectChanges();
+         this.loadFormData();
+       }*/
+      // this.cdr.detectChanges();
     });
   }
 
@@ -1291,26 +1227,30 @@ export class QuickQuoteFormComponent {
    * @method toggleButton
    * @return {void}
    */
-  toggleButton() {
-    this.newClient = !this.newClient
-    if (!this.newClient) {
-      // this.quickQuoteForm.get('clientName').disable();
-      this.quickQuoteForm?.get('emailAddress').disable();
-      this.quickQuoteForm?.get('phoneNumber').disable();
-      this.quickQuoteForm?.get('clientName').setValidators(Validators.required)
-    } else {
-      // this.quickQuoteForm.get('clientName').enable();
-      this.quickQuoteForm?.get('emailAddress').enable();
-      this.quickQuoteForm?.get('phoneNumber').enable();
-      this.quickQuoteForm?.get('clientName').setValue('');
-      this.quickQuoteForm?.get('emailAddress').setValue('');
-      this.quickQuoteForm?.get('phoneNumber').setValue('');
-      this.quickQuoteForm?.get('clientName').clearValidators()
-    }
+  toggleExistingClient() {
+    this.newClient = false
+    // this.quickQuoteForm.get('clientName').disable();
+    this.quickQuoteForm?.get('emailAddress').disable();
+    this.quickQuoteForm?.get('phoneNumber').disable();
+    this.quickQuoteForm?.get('clientName').setValidators(Validators.required)
     if (this.quickQuoteForm) {
       this.quickQuoteForm.updateValueAndValidity();
     }
 
+  }
+
+  toggleToNewClient() {
+    this.newClient = true;
+    // this.quickQuoteForm.get('clientName').enable();
+    this.quickQuoteForm?.get('emailAddress').enable();
+    this.quickQuoteForm?.get('phoneNumber').enable();
+    this.quickQuoteForm?.get('clientName').setValue('');
+    this.quickQuoteForm?.get('emailAddress').setValue('');
+    this.quickQuoteForm?.get('phoneNumber').setValue('');
+    this.quickQuoteForm?.get('clientName').clearValidators()
+    if (this.quickQuoteForm) {
+      this.quickQuoteForm.updateValueAndValidity();
+    }
   }
 
   /**
@@ -1591,16 +1531,22 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.value.code;
+    this.selectedProductCode = selectedValue.code;
     log.debug('Selected Product Code:', this.selectedProductCode);
+    const defaultCurrency = this.currencyList?.find(currency => currency.currencyDefault === 'Y')
+    log.debug("Default currency here", defaultCurrency)
+    this.quickQuoteForm.get('currency').setValue(defaultCurrency)
+    this.quickQuoteForm.get('effectiveDate').setValue(new Date())
+    this.setCurrencySymbol(defaultCurrency.symbol)
 
     this.getProductSubclass(this.selectedProductCode);
-    // this.loadAllSubclass()
+    this.loadAllSubclass()
 
     // Load the dynamic form fields based on the selected product
     this.LoadAllFormFields(this.selectedProductCode);
     this.getProductExpiryPeriod();
     this.getCoverToDate();
+
   }
 
   /**
@@ -1720,7 +1666,7 @@ export class QuickQuoteFormComponent {
    */
   getProductSubclass(code: number) {
     this.allMatchingSubclasses = []
-    this.productService.getProductSubclasses(code).subscribe((data) => {
+    this.productService.getProductSubclasses(code).pipe(untilDestroyed(this)).subscribe((data) => {
       this.subClassList = data._embedded.product_subclass_dto_list;
       log.debug(this.subClassList, 'Product Subclass List');
 
@@ -1728,10 +1674,10 @@ export class QuickQuoteFormComponent {
         const matchingSubclasses = this.allSubclassList.filter(
           (subCode) => subCode.code === element.sub_class_code
         ).map((value) => {
-          let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+          //let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
           return {
             ...value,
-            description: capitalizedDescription
+            description: this.capitalizeWord(value.description)
           }
         });
         this.allMatchingSubclasses.push(...matchingSubclasses);
@@ -1739,6 +1685,10 @@ export class QuickQuoteFormComponent {
       log.debug('Retrieved Subclasses by code', this.allMatchingSubclasses);
       //  this.cdr.detectChanges();
     });
+  }
+
+  capitalizeWord(value: String): string {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
 
   /**
@@ -1769,21 +1719,29 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   onSubclassSelected(event: any) {
-    log.debug(`Selected value: ${JSON.stringify(event.value)}`);
-    //  const selectedValue = event.target.value; // Get the selected value
-    this.selectedSubclassCode = event.value.code;
-    // Perform your action based on the selected value
+    log.debug(`Selected value: ${JSON.stringify(event)}`);
+    this.selectedSubclassCode = event.code;
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     const selectedSubclassCodeString = JSON.stringify(
       this.selectedSubclassCode
     );
+    this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
+   // this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
+   // this.loadAllBinders(this.selectedSubclassCode);
+   // this.loadSubclassSectionCovertype(this.selectedSubclassCode);
+  //  sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
+    log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
-
-    this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-    this.loadAllBinders(this.selectedSubclassCode);
-    this.loadSubclassSectionCovertype(this.selectedSubclassCode);
+ //   this.getPremiumRates()
     this.fetchRegexPattern();
-    this.fetchTaxes();
+   // this.fetchTaxes();
+  }
+
+  onDateInputChange(date: any) {
+    log.debug('selected Effective date raaaaaw', date);
+    this.selectedEffectiveDate = date;
+    this.getCoverToDate()
+    log.debug('selected Effective date', this.selectedEffectiveDate);
   }
 
   /**
@@ -1803,7 +1761,7 @@ export class QuickQuoteFormComponent {
         this.binderListDetails = this.binderList._embedded.binder_dto_list;
         log.debug('All Binders Details:', this.binderListDetails);
         if (this.binderListDetails && this.binderListDetails.length > 0) {
-          this.selectedBinder = this.binderListDetails[0]; // Set the first binder as the selected one
+          this.selectedBinder = this.binderListDetails.find(value => value?.is_default === 'Y'); // Set the first binder as the selected one
           log.debug('Selected Binder:', this.selectedBinder);
           this.selectedBinderCode = this.selectedBinder.code;
           this.currencyCode = this.selectedBinder.currency_code;
@@ -1811,7 +1769,6 @@ export class QuickQuoteFormComponent {
         } else {
           console.error('Binder list is empty or undefined');
         }
-        this.cdr.detectChanges();
       });
   }
 
@@ -1880,12 +1837,13 @@ export class QuickQuoteFormComponent {
       'Selecetd currency from the dropdown:',
       this.selectedCurrencyCode
     );
-    const selectedCurrency = this.currencyList.find(
-      (currency) => currency.id == this.selectedCurrencyCode
-    );
+    const selectedCurrency = this.currencyList.find(currency => currency.id == this.selectedCurrencyCode);
     log.debug('Selected Currency', selectedCurrency);
-    this.selectedCurrencySymbol = selectedCurrency.symbol;
-    log.debug('Selected Currency symbol', this.selectedCurrencySymbol);
+    this.setCurrencySymbol(selectedCurrency.symbol)
+  }
+
+  setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
     this.currencyObj = {
       prefix: this.selectedCurrencySymbol,
       allowNegative: false,
@@ -1923,7 +1881,7 @@ export class QuickQuoteFormComponent {
         // log.debug(this.coverTypeCode,'filtered covertype code');
         log.debug(this.coverTypeDesc, 'filtered covertype Desc');
 
-        this.cdr.detectChanges();
+        //  this.cdr.detectChanges();
       });
   }
 
@@ -1977,7 +1935,7 @@ export class QuickQuoteFormComponent {
           this.formData = []
           this.formContent = data;
           log.debug(this.formContent, 'Form-content'); // Debugging: Check the received data
-          this.formData = this.formContent[0].fields;
+          this.formData = this.formContent[0]?.fields;
           log.debug(this.formData, 'formData is defined here');
 
           // Clear existing form controls
@@ -1988,16 +1946,16 @@ export class QuickQuoteFormComponent {
             if (field.name === 'carRegNo') {
               field.regexPattern = this.regexPattern;
             }
-            this.control = new FormControl('', [
-              Validators.required,
-              Validators.pattern(field.regexPattern),
-            ]);
+            /* this.control = new FormControl('', [
+               Validators.required,
+               Validators.pattern(field.regexPattern),
+             ]);*/
 
             // Add a custom validator for displaying a specific error message
-            this.control.setValidators([
+            /*this.control.setValidators([
               Validators.required,
               Validators.pattern(new RegExp(field.regexPattern)),
-            ]);
+            ]);*/
             const validators = [];
             if (field.isMandatory === 'Y') {
               validators.push(Validators.required);
@@ -2006,14 +1964,13 @@ export class QuickQuoteFormComponent {
               validators.push(Validators.pattern(field.regexPattern));
             }
             log.debug('Control', this.control);
-            this.dynamicForm.addControl(field.name, this.control);
             this.quickQuoteForm.addControl(field.name, new FormControl('', validators));
-            this.additionalDetails.addControl(field.name, this.fb.control(''));
-            for (const controlName in this.additionalDetails.controls) {
-              if (this.additionalDetails.controls.hasOwnProperty(controlName)) {
-                this.quickQuoteForm.addControl(controlName, this.additionalDetails.get(controlName)!);
-              }
-            }
+            /* this.additionalDetails.addControl(field.name, this.fb.control(''));
+             for (const controlName in this.additionalDetails.controls) {
+               if (this.additionalDetails.controls.hasOwnProperty(controlName)) {
+                 this.quickQuoteForm.addControl(controlName, this.additionalDetails.get(controlName)!);
+               }
+             }*/
           });
         });
     }
@@ -2079,9 +2036,7 @@ export class QuickQuoteFormComponent {
       .then(data => {
         this.subclassSectionCoverList = data;
         log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-        this.mandatorySections = this.subclassSectionCoverList.filter(
-          section => section.subClassCode == code && section.isMandatory == "Y"
-        );
+        this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == code && section.isMandatory == "Y");
         log.debug("Mandatory Section Covertype:", this.mandatorySections);
         const notMandatorySections = this.subclassSectionCoverList.filter(
           section => section.subClassCode == code && section.isMandatory == null
@@ -2164,10 +2119,11 @@ export class QuickQuoteFormComponent {
   setRiskPremiumDto(): Risk[] {
     log.debug("subclass cover type", this.subclassCoverType)
     log.debug("Car Reg no:", this.carRegNoValue)
-    const propertyId = this.dynamicForm.get('riskId')?.value;
+    const propertyId = this.quickQuoteForm.get('riskId')?.value;
+    const carRegNo = this.quickQuoteForm.get('carRegNo')?.value;
+    const subClassCode = +this.quickQuoteForm.get('subClass')?.value.code;
     log.debug("Risk Id:", propertyId)
-
-
+    let subclassCoverTypes: SubclassCoverTypes[] = []
     return this.subclassCoverType.map((item) => {
       let risk: Risk = {
         propertyId: this.carRegNoValue || propertyId,
@@ -2177,7 +2133,7 @@ export class QuickQuoteFormComponent {
         subclassSection: {
           code: this.selectedSubclassCode,
         },
-        itemDescription: this.carRegNoValue || propertyId,
+        itemDescription: carRegNo || propertyId,
         noClaimDiscountLevel: 0,
         subclassCoverTypeDto: {
           subclassCode: this.selectedSubclassCode,
@@ -2191,7 +2147,7 @@ export class QuickQuoteFormComponent {
         binderDto: {
           code: this.selectedBinderCode,
           currencyCode: this.currencyCode,
-          maxExposure: this.selectedBinder.maximum_exposure,
+          maxExposure: this.selectedBinder?.maximum_exposure,
           currencyRate: 1.25 /**TODO: Fetch from API */,
         },
         limits: this.setLimitPremiumDto(item.coverTypeCode),
@@ -2216,21 +2172,21 @@ export class QuickQuoteFormComponent {
     log.debug("Final Value", finalValue);
     sessionStorage.setItem('sumInsuredValue', finalValue);
 
-    log.debug('Mandatory Sections', this.mandatorySections);
-
+    const coverTypeSections = this.mandatorySections.filter(value => value.coverTypeCode === coverTypeCode);
+    log.debug('Mandatory Sections for covertype', coverTypeCode,  coverTypeSections);
     let limitItems = [];
     let sectionCodes = [];
-    let sectionsForCovertype = this.mandatorySections.filter((sect) => {
+   /* let sectionsForCovertype = this.mandatorySections.filter((sect) => {
       log.debug(sect);
       log.debug(sect.coverTypeCode + ' vs ' + coverTypeCode);
       return sect.coverTypeCode == coverTypeCode;
-    });
+    });*/
 
     //   if (!this.allPremiumRate) return []
     //this.getPremiumRates()
-    log.debug("Found cover type sections ", sectionsForCovertype)
-    log.debug("Premium rates " + this.allPremiumRate)
-    let response: Limit[] = sectionsForCovertype.map(it =>
+    log.debug("Found cover type sections ", coverTypeSections)
+    log.debug("Premium rates ", this.allPremiumRate)
+    let response: Limit[] = coverTypeSections.map(it =>
       this.allPremiumRate
         .filter(rate => {
           log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
@@ -2266,10 +2222,10 @@ export class QuickQuoteFormComponent {
     if (this.additionalLimit.length > 0) {
       log.debug('Added Limit', this.additionalLimit);
       // Adjust the existing response to include the additional risk
-      this.additionalLimit.forEach((item) => sectionsForCovertype.push(item));
-      log.debug('section for CoverType:', sectionsForCovertype);
+      this.additionalLimit.forEach((item) => coverTypeSections.push(item));
+      log.debug('section for CoverType:', coverTypeSections);
       response = response.concat(
-        sectionsForCovertype.map(it =>
+        coverTypeSections.map(it =>
           this.allPremiumRate
             .filter(rate => {
               log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
@@ -2303,15 +2259,33 @@ export class QuickQuoteFormComponent {
     }
 
     log.debug('Covertype', coverTypeCode);
-    log.debug('Section items', sectionsForCovertype);
+    log.debug('Section items', coverTypeSections);
     log.debug('limit items', response);
 
-    response = response.filter(
+    /*response = response.filter(
       (item, index, self) =>
         index === self.findIndex((t) => t.section.code === item.section.code)
-    );
+    );*/
 
     return response;
+  }
+  fetchComputationData(productCode: number, subClassCode: number){
+    forkJoin([
+      this.quotationService.getTaxes(productCode, subClassCode),
+      this.subclassCoverTypesService.getSubclassCovertypeBySCode(subClassCode),
+      this.binderService.getAllBindersQuick(subClassCode),
+      this.subclassSectionCovertypeService.getSubclassCovertypeSectionsBySubClass(subClassCode)
+    ]).pipe(
+      untilDestroyed(this)
+    ).subscribe(([taxes, coverTypes, binders,sublCovtSections]) =>{
+      this.taxList = taxes._embedded
+      this.subclassCoverType = coverTypes
+      this.binderList = binders._embedded.binder_dto_list;
+      this.selectedBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y');
+      this.selectedBinderCode = this.selectedBinder?.code
+      this.subclassSectionCoverList = sublCovtSections._embedded[0];
+      this.mandatorySections = this.subclassSectionCoverList.filter((section: { isMandatory: string; }) => section.isMandatory == "Y");
+    })
   }
 
   computePremiumV2() {
@@ -2325,10 +2299,15 @@ export class QuickQuoteFormComponent {
     }
     if (this.quickQuoteForm.valid) {
       this.ngxSpinner.show();
+
       log.debug('Form is valid, proceeding with premium computation...');
       sessionStorage.setItem('product', this.selectedProductCode);
-      this.saveFormState()
+      //this.saveFormState()
       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+      log.debug("Mandatory sections: ",this.subclassSectionCoverList, this.mandatorySections)
+      log.debug("Subclass Cover Types", this.subclassCoverType)
+      log.debug("Selected binder ",this.binderList, this.selectedBinder)
+      this.currencyCode = quickQuoteDataModel.currency.id;
       const quickQuoteData: QuickQuoteData = {
         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
         carRegNumber: quickQuoteDataModel.carRegNo,
@@ -2341,67 +2320,76 @@ export class QuickQuoteFormComponent {
         declaredValue: quickQuoteDataModel.selfDeclaredValue,
         clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number
       }
-      sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-      this.premiumComputationRequest = {
-        dateWithEffectFrom: this.effectiveFromDate,
-        dateWithEffectTo: this.passedCoverToDate,
-        underwritingYear: new Date().getFullYear(),
-        age: null,
-        coinsuranceLeader: null,
-        coinsurancePercentage: null,
-        entityUniqueCode: null,
-        interfaceType: null,
-        frequencyOfPayment: "A",
-        quotationStatus: "Draft",
-        transactionStatus: "NB",
-        /**Setting Product Details**/
-        product: {
-          code: this.selectedProductCode,
-          expiryPeriod: this.expiryPeriod,
+      let applicableSections = this.mandatorySections.map(value => value.sectionCode);
+      log.debug("Applicable section codes", applicableSections,this.selectedBinderCode, this.selectedSubclassCode)
+      from(applicableSections).pipe(
+        concatMap(sectionCode =>  this.premiumRateService.getAllPremiums(sectionCode,this.selectedBinderCode, this.selectedSubclassCode))
+      ).subscribe({
+        next: result => {
+          log.debug("Premium rates response", result)
+          this.allPremiumRate = this.allPremiumRate.concat(result)
         },
-        /**Setting Tax Details**/
-        taxes: this.setTax(),
+        complete: () =>{
+          log.debug('All API calls completed',this.allPremiumRate);
+          log.debug("subclass cover type", this.subclassCoverType)
+          this.premiumComputationRequest = {
+            dateWithEffectFrom: this.effectiveFromDate,
+            dateWithEffectTo: this.passedCoverToDate,
+            underwritingYear: new Date().getFullYear(),
+            age: null,
+            coinsuranceLeader: null,
+            coinsurancePercentage: null,
+            entityUniqueCode: null,
+            interfaceType: null,
+            frequencyOfPayment: "A",
+            quotationStatus: "Draft",
+            transactionStatus: "NB",
+            /**Setting Product Details**/
+            product: {
+              code: this.selectedProductCode,
+              expiryPeriod: this.expiryPeriod,
+            },
+            /**Setting Tax Details**/
+            taxes: this.setTax(),
 
-        currency: {
-          rate: 1.25 /**TODO: Fetch from API */,
-        },
-        risks: this.setRiskPremiumDto(),
-      };
-      log.debug('PREMIUM COMPUTATION PAYLOAD', this.premiumComputationRequest);
+            currency: {
+              rate: 1.25 /**TODO: Fetch from API */,
+            },
+            risks: this.setRiskPremiumDto(),
+          };
+          const premiumComputationRequestString = JSON.stringify(
+            this.premiumComputationRequest
+          );
+          sessionStorage.setItem(
+            'premiumComputationRequest',
+            premiumComputationRequestString
+          );
+          this.quotationService
+            .premiumComputationEngine(this.premiumComputationRequest)
+            .subscribe({
+              next: (data) => {
+                log.debug('Data', data);
+                const premiumResponseString = JSON.stringify(data);
+                sessionStorage.setItem('premiumResponse', premiumResponseString);
+                this.router.navigate(['/home/gis/quotation/cover-type-details']);
+              },
+              error: (error: HttpErrorResponse) => {
+                log.info(error);
+                this.ngxSpinner.hide();
 
-      const premiumComputationRequestString = JSON.stringify(
-        this.premiumComputationRequest
-      );
-      sessionStorage.setItem(
-        'premiumComputationRequest',
-        premiumComputationRequestString
-      );
-      const subclassCoverTypeString = JSON.stringify(this.subclassCoverType);
-      sessionStorage.setItem('subclassCoverType', subclassCoverTypeString);
-      return this.quotationService
-        .premiumComputationEngine(this.premiumComputationRequest)
-        .subscribe({
-          next: (data) => {
-            log.debug('Data', data);
-            const premiumResponseString = JSON.stringify(data);
-            sessionStorage.setItem('premiumResponse', premiumResponseString);
-            this.router.navigate(['/home/gis/quotation/cover-type-details']);
-          },
-          error: (error: HttpErrorResponse) => {
-            log.info(error);
-            this.ngxSpinner.hide();
-
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          },
-        });
+                this.globalMessagingService.displayErrorMessage(
+                  'Error',
+                  error.error.message
+                );
+              },
+            });
+        }
+      })
 
     } else {
       // Mark all fields as touched and validate the form
-      this.personalDetailsForm.markAllAsTouched();
-      this.personalDetailsForm.updateValueAndValidity();
+      //   this.personalDetailsForm.markAllAsTouched();
+      //  this.personalDetailsForm.updateValueAndValidity();
       for (let controlsKey in this.quickQuoteForm.controls) {
         if (this.quickQuoteForm.get(controlsKey).invalid) {
           log.debug(
@@ -2472,10 +2460,10 @@ export class QuickQuoteFormComponent {
 
   saveFormState() {
     log.debug('SAVE FORM STATE METHOD HAS BEEN CALLED');
-    sessionStorage.setItem(
-      'personalDetails',
-      JSON.stringify(this.personalDetailsForm.value)
-    );
+    /* sessionStorage.setItem(
+       'personalDetails',
+       JSON.stringify(this.personalDetailsForm.value)
+     );*/
 
     const selfDeclaredValue = this.quickQuoteForm.get('selfDeclaredValue').value;
     const yearOfManufacture = this.quickQuoteForm.get('yearOfManufacture').value;
@@ -2680,7 +2668,7 @@ export class QuickQuoteFormComponent {
             this.clientsData = data;
             this.tableDetails.rows = this.clientsData?.content;
             this.tableDetails.totalElements = this.clientsData?.totalElements;
-            this.cdr.detectChanges();
+            //  this.cdr.detectChanges();
             this.spinner.hide();
           },
           error => {
@@ -2779,10 +2767,8 @@ export class QuickQuoteFormComponent {
         next: (response: any) => {
           this.taxList = response._embedded
           log.debug("Tax List ", this.taxList);
-
         },
         error: (error) => {
-
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
         }
       });

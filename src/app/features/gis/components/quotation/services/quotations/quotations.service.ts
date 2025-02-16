@@ -147,7 +147,7 @@ export class QuotationsService {
   getTaxes(
     productCode: number,
     subClassCode: number,
-  ) {
+  ):Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
@@ -156,7 +156,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<any>(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
 

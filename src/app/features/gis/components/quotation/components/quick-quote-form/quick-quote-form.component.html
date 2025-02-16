@@ -3,12 +3,12 @@
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   <div class="container mx-2 mt-n1">
     <div class="card mb-3" style=" position: relative;">
-      <ngx-spinner name="quickQuoteScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
-                   size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
+     <!-- <ngx-spinner name="quickQuoteScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
+                   size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>-->
       <div class="card-body">
         <div class="d-inline me-4">
           <input class="form-check-input me-2 mt-2"
-                 (click)="toggleButton()"
+                 (click)="toggleToNewClient()"
                  type="radio"
                  name="flexRadioDefault"
                  id="newClient"
@@ -19,7 +19,7 @@
         </div>
         <div class="d-inline ms-4">
           <input class="form-check-input me-2 ms-4 mt-2"
-                 (click)="toggleButton()"
+                 (click)="toggleExistingClient()"
                  type="radio"
                  name="flexRadioDefault"
                  id="existingClient">
@@ -110,6 +110,7 @@
                 }}</label><br>
               <p-dropdown formControlName="product" name="product"
                           [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
+                          (onChange)="onProductSelected($event.value)"
                           placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
@@ -127,6 +128,7 @@
                 }}</label><br>
               <p-dropdown formControlName="subClass" name="subclassCode"
                           [options]="allMatchingSubclasses" optionLabel="description" dataKey="code"
+                          (onChange)="onSubclassSelected($event.value)"
                           placeholder=" " [filterBy]="'description'"
                           [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
               <div
@@ -146,6 +148,7 @@
                 }}</label><br>
               <p-dropdown formControlName="currency" name="currency" [options]="currencyList"
                           optionLabel="name" [dataKey]="'id'"
+                          (onChange)="onCurrencySelected($event.value)"
                           [filterBy]="'name'" [filter]="true" ></p-dropdown>
               <div
                 *ngIf="quickQuoteForm?.get('currency')?.hasError('required') && quickQuoteForm?.get('currency').touched"
@@ -165,6 +168,7 @@
                           [showButtonBar]='true'
                           [style]="{ width: '100%' }"
                           [dataType]="'string'"
+                          (ngModelChange)="onDateInputChange(selectedEffectiveDate)"
                           [placeholder]="" [minDate]="minDate">
               </p-calendar>
               <div
@@ -187,15 +191,15 @@
                       <ng-container *ngIf="field.name==='carRegNo';else inputField">
                         <input type="text" id="quote-input" class="form-control form-control-sm"
                                (input)="updateCarRegNoValue($event); validateCarRegNo(); transformToUpperCase($event)"
-                               [formControlName]="field.name" [disabled]="field.disabled">
+                               [formControlName]="field.name">
                       </ng-container>
                       <ng-template #inputField>
                         <input type="text" id="quote-input" class="form-control form-control-sm"
-                               [formControlName]="field.name" [disabled]="field.disabled">
+                               [formControlName]="field.name">
                       </ng-template>
                     </ng-container>
                     <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
-                           [formControlName]="field.name" [disabled]="field.disabled" currencyMask
+                           [formControlName]="field.name"  currencyMask
                            [options]='currencyObj'>
                     <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [name]="field.name"
                                 [dateFormat]="dateFormat" inputStyleClass='form-control' [showButtonBar]='true'
