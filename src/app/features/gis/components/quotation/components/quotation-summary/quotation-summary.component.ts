@@ -21,7 +21,7 @@ import {BankService} from "../../../../../../shared/services/setups/bank/bank.se
 import {Logger} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { LimitsOfLiability } from '../../data/quotationsDTO';
+import { LimitsOfLiability, QuotationProduct } from '../../data/quotationsDTO';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -104,7 +104,8 @@ export class QuotationSummaryComponent {
   clientName: any;
   marketerCommissionAmount: number;
   subClassCodes: number[] = [];
-
+  similarQuotesList: any;
+  selectedProduct: QuotationProduct;
 
   insurersDetailsForm: FormGroup;
   selectedClause: any;
@@ -287,16 +288,6 @@ export class QuotationSummaryComponent {
       this.riskDetails = this.quotationView.riskInformation;
       log.debug("Risk Details quotation-summary", this.riskDetails);
 
-      // Handle multiple product codes
-      const proCodes = this.quotationView.quotationProducts.map((product: { proCode: any; }) => product.proCode);
-      log.debug("Product codes", proCodes);
-
-      // Call functions for each product code
-      proCodes.forEach((proCode) => {
-        // this.getProductDetails(proCode);
-        this.getProductClause(proCode);
-        this.getProductSubclass(proCode);
-      });
       this.productDetails= this.quotationView.quotationProducts
 
       this.getbranch();
@@ -744,6 +735,28 @@ export class QuotationSummaryComponent {
     this.getSections(data.code);
     this.getExcesses(data.code);
     this.getRiskClauses(data.code);
+  }
+
+  handleProductClick(data: any) {
+    if (!data) {
+      log.debug('Invalid data for row click:', data);
+      return;
+    }
+
+    this.selectedProduct = data;
+
+    log.debug('Product clicked with data:', data);
+
+    const proCode = data.proCode;
+    log.debug("product Code", proCode);
+
+    const quotationProductCode = data.code;
+    log.debug("product quotation Code", quotationProductCode);
+
+    this.getProductClause(proCode);
+    this.getProductSubclass(proCode);
+    this.fetchSimilarQuotes(quotationProductCode);
+    this.getLimits(quotationProductCode);
   }
 
   loadAllSubclass() {
@@ -1273,6 +1286,7 @@ export class QuotationSummaryComponent {
       });
     }
   }
+
   onSubclassClick(subclassCode: number): void {
    log.debug('Clicked Subclass Code:', subclassCode);
    this.selectedSubclassCode=subclassCode
@@ -1281,24 +1295,50 @@ export class QuotationSummaryComponent {
    }
     // Perform any action you need with subclassCode
   }
+
   fetchLimitsOfLiability() {
-      this.quotationService
-        .getLimitsOfLiability(this.selectedSubclassCode)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
+    this.quotationService
+      .getLimitsOfLiability(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
 
-            this.limitsOfLiabilityList = response._embedded
-            log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+          this.limitsOfLiabilityList = response._embedded
+          log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
 
-          },
-          error: (error) => {
+        },
+        error: (error) => {
+          log.debug("error fetching limits of liability", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
+        }
+      }
+    );
+  }
 
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
-          }
-        });
-    }
-    setActiveTab(tab: string) {
-      this.activeTab = tab;
-    }
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  fetchSimilarQuotes(quotationProductCode: number) {
+    log.debug("quotation-view at fetch-similar-quotations", this.quotationView);
+    // const quotationProductCode = this.quotationView.quotationProducts.map((quotationProduct) => quotationProduct.code);
+    log.debug("quotation-product-code at fetch-similar-quotations", quotationProductCode);
+
+    this.quotationService
+      .getSimilarQuotes(quotationProductCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.similarQuotesList = response._embedded
+          log.debug("Similar Quotes List ", this.similarQuotesList);
+
+        },
+        error: (error) => {
+          log.debug("error fetching similar quotes", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch similar quotations. Try again later');
+        }
+      }
+    );
+  }
 }

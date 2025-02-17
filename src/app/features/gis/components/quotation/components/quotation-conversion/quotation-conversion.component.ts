@@ -348,6 +348,7 @@ export class QuotationConversionComponent {
       // Add the product to the selectedProducts array
       this.selectedQuotationProduct= product;
       log.debug('Product selected:', product);
+      this.fetchPolicies();
     } else {
       // // Remove the product from the selectedProducts array
       // this.selectedQuotationProduct = this.selectedQuotationProduct.filter(
@@ -375,7 +376,7 @@ export class QuotationConversionComponent {
 
   fetchPolicies() {
     log.debug("fetch policies");
-    const productCode = this.selectedQuotationProduct.product;
+    const productCode = this.selectedQuotationProduct.proCode;
     const quotationCode = this.selectedQuotationProduct.quotCode;
 
 
@@ -392,6 +393,7 @@ export class QuotationConversionComponent {
     log.debug("load policy details");
 
     this.selectedPolicy = policyData;
+    log.debug("Selected Policy", this.selectedPolicy);
   }
 
   inputPolicyNumber(event) {
