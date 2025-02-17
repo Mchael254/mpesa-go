@@ -9,7 +9,6 @@ import {AbstractControl, FormArray} from '@angular/forms';
 import {ClientAccountContact} from "../../data/client-account-contact";
 import {AccountContact} from "../../data/account-contact";
 import {WebAdmin} from "../../data/web-admin";
-import {TqClient} from "../../data/tq-client";
 import {HttpParams} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
@@ -43,7 +42,7 @@ export class UtilService {
    * @param obj
    * @returns {ClientAccountContact}
    */
-  isUserClient(obj:any): obj is ClientAccountContact {
+  isUserClient(obj: any): obj is ClientAccountContact {
     return obj && 'acwaCode' in obj;
   }
 
@@ -52,7 +51,7 @@ export class UtilService {
    * @param obj
    * @returns {AccountContact}
    */
-  isUserAgent(obj:any): obj is AccountContact {
+  isUserAgent(obj: any): obj is AccountContact {
     return obj && 'acccAccCode' in obj;
   }
 
@@ -61,7 +60,7 @@ export class UtilService {
    * @param obj
    * @returns {WebAdmin}
    */
-  isUserAdmin(obj:any): obj is WebAdmin {
+  isUserAdmin(obj: any): obj is WebAdmin {
     return obj && 'id' in obj;
   }
 
@@ -186,19 +185,6 @@ export class UtilService {
    * @param {PortalClient} portalClient
    * @returns {string}
    */
-  // getFullName(portalClient?: TqClient): string {
-  //   if (this.isEmpty(portalClient)) {
-  //     return '';
-  //   }
-
-  //   return this.getClientFullName({
-  //     type: portalClient!.clntType,
-  //     surname: portalClient!.clntSurname,
-  //     name: portalClient!.clntName,
-  //     otherNames: portalClient!.clntOtherNames,
-  //   });
-  // }
-
   getFullName(client?: ClientDTO): string {
     if (this.isEmpty(client)) {
       return '';
@@ -206,8 +192,13 @@ export class UtilService {
     let fullName = '';
     const firstName = (client.firstName || '').trim();
     const lastName = (client.lastName || '').trim();
-    return (
-      fullName + firstName ? firstName : '' + ' ' + lastName ? lastName : '');
+    if (firstName){
+      fullName += firstName;
+    }
+    if (lastName){
+      fullName += ' ' + lastName;
+    }
+    return fullName;
   }
 
   /**
@@ -267,12 +258,12 @@ export class UtilService {
     clntType: 'I' | 'C' | 'T' | 'W' = 'I',
   ): FullName {
     if (!fullName) {
-      return { clntName: '', clntOtherNames: '', clntSurname: '' };
+      return {clntName: '', clntOtherNames: '', clntSurname: ''};
     }
 
     const _fullName = fullName.trim();
     if (clntType === 'C') {
-      return { clntName: _fullName, clntSurname: '', clntOtherNames: '' };
+      return {clntName: _fullName, clntSurname: '', clntOtherNames: ''};
     }
 
     let name: any, surname: any, otherNames: any;
@@ -380,7 +371,7 @@ export class UtilService {
         .split('')
         .map((char) => char.charCodeAt(0)),
     );
-    return new Blob([byteArray], { type: 'application/pdf' });
+    return new Blob([byteArray], {type: 'application/pdf'});
   }
 
   /**
@@ -540,7 +531,7 @@ export class UtilService {
    * @returns {any} - query params without null values
    */
   removeNullValuesFromQueryParams(params: HttpParams) {
-    return params ? params.keys().reduce((queryParams:any, key) => {
+    return params ? params.keys().reduce((queryParams: any, key) => {
       // getting value from map
       let value: any = params.get(key);
 
@@ -561,7 +552,7 @@ export class UtilService {
    * @param mimeType
    * @return boolean - true if document is an image
    */
-  checkIfImage(mimeType: string){
+  checkIfImage(mimeType: string) {
     return mimeType?.includes('jpg') || mimeType?.includes('png') || mimeType?.includes('jpeg');
   }
 
@@ -581,12 +572,12 @@ export class UtilService {
    * @returns {string} URL of the file
    */
   generateURLFromBase64String(mimeType: string,
-                              base64String : string){
+                              base64String: string) {
     // extract base64string
     // if in format: "data:image/png;base64,iVBORw0KG... extract data after coma
     let base64FileData = !!base64String && base64String.includes(',') ?
-                            base64String.split(',')[1] :
-                          base64String;
+      base64String.split(',')[1] :
+      base64String;
 
     // Decode the base64 string into a binary buffer.
     const binaryData = atob(base64FileData); // 'atob' is a built-in function to decode base64 strings
@@ -596,10 +587,10 @@ export class UtilService {
         .map((char) => char.charCodeAt(0)),
     );
 
-   // Create a Blob object from the array buffer.
-   const blob = new Blob([byteArray], { type: mimeType });
+    // Create a Blob object from the array buffer.
+    const blob = new Blob([byteArray], {type: mimeType});
 
-   // Create a temporary URL for the Blob object using the URL.createObjectURL() method.
+    // Create a temporary URL for the Blob object using the URL.createObjectURL() method.
     return URL.createObjectURL(blob);
   }
 

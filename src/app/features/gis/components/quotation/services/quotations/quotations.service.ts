@@ -38,7 +38,6 @@ export class QuotationsService {
     private session_storage: SessionStorageService,
     private api: ApiService,
     private utilService: UtilService
-
   ) { }
   /**
   * Base URL for quotation services obtained from application configuration.

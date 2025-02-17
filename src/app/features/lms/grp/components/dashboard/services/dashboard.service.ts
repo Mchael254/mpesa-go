@@ -166,14 +166,14 @@ export class DashboardService {
   
     // Build the payload
     const payload = {
-      "rpt_code": rpt_code,
+      "rptCode": rpt_code,
       "system": "GRP",
-      "report_format": "PDF",
-      "encode_format": "RAW",
+      "reportFormat": "PDF",
+      "encodeFormat": "RAW",
       "params": params
     };
   
-    return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
+    return this.api.POSTBYTE('reports', payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 
 }

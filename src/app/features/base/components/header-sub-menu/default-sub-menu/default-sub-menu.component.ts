@@ -93,6 +93,7 @@ export class DefaultSubMenuComponent implements OnInit {
       modal.classList.remove('show')
       modal.style.display = 'none';
     }
+    sessionStorage.removeItem('quickQuoteData')
   }
 
 }

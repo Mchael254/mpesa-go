@@ -333,7 +333,7 @@ export class CoverTypesComparisonComponent {
       this.storedQuotationCode= this.passedQuotationData._embedded[0].quotationCode;
       this.storedQuotationNo= this.passedQuotationData._embedded[0].quotationNumber;
 
-      
+
     }
 
 
