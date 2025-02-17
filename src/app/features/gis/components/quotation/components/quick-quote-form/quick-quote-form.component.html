@@ -83,7 +83,6 @@
                 'gis.quotation.phone_number' |
                   translate
               }}</label>
-            <!--<div class="input-group">-->
             <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
                                 [preferredCountries]="preferredCountries"
                                 [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
@@ -100,7 +99,6 @@
                 class="form-text text-danger">
                 {{ 'gis.quotation.invalid_phone_format' | translate }}
               </div>
-            <!--</div>-->
           </div>
           <div class="col-sm-4 col-6">
             <div class="form-group form-group-sm">
@@ -185,7 +183,7 @@
               <div class="col-sm-4 col-6 dynamic-field">
                 <div class="form-group form-group-sm">
                   <br>
-                  <label for="{{i}}{{field.name}}" class="quote-label">{{ field.label | translate }}</label>
+                  <label for="{{i}}{{field.name}}" class="quote-label" [ngClass]="{'required': isFieldRequired(field.name)}">{{ field.label | translate }}</label>
                   <br>
                   <ng-container [ngSwitch]="field.type">
                     <ng-container *ngSwitchCase="'text'">

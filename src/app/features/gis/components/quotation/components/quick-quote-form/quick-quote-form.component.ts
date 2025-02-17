@@ -262,7 +262,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   quotationSubMenuList: SidebarMenu[];
 
   quickQuoteForm: FormGroup;
-  additionalDetails: FormGroup
   quoteAction: string = null
 
 
@@ -427,6 +426,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.getProductExpiryPeriod();
       this.getCoverToDate();
       this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
+      this.fetchRegexPattern()
       this.existingClientSelected = this.storedData.existingClientSelected
       if (this.existingClientSelected){
         this.newClient = false
@@ -442,7 +442,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   createQuickQuiteForm() {
     this.quickQuoteForm = this.fb.group({
-      clientName: ['',],
+      clientName: [''],
       emailAddress: ['', [Validators.email]],
       phoneNumber: [''],
       product: ['', [Validators.required]],
@@ -450,6 +450,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       effectiveDate: ['', [Validators.required]],
       currency: ['', [Validators.required]]
     })
+  }
+  isFieldRequired(controlName: string): boolean {
+    const control = this.quickQuoteForm.get(controlName);
+    return control?.hasValidator(Validators.required) ?? false;
   }
 
   ngOnDestroy(): void {
