@@ -5,7 +5,7 @@ import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuakeZone, Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { QuakeZone, Subclass, Subclasses, subclassCoverTypeSection, SubclassCoverTypes, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
@@ -70,7 +70,7 @@ export class RiskDetailsComponent {
   binderListDetails: any;
   selectedBinder: any;
 
-  subclassCoverType: subclassCoverTypes[] = [];
+  subclassCoverType: SubclassCoverTypes[] = [];
   selectedCoverType: any;
   selectedCoverTypeCode: any;
   coverTypeCode: any;
@@ -391,7 +391,7 @@ export class RiskDetailsComponent {
       territory: [''],
       topLocationLevel: [''],
       // town: [''],
-     
+
     });
     // this.policyRiskForm = this.fb.group({
     //   addOrEdit: [''],
@@ -842,7 +842,7 @@ export class RiskDetailsComponent {
 
       log.debug("Retrieved All matching sections", this.allMatchingSections);
     }
- 
+
     this.filterMandatorySections();
 
   }
@@ -1275,7 +1275,7 @@ export class RiskDetailsComponent {
     if (coverType) {
       // this.filteredMandatorySections = this.mandatorySections.filter(section =>
       //   section.coverTypeShortDescription === (coverType === "COMP" ? "COMP" : coverType));
-        this.filteredMandatorySections = this.mandatorySections.filter(section => 
+        this.filteredMandatorySections = this.mandatorySections.filter(section =>
           (coverType === "COMP" ? section.coverTypeShortDescription === "COMP" : section.coverTypeShortDescription === coverType) ||
           section.coverTypeCode === covertypeCode
         );
@@ -1369,7 +1369,7 @@ export class RiskDetailsComponent {
   //   this.checkedSectionType = section.sectionType;
   //   // this.getPremiumRates()
   //   // this.getSectionbyCode()
-  // }  
+  // }
   // onCheckboxChange(section: any) {
   //   const index = this.selectedSections.findIndex((s) => s.code === section.code);
 
@@ -1637,21 +1637,21 @@ export class RiskDetailsComponent {
                     console.log(this.scheduleArray,'scheduleArray')
                   });
                   console.log(this.scheduleArray,'schedule array outside')
-                 
+
                   log.debug("Schedule Data:", this.scheduleList);
                   this.successCounter+1
-                 
-        
+
+
                 } catch (error) {
                   this.failedCounter = this.failedCounter+1
                   console.log(this.failedCounter)
-        
+
                 }
               },
               (error) => {
                 // console.error('Error creating schedule:', error);
-               
-        
+
+
               }
             );
           });
@@ -1663,16 +1663,16 @@ export class RiskDetailsComponent {
           // if(this.failedCounter>0){
           //   console.log("Failed schedules",this.failedCounter)
           // }
-          
-          
+
+
           try {
 
             this.uploadedFileName = file.name;
             sessionStorage.setItem('uploadedFileName', this.uploadedFileName)
             this.uploading = 'success';
-          
-       
-        
+
+
+
             // Set specific default values for some fields
             // schedule.details.level1.bodyType = csvRisksList.bodyType;
             // schedule.details.level1.yearOfManufacture = csvRisksList.yearOfManufacture;
@@ -1704,7 +1704,7 @@ export class RiskDetailsComponent {
   }
 
 
-  // EDIT SCHEDULE DETAILS FUNCTIONALITY 
+  // EDIT SCHEDULE DETAILS FUNCTIONALITY
 
   // This method Clears the Schedule Detail form by resetting the form model
   clearForm() {
@@ -1886,7 +1886,7 @@ export class RiskDetailsComponent {
     const schedule = this.scheduleDetailsForm.value;
     const riskID = this.policyRiskForm.get('propertyId').value;
     log.debug("passedriskid", riskID);
-    
+
   log.debug("passedcovertype",this.selectedCoverType)
 
     // Set specific default values for some fields
@@ -1946,14 +1946,14 @@ export class RiskDetailsComponent {
   }
   editPolicyDetails(){
     this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNo}`]);
-  
+
   }
   getRequiredGroups(){
     this.policyService.getRelationalGroups(this.selectedSubclassCode).pipe(untilDestroyed(this))
     .subscribe({
       next: (data) => {
         this.relationGroups = data
-        
+
         console.log('Relation Groups', this.relationGroups)
       }
 
@@ -1981,7 +1981,7 @@ onBinderSelected(selectedValue: any) {
   this.selectedBinder = parseInt(selectedValue);
   log.debug("SELECTED BINDER", this.selectedBinder)
 
- 
+
 }
 onEditSchedule(schedule: any) {
   log.debug('SELECTED SCHEDULE: ',schedule)
@@ -2002,7 +2002,7 @@ onEditSchedule(schedule: any) {
         coverType:schedule.coverType
       }
     },
-  
+
   });
 }
 fetchBodyTypes(){

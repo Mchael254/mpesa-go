@@ -5,16 +5,14 @@ import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
-import { BrowserStorage } from 'src/app/shared/services/storage';
 import { ReceiptService } from '../../services/receipt.service';
-import { descriptors } from 'chart.js/dist/core/core.defaults';
 import {OrganizationDTO} from '../../../crm/data/organization-dto';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { CurrencyDTO, CurrencyRateDTO } from 'src/app/shared/data/common/currency-dto';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 import {OrganizationService} from '../../../crm/services/organization.service'
 import {AuthService} from '../../../../shared/services/auth.service';
-import {StaffService} from '../../../../features/entities/services/staff/staff.service';
+import {StaffService} from '../../../entities/services/staff/staff.service';
 import {CurrencyService} from '../../../../shared/services/setups/currency/currency.service';
 import {BankService} from '../../../../shared/services/setups/bank/bank.service';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';

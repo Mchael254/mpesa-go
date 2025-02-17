@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
-import {subclassCoverSections, subclassCoverTypes} from "../../data/gisDTO";
+import {subclassCoverSections, SubclassCoverTypes, SubclassCoverTypesResponse} from "../../data/gisDTO";
 import { environment } from '../../../../../../../environments/environment';
 import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
 import {ApiService} from "../../../../../../shared/services/api/api.service";
@@ -58,8 +58,15 @@ export class SubClassCoverTypesSectionsService {
     )
   }
 
-  getSubclassCovertypeSections(): Observable<subclassCoverTypes[]>{
-    return this.api.GET<subclassCoverTypes[]>(`api/v1/subclass-covertype-to-sections?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  getSubclassCovertypeSections(): Observable<SubclassCoverTypes[]>{
+    return this.api.GET<SubclassCoverTypes[]>(`api/v1/subclass-covertype-to-sections?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+
+  getSubclassCovertypeSectionsBySubClass(subClassCode: number): Observable<SubclassCoverTypesResponse>{
+    return this.api.GET<SubclassCoverTypesResponse>(`api/v1/subclass-covertype-to-sections/subclass-code?subclassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

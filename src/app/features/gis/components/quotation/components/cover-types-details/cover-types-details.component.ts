@@ -11,10 +11,10 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Logger } from '../../../../../../shared/shared.module'
+import { Logger } from '../../../../../../shared/services'
 import { forkJoin } from 'rxjs';
-import { PremiumComputationRequest, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
-import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
+import { PremiumComputationRequest, PremiumRate, QuotationDetails } from '../../data/quotationsDTO'
+import { Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
