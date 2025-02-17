@@ -93,7 +93,7 @@ export interface QuotationProduct {
   code: number;
   commission: number;
   premium: number;
-  product: number;
+  proCode: number;
   productShortDescription: string;
   quotCode: number;
   quotationNo: string;

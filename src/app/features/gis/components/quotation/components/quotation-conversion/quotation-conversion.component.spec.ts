@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { QuotationConversionComponent } from './quotation-conversion.component';
@@ -65,7 +66,10 @@ describe('QuotationConversionComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ QuotationConversionComponent ],
-      imports: [TranslateModule.forRoot()],
+      imports: [
+        HttpClientTestingModule, // Add HttpClientTestingModule here
+        TranslateModule.forRoot()
+      ],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: MenuService, useValue: mockMenuService },
@@ -198,7 +202,7 @@ describe('QuotationConversionComponent', () => {
         code: 0,
         commission: 0,
         premium: 0,
-        product: 0,
+        proCode: 0,
         productShortDescription: "",
         quotationNo: "",
         revisionNo: 0,

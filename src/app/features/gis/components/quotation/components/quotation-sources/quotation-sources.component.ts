@@ -86,6 +86,7 @@ export class QuotationSourcesComponent {
 
     // Extract only the form values
     const source = { ...this.sourcesForm.value};
+    log.debug("quotationSource while adding source", source);
 
     this.closebutton.nativeElement.click();
 
@@ -115,7 +116,7 @@ export class QuotationSourcesComponent {
       .subscribe({
         next: (response: any) => {
 
-          this.globalMessagingService.displaySuccessMessage('Success', 'Sources fetched successfully');
+          // this.globalMessagingService.displaySuccessMessage('Success', 'Sources fetched successfully');
           this.sources = response.content;
           log.debug("Response after fetching sources", this.sources);
 
@@ -217,6 +218,7 @@ export class QuotationSourcesComponent {
 
     // Extract only the form values
     const source = { ...this.sourcesForm.value};
+    log.debug("quotationSource", source);
 
     this.closebutton.nativeElement.click();
 
@@ -229,6 +231,7 @@ export class QuotationSourcesComponent {
 
           log.debug("Response after editing source", response);
           this.fetchSources();
+          this.selectedSource = null;
 
         },
         error: (error) => {
