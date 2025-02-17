@@ -91,7 +91,7 @@ const mockQuotationDetail: QuotationDetails = {
   expiryDate: '2025-02-12',
   no: 'Q123456',
   premium: 1000,
-  quotationProduct: [
+  quotationProducts: [
     {
       WEF: '2024-02-12',
       WET: '2025-02-12',
@@ -100,7 +100,7 @@ const mockQuotationDetail: QuotationDetails = {
       code: 789,
       commission: 10,
       premium: 500,
-      product: 987,
+      proCode: 987,
       productShortDescription: 'Product ABC',
       quotCode: 654,
       quotationNo: 'Q123456',
@@ -1014,21 +1014,21 @@ describe('CoverTypesDetailsComponent', () => {
     );
   });
   it('should compute premium and update data on successful service call', async () => {
-   
+
     component.riskLevelPremiums = []; // Ensure initialization as an array
     jest.spyOn(component.quotationService, 'premiumComputationEngine').mockReturnValue(of(mockRiskLevelPremiumResponse));
     jest.spyOn(component.globalMessagingService, 'displaySuccessMessage');
-  
+
     // Act
     await component.computePremiumQuickQuote();
-  
+
     // Assert
     // Ensure that global messaging service is called with expected parameters
     expect(component.globalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Premium successfully computed');
-  
+
     // Check if the logic to update riskLevelPremiums is correct
     // expect(component.log.debug).toHaveBeenCalledWith('Updated Risk Level Premium:', expect.any(Array));
-  
+
     // Ensure that component.riskLevelPremiums is defined before attempting to loop through it
     if (component.riskLevelPremiums && Array.isArray(mockRiskLevelPremiumResponse.riskLevelPremiums)) {
       for (let i = 0; i < component.riskLevelPremiums.length; i++) {
@@ -1036,7 +1036,7 @@ describe('CoverTypesDetailsComponent', () => {
         const matchingCoverTypeSecondPayload = mockRiskLevelPremiumResponse.riskLevelPremiums.find(
           (coverTypeSecondPayload) => coverTypeSecondPayload.coverTypeDetails.coverTypeCode === coverTypeFirstPayload.coverTypeCode
         );
-  
+
         if (matchingCoverTypeSecondPayload) {
           // Ensure that the data in the first payload is replaced
           expect(component.riskLevelPremiums[i]).toEqual(matchingCoverTypeSecondPayload);
@@ -1045,27 +1045,27 @@ describe('CoverTypesDetailsComponent', () => {
     } else {
       throw new Error('component.riskLevelPremiums or mockResponse.riskLevelPremiums is not as expected');
     }
-  
+
     // Check if the logic to update premiumPayload is correct
     // expect(component.log.debug).toHaveBeenCalledWith('COVERTYPE TO REPLACE', expect.any(Array));
     // expect(component.log.debug).toHaveBeenCalledWith('UPDATED PREMIUM PAYLOAD', expect.any(Object));
-  
+
     // Additional assertions based on your specific logic
-  
+
     // NEW ASSERTIONS FOR THE SPECIFIC LOGIC
     for (let i = 0; i < component.riskLevelPremiums.length; i++) {
       const coverTypeFirstPayload = component.riskLevelPremiums[i].coverTypeDetails;
       const matchingCoverTypeSecondPayload = mockRiskLevelPremiumResponse.riskLevelPremiums.find(
         (coverTypeSecondPayload) => coverTypeSecondPayload.coverTypeDetails.coverTypeCode === coverTypeFirstPayload.coverTypeCode
       );
-  
+
       if (matchingCoverTypeSecondPayload) {
         // Ensure that the data in the first payload is replaced
         expect(component.riskLevelPremiums[i]).toEqual(matchingCoverTypeSecondPayload);
       }
     }
   });
-  
+
   it('should handle error and display error message on service call failure', () => {
     // Arrange
     jest.spyOn(component.quotationService, 'premiumComputationEngine').mockReturnValue(throwError(new HttpErrorResponse({})));
@@ -1079,7 +1079,7 @@ describe('CoverTypesDetailsComponent', () => {
     expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Error, try again later');
   });
 
- 
+
   it('should create risk section successfully', async () => {
     // Mock data
     const premiumRates = [
@@ -1105,7 +1105,7 @@ describe('CoverTypesDetailsComponent', () => {
     expect(quotationService.createRiskSection).toHaveBeenCalledWith(
       component.riskCode,
       passedSections.map((section, index) => expect.objectContaining([
-        { 
+        {
           calcGroup: 1,
           code: 1, // Change to number
           compute: 'Y',
