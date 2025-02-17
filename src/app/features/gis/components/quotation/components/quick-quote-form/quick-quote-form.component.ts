@@ -43,7 +43,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, from, Observable, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, from, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -85,7 +85,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   selectedBinder: Binders;
   newClient: boolean = true;
   isNewClient: boolean = true;
-  existingClientSelected =  false;
+  existingClientSelected = false;
   readonlyClient: boolean = false;
   isFieldsDisabled: boolean = false;
 
@@ -263,6 +263,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   quickQuoteForm: FormGroup;
   additionalDetails: FormGroup
+  quoteAction: string = null
 
 
   filterObject: {
@@ -330,7 +331,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: false
     }
-   this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
+    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
+    this.quoteAction = sessionStorage.getItem('quoteAction')
   }
 
   ngOnInit(): void {
@@ -343,6 +345,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
+    this.loadAllCurrencies();
 
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
@@ -367,7 +370,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     }
     this.premiumComputationRequest;
-    this.loadAllCurrencies();
     const organizationId = undefined;
     this.getOccupation(organizationId);
     this.getVesselTypes(organizationId)
@@ -415,7 +417,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     this.createQuickQuiteForm();
     log.debug("QUICK QUOTE FORM", this.quickQuoteForm)
-    this.additionalDetails = this.fb.group({});
 
     if (this.storedData) {
       log.debug("Existing data>>>>", this.storedData)
@@ -427,6 +428,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.getCoverToDate();
       this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
       this.existingClientSelected = this.storedData.existingClientSelected
+      if (this.existingClientSelected){
+        this.newClient = false
+      }
       this.quickQuoteForm.patchValue({
         clientName: this.storedData.clientName,
         emailAddress: this.storedData.clientEmail,
@@ -1174,9 +1178,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
-      if(this.storedData){
+      if (this.storedData) {
         this.quickQuoteForm.patchValue({
-          product: this.ProductDescriptionArray.find((value: { code: any; }) => value.code === this.storedData.product.code)
+          product: this.ProductDescriptionArray.find((value: {
+            code: any;
+          }) => value.code === this.storedData.product.code)
         })
       }
     });
@@ -1217,7 +1223,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     if (this.quickQuoteForm) {
       this.quickQuoteForm.updateValueAndValidity();
     }
-    if (this.storedData){
+    if (this.storedData) {
       this.quickQuoteForm.patchValue({
         clientName: this.storedData.clientName,
         emailAddress: this.storedData.clientEmail,
@@ -1817,7 +1823,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         }
         if (this.storedData){
           this.quickQuoteForm.patchValue({
-            currency: this.currencyList.find(value => value.id === this.storedData.currency.id)
+            currency: this.currencyList.find((value: { id: any; }) => value.id === this.storedData.currency.id)
           })
           this.setCurrencySymbol(this.defaultCurrencySymbol)
         }
@@ -1959,6 +1965,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           });
         });
     }
+  }
+
+  editingRisk(): boolean {
+    return this.storedData && this.quoteAction === 'E'
   }
 
   updateCarRegNoValue(event: Event) {
