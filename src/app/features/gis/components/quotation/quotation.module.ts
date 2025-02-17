@@ -36,7 +36,6 @@ import { QuotationConversionComponent } from './components/quotation-conversion/
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import {NgxMatInputTelComponent} from "ngx-mat-input-tel";
-import {QuickQuoteInfoResolverService} from "./components/quick-quote-form/quick-quote-info-resolver.service";
 
 @NgModule({
   declarations: [
@@ -83,7 +82,7 @@ import {QuickQuoteInfoResolverService} from "./components/quick-quote-form/quick
         EntitiesModule,
         NgxMatInputTelComponent
     ],
-  providers: [DatePipe, QuickQuoteInfoResolverService],
+  providers: [DatePipe],
 
 
 })
