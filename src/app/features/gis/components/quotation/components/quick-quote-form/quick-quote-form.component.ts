@@ -43,7 +43,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, from, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, from, Observable, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -85,6 +85,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   selectedBinder: Binders;
   newClient: boolean = true;
   isNewClient: boolean = true;
+  existingClientSelected =  false;
   readonlyClient: boolean = false;
   isFieldsDisabled: boolean = false;
 
@@ -339,8 +340,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.getCountries();
 
     this.loadAllQoutationSources();
-    //this.LoadAllFormFields(this.selectedProductCode);
-    //this.createPersonalDetailsForm();
     this.getuser();
     this.loadAllSubclass();
     this.populateYears();
@@ -368,7 +367,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     }
     this.premiumComputationRequest;
-    // this.loadFormData()
     this.loadAllCurrencies();
     const organizationId = undefined;
     this.getOccupation(organizationId);
@@ -428,6 +426,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.getProductExpiryPeriod();
       this.getCoverToDate();
       this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
+      this.existingClientSelected = this.storedData.existingClientSelected
       this.quickQuoteForm.patchValue({
         clientName: this.storedData.clientName,
         emailAddress: this.storedData.clientEmail,
@@ -1163,10 +1162,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.productList = data;
       log.info(this.productList, 'this is a product list');
       this.productList.forEach((product) => {
-        // Access each product inside the callback function
-        /* let capitalizedDescription =
-           product.description.charAt(0).toUpperCase() +
-           product.description.slice(1).toLowerCase();*/
         productDescription.push({
           code: product.code,
           description: this.capitalizeWord(product.description),
@@ -1179,11 +1174,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
-      /* if (this.isFormDataLoaded) {
-
-         this.loadFormData();
-       }*/
-      // this.cdr.detectChanges();
       if(this.storedData){
         this.quickQuoteForm.patchValue({
           product: this.ProductDescriptionArray.find((value: { code: any; }) => value.code === this.storedData.product.code)
@@ -1220,18 +1210,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    */
   toggleExistingClient() {
     this.newClient = false
+    this.existingClientSelected = true
     this.quickQuoteForm?.get('emailAddress').disable();
     this.quickQuoteForm?.get('phoneNumber').disable();
     this.quickQuoteForm?.get('clientName').setValidators(Validators.required)
     if (this.quickQuoteForm) {
       this.quickQuoteForm.updateValueAndValidity();
     }
+    if (this.storedData){
+      this.quickQuoteForm.patchValue({
+        clientName: this.storedData.clientName,
+        emailAddress: this.storedData.clientEmail,
+        phoneNumber: this.storedData.clientPhoneNumber
+      })
+    }
 
   }
 
   toggleToNewClient() {
     this.newClient = true;
-    // this.quickQuoteForm.get('clientName').enable();
+    this.existingClientSelected = false
     this.quickQuoteForm?.get('emailAddress').enable();
     this.quickQuoteForm?.get('phoneNumber').enable();
     this.quickQuoteForm?.get('clientName').setValue('');
@@ -1259,12 +1257,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.resetClientData();
       sessionStorage.removeItem("clientDetails");
     }
-  }
-
-  toggleReadonlyClient() {
-    this.readonlyClient = true;
-    this.isNewClient = false;
-    this.newClient = false;
   }
 
   // Helper method to determine if email field should be disabled
@@ -2311,7 +2303,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         coverTo: quickQuoteDataModel?.coverTo,
         riskId: quickQuoteDataModel?.riskId,
         value: quickQuoteDataModel?.value,
-        modeOfTransport: quickQuoteDataModel?.modeOfTransport
+        modeOfTransport: quickQuoteDataModel?.modeOfTransport,
+        existingClientSelected: this.existingClientSelected
       }
       sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
       let applicableSections = this.mandatorySections.map(value => value.sectionCode);

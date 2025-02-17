@@ -1003,6 +1003,7 @@ export interface QuickQuoteData {
   value: number;
   riskId: string;
   coverTo: Date
+  existingClientSelected: boolean
 
 }
 
