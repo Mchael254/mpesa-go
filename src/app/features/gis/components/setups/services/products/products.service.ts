@@ -3,9 +3,8 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError, forkJoin, map } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Products, Product_group, SubclassesDTO } from '../../data/gisDTO';
-import { environment } from '../../../../../../../environments/environment';
-import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
-import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
+import { SESSION_KEY } from '../../../../../lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
@@ -47,14 +46,6 @@ export class ProductsService {
     return throwError(errorMessage);
   }
 
-
-
-  // getAllProducts(): Observable<Products[]> {
-  //   return this.api.GET<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`,this.httpOptions).pipe(
-  //     retry(1),
-  //     catchError(this.errorHandl)
-  //   )
-  // }
 
   getAllProducts(): Observable<Products[]> {
     let page = 0;

@@ -292,6 +292,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   formattedCoverToDate: string;
 
   isReturnToQuickQuote: boolean;
+  storedData: QuickQuoteData = null
 
 
   constructor(
@@ -328,6 +329,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: false
     }
+   this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
   }
 
   ngOnInit(): void {
@@ -416,38 +418,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.createQuickQuiteForm();
     log.debug("QUICK QUOTE FORM", this.quickQuoteForm)
     this.additionalDetails = this.fb.group({});
-    const storedData: QuickQuoteData = JSON.parse(sessionStorage.getItem('quickQuoteData'))
-    if (storedData) {
-      log.debug("Existing data>>>>", storedData)
-      this.selectedProductCode = storedData.product.code
-      this.selectedSubclassCode = storedData.subClass.code
+
+    if (this.storedData) {
+      log.debug("Existing data>>>>", this.storedData)
+      this.selectedProductCode = this.storedData.product.code
+      this.selectedSubclassCode = this.storedData.subClass.code
       this.LoadAllFormFields(this.selectedProductCode);
       this.getProductSubclass(this.selectedProductCode)
       this.getProductExpiryPeriod();
       this.getCoverToDate();
-      // this.loadSubclassSectionCovertype(this.selectedSubclassCode)
+      this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
       this.quickQuoteForm.patchValue({
-        clientName: storedData.clientName,
-        emailAddress: storedData.clientEmail,
-        phoneNumber: storedData.clientPhoneNumber,
-        product: storedData.product,
-        subClass: storedData.subClass,
-        currency: storedData.currency.id,
-        selfDeclaredValue: storedData.declaredValue,
-        yearOfManufacture: storedData.yearOfManufacture,
-        carRegNo: storedData.carRegNumber,
-        effectiveDate: new Date(storedData.effectiveDateFrom)
+        clientName: this.storedData.clientName,
+        emailAddress: this.storedData.clientEmail,
+        phoneNumber: this.storedData.clientPhoneNumber,
+        effectiveDate: new Date(this.storedData.effectiveDateFrom)
       })
-      setTimeout(() => {
-        this.quickQuoteForm.patchValue({
-          product: this.ProductDescriptionArray.find(value => value.code === storedData.product.code)
-        });
-      });
-      /* setTimeout(() => {
-         this.quickQuoteForm.patchValue({
-           subClass: { code: storedData.subClass.code },
-         });
-       });*/
     }
   }
 
@@ -1198,6 +1184,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
          this.loadFormData();
        }*/
       // this.cdr.detectChanges();
+      if(this.storedData){
+        this.quickQuoteForm.patchValue({
+          product: this.ProductDescriptionArray.find((value: { code: any; }) => value.code === this.storedData.product.code)
+        })
+      }
     });
   }
 
@@ -1229,7 +1220,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    */
   toggleExistingClient() {
     this.newClient = false
-    // this.quickQuoteForm.get('clientName').disable();
     this.quickQuoteForm?.get('emailAddress').disable();
     this.quickQuoteForm?.get('phoneNumber').disable();
     this.quickQuoteForm?.get('clientName').setValidators(Validators.required)
@@ -1681,6 +1671,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           }
         });
         this.allMatchingSubclasses.push(...matchingSubclasses);
+        if(this.storedData){
+          this.quickQuoteForm.patchValue({
+            subClass: this.allMatchingSubclasses.find(value => value.code === this.storedData.subClass.code)
+          })
+        }
       });
       log.debug('Retrieved Subclasses by code', this.allMatchingSubclasses);
       //  this.cdr.detectChanges();
@@ -1726,15 +1721,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.selectedSubclassCode
     );
     this.fetchComputationData(this.selectedProductCode, this.selectedSubclassCode)
-   // this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-   // this.loadAllBinders(this.selectedSubclassCode);
-   // this.loadSubclassSectionCovertype(this.selectedSubclassCode);
-  //  sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
+    // this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
+    // this.loadAllBinders(this.selectedSubclassCode);
+    // this.loadSubclassSectionCovertype(this.selectedSubclassCode);
+    //  sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
- //   this.getPremiumRates()
+    //   this.getPremiumRates()
     this.fetchRegexPattern();
-   // this.fetchTaxes();
+    // this.fetchTaxes();
   }
 
   onDateInputChange(date: any) {
@@ -1827,6 +1822,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           this.defaultCurrencySymbol = defaultCurrency.symbol;
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        }
+        if (this.storedData){
+          this.quickQuoteForm.patchValue({
+            currency: this.currencyList.find(value => value.id === this.storedData.currency.id)
+          })
+          this.setCurrencySymbol(this.defaultCurrencySymbol)
         }
       });
   }
@@ -1942,20 +1943,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           //  this.removeFormControls();
 
           // Add new form controls for each product-specific field
+          Object.keys(this.quickQuoteForm.controls).forEach(controlName => {
+            const control = this.quickQuoteForm.get(controlName) as any;
+            if (control?.metadata?.dynamic) {
+              this.quickQuoteForm.removeControl(controlName);
+              log.debug(`Removed dynamic control: ${controlName}`);
+            }
+          });
           this.formData.forEach((field) => {
             if (field.name === 'carRegNo') {
               field.regexPattern = this.regexPattern;
             }
-            /* this.control = new FormControl('', [
-               Validators.required,
-               Validators.pattern(field.regexPattern),
-             ]);*/
-
-            // Add a custom validator for displaying a specific error message
-            /*this.control.setValidators([
-              Validators.required,
-              Validators.pattern(new RegExp(field.regexPattern)),
-            ]);*/
             const validators = [];
             if (field.isMandatory === 'Y') {
               validators.push(Validators.required);
@@ -1964,13 +1962,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
               validators.push(Validators.pattern(field.regexPattern));
             }
             log.debug('Control', this.control);
-            this.quickQuoteForm.addControl(field.name, new FormControl('', validators));
-            /* this.additionalDetails.addControl(field.name, this.fb.control(''));
-             for (const controlName in this.additionalDetails.controls) {
-               if (this.additionalDetails.controls.hasOwnProperty(controlName)) {
-                 this.quickQuoteForm.addControl(controlName, this.additionalDetails.get(controlName)!);
-               }
-             }*/
+            this.quickQuoteForm.addControl(field.name, new FormControl(this.storedData && this.storedData[field.name] ? this.storedData[field.name] : '', validators));
+            (this.quickQuoteForm.get(field.name) as any).metadata = {dynamic: true};
           });
         });
     }
@@ -2173,14 +2166,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('sumInsuredValue', finalValue);
 
     const coverTypeSections = this.mandatorySections.filter(value => value.coverTypeCode === coverTypeCode);
-    log.debug('Mandatory Sections for covertype', coverTypeCode,  coverTypeSections);
+    log.debug('Mandatory Sections for covertype', coverTypeCode, coverTypeSections);
     let limitItems = [];
     let sectionCodes = [];
-   /* let sectionsForCovertype = this.mandatorySections.filter((sect) => {
-      log.debug(sect);
-      log.debug(sect.coverTypeCode + ' vs ' + coverTypeCode);
-      return sect.coverTypeCode == coverTypeCode;
-    });*/
+    /* let sectionsForCovertype = this.mandatorySections.filter((sect) => {
+       log.debug(sect);
+       log.debug(sect.coverTypeCode + ' vs ' + coverTypeCode);
+       return sect.coverTypeCode == coverTypeCode;
+     });*/
 
     //   if (!this.allPremiumRate) return []
     //this.getPremiumRates()
@@ -2261,15 +2254,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Covertype', coverTypeCode);
     log.debug('Section items', coverTypeSections);
     log.debug('limit items', response);
-
-    /*response = response.filter(
-      (item, index, self) =>
-        index === self.findIndex((t) => t.section.code === item.section.code)
-    );*/
-
     return response;
   }
-  fetchComputationData(productCode: number, subClassCode: number){
+
+  fetchComputationData(productCode: number, subClassCode: number) {
     forkJoin([
       this.quotationService.getTaxes(productCode, subClassCode),
       this.subclassCoverTypesService.getSubclassCovertypeBySCode(subClassCode),
@@ -2277,14 +2265,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.subclassSectionCovertypeService.getSubclassCovertypeSectionsBySubClass(subClassCode)
     ]).pipe(
       untilDestroyed(this)
-    ).subscribe(([taxes, coverTypes, binders,sublCovtSections]) =>{
+    ).subscribe(([taxes, coverTypes, binders, sublCovtSections]) => {
       this.taxList = taxes._embedded
       this.subclassCoverType = coverTypes
       this.binderList = binders._embedded.binder_dto_list;
       this.selectedBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y');
       this.selectedBinderCode = this.selectedBinder?.code
       this.subclassSectionCoverList = sublCovtSections._embedded[0];
-      this.mandatorySections = this.subclassSectionCoverList.filter((section: { isMandatory: string; }) => section.isMandatory == "Y");
+      this.mandatorySections = this.subclassSectionCoverList.filter((section: {
+        isMandatory: string;
+      }) => section.isMandatory == "Y");
     })
   }
 
@@ -2302,35 +2292,39 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
       log.debug('Form is valid, proceeding with premium computation...');
       sessionStorage.setItem('product', this.selectedProductCode);
-      //this.saveFormState()
       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-      log.debug("Mandatory sections: ",this.subclassSectionCoverList, this.mandatorySections)
+      log.debug("Mandatory sections: ", this.subclassSectionCoverList, this.mandatorySections)
       log.debug("Subclass Cover Types", this.subclassCoverType)
-      log.debug("Selected binder ",this.binderList, this.selectedBinder)
+      log.debug("Selected binder ", this.binderList, this.selectedBinder)
       this.currencyCode = quickQuoteDataModel.currency.id;
       const quickQuoteData: QuickQuoteData = {
         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
-        carRegNumber: quickQuoteDataModel.carRegNo,
+        carRegNo: quickQuoteDataModel.carRegNo,
         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
         clientName: quickQuoteDataModel.clientName,
         clientEmail: quickQuoteDataModel.emailAddress,
         product: quickQuoteDataModel.product,
         subClass: quickQuoteDataModel.subClass,
         currency: quickQuoteDataModel.currency,
-        declaredValue: quickQuoteDataModel.selfDeclaredValue,
-        clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number
+        selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
+        clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
+        coverTo: quickQuoteDataModel?.coverTo,
+        riskId: quickQuoteDataModel?.riskId,
+        value: quickQuoteDataModel?.value,
+        modeOfTransport: quickQuoteDataModel?.modeOfTransport
       }
+      sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
       let applicableSections = this.mandatorySections.map(value => value.sectionCode);
-      log.debug("Applicable section codes", applicableSections,this.selectedBinderCode, this.selectedSubclassCode)
+      log.debug("Applicable section codes", applicableSections, this.selectedBinderCode, this.selectedSubclassCode)
       from(applicableSections).pipe(
-        concatMap(sectionCode =>  this.premiumRateService.getAllPremiums(sectionCode,this.selectedBinderCode, this.selectedSubclassCode))
+        concatMap(sectionCode => this.premiumRateService.getAllPremiums(sectionCode, this.selectedBinderCode, this.selectedSubclassCode))
       ).subscribe({
         next: result => {
           log.debug("Premium rates response", result)
           this.allPremiumRate = this.allPremiumRate.concat(result)
         },
-        complete: () =>{
-          log.debug('All API calls completed',this.allPremiumRate);
+        complete: () => {
+          log.debug('All API calls completed', this.allPremiumRate);
           log.debug("subclass cover type", this.subclassCoverType)
           this.premiumComputationRequest = {
             dateWithEffectFrom: this.effectiveFromDate,
@@ -2388,8 +2382,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     } else {
       // Mark all fields as touched and validate the form
-      //   this.personalDetailsForm.markAllAsTouched();
-      //  this.personalDetailsForm.updateValueAndValidity();
+      this.quickQuoteForm.markAllAsTouched();
+      this.quickQuoteForm.updateValueAndValidity();
       for (let controlsKey in this.quickQuoteForm.controls) {
         if (this.quickQuoteForm.get(controlsKey).invalid) {
           log.debug(
