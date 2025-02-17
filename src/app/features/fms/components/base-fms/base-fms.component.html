@@ -1,15 +1,69 @@
-
+<div class="container-fluid"> 
+   <!-- Top Bar -->
+   <form [formGroup]="receiptingDetailsForm">
+    <div class="top-bar">
+        <div class="top-select org">
+            <span>{{'fms.org' | translate}}:</span>
+            <div class="dropdown-container">
+                <select class="form-control fw-bold" id="organization"  formControlName="organization"  (change)="onOrganizationChange($event)"  >
+                    <label for="organization">Select</label>
+                    <option *ngFor="let org of organization" [value]="org.id" [selected]="org.id===2">{{ org.name }}</option>
+                    
+               
+            </select>
+            <i class="pi pi-chevron-down dropdown-icon"></i>
+        </div>
+        </div>
+        <div class="top-select">
+            <span>{{'fms.branch' | translate}}:</span>
+            
+                <div class="dropdown-container ">
+                    <select class="form-control fw-bold" id="branch" formControlName="selectedBranch"  (change)="onBranchChange($event)">
+                   
+                        <option value=""  >Select </option>
+                        <option *ngFor="let branch of branches" [value]="branch.id" [selected]="branch.id===1" >{{branch.name}}</option>
+                
+            </select>
+            <i class="pi pi-chevron-down dropdown-icon " ></i>
+        </div>
+        </div>
+        <div class="top-select">
+            <span>{{'fms.yr' | translate}}:</span>
+            
+                <div class="dropdown-container">
+                    <select class="form-control fw-bold">
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+            </select>
+            <i class="pi pi-chevron-down dropdown-icon"></i>
+        </div>
+        </div>
+        <div class="top-select">
+            <span>{{'fms.period' | translate}}:</span>
+            <div class="dropdown-container">
+            <select class="form-control fw-bold">
+                 
+                <option>OCT</option>
+                <option>NOV</option>
+                <option>DEC</option>
+            </select>
+            <i class="pi pi-chevron-down dropdown-icon"></i>
+        </div>
+        </div>
+    </div>
+</form>
 <div class="base-content-section">
   
     <div class="card">
    
-      <div class="card-body ">
+      <div class="card-body " >
         <div class="row my-3 mx-3">
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent header">General Ledger</div>
-              <div class="card-body">
-                <div class="custom-list list">
+              <div class="card-body ">
+                <div class="custom-list list " >
                   <div *ngFor="let item of GLledger" (click)="toggleItem(item)" [class.active]="item.showSubItems">
                     <a [routerLink]="item.link" *ngIf="item.link">
                       <i *ngIf="item.showSubItems" class="fa fa-chevron-down"></i>
@@ -33,7 +87,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">CashBook</div>
               <div class="card-body">
                 <div class="custom-list list">
@@ -60,7 +114,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">Creditors</div>
               <div class="card-body">
                 <div class="custom-list list">
@@ -87,7 +141,7 @@
             </div>
           </div>
           <div class="col-3 mb-3">
-            <div class="card fixed-height-card">
+            <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">Debtors</div>
               <div class="card-body">
                 <div class="custom-list list">
@@ -127,3 +181,4 @@
       </div>
     </div>
   </div>
+</div>  

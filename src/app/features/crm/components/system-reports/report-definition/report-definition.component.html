@@ -182,7 +182,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-subModule>
-            <tr class="custom-table" [pSelectableRow]="subModule">
+            <tr class="custom-table" [pSelectableRow]="subModule" (click)="onSelectSubModule(subModule)">
               <td>{{ subModule?.name | titlecase }}</td>
               <td>{{ subModule?.description | titlecase }}</td>
 
@@ -205,7 +205,7 @@
           <div class="row mb-3">
             <div class="col-12">
               <div class="float-end">
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" (click)="saveReportDescription('U')">
                   {{ 'base.save' | translate }}
                 </button>
               </div>
@@ -229,52 +229,40 @@
             responsiveLayout="stack"
             [scrollable]="true"
             [(selection)]="selectedReport"
-            selectionMode="single"
+            selectionMode="multiple"
             dataKey="code"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['code, name, desc']"
+            [globalFilterFields]="['code, name, description']"
           >
 
             <ng-template pTemplate="header">
               <tr>
+                <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
                 <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
                 <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+                <th pSortableColumn="description">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="description"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-report>
-              <tr class="custom-table" [pSelectableRow]="report">
-                <td></td>
-                <td></td>
+              <tr class="custom-table">
                 <td>
-                  <span title="{{report?.desc}}" (click)="toggleDropdown(report)">
-                    {{report?.desc?.substring(0,20) | titlecase }}
+                  <p-tableCheckbox [value]="report" />
+                </td>
+                <td>{{ report?.code }}</td>
+                <td>{{ report?.name }}</td>
+                <td>
+                  <span title="{{report?.description}}" (click)="toggleDropdown(report)">
+                    {{report?.description?.substring(0,20) | titlecase }}
                   </span>
 
-                  <ng-container *ngIf="!report.desc || showInputForReport === report">
+                  <ng-container *ngIf="!report.description || showInputForReport === report">
                     <input
                       type="text"
                       class="form-control"
                       placeholder="description"
+                      (input)="updateReportDescription($event, report)"
                     />
-                    <!--<p-dropdown
-                      [options]="completionRemarksData"
-                      optionLabel="remark"
-                      optionValue="remark"
-                      id="code"
-                      [filter]="true"
-                      filterBy="remark"
-                      [showClear]="true"
-                      [style]="{ 'width': '130px', 'height': '40px' }"
-                      placeholder="Select remark"
-                      appendTo="body"
-                      (onChange)="onDropdownChange($event, report)"
-                    >
-                      <ng-template let-remark pTemplate="item">
-                        <div title="{{remark.remark}}">{{ remark.remark.length > 10 ? remark.remark.substring(0, 28) + '...' : remark.remark }}</div>
-                      </ng-template>
-                    </p-dropdown>-->
                   </ng-container>
                 </td>
               </tr>
@@ -288,23 +276,15 @@
         </div>
       </div>
     </div>
-    <!--<div class="col-lg-2 col-sm-12 text-center my-auto">
-      <button class="btn btn-primary mb-3" style="width: 103px" [disabled]="!selectedReport">
-        {{ 'crm.add' | translate }}
-        <i class="fa fa-arrow-right"></i>
-      </button>
-      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
-        <i class="fa fa-arrow-left"></i>
-        {{ 'crm.remove' | translate }}
-      </button>
-    </div>-->
     <!-- Laptop View -->
     <div class="col-lg-2 col-sm-12 text-center my-auto d-none d-lg-block">
-      <button class="btn btn-primary mb-3" style="width: 103px" [disabled]="!selectedReport">
+      <button class="btn btn-primary mb-3" style="width: 103px" [disabled]="!selectedReport.length"
+              (click)="assignOrUnassignReport('A')">
         {{ 'crm.add' | translate }}
         <i class="fa fa-arrow-right"></i>
       </button>
-      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport.length"
+              (click)="assignOrUnassignReport('U')">
         <i class="fa fa-arrow-left"></i>
         {{ 'crm.remove' | translate }}
       </button>
@@ -312,11 +292,13 @@
 
     <!-- Phone View -->
     <div class="col-lg-2 col-sm-12 text-center my-3 d-block d-lg-none">
-      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedReport">
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedReport.length"
+              (click)="assignOrUnassignReport('A')">
         {{ 'crm.add' | translate }}
         <i class="fa fa-arrow-down"></i>
       </button>
-      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport">
+      <button class="btn btn-primary" style="width: 103px" [disabled]="!selectedAssignedReport.length"
+              (click)="assignOrUnassignReport('U')">
         <i class="fa fa-arrow-up"></i>
         {{ 'crm.remove' | translate }}
       </button>
@@ -329,7 +311,7 @@
           <div class="row mb-3">
             <div class="col-12">
               <div class="float-end">
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" (click)="saveReportDescription('A')">
                   {{ 'base.save' | translate }}
                 </button>
               </div>
@@ -353,25 +335,43 @@
             responsiveLayout="stack"
             [scrollable]="true"
             [(selection)]="selectedAssignedReport"
-            selectionMode="single"
+            selectionMode="multiple"
             dataKey="code"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['code, name, desc']"
+            [globalFilterFields]="['code, name, description']"
           >
 
             <ng-template pTemplate="header">
               <tr>
+                <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
                 <th pSortableColumn="code">{{ 'crm.code' | translate }} <p-sortIcon field="code"></p-sortIcon></th>
                 <th pSortableColumn="name">{{ 'crm.reportName' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="desc">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+                <th pSortableColumn="description">{{ 'crm.reportDesc' | translate }} <p-sortIcon field="description"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-report>
-              <tr class="custom-table" [pSelectableRow]="report">
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="custom-table">
+                <td>
+                  <p-tableCheckbox [value]="report" />
+                </td>
+                <td>{{ report?.code }}</td>
+                <td>{{ report?.name }}</td>
+                <td>
+                  <span title="{{report?.description}}" (click)="toggleDropdown(report)">
+                    {{report?.description?.substring(0,20) | titlecase }}
+                  </span>
+
+                  <ng-container *ngIf="!report.description || showInputForReport === report">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="description"
+                      [value]="report.description"
+                      (input)="updateReportDescription($event, report)"
+                    />
+                  </ng-container>
+                </td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">

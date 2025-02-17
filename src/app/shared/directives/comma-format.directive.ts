@@ -1,48 +1,45 @@
-import {Directive, ElementRef, HostListener} from '@angular/core';
+import { Directive, ElementRef, OnInit } from '@angular/core';
+
 @Directive({
   selector: '[appCommaFormat]',
-  standalone : false
+  standalone: false
 })
-export class CommaformatDirective {
+export class CommaformatDirective implements OnInit {
   private currencyDelimiter: string;
+
   constructor(private el: ElementRef) {
-    this.currencyDelimiter = sessionStorage.getItem('currencyDelimiter') || ','; // Default to comma if not found
-
-   }
-
-  // For input fields: Trigger on user input
-  @HostListener('input')
-  onInput() {
-    const value = this.el.nativeElement.value;
-    const formattedValue = this.formatNumber(value);
-    this.el.nativeElement.value = formattedValue;
+    this.currencyDelimiter = sessionStorage.getItem('currencyDelimiter') || ',';
   }
 
-   // For static content: Format on view initialization
-  ngAfterViewInit() {
-    if (this.el.nativeElement.tagName !== 'INPUT') { // Exclude inputs here
-      const value = this.el.nativeElement.innerText;
-      const formattedValue = this.formatNumber(value);
-      this.el.nativeElement.innerText = formattedValue;
+  ngOnInit() {
+    // Format the initial value
+    this.formatContent();
+
+    // Set up MutationObserver to watch for content changes
+    const observer = new MutationObserver(() => {
+      this.formatContent();
+    });
+
+    observer.observe(this.el.nativeElement, {
+      characterData: true,
+      childList: true,
+      subtree: true
+    });
+  }
+
+  private formatContent() {
+    const value = this.el.nativeElement.textContent;
+    if (value) {
+      const numberValue = Number(value.replace(new RegExp(`\\${this.currencyDelimiter}`, 'g'), ''));
+
+      if (!isNaN(numberValue)) {
+        const formattedValue = numberValue.toLocaleString(undefined, {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
+        }).replace(/,/g, this.currencyDelimiter);
+
+        this.el.nativeElement.textContent = formattedValue;
+      }
     }
   }
-  private formatNumber(value: string): string {
-    // Remove existing commas and convert to number
-    // const numberValue = Number(value.replace(/,/g, ''));
-    const numberValue = Number(value.replace(new RegExp(`\\${this.currencyDelimiter}`, 'g'), ''));
-
-
-     // Format the number using the specified delimiter (e.g., comma)
-     if (!isNaN(numberValue) && numberValue >= 1000) {
-      return numberValue.toLocaleString().replace(',', this.currencyDelimiter); // Replace the default comma with the specified delimiter
-    }
-        // Format the number with commas if it's greater than 1000
-    // if (numberValue >= 1000) {
-    //   return numberValue.toLocaleString();
-    // }
-
-    return value;
-  }
-
-
 }

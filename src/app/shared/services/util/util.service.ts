@@ -11,13 +11,13 @@ import {AccountContact} from "../../data/account-contact";
 import {WebAdmin} from "../../data/web-admin";
 import {HttpParams} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
-import {ClientDTO} from "../../../features/entities/data/ClientDTO";
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 
 // import { format, subYears } from 'date-fns';
 
 export interface FullName {
   clntName: string;
-  clntSurname: string;
+  clntSurname: string ;
   clntOtherNames: string;
 }
 
@@ -69,18 +69,17 @@ export class UtilService {
    * @param user the current logged in user
    * @returns {UserType}
    */
+ /* resolveUserType(user: any): UserType | undefined | null {
+    if (this.isUserClient(user)) {
+      return UserType.CLIENT;
+    } else if (this.isUserAdmin(user)) {
+      return UserType.ADMIN;
+    } else if (this.isUserAgent(user)) {
+      return UserType.AGENT;
+    }
 
-  /* resolveUserType(user: any): UserType | undefined | null {
-     if (this.isUserClient(user)) {
-       return UserType.CLIENT;
-     } else if (this.isUserAdmin(user)) {
-       return UserType.ADMIN;
-     } else if (this.isUserAgent(user)) {
-       return UserType.AGENT;
-     }
-
-     return null;
-   }*/
+    return null;
+  }*/
 
   /**
    * Gets the logged in user code
@@ -334,15 +333,14 @@ export class UtilService {
    * @param from
    * @param to
    */
+ /* computeYearRange(from: Date, to: Date = new Date()): string {
+    let _from = from;
+    if (this.isEmpty(from)) {
+      _from = subYears(new Date(), 100);
+    }
 
-  /* computeYearRange(from: Date, to: Date = new Date()): string {
-     let _from = from;
-     if (this.isEmpty(from)) {
-       _from = subYears(new Date(), 100);
-     }
-
-     return format(_from, 'yyyy') + ':' + format(to, 'yyyy');
-   }*/
+    return format(_from, 'yyyy') + ':' + format(to, 'yyyy');
+  }*/
 
   /**
    *
