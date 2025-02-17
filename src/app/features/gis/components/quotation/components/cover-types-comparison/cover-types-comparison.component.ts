@@ -1727,8 +1727,8 @@ export class CoverTypesComparisonComponent {
     const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
     log.debug("Existing client detail(covertype:",this.passedClientDetails)
-
-    this.router.navigate(['/home/gis/quotation/quick-quote']);
+    sessionStorage.setItem('quoteAction', 'E');
+    this.router.navigate(['/home/gis/quotation/quick-quote']).then(r => {});
 
   }
 }
