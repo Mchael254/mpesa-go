@@ -22,6 +22,7 @@
                  (click)="toggleExistingClient()"
                  type="radio"
                  name="flexRadioDefault"
+                 [checked]="existingClientSelected"
                  id="existingClient">
           <label class="form-check-label mb-4 mt-2" for="existingClient">
             {{ 'gis.quotation.existing_client' | translate }}
