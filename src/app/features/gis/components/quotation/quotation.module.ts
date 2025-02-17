@@ -35,6 +35,7 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
+import {NgxMatInputTelComponent} from "ngx-mat-input-tel";
 
 @NgModule({
   declarations: [
@@ -55,31 +56,32 @@ import { QuotationSourcesComponent } from './components/quotation-sources/quotat
     QuotationConversionComponent,
     QuotationInquiryComponent,
     QuotationSourcesComponent,
-    
-    
+
+
   ],
-  imports: [
-    CommonModule,
-    QuotationRoutingModule,
-    TableModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    CalendarModule,
-    DialogModule,
-    InputTextModule,
-    DropdownModule,
-    MenuModule,
-    PanelMenuModule,
-    TreeModule,
-    FileUploadModule,
-    BadgeModule,
-    RadioButtonModule,
-    NgxCurrencyDirective,
-    RadioButtonModule,
-    NgxIntlTelInputModule,
-    EntitiesModule
-  ],
+    imports: [
+        CommonModule,
+        QuotationRoutingModule,
+        TableModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+        CalendarModule,
+        DialogModule,
+        InputTextModule,
+        DropdownModule,
+        MenuModule,
+        PanelMenuModule,
+        TreeModule,
+        FileUploadModule,
+        BadgeModule,
+        RadioButtonModule,
+        NgxCurrencyDirective,
+        RadioButtonModule,
+        NgxIntlTelInputModule,
+        EntitiesModule,
+        NgxMatInputTelComponent
+    ],
   providers: [DatePipe],
 
 
