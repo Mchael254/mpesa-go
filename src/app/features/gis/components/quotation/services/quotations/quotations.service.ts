@@ -553,7 +553,7 @@ export class QuotationsService {
   getTaxes(
     productCode: number,
     subClassCode: number,
-  ) {
+  ): Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter

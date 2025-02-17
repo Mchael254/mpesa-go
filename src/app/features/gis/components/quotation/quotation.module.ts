@@ -35,7 +35,6 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
-import {NgxMatInputTelComponent} from "ngx-mat-input-tel";
 
 @NgModule({
   declarations: [
@@ -80,7 +79,6 @@ import {NgxMatInputTelComponent} from "ngx-mat-input-tel";
         RadioButtonModule,
         NgxIntlTelInputModule,
         EntitiesModule,
-        NgxMatInputTelComponent
     ],
   providers: [DatePipe],
 
