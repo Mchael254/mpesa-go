@@ -42,7 +42,7 @@
                   <input type="radio" name="cover" [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
                     [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
                     class="radio-btn" />
-                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription
+                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription || premiumPayload.risks[i].subclassCoverTypeDto.coverTypeShortDescription
                    | sentenceCase }}</span><br />
                   <small class="cover-premium">
                     Basic premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
@@ -295,9 +295,13 @@
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
                       <button #openModalButton type="button" class="btn btn-outline-primary me-2 mb-3"
-                        data-bs-toggle="modal" data-bs-target="#addMoreBenefits" id="btnCoverTypes"
-                        (click)="passCovertypeDesc(selectedCoverType);">
+                       id="btnCoverTypes"
+                        (click)="openAdditionalBenefitsModal();passCovertypeDesc(selectedCoverType);">
                         {{'gis.quotation.add_benefits' | translate}}</button>
+                        <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
+                                    title="open">
+                                </button>
                       <div class="row ms-3">
                         <div class="col-lg-6 col-12">
                           <div class="row" *ngFor="let risk of riskLevelPremiums; let i = index">

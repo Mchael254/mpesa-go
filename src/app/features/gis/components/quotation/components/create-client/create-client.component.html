@@ -1,4 +1,4 @@
 <div class="container">
-    <app-new-client [shouldReroute]="false" [PassedGisClientData]="clientData"  ></app-new-client>
+    <app-new-client [shouldReroute]="false" [PassedGisClientData]="clientData"  (onClickSaveClient)="handleSaveClient($event)"></app-new-client>
 </div>
 <!-- (onClickSaveClient)="" -->

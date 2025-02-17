@@ -2096,7 +2096,17 @@
       "capitalInjection": "Kapitalzufuhr",
       "deductions": "Abzüge",
       "chargeAmount": "Gebührenbetrag",
+      "back":"Zurück",
+      "clear":"Löschen",
+      "next":"Weiter",
+      "mpesaCode":"Mpesa-Code",
+      "cheque":"Scheck",
+      "eftNo":"EFT-Nummer",
+      "yes":"Ja",
+      "no":"Nein",
+      "editDescription":"Beschreibung bearbeiten",
       "uploadFiles": "Dateien hochladen"
+
     },
     "allocation": {
       "allocate_funds": "Mittel zuweisen",

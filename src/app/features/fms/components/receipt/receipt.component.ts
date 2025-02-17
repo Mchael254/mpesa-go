@@ -109,6 +109,7 @@ globalDocId:string;
 description: string = '';
 isUploadDisabled: boolean = true; // Initialize as true (button is inactive by default)
 isFileUploadButtonDisabled: boolean = false; // Controls the "File Upload" button state
+fileIsUploaded=false;
 //1.7 charges details
 chargeAmount: number = 0;
 chargeTypes: string[]=[];
@@ -1457,6 +1458,7 @@ uploadFile(): void {
         this.fileDescriptions = [];
         this.currentFileIndex = 0;
         this.isFileUploadButtonDisabled = false; // Re-enable the "File Upload" button
+        this.fileIsUploaded=true;
         this.fetchDocByDocId(this.globalDocId);
       },
       error: (error) => {
@@ -1813,7 +1815,7 @@ allocateAndPostAllocations(): void {
     next: (response) => {
       this.allocation = false;
       this.globalMessagingService.displaySuccessMessage('Success', 'Allocations posted successfully');
-      //console.log('allocation payload:',allocationData);
+      console.log('allocation payload:',allocationData);
        // Reset client selection and transactions
       // this.selectedClient = null;
        this.transactions = [];
@@ -2034,6 +2036,16 @@ return isValid;
 //     }
 //   })
 // }
+/**
+ *
+ *
+ * @memberof ReceiptComponent
+ */
+/**
+ *
+ *
+ * @memberof ReceiptComponent
+ */
 fetchParamStatus(){
   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
     next:(response)=>{
@@ -2047,6 +2059,7 @@ fetchParamStatus(){
     }
   })
 }
+
 submitReceipt(): any {
  // console.log('my SELECTED CLIENT',this.selectedClient);
   if (!this.validateRequiredFields()) {
@@ -2077,20 +2090,21 @@ submitReceipt(): any {
    return false;
 
   }
- this.fetchParamStatus();
- console.log('receiptDoc>>',this.parameterStatus);
-  if(this.parameterStatus=='N')
-    {
-     // alert('jey');
-     if(confirm('do you want to save receipt without uploading file?')==true){
+//  this.fetchParamStatus();
+//  console.log('receiptDoc>>',this.parameterStatus);
+//   if(this.parameterStatus=='N')
+//     {
+//      // alert('jey');
+//      if(confirm('do you want to save receipt without uploading file?')==true){
 
-return true;
-     }else{
-      return false;
-     }
+// return true;
+//      }else{
+//       return false;
+//      }
 
 
-     }
+//      }
+// this.confirmFormValidity();
   // Get form values
   const formValues = this.receiptingDetailsForm.value;
 const getCapitalInjectionStatus=formValues.capitalInjection;
@@ -2142,7 +2156,7 @@ const receiptData: ReceiptSaveDTO={
     receiptSms: "Y",
     receiptChequeType: formValues.chequeType || null,
     vatInclusive: null,
-    rctbbrCode: String( this.defaultBranchId) || String(this.selectedBranchId) ,
+    rctbbrCode: Number( this.defaultBranchId) || Number(this.selectedBranchId) ,
     directType: null,
     pmBnkCode: null,
     dmsKey: null,
@@ -2156,7 +2170,7 @@ const receiptData: ReceiptSaveDTO={
     grossOrNetWhtax: null,
     grossOrNetVat: null,
 
-    sysCode: String(this.selectedClient.systemCode),
+    sysCode: Number(this.selectedClient.systemCode),
     bankAccountType: this.globalBankAccountVariable.type
 
 }
@@ -2293,6 +2307,19 @@ return true;
      }
 
 }
+// fetchParamStatus(){
+//   this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
+//     next:(response)=>{
+      
+//       this.parameterStatus=response.data;
+//       console.log(this.parameterStatus);
+      
+//     },
+//     error:(err)=>{
+//       this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
+//     }
+//   })
+// }
 formatReturnedDate(date: string | Date): string {
   if (!date) return '';
   return new Date(date).toLocaleDateString();

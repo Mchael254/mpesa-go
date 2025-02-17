@@ -14,6 +14,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { StatusEnum } from '../../data/quotationsDTO';
+import {Logger} from "../../../../../../shared/services";
 
 describe('QuotationInquiryComponent', () => {
   let component: QuotationInquiryComponent;
@@ -26,17 +27,27 @@ describe('QuotationInquiryComponent', () => {
     getCurrentUser: jest.fn()
   };
 
+  const mockLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn()
+  };
+
   const mockQuotationService = {
-    getAllQuotationSources: jest.fn(),
+    getAllQuotationSources: jest.fn(() => of([])), // Ensure it returns an observable
     searchQuotations: jest.fn()
   };
+
 
   const mockProductService = {
     getAllProducts: jest.fn()
   };
 
   const mockMenuService = {
-    quotationSubMenuList: jest.fn(),
+    quotationSubMenuList: jest.fn(() => [
+      {}, {}, {}, {}, {}, {} // Array with at least 6 elements
+    ]),
     updateSidebarMainMenu: jest.fn()
   };
 
@@ -74,7 +85,8 @@ describe('QuotationInquiryComponent', () => {
         { provide: MenuService, useValue: mockMenuService },
         { provide: Router, useValue: mockRouter },
         { provide: NgxSpinnerService, useValue: mockSpinnerService },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef }
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: Logger, useValue: mockLogger }
       ]
     }).compileComponents();
 
@@ -88,6 +100,9 @@ describe('QuotationInquiryComponent', () => {
 
     // Mock translation service methods if needed
     jest.spyOn(translateService, 'instant').mockImplementation((key: string) => key);
+
+    jest.clearAllMocks(); // Clear previous calls
+
 
     component = fixture.componentInstance;
   });
@@ -125,6 +140,7 @@ describe('QuotationInquiryComponent', () => {
       expect(component.selectedStatus).toBeNull();
       expect(component.gisQuotationList).toEqual([]);
     });
+
   });
 
 
@@ -259,6 +275,20 @@ describe('QuotationInquiryComponent', () => {
       // Verify that fetchGISQuotations was called
       expect(fetchSpy).toHaveBeenCalled();
     });
+
+    it('should clear date filters correctly', () => {
+      component.selectedDateFrom = '2023-01-01';
+      component.selectedDateTo = '2023-12-31';
+      component.fromDate = new Date('2023-01-01');
+      component.toDate = new Date('2023-12-31');
+
+      component.clearDateFilters();
+
+      expect(component.selectedDateFrom).toBeNull();
+      expect(component.selectedDateTo).toBeNull();
+      expect(component.fromDate).toBeNull();
+      expect(component.toDate).toBeNull();
+    });
   });
 
   describe('Invalid Date Input Handling', () => {
@@ -302,6 +332,19 @@ describe('QuotationInquiryComponent', () => {
       expect(component.productCode).toBeNull();
       expect(fetchSpy).toHaveBeenCalled();
     });
+
+    it('should handle empty response from getAllProducts', () => {
+      mockProductService.getAllProducts.mockReturnValue(of([]));
+      component.loadAllproducts();
+      expect(component.productList).toEqual([]);
+    });
+
+    it('should transform product descriptions correctly', () => {
+      const mockProducts = [{ code: 1, description: 'test product' }];
+      mockProductService.getAllProducts.mockReturnValue(of(mockProducts));
+      component.loadAllproducts();
+      expect(component.ProductDescriptionArray).toEqual([{ code: 1, description: 'Test product' }]);
+    });
   });
 
   // Event Handling Tests
@@ -323,6 +366,18 @@ describe('QuotationInquiryComponent', () => {
       component.onStatusSelected(statusValue);
 
       expect(component.selectedStatus).toBe('Pending');
+    });
+
+    it('should handle empty input in onQuotationBlur', () => {
+      const event = { target: { value: '' } } as unknown as Event;
+      component.onQuotationBlur(event);
+      expect(component.quotationNumber).toBe('');
+    });
+
+    it('should handle valid input in onQuotationBlur', () => {
+      const event = { target: { value: 'Q123' } } as unknown as Event;
+      component.onQuotationBlur(event);
+      expect(component.quotationNumber).toBe('Q123');
     });
   });
 
@@ -351,4 +406,92 @@ describe('QuotationInquiryComponent', () => {
       expect(translatedText).toBeDefined();
     });
   });
+
+  describe('formatDate edge cases', () => {
+    it('should return an empty string for null input', () => {
+      expect(component.formatDate(null as any)).toBe('');
+    });
+
+    it('should return an empty string for undefined input', () => {
+      expect(component.formatDate(undefined as any)).toBe('');
+    });
+
+    it('should return an empty string for invalid date input', () => {
+      const invalidDate = new Date('invalid-date');
+      expect(isNaN(invalidDate.getTime()) ? '' : component.formatDate(invalidDate)).toBe('');
+    });
+  });
+
+  describe('onDateToInputChange', () => {
+    it('should update the toDate value correctly', () => {
+      const testDate = new Date('2023-06-15');
+      component.onDateToInputChange(testDate);
+
+      expect(component.toDate).toEqual(testDate);
+      expect(component.selectedDateTo).toBe('2023-06-15');
+    });
+  });
+
+  describe('setQuotationNumber edge cases', () => {
+    it('should not set session storage if values are null', () => {
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+
+      component.setQuotationNumber(null as any, null as any, null as any);
+
+      expect(setItemSpy).not.toHaveBeenCalled();
+      setItemSpy.mockRestore();
+    });
+
+    it('should not navigate if quotationNumber is empty', () => {
+      component.setQuotationNumber('', 456, 789);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Error handling in translations', () => {
+    it('should handle missing translation key gracefully', () => {
+      jest.spyOn(translateService, 'instant').mockImplementation(() => null);
+      const result = translateService.instant('non.existent.key');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('ngOnInit lifecycle hook', () => {
+    it('should call fetchGISQuotations on initialization', () => {
+      const fetchSpy = jest.spyOn(component, 'fetchGISQuotations');
+      component.ngOnInit();
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+
+    it('should handle invalid sidebarMenu link in dynamicSideBarMenu', () => {
+      // Mock console.warn
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Arrange
+      const invalidSidebarMenu = { link: null, name: 'test' };
+
+      // Act
+      component.dynamicSideBarMenu(invalidSidebarMenu);
+
+      // Assert
+      expect(warnSpy).toHaveBeenCalledWith('Invalid or empty link in sidebar menu:', invalidSidebarMenu);
+
+      // Restore original implementation
+      warnSpy.mockRestore();
+    });
+
+
+    it('should navigate to the specified link if sidebarMenu.link is valid', () => {
+      const validSidebarMenu = { link: '/valid-link', name: 'test' };
+      component.dynamicSideBarMenu(validSidebarMenu);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/valid-link']);
+    });
+
+    it('should not navigate if sidebarMenu.link is empty', () => {
+      const emptyLinkSidebarMenu = { link: '', name: 'test' };
+      component.dynamicSideBarMenu(emptyLinkSidebarMenu);
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
 });

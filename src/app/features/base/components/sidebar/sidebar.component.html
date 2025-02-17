@@ -17,12 +17,12 @@
     </li>
 
     <ng-container *ngFor="let item of sidebarMainMenuList; let i = index">
-      <li (click)="clickURL(item?.link)">
+      <li>
         <button
-          class="btn btn-toggle align-items-center rounded collapsed"
-          data-bs-toggle="collapse"
-          [attr.data-bs-target]="'#' + item.nameSlug"
-          [attr.aria-expanded]="false"
+          class="btn btn-toggle align-items-center rounded dropdown-toggle"
+          [class.collapsed]="!isExpanded(item.nameSlug)"
+          (click)="toggleMenuItem(item)"
+          [attr.aria-expanded]="isExpanded(item.nameSlug)"
         >
           <span class="menu-title">
             <i
@@ -31,44 +31,57 @@
             ></i>
             {{ "base." + item.name | translate }}
           </span>
+          <i class="dropdown-arrow fa-solid fa-chevron-down"></i>
         </button>
-        <div class="collapse sub-title" [id]="item.nameSlug">
+        <div
+          class="collapse sidebar-collapse"
+          [class.show]="isExpanded(item.nameSlug)"
+          [id]="item.nameSlug"
+        >
           <ul
             *ngIf="item.menuItems?.length > 0"
             class="btn-toggle-nav list-unstyled"
           >
             <ng-container *ngFor="let menuItem of item.menuItems">
               <li>
-                <a
-                  *ngIf="!menuItem.subList"
-                  (click)="clickURL(menuItem.link)"
-                  class="link-dark rounded"
-                  style="font-size: 12px"
-                >
-                  {{ "base." + menuItem.name | translate }}
-                </a>
+                <div *ngIf="!menuItem.subList" class="menu-item-container">
+                  <a
+                    (click)="clickURL(menuItem.link)"
+                    class="menu-link"
+                    [class.active]="isCurrentRoute(menuItem.link)"
+                  >
+                    {{ "base." + menuItem.name | translate }}
+                  </a>
+                </div>
 
                 <!-- Submenu for three-level depth -->
                 <ng-container *ngIf="menuItem.subList?.length > 0">
                   <button
-                    class="btn btn-toggle align-items-center rounded collapsed"
-                    data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#' + menuItem.nameSlug"
-                    [attr.aria-expanded]="false"
+                    class="btn btn-toggle align-items-center rounded dropdown-toggle"
+                    [class.collapsed]="!isExpanded(menuItem.nameSlug)"
+                    (click)="toggleMenuItem(menuItem)"
+                    [attr.aria-expanded]="isExpanded(menuItem.nameSlug)"
                     style="font-size: 12px"
                   >
                     {{ "base." + menuItem.name | translate }}
+                    <i class="dropdown-arrow fa-solid fa-chevron-down"></i>
                   </button>
-                  <div class="collapse sub-title" [id]="menuItem.nameSlug">
+                  <div
+                    class="collapse"
+                    [class.show]="isExpanded(menuItem.nameSlug)"
+                    [id]="menuItem.nameSlug"
+                  >
                     <ul class="btn-toggle-nav list-unstyled">
                       <li *ngFor="let subMenuItem of menuItem.subList">
-                        <a
-                          (click)="clickURL(subMenuItem.link)"
-                          class="link-dark rounded"
-                          style="font-size: 12px"
-                        >
-                          {{ "base." + subMenuItem.name | translate }}
-                        </a>
+                        <div class="menu-item-container">
+                          <a
+                            (click)="clickURL(subMenuItem.link)"
+                            class="menu-link"
+                            [class.active]="isCurrentRoute(subMenuItem.link)"
+                          >
+                            {{ "base." + subMenuItem.name | translate }}
+                          </a>
+                        </div>
                       </li>
                     </ul>
                   </div>

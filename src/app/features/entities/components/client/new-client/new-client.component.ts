@@ -792,7 +792,8 @@ export class NewClientComponent implements OnInit {
         .subscribe((clientData:any) => {
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
-          this.onClickSaveClient.emit();
+          this.onClickSaveClient.emit(clientData);
+          log.debug("client data", clientData);
           this.clientRegistrationForm.reset();
           // this.clients = clientData;
           log.debug("Timestamp:", this.timeStamp)

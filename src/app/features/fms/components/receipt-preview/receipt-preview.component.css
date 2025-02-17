@@ -1,0 +1,19 @@
+.btn-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 5px;
+}
+/* .btn-back{
+    display:flex;
+    align-items: flex-start;
+    } */
+.btn-back {
+  margin-top: 1px;
+  text-decoration: underline;
+  background: transparent;
+  align-items: flex-start;
+}
+.btn-next {
+  justify-content: flex-end;
+}

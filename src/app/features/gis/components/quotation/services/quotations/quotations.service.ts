@@ -1,28 +1,22 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../../../../core/config/app-config-service';
+import { APP_CONFIG, AppConfigService } from '../../../../../../core/config/app-config-service';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
-import {
-  PremiumComputationRequest,
-  quotationDTO,
-  quotationRisk,
-  RegexPattern,
-  riskSection,
-  scheduleDetails,
-  Sources
-} from '../../data/quotationsDTO';
+import { QuotationDTO, QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
+import { Clause, CreateLimitsOfLiability, EditRisk, PremiumComputationRequest, premiumPayloadData, quotationDTO, QuotationPayload, quotationRisk, RegexPattern, riskSection, scheduleDetails, Sources } from '../../data/quotationsDTO';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
+import { environment } from '../../../../../../../environments/environment';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { riskClauses } from '../../../setups/data/gisDTO';
-import { SESSION_KEY } from '../../../../../lms/util/session_storage_enum';
-import { StringManipulation } from '../../../../../lms/util/string_manipulation';
+import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../../environments/api_service_config';
 import { ApiService } from '../../../../../../shared/services/api/api.service';
 import { ExternalClaimExp } from '../../../policy/data/policy-dto';
-import {ClientDTO} from "../../../../../entities/data/ClientDTO";
-import {UtilService} from "../../../../../../shared/services";
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { UtilService } from '../../../../../../shared/services/util/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -100,65 +94,6 @@ export class QuotationsService {
     return this.api.POST<any>(`v2/quotation-sources`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
-  premiumComputationEngine(payload: PremiumComputationRequest): Observable<any> {
-    return this.api.POST<any[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION,);
-
-    console.log("Premium Payload after", payload)
-
-  }
-
-  getFormFields(shortDescription: any): Observable<any> {
-
-    return this.api.GET<any>(`api/v1/forms?shortDescription=${shortDescription}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
-      retry(1),
-      catchError(this.errorHandl)
-    )
-  }
-
-  searchClients(
-    columnName: string = null,
-    columnValue: string = null,
-    page: number,
-    size: number = 5,
-    name: string,
-    idNumber: string = null,
-  ): Observable<Pagination<ClientDTO>> {
-    const params = new HttpParams()
-      .set('columnName', `${columnName}`)
-      .set('columnValue', `${columnValue}`)
-      .set('page', `${page}`)
-      .set('size', `${size}`)
-      .set('name', `${name}`)
-      .set('idNumber', `${idNumber}`);
-
-    /*if (organizationId !== undefined && organizationId !== null) {
-      params['organizationId'] = organizationId.toString();
-    }*/
-
-    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-
-    return this.api.GET<Pagination<ClientDTO>>(
-      `clients`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
-      paramObject
-    );
-  }
-
-  getTaxes(
-    productCode: number,
-    subClassCode: number,
-  ):Observable<any> {
-    // Create an object to hold parameters only if they are provided
-    const paramsObj: { [param: string]: string } = {};
-    // Add the mandatory parameter
-    paramsObj['productCode'] = productCode.toString();
-    paramsObj['subClassCode'] = subClassCode.toString();
-
-    const params = new HttpParams({ fromObject: paramsObj });
-
-    return this.api.GET<any>(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-  }
-
 
   /**
    * Deleted quotation sources using an HTTP DELETE request.
@@ -187,7 +122,7 @@ export class QuotationsService {
     */
   createQuotation(data: quotationDTO, user) {
     console.log("Data", JSON.stringify(data))
-    return this.api.POST(`v2/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   /**
    * Retrieves quotations based on specified parameters using an HTTP GET request.
@@ -207,11 +142,11 @@ export class QuotationsService {
    * @param {quotationRisk[]} data - The data representing the quotation risk.
    * @return {Observable<any>} - An observable of the response containing the created quotation risk data.
    */
-  createQuotationRisk(quotationCode, data: quotationRisk[]) {
-    console.log(JSON.stringify(data), "Data from the service")
-    return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  // createQuotationRisk(quotationCode, data: quotationRisk[]) {
+  //   console.log(JSON.stringify(data), "Data from the service")
+  //   return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
-  }
+  // }
   /**
   * Retrieves risk sections for a given quotation risk code using an HTTP GET request.
   * @method getRiskSection
@@ -234,6 +169,7 @@ export class QuotationsService {
     return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
+
   /**
  * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
  * @method updateRiskSection
@@ -569,5 +505,176 @@ export class QuotationsService {
     );
   }
 
+  processQuotation(data: QuotationPayload) {
+    return this.api.POST(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+  }
+  getFormFields(shortDescription: any): Observable<any> {
+
+    return this.api.GET<any>(`api/v1/forms?shortDescription=${shortDescription}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  premiumComputationEngine(payload: PremiumComputationRequest): Observable<any> {
+    return this.api.POST<any[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION,);
+
+    console.log("Premium Payload after", payload)
+
+  }
+  searchClients(
+    columnName: string = null,
+    columnValue: string = null,
+    page: number,
+    size: number = 5,
+    name: string,
+    idNumber: string = null,
+  ): Observable<Pagination<ClientDTO>> {
+    const params = new HttpParams()
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`)
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('idNumber', `${idNumber}`);
+
+    /*if (organizationId !== undefined && organizationId !== null) {
+      params['organizationId'] = organizationId.toString();
+    }*/
+
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<Pagination<ClientDTO>>(
+      `clients`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+  getTaxes(
+    productCode: number,
+    subClassCode: number,
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['productCode'] = productCode.toString();
+    paramsObj['subClassCode'] = subClassCode.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+  getClauses(
+    covertypeCode: number,
+    subclassCode: number,): Observable<Clause[]> {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['coverTypeCode'] = covertypeCode?.toString();
+    paramsObj['subclassCode'] = subclassCode?.toString();
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<Clause[]>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+
+  }
+
+  getExcesses(
+    subclassCode: number,
+    scheduleType: string = 'E'
+  ) {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    // Add the mandatory parameter
+    paramsObj['subclassCode'] = subclassCode?.toString();
+    paramsObj['scheduleType'] = scheduleType;
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  addLimitsOfLiability(data: CreateLimitsOfLiability[]) {
+    return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+  }
+
+  addClauses(
+    clauseCodes: number[], // Accept an array of clause codes
+    productCode: number,
+    quotCode: number,
+    riskCode: number
+  ) {
+    // Construct the payload
+    const payload = {
+      clauseCodes, // Send all clause codes in a single object
+    };
+
+    // Construct query parameters for the other mandatory parameters
+    const params = new HttpParams()
+      .set('productCode', productCode.toString())
+      .set('quotCode', quotCode.toString())
+      .set('riskCode', riskCode.toString());
+
+    // Call the API with the payload and query parameters
+    return this.api.POST(`v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  updateQuotationRisk(data: EditRisk) {
+    return this.api.PUT(`v2/quotationRisks`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  deleteRisk(quotRiskCode: number,) {
+    return this.api.DELETE(`v2/quotationRisks?quotRiskCode=${quotRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  getClientQuotations(quotationNo) {
+    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  createQuotationDetails(quotationCode: any, data: premiumPayloadData) {
+
+    return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  }
+  createQuotationRisk(quotationCode, data: quotationRisk[]) {
+    // console.log(JSON.stringify(data),"Data from the service")
+    return this.api.POST(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+
+
+  getUserOrgId(userId:number){
+    return this.api.GET(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
+  }
+  getExchangeRates(quotCurrencyId:number ,orgId :number){
+    return this.api.GET(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+  convertQuoteToPolicy(
+    quotCode: number,
+
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  convertToNormalQuote(
+    quotCode: number,
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
+
+    // Add mandatory parameters with default values
+    paramsObj['quotCode'] = quotCode.toString();
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  updateQuotationDetails(user:string,quotationCode:number,quotationNumber:string,data:quotationDTO){
+    return this.api.PUT(`v1/quotation?user=${user}&quotationCode=${quotationCode}&quotationNumber=${quotationNumber}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+}
 }
 

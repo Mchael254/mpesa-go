@@ -14,6 +14,8 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {TableModule} from "primeng/table";
 import {TranslateModule} from "@ngx-translate/core";
 import {SystemReportModule, SystemReportSubModule, SystemsDto} from "../../../../../shared/data/common/systemsDto";
+import {ReportsService} from "../../../../../shared/services/reports/reports.service";
+import {SystemReportDto} from "../../../../../shared/data/common/reports-dto";
 
 export class MockGlobalMessageService {
   displayErrorMessage = jest.fn((summary, detail) => {
@@ -38,6 +40,13 @@ export class MockSystemsService {
   createSystemReportSubModule = jest.fn().mockReturnValue(of());
   updateSystemReportSubModule = jest.fn().mockReturnValue(of());
 }
+
+export class MockReportsService {
+  getAssignedOrUnassignedReports = jest.fn().mockReturnValue(of(mockSystemReport));
+  assignOrUnassignReport = jest.fn().mockReturnValue(of(mockSystemReport));
+  updateReportDetails = jest.fn().mockReturnValue(of());
+}
+
 const mockSystem: SystemsDto[] = [
   {
     "id": 1,
@@ -65,12 +74,50 @@ const mockReportSubModule: SystemReportSubModule[] = [
   }
 ];
 
+const mockSystemReport: SystemReportDto[] = [
+  {
+    "code": 1,
+    "systemCode": 15,
+    "name": "Report name",
+    "description": "Report description",
+    "datafile": "",
+    "applicationLevel": "SYS",
+    "status": "",
+    "rsmCode": 20,
+    "order": 3,
+    "printSrvAppl": "",
+    "printSrvcAppl": "",
+    "type": "",
+    "visible": "",
+    "shortDescription": "",
+    "update": ""
+  },
+  {
+    "code": 2,
+    "systemCode": 15,
+    "name": "Report name two",
+    "description": "Report description two",
+    "datafile": "",
+    "applicationLevel": "SYS",
+    "status": "",
+    "rsmCode": 20,
+    "order": 3,
+    "printSrvAppl": "",
+    "printSrvcAppl": "",
+    "type": "",
+    "visible": "",
+    "shortDescription": "",
+    "update": ""
+  }
+];
+
 describe('ReportDefinitionComponent', () => {
   let component: ReportDefinitionComponent;
   let fixture: ComponentFixture<ReportDefinitionComponent>;
   let systemsServiceStub: SystemsService;
   let messageServiceStub: GlobalMessagingService;
   let mandatoryFieldsServiceStub: MandatoryFieldsService;
+  let reportsServiceStub: ReportsService;
   jest.mock('ng2-pdf-viewer', () => ({
     PdfViewerComponent: jest.fn(),
   }));
@@ -91,7 +138,8 @@ describe('ReportDefinitionComponent', () => {
       providers: [
         { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
         { provide: MandatoryFieldsService, useClass: MockMandatoryService },
-        { provide: SystemsService, useClass: MockSystemsService }
+        { provide: SystemsService, useClass: MockSystemsService },
+        { provide: ReportsService, useClass: MockReportsService },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });
@@ -100,6 +148,7 @@ describe('ReportDefinitionComponent', () => {
     messageServiceStub = TestBed.inject(GlobalMessagingService);
     mandatoryFieldsServiceStub = TestBed.inject(MandatoryFieldsService);
     systemsServiceStub = TestBed.inject(SystemsService);
+    reportsServiceStub = TestBed.inject(ReportsService);
     fixture.detectChanges();
   });
 
@@ -274,6 +323,18 @@ describe('ReportDefinitionComponent', () => {
     expect(component.selectedModule).toEqual(mockReportModule[0]);
     expect(getAllSystemReportSubModulesSpy).toHaveBeenCalledWith(mockReportModule[0].id);
   });
+
+  test('should set selectedSubModule and fetch all and assigned reports', () => {
+    const fetchAllUnAssignedReportsSpy = jest.spyOn(component, 'fetchAllUnAssignedReports');
+    const fetchAssignedReportsSpy = jest.spyOn(component, 'fetchAssignedReports');
+
+    component.onSelectSubModule(mockReportSubModule[0]);
+
+    expect(component.selectedSubModule).toEqual(mockReportSubModule[0]);
+    expect(fetchAllUnAssignedReportsSpy).toHaveBeenCalledWith(null);
+    expect(fetchAssignedReportsSpy).toHaveBeenCalledWith(mockReportSubModule[0].id);
+  });
+
   test('should toggle dropdown visibility', () => {
     const mockReport = { id: 1, name: 'Test Report' };
     const anotherReport = { id: 2, name: 'Another Report' };
@@ -287,5 +348,104 @@ describe('ReportDefinitionComponent', () => {
 
     component.toggleDropdown(anotherReport);
     expect(component.showInputForReport).toEqual(anotherReport);
+  });
+
+  test('should fetch unassigned reports data', () => {
+    jest.spyOn(reportsServiceStub,'getAssignedOrUnassignedReports');
+    const submoduleId = mockReportSubModule[0].id;
+    component.fetchAllUnAssignedReports(submoduleId);
+    expect(reportsServiceStub.getAssignedOrUnassignedReports).toHaveBeenCalled();
+    expect(component.allReportsData).toEqual(mockSystemReport);
+  });
+
+  test('should fetch assigned reports data', () => {
+    jest.spyOn(reportsServiceStub,'getAssignedOrUnassignedReports');
+    const submoduleId = mockReportSubModule[0].id;
+    component.fetchAssignedReports(submoduleId);
+    expect(reportsServiceStub.getAssignedOrUnassignedReports).toHaveBeenCalled();
+    expect(component.assignedReportsData).toEqual(mockSystemReport);
+  });
+
+  test('should assign reports when status is "A"', async () => {
+    component.selectedReport = mockSystemReport;
+    component.selectedSubModule = mockReportSubModule[0];
+    jest.spyOn(reportsServiceStub,'assignOrUnassignReport');
+
+    await component.assignOrUnassignReport('A');
+
+    expect(reportsServiceStub.assignOrUnassignReport).toHaveBeenCalledWith({
+      code: [1, 2],
+      subModuleCode: 1,
+    });
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Successfully assigned reports to sub module');
+    expect(component.selectedReport).toEqual([]);
+  });
+
+  test('should unassign reports when status is "U"', async () => {
+    component.selectedAssignedReport = mockSystemReport;
+    jest.spyOn(reportsServiceStub,'assignOrUnassignReport');
+
+    await component.assignOrUnassignReport('U');
+
+    expect(reportsServiceStub.assignOrUnassignReport).toHaveBeenCalledWith({
+      code: [1, 2],
+      subModuleCode: null,
+    });
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Successfully unassigned report(s) from sub module');
+    expect(component.selectedAssignedReport).toEqual([]);
+  });
+
+  it('should update report description correctly', () => {
+    const mockEvent = {
+      target: {
+        value: 'New report description'
+      }
+    } as unknown as Event;
+
+    const mockReport = { code: 'report1' };
+
+    component.updateReportDescription(mockEvent, mockReport);
+
+    expect(component.reportDescription).toBe('New report description');
+  });
+
+  test('should display error if no report is selected for unassigned reports', () => {
+    component.selectedReport = [];
+    component.saveReportDescription('U');
+
+    expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith('Error', 'No report is selected');
+  });
+
+  test('should display error if no report is selected for assigned reports', () => {
+    component.selectedAssignedReport = [];
+    component.saveReportDescription('A');
+
+    expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith('Error', 'No assigned report is selected');
+  });
+
+  it('should update report description for unassigned report', () => {
+    component.selectedReport = mockSystemReport;
+    component.reportDescription = 'Updated description';
+    jest.spyOn(reportsServiceStub,'updateReportDetails');
+
+    component.saveReportDescription('U');
+
+    expect(reportsServiceStub.updateReportDetails).toHaveBeenCalledWith(1, 'Updated description');
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Report description updated successfully');
+    expect(component.selectedReport).toEqual([]);
+    expect(component.reportDescription).toBe('');
+  });
+
+  it('should update report description for assigned report', () => {
+    component.selectedAssignedReport = mockSystemReport;
+    component.reportDescription = 'Another updated description';
+    jest.spyOn(reportsServiceStub,'updateReportDetails');
+
+    component.saveReportDescription('A');
+
+    expect(reportsServiceStub.updateReportDetails).toHaveBeenCalledWith(1, 'Another updated description');
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Report description updated successfully');
+    expect(component.selectedAssignedReport).toEqual([]);
+    expect(component.reportDescription).toBe('');
   });
 });
