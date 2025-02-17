@@ -993,12 +993,16 @@ export interface QuickQuoteData {
   clientName: string;
   clientEmail: string;
   clientPhoneNumber: string
-  carRegNumber: string;
+  carRegNo: string;
   product: any
   subClass: any;
   currency: any;
   effectiveDateFrom: Date
-  declaredValue: number
+  selfDeclaredValue: number
+  modeOfTransport: number
+  value: number;
+  riskId: string;
+  coverTo: Date
 
 }
 
