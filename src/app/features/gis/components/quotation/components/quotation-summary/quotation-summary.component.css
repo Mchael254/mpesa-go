@@ -1,461 +1,472 @@
-  .sub-title{
-    color: rgba(0, 0, 0, 0.25);
-    font-size: 15px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 18px;
-    border-right: 0px
-  }
-  .card-title{
-    color: #000;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 18px
+.sub-title {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+  border-right: 0px;
+}
+.card-title {
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
+.title {
+  color: #000;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
+#icon {
+  background-color: #e4e7eb;
+  border-radius: 100px;
+  border: none;
+}
+#icon i {
+  color: #00529b;
+}
+.label {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.content {
+  color: #000;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.cancel {
+  color: #00529b;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration-line: underline;
+}
 
-  }
-  .title{
-    color: #000;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 18px;
-  }
-  #icon{
-    background-color: #E4E7EB;
-    border-radius: 100px;
-    border: none;
-  }
-  #icon i{
-    color: #00529B;
-  }
-  .label{
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  }
-  .content{
-    color: #000;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-  }
-  .cancel{
-    color: #00529B;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    text-decoration-line: underline;
-  }
+li {
+  cursor: pointer;
+}
+#report-checks {
+  margin-right: 100px;
+}
+.nav-item > .active {
+  color: var(--primary-color);
+}
 
-  li{
-    cursor:pointer
-  }
-  #report-checks{
-    margin-right: 100px;
-  }
-  .nav-item > .active{
-    color:var(--primary-color);;
+#icon {
+  background-color: #e4e7eb;
+  border-radius: 100px;
+  border: none;
+}
+#icon i {
+  color: #00529b;
+}
+.fa-pencil {
+  color: #00529b;
+}
+.fa-trash-can {
+  color: #00529b;
+}
+#messageLabel {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+}
+.titleButton {
+  border-radius: 4px;
+  background: #e4e7eb;
+  color: #00529b;
+  border: 0px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-  }
+::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
+  border: 0px;
+  color: #00529b;
+  padding: 0.5rem;
+}
 
-  #icon{
-    background-color: #E4E7EB;
-    border-radius: 100px;
-    border: none;
-  }
-  #icon i{
-    color: #00529B;
-  }
-  .fa-pencil{
-    color:#00529B
-  }
-  .fa-trash-can{
-    color:#00529B
-  }
-  #messageLabel{
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-  }
-  .titleButton{
-    border-radius: 4px;
-    background: #E4E7EB;
-    color: #00529B;
-    border:0px;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 18px;
-  }
+::ng-deep .p-panelmenu .p-menuitem-text {
+  color: #00529b;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-  ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
-    border: 0px;
-    color:#00529B;
-    padding: 0.5rem;
-  }
+::ng-deep
+  .p-panelmenu
+  .p-panelmenu-header
+  .p-panelmenu-header-content
+  .p-panelmenu-header-action {
+  color: #00529b;
+  padding: 0.25rem;
+  font-weight: 700;
+}
+.point {
+  cursor: pointer;
+}
 
-  ::ng-deep .p-panelmenu .p-menuitem-text {
-    color: #00529B;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 18px;
-  }
+ul {
+  list-style-type: none;
+  cursor: pointer;
+}
+ul li a.active {
+  color: #00529b;
+}
+.browse-link {
+  color: #00529b;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
-  ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
-    color: #00529B;
-    padding: 0.25rem;
-    font-weight: 700;
-  }
-  .point{
-    cursor: pointer;
-  }
+.file-list {
+  margin-top: 20px;
+}
 
-  ul{
-    list-style-type: none;
-    cursor: pointer ;
-  }
-  ul li a.active {
-    color: #00529b;
-  }
-  .browse-link {
-    color: #00529b;
-    cursor: pointer;
-    text-decoration: underline;
-  }
+.file-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
-  .file-list {
-    margin-top: 20px;
-  }
+.file-name {
+  flex: 1;
+  margin-left: 10px;
+}
 
-  .file-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
+.file-actions {
+  margin-right: 47%;
+}
 
-  .file-name {
-    flex: 1;
-    margin-left: 10px;
-  }
+.file-actions i {
+  margin-left: 10px;
+  cursor: pointer;
+}
 
-  .file-actions {
-    margin-right: 47%;
-  }
+.external-claim-input {
+  height: 38px;
+  width: 100%;
+}
 
-  .file-actions i {
-    margin-left: 10px;
-    cursor: pointer;
-  }
+:host ::ng-deep .modal-lg {
+  max-width: 800px; /* Increased from default 500px */
+  width: 90%;
+}
 
-  .external-claim-input {
-    height: 38px;
-    width: 100%;
-  }
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+  height: 38px;
+}
 
-  :host ::ng-deep .modal-lg {
-    max-width: 800px;  /* Increased from default 500px */
-    width: 90%;
-  }
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  padding-top: 0.4rem;
+}
 
-  :host ::ng-deep .p-dropdown {
-    width: 100%;
-    height: 38px;
-  }
+:host ::ng-deep .p-dropdown-panel {
+  /* Make dropdown panel width smaller */
+  max-width: 300px !important; /* Adjust this value as needed */
+  width: auto !important;
+}
 
-  :host ::ng-deep .p-dropdown .p-dropdown-label {
-    padding-top: 0.4rem;
-  }
+:host ::ng-deep .p-dropdown-item {
+  /* Make option text smaller */
+  font-size: 0.875rem !important; /* Adjust this value as needed */
+  padding: 0.5rem 0.75rem !important; /* Optionally adjust padding for better spacing */
+}
 
-  :host ::ng-deep .p-dropdown-panel {
-    /* Make dropdown panel width smaller */
-    max-width: 300px !important; /* Adjust this value as needed */
-    width: auto !important;
-  }
+:host ::ng-deep .p-dropdown-filter {
+  /* Make search filter text smaller if needed */
+  font-size: 0.875rem !important;
+}
 
-  :host ::ng-deep .p-dropdown-item {
-    /* Make option text smaller */
-    font-size: 0.875rem !important; /* Adjust this value as needed */
-    padding: 0.5rem 0.75rem !important; /* Optionally adjust padding for better spacing */
-  }
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items {
+  padding: 0.25rem 0 !important; /* Reduce padding around the options list */
+}
 
-  :host ::ng-deep .p-dropdown-filter {
-    /* Make search filter text smaller if needed */
-    font-size: 0.875rem !important;
-  }
+/* If you also want to adjust the selected item text size in the dropdown */
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  font-size: 0.875rem !important;
+}
 
-  :host ::ng-deep .p-dropdown-panel .p-dropdown-items {
-    padding: 0.25rem 0 !important; /* Reduce padding around the options list */
-  }
+:host ::ng-deep .modal-body {
+  padding: 1rem 2rem;
+}
 
-  /* If you also want to adjust the selected item text size in the dropdown */
-  :host ::ng-deep .p-dropdown .p-dropdown-label {
-    font-size: 0.875rem !important;
-  }
+:host ::ng-deep .form-label {
+  white-space: nowrap;
+  text-align: left;
+}
 
-  :host ::ng-deep .modal-body {
-    padding: 1rem 2rem;
-  }
+:host ::ng-deep .form-control,
+:host ::ng-deep .form-select,
+:host ::ng-deep .p-dropdown {
+  margin-left: -0.3rem; /* Pull inputs slightly to the left */
+}
+.sub-title {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+  border-right: 0px;
+}
 
-  :host ::ng-deep .form-label {
-    white-space: nowrap;
-    text-align: left;
-  }
+.card-title {
+  color: #00529b;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-  :host ::ng-deep .form-control,
-  :host ::ng-deep .form-select,
-  :host ::ng-deep .p-dropdown {
-    margin-left: -0.3rem;  /* Pull inputs slightly to the left */
-  }
-    .sub-title {
-        color: rgba(0, 0, 0, 0.25);
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 18px;
-        border-right: 0px
-    }
+.title {
+  color: #000;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-    .card-title {
-        color: #00529B;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 18px
-    }
+#icon {
+  background-color: #e4e7eb;
+  border-radius: 100px;
+  border: none;
+}
 
-    .title {
-        color: #000;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 18px;
-    }
+#icon i {
+  color: #00529b;
+}
 
-    #icon {
-        background-color: #E4E7EB;
-        border-radius: 100px;
-        border: none;
-    }
+.label {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
 
-    #icon i {
-        color: #00529B;
-    }
+.content {
+  color: #000;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
 
-    .label {
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-    }
+.cancel {
+  color: #00529b;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration-line: underline;
+}
 
-    .content {
-        color: #000;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: normal;
-    }
+li {
+  cursor: pointer;
+}
 
-    .cancel {
-        color: #00529B;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: normal;
-        text-decoration-line: underline;
-    }
+#report-checks {
+  margin-right: 100px;
+}
 
-    li {
-        cursor: pointer
-    }
+.nav-item > .active {
+  color: #00529b;
+}
 
-    #report-checks {
-        margin-right: 100px;
-    }
+.nav-item > .nav-link {
+  font-size: 15px;
+}
 
-    .nav-item>.active {
-        color:  #00529B;
-        ;
-
-    }
-
-    .nav-item>.nav-link {
-        font-size: 15px;
-    }
-
-    /* ::ng-deep
+/* ::ng-deep
     .p-datatable .p-datatable-tbody{
         border:0px
     } */
 
-    #icon {
-        background-color: #E4E7EB;
-        border-radius: 100px;
-        border: none;
-    }
+#icon {
+  background-color: #e4e7eb;
+  border-radius: 100px;
+  border: none;
+}
 
-    #icon i {
-        color: #00529B;
-    }
+#icon i {
+  color: #00529b;
+}
 
-    .fa-pencil {
-        color: #00529B
-    }
+.fa-pencil {
+  color: #00529b;
+}
 
-    .fa-trash-can {
-        color: #00529B
-    }
+.fa-trash-can {
+  color: #00529b;
+}
 
-    #messageLabel {
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-    }
+#messageLabel {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+}
 
-    .titleButton {
-        border-radius: 4px;
-        background: #E4E7EB;
-        color: #00529B;
-        border: 0px;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 18px;
-    }
+.titleButton {
+  border-radius: 4px;
+  background: #e4e7eb;
+  color: #00529b;
+  border: 0px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-    ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
-        border: 0px;
-        color: #00529B;
-        padding: 0.5rem;
-    }
+::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
+  border: 0px;
+  color: #00529b;
+  padding: 0.5rem;
+}
 
-    ::ng-deep .p-panelmenu .p-menuitem-text {
+::ng-deep .p-panelmenu .p-menuitem-text {
+  color: #00529b;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 
-        color: #00529B;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 18px;
-    }
+::ng-deep
+  .p-panelmenu
+  .p-panelmenu-header
+  .p-panelmenu-header-content
+  .p-panelmenu-header-action {
+  color: #00529b;
+  padding: 0.25rem;
+  font-weight: 700;
+}
 
-    ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
-        color: #00529B;
-        padding: 0.25rem;
-        font-weight: 700;
-    }
+.point {
+  cursor: pointer;
+}
 
-    .point {
-        cursor: pointer;
-    }
+ul {
+  list-style-type: none;
+  cursor: pointer;
+}
 
-    ul {
-        list-style-type: none;
-        cursor: pointer;
-    }
+ul li a.active {
+  color: #00529b;
+}
 
-    ul li a.active {
-        color: #00529b;
-    }
+.browse-link {
+  color: #00529b;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
-    .browse-link {
-        color: #00529b;
-        cursor: pointer;
-        text-decoration: underline;
-    }
+.file-list {
+  margin-top: 20px;
+}
 
-    .file-list {
-        margin-top: 20px;
-    }
+.file-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
-    .file-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
+.file-name {
+  flex: 1;
+  margin-left: 10px;
+}
 
-    .file-name {
-        flex: 1;
-        margin-left: 10px;
-    }
+.file-actions {
+  margin-right: 47%;
+}
 
-    .file-actions {
-        margin-right: 47%;
-    }
+.file-actions i {
+  margin-left: 10px;
+  cursor: pointer;
+}
 
-    .file-actions i {
-        margin-left: 10px;
-        cursor: pointer;
-    }
+.card {
+  border: none;
+  border-radius: 5px;
+}
 
-    .card {
-        border: none;
-        border-radius: 5px;
-    }
+.card-body {
+  padding-left: 40px;
+  padding-right: 40px;
+}
 
-    .card-body {
-        padding-left: 40px;
-        padding-right: 40px;
-    }
+#navigationIcons {
+  margin-left: -10px;
+}
 
-    #navigationIcons {
-        margin-left: -10px
-    }
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding: 0.6rem 0.6rem;
+  /* text-align: left; */
+}
 
-    ::ng-deep .p-datatable .p-datatable-thead>tr>th {
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: normal;
-        padding: 0.6rem 0.6rem;
-        /* text-align: left; */
-    }
+.flexible-header {
+  white-space: nowrap;
+  width: auto;
+  text-align: left;
+}
 
-    .flexible-header {
-        white-space: nowrap;
-        width: auto;
-        text-align: left;
-    }
-
-    /* .ui-datatable th, .ui-datatable td {
+/* .ui-datatable th, .ui-datatable td {
         white-space: nowrap;
     } */
-    .ui-datatable th,
-    .ui-datatable td {
-        white-space: nowrap;
-    }
-   
-      .scrollable-list {
-        max-height: 100px;  /* Adjust the height as needed */
-        overflow-y: auto;   /* Enables vertical scrolling */
-        padding-left: 0px;
-        list-style: none;
-      }
-      
-      .scrollable-list li {
-        cursor: pointer;
-        padding: 4px;
-        border-bottom: 1px solid #ddd; /* Optional: Separates list items */
-        font-size: 13px;
-      }
-      
-      .scrollable-list li:hover {
-        background-color: #f0f0f0;
-      } 
-    
-      .subclass-title{
-        font-family: Roboto;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 16.8px;
-        text-align: left;
-        text-underline-position: from-font;
-        text-decoration-skip-ink: none;
-              }
-      
-      
+.ui-datatable th,
+.ui-datatable td {
+  white-space: nowrap;
+}
+
+.scrollable-list {
+  max-height: 100px; /* Adjust the height as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding-left: 0px;
+  list-style: none;
+}
+
+.scrollable-list li {
+  cursor: pointer;
+  padding: 4px;
+  border-bottom: 1px solid #ddd; /* Optional: Separates list items */
+  font-size: 13px;
+}
+
+.scrollable-list li:hover {
+  background-color: #f0f0f0;
+}
+
+.subclass-title {
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16.8px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+.selected-row {
+  background-color: #e0e0e0 !important; /* Light grey */
+}
+
+tr:hover {
+  background-color: #e0e0e0 !important; /* Same as selected color */
+  cursor: pointer;
+}
+

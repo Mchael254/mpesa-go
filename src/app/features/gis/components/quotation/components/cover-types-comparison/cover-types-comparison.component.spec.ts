@@ -108,7 +108,7 @@ const mockQuotationDetail: QuotationDetails = {
   expiryDate: '2025-02-12',
   no: 'Q123456',
   premium: 1000,
-  quotationProduct: [
+  quotationProducts: [
     {
       WEF: '2024-02-12',
       WET: '2025-02-12',
@@ -117,7 +117,7 @@ const mockQuotationDetail: QuotationDetails = {
       code: 789,
       commission: 10,
       premium: 500,
-      product: 987,
+      proCode: 987,
       productShortDescription: 'Product ABC',
       quotCode: 654,
       quotationNo: 'Q123456',
@@ -975,26 +975,26 @@ describe('CoverTypesComparisonComponent', () => {
   //   ];
   //   const mockRiskCode = 'RISK01';
   //   const mockResponse = { success: true };
-  
+
   //   // Mock services and methods
   //   component.passedSections = mockPassedSections;
   //   component.premiumList = mockTemporaryPremiumList;
   //   component.riskCode = mockRiskCode;
-  
+
   //   jest.spyOn(quotationService, 'createRiskSection').mockReturnValue(of(mockResponse));
   //   jest.spyOn(messageService, 'add');
   //   jest.spyOn(component.sectionDetailsForm, 'reset');
   //   jest.spyOn(component, 'computeQuotePremium');
-  
+
   //   // Control setInterval with Jest fake timers
   //   jest.useFakeTimers();
-  
+
   //   // Call the method
   //   component.onCreateRiskSection();
-  
+
   //   // Fast forward timers to trigger the interval
   //   jest.advanceTimersByTime(200);
-  
+
   //   // Expectations
   //   expect(quotationService.createRiskSection).toHaveBeenCalledWith(
   //     mockRiskCode,
@@ -1003,19 +1003,19 @@ describe('CoverTypesComparisonComponent', () => {
   //       expect.objectContaining({ sectionCode: '002', description: 'Premium B', premiumRate: 2.0 }),
   //     ])
   //   );
-  
+
   //   expect(messageService.add).toHaveBeenCalledWith({
   //     severity: 'success',
   //     summary: 'Success',
   //     detail: 'Section Created',
   //   });
-  
+
   //   expect(component.sectionDetailsForm.reset).toHaveBeenCalled();
   //   expect(component.computeQuotePremium).toHaveBeenCalled();
-  
+
   //   jest.useRealTimers(); // Restore timers
   // });
-  
+
   test('should load all currencies', () => {
     const mockCurrencyList = [
       { id: 'USD', name: 'US Dollar' /* add more properties as needed */ },
@@ -1058,7 +1058,7 @@ describe('CoverTypesComparisonComponent', () => {
       withEffectiveFromDate: component.premiumPayload?.risks?.[0]?.withEffectFrom,
       withEffectiveToDate: component.premiumPayload?.[0]?.withEffectTo
     };
-  
+
     const mockQuotationResponse = {
       _embedded: [
         {
@@ -1067,21 +1067,21 @@ describe('CoverTypesComparisonComponent', () => {
         }
       ]
     };
-  
+
     // Mocking the service call
     jest.spyOn(component.quotationService, 'createQuotation').mockReturnValue(of(mockQuotationResponse));
-  
+
     // Spying on the internal methods that should be called within createQuotation
     jest.spyOn(component, 'createQuotationRisk');
-  
+
     // Call the method to test
     component.createQuotation();
-  
+
     // Expectations for the state changes or actions triggered by the method
     expect(component.quotationData).toEqual(mockQuotationResponse);
     expect(component.quotationCode).toEqual(mockQuotationResponse._embedded[0].quotationCode);
     expect(component.quotationNo).toEqual(mockQuotationResponse._embedded[0].quotationNumber);
-    
+
     // Check if internal methods were called
     expect(component.createQuotationRisk).toHaveBeenCalled();
   });
@@ -1143,49 +1143,49 @@ describe('CoverTypesComparisonComponent', () => {
         }
       ]
     };
-  
+
     // Mocking the service call for getClientQuotations
     jest.spyOn(component.quotationService, 'getClientQuotations').mockReturnValue(of(mockQuotationDetails));
-  
+
     // Spying on the internal methods that should be called within loadClientQuotation
     jest.spyOn(component, 'addLimitsOfLiability');
     jest.spyOn(component, 'addClauses');
-  
+
     // Test Case 1: When quotationNo is set
     component.quotationNo = '123456';  // Define quotationNo
     component.passedNumber = '654321';  // Example passed number
-    
+
     component.loadClientQuotation();  // Call method to load data
-    
+
     // Expectation when quotationNo is set
     setTimeout(() => {
       // Check that selectedRisk is set correctly
       expect(component.selectedRisk).toEqual(mockQuotationDetails.riskInformation);
-      
+
       // Ensure quotationNo is used correctly
       expect(component.quotationNo).toEqual('123456');
       expect(component.taxInformation).toEqual(mockQuotationDetails.taxInformation);
-      
+
       // Ensure the internal methods are called
       expect(component.addLimitsOfLiability).toHaveBeenCalled();
       expect(component.addClauses).toHaveBeenCalled();  // Ensure addClauses is called when selectedRisk exists
     }, 0);  // Allow for async execution
-    
+
     // Test Case 2: When quotationNo is not set, using passedNumber
     component.quotationNo = null;  // Clear quotationNo to trigger else case
     component.passedNumber = '654321';  // Use passedNumber
-    
+
     component.loadClientQuotation();  // Call method to load data
-    
+
     // Expectation when quotationNo is not set
     setTimeout(() => {
       // Check that selectedRisk is set correctly
       expect(component.selectedRisk).toEqual(mockQuotationDetails.riskInformation);
-      
+
       // Ensure quotationNo is set to quotOriginalQuotNo when quotationNo is null
       expect(component.quotationNo).toEqual(mockQuotationDetails.quotOriginalQuotNo);
       expect(component.taxInformation).toEqual(mockQuotationDetails.taxInformation);
-      
+
       // Ensure the internal methods are called
       expect(component.addLimitsOfLiability).toHaveBeenCalled();
       expect(component.addClauses).toHaveBeenCalled();  // Ensure addClauses is called when selectedRisk exists
@@ -1194,7 +1194,7 @@ describe('CoverTypesComparisonComponent', () => {
   // test('createQuotationRisk should correctly handle form validation and populate the risk object', () => {
   //   // Create a new instance of FormBuilder for the test
   //   const fb = new FormBuilder();
-    
+
   //   // Mock the form and set the values
   //   component.riskDetailsForm = fb.group({
   //     binderCode: [202420207353, Validators.required],
@@ -1218,11 +1218,11 @@ describe('CoverTypesComparisonComponent', () => {
   //     value: [7890000, [Validators.required, Validators.min(1)]],
   //     coverTypeDescription: ['COMPREHENSIVE'],
   //   });
-  
+
   //   // Mock the necessary values
-  
+
   //   const mockSelectedCoverType = 302;
-  
+
   //   // Mock the service call and response
   //   const mockQuotationRiskResponse = {
   //     _embedded: [
@@ -1232,11 +1232,11 @@ describe('CoverTypesComparisonComponent', () => {
   //       }
   //     ]
   //   };
-  
+
   //   // Spying on the method createQuotationRisk
   //   jest.spyOn(component.quotationService, 'createQuotationRisk').mockReturnValue(of(mockQuotationRiskResponse));
   //   jest.spyOn(component, 'onCreateRiskSection'); // Spying on onCreateRiskSection
-  
+
   //   // Set values in component
   //   component.quotationCode = 123456;
   //   component.passedQuotationCode = 654321;
@@ -1247,16 +1247,16 @@ describe('CoverTypesComparisonComponent', () => {
   //   component.passedCoverTypeShortDes = "COMP";
   //   component.passedCovertypeDescription = "COMPREHENSIVE";
   //   component.passedClientDetails = { id: 98765 };
-  
+
   //   // Call createQuotationRisk
   //   component.createQuotationRisk();
-  
+
   //   // Validate if the correct defaultCode is set based on the condition (quotationCode is set)
   //   expect(component.quotationCode).toBe(123456);
   //   expect(component.passedQuotationCode).toBe(654321);
   //   // expect(component.selectedRisk).toBeDefined();  // Ensure selectedRisk is populated
   //   expect(component.selectedRisk?.[0]?.subclassCoverTypeDto?.coverTypeCode).toBe(mockSelectedCoverType);
-  
+
   //   // Check the created risk object against the expected quotationRisk type
   //   const expectedRisk = {
   //     binderCode: 202420207353,
@@ -1280,96 +1280,96 @@ describe('CoverTypesComparisonComponent', () => {
   //     value: 7890000,
   //     coverTypeDescription: "COMPREHENSIVE",
   //   };
-  
+
   //   // Assert that the risk object is populated as expected
   //   expect(component.riskDetailsForm.value).toEqual(expectedRisk);
-  
+
   //   // Ensure createQuotationRisk was called
   //   expect(component.quotationService.createQuotationRisk).toHaveBeenCalledTimes(1);
   //   expect(component.quotationService.createQuotationRisk).toHaveBeenCalledWith(123456, [expectedRisk]);
-  
+
   //   // Check if the response is handled correctly
   //   expect(component.riskCode).toBe(12345);
   //   expect(component.quoteProductCode).toBe(67890);
-  
+
   //   // Ensure onCreateRiskSection is called after the API response
   //   expect(component.onCreateRiskSection).toHaveBeenCalled();
   // });
-  
+
   test('should store risk level premium in sessionStorage', () => {
     // Mock data to simulate the input
     const mockData = {
       level: 'high',
       premiumAmount: 5000
     };
-  
+
     // Spy on sessionStorage to ensure setItem is called
     const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
-  
+
     // Mock sharedService if needed (currently commented in your method)
     // jest.spyOn(sharedService, 'setPremiumResponse').mockImplementation(() => {});
-  
+
     // Call the method
     component.selectedRiskLevelPremium(mockData);
-  
+
     // Check if sessionStorage.setItem was called with correct parameters
     expect(setItemSpy).toHaveBeenCalledWith('riskLevelPremium', JSON.stringify(mockData));
-  
+
     // If needed, check if the sharedService method was called
     // expect(sharedService.setPremiumResponse).toHaveBeenCalledWith(mockData);
-  
+
     // Clean up spies
     setItemSpy.mockRestore();
   });
-  
+
   // test('should handle the cover selection and session storage', () => {
   //   // Mock the data for the method
   //   const mockPassedNumber = '12345';
   //   const mockQuotationNo = '67890';
-    
+
   //   // Mock necessary flags and properties
   //   const isAddededBenefitsCalled = true;
   //   const isEditRisk = false;
   //   const isAddRisk = false;
-    
+
   //   // Mock the sessionStorage methods
   //   const setItemSpy = jest.spyOn(sessionStorage, 'setItem');
   //   const removeItemSpy = jest.spyOn(sessionStorage, 'removeItem');
-  
+
   //   // Mock the router navigate method
   //   const navigateSpy = jest.spyOn(Router.prototype, 'navigate');
-  
-    
-    
+
+
+
   //   // Set component properties
   //   component.passedNumber = mockPassedNumber;
   //   component.quotationNo = mockQuotationNo;
   //   component.isAddededBenefitsCalled = isAddededBenefitsCalled;
   //   component.isEditRisk = isEditRisk;
   //   component.isAddRisk = isAddRisk;
-  
+
   //   // Call the method
   //   component.selectCoverNew();
-  
+
   //   // Expectations for sessionStorage.setItem
   //   expect(setItemSpy).toHaveBeenCalledWith('quotationNumber', JSON.stringify(mockQuotationNo));
-    
+
   //   // Expectations for sessionStorage.removeItem
   //   if (isEditRisk) {
   //     expect(removeItemSpy).toHaveBeenCalledWith('isEditRisk');
   //   } else if (isAddRisk) {
   //     expect(removeItemSpy).toHaveBeenCalledWith('isAddRisk');
   //   }
-  
+
   //   // Expectations for navigating to policy summary
   //   expect(navigateSpy).toHaveBeenCalledWith(['/home/gis/quotation/quote-summary']);
-    
+
   //   // Clean up spies
   //   setItemSpy.mockRestore();
   //   removeItemSpy.mockRestore();
   //   navigateSpy.mockRestore();
   // });
-  
+
     test('should fetch clauses successfully and populate clauseList', () => {
       // Mock the response from getClauses with data matching the Clause interface
       const mockResponse = {
@@ -1378,34 +1378,34 @@ describe('CoverTypesComparisonComponent', () => {
           { code: 2, coverTypeCode: 102, subclassCode: 203, classShortDescription: 'Clause 2', heading: 'Heading 2', isMandatory: 'No' }
         ]
       };
-  
+
       const getClausesMock = jest.spyOn(component.quotationService, 'getClauses').mockReturnValue(of(mockResponse) as any);
-  
+
       // Spy on the log.debug method
       const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
-  
+
       // Spy on the global messaging service
       const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
-  
+
       // Set up the selectedRisk and selectedSubclassCode to trigger the method
       component.selectedRisk = { coverTypeCode: 101 };
       component.selectedSubclassCode = 202;
-  
+
       // Call the fetchClauses method
       component.fetchClauses();
-  
+
       // Check if getClauses was called with the correct arguments
       expect(getClausesMock).toHaveBeenCalledWith(101, 202);
-  
+
       // Check if clauseList was populated correctly
       expect(component.clauseList).toEqual(mockResponse._embedded);
-  
+
       // Check if log.debug was called with the correct arguments
       // expect(debugSpy).toHaveBeenCalledWith("Clause List ", mockResponse._embedded);
-  
+
       // Ensure no error message was displayed
       expect(displayErrorMessageSpy).not.toHaveBeenCalled();
-  
+
       // Restore the spies
       getClausesMock.mockRestore();
       debugSpy.mockRestore();
@@ -1414,16 +1414,16 @@ describe('CoverTypesComparisonComponent', () => {
     test('should handle error and display error message when fetch fails', () => {
       // Mock the error response from getClauses
       const getClausesMock = jest.spyOn(component.quotationService, 'getClauses').mockReturnValue(throwError('Error'));
-  
+
       // Spy on the global messaging service
       const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
-  
+
       // Call the fetchClauses method
       component.fetchClauses();
-  
+
       // Check if the error message is displayed
       expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch clauses. Try again later');
-  
+
       // Restore the spies
       getClausesMock.mockRestore();
       displayErrorMessageSpy.mockRestore();
@@ -1436,33 +1436,33 @@ describe('CoverTypesComparisonComponent', () => {
           { code: 2, narration: null, value: '200', subclassCode: 203, quotationValueCode: 302 }
         ]
       };
-  
+
       const getExcessesMock = jest.spyOn(component.quotationService, 'getExcesses').mockReturnValue(of(mockResponse));
-  
+
       // Spy on the log.debug method
       const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
-  
+
       // Spy on the global messaging service
       const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
-  
+
       // Set up the selectedSubclassCode to trigger the method
       component.selectedSubclassCode = 202;
-  
+
       // Call the fetchExcesses method
       component.fetchExcesses();
-  
+
       // Check if getExcesses was called with the correct argument
       expect(getExcessesMock).toHaveBeenCalledWith(202);
-  
+
       // Check if excessesList was populated correctly
       expect(component.excessesList).toEqual(mockResponse._embedded);
-  
+
       // Check if log.debug was called with the correct arguments
       // expect(debugSpy).toHaveBeenCalledWith("Excesses List ", mockResponse._embedded);
-  
+
       // Ensure no error message was displayed
       expect(displayErrorMessageSpy).not.toHaveBeenCalled();
-  
+
       // Restore the spies
       getExcessesMock.mockRestore();
       debugSpy.mockRestore();
@@ -1471,16 +1471,16 @@ describe('CoverTypesComparisonComponent', () => {
     test('should handle error and display error message when fetch fails', () => {
       // Mock the error response from getExcesses
       const getExcessesMock = jest.spyOn(component.quotationService, 'getExcesses').mockReturnValue(throwError('Error'));
-  
+
       // Spy on the global messaging service
       const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
-  
+
       // Call the fetchExcesses method
       component.fetchExcesses();
-  
+
       // Check if the error message is displayed
       expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch excesses. Try again later');
-  
+
       // Restore the spies
       getExcessesMock.mockRestore();
       displayErrorMessageSpy.mockRestore();
@@ -1505,60 +1505,60 @@ describe('CoverTypesComparisonComponent', () => {
           },
         ],
       };
-  
+
       const getLimitsOfLiabilityMock = jest
         .spyOn(component.quotationService, 'getLimitsOfLiability')
         .mockReturnValue(of(mockResponse));
-  
+
       // Spy on log.debug
       const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
-  
+
       // Spy on globalMessagingService
       const displayErrorMessageSpy = jest
         .spyOn(globalMessagingService, 'displayErrorMessage')
         .mockImplementation();
-  
+
       // Set up selectedSubclassCode
       component.selectedSubclassCode = 202;
-  
+
       // Call the fetchLimitsOfLiability method
       component.fetchLimitsOfLiability();
-  
+
       // Ensure getLimitsOfLiability was called with correct argument
       expect(getLimitsOfLiabilityMock).toHaveBeenCalledWith(202);
-  
+
       // Check if limitsOfLiabilityList is populated correctly
       expect(component.limitsOfLiabilityList).toEqual(mockResponse._embedded);
-  
+
       // Check if log.debug was called with the correct arguments
       // expect(debugSpy).toHaveBeenCalledWith('Limits of Liability List ', mockResponse._embedded);
-  
+
       // Ensure no error message was displayed
       expect(displayErrorMessageSpy).not.toHaveBeenCalled();
-  
+
       // Restore spies
       getLimitsOfLiabilityMock.mockRestore();
       debugSpy.mockRestore();
       displayErrorMessageSpy.mockRestore();
     });
-  
+
     test('should handle error and display error message when fetch fails', () => {
       // Mock error response from getLimitsOfLiability
-  
+
       const getLimitsOfLiabilityMock = jest.spyOn(component.quotationService, 'getLimitsOfLiability').mockReturnValue(throwError('Error'));
-  
+
       // Spy on globalMessagingService
       const displayErrorMessageSpy = jest.spyOn(globalMessagingService, 'displayErrorMessage').mockImplementation();
-  
+
       // Call the fetchLimitsOfLiability method
       component.fetchLimitsOfLiability();
-  
+
       // Check if error message is displayed
       expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Failed to fetch limits of liabilty. Try again later');
-  
+
       // Ensure limitsOfLiabilityList remains undefined or empty
       // expect(component.limitsOfLiabilityList).toBeUndefined();
-  
+
       // Restore spies
       getLimitsOfLiabilityMock.mockRestore();
       displayErrorMessageSpy.mockRestore();

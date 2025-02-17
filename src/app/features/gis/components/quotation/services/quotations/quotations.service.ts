@@ -80,7 +80,7 @@ export class QuotationsService {
  */
   getAllQuotationSources(): Observable<any> {
     let page = 0;
-    let size = 10;
+    let size = 100;
 
     return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
@@ -349,8 +349,7 @@ export class QuotationsService {
   }
   assignProductLimits(productCode) {
 
-    return this.api.POST(`v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL
-    )
+    return this.api.POST(`v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
   documentTypes(accountType) {
@@ -499,8 +498,7 @@ export class QuotationsService {
   ) {
     // Sends a GET request to fetch mergeable policies based on quotation and product code
     return this.api.GET(
-      `/v2/quotation-policy/mergeable?quotationCode=${quotationCode}&productCode=${productCode}`,
-      null,
+      `v2/quotation-policy/mergeable?quotationCode=${quotationCode}&productCode=${productCode}`,
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
@@ -675,6 +673,13 @@ export class QuotationsService {
   updateQuotationDetails(user:string,quotationCode:number,quotationNumber:string,data:quotationDTO){
     return this.api.PUT(`v1/quotation?user=${user}&quotationCode=${quotationCode}&quotationNumber=${quotationNumber}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
-}
+  }
+
+  getSimilarQuotes(
+    quotationProductCode: number
+  ) {
+
+    return this.api.GET(`v2/quotation/similar-quotes?quotationProductCode=${quotationProductCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
 }
 
