@@ -144,7 +144,7 @@ export class QuotationSummaryComponent {
   public showEmail = false;
   public showSms = false;
   public showInternalClaims = false;
-  public showExternalClaims = true;
+  public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
 
 
@@ -237,14 +237,14 @@ export class QuotationSummaryComponent {
     }
   }
 
+  // Method to show external claims
   external() {
     this.showExternalClaims = true;
     this.showInternalClaims = false;
-
   }
 
+  // Method to show internal claims
   internal() {
-
     this.showInternalClaims = true;
     this.showExternalClaims = false;
   }

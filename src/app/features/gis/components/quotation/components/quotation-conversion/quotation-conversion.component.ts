@@ -404,7 +404,29 @@ export class QuotationConversionComponent {
   mergeQuoteToPolicy() {
     log.debug("merge to policy button clicked");
 
+    const quotationProductCode = this.selectedQuotationProduct.code;
+    log.debug("quotation produvt code", quotationProductCode);
 
+    const batchNo = this.selectedPolicy.batchNumber;
+    log.debug("batch number", batchNo);
+
+    this.quotationsService
+      .mergeToPolicy(quotationProductCode, batchNo)
+      .subscribe({
+        next: (response: any) => {
+
+        log.debug("reposnse after merging to policy", response);
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Quotation merged to policy successfully');
+        this.closeModal();
+
+        },
+        error: (error) => {
+          log.debug("error when mergin to policy", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to merge to policy. Try again later');
+        }
+      }
+    );
   }
 
 

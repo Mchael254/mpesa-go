@@ -21,7 +21,7 @@
                             (blur)="onQuotationBlur($event)" />
                     </div>
                     <div class="col-sm-3 col-12 ">
-                      
+
                         <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
                             [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
                             (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()"
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="col-sm-3 col-12 ">
-                        
+
                         <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
                             [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
                             (onSelect)="onDateToInputChange($event)"
@@ -71,17 +71,17 @@
                         <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
                     </div>
 
-                    <div class="col-sm-3 col-12 ">
+                    <!-- <div class="col-sm-3 col-12 ">
                         <p-dropdown [options]="status" [(ngModel)]="selectedStatus" placeholder="Contract"
                             class="form-control-sm mb-1">
                         </p-dropdown>
 
-                    </div>
-                   
+                    </div> -->
+
                 </div>
                 <!-- <div class="row mb-4">
                     <div class="col-sm-3 col-12 ">
-                      
+
                         <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
                             [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date from'"
                             (onSelect)="onDateFromInputChange($event)" (onClear)="clearDateFilters()">
@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="col-sm-3 col-12 ">
-                        
+
                         <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat"
                             [showIcon]="true" [showButtonBar]="true" [placeholder]="'Date to'"
                             (onSelect)="onDateToInputChange($event)"
