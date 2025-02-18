@@ -447,13 +447,13 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td>{{data.quotationNo}}</td>
-                      <td>{{data.clientName}}</td>
-                      <td>{{data.coverFrom}}</td>
-                      <td>{{data.coverTo}}</td>
-                      <td>{{data.binder || "null"}}</td>
+                      <td>{{data.quotNo}}</td>
+                      <td>{{data.client}}</td>
+                      <td>{{data.quotCoverFrom}}</td>
+                      <td>{{data.quotCoverTo}}</td>
+                      <td>{{data.branchName || "null"}}</td>
                       <td>{{data.agentName}}</td>
-                      <td>{{data.quotationProducts[0].productName}}</td>
+                      <td>{{data.productDesc}}</td>
                     </tr>
                   </ng-template>
 
@@ -682,7 +682,7 @@
         </div>
       </div>
 
-      <!-- External Claims Experience -->
+      <!-- Claims Experience Section -->
       <div class="card mb-4">
         <div class="card-body">
           <div class="row mb-3">
@@ -719,7 +719,8 @@
               </div>
             </div>
           </div>
-          <div class="mb-4" *ngIf="showExternalClaims === true;">
+          <!-- Externsl Claims -->
+          <div class="mb-4" *ngIf="showExternalClaims">
             <p-table [value]="externalTable" [tableStyle]="{ 'min-width': '50rem' }">
               <ng-template pTemplate="header">
                 <tr>
@@ -749,17 +750,17 @@
             </p-table>
           </div>
 
-          <!-- internal-claims-experience -->
-          <div class="mb-4" *ngIf="showExternalClaims === false;">
+          <!-- Internal Claims -->
+          <div class="mb-4" *ngIf="showInternalClaims">
             <p-table [value]="internalTable" [tableStyle]="{ 'min-width': '50rem' }">
               <ng-template pTemplate="header">
                 <tr>
                   <th>Policy No</th>
                   <th>Claim No</th>
-                  <th>OST Reserve</th>
-                  <th>Total Reserve</th>
-                  <th>Recoveries</th>
-                  <th>Salvages</th>
+                  <th class="text-end">OST Reserve</th>
+                  <th class="text-end">Total Reserve</th>
+                  <th class="text-end">Recoveries</th>
+                  <th class="text-end">Salvages</th>
                   <th class="text-end">Total Payments</th>
                   <th class="text-end">Net Paid</th>
                 </tr>
@@ -769,10 +770,10 @@
                   (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
                   <td>{{internalClaim.client_policy_number}}</td>
                   <td>{{internalClaim.claim_number}}</td>
-                  <td>{{internalClaim.outstanding_reserve}}</td>
-                  <td>{{internalClaim.total_reserve}}</td>
-                  <td>{{internalClaim.recoveries}}</td>
-                  <td>{{internalClaim.salvages}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.outstanding_reserve}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.total_reserve}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.recoveries}}</td>
+                  <td appCommaFormat class="text-end">{{internalClaim.salvages}}</td>
                   <td appCommaFormat class="text-end">{{internalClaim.total_payments}}</td>
                   <td appCommaFormat class="text-end">{{internalClaim.net_paid}}</td>
                 </tr>

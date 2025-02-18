@@ -158,10 +158,10 @@ export class QuotationSourcesComponent {
   }
 
   sourceModalAction() {
-    if(!this.selectedSource) {
-      this.addSources();
-    } else {
+    if(this.selectedSource) {
       this.editQuotationSource();
+    } else {
+      this.addSources();
     }
   }
 
@@ -177,6 +177,7 @@ export class QuotationSourcesComponent {
           log.debug("Response after deleting an quotation source ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation source deleted successfully');
           this.fetchSources();
+          this.selectedSource = null;
 
         },
         error: (error) => {
