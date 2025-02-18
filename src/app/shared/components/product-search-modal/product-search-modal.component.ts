@@ -4,14 +4,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { tap } from 'rxjs';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { Pagination } from '../../data/common/pagination';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { Logger, untilDestroyed } from '../../shared.module';
-import { Products } from 'src/app/features/gis/components/setups/data/gisDTO';
-import { ProductsService } from 'src/app/features/gis/components/setups/services/products/products.service';
+import { Products } from '../../../features/gis/components/setups/data/gisDTO';
+import { ProductsService } from '../../../features/gis/components/setups/services/products/products.service';
 
 // const log = new Logger('ProductSearchModalComponent');
 
@@ -54,7 +52,6 @@ export class ProductSearchModalComponent {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
-    private clientService: ClientService,
     private spinner: NgxSpinnerService,
     public productService: ProductsService,
 

@@ -26,27 +26,37 @@ export interface quotationDTO {
 }
 export interface quotationRisk {
 
-  binderCode: number;
+  insuredCode: number;
+  location: string;
+  town: string;
+  ncdLevel: number;
+  // schedules: Record<string, unknown>;
   coverTypeCode: number;
+  addEdit: string;
+  quotationRevisionNumber: number;
+  code: number;
+  quotationProductCode: number;
+  quotationRiskNo: string;
+  quotationCode: number;
+  productCode: number;
+  propertyId: string;
+  value: number;
   coverTypeShortDescription: string;
+  premium: number;
+  subclassCode: number;
+  itemDesc: string;
+  binderCode: number;
   wef: string;
   wet: string;
-  dateRange: string;
+  commissionRate: number;
+  commissionAmount: number;
   prpCode: number;
-  isNoClaimDiscountApplicable: string;
-  itemDescription: string;
-  location: string;
-  noClaimDiscountLevel: string;
-  quotProCode: number;
-  propertyId: string;
-  itemDesc: string;
-  riskPremAmount: string;
-  quotationCode: string;
-  sclCode: string;
-  town: string;
-  value: number;
+  clientShortDescription: string;
+  annualPremium: number;
+  coverDays: number;
+  clientType: string;
+  prospectCode: number;
   coverTypeDescription: string;
-
 
 }
 export interface riskSection {
@@ -422,48 +432,44 @@ export interface Sources {
   description: string;
   applicableModule: string;
 }
-export interface PolicyData {
-  wefDate: string;
-  wetDate: string;
+export interface QuotationPayload {
+  quotationCode: number;
+  quotationNumber: string;
+  source: string;
+  user: string;
+  clientCode: number;
   productCode: number;
-  binderPolicy: string;
-  bindCode: number;
-  branchCode: number;
-  action: string;
   currencyCode: number;
   currencyRate: number;
   agentCode: number;
   agentShortDescription: string;
-  introducerCode: number;
-  internalComments: string;
-  source: string;
-  clientCode: number;
-  polPropHoldingCoPrpCode: number;
-  chequeRequisition: boolean;
-  divisionCode: number;
-  polSubAgnCode: number;
-  clientType: string;
-  quotPrsCode: number;
-  polMktrAgnCode: number;
-  comments: string;
   gisPolicyNumber: string;
-  polPipPfCode: number;
-  endorsementStatus: string;
-  polEnforceSfParam: string;
-  polCrDateNotified: string;
   multiUser: string;
   unitCode: number;
   locationCode: number;
+  wefDate: string; // ISO date format (YYYY-MM-DD)
+  wetDate: string; // ISO date format (YYYY-MM-DD)
+  bindCode: number;
+  binderPolicy: string;
+  divisionCode: number;
+  subAgentCode: number;
+  clientType: string;
+  prospectCode: number;
+  branchCode: number;
+  marketerAgentCode: number;
+  comments: string;
+  polPipPfCode: number;
+  endorsementStatus: string;
+  polEnforceSfParam: string;
+  creditDateNotified: string; // ISO date format (YYYY-MM-DD)
+  introducerCode: number;
+  internalComments: string;
+  polPropHoldingCoPrpCode: number;
+  chequeRequisition: boolean;
 }
 
-export interface QuotationPayload {
-  quotationCode: number;
-  quotationNo: string;
-  policyData: PolicyData[];
-  user: string;
-  quotStage: string;
-}
-export interface UserDetails {
+
+export interface UserDetail {
   id: number;
   name: string;
   username: string;
