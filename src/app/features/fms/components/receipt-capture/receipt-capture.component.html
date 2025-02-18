@@ -1,35 +1,28 @@
 <div class="container">
-  <!-- Breadcrumb -->
-  <!-- <div class="breadcrumb-custom">
-            Finance > CB-Receipting > Receipting > <span class="breadcrumb-text">{{'fms.receipting.capture_receipt' | translate}}</span>
-        </div> -->
-
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
     <form [formGroup]="receiptingDetailsForm">
-      <h2 class="form-title">
+      <h5 class="form-title">
         {{ "fms.receipting.capture_receipt" | translate }}
-      </h2>
+      </h5>
 
-      <div class="row g-3">
+      <div class="row">
         <div class="col-md-4">
           <label for="currency" class="form-label required">
             {{ "fms.receipting.currency" | translate }}
           </label>
-          <div class="dropdown-container">
-            <select
-              class="form-control"
-              id="currency"
-              formControlName="currency"
-              (change)="onCurrencyChanged($event)"
-            >
-              <option *ngFor="let currency of currencies" [value]="currency.id">
-                {{ currency?.symbol }}
-              </option>
-            </select>
-            <i class="pi pi-chevron-down dropdown-icon"></i>
-          </div>
+
+          <select
+            class="form-select"
+            id="currency"
+            formControlName="currency"
+            (change)="onCurrencyChanged($event)"
+          >
+            <option *ngFor="let currency of currencies" [value]="currency.id">
+              {{ currency?.symbol }}
+            </option>
+          </select>
 
           <!-- Display exchange rate if available -->
           <div *ngIf="exchangeRateText" class="exchange-rate-text mt-2">
@@ -72,36 +65,33 @@
           <label for="paymentMode" class="form-label required">{{
             "fms.receipting.payment_mode" | translate
           }}</label>
-          <div class="dropdown-container" (mouseleave)="onLeavePaymentMode()">
-            <!-- Only hides if no selection is made -->
-            <select
-              id="paymentMode"
-              class="form-control"
-              formControlName="paymentMode"
-              (change)="onPaymentModeSelected($event)"
-              (mouseover)="onHoverPaymentMode($event)"
+          <!-- <div class="dropdown-container" (mouseleave)="onLeavePaymentMode()"> -->
+          <!-- Only hides if no selection is made -->
+          <select
+            id="paymentMode"
+            class="form-select"
+            formControlName="paymentMode"
+            (change)="onPaymentModeSelected($event)"
+            (mouseover)="onHoverPaymentMode($event)"
+          >
+            <option
+              *ngFor="let paymentMode of paymentModes"
+              [value]="paymentMode.code"
             >
-              <option
-                *ngFor="let paymentMode of paymentModes"
-                [value]="paymentMode.code"
-              >
-                {{ paymentMode.code }}
-              </option>
-            </select>
-            <i class="pi pi-chevron-down dropdown-icon"></i>
+              {{ paymentMode.code }}
+            </option>
+          </select>
 
-            <!-- Hidden Dropdown for Cheque Type -->
-            <div
-              *ngIf="showChequeOptions"
-              class="cheque-options"
-              (mouseleave)="onLeaveChequeOptions()"
-            >
-              <div (click)="setChequeType('open_cheque')">
-                <span class="chequeTypeText">Normal Cheque</span>
-              </div>
-              <div (click)="setChequeType('post_dated_cheque')">
-                <span class="chequeTypeText">Pd Cheque</span>
-              </div>
+          <div
+            *ngIf="showChequeOptions"
+            class="cheque-options"
+            (mouseleave)="onLeaveChequeOptions()"
+          >
+            <div (click)="setChequeType('open_cheque')">
+              <span class="chequeTypeText">Normal Cheque</span>
+            </div>
+            <div (click)="setChequeType('post_dated_cheque')">
+              <span class="chequeTypeText">Pd Cheque</span>
             </div>
           </div>
         </div>
@@ -109,22 +99,22 @@
           <label for="bankAccount" class="form-label required"
             >{{ "fms.receipting.bank_account" | translate }}
           </label>
-          <div class="dropdown-container">
-            <select
-              id="bankAccount"
-              class="form-control"
-              formControlName="bankAccount"
-              (change)="onBank($event)"
-            >
-              <option *ngFor="let bank of bankAccounts" [value]="bank.code">
-                {{ bank.name }}
-              </option>
-            </select>
-            <i class="pi pi-chevron-down dropdown-icon"></i>
-          </div>
+
+          <select
+            id="bankAccount"
+            class="form-select"
+            formControlName="bankAccount"
+            (change)="onBank($event)"
+          >
+            <option *ngFor="let bank of bankAccounts" [value]="bank.code">
+              {{ bank.name }}
+            </option>
+          </select>
         </div>
-        <!-- Second Row -->
-        <!-- <div class="row g-3"> -->
+      </div>
+      <!-- Second Row -->
+
+      <div class="row">
         <div class="col-md-4">
           <label for="receiptingPoint" class="form-label">{{
             "fms.receipting.receipting_point" | translate
@@ -141,18 +131,16 @@
           <label for="drawersBank" class="form-label"
             >{{ "fms.receipting.drawers_bank" | translate }}
           </label>
-          <div class="dropdown-container">
-            <select
-              id="drawersBank"
-              class="form-control"
-              formControlName="drawersBank"
-            >
-              <option *ngFor="let bank of drawersBanks" [value]="bank.name">
-                {{ bank.name }}
-              </option>
-            </select>
-            <i class="pi pi-chevron-down dropdown-icon"></i>
-          </div>
+
+          <select
+            id="drawersBank"
+            class="form-select"
+            formControlName="drawersBank"
+          >
+            <option *ngFor="let bank of drawersBanks" [value]="bank.name">
+              {{ bank.name }}
+            </option>
+          </select>
         </div>
         <div class="col-md-4">
           <label for="amountIssued" class="form-label required">{{
@@ -166,9 +154,10 @@
             formControlName="amountIssued"
           />
         </div>
-        <!-- </div> -->
-        <!-- Third Row -->
-        <!-- <div class="row g-3"> -->
+      </div>
+
+      <!-- Third Row -->
+      <div class="row">
         <div class="col-md-4">
           <label for="receiptDate" class="form-label required">{{
             "fms.receipting.receipt_date" | translate
@@ -209,9 +198,11 @@
             formControlName="receivedFrom"
           />
         </div>
-        <!-- </div> -->
-        <!-- Fourth Row -->
-        <!-- <div class="row g-3"> -->
+      </div>
+      <!-- </div> -->
+      <!-- Fourth Row -->
+
+      <div class="row">
         <div class="col-md-4">
           <label for="manualRef" class="form-label">{{
             "fms.receipting.manual_ref" | translate
@@ -242,43 +233,32 @@
                       <input type="text" class="form-control" id="otherRef" formControlName="otherRef">
                        
                     </div> -->
-        <!-- </div> -->
+
         <!-- Fifth Row -->
-        <!-- <div class="row g-3"> -->
 
         <div class="col-md-4">
-          <div class="form-group position-relative">
-            <label for="narration" class="text-dark narration-label">
+          <div class="form-group">
+            <label for="narration" class="text-dark form-label w-100">
               {{ "fms.receipting.narration" | translate }}
               <span class="required"></span>
             </label>
-            <div class="d-flex">
-              <!-- Dropdown Menu -->
-              <div
-                class="dropdown-container me-1"
-                style="flex: 2; position: relative"
+            <div class="row">
+              <select
+                id="narrationDropdown"
+                class="form-select w-25"
+                (change)="onNarrationDropdownChange($event)"
               >
-                <select
-                  id="narrationDropdown"
-                  class="form-control narration-dropdown"
-                  (change)="onNarrationDropdownChange($event)"
+                <option value="" disabled selected hidden></option>
+                <option
+                  *ngFor="let narrate of narrations"
+                  [value]="narrate?.narration"
                 >
-                  <option value="" disabled selected hidden></option>
-                  <option
-                    *ngFor="let narrate of narrations"
-                    [value]="narrate?.narration"
-                  >
-                    {{ narrate?.narration }}
-                  </option>
-                </select>
-
-                <i class="pi pi-chevron-down dropdown-icon"></i>
-              </div>
-
-              <!-- Textarea for Narration -->
+                  {{ narrate?.narration }}
+                </option>
+              </select>
 
               <textarea
-                class="form-control narration-textarea"
+                class="form-control w-75"
                 rows="1"
                 style="flex: 7"
                 id="narrationTextarea"
@@ -289,42 +269,45 @@
             </div>
           </div>
         </div>
-
+      </div>
+      <div class="row">
         <div class="col-md-4">
           <div class="form-group">
             <label for="charges" class="form-label">{{
               "fms.receipting.charges" | translate
             }}</label
             ><br />
-            <div class="d-flex">
-              <div class="form-check">
-                <input
-                  class="form-check-input ms-1"
-                  type="radio"
-                  name="charges"
-                  id="chargesYes"
-                  value="yes"
-                  formControlName="charges"
-                  (change)="onChargesChange('yes')"
-                  (click)="showChargesModal()"
-                />
-                <label class="radio-label" for="chargesYes">{{
-                  "fms.receipting.yes" | translate
-                }}</label>
-              </div>
-              <div class="form-check">
-                <input
-                  class="form-check-input ms-1"
-                  type="radio"
-                  name="charges"
-                  id="chargesNo"
-                  value="no"
-                  formControlName="charges"
-                  (change)="onChargesChange('no')"
-                />
-                <label class="radio-label" for="chargesNo">{{
-                  "fms.receipting.no" | translate
-                }}</label>
+            <div class="m-3 me-5">
+              <div class="d-flex">
+                <div class="form-check">
+                  <input
+                    class="form-check-input ms-1"
+                    type="radio"
+                    name="charges"
+                    id="chargesYes"
+                    value="yes"
+                    formControlName="charges"
+                    (change)="onChargesChange('yes')"
+                    (click)="showChargesModal()"
+                  />
+                  <label class="radio-label" for="chargesYes">{{
+                    "fms.receipting.yes" | translate
+                  }}</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input ms-1"
+                    type="radio"
+                    name="charges"
+                    id="chargesNo"
+                    value="no"
+                    formControlName="charges"
+                    (change)="onChargesChange('no')"
+                  />
+                  <label class="radio-label" for="chargesNo">{{
+                    "fms.receipting.no" | translate
+                  }}</label>
+                </div>
               </div>
             </div>
           </div>
@@ -365,21 +348,19 @@
                   <!-- Charge Type -->
                   <div class="form-group mb-3">
                     <label for="chargeType">Type</label>
-                    <div class="dropdown-container">
-                      <select
-                        class="form-control"
-                        id="chargeType"
-                        formControlName="selectedChargeType"
+
+                    <select
+                      class="form-select"
+                      id="chargeType"
+                      formControlName="selectedChargeType"
+                    >
+                      <option
+                        *ngFor="let charge of charges"
+                        [value]="charge.name"
                       >
-                        <option
-                          *ngFor="let charge of charges"
-                          [value]="charge.name"
-                        >
-                          {{ charge.name }}
-                        </option>
-                      </select>
-                      <i class="pi pi-chevron-down dropdown-icon"></i>
-                    </div>
+                        {{ charge.name }}
+                      </option>
+                    </select>
                   </div>
 
                   <!-- Charge Amount -->
@@ -457,7 +438,7 @@
           </div>
         </div>
         <!-- Sixth Row -->
-        <!-- <div class="row g-3"> -->
+
         <div class="col-md-4">
           <label for="grossReceiptAmount" class="form-label">{{
             "fms.receipting.gross_receipt_amount" | translate
@@ -578,4 +559,3 @@
     </div>
   </div>
 </div>
-<!-- </div> -->

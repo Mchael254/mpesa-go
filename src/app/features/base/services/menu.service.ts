@@ -652,7 +652,7 @@ export class MenuService {
           {
             name: 'Receipts',
             nameSlug: 'receipting',
-            subList: [{ name: 'Receipting', link: '/home/fms/receipt' }],
+            subList: [{ name: 'Receipting', link: '/home/fms/receipt-capture' }],
           },
         ],
         collapsed: true,
