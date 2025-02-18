@@ -1,3 +1,5 @@
+import {ClientDTO} from "../../../../entities/data/ClientDTO";
+
 /**
  * Screen Code interface
  */
@@ -1004,6 +1006,7 @@ export interface QuickQuoteData {
   riskId: string;
   coverTo: Date
   existingClientSelected: boolean
+  selectedClient?: ClientDTO
 
 }
 
