@@ -3,14 +3,14 @@ import { Logger } from '../../services';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { Pagination } from '../../data/common/pagination';
 import { Router } from '@angular/router';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { untilDestroyed } from '../../shared.module';
 import { tap } from 'rxjs';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
+import { IntermediaryService } from '../../../features/entities/services/intermediary/intermediary.service';
 
 const log = new Logger('agentSearchComponent');
 

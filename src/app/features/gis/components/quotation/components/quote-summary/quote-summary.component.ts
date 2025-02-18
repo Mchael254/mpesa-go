@@ -10,7 +10,7 @@ import { AuthService } from '../../../../../../shared/services/auth.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuotationsService } from '../../../../services/quotations/quotations.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
@@ -197,7 +197,7 @@ export class QuoteSummaryComponent {
         this.getPremiumAmount()
       }
 
-      this.insuredCode = this.quotationDetails.quotPrpCode;
+      this.insuredCode = this.quotationDetails.clientCode;
       log.debug("Insured Code:", this.insuredCode)
 
       this.coverFrom = this.quotationDetails.coverFrom;
@@ -694,7 +694,8 @@ export class QuoteSummaryComponent {
   convertQuoteToPolicy(){
     log.debug("Quotation Details",this.quotationDetails)
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
-    log.debug("Quotation Code",this.quotationCode);
+    log.debug("Quotation Code",quotationCode);
+    log.debug("Quotation Details",this.quotationDetails);
 
     const conversionFlag = true;
     sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));

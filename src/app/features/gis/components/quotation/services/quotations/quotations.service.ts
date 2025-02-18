@@ -627,7 +627,7 @@ export class QuotationsService {
   getClientQuotations(quotationNo) {
     return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  createQuotationDetails(quotationCode: any, data: premiumPayloadData) {
+  updatePremium(quotationCode: any, data: premiumPayloadData) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
@@ -643,18 +643,34 @@ export class QuotationsService {
   getExchangeRates(quotCurrencyId:number ,orgId :number){
     return this.api.GET(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+  // convertQuoteToPolicy(
+  //   quotCode: number,
+    
+  // ) {
+  //   const paramsObj: { [param: string]: string | number } = {};
+
+  //   // Add mandatory parameters with default values
+  //   paramsObj['quotCode'] = quotCode.toString();
+
+  //   // Create HttpParams from the paramsObj
+  //   const params = new HttpParams({ fromObject: paramsObj });
+  //   return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  // }
   convertQuoteToPolicy(
     quotCode: number,
-
+    
   ) {
-    const paramsObj: { [param: string]: string | number } = {};
+  
+    // const paramsObj: { [param: string]: string | number } = {};
 
-    // Add mandatory parameters with default values
-    paramsObj['quotCode'] = quotCode.toString();
+    // // Add mandatory parameters with default values
+    // paramsObj['quotCode'] = quotCode.toString();
 
-    // Create HttpParams from the paramsObj
-    const params = new HttpParams({ fromObject: paramsObj });
-    return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    // // Create HttpParams from the paramsObj
+    // const params = new HttpParams({ fromObject: paramsObj });
+    // return this.api.POST(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.POST(`v2/quotation/convert-to-policy?quotCode=${quotCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL);
+
   }
 
   convertToNormalQuote(
@@ -681,5 +697,12 @@ export class QuotationsService {
 
     return this.api.GET(`v2/quotation/similar-quotes?quotationProductCode=${quotationProductCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
+
+updateQuotationStatus(quotationCode: number, status: string, reasonCancelled: string) {
+
+  return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+}
+
 }
 
