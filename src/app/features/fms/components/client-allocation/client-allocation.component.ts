@@ -26,6 +26,9 @@ import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { FmsSetupService } from '../../services/fms-setup.service';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
  * for receipts. It handles form inputs, allocation calculations, file uploads, and interactions
@@ -62,7 +65,7 @@ export class ClientAllocationComponent {
 
   //control flags
   receiptingDetailsForm: FormGroup;
-  defaultBranch: BranchDTO;
+  parameterStatus:string;
   // receiptingPointId:number;
   selectedBranchId: number;
   receiptingPointObject: ReceiptingPointsDTO;
@@ -96,9 +99,12 @@ export class ClientAllocationComponent {
   isAllocationPosted: boolean = false;
   fileUploaded: boolean = false;
   receiptResponse: any;
-  selectedBranch: number;
-  defaultBranchId: number;
+  defaultOrg: OrganizationDTO;
+  selectedOrg:OrganizationDTO;
+  selectedBranch: BranchDTO;
+  defaultBranch: BranchDTO;
   orgId: number;
+  receiptDefaultBranch:BranchDTO;
   branchReceiptNumber: number;
   receiptCode: string;
   // Existing properties...
@@ -149,7 +155,9 @@ export class ClientAllocationComponent {
     //private router:Router,
     private router: Router,
     private dmsService: DmsService,
-    private reportService: ReportsService
+    private reportService: ReportsService,
+    private sessionStorage:SessionStorageService,
+    private fmsSetupService:FmsSetupService
   ) {}
    /**
    * Angular lifecycle hook that initializes the component.
@@ -160,40 +168,70 @@ export class ClientAllocationComponent {
     this.loggedInUser = this.authService.getCurrentUser();
     const storedData = this.receiptDataService.getReceiptData();
     this.storedData = storedData;
+
+    //console.log('form data>',this.storedData);
+    // Retrieve organization from localStorage or receiptDataService
+  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
+  
+  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+
+   // Ensure only one organization is active at a time
+   if (this.selectedOrg) {
+    this.defaultOrg = null;
+  } else if (this.defaultOrg) {
+    this.selectedOrg = null;
+  }
+
+  
+
+    // Retrieve branch from localStorage or receiptDataService
+    let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
+    let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
+  
+    this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
+    this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
+  
+    // Ensure only one branch is active at a time
+    if (this.selectedBranch) {
+      this.defaultBranch = null;
+    } else if (this.defaultBranch) {
+      this.selectedBranch = null;
+    }
+  
+  
+   
+
     //     let globalUserId=localStorage.getItem('UserId');
     //     this.userId =  Number(globalUserId);
     // this.userId = globalUserId ? Number(globalUserId ) : null;
-    let receiptingPoint = localStorage.getItem('receiptingPoint');
+    let receiptingPoint = this.sessionStorage.getItem('receiptingPoint');
     this.receiptingPointObject = JSON.parse(receiptingPoint);
     this.transactions = this.receiptDataService.getTransactions();
     this.filteredTransactions = this.transactions;
     if (this.transactions) {
       this.allocation = true;
     }
-    const selectedBranchId = localStorage.getItem('selectedBranch');
-    this.selectedBranch = Number(selectedBranchId);
-    let defaultBranch = localStorage.getItem('defaultBranch');
-    this.defaultBranch = JSON.parse(defaultBranch);
-    let globalDefaultBranch = localStorage.getItem('defaultBranchId');
-    this.defaultBranchId = globalDefaultBranch
-      ? Number(globalDefaultBranch)
-      : null;
-    let globalSelectedBranch = localStorage.getItem('selectedBranch');
-    this.selectedBranch = globalSelectedBranch
-      ? Number(globalSelectedBranch)
-      : null;
-    let receiptCode = localStorage.getItem('receiptCode');
+   
+    
+    
+   
+    let receiptCode = this.sessionStorage.getItem('receiptCode');
     this.receiptCode = receiptCode;
     
-    let branchReceiptNumber = localStorage.getItem('branchReceiptNumber');
+    let branchReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
     this.branchReceiptNumber = Number(branchReceiptNumber);
  
-    let defaultCurrencyId = localStorage.getItem('defaultCurrencyId');
+    let defaultCurrencyId = this.sessionStorage.getItem('defaultCurrencyId');
     this.defaultCurrencyId = Number(defaultCurrencyId);
-    let globalOrgId = localStorage.getItem('OrgId');
-    this.orgId = globalOrgId ? Number(globalOrgId) : null;
-    let selectedBank = localStorage.getItem('selectedBank');
-    this.selectedBank = JSON.parse(selectedBank);
+   
+
+    
+    // let receiptDefaultBranch = this.sessionStorage.getItem('receiptDefaultBranch');
+    // this.receiptDefaultBranch = JSON.parse(receiptDefaultBranch);
+    // console.log('receiptBranchCode>',this.receiptDefaultBranch);
+
     if (storedData) {
       this.amountIssued = storedData.amountIssued || 0;
       this.paymentMode = storedData.paymentMode || '';
@@ -220,10 +258,12 @@ export class ClientAllocationComponent {
       this.grossReceiptAmount = storedData?.grossReceiptAmount || 0;
       this.receiptingPoint = storedData.receiptingPoint || '';
     }
+    let selectedBank = this.sessionStorage.getItem('selectedBank');
+    this.selectedBank = JSON.parse(selectedBank);
     
-    let globalBankAccountVariable = localStorage.getItem('globalBankAccount');
+    let globalBankAccountVariable = this.sessionStorage.getItem('globalBankAccount');
     this.globalBankAccountVariable = Number(this.globalBankAccountVariable);
-    let globalBankType = localStorage.getItem('globalBankType');
+    let globalBankType = this.sessionStorage.getItem('globalBankType');
     this.globalBankType = globalBankType;
     this.allocatedAmounts = this.receiptDataService.getAllocatedAmounts();
     // Initialize form controls for each transaction
@@ -239,15 +279,16 @@ export class ClientAllocationComponent {
     ) {
     
     }
-    let accountTypeShortDesc = localStorage.getItem('accountTypeShortDesc');
+    let accountTypeShortDesc = this.sessionStorage.getItem('accountTypeShortDesc');
     this.accountTypeShortDesc = accountTypeShortDesc;
     if (this.selectedClient && this.selectedClient.code) {
     
     }
     this.totalRecords = this.transactions.length; // Set total records count
 
-    let exchangeRate = localStorage.getItem('exchangeRate');
+    let exchangeRate = this.sessionStorage.getItem('exchangeRate');
     this.exchangeRate = Number(exchangeRate);
+    this.fetchParamStatus();
   }
     /**
    * Initializes the receipt capture form with default values and validators.
@@ -402,7 +443,7 @@ export class ClientAllocationComponent {
         total + Number(item.allocatedAmount || 0),
       0
     );
-    localStorage.setItem(
+    this.sessionStorage.setItem(
       'totalAllocatedAmount',
       JSON.stringify(this.totalAllocatedAmount)
     );
@@ -454,6 +495,8 @@ export class ClientAllocationComponent {
    */
   allocateAndPostAllocations(): void {
     // Store already posted amount before resetting transactions
+    // console.log('defaultBranch>',this.defaultBranch.id);
+    // console.log('selectedBranch>',this.selectedBranch);
     const previousTotalAllocated = this.totalAllocatedAmount;
     const deductionsValue = this.receiptingDetailsForm.get('deductions')?.value;
     const narration = this.receiptingDetailsForm.get('narration')?.value;
@@ -486,7 +529,7 @@ export class ClientAllocationComponent {
       receiptNumber: this.branchReceiptNumber,
       capturedBy: this.loggedInUser.code,
       systemCode: this.selectedClient.systemCode,
-      branchCode: this.defaultBranchId || this.selectedBranch,
+      branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
       clientCode: this.selectedClient.code,
       clientShortDescription: this.selectedClient.shortDesc,
       receiptType: this.selectedClient.receiptType,
@@ -513,7 +556,7 @@ export class ClientAllocationComponent {
           commissionAmount: transaction.commission,
           narration: this.narration || '',
           overAllocated: 0,
-          includeVat: deductionsValue ? 'Y' : 'N',
+          includeVat:  'N',
           clientPolicyNumber: transaction.clientPolicyNumber,
           policyType: null,
           accountNumber: null,
@@ -601,7 +644,7 @@ export class ClientAllocationComponent {
           );
 
           // ✅ Store the latest total in localStorage
-          localStorage.setItem(
+          this.sessionStorage.setItem(
             'totalAllocatedAmount',
             JSON.stringify(this.totalAllocatedAmount)
           );
@@ -670,7 +713,7 @@ export class ClientAllocationComponent {
           );
 
           // Store the updated total in localStorage
-          localStorage.setItem(
+          this.sessionStorage.setItem(
             'totalAllocatedAmount',
             JSON.stringify(this.totalAllocatedAmount)
           );
@@ -889,7 +932,7 @@ export class ClientAllocationComponent {
           this.base64Output = '';
           this.fileDescriptions = [];
           this.currentFileIndex = 0;
-          this.isFileUploadButtonDisabled = false; // Re-enable the "File Upload" button
+          this.isFileUploadButtonDisabled = true; // Re-enable the "File Upload" button
           this.fileIsUploaded = true;
           this.fetchDocByDocId(this.globalDocId);
         },
@@ -1025,17 +1068,46 @@ export class ClientAllocationComponent {
       },
     });
   }
+  fetchParamStatus(){
+    this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
+      next:(response)=>{
+  
+        this.parameterStatus=response.data;
+  
+  
+      },
+      error:(err)=>{
+        this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
+      }
+    })
+  }
+  
 
 /**
    * Submits the receipt data to the backend.
    */
   submitReceipt(): any {
-    const amountIssued = this.receiptingDetailsForm.get('amountIssued')?.value;
-    const amountIssuedControl = this.receiptingDetailsForm.get('amountIssued');
+   
 
-    const formValues = this.receiptingDetailsForm.value;
-    const getCapitalInjectionStatus = formValues.capitalInjection;
-    
+   
+     
+ console.log('receiptDoc>>',this.parameterStatus);
+  if(this.parameterStatus=='Y' && !this.fileUploaded )
+    {
+ 
+     if(confirm('do you want to save receipt without uploading file?')==true){
+
+return true;
+     }else{
+      return false;
+     }
+
+
+     }
+     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
+      this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
+      return false;
+           }
     const allocatedDetails =
       this.getAllocation?.[0]?.receiptParticularDetails || [];
 
@@ -1056,123 +1128,125 @@ export class ClientAllocationComponent {
       receiptDate: this.receiptDate
         ? this.receiptDate.toISOString().split('T')[0]
         : null, // Ensure it's a valid Date before calling toISOString()
-      amount: String(this.storedData?.amountIssued), // Add decimal points for BigDecimal fields
-      paidBy: this.storedData?.receivedFrom,
+      amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
+      paidBy: this.receivedFrom,
       currencyCode: String(this.defaultCurrencyId), // Add quotes to ensure it's treated as string before conversion
 
-      branchCode: String(this.defaultBranchId) || String(this.selectedBranch), // Add quotes to ensure it's treated as string before conversion
-      paymentMode: this.storedData?.paymentMode,
-      paymentMemo: this.storedData?.paymentRef || null,
+      branchCode:
+        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
+      paymentMode: this.paymentMode,
+      paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
         ? this.documentDate.toISOString().split('T')[0]
         : null, // Ensure it's a valid Date before calling toISOString()
-
-      drawerBank: this.storedData?.drawersBank || 'N/A',
-      userCode: this.userId,
-      narration: this.storedData?.narration,
+      //drawerBank: formValues.drawersBank || 'N/A',
+      drawerBank: this.drawersBank || 'N/A',
+      userCode: this.loggedInUser.code,
+      narration: this.narration,
       insurerAccount: null,
-      receivedFrom: this.storedData?.receivedFrom || null,
-      grossOrNet: 'N/A',
+      receivedFrom: this.receivedFrom || null,
+      grossOrNet: 'G',
       //  grossOrNet: null,
       sysShtDesc: this.selectedClient?.systemShortDesc,
       receiptingPointId: this.receiptingPointObject.id,
-      receiptingPointAutoManual: this.receiptingPoint,
+      receiptingPointAutoManual: this.receiptingPointObject.autoManual,
 
       // capitalInjection:  "N",
       //capitalInjection: this.capitalInjection || this.NoCapitalInjection ,
-      capitalInjection: 'N/A',
+      capitalInjection: 'N',
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType: this.storedData?.chequeType || null,
+      receiptChequeType: this.chequeType || null,
       vatInclusive: null,
-      rctbbrCode: Number(this.defaultBranchId) || Number(this.selectedBranch),
+      //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
+      rctbbrCode:null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
-      currencyRate:
-        this.storedData?.exchangeRate ||
-        this.storedData?.manualExchangeRate ||
-        null,
+      currencyRate: this.exchangeRate || this.manualExchangeRate || null,
       internalRemarks: null,
       // manualRef:formValues.manualRef || null,
       manualRef: this.manualRef || null,
-      bankAccountCode: '526',
+      bankAccountCode: String(this.selectedBank.code),
       //bankAccountCode: Number(this.globalBankAccountVariable) || null, // Add quotes to ensure it's treated as string before conversion
-      grossOrNetAdminCharge: 'N/A',
+      grossOrNetAdminCharge: 'G',
       insurerAcc: null,
       grossOrNetWhtax: null,
       grossOrNetVat: null,
 
       sysCode: Number(this.selectedClient.systemCode),
-      bankAccountType: this.globalBankType,
+      bankAccountType: this.selectedBank.type,
     };
     
     // Call the service to save the receipt
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
-        localStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Receipt saved successfully'
         );
 
         // Store current values of fields to preserve
-        const preservedValues = {
-          currency: this.receiptingDetailsForm.get('currency')?.value,
-          organization: this.receiptingDetailsForm.get('organization')?.value,
-          selectedBranch:
-            this.receiptingDetailsForm.get('selectedBranch')?.value,
-          documentDate: this.receiptingDetailsForm.get('documentDate')?.value,
-          receiptDate: this.receiptingDetailsForm.get('receiptDate')?.value,
-        };
-        // Reset form and clear allocations
-        this.receiptingDetailsForm.reset();
-        this.transactions = [];
-        this.allocatedAmountControls.clear();
-        this.totalAllocatedAmount = 0;
-        localStorage.removeItem('totalAllocatedAmount');
+        // const preservedValues = {
+        //   currency: this.receiptingDetailsForm.get('currency')?.value,
+        //   organization: this.receiptingDetailsForm.get('organization')?.value,
+        //   selectedBranch:
+        //     this.receiptingDetailsForm.get('selectedBranch')?.value,
+        //   documentDate: this.receiptingDetailsForm.get('documentDate')?.value,
+        //   receiptDate: this.receiptingDetailsForm.get('receiptDate')?.value,
+        // };
+        // // Reset form and clear allocations
+        // this.receiptingDetailsForm.reset();
+        // this.transactions = [];
+        // this.allocatedAmountControls.clear();
+        // this.totalAllocatedAmount = 0;
+        // this.sessionStorage.removeItem('totalAllocatedAmount');
 
-        this.isAllocationCompleted = false;
+        // this.isAllocationCompleted = false;
 
-        // Clear client-related states
-        this.selectedClient = null;
+        // // Clear client-related states
+        // this.selectedClient = null;
 
-        this.globalAccountTypeSelected = null;
+        // this.globalAccountTypeSelected = null;
 
-        // Explicitly disable search fields
-        this.receiptingDetailsForm.get('searchCriteria')?.disable();
-        this.receiptingDetailsForm.get('searchQuery')?.disable();
+        // // Explicitly disable search fields
+        // this.receiptingDetailsForm.get('searchCriteria')?.disable();
+        // this.receiptingDetailsForm.get('searchQuery')?.disable();
 
-        // Reset other form-related states
-        this.fileDescriptions = [];
-        this.selectedFile = null;
-        this.uploadedFile = null;
-        this.base64Output = '';
+        // // Reset other form-related states
+        // this.fileDescriptions = [];
+        // this.selectedFile = null;
+        // this.uploadedFile = null;
+        // this.base64Output = '';
 
-        this.receiptingDetailsForm.patchValue({
-          currency: preservedValues.currency,
-          organization: preservedValues.organization,
-          selectedBranch: preservedValues.selectedBranch,
-          documentDate: preservedValues.documentDate,
-          receiptDate: preservedValues.receiptDate,
-        });
+        // this.receiptingDetailsForm.patchValue({
+        //   currency: preservedValues.currency,
+        //   organization: preservedValues.organization,
+        //   selectedBranch: preservedValues.selectedBranch,
+        //   documentDate: preservedValues.documentDate,
+        //   receiptDate: preservedValues.receiptDate,
+        // });
 
-        Object.keys(this.receiptingDetailsForm.controls).forEach((key) => {
-          const control = this.receiptingDetailsForm.get(key);
-          if (
-            control &&
-            key !== 'currency' &&
-            key !== 'organization' &&
-            key !== 'branch' &&
-            key !== 'documentDate' &&
-            key !== 'receiptDate'
-          ) {
-            control.markAsUntouched();
-            control.markAsPristine();
-          }
-        });
+        // Object.keys(this.receiptingDetailsForm.controls).forEach((key) => {
+        //   const control = this.receiptingDetailsForm.get(key);
+        //   if (
+        //     control &&
+        //     key !== 'currency' &&
+        //     key !== 'organization' &&
+        //     key !== 'branch' &&
+        //     key !== 'documentDate' &&
+        //     key !== 'receiptDate'
+        //   ) {
+        //     control.markAsUntouched();
+        //     control.markAsPristine();
+        //   }
+        // });
+        this.router.navigate(['/home/fms/receipt-capture']);
+        this.receiptDataService.clearReceiptData();
+
         //prepare receipt upload payload
       },
       error: (error) => {
@@ -1188,6 +1262,23 @@ export class ClientAllocationComponent {
    * Saves the receipt and navigates to the receipt preview page.
    */
   saveAndPrint() {
+    console.log('receiptDoc>>',this.parameterStatus);
+  if(this.parameterStatus=='Y' && !this.fileUploaded )
+    {
+ 
+     if(confirm('do you want to save receipt without uploading file?')==true){
+
+return true;
+     }else{
+      return false;
+     }
+
+
+     }
+     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
+this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
+return false;
+     }
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1225,7 +1316,7 @@ export class ClientAllocationComponent {
       currencyCode: String(this.defaultCurrencyId), // Add quotes to ensure it's treated as string before conversion
 
       branchCode:
-        String(this.defaultBranch.id) || String(this.selectedBranchId), // Add quotes to ensure it's treated as string before conversion
+        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
@@ -1251,7 +1342,8 @@ export class ClientAllocationComponent {
       receiptSms: 'Y',
       receiptChequeType: this.chequeType || null,
       vatInclusive: null,
-      rctbbrCode: Number(this.defaultBranch.id) || Number(this.selectedBranch),
+     // rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
+     rctbbrCode:null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
@@ -1273,7 +1365,7 @@ export class ClientAllocationComponent {
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
-        localStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Receipt saved successfully'
@@ -1293,6 +1385,6 @@ export class ClientAllocationComponent {
    */
   onBack() {
     //this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
-    this.router.navigate(['/home/fms/client']); // Navigate to the next screen
+    this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

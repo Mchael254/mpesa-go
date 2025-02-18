@@ -3,7 +3,7 @@
  * It fetches the receipt data, generates a report using the `ReportsService`, and provides a download link.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
@@ -11,6 +11,7 @@ import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -29,12 +30,21 @@ const log = new Logger('ReceiptPreviewComponent');
   templateUrl: './receipt-preview.component.html',
   styleUrls: ['./receipt-preview.component.css'],
 })
-export class ReceiptPreviewComponent implements OnInit {
+export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
+  // Reference to the iframe
+
+  @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
+  filePath: string = '';
+
+ 
+  //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
+  //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
+ // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
   /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
   receiptResponse: any;
 
   /** @property {string | null} filePath - The path to the generated receipt file (PDF), or null if not yet generated.*/
-  filePath: string | null = null;
+  // filePath: string | null = null;
 
   /** @property {number} orgId - The ID of the organization for which the receipt is generated. */
   orgId: number;
@@ -53,7 +63,8 @@ export class ReceiptPreviewComponent implements OnInit {
     private reportService: ReportsService,
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
-    private receiptDataService: ReceiptDataService
+    private receiptDataService: ReceiptDataService,
+    private sessionStorage:SessionStorageService
   ) {}
 
   /**
@@ -62,17 +73,63 @@ export class ReceiptPreviewComponent implements OnInit {
    * @returns {void}
    */
   ngOnInit(): void {
-    let receiptResponse = localStorage.getItem('receiptResponse');
+    let receiptResponse = this.sessionStorage.getItem('receiptResponse');
     this.receiptResponse = Number(receiptResponse);
-    console.log('receipt', this.receiptResponse);
-    let receiptNo = localStorage.getItem('receiptNo');
+    //console.log('receipt', this.receiptResponse);
+    let receiptNo = this.sessionStorage.getItem('receiptNo');
     this.receiptResponse = Number(receiptNo);
-    console.log('receiptNo>>', this.receiptResponse);
-    let globalOrgId = localStorage.getItem('OrgId');
+    //console.log('receiptNo>>', this.receiptResponse);
+    let globalOrgId = this.sessionStorage.getItem('OrgId');
     this.orgId = Number(globalOrgId);
     this.getReceipt();
   }
+  // Add event listeners after the view is fully initialized
+  // ngAfterViewInit() {
+  //   setTimeout(() => this.addEventListeners(), 1000); // Delay to ensure DOM is ready
+  // }
+ 
 
+
+   
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.detectPrintAndDownload();
+    }, 2000); // Delay to allow iframe to load
+  }
+
+  detectPrintAndDownload() {
+    const iframe = this.docViewerIframe?.nativeElement?.querySelector('iframe');
+    if (!iframe) {
+      console.warn('No iframe found inside ngx-doc-viewer');
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const printButton = iframe.contentDocument?.querySelector('button[title="Print"]');
+      const downloadButton = iframe.contentDocument?.querySelector('button[title="Download"]');
+
+      if (printButton && downloadButton) {
+        printButton.addEventListener('click', () => {
+          console.log('Printed');
+          this.updateRecord('printed');
+        });
+
+        downloadButton.addEventListener('click', () => {
+          console.log('Downloaded');
+          this.updateRecord('downloaded');
+        });
+
+        observer.disconnect(); // Stop observing once buttons are found
+      }
+    });
+
+    observer.observe(iframe, { childList: true, subtree: true });
+  }
+
+  updateRecord(action: string) {
+    console.log('Receipt ${action} recorded');
+    // Call API here if needed
+  }
   /**
    * Generates the receipt report by calling the `ReportsService`.
    * Builds the `ReportDto` payload with the receipt number and organization ID and subscribes to the result.
@@ -114,6 +171,10 @@ export class ReceiptPreviewComponent implements OnInit {
       },
     });
   }
+  downloadReceipt(){
+    this.download(this.filePath,'receipt.pdf');
+    this.router.navigate(['/home/fms/receipt-capture']);
+  }
 
   /**
    * Triggers a download of the file at the given URL.
@@ -130,13 +191,15 @@ export class ReceiptPreviewComponent implements OnInit {
       link.click();
     }
   }
-
+  
+ 
+  
   /**
    * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
    * @returns {void}
    */
   onBack() {
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
-    this.router.navigate(['/home/fms/screen1']); // Navigate to the next screen
+    this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }
 }
