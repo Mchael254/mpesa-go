@@ -28,15 +28,15 @@ const routes: Routes = [
     component:ReceiptAuthorizationComponent
   },
   {
-    path:'client',
+    path:'client-search',
     component:ClientSearchComponent
   },
   {
-    path:'screen1',
+    path:'receipt-capture',
     component:ReceiptCaptureComponent
   },
   {
-    path:'allocation',
+    path:'client-allocation',
     component:ClientAllocationComponent
   },
  {

@@ -607,3 +607,69 @@ export interface Allocation {
   policyNumber: string;
   // ... add other allocation properties you need
 }
+// export interface YearDTO {
+//   msg: string;
+//   success: boolean;
+//   data: DataItem[];
+// }
+
+// export interface DataItem {
+//   year: string;
+//   branch_code: number;
+//   wef: Date;
+//   wet: Date;
+//   state: string;
+//   balance: string;
+//   transaction: string;
+//   periods: Period[];
+// }
+
+// export interface Period {
+//   period: string;
+//   branch_code: number;
+//   year: string;
+//   wef: Date;
+//   wet: Date;
+//   counter: number;
+//   state: string;
+//   start: string;
+//   orgCode: number;
+//   currentPeriod: number;
+//   curPeriod: number;
+//   transacted: string;
+//   closedByUser: number;
+//   closedByUserName: string;
+// }
+export interface YearDTO {
+  msg: string;
+  success: boolean;
+  data: DataItem[];
+}
+
+export interface DataItem {
+  year: string;
+  branch_code: number; // Matches API response
+  wef: string; // Change to string or handle Date conversion
+  wet: string;
+  state: string;
+  balance: string;
+  transaction: string;
+  periods: Period[];
+}
+
+export interface Period {
+  period: string;
+  branch_code: number;
+  year: string;
+  wef: string;
+  wet: string;
+  counter: number;
+  state: string;
+  start?: string | null; // Can be null
+  orgCode?: number | null;
+  currentPeriod?: number | null;
+  curPeriod?: number | null;
+  transacted: string;
+  closedByUser?: number | null;
+  closedByUserName?: string | null;
+}

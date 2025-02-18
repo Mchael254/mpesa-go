@@ -17,3 +17,6 @@
 .btn-next {
   justify-content: flex-end;
 }
+.ngx-doc-viewer iframe{
+pointer-events: none;
+}

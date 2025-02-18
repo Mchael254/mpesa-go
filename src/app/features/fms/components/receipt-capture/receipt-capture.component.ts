@@ -32,6 +32,8 @@ import { Router } from '@angular/router';
 import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
+import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -71,8 +73,9 @@ export class ReceiptCaptureComponent {
     /**
    * @property {OrganizationDTO[]} organization - An array of organizations.
    */
-
+    orgIdToUse:number;
   organization: OrganizationDTO[];
+  selectedOrg:OrganizationDTO;
   /**
    * @property {BranchDTO} defaultBranch - The default branch.
    */
@@ -92,7 +95,7 @@ export class ReceiptCaptureComponent {
     /**
    * @property {number | null} selectedCountryId - The ID of the selected country (nullable).
    */
-  selectedCountryId: number | null = null;
+ 
   
   /**
    * @property {string | null} selectedOrganization - The name of the currently selected organization (nullable).
@@ -102,16 +105,19 @@ export class ReceiptCaptureComponent {
    * @property {any} selectedBranchId - ID of the selected branch.
    * @deprecated Consider using defaultBranch.id or selectedBranch directly.
    */
-  selectedBranchId: any;
+  
    /**
    * @property {string} defaultBranchName - The name of the default branch.
    * @deprecated Consider accessing defaultBranch.name directly.
    */
-  defaultBranchName: string;
+ 
    /**
    * @property {number} selectedOrgId - The ID of the selected organization.
    */
-  selectedOrgId: number;
+  
+ 
+
+
   /**
    * @property {number} receiptigPointId - The ID of the receipting point.
    */
@@ -330,9 +336,11 @@ export class ReceiptCaptureComponent {
    * @property {number} receiptResponse - The receipt response.
    */
   receiptResponse: number;
-  
+  selectedbranchId:number;
   /** @property {number | null} editReceiptExpenseId - To hold the receiptExpenseId of the edited charge.*/
   editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
+  selectedBranch:BranchDTO;
+
 /**
    * Constructor for the `ReceiptCaptureComponent`.
    *
@@ -359,7 +367,9 @@ export class ReceiptCaptureComponent {
     private authService: AuthService,
     private fmsService: FmsService,
     private receiptDataService: ReceiptDataService,
-    private router: Router
+    private router: Router,
+    private localStorage:LocalStorageService,
+    private sessionStorage:SessionStorageService
   ) {}
  /**
    * Lifecycle hook called once the component is initialized.
@@ -369,33 +379,70 @@ export class ReceiptCaptureComponent {
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
-    console.log('user>', this.loggedInUser.code);
-    let defaultOrg = localStorage.getItem('defaultOrg');
-    this.defaultOrg = JSON.parse(defaultOrg);
-    let defaultBranch = localStorage.getItem('defaultBranch');
-    this.defaultBranch = JSON.parse(defaultBranch);
-    let users = localStorage.getItem('user');
+  //  let my =this.sessionStorage.getItem('user');
+  //  console.log('my>',my);
+  
+    // Retrieve organization from localStorage or receiptDataService
+  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
+  
+  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+
+  // Ensure only one organization is active at a time
+  if (this.selectedOrg) {
+    this.defaultOrg = null;
+  } else if (this.defaultOrg) {
+    this.selectedOrg = null;
+  }
+
+ 
+
+  // Retrieve branch from localStorage or receiptDataService
+  let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
+  let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
+
+  this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
+  this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
+
+  // Ensure only one branch is active at a time
+  if (this.selectedBranch) {
+    this.defaultBranch = null;
+  } else if (this.defaultBranch) {
+    this.selectedBranch = null;
+  }
+
+  
+   
+    
+    let users = this.sessionStorage.getItem('user');
     this.users = JSON.parse(users);
 
-    this.fetchNarrations();
+    
 
     const currentDate = new Date();
     this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
     this.maxDate = this.formatDate(currentDate);
 
-    let selectedOrgId = localStorage.getItem('selectedOrgId');
-    this.selectedOrgId = Number(selectedOrgId);
+  
 
-    let selectedCountryId = localStorage.getItem('selectedCountryId');
-    this.selectedCountryId = Number(selectedCountryId);
+    // let selectedCountryId = localStorage.getItem('selectedCountryId');
+    // this.selectedCountryId = Number(selectedCountryId);
 
     this.fetchDrawersBanks(
-      this.defaultOrg.country.id || this.selectedCountryId
+       this.selectedOrg?.country.id || this.defaultOrg?.country.id
     );
     this.fetchCurrencies();
-    this.fetchPayments(this.defaultOrg.id || this.selectedOrgId);
+    this.fetchPayments(this.selectedOrg?.id || this.defaultOrg?.id);
     //this.fetchBanks(this.defaultBranchId || this.selectedBranchId,this.defaultCurrencyId);
     this.restoreFormData(); // Restore saved data
+
+
+    this.fetchReceiptNumber(
+      this.defaultBranch?.id || this.selectedBranch?.id,
+      this.loggedInUser.code
+    );
+    this.fetchNarrations();
   }
 
   /**
@@ -481,7 +528,7 @@ export class ReceiptCaptureComponent {
         if (defaultCurrency) {
           this.defaultCurrencyId = defaultCurrency.id;
           const defaultCurrencySymbol = defaultCurrency.symbol;
-          localStorage.setItem(
+          this.sessionStorage.setItem(
             'defaultCurrencyId',
             String(this.defaultCurrencyId)
           );
@@ -490,8 +537,10 @@ export class ReceiptCaptureComponent {
           this.receiptingDetailsForm.patchValue({
             currency: this.defaultCurrencyId, // Use ID instead of symbol
           });
+          console.log('default branch>',this.defaultBranch?.id);
+          console.log('selected branch>',this.selectedBranch?.id);
           this.fetchBanks(
-            this.defaultBranch.id || this.selectedBranchId,
+            this.defaultBranch?.id || this.selectedBranch?.id,
             this.defaultCurrencyId
           );
         }
@@ -509,12 +558,13 @@ export class ReceiptCaptureComponent {
    * @param {Event} event - The currency change event.
    * @returns {void}
    */
-  onCurrencyChanged(event: Event): void {
+  onCurrencyChanged(event: Event): any {
     this.exchangeRateText = true;
     const selectedCurrencyCodes = (event.target as HTMLSelectElement).value;
     this.selectedCurrencyCode = Number(selectedCurrencyCodes);
+    
     this.fetchBanks(
-      this.defaultBranch.id || this.selectedBranchId,
+      this.defaultBranch?.id || this.selectedBranch?.id,
       this.selectedCurrencyCode
     );
     // Find the currency from the list
@@ -526,18 +576,27 @@ export class ReceiptCaptureComponent {
     this.selectedCurrencySymbol = selectedCurrency
       ? selectedCurrency.symbol
       : '';
-
-    this.fetchCurrencyRate();
+// **STOP if the selected currency is the same as the default currency**
+if (this.selectedCurrencyCode === Number(this.defaultCurrencyId)) {
+  console.log('selectedCurrencyCode',this.selectedCurrencyCode);
+  console.log('defaultCurrencyId',this.defaultCurrencyId);
+  this.exchangeRate = 0; // Reset exchange rate
+  this.exchangeFound = false; // Hide span text
+  this.receiptingDetailsForm.patchValue({ exchangeRate: 0 }); // Clear exchange rate field
+  return; // Stop execution
+}   
+     
   }
 /**
    * Fetches the exchange rate for the selected currency from the `CurrencyService`.
    * @returns {void}
    */
   fetchCurrencyRate() {
-    if (!this.defaultBranch.id && !this.selectedBranchId) {
-      console.error('Branch ID is not set');
-      return;
-    }
+    // if (!this.defaultBranch?.id ) {
+    //  // console.error('Branch ID is not set');
+    //   return;
+    // }
+  
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -555,7 +614,7 @@ export class ReceiptCaptureComponent {
         } else if (matchingRates.length === 1) {
           this.exchangeRate = matchingRates[0].rate; // Assign exchange rate
           this.exchangeFound = true; // Show span text
-          localStorage.setItem('exchangeRate', String(this.exchangeRate));
+          this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
           this.receiptingDetailsForm.patchValue({
             exchangeRate: this.exchangeRate,
           });
@@ -570,7 +629,7 @@ export class ReceiptCaptureComponent {
 
           if (validRates.length > 0) {
             this.exchangeRate = validRates[0].rate; // Assign most recent exchange rate
-            localStorage.setItem('exchangeRate', String(this.exchangeRate));
+            this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
             this.exchangeFound = true; // Show span text
             this.receiptingDetailsForm.patchValue({
               exchangeRate: this.exchangeRate,
@@ -828,9 +887,8 @@ export class ReceiptCaptureComponent {
     if (selectedBank) {
       this.selectedBank = selectedBank;
 
-      this.globalBankAccountVariable = selectedBank; // Assign the selected bank to the global variable
-
-      localStorage.setItem('selectedBank', JSON.stringify(this.selectedBank));
+     
+      this.sessionStorage.setItem('selectedBank', JSON.stringify(this.selectedBank));
     } else {
     }
 
@@ -838,7 +896,7 @@ export class ReceiptCaptureComponent {
 
     this.receiptService
       .getReceiptingPoints(
-        this.defaultBranch.id || this.selectedBranchId,
+        this.defaultBranch?.id || this.selectedBranch?.id,
         this.loggedInUser.code
       )
       .subscribe({
@@ -852,7 +910,7 @@ export class ReceiptCaptureComponent {
 
             this.receiptingPointAutoManual = receiptingPoint.autoManual;
 
-            localStorage.setItem(
+            this.sessionStorage.setItem(
               'receiptingPoint',
               JSON.stringify(receiptingPoint)
             );
@@ -873,7 +931,7 @@ export class ReceiptCaptureComponent {
 
   
     this.fetchReceiptNumber(
-      this.defaultBranch.id || this.selectedBranchId,
+      this.defaultBranch?.id || this.selectedBranch?.id,
       this.loggedInUser.code
     );
   }
@@ -890,12 +948,12 @@ export class ReceiptCaptureComponent {
           this.globalReceiptNo = response.receiptNumber;
           this.globalReceiptNumber = response.branchReceiptNumber;
 
-          localStorage.setItem(
+          this.sessionStorage.setItem(
             'branchReceiptNumber',
             this.globalReceiptNumber.toString()
           );
           //store receipt number string visible to Ui
-          localStorage.setItem('receiptCode', this.globalReceiptNo);
+          this.sessionStorage.setItem('receiptCode', this.globalReceiptNo);
           // Update the form control
           this.receiptingDetailsForm
             .get('receiptNumber')
@@ -979,7 +1037,7 @@ export class ReceiptCaptureComponent {
   // Fetch charge types
   fetchCharges(): void {
     this.receiptService
-      .getCharges(this.users.organizationId, this.defaultBranch.id)
+      .getCharges(this.users.organizationId, this.defaultBranch?.id || this.selectedBranch?.id)
       .subscribe({
         next: (response) => {
           this.charges = response.data;
@@ -1324,7 +1382,24 @@ this.receiptingDetailsForm.reset();
    * @returns {void}
    */
   onNext() {
+//     const paymentMethod = this.receiptingDetailsForm.get('paymentMode')?.value;
+// const drawersBank = this.receiptingDetailsForm.get('drawersBank')?.value;
+// const paymentRef = this.receiptingDetailsForm.get('paymentRef')?.value;
+// const amountIssued = this.receiptingDetailsForm.get('amount Issued')?.value;
+// console.log('amount issued',amountIssued);
+
+    // if(paymentMethod==='CASH' && drawersBank !=null && paymentRef !=null){
+    //   this.receiptingDetailsForm.reset('paymentRef');
+    //   this.receiptingDetailsForm.get('paymentRef')?.setValue('');
+    //   this.receiptingDetailsForm.get('drawersBank')?.setValue('');
+    //   console.log('paymentRef',paymentRef);
+    //   console.log('drawersBank',drawersBank);
+    //   console.log('paymentModes',paymentMethod);
+
+    // }
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
-    this.router.navigate(['/home/fms/client']); // Navigate to the next screen
+    const formData = this.receiptDataService.getReceiptData();
+    console.log('form data>>',formData);
+    this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

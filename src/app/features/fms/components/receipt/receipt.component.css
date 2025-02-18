@@ -1,44 +1,7 @@
-
-.dropdown-container {
-    position: relative;
-  }
-  
-  .dropdown-container select {
-    width: 100%;
-    padding-right: 30px; /* Leave space for the icon */
-    -webkit-appearance: none; /* Hide default arrow in Chrome */
-    -moz-appearance: none; /* Hide default arrow in Firefox */
-    appearance: none; /* Hide default arrow in other browsers */
-  }
-  
-  .dropdown-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none; /* Ensure clicks go to the select */
-    color: black; /* Set the icon color to black */
-  }
-  
-  .dropdown-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0px;
-    pointer-events: none;
-  }
-  /*   Styles */
- .hidden-print-field {
-  display: none; /* Hidden on the screen */
+body {
+  background-color: #f5f6f8;
+  padding: 1rem;
 }
-
-/* Show the hidden fields during printing */
-@media print { 
-  .hidden-print-field { 
-    display: block;
-  }
-} 
 /* Scrollable content container inside the receipting component */
 .scroll-container {
   max-height: 70vh; /* Adjust based on your layout */
@@ -62,106 +25,238 @@
 .scroll-container::-webkit-scrollbar-thumb:hover {
   background-color: #495057;
 }
-.modal-body {
-  font-size: 14px;
-}
-
-.table th, .table td {
-  padding: 8px;
-}
-
-.text-end {
-  text-align: right;
-}
-
-@media print {
-  .modal-footer {
-    display: none;
-  }
-  
-  .btn-close {
-    display: none;
-  }
-}
-/* .required {
-  color: red;
-  margin-left: 3px;
-} */
-.text-danger {
-  color: #dc3545;
-}
-
-.is-invalid {
-  border-color: #dc3545;
-}
-
-.invalid-feedback {
+.top-bar {
   display: none;
-  width: 100%;
-  margin-top: 0.25rem;
-  font-size: 80%;
-  color: #dc3545;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  margin-bottom: 5px;
+  /* display: flex; */
+  align-items: center;
+  white-space: nowrap;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: 25px; /* Set a fixed height */
+}
+/* Override for dropdowns inside the .top-bar */
+.top-bar .dropdown-icon {
+  right: 2px !important; /* Increase the right spacing only for top-bar */
+}
+.top-select {
+  display: flex;
+  align-items: center;
+  margin-right: 60px;
+
+  font-size: 13px;
+  color: #333;
+  /* FMS Info bar */
+}
+.org {
+  margin-left: 20px;
 }
 
-.form-control.is-invalid ~ .invalid-feedback {
-  display: block;
+.top-select span {
+  margin-right: 4px;
 }
 
-.required-field::after {
-  content: "*";
-  color: #dc3545;
-  margin-left: 4px;
-}
-.dropdown-container {
-  position: relative;
+.top-select select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #333;
+  padding-right: 16px;
+
+  background-repeat: no-repeat;
+  background-position: right center;
+  appearance: none;
 }
 
-.search-wrapper {
-  position: relative;
+/* Add this new class to hide the scrollbar but keep functionality */
+.top-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumb-custom {
+  font-size: 10px;
+  color: #0066cc;
   margin-bottom: 5px;
 }
 
-.search-input {
-  width: 100%;
-  padding-right: 30px;
-  border: 1px solid #ced4da;
+.breadcrumb-custom a {
+  color: #0066cc;
+  text-decoration: none;
+}
+.breadcrumb-text {
+  color: #333;
+}
+.chequeTypeText{
+font-size: 13px;
+}
+.main-form {
+  background: white;
+  
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+.required::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 2px;
+}
+
+.form-control,
+.form-select {
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
   border-radius: 4px;
+  height: 36px;
 }
 
-.dropdown-container select {
+.form-control {
+  /* background-color: #f9fafb; */
+  color: #333;
+}
+
+
+select.form-control {
   width: 100%;
-  padding-right: 30px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  padding-right: 30px; /* Ensure space for icon */
+  appearance: none; /* Removes default dropdown arrow */
 }
 
-.dropdown-icon {
+
+
+.edit-link {
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.date-input {
+  position: relative;
+}
+
+.date-input input {
+  padding-right: 36px;
+}
+
+.date-input::after {
+  content: "";
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
-  transform: translateY(-50%);
+  /* transform: translateY(-50%); */
+  width: 16px;
+  height: 16px;
+
   pointer-events: none;
 }
 
-/* Style for filtered options */
-select option {
-  padding: 8px;
+.radio-group {
+  display: flex;
+  gap: 20px;
+  padding-top: 5px;
+  align-items: flex-start; /* Align items to the start (left) */
+  width: 100%; /* Ensure full width */
 }
 
-select option:hover {
-  background-color: #f8f9fa;
+.radio-label {
+  display: flex;
+  align-items: center; /* Align label text with the radio button */
+  gap: 6px;
+  font-size: 13px;
+  margin-left: 0; /* Ensure no extra margin */
+  color: #333;
 }
 
-/* style the selected client */
-.selected-client-row {
-  background-color: #e3f2fd !important; /* Light blue background */
-  color: #1976d2 !important; /* Primary blue text */
-  font-weight: 500;
+.radio-label input[type="radio"] {
+  margin: 0;
+  align-content: flex-start;
+  width: 16px;
+  height: 16px;
 }
 
-/* Add hover effect for better UX */
-.client-row:hover {
-  background-color: #f5f5f5;
+.btn-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.btn-primary-outline {
+  padding: 6px 16px;
+  border: 1px solid #006fd2;
+  color: #006fd2;
+  /* background: white; */
+  border-radius: 4px;
+  /* font-size: 14px; */
+  font-weight: 400;
+  min-width: 80px;
+}
+
+.btn-primary {
+  padding: 6px 16px;
+  /* background: #006FD2; */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  /* font-size: 14px; */
+  min-width: 80px;
+}
+
+.amount-input {
+  position: relative;
+}
+
+.amount-input::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+
+  pointer-events: none;
+}
+.cheque-options {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  width: 150px;
+  top: 20px;
+  left: 0;
+  display: block;
+  z-index: 1000;
+  padding: 5px;
+}
+
+.cheque-options div {
+  padding: 10px;
   cursor: pointer;
+}
+
+.cheque-options div:hover {
+  background: #f0f0f0;
+}
+.main-btn-div.btn-back {
+  text-decoration: underline;
+  /* background: transparent;
+    align-items: flex-start; */
+}
+.main-btn-div {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 1px;
+}
+.btn-link {
+  text-decoration: underline;
 }
