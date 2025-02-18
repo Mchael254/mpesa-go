@@ -9,7 +9,6 @@ import { ClientService } from '../../../../../entities/services/client/client.se
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-// import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -17,7 +16,7 @@ import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
 import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection, UserDetails } from '../../data/quotationsDTO'
-import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
+import { Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
@@ -1869,6 +1868,7 @@ export class CoverTypesComparisonComponent {
   navigateToQuickQuote() {
     log.debug("Navigate to quick quote screen")
     this.isReturnToQuickQuote = true;
+    sessionStorage.setItem('quoteAction','E')
     // Add a unique flag for add another risk navigation
     sessionStorage.setItem('navigationSource', 'isReturnToQuickQuote');
 
