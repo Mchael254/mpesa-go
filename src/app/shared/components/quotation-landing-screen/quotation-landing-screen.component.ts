@@ -42,7 +42,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  pageSize: number = 19;
+  pageSize: number = 5;
   quotationSubMenuList: SidebarMenu[];
 
 

@@ -1,16 +1,16 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Logger } from '../../services';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { Router } from '@angular/router';
-import { QuotationList } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
 import { untilDestroyed } from '../../shared.module';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { LazyLoadEvent } from 'primeng/api';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { ClientService } from '../../../features/entities/services/client/client.service';
 import { tap } from 'rxjs';
 import { Pagination } from '../../data/common/pagination';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClientDTO } from '../../../features/entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('clientSearchComponent');
