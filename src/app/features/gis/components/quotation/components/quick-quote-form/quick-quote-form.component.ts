@@ -1900,6 +1900,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         selectedClient: this.clientDetails ? this.clientDetails : null
       }
       sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+      const mandatorySectionsString = JSON.stringify(this.mandatorySections);
+        sessionStorage.setItem('mandatorySections', mandatorySectionsString);
       let applicableSections = this.mandatorySections.map(value => value.sectionCode);
       log.debug("Applicable section codes", applicableSections, this.selectedBinderCode, this.selectedSubclassCode)
       from(applicableSections).pipe(

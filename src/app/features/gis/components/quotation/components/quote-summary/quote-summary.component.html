@@ -305,7 +305,7 @@
                                     <td>{{ data.calculationGroup }}</td>
                                     <td>{{ data.rowNumber }}</td>
                                     <td>{{ data.sectionDescription |sentenceCase}}</td>
-                                    <td>{{ data.sectionDescription }}</td>
+                                    <td>{{ data.sectionDescription |sentenceCase}}</td>
                                     <td>{{ data.rate }}</td>
                                     <td>{{ data.rateType }}</td>
                                     <td>{{ data.rateDivisionFactor }}</td>
@@ -490,28 +490,48 @@
        <!-- Convert Quote Modal -->
         <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content ps-2 pt-2 pe-2 pb-2 text-center">
+            <div class="modal-content">
               <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
-              <p class="cancelQouteTitle ">{{'gis.quotation.convert_quote' | translate}}</p>
-              <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message' | translate}}</p>
+              <p class="convertQouteTitle mt-4 mb-2 ">{{'gis.quotation.convert_quote' | translate}}</p>
+              <p class="cancelQouteParagraph text-center">{{'gis.quotation.conversion_message' | translate}}</p>
 
-              <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
+              <div class="d-flex justify-content-center mb-4" *ngIf="showQuoteActions">
                 <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
                   {{'gis.policy.cancel' | translate}}
                 </button>
-                <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
+                <button class="btn btn-primary " type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
                   {{'gis.quotation.convert_to_normal_quote' | translate}}
                 </button>
             </div>
             </div>
           </div>
         </div>
+        <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" role="dialog"
+        aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="convertQuoteToPolicy">
+                <div class="modal-body ">
+                  <p class="convertQouteTitle mt-2 mb-2">{{'gis.quotation.convert_quote' | translate}}</p>
+                  <p class="cancelQouteParagraph text-center">{{'gis.quotation.conversion_message_policy' | translate}}</p>
+                  <div class="d-flex justify-content-center mb-3">
+                        <button type="button" class="btn btn-outline-primary px-5" id="delete"
+                            data-bs-dismiss="modal" >{{'gis.policy.cancel' | translate}}</button>
+                            <button type="button" class="btn btn-primary px-5 ms-3"
+                            data-bs-dismiss="modal" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                      
+                    </div>
 
+
+                </div>
+            </div>
+        </div>
+    </div>
         <!-- Convert Quote to policy Modal -->
-        <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
+        <!-- <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content ps-2 pt-2 pe-2 pb-2 text-center">
-              <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
+            <div class="modal-content text-center">
               <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
               <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message_policy' | translate}}</p>
 
@@ -525,7 +545,7 @@
             </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
 
         <!-- Cancel Quote Modal -->
