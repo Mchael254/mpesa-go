@@ -2,9 +2,7 @@
   <div class="allocation-div">
     <!-- Receipt Allocations Section -->
     <div class="row mt-3">
-      <h2 class="text-primary text-start fs-3 mt-1 mb-2">
-        Receipt Allocations
-      </h2>
+      <h5 class="text-primary text-start mt-1 mb-2">Receipt Allocations</h5>
 
       <!-- Amount Summary Row -->
       <div class="row mb-3">
@@ -238,10 +236,10 @@
             (change)="onFileSelected($event)"
             style="display: none"
           />
+          <!-- [disabled]="!isFileUploadButtonDisabled" -->
           <button
             type="button"
             class="btn btn-primary"
-            [disabled]="isFileUploadButtonDisabled"
             (click)="fileInput.click()"
           >
             {{ "fms.receipting.uploadFiles" | translate }}
@@ -355,10 +353,8 @@
       post File
     </button>
   </div>
-  
- 
+
   <div class="btn-actions" *ngIf="!isAllocationComplete">
-    
     <button
       type="button"
       class="btn btn-primary"
@@ -369,28 +365,30 @@
   </div>
 
   <div class="btn2">
-    <div class="back-btn" style="justify-content: flex-start;">
-      <button type="button" class="btn btn-link" (click)="onBack()">Back</button>
+    <div class="back-btn" style="justify-content: flex-start">
+      <button type="button" class="btn btn-link" (click)="onBack()">
+        Back
+      </button>
     </div>
-    <div class="save-btns" >
-    <button
-      type="button"
-      [disabled]="!isAllocationComplete"
-      class="btn btn-outline-primary"
-      (click)="saveAndPrint()"
-    >
-      Save and Print
-    </button>
+    <div class="save-btns">
+      <button
+        type="button"
+        [disabled]="!isAllocationComplete"
+        class="btn btn-outline-primary"
+        (click)="saveAndPrint()"
+      >
+        Save and Print
+      </button>
 
-    <button
-      type="button"
-      [disabled]="!isAllocationComplete"
-      class="btn btn-primary"
-      (click)="submitReceipt()"
-    >
-      Save receipt
-    </button>
+      <button
+        type="button"
+        [disabled]="!isAllocationComplete"
+        class="btn btn-primary"
+        (click)="submitReceipt()"
+      >
+        Save receipt
+      </button>
+    </div>
   </div>
-</div>
 </div>
 <!-- </div> -->

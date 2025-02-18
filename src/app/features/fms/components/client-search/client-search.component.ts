@@ -21,6 +21,7 @@ import { OrganizationService } from 'src/app/features/crm/services/organization.
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 /**
  * @Component({
@@ -40,7 +41,7 @@ import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 })
 export class ClientSearchComponent implements OnInit {
   /** @property {number} globalReceiptNumber - Stores the global receipt number for the application.*/
-  globalReceiptNumber: number;
+  branchReceiptNumber: number;
 
   /** @property {FormGroup} receiptingDetailsForm - Reactive form group for capturing receipt details.*/
   receiptingDetailsForm: FormGroup;
@@ -82,46 +83,48 @@ export class ClientSearchComponent implements OnInit {
   defaultBranch: BranchDTO;
 
   /** @property {number} organizationId - ID of the organization.*/
-  organizationId: number;
+ 
 
   /** @property {number | null} selectedCountryId -  ID of the selected country (nullable).*/
   selectedCountryId: number | null = null;
 
   /** @property {number} defaultCountryId -  ID of the default  country .*/
-  defaultCountryId: number;
+
+  
 
   /** @property {string | null} selectedOrganization -  Name of the selected organization (nullable).*/
   selectedOrganization: string | null = null;
 
   /** @property {number} selectedOrgId - ID of the selected organization.*/
-  selectedOrgId: number;
+  selectedOrg:OrganizationDTO;
+  
 
   /**
    * @property {any} selectedBranchId - ID of the selected branch.
    * @deprecated Consider using defaultBranch.id or selectedBranch directly.
    */
-  selectedBranchId: any;
+  
 
   /**
    * @property {any} defaultBranchId - ID of the default branch.
    * @deprecated Consider using defaultBranch.id directly.
    */
-  defaultBranchId: any;
+  
 
   /**
    * @property {string} defaultBranchName - Name of the default branch.
    * @deprecated Consider accessing defaultBranch.name directly.
    */
-  defaultBranchName: string;
+  
 
   /** @property {number} selectedBranch - ID of the selected branch.*/
-  selectedBranch: number;
+  selectedBranch:BranchDTO;
 
   /** @property {number} userId - ID of the user.*/
   userId: number;
 
   /** @property {number} orgId - ID of the organization.*/
-  orgId: number;
+ 
 
   /** @property {any} selectedClient - The selected client object.*/
   selectedClient: any;
@@ -170,7 +173,8 @@ export class ClientSearchComponent implements OnInit {
     private organizationService: OrganizationService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private sessionStorage:SessionStorageService
   ) {}
 
   /**
@@ -180,29 +184,52 @@ export class ClientSearchComponent implements OnInit {
   ngOnInit(): void {
     this.captureReceiptForm();
     const storedData = this.receiptDataService.getReceiptData();
-    let storedReceiptNumber = localStorage.getItem('receiptNumber');
+    let storedReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
     this.loggedInUser = this.authService.getCurrentUser();
     if (storedReceiptNumber) {
-      this.globalReceiptNumber = Number(storedReceiptNumber);
+      this.branchReceiptNumber = Number(storedReceiptNumber);
     }
-    let globalSelectedOrgId = localStorage.getItem('selectedOrgId');
-    this.selectedOrgId = globalSelectedOrgId
-      ? Number(globalSelectedOrgId)
-      : null;
-    let globalSelectedBranch = localStorage.getItem('selectedBranch');
-    this.selectedBranch = globalSelectedBranch
-      ? Number(globalSelectedBranch)
-      : null;
-    let globalOrgId = localStorage.getItem('OrgId');
-    this.orgId = globalOrgId ? Number(globalOrgId) : null;
-    let globalUserId = localStorage.getItem('UserId');
-    this.userId = globalUserId ? Number(globalUserId) : null;
-    let defaultOrg = localStorage.getItem('defaultOrg');
-    this.defaultOrg = JSON.parse(defaultOrg);
-    let defaultBranch = localStorage.getItem('defaultBranch');
-    this.defaultBranch = JSON.parse(defaultBranch);
-    let users = localStorage.getItem('user');
+    console.log('this.globalReceiptNumber',this.branchReceiptNumber)
+    this.loggedInUser = this.authService.getCurrentUser();
+    
+    let users = this.sessionStorage.getItem('user');
     this.users = JSON.parse(users);
+
+    // Retrieve organization from localStorage or receiptDataService
+  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
+  
+  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+
+   // Ensure only one organization is active at a time
+   if (this.selectedOrg) {
+    this.defaultOrg = null;
+  } else if (this.defaultOrg) {
+    this.selectedOrg = null;
+  }
+
+  console.log('Selected Organization:', this.selectedOrg);
+  console.log('Default Organization:', this.defaultOrg);
+
+    // Retrieve branch from localStorage or receiptDataService
+    let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
+    let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
+  
+    this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
+    this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
+  
+    // Ensure only one branch is active at a time
+    if (this.selectedBranch) {
+      this.defaultBranch = null;
+    } else if (this.defaultBranch) {
+      this.selectedBranch = null;
+    }
+  
+    console.log('Selected Branch:', this.selectedBranch?.id);
+    console.log('Default Branch:', this.defaultBranch?.id);
+   
+    
     this.fetchAccountTypes();
   }
 
@@ -226,11 +253,11 @@ export class ClientSearchComponent implements OnInit {
    * @returns {void}
    */
   fetchAccountTypes() {
-    localStorage.setItem('defaultOrg', JSON.stringify(this.defaultOrg));
+    this.sessionStorage.setItem('defaultOrg', JSON.stringify(this.defaultOrg));
     this.receiptService
       .getAccountTypes(
-        this.defaultOrg.id || this.selectedOrgId,
-        this.defaultBranch.id || this.selectedBranch,
+        this.defaultOrg?.id || this.selectedOrg?.id,
+        this.defaultBranch?.id || this.selectedBranch?.id,
         this.loggedInUser.code
       )
       .subscribe({
@@ -261,7 +288,7 @@ export class ClientSearchComponent implements OnInit {
         (account) => account.name === accountType
       );
       this.accountTypeShortDesc = this.globalAccountTypeSelected.actTypeShtDesc;
-      localStorage.setItem('accountTypeShortDesc', this.accountTypeShortDesc);
+      this.sessionStorage.setItem('accountTypeShortDesc', this.accountTypeShortDesc);
       this.receiptingDetailsForm.get('searchCriteria')?.enable();
       this.receiptingDetailsForm.get('searchQuery')?.enable();
     } else {
@@ -360,7 +387,7 @@ export class ClientSearchComponent implements OnInit {
             this.receiptDataService.setReceiptData(
               this.receiptingDetailsForm.value
             );
-            this.router.navigate(['/home/fms/allocation']);
+            this.router.navigate(['/home/fms/client-allocation']);
           } else {
             this.globalMessagingService.displayErrorMessage(
               'Error:',
@@ -430,13 +457,13 @@ export class ClientSearchComponent implements OnInit {
    */
   onNext() {
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
-    this.router.navigate(['/home/fms/allocation']);
+    this.router.navigate(['/home/fms/client-allocation']);
   }
 
   /**
    * Navigates back to the first screen (screen1).
    */
   onBack() {
-    this.router.navigate(['/home/fms/screen1']);
+    this.router.navigate(['/home/fms/receipt-capture']);
   }
 }
