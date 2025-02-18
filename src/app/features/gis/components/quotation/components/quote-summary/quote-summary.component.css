@@ -72,11 +72,20 @@ line-height: normal;
     font-weight: 600;
     line-height: 24px;
 }
+.convertQouteTitle{
+  color:rgba(0, 82, 155, 1);
+  font-family: Roboto;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: center;
+}
 
 .cancelQouteParagraph{
   color: #000;
   font-family: Roboto;
-  font-size: 13px;
+  font-size: 15px;
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
@@ -88,7 +97,6 @@ border: 1px solid #00529B;
 }
 #closeBtn{
     width:73px;
-    margin-right: -20px;
 }
 
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {

@@ -15,7 +15,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 import { forkJoin } from 'rxjs';
-import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection, UserDetails } from '../../data/quotationsDTO'
+import { Clause, Excesses, LimitsOfLiability, PremiumComputationRequest, premiumPayloadData, PremiumRate, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection, UserDetails, UserDetail } from '../../data/quotationsDTO'
 import { Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -168,7 +168,7 @@ export class CoverTypesComparisonComponent {
   sectionDetails: any;
   existingRisk: any;
   isReturnToQuickQuote: boolean;
-  userOrgDetails: UserDetails;
+  userOrgDetails: UserDetail;
   userCode: number;
   organizationId: number;
   exchangeRate: number;
@@ -176,6 +176,8 @@ export class CoverTypesComparisonComponent {
   isEditQuotationDetail: boolean = false;
   storedQuotationNo: string;
   storedQuotationCode: number;
+  extraRiskCode: []=[];
+  component: { risks: { binderDto: { code: number; maxExposure: number; currencyCode: number; currencyRate: number; }; limits: any[]; withEffectFrom: string; withEffectTo: string; prorata: string; subclassSection: any; noClaimDiscountLevel: number; subclassCoverTypeDto: any; enforceCovertypeMinimumPremium: string; }[]; };
 
 
 
@@ -248,7 +250,7 @@ export class CoverTypesComparisonComponent {
 
     const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
     this.quickQuoteSectionList = JSON.parse(storedMandatorySectionsString);
-
+    log.debug("Mandatory sections passed fROMm   QQ",this.quickQuoteSectionList)
 
     log.debug("Quick Quote Quotation Sections:", this.quickQuoteSectionList);
     const storedClientDetailsString = sessionStorage.getItem('clientDetails');
@@ -329,8 +331,9 @@ export class CoverTypesComparisonComponent {
     log.debug("Passed Quotation Details", this.passedQuotationData)
     if (this.passedQuotationData) {
       this.isEditQuotationDetail = true
-      this.storedQuotationCode= this.passedQuotationData._embedded[0].quotationCode;
-      this.storedQuotationNo= this.passedQuotationData._embedded[0].quotationNumber;
+      this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
+      this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber;
+
 
 
     }
@@ -718,30 +721,66 @@ export class CoverTypesComparisonComponent {
     * @method createRiskDetailsForm
     * @return {void}
     */
+  // createRiskDetailsForm() {
+  //   this.riskDetailsForm = this.fb.group({
+  //     binderCode: ['', Validators.required],
+  //     coverTypeCode: ['', Validators.required],
+  //     coverTypeShortDescription: [''],
+  //     wef: ['', Validators.required],
+  //     wet: ['', Validators.required],
+  //     dateRange: [''],
+  //     prpCode: ['', Validators.required],
+  //     isNoClaimDiscountApplicable: [''],
+  //     itemDescription: ['', Validators.required],
+  //     location: [''],
+  //     noClaimDiscountLevel: [''],
+  //     quotProCode: ['', Validators.required],
+  //     propertyId: ['', Validators.required],
+  //     itemDesc: [''],
+  //     riskPremAmount: [''],
+  //     quotationCode: ['', Validators.required],
+  //     sclCode: ['', Validators.required],
+  //     town: [''],
+  //     value: ['', [Validators.required, Validators.min(1)]],
+  //     coverTypeDescription: [''],
+  //   });
+  // }
   createRiskDetailsForm() {
     this.riskDetailsForm = this.fb.group({
-      binderCode: ['', Validators.required],
+      insuredCode: [''],
+      location: [''],
+      town: ['', ],
+      ncdLevel: [''],
+      schedules: [''],
       coverTypeCode: ['', Validators.required],
+      addEdit: [''],
+      quotationRevisionNumber: [''],
+      code: ['', ],
+      quotationProductCode: ['', ],
+      quotationRiskNo: [''],
+      quotationCode: ['', Validators.required],
+      productCode: ['', Validators.required],
+      propertyId: ['', Validators.required],
+      value: ['', [Validators.required]],
       coverTypeShortDescription: [''],
+      premium: ['', Validators.required],
+      subclassCode: ['', Validators.required],
+      itemDesc: ['', Validators.required],
+      binderCode: ['', Validators.required],
       wef: ['', Validators.required],
       wet: ['', Validators.required],
-      dateRange: [''],
+      commissionRate: ['', ],
+      commissionAmount: ['', ],
       prpCode: ['', Validators.required],
-      isNoClaimDiscountApplicable: [''],
-      itemDescription: ['', Validators.required],
-      location: [''],
-      noClaimDiscountLevel: [''],
-      quotProCode: ['', Validators.required],
-      propertyId: ['', Validators.required],
-      itemDesc: [''],
-      riskPremAmount: [''],
-      quotationCode: ['', Validators.required],
-      sclCode: ['', Validators.required],
-      town: [''],
-      value: ['', [Validators.required, Validators.min(1)]],
+      clientShortDescription: [''],
+      annualPremium: ['', ],
+      coverDays: ['', ],
+      clientType: ['', ],
+      prospectCode: ['',],
       coverTypeDescription: [''],
     });
   }
+
 
   /**
   * Retrieves the current user and stores it in the 'user' property.
@@ -774,7 +813,7 @@ export class CoverTypesComparisonComponent {
 
     })
   }
-  createQuotation() {
+  createQuotationOld() {
     const quoteForm = this.quotationForm.value;
 
     quoteForm.agentCode = 0;
@@ -808,52 +847,51 @@ export class CoverTypesComparisonComponent {
 
     })
   }
-  createQuotationNew() {
+  createQuotation() {
+    log.debug("PREEEEMIUM PAYLOAD(CREATE QUOTATION)",this.premiumPayload)
+    log.debug("User Branch",this.userBranchId)
     const quoteForm = this.quotationForm.value;
+    quoteForm.quotationCode = null;
+    quoteForm.quotationNumber = null;
+    quoteForm.source = 37;
     quoteForm.user = this.user;
-    quoteForm.policyData.wefDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
-    quoteForm.policyData.wetDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
-    quoteForm.policyData.productCode = this.premiumPayload?.product?.code;
-    quoteForm.policyData.binderPolicy = "";
-    quoteForm.policyData.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
-    quoteForm.policyData.branchCode = this.userBranchId;
-    quoteForm.policyData.action = "A";
-    quoteForm.policyData.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
-    quoteForm.policyData.currencyRate = this.exchangeRate;
-    quoteForm.policyData.agentCode = 0;
-    quoteForm.policyData.agentShortDescription = "DIRECT";
-    quoteForm.policyData.introducerCode = "";
-    quoteForm.policyData.internalComments = "";
-    quoteForm.policyData.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
-    quoteForm.policyData.clientCode = this.passedClientDetails?.id
-    quoteForm.policyData.polPropHoldingCoPrpCode = "";
-    quoteForm.policyData.chequeRequisition = "";
-    quoteForm.policyData.divisionCode = "";
-    quoteForm.policyData.polSubAgnCode = "";
-    quoteForm.policyData.clientType = "I";
-    quoteForm.policyData.quotPrsCode = "";
-    quoteForm.policyData.polMktrAgnCode = "";
+    quoteForm.clientCode = this.passedClientDetails?.id || null,
+    quoteForm.productCode = this.premiumPayload?.product?.code;
+    quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode ,
+    quoteForm.currencyRate = this.exchangeRate || 1,
+    quoteForm.agentCode = 0;
+    quoteForm.agentShortDescription = "DIRECT";
+    quoteForm.gisPolicyNumber = null;
+    quoteForm.multiUser = null
+    quoteForm.unitCode = null;
+    quoteForm.locationCode = null;
+    quoteForm.wefDate = this.premiumPayload?.dateWithEffectFrom;
+    quoteForm.wetDate = this.premiumPayload?.dateWithEffectTo;
+    quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
+    quoteForm.binderPolicy = null;
+    quoteForm.divisionCode = null;
+    quoteForm.subAgentCode = null;
+    quoteForm.clientType = "C";
+    quoteForm.prospectCode = null;
+    quoteForm.branchCode = this.userBranchId || 1,
+    quoteForm.marketerAgentCode = null;
+    quoteForm.comments = null;
+    quoteForm.polPipPfCode = null;
+    quoteForm.endorsementStatus = null;
+    quoteForm.polEnforceSfParam = null;
+    quoteForm.creditDateNotified = null;
+    quoteForm.introducerCode = null;
+    quoteForm.internalComments = null;
+    quoteForm.polPropHoldingCoPrpCode = null;
+    quoteForm.chequeRequisition = null;
 
-
-
-    // quoteForm.agentShortDescription = "DIRECT";
-    // quoteForm.branchCode = this.userBranchId;
-    // quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
-    // quoteForm.clientCode = this.passedClientDetails?.id
-    // quoteForm.clientType = "I";
-    // quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
-    // quoteForm.currencySymbol = this.selectedCurrency;
-    // quoteForm.productCode = this.premiumPayload?.product?.code;
-    // quoteForm.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
-    // quoteForm.withEffectiveFromDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
-    // quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
-
+  
     this.quotationService.processQuotation(quoteForm).subscribe(data => {
       this.quotationData = data;
-      this.quotationCode = this.quotationData._embedded[0].quotationCode;
-      this.quotationNo = this.quotationData._embedded[0].quotationNumber;
+      this.quotationCode = this.quotationData._embedded.quotationCode;
+      this.quotationNo = this.quotationData._embedded.quotationNumber;
       log.debug("Quotation results:", this.quotationData)
-      log.debug("Quotation Number", this.quotationNo);
+      log.debug("Quotation Number(Process quotation)", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
       if (this.quotationNo) {
         const quotationNumberString = JSON.stringify(this.quotationNo);
@@ -879,7 +917,7 @@ export class CoverTypesComparisonComponent {
     this.quotationService.getClientQuotations(defaultCode).subscribe(data => {
       this.quotationDetails = data;
       log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
-      this.quotationNo = this.quotationDetails.quotOriginalQuotNo;
+      this.quotationNo = this.quotationDetails.quotationNo;
       log.debug("Quotation Number when quotation is loaded:", this.quotationNo)
       this.taxInformation = this.quotationDetails.taxInformation
       log.debug("Tax information", this.taxInformation)
@@ -913,32 +951,24 @@ export class CoverTypesComparisonComponent {
 
 
     const risk = this.riskDetailsForm.value;
-
+    risk.coverTypeCode = this.passedCovertypeCode;
+    risk.quotationCode = defaultCode;
+    risk.productCode = this.premiumPayload?.product.code;
+    risk.propertyId = selectedRisk.propertyId;
+    risk.value = this.sumInsuredValue;
+    risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
+    risk.subclassCode = this.premiumPayload?.risks[0].subclassSection.code;
     if (selectedRisk) {
       // Populate the risk object with details from the selected risk
       risk.itemDesc = selectedRisk.subclassCoverTypeDto.coverTypeShortDescription;
-      risk.itemDescription = selectedRisk.subclassCoverTypeDto.coverTypeDescription;
-
-      // From dynamic form
-      risk.propertyId = selectedRisk.propertyId;
+      // risk.itemDescription = selectedRisk.subclassCoverTypeDto.coverTypeDescription;
+      risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
     }
     risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
-    risk.coverTypeCode = this.passedCovertypeCode;
-    risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
-    risk.prpCode = this.passedClientDetails?.id
-    risk.quotProCode = this.premiumPayload?.product.code;
     risk.wef = this.premiumPayload?.risks[0].withEffectFrom;
     risk.wet = this.premiumPayload?.risks[0].withEffectTo;
-    risk.sclCode = this.premiumPayload?.risks[0].subclassSection.code;
-    // risk.itemDesc = this.premiumPayload?.risks[0].propertyId;
-    // risk.itemDescription = this.premiumPayload?.risks[0].propertyId;
-    risk.quotationCode = defaultCode;
-    risk.value = this.sumInsuredValue;
+    risk.prpCode = this.passedClientDetails?.id
     risk.coverTypeDescription = this.passedCovertypeDescription;
-
-    // FROM DYNAMIC FORM
-    // risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    // log.debug("Property ID", this.premiumPayload?.risks[0].propertyId)
     log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
     log.debug('Quick Form Risk', risk);
     const riskArray = [risk];
@@ -1118,62 +1148,84 @@ export class CoverTypesComparisonComponent {
     //     this.createQuotation();
     //     this.getQuotationNumber();
     // }
-    if(this.isEditQuotationDetail == true){
+    if (this.isEditQuotationDetail == true) {
       log.debug("EDITING QUOTATION DETAILS: 2ND STEPPER WAS CLICKED")
       log.debug("EDITING QUOTATION DETAILS Method called")
       this.editQuotation();
       this.router.navigate(['/home/gis/quotation/quote-summary']);
 
 
-    }else{
-    if (this.isAddededBenefitsCalled == true) {
-      log.debug(" A BENEFIT HAS BEEN ADDED");
-      log.debug("Quotation Number:", this.quotationNo)
-      const quotationNumberString = JSON.stringify(this.quotationNo);
-      sessionStorage.setItem('quotationNumber', quotationNumberString);
-      this.loadClientQuotation()
-      log.debug("NAVIGATING TO POLICY SUMMARY");
-      this.router.navigate(['/home/gis/quotation/quote-summary']);
+    } else {
+      if (this.isAddededBenefitsCalled == true) {
+        log.debug(" A BENEFIT HAS BEEN ADDED");
+        log.debug("Quotation Number:", this.quotationNo)
+        log.debug("Quotation Details(ADD BENEFITS):", this.quotationDetails)
+        log.debug("Selected Covertype", this.selectedCoverType)
+        const quotationNumber =this.quotationDetails?.quotationNo
+        log.debug("Quotation Number const:", quotationNumber)
 
-      if (this.passedNumber) {
-        // Both passedNumber and additional benefit have been added
-        log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
-        log.debug("NAVIGATING TO POLICY SUMMARY");
-        // this.router.navigate(['/home/gis/quotation/quote-summary']);
-      }
-    } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
-      // PassedNumber exists, but no additional benefit has been added
-      log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
-      log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
 
-      if (this.isEditRisk) {
-        log.debug("UPDATING EXISTING QUOTATION RISK");
-        this.UpdateQuotationRisk();
-        sessionStorage.removeItem('isEditRisk');
+        // Filter risks where coverTypeCode does not match selectedCoverType
+        const filteredRisks = this.quotationDetails.riskInformation.filter(
+          (risk: any) => risk.coverTypeCode !== this.selectedCoverType
+        );
 
-        const quotationNumberString = JSON.stringify(this.passedNumber);
-        sessionStorage.setItem('quotationNumber', quotationNumberString);
-      } else if (this.isAddRisk) {
-        log.debug("ADDING ANOTHER QUOTATION RISK");
-        this.createQuotationRisk();
-        sessionStorage.removeItem('isAddRisk');
+        // Extract risk codes
+        const riskCode = filteredRisks.map((risk: any) => risk.code);
+
+        log.debug("Filtered Risk Codes:", riskCode);
+        this.extraRiskCode = riskCode
+        if(this.extraRiskCode.length > 0){
+          this.deleteRisk()
+        }else{
+          const quotationNumberString = JSON.stringify(quotationNumber || this.quotationNo);
+          sessionStorage.setItem('quotationNumber', quotationNumberString);
+          this.loadClientQuotation()
+          log.debug("NAVIGATING TO POLICY SUMMARY");
+          this.router.navigate(['/home/gis/quotation/quote-summary']);
+        }
+
+       
+
+        if (this.passedNumber) {
+          // Both passedNumber and additional benefit have been added
+          log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
+          log.debug("NAVIGATING TO POLICY SUMMARY");
+          // this.router.navigate(['/home/gis/quotation/quote-summary']);
+        }
+      } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
+        // PassedNumber exists, but no additional benefit has been added
+        log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
+        log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
+
+        if (this.isEditRisk) {
+          log.debug("UPDATING EXISTING QUOTATION RISK");
+          this.UpdateQuotationRisk();
+          sessionStorage.removeItem('isEditRisk');
+
+          const quotationNumberString = JSON.stringify(this.passedNumber);
+          sessionStorage.setItem('quotationNumber', quotationNumberString);
+        } else if (this.isAddRisk) {
+          log.debug("ADDING ANOTHER QUOTATION RISK");
+          this.createQuotationRisk();
+          sessionStorage.removeItem('isAddRisk');
+
+          const quotationNumberString = JSON.stringify(this.passedNumber);
+          sessionStorage.setItem('quotationNumber', quotationNumberString);
+        } else {
+          log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
+        }
 
         const quotationNumberString = JSON.stringify(this.passedNumber);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
       } else {
-        log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
+        // Quotation data is empty, create a new quotation
+        log.debug("QUOTATION DATA IS EMPTY AND NO EXTRA BENEFIT HAS BEEN ADDED");
+        this.createQuotation();
+        this.getQuotationNumber();
       }
-
-      const quotationNumberString = JSON.stringify(this.passedNumber);
-      sessionStorage.setItem('quotationNumber', quotationNumberString);
-    } else {
-      // Quotation data is empty, create a new quotation
-      log.debug("QUOTATION DATA IS EMPTY AND NO EXTRA BENEFIT HAS BEEN ADDED");
-      this.createQuotation();
-      this.getQuotationNumber();
+      this.spinner.hide()
     }
-    this.spinner.hide()
-  }
   }
 
   // selectQuote(){
@@ -1271,7 +1323,7 @@ export class CoverTypesComparisonComponent {
   }
 
   computePremiumQuickQuote() {
-
+ 
     this.quotationService.premiumComputationEngine(this.computationDetails).subscribe(
       {
         next: (res) => {
@@ -1283,9 +1335,9 @@ export class CoverTypesComparisonComponent {
           this.newRiskLevelPremiums = newriskLevelPremiums;
           log.debug('newRiskLevelPremiums:', this.newRiskLevelPremiums)
 
-          if (this.newRiskLevelPremiums) {
-            this.updateQuotationDetails()
-          }
+          // if (this.newRiskLevelPremiums) {
+          //   this.updateQuotationDetails()
+          // }
 
           // Iterate through the cover types in the first payload
           for (let i = 0; i < this.riskLevelPremiums.length; i++) {
@@ -1302,7 +1354,11 @@ export class CoverTypesComparisonComponent {
             }
           }
 
-          log.debug("Updated Risk Level Premium:", this.riskLevelPremiums)
+          log.debug("Updated Risk Level Premium(COMPUTE PREMIUM QUICK QUOTE):", this.riskLevelPremiums)
+          if (this.riskLevelPremiums) {
+            this.updateQuotationDetails()
+          }
+
 
 
           // Extract the cover types from the computationalDetails
@@ -1625,7 +1681,7 @@ export class CoverTypesComparisonComponent {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
@@ -1661,7 +1717,7 @@ export class CoverTypesComparisonComponent {
         log.debug("RESPONSE AFTER ADDING LIST ", result);
       },
       error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add limits of liability. Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
   }
@@ -1686,7 +1742,7 @@ export class CoverTypesComparisonComponent {
         log.debug("RESPONSE AFTER ADDING LIST ", result);
       },
       error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add excesses. Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
   }
@@ -1715,7 +1771,7 @@ export class CoverTypesComparisonComponent {
           log.error("Failed to add clauses:", error);
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to add clauses. Try again later.'
+            error.error.message
           );
         }
       });
@@ -1785,16 +1841,26 @@ export class CoverTypesComparisonComponent {
   }
 
   updateQuotationDetails() {
-    log.debug('computation details-updateQuotationDetails', this.computationDetails);
+    log.debug('computation detailss-updateQuotationDetails', this.computationDetails);
     log.debug('Risk level premiums details-updateQuotationDetails', this.riskLevelPremiums);
+    log.debug('NEW Risk level premiums details-updateQuotationDetails', this.newRiskLevelPremiums);
+    log.debug("Selected Cover type", this.selectedCoverType)
 
     // Find the selected cover type from riskLevelPremiums based on the selectedCoverType value
-    const selectedRiskLevelPremium = this.riskLevelPremiums.find(
-      (premium) => premium.coverTypeDetails.coverTypeCode === this.selectedCoverType
+    const selectedRiskLevelPremium = this.riskLevelPremiums?.find(
+      premium => premium.coverTypeDetails.coverTypeCode === this.selectedCoverType
     );
+
+    // let updatedSections = [];
+    // for(let premiumValue of this.riskLevelPremiums){
+    //   if(premiumValue.coverTypeDetails.coverTypeCode === this.selectedCoverType){
+    //     updatedSections.push(premiumValue.limitPremiumDtos)
+    //   }
+    // }
+    // const selectedRiskLevelPremium = this.newRiskLevelPremiums[0]
     log.debug('SELECTED Risk level premiums details-updateQuotationDetails', selectedRiskLevelPremium);
 
-    const initialPremium = selectedRiskLevelPremium.premium;
+    const initialPremium = selectedRiskLevelPremium?.premium;
 
     sessionStorage.setItem("initialPremium", JSON.stringify(initialPremium));
 
@@ -1811,7 +1877,7 @@ export class CoverTypesComparisonComponent {
 
     let quotationCode;
     if (this.quotationData) {
-      this.quotationCode = this.quotationData._embedded[0].quotationCode;
+      this.quotationCode = this.quotationData?._embedded?.quotationCode;
       quotationCode = Number(this.quotationCode);
     } else {
       quotationCode = sessionStorage.getItem("passedQuotationCode");
@@ -1820,26 +1886,28 @@ export class CoverTypesComparisonComponent {
 
 
     // Fetch individual tax premiums
-    const taxPremiums = selectedRiskLevelPremium.taxComputation.map((tax) => tax.premium);
+    const taxPremiums = selectedRiskLevelPremium?.taxComputation?.map((tax) => tax.premium);
 
     // Calculate the total tax premium
-    const totalTaxPremium = taxPremiums.reduce((sum, taxPremium) => sum + taxPremium, 0);
+    const totalTaxPremium = taxPremiums?.reduce((sum, taxPremium) => sum + taxPremium, 0);
 
     // Add the total tax premium to the selected premium
-    const productPremium = selectedRiskLevelPremium.premium + totalTaxPremium;
+    // const productPremium = selectedRiskLevelPremium?.premium + +Number(totalTaxPremium);
+    const productPremium = selectedRiskLevelPremium?.premium ;
+    log.debug("product premium when updating the premium details", productPremium);
 
     this.updatePremiumPayload = {
       productPremium: productPremium, // Sum of premium and tax premiums
-      productCode: this.premiumPayload.product.code,
+      productCode: this.premiumPayload?.product.code,
       quotProductCode: this.quoteProductCode,
-      taxes: selectedRiskLevelPremium.taxComputation.map((tax) => ({
+      taxes: selectedRiskLevelPremium?.taxComputation?.map((tax) => ({
         code: tax.code,
         premium: tax.premium,
       })),
       riskLevelPremiums: [{
         code: this.riskCode,
         premium: selectedRiskLevelPremium.premium,
-        limitPremiumDtos: selectedRiskLevelPremium.limitPremiumDtos.map((limit) => ({
+        limitPremiumDtos: selectedRiskLevelPremium?.limitPremiumDtos.map((limit) => ({
           sectCode: limit.sectCode,
           premium: limit.premium,
         })),
@@ -1849,7 +1917,7 @@ export class CoverTypesComparisonComponent {
     log.debug("update premium payload", this.updatePremiumPayload);
 
     return this.quotationService
-      .createQuotationDetails(quotationCode, this.updatePremiumPayload)
+      .updatePremium(quotationCode, this.updatePremiumPayload)
       .subscribe({
         next: (response: any) => {
           const result = response;
@@ -1859,7 +1927,7 @@ export class CoverTypesComparisonComponent {
           log.error("Failed to update details:", error);
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to update details. Try again later.'
+            error.error.message
           );
         }
       }
@@ -1919,78 +1987,113 @@ export class CoverTypesComparisonComponent {
   createQuotationFormNew() {
     this.quotationFormNew = this.fb.group({
       quotationCode: [''],
-      quotationNo: [''],
+      quotationNumber: [''],
+      source: [''],
       user: [''],
-      quotStage: [''],
-      policyData: this.fb.array([
-        this.fb.group({
-          wefDate: [''],
-          wetDate: [''],
-          productCode: [''],
-          binderPolicy: [''],
-          bindCode: [''],
-          branchCode: [''],
-          action: [''],
-          currencyCode: [''],
-          currencyRate: [''],
-          agentCode: [''],
-          agentShortDescription: [''],
-          introducerCode: [''],
-          internalComments: [''],
-          source: [''],
-          clientCode: [''],
-          polPropHoldingCoPrpCode: [''],
-          chequeRequisition: [false],
-          divisionCode: [''],
-          polSubAgnCode: [''],
-          clientType: [''],
-          quotPrsCode: [''],
-          polMktrAgnCode: [''],
-          comments: [''],
-          gisPolicyNumber: [''],
-          polPipPfCode: [''],
-          endorsementStatus: [''],
-          polEnforceSfParam: [''],
-          polCrDateNotified: [''],
-          multiUser: [''],
-          unitCode: [''],
-          locationCode: ['']
-        })
-      ])
+      clientCode: [''],
+      productCode: [''],
+      currencyCode: [''],
+      currencyRate: [''],
+      agentCode: [''],
+      agentShortDescription: [''],
+      gisPolicyNumber: [''],
+      multiUser: [''],
+      unitCode: [''],
+      locationCode: [''],
+      wefDate: [''],
+      wetDate: [''],
+      bindCode: [''],
+      binderPolicy: [''],
+      divisionCode: [''],
+      subAgentCode: [''],
+      clientType: [''],
+      prospectCode: [''],
+      branchCode: [''],
+      marketerAgentCode: [''],
+      comments: [''],
+      polPipPfCode: [''],
+      endorsementStatus: [''],
+      polEnforceSfParam: [''],
+      creditDateNotified: [''],
+      introducerCode: [''],
+      internalComments: [''],
+      polPropHoldingCoPrpCode: [''],
+      chequeRequisition: [false]
+    });
+}
+  // createQuotationForm() {
+  //   this.quotationForm = this.fb.group({
+  //     actionType: ['',],
+  //     addEdit: [''],
+  //     agentCode: ['', Validators.required],
+  //     agentShortDescription: [''],
+  //     bdivCode: [''],
+  //     bindCode: [''],
+  //     branchCode: ['', Validators.required],
+  //     clientCode: ['', Validators.required],
+  //     clientType: [''],
+  //     coinLeaderCombined: [''],
+  //     consCode: [''],
+  //     currencyCode: ['', Validators.required],
+  //     currencySymbol: [''],
+  //     fequencyOfPayment: [''],
+  //     isBinderPolicy: [''],
+  //     paymentMode: [''],
+  //     proInterfaceType: [''],
+  //     productCode: ['', Validators.required],
+  //     source: ['', Validators.required],
+  //     withEffectiveFromDate: ['', Validators.required],
+  //     withEffectiveToDate: ['', Validators.required],
+  //     multiUser: [''],
+  //     comments: [''],
+  //     internalComments: [''],
+  //     introducerCode: [''],
+  //     dateRange: [''],
+  //     RFQDate: ['', Validators.required],
+  //     expiryDate: ['', Validators.required]
+  //   })
+  // }
+  createQuotationForm(): void {
+    this.quotationForm = this.fb.group({
+      quotationCode: [null],
+      quotationNo: [null],
+      user: ['', Validators.required],
+      policyData: this.fb.group({
+        action: [''],
+        wefDate: ['', Validators.required],
+        wetDate: ['', Validators.required],
+        branchCode: [, Validators.required],
+        currencyCode: [, Validators.required],
+        agentCode: [, Validators.required],
+        agentShortDescription: [''],
+        source: [, Validators.required],
+        clientType: [''],
+        productCode: [, Validators.required],
+        bindCode: [],
+        binderPolicy: [],
+        currencyRate: [],
+        introducerCode: [null],
+        internalComments: [null],
+        clientCode: [null],
+        polPropHoldingCoPrpCode: [null],
+        chequeRequisition: [null],
+        divisionCode: [null],
+        subAgentCode: [null],
+        prospectCode: [null],
+        marketerAgentCode: [null],
+        comments: [null],
+        gisPolicyNumber: [null],
+        polPipPfCode: [null],
+        endorsementStatus: [null],
+        polEnforceSfParam: [null],
+        creditDateNotified: [null],
+        multiUser: [null],
+        unitCode: [null],
+        locationCode: [null]
+      })
     });
   }
-  createQuotationForm() {
-    this.quotationForm = this.fb.group({
-      actionType: ['',],
-      addEdit: [''],
-      agentCode: ['', Validators.required],
-      agentShortDescription: [''],
-      bdivCode: [''],
-      bindCode: [''],
-      branchCode: ['', Validators.required],
-      clientCode: ['', Validators.required],
-      clientType: [''],
-      coinLeaderCombined: [''],
-      consCode: [''],
-      currencyCode: ['', Validators.required],
-      currencySymbol: [''],
-      fequencyOfPayment: [''],
-      isBinderPolicy: [''],
-      paymentMode: [''],
-      proInterfaceType: [''],
-      productCode: ['', Validators.required],
-      source: ['', Validators.required],
-      withEffectiveFromDate: ['', Validators.required],
-      withEffectiveToDate: ['', Validators.required],
-      multiUser: [''],
-      comments: [''],
-      internalComments: [''],
-      introducerCode: [''],
-      dateRange: [''],
-      RFQDate: ['', Validators.required],
-      expiryDate: ['', Validators.required]
-    })
-  }
+
   fetchUserOrgId() {
     this.quotationService
       .getUserOrgId(this.userCode)
@@ -2007,7 +2110,7 @@ export class CoverTypesComparisonComponent {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
@@ -2029,40 +2132,136 @@ export class CoverTypesComparisonComponent {
         }
       });
   }
-  editQuotation(){
+  editQuotation() {
     const quoteForm = this.quotationForm.value;
 
-    quoteForm.agentCode = 0;
-    quoteForm.agentShortDescription = "DIRECT";
-    quoteForm.branchCode = this.userBranchId;
-    quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
-    quoteForm.clientCode = this.passedClientDetails?.id
-    quoteForm.clientType = "I";
-    quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
-    quoteForm.currencySymbol = this.selectedCurrency;
-    quoteForm.productCode = this.premiumPayload?.product?.code;
-    quoteForm.source = this.passedQuotationSource && this.passedQuotationSource[0]?.code || undefined;
-    quoteForm.withEffectiveFromDate = this.premiumPayload?.risks?.[0]?.withEffectFrom;
-    quoteForm.withEffectiveToDate = this.premiumPayload?.risks?.[0]?.withEffectTo;
+    quoteForm.user = this.user;
+    quoteForm.quotationCode = this.storedQuotationCode;
+    quoteForm.quotationNo = this.storedQuotationNo;
+    
+    // Creating policyData as an array with an object
+    quoteForm.policyData = [{
+      action: "E",
+      wefDate: this.premiumPayload?.dateWithEffectFrom,
+      wetDate: this.premiumPayload?.dateWithEffectTo,
+      branchCode:this.userBranchId || 1,
+      currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode ,
+      agentCode: 0,
+      agentShortDescription: "DIRECT",
+      clientType: "C",
+      source:37,
+      productCode: this.premiumPayload?.product?.code,
+      bindCode: this.premiumPayload?.risks?.[0]?.binderDto?.code,
+      binderPolicy: null,
+      currencyRate: this.exchangeRate || 1,
+      introducerCode: null,
+      internalComments: null,
+      clientCode: this.passedClientDetails?.id,
+      polPropHoldingCoPrpCode: null,
+      chequeRequisition: null,
+      divisionCode: null,
+      subAgentCode: null,
+      prospectCode: null,
+      marketerAgentCode: null,
+      comments: null,
+      gisPolicyNumber: null,
+      polPipPfCode: null,
+      endorsementStatus: null,
+      polEnforceSfParam: null,
+      creditDateNotified: null,
+      multiUser: null,
+      unitCode: null,
+      locationCode: null
+  }];
 
     this.quotationService
-    .updateQuotationDetails(this.user,this.storedQuotationCode,this.storedQuotationNo,quoteForm)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
+      .processQuotation(quoteForm)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
 
-        this.userOrgDetails = response
-        log.debug("User Organization Details  ", this.userOrgDetails);
-        this.organizationId = this.userOrgDetails.organizationId
-        if (this.organizationId) {
-          this.fetchExchangeRate()
+          const updatedQuotationResponse = response
+          log.debug("Response after editing a risk  ", updatedQuotationResponse);
+         
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
+      });
+  }
+  //  deleteRisk() {
+  //     log.debug("Selected Risks to be deleted", this.extraRiskCode)
+  //     // const riskCode =code
+  //     this.quotationService
+  //       .deleteRisk(riskCode)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (response: any) => {
+  //           log.debug("Response after deleting a risk ", response);
+  //           // this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
+  
+  //           // Remove the deleted risk from the riskDetails array
+  //           const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
+  //           if (index !== -1) {
+  //             this.quotationDetails?.riskInformation.splice(index, 1);
+  //           }
+  //           // Clear the selected risk
+  //           this.extraRiskCode = null;
+  //           const quotationNumberString = JSON.stringify(this.quotationNo);
+  //           sessionStorage.setItem('quotationNumber', quotationNumberString);
+  //           this.loadClientQuotation()
+  //           log.debug("NAVIGATING TO POLICY SUMMARY");
+  //           this.router.navigate(['/home/gis/quotation/quote-summary']);
+  
+  //         },
+  //         error: (error) => {
+  
+  //           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+  //         }
+  //       });
+  //   }
+  deleteRisk() {
+    log.debug("Selected Risks to be deleted", this.extraRiskCode);
+  
+    if (!Array.isArray(this.extraRiskCode) || this.extraRiskCode.length === 0) {
+      log.debug("No risks selected for deletion.");
+      return;
+    }
+  
+    const deleteObservables = this.extraRiskCode.map(riskCode =>
+      this.quotationService.deleteRisk(riskCode).pipe(untilDestroyed(this))
+    );
+  
+    forkJoin(deleteObservables).subscribe({
+      next: (responses) => {
+        log.debug("Responses after deleting risks", responses);
+  
+        // Remove deleted risks from the riskDetails array
+        this.extraRiskCode.forEach((riskCode) => {
+          const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === riskCode);
+          if (index !== -1) {
+            this.quotationDetails?.riskInformation.splice(index, 1);
+          }
+        });
+  
+        // Clear the selected risks
+        this.extraRiskCode = [];
+  
+        // Update session storage
+        sessionStorage.setItem('quotationNumber', JSON.stringify(this.quotationNo));
+  
+        // Reload quotation details
+        this.loadClientQuotation();
+  
+        log.debug("NAVIGATING TO POLICY SUMMARY");
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
       },
       error: (error) => {
-
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch taxes. Try again later');
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
   }
+  
 }
 
