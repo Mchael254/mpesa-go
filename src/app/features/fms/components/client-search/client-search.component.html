@@ -85,7 +85,7 @@
             responsiveLayout="scroll"
             class="table-striped"
             [paginator]="true"
-            [rows]="10"
+            [rows]="5"
             [rowsPerPageOptions]="[5, 10, 20]"
             selectionMode="single"
             [(selection)]="selectedClient"
@@ -118,9 +118,17 @@
                 <td>
                   <button
                     class="btn btn-secondary"
+                    style="
+                      height: 30px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      text-align: center;
+                      padding: 0 10px;
+                    "
                     (click)="onClickClient(client)"
                   >
-                    Select
+                    select
                   </button>
                 </td>
               </tr>
@@ -143,7 +151,9 @@
       </button>
     </div>
     <div class="btn-next">
-      <button type="button" class="btn-primary-outline">Clear</button>
+      <button type="button" class="btn-primary-outline" (click)="onNext()">
+        Next
+      </button>
       <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
     </div>
   </div>
