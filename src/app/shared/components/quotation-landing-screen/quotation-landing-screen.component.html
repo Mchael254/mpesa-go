@@ -188,9 +188,9 @@
               <td class="align-currency">{{ quoteData?.total_premium !== null ? (quoteData?.total_premium | number) :
                 "-"
                 }}</td>
-              <td>{{ quoteData?.cover_from_date | date: 'dd-MM-yyyy' || "-" }}</td>
-              <td>{{ quoteData?.cover_to_date | date: 'dd-MM-yyyy'|| "-" }}</td>
-              <td>{{ quoteData?.quotation_date | date: 'dd-MM-yyyy' || "-" }}</td>
+              <td>{{ quoteData?.cover_from_date | date: 'dd-MM-yyyy' }}</td>
+              <td>{{ quoteData?.cover_to_date | date: 'dd-MM-yyyy' }}</td>
+              <td>{{ quoteData?.quotation_date | date: 'dd-MM-yyyy' }}</td>
               <td>{{ quoteData?.quotation_status || "-" | titlecase }}</td>
               <td>
                 <div class="dropdown">
@@ -262,7 +262,7 @@
         </div>
       </div>
     </div>
-    <!-- <p-table [value]="LMS_IND" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'" 
+    <!-- <p-table [value]="LMS_IND" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'"
     [resizableColumns]="true"
       [reorderableColumns]="true"> -->
       <p-table
@@ -275,12 +275,12 @@
   [resizableColumns]="true"
   [showCurrentPageReport]="true"
   [rows]="pageSize || 5"
-  [totalRecords]="tableDetails.totalElements"  
-  [value]="tableDetails.rows" 
+  [totalRecords]="tableDetails.totalElements"
+  [value]="tableDetails.rows"
   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
   responsiveLayout="stack"
   [scrollable]="true"
- 
+
   currentPageReportTemplate="{first} - {last} of {totalRecords}"
   styleClass="p-datatable-sm">
       <ng-template pTemplate="header">
@@ -296,7 +296,7 @@
           <th>{{ 'gis.quotation.status' | translate }}</th>
           <th>Action</th>
 
-      
+
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-quotation>
