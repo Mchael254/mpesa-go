@@ -340,6 +340,7 @@ export class ReceiptCaptureComponent {
   /** @property {number | null} editReceiptExpenseId - To hold the receiptExpenseId of the edited charge.*/
   editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
   selectedBranch:BranchDTO;
+  isdefaultCurrencySelected:boolean=true;
 
 /**
    * Constructor for the `ReceiptCaptureComponent`.
@@ -577,25 +578,25 @@ export class ReceiptCaptureComponent {
       ? selectedCurrency.symbol
       : '';
 // **STOP if the selected currency is the same as the default currency**
-if (this.selectedCurrencyCode === Number(this.defaultCurrencyId)) {
+if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
   console.log('selectedCurrencyCode',this.selectedCurrencyCode);
   console.log('defaultCurrencyId',this.defaultCurrencyId);
-  this.exchangeRate = 0; // Reset exchange rate
-  this.exchangeFound = false; // Hide span text
+ this.isdefaultCurrencySelected=false;
+  // this.exchangeRate = 0; // Reset exchange rate
+  // this.exchangeFound = false; // Hide span text
   this.receiptingDetailsForm.patchValue({ exchangeRate: 0 }); // Clear exchange rate field
   return; // Stop execution
 }   
-     
+ // If another currency is selected, ensure the span is shown
+ this.isdefaultCurrencySelected = true;
+  this.fetchCurrencyRate();   
   }
 /**
    * Fetches the exchange rate for the selected currency from the `CurrencyService`.
    * @returns {void}
    */
   fetchCurrencyRate() {
-    // if (!this.defaultBranch?.id ) {
-    //  // console.error('Branch ID is not set');
-    //   return;
-    // }
+    
   
 
     const currentDate = new Date();

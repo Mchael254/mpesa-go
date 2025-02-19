@@ -25,9 +25,13 @@
           </select>
 
           <!-- Display exchange rate if available -->
-          <div *ngIf="exchangeRateText" class="exchange-rate-text mt-2">
-            1 {{ defaultCurrencyName }} = {{ exchangeRate }}
-            {{ selectedCurrencySymbol }}
+          <div
+            *ngIf="exchangeRateText && isdefaultCurrencySelected"
+            class="exchange-rate-text mt-2"
+          >
+            {{ exchangeRate }} {{ defaultCurrencyName }} = 1{{
+              selectedCurrencySymbol
+            }}
             <span
               class="text-primary edit-link"
               (click)="showExchangeRateModal2()"
