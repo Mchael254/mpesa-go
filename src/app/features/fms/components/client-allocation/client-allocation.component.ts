@@ -88,14 +88,14 @@ export class ClientAllocationComponent {
   amountIssued: number = 0; // Store amountIssued from storedData
   selectedClient: any = null; // ✅ Add this property
   globalAccountTypeSelected: any = null;
-  allocationsReturned: any;
+  allocationsReturned: boolean = false;
   globalGetAllocation: any;
   getAllocationStatus: boolean = false;
   isAllocationCompleted: boolean = false;
   isFileSaved: boolean = false;
   getAllocation: GetAllocationDTO[] = [];
   filteredTransactions: any[] = [];
-
+  showSaveButton:boolean=false;
   isAllocationPosted: boolean = false;
   fileUploaded: boolean = false;
   receiptResponse: any;
@@ -133,6 +133,7 @@ export class ClientAllocationComponent {
   decodedFileUrl: string | null = null;
   uploadedFiles: any[] = []; // Store multiple files
   filePath: string | null = null;
+
    /**
    * Constructor for `ClientAllocationComponent`.
    * @param receiptDataService Service for managing receipt data
@@ -234,6 +235,7 @@ export class ClientAllocationComponent {
 
     if (storedData) {
       this.amountIssued = storedData.amountIssued || 0;
+     // this.amountIssued = this.amountIssued ?? (storedData.amountIssued || 0);
       this.paymentMode = storedData.paymentMode || '';
       this.paymentRef = storedData.paymentRef || '';
       this.manualRef = storedData.manualRef || '';
@@ -289,6 +291,7 @@ export class ClientAllocationComponent {
     let exchangeRate = this.sessionStorage.getItem('exchangeRate');
     this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
+    this.getAllocations(); // Always fetch latest allocations
   }
     /**
    * Initializes the receipt capture form with default values and validators.
@@ -493,13 +496,8 @@ export class ClientAllocationComponent {
  /**
    * Allocates and posts the allocations to the backend.
    */
-  allocateAndPostAllocations(): void {
-    // Store already posted amount before resetting transactions
-    // console.log('defaultBranch>',this.defaultBranch.id);
-    // console.log('selectedBranch>',this.selectedBranch);
-    const previousTotalAllocated = this.totalAllocatedAmount;
-    const deductionsValue = this.receiptingDetailsForm.get('deductions')?.value;
-    const narration = this.receiptingDetailsForm.get('narration')?.value;
+  allocateAndPostAllocations(): any {
+    
 
     const allocatedTransactionsData = this.transactions
       .map((transaction, index) => {
@@ -524,7 +522,30 @@ export class ClientAllocationComponent {
       );
       return;
     }
+    if (!this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please enter the amount issued.'
+      );
+      return false; // Stop further execution
+    }
+// Step 2: Validate the total allocated amount against the issued amount
+// if (this.totalAllocatedAmount < this.amountIssued) {
+//   this.globalMessagingService.displayErrorMessage(
+//     'Error',
+//     'Amount issued is not fully allocated.'
+//   );
 
+//   return false; // Stop further execution
+// }
+if (this.totalAllocatedAmount > this.amountIssued) {
+  this.globalMessagingService.displayErrorMessage(
+    'Error',
+    'Total Allocated Amount Exceeds Amount Issued'
+  );
+
+  return false;
+}
     const receiptParticulars = {
       receiptNumber: this.branchReceiptNumber,
       capturedBy: this.loggedInUser.code,
@@ -579,6 +600,12 @@ export class ClientAllocationComponent {
             'Allocations posted successfully'
           );
           this.isAllocationComplete = true;
+            // Preserve amountIssued
+      const currentReceiptData = this.receiptDataService.getReceiptData();
+     
+
+      this.amountIssued = currentReceiptData.amountIssued; // Ensure UI retains value
+    
           // ✅ Update totalAllocatedAmount
           const newlyAllocatedTotal = allocatedTransactionsData.reduce(
             (total, item) => total + item.allocatedAmount,
@@ -602,6 +629,9 @@ export class ClientAllocationComponent {
           // ✅ Refresh allocations
           this.getAllocations();
           this.isAllocationPosted = true;
+          this.transactions = this.receiptDataService.getTransactions();
+    this.filteredTransactions = this.transactions;
+    this.showSaveButton = true; // Ensure Save button is visible
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
@@ -628,7 +658,7 @@ export class ClientAllocationComponent {
               (detail) => detail.premiumAmount > 0
             )
           );
-
+this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           // ✅ Reset totalAllocatedAmount before recalculating
           this.totalAllocatedAmount = this.getAllocation.reduce(
             (total, allocation) => {
@@ -665,8 +695,8 @@ export class ClientAllocationComponent {
           });
           this.isAllocationCompleted = true;
           this.getAllocationStatus = true;
-          this.allocationsReturned = this.getAllocation;
-          this.globalGetAllocation = this.getAllocation;
+          this.allocationsReturned = true;
+          //this.globalGetAllocation = this.getAllocation;
 
           
         },
@@ -1089,9 +1119,32 @@ export class ClientAllocationComponent {
   submitReceipt(): any {
    
 
-   
+    if (!this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please enter the amount issued.'
+      );
+      return false; // Stop further execution
+    }
+// Step 2: Validate the total allocated amount against the issued amount
+if (this.totalAllocatedAmount < this.amountIssued) {
+  this.globalMessagingService.displayErrorMessage(
+    'Error',
+    'Amount issued is not fully allocated.'
+  );
+
+  return false; // Stop further execution
+}
+if (this.totalAllocatedAmount > this.amountIssued) {
+  this.globalMessagingService.displayErrorMessage(
+    'Error',
+    'Total Allocated Amount Exceeds Amount Issued'
+  );
+
+  return false;
+}
      
- console.log('receiptDoc>>',this.parameterStatus);
+// console.log('receiptDoc>>',this.parameterStatus);
   if(this.parameterStatus=='Y' && !this.fileUploaded )
     {
  
@@ -1188,62 +1241,7 @@ return true;
           'Success',
           'Receipt saved successfully'
         );
-
-        // Store current values of fields to preserve
-        // const preservedValues = {
-        //   currency: this.receiptingDetailsForm.get('currency')?.value,
-        //   organization: this.receiptingDetailsForm.get('organization')?.value,
-        //   selectedBranch:
-        //     this.receiptingDetailsForm.get('selectedBranch')?.value,
-        //   documentDate: this.receiptingDetailsForm.get('documentDate')?.value,
-        //   receiptDate: this.receiptingDetailsForm.get('receiptDate')?.value,
-        // };
-        // // Reset form and clear allocations
-        // this.receiptingDetailsForm.reset();
-        // this.transactions = [];
-        // this.allocatedAmountControls.clear();
-        // this.totalAllocatedAmount = 0;
-        // this.sessionStorage.removeItem('totalAllocatedAmount');
-
-        // this.isAllocationCompleted = false;
-
-        // // Clear client-related states
-        // this.selectedClient = null;
-
-        // this.globalAccountTypeSelected = null;
-
-        // // Explicitly disable search fields
-        // this.receiptingDetailsForm.get('searchCriteria')?.disable();
-        // this.receiptingDetailsForm.get('searchQuery')?.disable();
-
-        // // Reset other form-related states
-        // this.fileDescriptions = [];
-        // this.selectedFile = null;
-        // this.uploadedFile = null;
-        // this.base64Output = '';
-
-        // this.receiptingDetailsForm.patchValue({
-        //   currency: preservedValues.currency,
-        //   organization: preservedValues.organization,
-        //   selectedBranch: preservedValues.selectedBranch,
-        //   documentDate: preservedValues.documentDate,
-        //   receiptDate: preservedValues.receiptDate,
-        // });
-
-        // Object.keys(this.receiptingDetailsForm.controls).forEach((key) => {
-        //   const control = this.receiptingDetailsForm.get(key);
-        //   if (
-        //     control &&
-        //     key !== 'currency' &&
-        //     key !== 'organization' &&
-        //     key !== 'branch' &&
-        //     key !== 'documentDate' &&
-        //     key !== 'receiptDate'
-        //   ) {
-        //     control.markAsUntouched();
-        //     control.markAsPristine();
-        //   }
-        // });
+        //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
         this.receiptDataService.clearReceiptData();
 

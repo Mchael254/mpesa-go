@@ -169,7 +169,15 @@
         </p-table>
       </div>
     </div>
-
+    <div class="btn-actions" *ngIf="allocation || showSaveButton">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="allocateAndPostAllocations()"
+      >
+        Save Allocation
+      </button>
+    </div>
     <!-- Allocations Table -->
     <div
       *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0"
@@ -354,16 +362,6 @@
     </button>
   </div>
 
-  <div class="btn-actions" *ngIf="!isAllocationComplete">
-    <button
-      type="button"
-      class="btn btn-primary"
-      (click)="allocateAndPostAllocations()"
-    >
-      Save Allocation
-    </button>
-  </div>
-
   <div class="btn2">
     <div class="back-btn" style="justify-content: flex-start">
       <button type="button" class="btn btn-link" (click)="onBack()">
@@ -373,7 +371,7 @@
     <div class="save-btns">
       <button
         type="button"
-        [disabled]="!isAllocationComplete"
+        [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-outline-primary"
         (click)="saveAndPrint()"
       >
@@ -382,7 +380,7 @@
 
       <button
         type="button"
-        [disabled]="!isAllocationComplete"
+        [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-primary"
         (click)="submitReceipt()"
       >
