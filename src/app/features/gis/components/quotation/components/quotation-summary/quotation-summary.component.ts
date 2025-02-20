@@ -756,7 +756,7 @@ export class QuotationSummaryComponent {
     this.getProductClause(proCode);
     this.getProductSubclass(proCode);
     this.fetchSimilarQuotes(quotationProductCode);
-    this.getLimits(quotationProductCode);
+    // this.getLimits(quotationProductCode);
   }
 
   loadAllSubclass() {

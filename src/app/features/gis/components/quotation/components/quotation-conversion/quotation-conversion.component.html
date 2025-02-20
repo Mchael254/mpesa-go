@@ -288,16 +288,23 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.policy_ID' | translate}}</th>
+                <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.policy_number' | translate}}</th>
+                <th pSortableColumn="id" class="flexible-header">{{'gis.quotation.batch_number' | translate}}</th>
               </tr>
               <tr>
                 <th><input type="text" class="form-control" (input)="inputPolicyNumber($event)"></th>
+                <th><input type="text" class="form-control" (input)="inputBatchNo($event)"></th>
               </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-policyData>
-              <tr [pSelectableRow]="true" (click)="loadPolicyDetails(policyData)">
+              <tr
+                [pSelectableRow]="true"
+                (click)="loadPolicyDetails(policyData)"
+                [class.p-highlight]="policyData === selectedPolicy"
+              >
                 <td>{{ policyData.policyNumber }}</td>
+                <td>{{ policyData.batchNumber }}</td>
               </tr>
             </ng-template>
 
