@@ -1,3 +1,5 @@
+import { ClientDTO } from "src/app/features/entities/data/ClientDTO";
+
 export interface quotationDTO {
   actionType: string,
   addEdit: string,
@@ -367,6 +369,7 @@ export interface tax {
 export interface limitPremiumDto {
   sectCode: number;
   premium: number;
+  sectionDescription: string;
 }
 
 export interface riskLevelPremiums {
@@ -376,7 +379,7 @@ export interface riskLevelPremiums {
 }
 
 export interface premiumPayloadData {
-  productPremium: string;
+  productPremium: number;
   productCode: number;
   quotProductCode: string;
   taxes: tax[];
@@ -498,7 +501,26 @@ export interface UserDetail {
   pinNumber: string | null;
   idNumber: string | null;
 }
+export interface QuickQuoteData {
+  yearOfManufacture: number;
+  clientName: string;
+  clientEmail: string;
+  clientPhoneNumber: string
+  carRegNo: string;
+  product: any
+  subClass: any;
+  currency: any;
+  effectiveDateFrom: Date
+  selfDeclaredValue: number
+  modeOfTransport: number
+  value: number;
+  riskId: string;
+  coverTo: Date
+  existingClientSelected: boolean
+  selectedClient?: ClientDTO
+  computationPayloadCode?:number
 
+}
 
 
 

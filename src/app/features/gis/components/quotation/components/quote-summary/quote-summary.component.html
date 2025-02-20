@@ -220,7 +220,7 @@
 
                   <ng-template pTemplate="body" let-risk>
                       <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
-                          <td>{{ risk.propertyId }}</td>
+                          <td>{{ risk.propertyId || risk.propertyDescription  }}</td>
                           <td>{{ risk.subclass.sclDescription | sentenceCase }}</td>
                           <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
                           <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
