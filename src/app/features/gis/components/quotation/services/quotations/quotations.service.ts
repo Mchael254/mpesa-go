@@ -479,7 +479,7 @@ export class QuotationsService {
   ) {
     // Sends a POST request to merge a quotation into an existing policy
     return this.api.POST(
-      `v1/quotation/merge-to-existing-policy?batchNo=${batchNo}&quotationProductCode=${quotProductCode}`,
+      `v1/quotation/merge-to-existing-policy?batchNo=${batchNo}&quotationProductCode=${quotProductCode}`, null,
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
@@ -644,7 +644,7 @@ export class QuotationsService {
   }
   // convertQuoteToPolicy(
   //   quotCode: number,
-    
+
   // ) {
   //   const paramsObj: { [param: string]: string | number } = {};
 
@@ -657,9 +657,9 @@ export class QuotationsService {
   // }
   convertQuoteToPolicy(
     quotCode: number,
-    
+
   ) {
-  
+
     // const paramsObj: { [param: string]: string | number } = {};
 
     // // Add mandatory parameters with default values

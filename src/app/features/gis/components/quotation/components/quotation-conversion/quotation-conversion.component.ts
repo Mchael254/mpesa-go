@@ -67,8 +67,9 @@ export class QuotationConversionComponent {
   selectedQuotationProduct:QuotationProduct;
   policyData: Policy[];
   selectedPolicy: Policy;
-  globalFilterFields = ['policyNumber'];
-  policyNumber: number;
+  globalFilterFields = ['policyNumber', 'batchNo'];
+  policyNumber: string;
+  batchNo: number;
   showModal: boolean = false;
 
   constructor(
@@ -381,12 +382,20 @@ export class QuotationConversionComponent {
 
 
     this.quotationsService.getPolicies(quotationCode, productCode)
-      .subscribe((data: Policy[]) => {
-        log.debug("Response after fetching policies:", data);
+    .subscribe({
+      next: (response: any) => {
+        this.policyData = response._embedded;
 
-        this.policyData = data;
+        log.debug("fetched policies", this.policyData);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Policies fetched Succesfully');
+
+      },
+      error: (error) => {
+        log.debug("error when fetching policies", error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch policies. Try again later');
       }
-    );
+    }
+  );
   }
 
   loadPolicyDetails(policyData) {
@@ -398,7 +407,12 @@ export class QuotationConversionComponent {
 
   inputPolicyNumber(event) {
     const value = (event.target as HTMLInputElement).value;
-    this.policyNumber = Number(value);
+    this.policyNumber = value;
+  }
+
+  inputBatchNo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.batchNo = Number(value);
   }
 
   mergeQuoteToPolicy() {
