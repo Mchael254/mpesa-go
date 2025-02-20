@@ -23,12 +23,17 @@ export class ReceiptDataService {
   receiptData$ = this.receiptDataSubject.asObservable();
 
   setReceiptData(data: any) {
-    this.receiptData = { ...this.receiptData, ...data };
+    this.receiptData = { ...this.receiptData, ...data,
+      amountIssued: this.receiptData.amountIssued ?? data.amountIssued, // Preserve amountIssued
+     };
+     this.receiptDataSubject.next(this.receiptData); // Notify subscribers
+    
   }
 
   getReceiptData() {
     return this.receiptData;
   }
+  
   setGlobalAccountTypeSelected(account: any): void {
     this.globalAccountTypeSelected = account;
     localStorage.setItem('globalAccountTypeSelected', JSON.stringify(account)); // Persist data

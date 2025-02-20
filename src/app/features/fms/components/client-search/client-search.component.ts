@@ -11,6 +11,7 @@ import {
   AccountTypeDTO,
   BranchDTO,
   ClientsDTO,
+  GetAllocationDTO,
   TransactionDTO,
 } from '../../data/receipting-dto';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -152,6 +153,7 @@ export class ClientSearchComponent implements OnInit {
 
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
+    getAllocation: GetAllocationDTO[] = [];
 
   /**
    * Constructor for the ClientSearchComponent.
@@ -457,6 +459,8 @@ export class ClientSearchComponent implements OnInit {
    */
   onNext() {
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
+   // let allocations = this.sessionStorage.getItem('allocations');
+   // this.getAllocation = JSON.parse(allocations);
     this.router.navigate(['/home/fms/client-allocation']);
   }
 
