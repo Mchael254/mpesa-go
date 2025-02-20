@@ -34,6 +34,8 @@ export class BaseFmsComponent {
   organization: OrganizationDTO[]; // List of organizations
   years: DataItem[] = []; // Store only the `data` array, not `YearDTO`
   periods: Period[] = []; // Stores periods based on selected year
+  curentPeriod:Period[];
+ selectedPeriod:any;
   selectedYear: string = ''; // Stores the selected year
   /**
    * Angular lifecycle hook that initializes the component.
@@ -129,14 +131,21 @@ export class BaseFmsComponent {
 
             //this.receiptDataService.setDefaultOrg(defaultOrg);
             this.fetchBranches(this.defaultOrg.id);
-
-            this.receiptingDetailsForm.patchValue({
-              organization: this.defaultOrg.id,
-            });
+ // Use setTimeout to ensure form updates correctly
+ setTimeout(() => {
+  this.receiptingDetailsForm.patchValue({ organization: this.defaultOrg.id });
+});
+            // this.receiptingDetailsForm.patchValue({
+            //   organization: this.defaultOrg.id,
+            // });
           } else {
             this.defaultOrg = null;
             this.fetchBranches(this.selectedOrg.id);
             this.sessionStorage.removeItem('defaultOrg');
+          }
+          if (!defaultOrg) {
+            console.warn('No default organization found. Setting first available organization.');
+            this.defaultOrg = this.organization.length > 0 ? this.organization[0] : null;
           }
         }
       },
@@ -225,11 +234,20 @@ export class BaseFmsComponent {
               'receiptDefaultBranch',
               JSON.stringify(this.defaultBranch)
             );
-            this.receiptingDetailsForm.patchValue({
-              selectedBranch: defaultBranch.id,
-            });
+             // Use setTimeout to ensure UI updates
+  setTimeout(() => {
+    this.receiptingDetailsForm.patchValue({ selectedBranch: defaultBranch.id });
+  });
+            // this.receiptingDetailsForm.patchValue({
+            //   selectedBranch: defaultBranch.id,
+            // });
+          }
+          if (!defaultBranch) {
+            console.warn('No default branch found. Setting first available branch.');
+            this.defaultBranch = this.branches.length > 0 ? this.branches[0] : null;
           }
         }
+        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -277,39 +295,7 @@ export class BaseFmsComponent {
     }
   }
 
-// fetchYears(branchCode:number){
-//   this.fmsSetupService.getYears(branchCode).subscribe({
-//     next:(response)=>{
-//       this.years = response.data;
-      
-//     // Set default year to current year
-//     const currentYear = new Date().getFullYear().toString();
-//     const currentYearData = this.years.find(y => y.year === currentYear);
-//     if (currentYearData) {
-      
-//       this.receiptingDetailsForm.patchValue({year:currentYearData.year});
-      
-    
-//       this.periods = currentYearData.periods;
 
-//       // Set default month (if available)
-//       const currentMonth = new Date().toLocaleString('default', { month: 'short' }).toUpperCase();
-//       const currentMonthData = this.periods.find(p => p.period === currentMonth);
-//       if (currentMonthData) {
-//       this.receiptingDetailsForm.get('period')?.setValue(currentMonthData);
-//         //this.receiptingDetailsForm.patchValue({period:currentMonthData}); 
-//       }
-//     // }
-//      // Watch for year selection changes
-//     //  this.form.controls['year'].valueChanges.subscribe((selectedYear) => {
-//     //   this.onYearChange(selectedYear);
-//     // });
-//     }},
-//     error:(err)=>{
-//       this.globalMessagingService.displayErrorMessage('Error fetching periods',err.error.error);
-//     }
-//   })
-// }
 fetchYears(branchCode: number) {
   this.fmsSetupService.getYears(branchCode).subscribe({
     next: (response) => {
@@ -344,17 +330,34 @@ fetchYears(branchCode: number) {
   });
 }
 
+
 onYearChange(event: any) {
   this.selectedYear = event.target.value; // Get selected year
- 
 
-  // Find matching year and get periods
+  // Find the selected year's data
   const selectedData = this.years.find(y => y.year === this.selectedYear);
-  
+
   // Update periods dropdown
   this.periods = selectedData ? selectedData.periods : [];
- 
+
+  if (this.periods.length > 0) {
+    // Get the current year as a string
+    const currentYear = new Date().getFullYear().toString();
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'short' }).toUpperCase();
+
+    let selectedPeriod = this.periods.find(p => p.period === currentMonth)?.period || this.periods[0]?.period;
+
+    console.log(`Selected Year: ${this.selectedYear}, Period Set: ${selectedPeriod}`);
+
+    // Use setTimeout to ensure change detection
+    setTimeout(() => {
+      this.receiptingDetailsForm.patchValue({ period: selectedPeriod });
+    });
+  }
 }
+
+
+
   /* The `items` property is an array of objects. Each object represents a menu item in a CRM (Customer
 Relationship Management) application. Each object has the following properties: */
   GLledger: Array<{
