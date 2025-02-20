@@ -1,9 +1,11 @@
 <div class="container-fluid">
+  <h5 class="text-primary" style="padding-top: 10px">Receipt summary</h5>
   <div class="receipt-section">
     <ngx-doc-viewer
       #docViewerIframe
       [fileName]="documentData?.fileName ?? ''"
       [srcUrl]="filePath ?? ''"
+      style="margin: 20px; margin-top: 10px; width: 80%"
     >
     </ngx-doc-viewer>
   </div>
