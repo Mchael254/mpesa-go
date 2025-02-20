@@ -66,7 +66,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.getGroupQuotationsList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
-    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    if(this.activeIndex === 0) {
+      this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -102,11 +104,17 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   }
 
-  //gets params to automatically open Group-life tab when navigating from quote summary
+  //gets params to automatically open General tab when navigating from quote summary
   getParams() {
     this.route.queryParams.subscribe(params => {
+      console.log('Received query params:', params);
       if (params['tab'] === 'group-life') {
         this.activeIndex = 1; // Set the active index to the desired tab index (1-based)
+        this.dynamicSideBarMenu(this.quotationSubMenuList[2]); // Use appropriate menu index
+      } else if (params['tab'] === 'general') {
+        this.activeIndex = 2;
+        this.dynamicSideBarMenu(this.quotationSubMenuList[0]); // Use menu index for general
+        console.log('Setting activeIndex to 2 for general tab');
       }
     });
   }
@@ -395,11 +403,28 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   onTabChange(event: any): void {
     this.activeIndex = event.index; // Update the active index
 
-    if (this.activeIndex === 2) { // Index 2 corresponds to the "General" tab
+    if (this.activeIndex === 2) {
       this.dynamicSideBarMenu(this.quotationSubMenuList[0]);
+      // Update URL to reflect the general tab without triggering navigation
+      this.router.navigate(
+        [],
+        {
+          relativeTo: this.route,
+          queryParams: { tab: 'general' },
+          queryParamsHandling: 'merge'
+        }
+      );
     } else {
-       // Clear or hide the sidebar menu
-       this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+      this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+      // Clear the tab parameter if not on general tab
+      this.router.navigate(
+        [],
+        {
+          relativeTo: this.route,
+          queryParams: { tab: null },
+          queryParamsHandling: 'merge'
+        }
+      );
     }
   }
 

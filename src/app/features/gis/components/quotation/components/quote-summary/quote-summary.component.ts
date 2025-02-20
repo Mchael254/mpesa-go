@@ -13,7 +13,7 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { Products } from '../../../setups/data/gisDTO';
+import { QuickQuoteData } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
@@ -46,6 +46,7 @@ export class QuoteSummaryComponent {
   agentDesc: any;
   coverFrom: any;
   coverTo: any;
+  expiryDate: any;
 
   clientDetails: ClientDTO;
   selectedClientName: any;
@@ -87,6 +88,7 @@ export class QuoteSummaryComponent {
   cancelQuoteClicked: boolean = false;
   showQuoteActions: boolean = true;
   batchNo: number;
+  quickQuoteData: QuickQuoteData;
 
 
   constructor(
@@ -136,26 +138,42 @@ export class QuoteSummaryComponent {
     this.passedNewClientDetails = JSON.parse(newClientDetailsString);
     log.debug("New Client Details", this.passedNewClientDetails);
 
+    const quickQuoteDataString = sessionStorage.getItem('quickQuoteData');
+    this.quickQuoteData = JSON.parse(quickQuoteDataString);
+    log.debug("quick quote data", this.quickQuoteData)
+
     const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
     this.showQuoteActions = JSON.parse(showQuoteActionsString);
 
-    if (this.passedClientDetails) {
-      log.info("EXISTING CLIENT")
-      this.selectedClientName = this.utilService.getFullName(this.passedClientDetails)
-      this.selectedEmail = this.passedClientDetails?.emailAddress;
-      this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
-    } else {
-      log.info("NEW CLIENT")
-      this.selectedClientName = this.passedNewClientDetails?.inputClientName;
+    // if (this.passedClientDetails) {
+    //   log.info("EXISTING CLIENT")
+    //   this.selectedClientName = this.utilService.getFullName(this.passedClientDetails)
+    //   this.selectedEmail = this.passedClientDetails?.emailAddress;
+    //   this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
+    // } else {
+    //   log.info("NEW CLIENT")
+    //   this.selectedClientName = this.passedNewClientDetails?.inputClientName;
+    //   log.info("Selected Name:", this.selectedClientName)
+
+    //   this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
+    //   log.info("Selected Email:", this.selectedEmail)
+
+    //   this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
+    //   log.info("Selected Phone:", this.selectedPhoneNo)
+
+    // }
+
+    if(this.quickQuoteData) {
+      this.selectedClientName = this.quickQuoteData?.clientName;
       log.info("Selected Name:", this.selectedClientName)
 
-      this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
+      this.selectedEmail = this.quickQuoteData?.clientEmail;
       log.info("Selected Email:", this.selectedEmail)
 
-      this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
+      this.selectedPhoneNo = this.quickQuoteData?.clientPhoneNumber;
       log.info("Selected Phone:", this.selectedPhoneNo)
-
     }
+
     this.getuser();
     this.createEmailForm();
     this.createSmsForm();
@@ -206,6 +224,8 @@ export class QuoteSummaryComponent {
       this.coverTo = this.quotationDetails.coverTo;
       log.debug("Cover To:", this.coverTo)
 
+      this.expiryDate = this.quotationDetails.expiryDate;
+      log.debug("Cover To:", this.expiryDate)
 
 
       this.productInformation = this.quotationDetails.quotationProducts;
