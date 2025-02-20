@@ -122,6 +122,15 @@ export class SubClassCoverTypesService {
         catchError(this.errorHandl)
       )
   }
-
+/**
+   * Get all subclass cover types with mandatory secions
+   * @param subClassCode Subclass code
+   */
+getCoverTypeSections(subClassCode: number, binderCode: number): Observable<any>{
+  return this.api.GET<any>(`api/v1/subclass-cover-types/subclass?binderCode=${binderCode}&subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  )
+}
 
 }

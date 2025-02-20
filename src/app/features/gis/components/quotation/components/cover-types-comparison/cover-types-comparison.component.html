@@ -1,5 +1,6 @@
 <div class="container">
-  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium"
+    bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
   <p class="titleMain mt-3">{{ 'gis.quotation.quotation_covertypes' | translate }}</p>
   <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
@@ -8,28 +9,6 @@
     <ngx-spinner name="coverComparisonScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
       size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
     <div class="row">
-      <!-- old Cover Section -->
-      <!-- <div class="col-5">
-        <p class="card-title mb-3"> {{'gis.quotation.select_a_cover' | translate}}</p>
-        <div class="row">
-          <div class="col-12" *ngFor="let risk of riskLevelPremiums; let i = index">
-            <div class="card mb-3">
-              <div class="card-body cover-types-body">
-                <label>
-                  <input type="radio" name="cover" [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
-                    [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
-                    class="radio-btn" />
-                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription
-                    }}</span><br />
-                  <small class="cover-premium">
-                    Basic Premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
-                  </small>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <!-- Cover Section -->
       <div class="col-5">
         <p class="card-title mb-3"> {{'gis.quotation.select_a_cover' | translate}}</p>
@@ -39,11 +18,12 @@
             <div class="card mb-3" *ngFor="let risk of riskLevelPremiums; let i = index">
               <div class="card-body cover-types-body">
                 <label>
-                  <input type="radio" name="cover" [value]="premiumPayload.risks[i].subclassCoverTypeDto.coverTypeCode"
-                    [(ngModel)]="selectedCoverType" [checked]="i === 0" (change)="onCoverTypeChange()"
-                    class="radio-btn" />
-                  <span class="cover-name">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeDescription || premiumPayload.risks[i].subclassCoverTypeDto.coverTypeShortDescription
-                   | sentenceCase }}</span><br />
+                  <input type="radio" name="cover" [value]="risk.coverTypeDetails.coverTypeCode"
+                    [(ngModel)]="selectedCoverType" [checked]="i === 0"
+                    (change)="onCoverTypeChange(risk.coverTypeDetails.coverTypeCode) " class="radio-btn" />
+                  <span class="cover-name">{{ risk.coverTypeDetails.coverTypeDescription ||
+                    risk.coverTypeDetails.coverTypeShortDescription
+                    | sentenceCase }}</span><br />
                   <small class="cover-premium">
                     Basic premium: <span style="font-weight: bold;">{{ risk.premium | number: '1.2-2' }}</span>
                   </small>
@@ -74,7 +54,7 @@
                           <div class="row mb-2">
                             <div class="col-3">
                               <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleClauseDetails();passCovertypeDesc(selectedCoverType) ">
+                                (click)="toggleClauseDetails(); ">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -84,55 +64,52 @@
                     </div>
                     <div class="collapse" id="clauseDetails" [class.show]="isClauseDetailsOpen">
 
-                      <p-table
-                        [value]="clauseList"
-                        dataKey="code"
-                        selectionMode="single"
-                        [tableStyle]="{'min-width': '50rem'}"
-                        [(selection)]="selectedClause"
-                        responsiveLayout="scroll"
-                        [autoLayout]="true"
-                        [paginator]="clauseList?.length > 5"
-                        [rows]="5"
+                      <p-table [value]="clauseList" dataKey="code" selectionMode="single"
+                        [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause" responsiveLayout="scroll"
+                        [autoLayout]="true" [paginator]="clauseList?.length > 5" [rows]="5"
                         [showCurrentPageReport]="clauseList?.length > 5"
-                        currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        class="ui-datatable">
+                        currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable">
 
                         <ng-template pTemplate="header">
-                            <tr>
-                                <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
-                                <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
-                                <th class="flexible-header"></th>
-                                <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
-                            </tr>
+                          <tr>
+                            <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
+                            <th class="flexible-header"></th>
+                            <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
+                          </tr>
                         </ng-template>
 
                         <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
-                            <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause" class="custom-row">
-                                <td class="flexible-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-                                    pTooltip="{{clauseList.heading }}" tooltipPosition="top">
-                                    {{ clauseList.heading | sentenceCase }}
-                                </td>
-                                <td class="flexible-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px;">
-                                    {{ clauseList.wording | sentenceCase }}
-                                </td>
-                                <td class="flexible-header">
-                                    <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
-                                        icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                                </td>
-                                <td class="flexible-header">{{ clauseList.isMandatory }}</td>
-                            </tr>
+                          <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause"
+                            class="custom-row">
+                            <td class="flexible-header"
+                              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
+                              pTooltip="{{clauseList.heading }}" tooltipPosition="top">
+                              {{ clauseList.heading | sentenceCase }}
+                            </td>
+                            <td class="flexible-header"
+                              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px;">
+                              {{ clauseList.wording | sentenceCase }}
+                            </td>
+                            <td class="flexible-header">
+                              <button pButton pRipple type="button" (click)="openHelperModal(clauseList)"
+                                icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+                            </td>
+                            <td class="flexible-header">{{ clauseList.isMandatory }}</td>
+                          </tr>
 
-                            <!-- Modal for each row -->
-                            <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}">
-                                <ng-container *ngIf="clauseList">
-                                    <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
-                                        <p>{{ clauseList.wording }}</p>
-                                    </div>
-                                </ng-container>
-                            </p-dialog>
+                          <!-- Modal for each row -->
+                          <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
+                            [style]="{ 'width': '700px'}">
+                            <ng-container *ngIf="clauseList">
+                              <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                                (onResize)="onResize($event)">
+                                <p>{{ clauseList.wording }}</p>
+                              </div>
+                            </ng-container>
+                          </p-dialog>
                         </ng-template>
-                    </p-table>
+                      </p-table>
 
                     </div>
                   </div>
@@ -155,7 +132,7 @@
                           <div class="row mb-2">
                             <div class="col-3">
                               <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleLimitsDetails(); passCovertypeDesc(selectedCoverType)">
+                                (click)="toggleLimitsDetails();">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -164,18 +141,12 @@
                       </div>
                     </div>
                     <div class="collapse" id="limitsOfLiabilityDetails" [class.show]="isLimitsDetailsOpen">
-                      <p-table
-                        #dt1
-                        [value]="limitsOfLiabilityList"
-                        dataKey="code"
-                        selectionMode="single"
-                        [tableStyle]="{ 'min-width': '50rem' }"
-                        responsiveLayout="scroll"
-                        [paginator]="limitsOfLiabilityList?.length > 5"
-                        [rows]="5"
+                      <p-table #dt1 [value]="limitsOfLiabilityList" dataKey="code" selectionMode="single"
+                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
+                        [paginator]="limitsOfLiabilityList?.length > 5" [rows]="5"
                         [showCurrentPageReport]="limitsOfLiabilityList?.length > 5"
-                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                        [autoLayout]="true" class='ui-datatable' >
+                        currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
+                        class='ui-datatable'>
                         <ng-template pTemplate="header">
                           <tr>
                             <th> {{'gis.quotation.narration' | translate}}</th>
@@ -224,7 +195,7 @@
                           <div class="row mb-2">
                             <div class="col-3">
                               <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleExcessDetails();passCovertypeDesc(selectedCoverType)">
+                                (click)="toggleExcessDetails()">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -235,9 +206,11 @@
                     <div class="collapse" id="excessDetails" [class.show]="isExcessDetailsOpen">
 
                       <p-table #dt1 [value]="excessesList" dataKey="code" selectionMode="single"
-                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="excessesList?.length > 5" [rows]="5"
-                        [showCurrentPageReport]="excessesList?.length > 5" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                        [autoLayout]="true" class='ui-datatable' >
+                        [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
+                        [paginator]="excessesList?.length > 5" [rows]="5"
+                        [showCurrentPageReport]="excessesList?.length > 5"
+                        currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
+                        class='ui-datatable'>
                         <ng-template pTemplate="header">
                           <tr>
                             <th> {{'gis.quotation.narration' | translate}}</th>
@@ -295,26 +268,45 @@
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
                       <button #openModalButton type="button" class="btn btn-outline-primary me-2 mb-3"
-                       id="btnCoverTypes"
-                        (click)="openAdditionalBenefitsModal();passCovertypeDesc(selectedCoverType);">
+                        id="btnCoverTypes"
+                        (click)="openAdditionalBenefitsModal()">
                         {{'gis.quotation.add_benefits' | translate}}</button>
-                        <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                    id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
-                                    title="open">
-                                </button>
+                      <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                        id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
+                        title="open">
+                      </button>
                       <div class="row ms-3">
                         <div class="col-lg-6 col-12">
-                          <div class="row" *ngFor="let risk of riskLevelPremiums; let i = index">
-                            <div class="row" *ngFor="let limit of getLimits(i)">
-                              <div class="col-6">
-                                <p class="details-label"> {{ limit.description }}</p>
+                          <div class="row" *ngFor="let risk of riskLevelPremiums">
+                            <!-- Only show risk that matches the selectedCoverType -->
+                            <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
+                              <div class="row" *ngFor="let limit of risk.limitPremiumDtos">
+                                <div class="col-6">
+                                  <p class="details-label"> {{ limit.sectCode }}</p>
+                                </div>
+                                <div class="col-6">
+                                  <p class="details-label fw-semibold"> {{ limit.premium | number }}</p>
+                                </div>
                               </div>
-                              <div class="col-6">
-                                <p class="details-label fw-semibold"> {{ limit.limitAmount | number }}</p>
-                              </div>
-                            </div>
+                            </ng-container>
                           </div>
                         </div>
+
+                        <!-- <div class="col-lg-6 col-12">
+                          <div *ngFor="let risk of riskLevelPremiums">
+                            <div class="row">
+                              <ng-container *ngFor="let limit of getLimits(risk)">
+                                <div class="col-6">
+                                  <p class="details-label">{{ limit.description }}</p>
+                                </div>
+                                <div class="col-6">
+                                  <p class="details-label fw-semibold">{{ limit.limitAmount | number }}</p>
+                                </div>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div> -->
+
                       </div>
                     </div>
                   </div>
@@ -352,9 +344,9 @@
 
       <p-table [value]="temporaryPremiumList" id="clientTable" dataKey="code"
         [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
-        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable'
-        [autoLayout]="true" [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
-        [showCurrentPageReport]="true" currentPageReportTemplate="{first} - {last} of {totalRecords}">
+        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="true"
+        [rows]="10" [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}">
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 1em;"></th> <!-- Checkbox column -->

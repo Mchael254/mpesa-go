@@ -1910,7 +1910,7 @@ describe('CoverTypesComparisonComponent', () => {
         limitPremiumDtos: [{ sectCode: 1, premium: 500 }],
       },
     ];
-    component.selectedCoverType = 'COVER123';
+    component.selectedCoverType = 1;
     component.premiumPayload = mockPremiumPayload;
     component.quoteProductCode = 202;
     component.riskCode = 303;
@@ -1926,7 +1926,7 @@ describe('CoverTypesComparisonComponent', () => {
     expect(quotationService.updatePremium).toHaveBeenCalledWith(12345, component.updatePremiumPayload);
   });
   it('should display error if selected cover type is not found', async () => {
-    component.selectedCoverType = 'NON_EXISTENT';
+    component.selectedCoverType = 0;
     await component.updateQuotationDetails();
 
     expect(globalMessagingService.displayErrorMessage).toHaveBeenCalledWith(

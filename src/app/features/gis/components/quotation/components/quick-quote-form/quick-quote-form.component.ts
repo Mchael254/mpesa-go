@@ -1,18 +1,18 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {ClientService} from '../../../../../entities/services/client/client.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
   Premiums,
-  Products, QuickQuoteData,
+  Products,
   Sections,
   Subclass,
   SubclassCoverTypes,
@@ -20,40 +20,40 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Calendar} from 'primeng/calendar';
-import {SectionsService} from '../../../setups/services/sections/sections.service';
-import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
-import {CountryDto} from '../../../../../../shared/data/common/countryDto';
-import {Table, TableLazyLoadEvent} from 'primeng/table';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Calendar } from 'primeng/calendar';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
-import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
-import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
+import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
-import {NgxSpinnerService} from 'ngx-spinner';
-import {ClientPhone, Limit, PremiumComputationRequest, Risk, Tax,} from '../../data/quotationsDTO';
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Router} from '@angular/router';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ClientPhone, Limit, PremiumComputationRequest, QuickQuoteData, Risk, Tax, UserDetail, } from '../../data/quotationsDTO';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, from, mergeMap, tap} from 'rxjs';
-import {NgxCurrencyConfig} from 'ngx-currency';
-import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
-import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
-import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
-import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {TableDetail} from '../../../../../../shared/data/table-detail';
-import {MenuService} from 'src/app/features/base/services/menu.service';
-import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
-import {concatMap} from "rxjs/operators";
+import { firstValueFrom, forkJoin, from, mergeMap, tap } from 'rxjs';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { concatMap } from "rxjs/operators";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -267,9 +267,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     name: string;
     idNumber: string;
   } = {
-    name: '',
-    idNumber: '',
-  };
+      name: '',
+      idNumber: '',
+    };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
   public pageSize: 5;
@@ -294,8 +294,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   isReturnToQuickQuote: boolean;
   storedData: QuickQuoteData = null
+  userCode: number;
+  userOrgDetails: UserDetail;
+  organizationId: number;
+  exchangeRate: number;
 
   applicablePremiumRates: any
+  computationPayloadCode: number;
 
   constructor(
     public fb: FormBuilder,
@@ -333,7 +338,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     };
     this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
     this.quoteAction = sessionStorage.getItem('quoteAction');
-    this.quoteAction = sessionStorage.getItem('quoteAction');
     this.isReturnToQuickQuote = JSON.parse(
       sessionStorage.getItem('isReturnToQuickQuote')
     );
@@ -341,6 +345,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.passedQuotation = JSON.parse(
       sessionStorage.getItem('passedQuotationDetails')
     );
+    
   }
 
   ngOnInit(): void {
@@ -415,6 +420,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         effectiveDate: new Date(this.storedData.effectiveDateFrom),
       });
     }
+    log.debug('Quotation Action:', this.quoteAction);
+    log.debug('Quotation Details:', this.passedQuotation);
+    this.passedQuotationNo = this.passedQuotation?.quotationNo ?? null;
+    log.debug('passed QUOYTATION number', this.passedQuotationNo);
+    if (this.passedQuotation) {
+      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(
+        (risk) => risk.propertyId
+      );
+      log.debug('existing property id', this.existingPropertyIds);
+    }
+
+    this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
+
+    log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
+    sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
+    sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
   }
 
   createQuickQuiteForm() {
@@ -434,7 +455,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return control?.hasValidator(Validators.required) ?? false;
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
@@ -874,6 +895,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails?.branchId;
     log.debug('User Branch Id', this.userBranchId);
+    this.userCode = this.userDetails.code
+    log.debug('User Code ', this.userCode);
+    if (this.userCode) {
+      this.fetchUserOrgId()
+    }
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
     // Get today's date in yyyy-MM-dd format
@@ -1383,6 +1409,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     log.debug('Selected Binder:', this.selectedBinder);
     log.debug('Selected Currency Code:', this.currencyCode);
+    // this.fetchExchangeRate();
   }
 
   /**
@@ -1558,8 +1585,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
               field.name,
               new FormControl(
                 this.storedData &&
-                this.storedData[field.name] &&
-                this.quoteAction == 'E'
+                  this.storedData[field.name] &&
+                  this.quoteAction == 'E'
                   ? this.storedData[field.name]
                   : '',
                 validators
@@ -1573,8 +1600,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
         const control = this.quickQuoteForm.get(controlName);
         log.debug(
-          `Control: ${controlName}, Value: ${
-            control?.value
+          `Control: ${controlName}, Value: ${control?.value
           }, Validators: ${this.getValidatorNames(control)}`
         );
       });
@@ -1782,7 +1808,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       })
 
       let risk: Risk = {
-        propertyId: this.carRegNoValue || propertyId,
+        propertyId: propertyId,
         withEffectFrom: this.effectiveFromDate,
         withEffectTo: this.passedCoverToDate,
         prorata: 'F',
@@ -1804,7 +1830,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           code: this.selectedBinderCode,
           currencyCode: this.currencyCode,
           maxExposure: this.selectedBinder?.maximum_exposure,
-          currencyRate: 1.25 /**TODO: Fetch from API */,
+          currencyRate: this.exchangeRate,
         },
         limits: applicableLimits,
       };
@@ -1929,7 +1955,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         this.binderList = binders._embedded.binder_dto_list;
         this.selectedBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y');
         this.selectedBinderCode = this.selectedBinder?.code;
-        log.debug("Testing fetching taxes", this.selectedBinderCode)
+        log.debug("Selected Binder code", this.selectedBinderCode)
+        this.currencyCode = this.selectedBinder.currency_code
+
+        if (this.currencyCode) {
+          this.fetchExchangeRate()
+        }
         return forkJoin([
           this.quotationService.getTaxes(productCode, subClassCode),
           this.subclassCoverTypesService.getCoverTypeSections(subClassCode, this.selectedBinderCode)
@@ -1939,7 +1970,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.taxList = taxes._embedded
       this.applicablePremiumRates = coverTypeSections._embedded
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
+
+
     })
+
   }
 
   computePremiumV2() {
@@ -1965,7 +1999,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       log.debug('Subclass Cover Types', this.subclassCoverType);
       log.debug('Selected binder ', this.binderList, this.selectedBinder);
       this.currencyCode = quickQuoteDataModel.currency.id;
-      const quickQuoteData: QuickQuoteData = {
+      let quickQuoteData: QuickQuoteData = {
         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
         carRegNo: quickQuoteDataModel.carRegNo,
         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
@@ -1984,7 +2018,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         selectedClient: this.clientDetails ? this.clientDetails : null
       }
 
-      sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+
       this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
       sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
       this.premiumComputationRequest = {
@@ -2008,7 +2042,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         taxes: this.setTax(),
 
         currency: {
-          rate: 1.25 /**TODO: Fetch from API */,
+          rate: this.exchangeRate,
         },
         risks: this.setRiskPremiumDto(),
       };
@@ -2017,14 +2051,27 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         JSON.stringify(this.premiumComputationRequest)
       );
       log.debug("Aggregated payload", this.premiumComputationRequest)
-      // return
-      this.quotationService
-        .premiumComputationEngine(this.premiumComputationRequest)
+
+
+
+      return forkJoin([
+        this.quotationService.premiumComputationEngine(this.premiumComputationRequest),
+        this.quotationService.savePremiumComputationPayload(this.premiumComputationRequest)
+      ])
         .subscribe({
-          next: (data) => {
-            log.debug('Data', data);
-            const premiumResponseString = JSON.stringify(data);
+          next: ([premiumResponse, payloadResponse]) => {
+            log.debug('Data', premiumResponse);
+            quickQuoteData.carRegNo = ""
+            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+            const premiumResponseString = JSON.stringify(premiumResponse);
             sessionStorage.setItem('premiumResponse', premiumResponseString);
+
+            this.computationPayloadCode = payloadResponse._embedded
+            log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
+
+
+            quickQuoteData.computationPayloadCode = this.computationPayloadCode
+            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
             this.router.navigate(['/home/gis/quotation/cover-type-details']);
           },
           error: (error: HttpErrorResponse) => {
@@ -2070,7 +2117,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to fetch regex patterns. Try again later'
+            error.error.message
           );
         },
       });
@@ -2123,7 +2170,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to fetch occupation list. Try again later'
+            error.error.message
           );
         },
       });
@@ -2172,7 +2219,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to fetch occupation list. Try again later'
+            error.error.message
           );
         },
       });
@@ -2334,7 +2381,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to fetch taxes. Try again later'
+            error.error.message
           );
         },
       });
@@ -2358,4 +2405,47 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Tax List after mapping the payload', taxList);
     return taxList; // Explicitly returning the list
   }
+  fetchUserOrgId() {
+    this.quotationService
+      .getUserOrgId(this.userCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.userOrgDetails = response
+          log.debug("User Organization Details  ", this.userOrgDetails);
+          this.organizationId = this.userOrgDetails.organizationId
+          if (this.organizationId) {
+            // this.fetchExchangeRate()
+          }
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+  }
+
+  fetchExchangeRate() {
+    const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+    const formCurrencyCode = quickQuoteDataModel.currency.id;
+    const currencyCode = this.currencyCode || formCurrencyCode;
+    log.debug("Currency Code", currencyCode)
+    this.quotationService
+      .getExchangeRates(currencyCode, this.organizationId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.exchangeRate = response
+          log.debug("Exchange rate  ", this.exchangeRate);
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+  }
+ 
 }

@@ -13,11 +13,10 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { QuickQuoteData } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, Excesses, LimitsOfLiability, StatusEnum, Status } from '../../data/quotationsDTO';
+import { Clause, Excesses, LimitsOfLiability, StatusEnum, Status, QuickQuoteData } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -89,6 +88,7 @@ export class QuoteSummaryComponent {
   showQuoteActions: boolean = true;
   batchNo: number;
   quickQuoteData: QuickQuoteData;
+  quoteAction: string = null
 
 
   constructor(
@@ -206,6 +206,10 @@ export class QuoteSummaryComponent {
     log.debug("Load CLient quotation has been called")
     this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data => {
       this.quotationDetails = data;
+
+      const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+      sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+      
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.quotationNo;
       log.debug("Quotation Number:", this.quotationNo)
@@ -308,6 +312,12 @@ export class QuoteSummaryComponent {
     this.isAddRisk = true;
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
+
+   
+    sessionStorage.setItem('quoteAction','A')
+
+   
+
 
     // Set the fields disable state to true
     this.fieldDisableState = true;
@@ -622,6 +632,8 @@ export class QuoteSummaryComponent {
 
     // Add a unique flag for edit risk navigation
     sessionStorage.setItem('navigationSource', 'editRisk');
+    sessionStorage.setItem('quoteAction','E')
+
 
     log.debug("isEditRisk:", this.isEditRisk)
     log.debug("quotation number:", this.quotationNo)
