@@ -702,6 +702,15 @@ updateQuotationStatus(quotationCode: number, status: string, reasonCancelled: st
   return this.api.PUT(`v2/quotation/status?quotationCode=${quotationCode}&status=${status}&reasonCancelled=${reasonCancelled}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
 }
+savePremiumComputationPayload( data: PremiumComputationRequest): Observable<any> {
+    
+  return this.api.POST<any[]>(`api/v1/computation-payload?`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
 
+}
+getPremiumComputationPayload( code: number): Observable<any> {
+    
+  return this.api.GET<any[]>(`api/v1/computation-payload?code=${code}`, API_CONFIG.PREMIUM_COMPUTATION,);
+
+}
 }
 

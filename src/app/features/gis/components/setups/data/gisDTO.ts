@@ -990,25 +990,7 @@ export interface specialPremiumRates {
   ncdlevel: string
 }
 
-export interface QuickQuoteData {
-  yearOfManufacture: number;
-  clientName: string;
-  clientEmail: string;
-  clientPhoneNumber: string
-  carRegNo: string;
-  product: any
-  subClass: any;
-  currency: any;
-  effectiveDateFrom: Date
-  selfDeclaredValue: number
-  modeOfTransport: number
-  value: number;
-  riskId: string;
-  coverTo: Date
-  existingClientSelected: boolean
-  selectedClient?: ClientDTO
 
-}
 
 export interface SubclassCoverTypes {
   code: number,
