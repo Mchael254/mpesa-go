@@ -1023,7 +1023,9 @@
       "quotations" : "Quotations",
       "select_a_policy" : "Select a policy",
       "policy_ID" : "PolicyId",
-      "no_policy_found" : "No Policy Found"
+      "no_policy_found" : "No Policy Found",
+      "policy_number": "Policy Number",
+      "batch_number": "Batch No."
 
   },
     "policy": {
