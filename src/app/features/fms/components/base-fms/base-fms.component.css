@@ -22,7 +22,7 @@
 }
 /* Override for dropdowns inside the .top-bar */
 .top-bar .dropdown-icon {
-  right: 2px !important; /* Increase the right spacing only for top-bar */
+  right: 2px !important; 
 }
 .top-select {
   display: flex;
@@ -44,6 +44,7 @@
 .top-select select {
   border: none;
   background: transparent;
+  appearance: auto; /* Ensures default dropdown is visible */
   font-size: 13px;
   color: #333;
   padding-right: 16px;
@@ -56,6 +57,11 @@
 /* Add this new class to hide the scrollbar but keep functionality */
 .top-bar::-webkit-scrollbar {
   display: none;
+}
+.top-select select[formControlName="year"],
+.top-select select[formControlName="period"] {
+  min-width: 80px; /* Ensures enough space */
+  width: auto;
 }
 
 
