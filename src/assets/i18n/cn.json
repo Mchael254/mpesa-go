@@ -704,6 +704,7 @@
     "potential_contr": "潜在合同",
     "potential_contr_required": "潜在合同为必填项",
     "converted": "已转换",
+    "is_lead_converted": "该潜在客户是否已转换？",
     "converted_required": "转换为必填项",
     "potential_close_date": "潜在结束日期",
     "potential_close_date_required": "潜在结束日期为必填项",
