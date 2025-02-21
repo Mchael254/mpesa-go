@@ -53,8 +53,7 @@
                         <div class="col-sm-7 d-flex justify-content-end">
                           <div class="row mb-2">
                             <div class="col-3">
-                              <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleClauseDetails(); ">
+                              <button type="button" id="icon" class="btn btn-primary" (click)="toggleClauseDetails(); ">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -131,8 +130,7 @@
                         <div class="col-sm-7 d-flex justify-content-end">
                           <div class="row mb-2">
                             <div class="col-3">
-                              <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleLimitsDetails();">
+                              <button type="button" id="icon" class="btn btn-primary" (click)="toggleLimitsDetails();">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -194,8 +192,7 @@
                         <div class="col-sm-7 d-flex justify-content-end">
                           <div class="row mb-2">
                             <div class="col-3">
-                              <button type="button" id="icon" class="btn btn-primary"
-                                (click)="toggleExcessDetails()">
+                              <button type="button" id="icon" class="btn btn-primary" (click)="toggleExcessDetails()">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
@@ -268,17 +265,15 @@
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
                       <button #openModalButton type="button" class="btn btn-outline-primary me-2 mb-3"
-                        id="btnCoverTypes"
-                        (click)="openAdditionalBenefitsModal()">
+                        id="btnCoverTypes" (click)="openAdditionalBenefitsModal()">
                         {{'gis.quotation.add_benefits' | translate}}</button>
                       <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
                         id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
                         title="open">
                       </button>
-                      <div class="row ms-3">
-                        <div class="col-lg-6 col-12">
+                      <div class="row ">
+                        <!-- <div class="col-lg-6 col-12">
                           <div class="row" *ngFor="let risk of riskLevelPremiums">
-                            <!-- Only show risk that matches the selectedCoverType -->
                             <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
                               <div class="row" *ngFor="let limit of risk.limitPremiumDtos">
                                 <div class="col-6">
@@ -290,22 +285,45 @@
                               </div>
                             </ng-container>
                           </div>
-                        </div>
-
-                        <!-- <div class="col-lg-6 col-12">
-                          <div *ngFor="let risk of riskLevelPremiums">
-                            <div class="row">
-                              <ng-container *ngFor="let limit of getLimits(risk)">
-                                <div class="col-6">
-                                  <p class="details-label">{{ limit.description }}</p>
-                                </div>
-                                <div class="col-6">
-                                  <p class="details-label fw-semibold">{{ limit.limitAmount | number }}</p>
-                                </div>
-                              </ng-container>
-                            </div>
-                          </div>
                         </div> -->
+                        
+                        <p-table [value]="riskLevelPremiums" responsiveLayout="scroll" 
+                        dataKey="sectionCode" selectionMode="single"
+                         responsiveLayout="scroll"
+                       [autoLayout]="true"
+                        class='ui-datatable'>
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th>Section</th>
+                              <th>Limit amount</th>
+                              <th>Premium</th>
+                              <th></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-risk>
+                            <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
+                              <tr *ngFor="let limit of risk.limitPremiumDtos">
+                                <td>{{ limit.sectCode }}</td>
+                                <td></td>
+                                <td class="fw-semibold">{{ limit.premium | number }}</td>
+                               
+                                <td  id="action-buttons">
+                                  <button
+                                  type="button"
+                                  id="icon"
+                                  class="btn btn-primary"
+                                  title="Delete"
+                                  (click)="openRiskDeleteModal()"
+                                 >
+                                  <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                                </td>
+                              </tr>
+                            </ng-container>
+                          </ng-template>
+                        </p-table>
+                        
+                       
 
                       </div>
                     </div>
@@ -358,14 +376,14 @@
         <ng-template pTemplate="body" let-section let-editing="editing" let-i="rowIndex">
           <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
             <td>
-              <input type="checkbox" id="check_section_{{ section.sectionCode }}">
+              <input type="checkbox" id="check_section_{{ section.sectionCode }}" [(ngModel)]="section.isChecked">
             </td>
             <td>{{ section.sectionShortDescription |sentenceCase }}</td>
             <td>{{ section.freeLimit | number }}</td>
             <td [pEditableColumn]="section.limitAmount" pEditableColumnField="limitAmount">
-              <input  id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
-                       [options]="currencyObj" currencyMask class="cellEditorInput form-control-sm" type="text"
-                (keydown)="onKeyUp($event, section)">
+              <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount" [options]="currencyObj"
+                currencyMask class="error-border form-control-sm" type="text"
+                 (keydown)="onKeyUp($event, section)" [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
             </td>
           </tr>
         </ng-template>

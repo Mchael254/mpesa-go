@@ -144,3 +144,12 @@
     overflow-y: auto;
     padding-right: 10px; /* Add some padding for a better scrollbar view */
   }
+  .error-border {
+    border: 1px solid red !important;
+  }
+ 
+  #icon i {
+    color: #00529B;
+  }
+  
+  

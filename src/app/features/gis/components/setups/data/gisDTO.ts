@@ -939,6 +939,7 @@ export interface Premiums {
   doesCashBackApply: string,
   cashBackLevel: number,
   rateFrequencyType: string,
+  isChecked?: true
 }
 
 export interface report {

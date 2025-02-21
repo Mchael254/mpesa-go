@@ -1,34 +1,34 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MessageService} from 'primeng/api';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {SharedQuotationsService} from '../../services/shared-quotations.service';
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { SharedQuotationsService } from '../../services/shared-quotations.service';
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
-import {forkJoin, mergeMap} from 'rxjs';
+import { forkJoin, mergeMap } from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, PremiumRate,
   QuotationDetails, UserDetail, QuickQuoteData
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
+import { HttpErrorResponse } from '@angular/common/http';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -131,7 +131,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -180,11 +180,14 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     }[];
   };
   quoteAction: string = null
-  premiumComputaionPayload: PremiumComputationRequest;
+  premiumComputationPayload: PremiumComputationRequest;
   storedData: QuickQuoteData = null;
   computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
+  private typingTimer: any;// Timer reference
+  sectionToBeRemoved: number[] = [];
+  inputErrors: { [key: string]: boolean } = {};
 
 
   constructor(
@@ -505,22 +508,118 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
+  // onKeyUp(event: any, section: any): void {
+  //   setTimeout(() => {
+  //     const inputElement = event.target as HTMLInputElement;
+  //     const inputValue = inputElement.value;
+  //     const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
+  //     checkbox.checked = !!(checkbox && inputValue);
+  //     section.typedWord = parseInt(inputValue, 10);
+  //     section.isChecked = !!inputElement
+  //     if (section.isChecked && !this.passedSections.includes(section)) {
+  //       this.passedSections.push(section);
+  //       log.debug('Selected Sections:', this.passedSections);
+  //       sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+  //       this.loadAllPremiums();
+  //     }
+  //   }, 0)
+  // }
+  // onKeyUp(event: any, section: any): void {
+  //   clearTimeout(this.typingTimer); // Reset the timer
+
+  //   this.typingTimer = setTimeout(() => {
+  //     const inputElement = event.target as HTMLInputElement;
+  //     const inputValue = inputElement.value.trim(); // Trim spaces
+  //     const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
+
+  
+
+  //     // Update checkbox state based on input value
+  //     checkbox.checked = !!(checkbox && inputValue);
+  //     section.typedWord = parseInt(inputValue, 10);
+  //     section.isChecked = !!inputValue; // True only if input has a value
+
+  //     if (section.isChecked) {
+  //       if (!this.passedSections.includes(section)) {
+  //         this.passedSections.push(section);
+  //       }
+  //     } else {
+  //       // Remove section if input is empty
+  //       this.passedSections = this.passedSections.filter(s => s !== section);
+  //       const removedSectionCode = section.sectionCode;
+
+  //       // Ensure sectionToBeRemoved is an array
+  //       if (!Array.isArray(this.sectionToBeRemoved)) {
+  //         this.sectionToBeRemoved = [];
+  //       }
+
+  //       // Store multiple removed sections
+  //       this.sectionToBeRemoved.push(removedSectionCode);
+  //       log.debug("Sections to be removed", this.sectionToBeRemoved);
+
+  //     }
+
+  //     // Log the selected sections
+  //     console.debug('Selected Sections:', this.passedSections);
+
+  //     // Update session storage
+  //     sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+
+  //     this.loadAllPremiums();
+  //   }, 500); // Trigger after 500ms of no typing
+  // }
+
   onKeyUp(event: any, section: any): void {
-    setTimeout(() => {
+    clearTimeout(this.typingTimer); // Reset the timer
+
+    this.typingTimer = setTimeout(() => {
       const inputElement = event.target as HTMLInputElement;
-      const inputValue = inputElement.value;
+      const inputValue = inputElement.value.trim(); // Trim spaces
       const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
+      if (section.isChecked && !section.limitAmount) {
+        document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
+      } else {
+        document.getElementById(`section_${section.sectionCode}`)?.classList.remove('error-border');
+      }
+      // Update checkbox state based on input value
       checkbox.checked = !!(checkbox && inputValue);
       section.typedWord = parseInt(inputValue, 10);
-      section.isChecked = !!inputElement
-      if (section.isChecked && !this.passedSections.includes(section)) {
+      section.isChecked = !!inputValue; // True only if input has a value
+     
+
+      if (section.isChecked) {
         this.passedSections.push(section);
-        log.debug('Selected Sections:', this.passedSections);
-        sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
-        this.loadAllPremiums();
+        if (!this.passedSections.includes(section)) {
+          this.passedSections.push(section);
+        }
+
+      } else {
+        // Remove section if input is empty
+        this.passedSections = this.passedSections.filter(s => s !== section);
+        const removedSectionCode = section.sectionCode;
+
+        // Ensure sectionToBeRemoved is an array
+        if (!Array.isArray(this.sectionToBeRemoved)) {
+          this.sectionToBeRemoved = [];
+        }
+
+        // Store multiple removed sections
+        this.sectionToBeRemoved.push(removedSectionCode);
+        console.debug("Sections to be removed", this.sectionToBeRemoved);
       }
-    }, 0)
+
+      // Remove error if user types a valid value
+      if (section.limitAmount) {
+        this.inputErrors[section.sectionCode] = false;
+      }
+
+      console.debug('Selected Sections:', this.passedSections);
+      sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+
+      this.loadAllPremiums();
+    }, 500); // Trigger after 500ms of no typing
   }
+
 
 
   // Function to determine the checkbox state for each row
@@ -638,10 +737,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.isTempPremiumListUpdated = true;
         this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
 
-        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Section Created'});
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset();
       } catch (error) {
-        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Error, try again later'});
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
       }
       this.computeQuotePremium();
     });
@@ -881,7 +980,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
   }
-
+  selectCoverButton(){
+    
+  }
   selectCoverNew() {
     this.spinner.show()
     this.passedNumber = this.passedNumber === "null" ? null : this.passedNumber;
@@ -1227,46 +1328,106 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   addBenefits() {
-    log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputaionPayload)
+    let isValid = true;
+
+    this.temporaryPremiumList.forEach(section => {
+      if (section.isChecked && !section.limitAmount) {
+        document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
+        isValid = false;
+      }
+    });
+  
+    if (!isValid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please fill in all limit amounts before proceeding.'
+      );
+      return;
+    }
+    log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputationPayload)
     log.debug("Passed Section", this.passedSections);
     log.debug("Selected Cover type:", this.selectedCoverType)
-    let limitsToModify = this.premiumComputaionPayload.risks
-      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType).limits
+    log.debug("Sections to be removed", this.sectionToBeRemoved)
+    // for(let limit of this.temporaryPremiumList){
+    //   if(limit.isChecked && !)
+    // }
+    // Iterate over sections and mark empty ones as invalid
+  
+    let limitsToModify = this.premiumComputationPayload.risks
+      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
 
-    log.debug("Limts to modify ", limitsToModify)
-    const limitsToAdd = this.passedSections.map((value) => {
-      return {
-        calculationGroup: 1,
-        declarationSection: "N",
-        rowNumber: 1,
-        rateDivisionFactor: value.divisionFactor,
-        premiumRate: value.rate,
-        rateType: value.rateType,
-        minimumPremium: value.minimumPremium,
-        annualPremium: 0,
-        multiplierDivisionFactor: value.multiplierDivisionFactor,
-        multiplierRate: value.multiplierRate,
-        description: value.sectionShortDescription,
-        section: {
-          code: value.sectionCode
-        },
-        sectionType: value.sectionType,
-        riskCode: null,
-        limitAmount: value.limitAmount,
-        compute: "Y",
-        dualBasis: "N"
+    log.debug("Limits to modify before update", limitsToModify);
+
+    if (this.passedSections.length > 0) {
+      // Ensure limitsToModify is initialized
+      if (!limitsToModify) {
+        limitsToModify = [];
       }
-    })
-    this.premiumComputaionPayload.risks.forEach((risk) => {
-      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
-        risk.limits.push(...limitsToAdd)
-      }
-    })
 
-    log.debug("Limts to add ", limitsToAdd)
-    log.debug("Updated premium computation payload ", this.premiumComputaionPayload)
+      this.passedSections.forEach((section) => {
+        let existingLimit = limitsToModify.find(limit => limit.section.code === section.sectionCode);
 
-    this.quotationService.premiumComputationEngine(this.premiumComputaionPayload)
+        if (existingLimit) {
+          // Update existing limit
+          log.debug("Update existing limit")
+          existingLimit.rateDivisionFactor = section.divisionFactor;
+          existingLimit.premiumRate = section.rate;
+          existingLimit.rateType = section.rateType;
+          existingLimit.minimumPremium = section.minimumPremium;
+          existingLimit.multiplierDivisionFactor = section.multiplierDivisionFactor;
+          existingLimit.multiplierRate = section.multiplierRate;
+          existingLimit.limitAmount = section.limitAmount;
+          existingLimit.description = section.sectionShortDescription;
+        } else {
+          // Add new limit
+          log.debug("Adding new limit")
+
+          limitsToModify.push({
+            calculationGroup: 1,
+            declarationSection: "N",
+            rowNumber: 1,
+            rateDivisionFactor: section.divisionFactor,
+            premiumRate: section.rate,
+            rateType: section.rateType,
+            minimumPremium: section.minimumPremium,
+            annualPremium: 0,
+            multiplierDivisionFactor: section.multiplierDivisionFactor,
+            multiplierRate: section.multiplierRate,
+            description: section.sectionShortDescription,
+            section: {
+              code: section.sectionCode
+            },
+            sectionType: section.sectionType,
+            riskCode: null,
+            limitAmount: section.limitAmount,
+            compute: "Y",
+            dualBasis: "N"
+          });
+        }
+      });
+
+      log.debug("modified limits: ", limitsToModify);
+      log.debug("Updated premium computation payload", this.premiumComputationPayload);
+    }
+
+    if (this.sectionToBeRemoved.length > 0) {
+      log.debug("removing existing limit(s)")
+
+      this.premiumComputationPayload.risks.forEach((risk) => {
+        if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
+          // Remove limits whose section code is in sectionToBeRemoved
+          risk.limits = risk.limits.filter(limit =>
+            !this.sectionToBeRemoved.includes(limit.section.code)
+          );
+
+        }
+      });
+      log.debug("Premium computation payload after removing sections ", this.premiumComputationPayload)
+
+    }
+
+
+    this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -1671,18 +1832,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     return this.quotationService
       .updatePremium(quotationCode, this.updatePremiumPayload)
       .subscribe({
-          next: (response: any) => {
-            const result = response;
-            log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-          },
-          error: (error) => {
-            log.error("Failed to update details:", error);
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          }
+        next: (response: any) => {
+          const result = response;
+          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+        },
+        error: (error) => {
+          log.error("Failed to update details:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
         }
+      }
       );
   }
 
@@ -1908,8 +2069,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: any) => {
 
-          this.premiumComputaionPayload = response._embedded
-          log.debug("Premium computation paylod from the endpoint", this.premiumComputaionPayload);
+          this.premiumComputationPayload = response._embedded
+          log.debug("Premium computation paylod from the endpoint", this.premiumComputationPayload);
 
 
         },
@@ -1918,6 +2079,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
+  }
+  openRiskDeleteModal(){
+    
   }
 }
 
