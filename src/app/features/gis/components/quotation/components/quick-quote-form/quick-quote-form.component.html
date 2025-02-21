@@ -205,6 +205,12 @@
                         <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
                           [filter]="true"></p-dropdown>
                       </ng-container>
+                      <ng-container *ngSwitchCase="'number'">
+                        <input type="number" id="quote-input" class="form-control form-control-sm"
+                               [max]="field?.max"
+                               [min]="field?.min"
+                               [formControlName]="field.name">
+                      </ng-container>
                       <ng-container *ngIf="field.name === 'vesselType'">
                         <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
                           optionLabel="name" dataKey="code"

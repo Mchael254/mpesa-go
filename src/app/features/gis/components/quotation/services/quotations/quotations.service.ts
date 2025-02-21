@@ -631,43 +631,20 @@ export class QuotationsService {
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
   createQuotationRisk(quotationCode, data: quotationRisk[]) {
-    // console.log(JSON.stringify(data),"Data from the service")
     return this.api.POST(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
 
-  getUserOrgId(userId:number){
-    return this.api.GET(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
+  getUserOrgId(userId:number): Observable<any>{
+    return this.api.GET<Observable<any>>(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
-  getExchangeRates(quotCurrencyId:number ,orgId :number){
-    return this.api.GET(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getExchangeRates(quotCurrencyId:number ,orgId :number): Observable<any>{
+    return this.api.GET<Observable<any>>(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
-  // convertQuoteToPolicy(
-  //   quotCode: number,
-
-  // ) {
-  //   const paramsObj: { [param: string]: string | number } = {};
-
-  //   // Add mandatory parameters with default values
-  //   paramsObj['quotCode'] = quotCode.toString();
-
-  //   // Create HttpParams from the paramsObj
-  //   const params = new HttpParams({ fromObject: paramsObj });
-  //   return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
-  // }
   convertQuoteToPolicy(
     quotCode: number,
 
-  ) {
-
-    // const paramsObj: { [param: string]: string | number } = {};
-
-    // // Add mandatory parameters with default values
-    // paramsObj['quotCode'] = quotCode.toString();
-
-    // // Create HttpParams from the paramsObj
-    // const params = new HttpParams({ fromObject: paramsObj });
-    // return this.api.POST(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  ): Observable<any> {
     return this.api.POST(`v2/quotation/convert-to-policy?quotCode=${quotCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
@@ -703,12 +680,12 @@ updateQuotationStatus(quotationCode: number, status: string, reasonCancelled: st
 
 }
 savePremiumComputationPayload( data: PremiumComputationRequest): Observable<any> {
-    
+
   return this.api.POST<any[]>(`api/v1/computation-payload?`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
 
 }
 getPremiumComputationPayload( code: number): Observable<any> {
-    
+
   return this.api.GET<any[]>(`api/v1/computation-payload?code=${code}`, API_CONFIG.PREMIUM_COMPUTATION,);
 
 }
