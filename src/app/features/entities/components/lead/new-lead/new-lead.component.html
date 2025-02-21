@@ -49,42 +49,6 @@
             </div>
             <div class="row">
               <ng-container *ngIf="visibleStatus?.clientType === 'Y'">
-                <!-- <div class="form-group col-md-4 mb-3">
-                  <label for="clientType" class="label col-form-label">
-                    {{ "entities.client" | translate | titlecase }}
-                    {{ "entities.type" | translate | titlecase }}
-                  </label>
-                  <select
-                    class="form-select"
-                    formControlName="clientType"
-                    [ngClass]="{
-                      'is-invalid':
-                        f['clientType']?.invalid &&
-                        (f['clientType']?.dirty || f['clientType']?.touched)
-                    }"
-                  >
-                    <option value="" disabled selected>
-                      {{ "entities.select" | translate | titlecase }}
-                    </option>
-                    <option
-                      *ngFor="let clienttype of clientsTypeData"
-                      value="{{ clienttype.code }}"
-                    >
-                      {{ clienttype.clientTypeName | titlecase }}
-                    </option>
-                  </select>
-                  <div
-                    *ngIf="
-                      f['clientType']?.invalid &&
-                      (f['clientType']?.dirty || f['clientType']?.touched)
-                    "
-                    class="form-text text-danger"
-                  >
-                    <div *ngIf="f['clientType']?.errors['required']">
-                      {{ "entities.client_type_required" | translate }}
-                    </div>
-                  </div>
-                </div> -->
                 <div class="form-group col-md-4 mb-3">
                   <label for="clientType">{{
                     "entities.client_type" | translate
@@ -104,7 +68,7 @@
                     </option>
                     <option
                       *ngFor="let type of clientsTypeData"
-                      [value]="type.type"
+                      [value]="type.code"
                     >
                       {{ type.clientTypeName }}
                     </option>
@@ -165,26 +129,27 @@
                   <label for="citizenship">{{
                     "entities.citizenship" | translate
                   }}</label>
-                  <select
-                    id="citizenship"
-                    class="form-select"
+                  <p-dropdown
+                    [options]="countryData"
+                    optionLabel="name"
+                    optionValue="id"
+                    [style]="{ width: '100%', height: '50%' }"
+                    placeholder="Citizenship"
                     formControlName="citizenship"
+                    id="citizenship"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    appendTo="body"
+                    class="center-placeholder"
+                    ngDefaultControl
                     [ngClass]="{
                       'is-invalid':
                         f['citizenship']?.invalid &&
                         (f['citizenship']?.dirty || f['citizenship']?.touched)
                     }"
                   >
-                    <option value="" selected>
-                      {{ "entities.select_citizenship" | translate }}
-                    </option>
-                    <option
-                      *ngFor="let country of countryData"
-                      [value]="country.id"
-                    >
-                      {{ country.name }}
-                    </option>
-                  </select>
+                  </p-dropdown>
                   <div
                     *ngIf="
                       f['citizenship']?.invalid &&
@@ -868,7 +833,7 @@
                       }"
                     >
                       <option
-                        *ngFor="let value of countryData"
+                        *ngFor="let value of filteredZipCodes"
                         [value]="'+' + value?.zipCode"
                       >
                         {{ "+" + value?.zipCode }}
@@ -982,7 +947,7 @@
                       }"
                     >
                       <option
-                        *ngFor="let value of countryData"
+                        *ngFor="let value of filteredZipCodes"
                         [value]="'+' + value?.zipCode"
                       >
                         {{ "+" + value?.zipCode }}
@@ -2121,9 +2086,9 @@
               </ng-container>
               <ng-container *ngIf="visibleStatus?.converted === 'Y'">
                 <div class="form-group col-md-4 mb-3">
-                  <label for="converted">{{
-                    "entities.converted" | translate
-                  }}</label>
+                  <label for="converted">
+                    {{"entities.converted" | translate }}?
+                  </label>
                   <select
                     id="converted"
                     class="form-select"
@@ -2136,7 +2101,7 @@
                     }"
                   >
                     <option value="" selected>
-                      {{ "entities.select_title" | translate }}
+                      {{ "entities.is_lead_converted" | translate }}
                     </option>
                     <option value="Y">Yes</option>
                     <option value="N">No</option>

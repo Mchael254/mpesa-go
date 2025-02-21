@@ -13,6 +13,7 @@ import { LeadsService } from '../../../../../features/crm/services/leads.service
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { Leads } from '../../../../../features/crm/data/leads';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
+import { TableDetail } from "../../../../../shared/data/table-detail";
 
 const log = new Logger('ListLeadComponent');
 
@@ -26,6 +27,7 @@ export class ListLeadComponent implements OnInit {
   public pageSize: 5;
   public isSearching = false;
   public searchTerm = '';
+  tableDetails: TableDetail;
   leadBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -52,12 +54,12 @@ export class ListLeadComponent implements OnInit {
     name: string;
     modeOfIdentity: string;
     idNumber: string;
-    clientTypeName: string;
+    'clientTypeDto.category': string;
   } = {
     name: '',
     modeOfIdentity: '',
     idNumber: '',
-    clientTypeName: '',
+    'clientTypeDto.category': '',
   };
 
   constructor(
@@ -84,7 +86,7 @@ export class ListLeadComponent implements OnInit {
       const searchEvent = {
         target: { value: this.searchTerm },
       };
-      this.filter(searchEvent, pageIndex, pageSize);
+      this.filter(searchEvent, pageIndex, pageSize, null);
     } else {
       this.getLeads(pageIndex, pageSize, sortField, sortOrder)
         .pipe(
@@ -139,34 +141,46 @@ export class ListLeadComponent implements OnInit {
       });
   }
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
     this.leadsData = null;
 
     this.isSearching = true;
     this.spinner.show();
-    this.leadService
-      .searchLeads(
+    let data = this.filterObject[keyData];
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.leadService
+        .searchLeads(
+          pageIndex,
+          pageSize,
+          keyData, data
+        )
+        .subscribe(
+          (data) => {
+            this.leadsData = data;
+            this.spinner.hide();
+          },
+          (error) => {
+            this.spinner.hide();
+          }
+        );
+    } else {
+      this.getLeads(
         pageIndex,
-        pageSize,
-        this.filterObject?.name,
-        this.filterObject?.modeOfIdentity,
-        this.filterObject?.idNumber,
-        this.filterObject?.clientTypeName
-      )
-      .subscribe(
-        (data) => {
-          // this.leadsData = data;
-          this.spinner.hide();
-        },
-        (error) => {
-          this.spinner.hide();
-        }
-      );
+        pageSize
+    ).subscribe((data: Pagination<Leads>) => {
+      this.leadsData = data;
+      this.tableDetails.rows = this.leadsData?.content;
+      this.tableDetails.totalElements = this.leadsData?.totalElements;
+      this.spinner.hide();
+    })
+    }
+
   }
 
   inputName(event) {
     const value = (event.target as HTMLInputElement).value;
-    this.filterObject['name'] = value;
+    this.filterObject['otherNames'] = value;
   }
 
   inputModeOfIdentity(event) {
@@ -181,6 +195,6 @@ export class ListLeadComponent implements OnInit {
 
   inputClientTypeName(event) {
     const value = (event.target as HTMLInputElement).value;
-    this.filterObject['clientTypeName'] = value;
+    this.filterObject['clientTypeDto.category'] = value;
   }
 }
