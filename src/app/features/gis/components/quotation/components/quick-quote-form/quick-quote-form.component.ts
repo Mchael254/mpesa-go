@@ -103,6 +103,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   formData: {
     type: string;
     name: string;
+    max: number
+    min: number
     isMandatory: string;
     disabled: boolean;
     readonly: boolean;
@@ -257,7 +259,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   ];
 
   selectedVesselTypeCode: any;
-  isFormDataLoaded: boolean = false;
   quotationSubMenuList: SidebarMenu[];
 
   quickQuoteForm: FormGroup;
@@ -345,7 +346,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.passedQuotation = JSON.parse(
       sessionStorage.getItem('passedQuotationDetails')
     );
-    
+
   }
 
   ngOnInit(): void {
@@ -362,8 +363,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
-
-    const QuickFormDetails = sessionStorage.getItem('riskFormData');
 
     const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
     this.isEditRisk = JSON.parse(passedIsEditRiskString);
@@ -392,7 +391,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     };
 
     log.debug('isReturnToQuickQuote Details:', this.isReturnToQuickQuote);
-    const navigationSource = sessionStorage.getItem('navigationSource');
     sessionStorage.removeItem('navigationSource');
     this.createQuickQuiteForm();
 
@@ -938,15 +936,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Selected Zip Code:', this.selectedZipCode);
   }
 
-  // onInputChange() {
-  //   log.debug('Method called');
-  //   this.newClientData.inputClientZipCode = this.newClientPhone?.dialCode;
-  //   this.newClientData.inputClientPhone = this.newClientPhone?.number
-  //   // this.newClientData.inputClientPhone = this.newClientPhone
-  //   log.debug('New User Data', this.newClientData);
-  //   const newClientDetailsString = JSON.stringify(this.newClientData);
-  //   sessionStorage.setItem('newClientDetails', newClientDetailsString);
-  // }
 
   /**
    * Retrieves branch information by making an HTTP GET request to the BranchService.
@@ -1031,43 +1020,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Creates a form group for personal details using Angular FormBuilder (fb).
-   * - Defines form controls for various personal details.
-   * @method createPersonalDetailsForm
-   * @return {void}
-   */
-  createPersonalDetailsForm() {
-    this.personalDetailsForm = this.fb.group({
-      actionType: [''],
-      addEdit: [''],
-      agentCode: [''],
-      agentShortDescription: [''],
-      bdivCode: [''],
-      bindCode: [''],
-      branchCode: [''],
-      clientCode: [''],
-      clientType: [''],
-      coinLeaderCombined: [''],
-      consCode: [''],
-      currencyCode: ['', Validators.required],
-      currencySymbol: [''],
-      fequencyOfPayment: [''],
-      isBinderPolicy: [''],
-      paymentMode: [''],
-      proInterfaceType: [''],
-      productCode: ['', Validators.required],
-      source: [''],
-      withEffectiveFromDate: ['', Validators.required],
-      withEffectiveToDate: [''],
-      multiUser: [''],
-      comments: [''],
-      internalComments: [''],
-      introducerCode: [''],
-      subclassCode: ['', Validators.required],
-      // dateRange:['']
-    });
-  }
+
 
   /**
    * - Get A specific client's details on select.
@@ -1083,8 +1036,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.clientDetails = client;
     this.clientType = this.clientDetails.clientType.clientTypeName;
     this.selectedCountry = this.clientDetails.country;
-    //sessionStorage.setItem('clientDetails', JSON.stringify(this.clientDetails));
-    // this.getCountries();
     this.saveclient();
 
     let fullName = this.utilService.getFullName(this.clientDetails);
@@ -1988,9 +1939,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     if (this.quickQuoteForm.valid) {
       this.ngxSpinner.show();
 
-      log.debug('Form is valid, proceeding with premium computation...');
+
       sessionStorage.setItem('product', this.selectedProductCode);
       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+      log.debug('Form is valid, proceeding with premium computation...',quickQuoteDataModel);
       log.debug(
         'Mandatory sections: ',
         this.subclassSectionCoverList,
@@ -2001,7 +1953,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.currencyCode = quickQuoteDataModel.currency.id;
       let quickQuoteData: QuickQuoteData = {
         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
-        carRegNo: quickQuoteDataModel.carRegNo,
+        carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
         clientName: quickQuoteDataModel.clientName,
         clientEmail: quickQuoteDataModel.emailAddress,
@@ -2061,7 +2013,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         .subscribe({
           next: ([premiumResponse, payloadResponse]) => {
             log.debug('Data', premiumResponse);
-            quickQuoteData.carRegNo = ""
             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
             const premiumResponseString = JSON.stringify(premiumResponse);
             sessionStorage.setItem('premiumResponse', premiumResponseString);
@@ -2447,5 +2398,5 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         }
       });
   }
- 
+
 }
