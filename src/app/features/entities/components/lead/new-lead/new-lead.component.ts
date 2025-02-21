@@ -1,62 +1,45 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, map, take } from 'rxjs';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {DatePipe} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {map, take} from 'rxjs';
 
-import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
-import { Logger } from '../../../../../shared/services/logger/logger.service';
-import { CountryService } from '../../../../../shared/services/setups/country/country.service';
-import {
-  CountryDto,
-  StateDto,
-  TownDto,
-} from '../../../../../shared/data/common/countryDto';
-import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
-import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
-import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
-import { AccountService } from '../../../services/account/account.service';
-import { ClientTitleDTO } from '../../../data/accountDTO';
-import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
-import { SetupsParametersService } from '../../../../../shared/services/setups-parameters.service';
-import { LeadsService } from '../../../../../features/crm/services/leads.service';
-import {
-  LeadCommentDto,
-  LeadSourceDto,
-  LeadStatusDto,
-  Leads,
-} from '../../../../../features/crm/data/leads';
-import { SystemsDto } from '../../../../../shared/data/common/systemsDto';
-import { SystemsService } from '../../../../../shared/services/setups/systems/systems.service';
-import { SectorService } from '../../../../../shared/services/setups/sector/sector.service';
-import { OccupationService } from '../../../../../shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from '../../../../../shared/data/common/occupation-dto';
-import { SectorDTO } from '../../../../../shared/data/common/sector-dto';
-import { CurrencyDTO } from '../../../../../shared/data/common/currency-dto';
-import { CurrencyService } from '../../../../../shared/services/setups/currency/currency.service';
-import {
-  OrganizationDTO,
-  OrganizationDivisionDTO,
-} from '../../../../../features/crm/data/organization-dto';
-import { OrganizationService } from '../../../../../features/crm/services/organization.service';
-import { CampaignsDTO } from '../../../../../features/crm/data/campaignsDTO';
-import { CampaignsService } from '../../../../../features/crm/services/campaigns..service';
-import { StaffService } from '../../../services/staff/staff.service';
-import { StaffDto } from '../../../data/StaffDto';
-import { Activity } from '../../../../../features/crm/data/activity';
-import { ActivityService } from '../../../../../features/crm/services/activity.service';
-import { IntermediaryService } from '../../../services/intermediary/intermediary.service';
-import { ClientService } from '../../../services/client/client.service';
-import { ClientTypeDTO } from '../../../data/ClientDTO';
-import { UtilService } from '../../../../../shared/services/util/util.service';
-import { EntityService } from '../../../services/entity/entity.service';
-import { ProductsService } from '../../../../../features/gis/components/setups/services/products/products.service';
-import { ProductService } from '../../../../../features/lms/service/product/product.service';
+import {BreadCrumbItem} from '../../../../../shared/data/common/BreadCrumbItem';
+import {Logger} from '../../../../../shared/services/logger/logger.service';
+import {CountryService} from '../../../../../shared/services/setups/country/country.service';
+import {CountryDto, StateDto, TownDto,} from '../../../../../shared/data/common/countryDto';
+import {MandatoryFieldsService} from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import {GlobalMessagingService} from '../../../../../shared/services/messaging/global-messaging.service';
+import {untilDestroyed} from '../../../../../shared/services/until-destroyed';
+import {AccountService} from '../../../services/account/account.service';
+import {ClientTitleDTO} from '../../../data/accountDTO';
+import {EntityDto, IdentityModeDTO} from '../../../data/entityDto';
+import {SetupsParametersService} from '../../../../../shared/services/setups-parameters.service';
+import {LeadsService} from '../../../../../features/crm/services/leads.service';
+import {LeadCommentDto, Leads, LeadSourceDto, LeadStatusDto,} from '../../../../../features/crm/data/leads';
+import {SystemsDto} from '../../../../../shared/data/common/systemsDto';
+import {SystemsService} from '../../../../../shared/services/setups/systems/systems.service';
+import {SectorService} from '../../../../../shared/services/setups/sector/sector.service';
+import {OccupationService} from '../../../../../shared/services/setups/occupation/occupation.service';
+import {OccupationDTO} from '../../../../../shared/data/common/occupation-dto';
+import {SectorDTO} from '../../../../../shared/data/common/sector-dto';
+import {CurrencyDTO} from '../../../../../shared/data/common/currency-dto';
+import {CurrencyService} from '../../../../../shared/services/setups/currency/currency.service';
+import {OrganizationDivisionDTO, OrganizationDTO,} from '../../../../../features/crm/data/organization-dto';
+import {OrganizationService} from '../../../../../features/crm/services/organization.service';
+import {CampaignsDTO} from '../../../../../features/crm/data/campaignsDTO';
+import {CampaignsService} from '../../../../../features/crm/services/campaigns..service';
+import {StaffService} from '../../../services/staff/staff.service';
+import {StaffDto} from '../../../data/StaffDto';
+import {Activity} from '../../../../../features/crm/data/activity';
+import {ActivityService} from '../../../../../features/crm/services/activity.service';
+import {IntermediaryService} from '../../../services/intermediary/intermediary.service';
+import {ClientService} from '../../../services/client/client.service';
+import {ClientTypeDTO} from '../../../data/ClientDTO';
+import {UtilService} from '../../../../../shared/services/util/util.service';
+import {EntityService} from '../../../services/entity/entity.service';
+import {ProductsService} from '../../../../../features/gis/components/setups/services/products/products.service';
+import {ProductService} from '../../../../../features/lms/service/product/product.service';
 
 const log = new Logger('NewLeadComponent');
 
@@ -75,6 +58,7 @@ export class NewLeadComponent implements OnInit {
   public createCommentForm: FormGroup;
 
   public countryData: CountryDto[] = [];
+  public filteredZipCodes: CountryDto[] = [];
   public statesData: StateDto[] = [];
   public townData: TownDto[] = [];
   public modeIdentityType: IdentityModeDTO[] = [];
@@ -347,7 +331,7 @@ export class NewLeadComponent implements OnInit {
         annualRevenue: [''],
         potentialAmount: [''],
         potentialName: [''],
-        potentialSaleStage: [''],
+        potentialSaleStage: ['', [Validators.maxLength(2)]],
         potentialContr: [''],
         converted: [''],
         potentialCloseDate: [''],
@@ -660,6 +644,7 @@ export class NewLeadComponent implements OnInit {
         next: (data) => {
           if (data) {
             this.countryData = data;
+            this.filteredZipCodes = data.filter(value => value.zipCode != null);
             log.info('Fetched Countries', this.countryData);
           } else {
             this.errorOccurred = true;
@@ -1130,6 +1115,7 @@ export class NewLeadComponent implements OnInit {
           log.info(`error >>>`, err);
         },
       });
+    this.cdr.detectChanges();
   }
 
   openCommentModal() {
