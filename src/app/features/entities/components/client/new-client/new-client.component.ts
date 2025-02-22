@@ -30,6 +30,8 @@ import { AuthService } from "../../../../../shared/services/auth.service";
 import { DmsService } from "../../../../../shared/services/dms/dms.service";
 import { AppConfigService } from "../../../../../core/config/app-config-service";
 import { PassedClientDto } from '../../../data/PassedClientDTO';
+import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
+
 const log = new Logger("CreateClientComponent")
 
 @Component({
@@ -160,12 +162,23 @@ export class NewClientComponent implements OnInit {
   allUsersModalVisible: boolean = false;
   zIndex = 1;
   selectedMainUser: ClientDTO;
-  private today = new Date();
+  public today = new Date();
+  public tomorrow: Date = new Date(new Date().setDate(new Date().getDate() + 1));
   public eighteenYearsAgo: Date = new Date(
     this.today.setFullYear(this.today.getFullYear() - 18)
   );
+  public minDate = new Date(this.today.getFullYear() - 100, this.today.getMonth(), this.today.getDate()); // Example: 100 years ago
   pinNumberRegex: string;
   selectedOption: IdentityModeDTO;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Kenya,
+    CountryISO.Nigeria,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom,
+  ];
 
   constructor(
     private clientService: ClientService,
@@ -284,6 +297,8 @@ export class NewClientComponent implements OnInit {
         {
           clientBranch: [''],
           clientTitle: [''],
+          // smsNumber: [null],
+          // phoneNumber: [null],
           smsNumber: [''],
           phoneNumber: [''],
           email: [''],
@@ -597,14 +612,25 @@ export class NewClientComponent implements OnInit {
  * and wealth details, by making an API call with the form values.
  */
   saveClientBasic() {
+    log.debug("submitted form",this.clientRegistrationForm );
 
     this.submitted = true;
     this.clientRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
     setTimeout(() => {
       if (this.clientRegistrationForm.invalid) {
-        const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
+        const invalidFields = [];
+        Object.keys(this.clientRegistrationForm.controls).forEach((key) => {
+          const control = this.clientRegistrationForm.get(key);
+          if (control?.invalid) {
+            invalidFields.push(key);
+          }
+        });
 
+        console.error("Invalid Fields:", invalidFields);
+
+        // Existing logic to scroll and focus on the first invalid field
+        const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
         let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
 
         for (const control of invalidControls) {
@@ -615,24 +641,24 @@ export class NewClientComponent implements OnInit {
         }
 
         if (firstInvalidUnfilledControl) {
-          firstInvalidUnfilledControl.focus(); // Set focus to the first invalid and unfilled field
+          firstInvalidUnfilledControl.focus();
           const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
           if (scrollContainer) {
-            scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop; // Scroll the scrollable container to the top of the first invalid and unfilled field
+            scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
           }
         } else {
           const firstInvalidControl = invalidControls[0];
           if (firstInvalidControl) {
-            firstInvalidControl.focus(); // Set focus to the first invalid field
+            firstInvalidControl.focus();
             const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
             if (scrollContainer) {
-              scrollContainer.scrollTop = firstInvalidControl.offsetTop; // Scroll the scrollable container to the top of the first invalid field
+              scrollContainer.scrollTop = firstInvalidControl.offsetTop;
             }
           }
         }
 
         this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
-        return; // Exit the method if the form is invalid
+        return;
       }
 
       const clientFormValues = this.clientRegistrationForm.getRawValue();
@@ -676,6 +702,9 @@ export class NewClientComponent implements OnInit {
         receivedDocuments: "N", /*Todo: provide field to capture*/
         // smsNumber: clientFormValues.contact_details.smsNumber,
         // titleShortDescription: "DR",
+        // phoneNumber: clientFormValues.contact_details.phoneNumber.e164Number,
+        // smsNumber: clientFormValues.contact_details.smsNumber.e164Number,
+
         phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
         smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
         titleId: clientFormValues.contact_details.clientTitle
@@ -996,6 +1025,7 @@ export class NewClientComponent implements OnInit {
     this.countryService.getCountries()
       .subscribe((data) => {
         this.countryData = data;
+        log.debug("country data", this.countryData);
         // if(this.countryData){
         //   this.newServiceProviderForm.patchValue({
         //     country: this.entityDetails.countryId
