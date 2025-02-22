@@ -150,8 +150,8 @@
                         <ng-template pTemplate="header">
                           <tr>
                             <th></th>
-                            <th> {{'gis.quotation.narration' | translate}}</th>
-                            <th> {{'gis.quotation.value' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.narration' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.value' | translate}}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-limits let-ri="rowIndex">
@@ -215,8 +215,8 @@
                         <ng-template pTemplate="header">
                           <tr>
                             <th class="flexible-header"></th>
-                            <th> {{'gis.quotation.narration' | translate}}</th>
-                            <th> {{'gis.quotation.value' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.narration' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.value' | translate}}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-limits let-ri="rowIndex">
@@ -300,11 +300,11 @@
                         class='ui-datatable'>
                           <ng-template pTemplate="header">
                             <tr>
-                              <th></th>
-                              <th>Section</th>
-                              <th>Limit amount</th>
-                              <th>Premium</th>
-                              <th></th>
+                              <th class="flexible-header"></th>
+                              <th class="flexible-header">Section</th>
+                              <th class="flexible-header">Limit amount</th>
+                              <th class="flexible-header">Premium</th>
+                              <th class="flexible-header"></th>
                             </tr>
                           </ng-template>
                           <ng-template pTemplate="body" let-risk>
@@ -355,7 +355,7 @@
 
 
       <button class="btn btn-primary" type="submit" id="btnCoverTypes"
-        (click)="passCovertypeDesc(selectedCoverType);selectCoverNew();">
+        (click)="selectCoverNew();">
         {{'gis.quotation.select_cover' | translate}}</button>
     </div>
   </div>
