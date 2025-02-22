@@ -114,6 +114,7 @@ export class QuotationSummaryComponent {
   activeTab: string = 'clauses';
   conversionFlag: boolean = false;
   conversionFlagString: string;
+  acceptedYear: number = new Date().getFullYear() + 6;
 
 
   constructor(
@@ -1012,7 +1013,12 @@ export class QuotationSummaryComponent {
       remark: ['', [Validators.required]],
       riskDetails: ['', [Validators.required]],
       tpAmount: ['', [Validators.required]],
-      eceYear: ['', [Validators.required]]
+      eceYear: ['', [
+        Validators.required,
+        Validators.min(1900),
+        Validators.max(this.acceptedYear),
+        Validators.pattern('^[0-9]{4}$')
+      ]]
     });
   }
 

@@ -49,8 +49,8 @@ export class QuotationDetailsComponent {
   quotationNo:any;
   quotationCode:any;
   isChecked: boolean = false;
-  show:boolean=true;
-  showProduct:boolean=true;
+  show: boolean = false;
+  showProduct: boolean = false;
   quotationNum:string;
   introducers:any;
   productSubclassList:any
@@ -74,6 +74,7 @@ export class QuotationDetailsComponent {
   showCampaignField: boolean = false;
   campaignList: any;
   clientId: number;
+  today = new Date();
 
 
 
@@ -439,7 +440,7 @@ onResize(event: any) {
     if (this.quotationType === "D") {
       this.quotationForm.controls['agentCode'].setValue(0);
       this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
-  
+
   } else if (this.quotationType === "I") {
     this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
   }
@@ -502,31 +503,32 @@ onResize(event: any) {
    * @param {Event} e - The event containing the target value representing the cover from date.
    * @return {void}
    */
-updateCoverToDate(e) {
+    updateCoverToDate(e) {
 
-    const coverFromDate= e.target.value
+      const coverFromDate= e;
 
-    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-    //   this.productDetails = res
-    //   log.debug(this.productDetails)
-      // if(this.productDetails.expires === 'Y'){
-        this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
-          this.midnightexpiry = res
-          log.debug(this.midnightexpiry)
-          this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
-        })
+      // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
+      //   this.productDetails = res
+      //   log.debug(this.productDetails)
+        // if(this.productDetails.expires === 'Y'){
+          this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
+            this.midnightexpiry = res;
+            log.debug("midnightexpirydate", this.midnightexpiry);
+            log.debug(this.midnightexpiry)
+            this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
+          })
 
-      // }else {
-      //   const selectedDate = new Date(coverFromDate);
-      //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-      //   const coverToDate = selectedDate.toISOString().split('T')[0];
-      //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
+        // }else {
+        //   const selectedDate = new Date(coverFromDate);
+        //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+        //   const coverToDate = selectedDate.toISOString().split('T')[0];
+        //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
 
 
-      // }
-    // })
+        // }
+      // })
 
-  }
+    }
 
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
@@ -535,7 +537,7 @@ updateCoverToDate(e) {
    * @return {void}
    */
 updateQuotationExpiryDate(e){
-  const RFQDate = e.target.value
+  const RFQDate = e;
   if (RFQDate) {
     const selectedDate = new Date(RFQDate);
     selectedDate.setMonth(selectedDate.getMonth() + 3);
@@ -588,12 +590,12 @@ onQuotationTypeChange(value: string): void {
 
   if (!this.showIntermediaryField) {
     this.quotationForm.get('agentCode').reset();
-   
+
   }
 
   // if (!this.showFacultativeFields) {
   //   this.policyProductForm.get('agentCode').reset();
-   
+
   // }
 }
 onResultCampaignTypeChange(value: string): void {
@@ -605,12 +607,12 @@ onResultCampaignTypeChange(value: string): void {
 
   if (!this.showCampaignField) {
     this.quotationForm.get('agentCode').reset();
-   
+
   }
 
   // if (!this.showFacultativeFields) {
   //   this.policyProductForm.get('agentCode').reset();
-   
+
   // }
 }
 fetchCampaigns(){
@@ -628,5 +630,13 @@ fetchCampaigns(){
       this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  campaign details.Try again later');
     }
   })
-}
+  }
+
+  toggleProduct() {
+    this.showProduct = !this.showProduct;
+  }
+
+  toggleDetails() {
+    this.show = !this.show;
+  }
 }
