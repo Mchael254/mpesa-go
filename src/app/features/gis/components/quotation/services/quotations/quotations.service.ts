@@ -447,7 +447,7 @@ export class QuotationsService {
   getLimitsOfLiability(
     subclassCode: number,
     scheduleType: string = 'L'
-  ) {
+  ): Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
 
@@ -459,7 +459,7 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
 
     // Sends a GET request to fetch limits of liability
-    return this.api.GET(
+    return this.api.GET<Observable<any>>(
       `v2/limits-of-liability/subclass?`,
       API_CONFIG.GIS_QUOTATION_BASE_URL,
       params
@@ -563,7 +563,7 @@ export class QuotationsService {
   }
   getClauses(
     covertypeCode: number,
-    subclassCode: number,): Observable<Clause[]> {
+    subclassCode: number,): Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
@@ -572,14 +572,14 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<Clause[]>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<any>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
 
   getExcesses(
     subclassCode: number,
     scheduleType: string = 'E'
-  ) {
+  ): Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
@@ -588,7 +588,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
   addLimitsOfLiability(data: CreateLimitsOfLiability[]) {
