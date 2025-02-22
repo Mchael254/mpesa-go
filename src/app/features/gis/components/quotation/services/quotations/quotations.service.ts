@@ -187,6 +187,11 @@ export class QuotationsService {
 
   }
 
+
+  createRiskLimits(data: any): Observable<any>{
+    return this.api.POST(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+
   /**
    * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
    * @method updateRiskSection

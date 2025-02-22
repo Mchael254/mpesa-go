@@ -711,6 +711,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
           rateType: premiumRate?.rateType || "FXD",
           rowNumber: 1,
+          sectionType: premiumRate?.sectionType,
           sumInsuredLimitType: premiumRate?.sectionType || null,
           sumInsuredRate: databaseLimit?.sumInsuredRate,
           sectionShortDescription: premiumRate.sectionType,
@@ -970,13 +971,17 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     );
 
     log.debug("Selected Risk", selectedRisk)
+    const coverTypeSections = this.riskLevelPremiums
+      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
+      .map(section => section.limitPremiumDtos).flat()
     let risk = {
-      coverTypeCode: this.passedCovertypeCode,
+      coverTypeCode: this.selectedCoverType,
       quotationCode: defaultCode,
       productCode: this.premiumPayload?.product.code,
-      propertyId: selectedRisk?.propertyId,
+      propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
       value: this.sumInsuredValue, // TODO attach this to individual risk
-      coverTypeShortDescription: this.coverTypeShortDescription,
+      coverTypeShortDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeShortDescription,
+      premium:  coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
       subclassCode: selectedRisk?.subclassSection.code,
       itemDesc: selectedRisk?.itemDescription,
       binderCode: selectedRisk?.binderDto?.code,
@@ -984,7 +989,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       wet: selectedRisk?.withEffectTo,
       prpCode: this.passedClientDetails?.id,
       coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
-
     }
     return [risk]
     /*   const risk = this.riskDetailsForm.value;
@@ -1041,8 +1045,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   selectCoverNew() {
     const quotation = this.getQuotationPayload();
-    const riskPayload = this.getQuotationRiskPayload();
+    let riskPayload = this.getQuotationRiskPayload();
     let limitsToSave = this.riskLimitPayload();
+
     log.debug("Quotation payload>>>", quotation)
     log.debug("Risk payload", riskPayload);
     log.debug("About to save these limits", limitsToSave)
@@ -1054,6 +1059,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.quotationCode = quotationResponse._embedded.quotationCode;
         this.quotationNo = quotationResponse._embedded.quotationNumber;
         log.debug('Quotation saved successfully', quotationResponse);
+        riskPayload = riskPayload.map((risk) => {
+          return {
+            ...risk,
+            quotationCode: this.quotationCode
+          }
+        })
         return this.quotationService.createQuotationRisk(this.quotationCode, riskPayload)
       }),
       switchMap((riskResponse) => {
@@ -1078,21 +1089,35 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         const excesses = this.excessesList.map(item => ({
           code: item.code,
           scheduleValueCode: item.quotationValueCode,
-          quotationProductCode:  this.quoteProductCode,
+          quotationProductCode: this.quoteProductCode,
           value: item.value,
           narration: item.narration,
-          type: "E"  // For Limit of Liability
+          type: "E"
         }));
-
+        const limitsPayLoad = {
+          addOrEdit: 'A',
+          quotationRiskCode: this.riskCode,
+          riskSections:
+            limitsToSave.map((value) => {
+              return {
+                ...value,
+                quotationCode: this.quotationCode,
+                quotRiskCode: this.riskCode
+              }
+            })
+        }
         return forkJoin(([
-          this.quotationService.addClauses(clauseCodes, this.quoteProductCode, this.quotationCode, this.riskCode),
-         this.quotationService.createRiskSection(this.riskCode, limitsToSave),
+          this.quotationService.addClauses(clauseCodes, this.premiumPayload?.product.code, this.quotationCode, this.riskCode),
+          this.quotationService.createRiskLimits(limitsPayLoad),
           this.quotationService.addLimitsOfLiability(limitsOfLiability),
           this.quotationService.addLimitsOfLiability(excesses)
         ]))
       })
     ).subscribe({
-      next: (([clauses, riskSections, limits,excesses]) => log.debug(riskSections)),
+      next: (([clauses, riskSections, limits, excesses]) => {
+        log.debug(riskSections)
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }),
       error: ((error) => log.error("Error>>>", error))
     })
     /*
