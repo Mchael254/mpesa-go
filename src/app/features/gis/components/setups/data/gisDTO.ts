@@ -905,6 +905,7 @@ export interface Premiums {
   code: number,
   sectionCode: number,
   sectionShortDescription: string,
+  sectionDescription?: string
   sectionType: string,
   rate: number,
   dateWithEffectFrom: string,
@@ -939,7 +940,8 @@ export interface Premiums {
   doesCashBackApply: string,
   cashBackLevel: number,
   rateFrequencyType: string,
-  isChecked?: true
+  isChecked?: boolean
+  isMandatory?: string
 }
 
 export interface report {

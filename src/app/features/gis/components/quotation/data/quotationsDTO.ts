@@ -275,7 +275,10 @@ export interface Limit {
 }
 
 export interface Section {
+  description?: string
+  limitAmount?: number
   code: number
+  isMandatory?: string
 }
 
 export interface BinderDto {
@@ -518,6 +521,7 @@ export interface QuickQuoteData {
   coverTo: Date
   existingClientSelected: boolean
   selectedClient?: ClientDTO
+  selectedBinderCode?: number
   computationPayloadCode?:number
 
 }

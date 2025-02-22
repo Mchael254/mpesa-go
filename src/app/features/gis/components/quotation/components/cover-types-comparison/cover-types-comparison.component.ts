@@ -1,34 +1,34 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import stepData from '../../data/steps.json'
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
-import { AuthService } from '../../../../../../shared/services/auth.service';
-import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { BinderService } from '../../../setups/services/binder/binder.service';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuotationsService } from '../../services/quotations/quotations.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MessageService} from 'primeng/api';
+import {AuthService} from '../../../../../../shared/services/auth.service';
+import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
+import {BinderService} from '../../../setups/services/binder/binder.service';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 
-import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+import {SharedQuotationsService} from '../../services/shared-quotations.service';
+import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 
-import { forkJoin, mergeMap } from 'rxjs';
+import {forkJoin, mergeMap} from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, PremiumRate,
   QuotationDetails, UserDetail, QuickQuoteData
 } from '../../data/quotationsDTO'
-import { Premiums } from '../../../setups/data/gisDTO';
-import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { NgxSpinnerService } from 'ngx-spinner';
+import {Premiums} from '../../../setups/data/gisDTO';
+import {ClientDTO} from '../../../../../entities/data/ClientDTO';
+import {NgxSpinnerService} from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
-import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { Router } from '@angular/router';
-import { NgxCurrencyConfig } from "ngx-currency";
+import {HttpErrorResponse} from '@angular/common/http';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
+import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
+import {Router} from '@angular/router';
+import {NgxCurrencyConfig} from "ngx-currency";
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -108,7 +108,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedClientCode: any;
   computationDetails: any;
 
-  selectedSectionCode: any;
   selectedSubclassCode: any;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
@@ -123,7 +122,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedQuotationDetails: any;
   emailForm: FormGroup;
   smsForm: FormGroup;
-  currentExpandedIndex: number = -1;
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null; // Initially set to null
   isUpdateQuoteCalled: boolean = false;
@@ -131,9 +129,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
-  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
+
+  fetchPremiumRates: Premiums[] = []
 
   clauseList: Clause[] = []
   selectedClause: any;
@@ -207,6 +207,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     public premiumRateService: PremiumRateService,
     public spinner: NgxSpinnerService,
   ) {
+    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
   }
 
   public isClauseDetailsOpen = false;
@@ -250,10 +251,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     // this.selectedCoverType = this.riskLevelPremiums[0].coverTypeDetails?.coverTypeCode;
     this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.coverTypeCode;
 
-    log.info("selectedCovertype when the page loads:", this.selectedCoverType)
-    if (this.selectedCoverType && this.selectedSubclassCode) {
-      this.onCoverTypeChange(this.selectedCoverType)
-    }
+    log.info("selectedCovertype when the page loads:", this.selectedCoverType) //TODO check this out with HOPE
+    /*  if (this.selectedCoverType && this.selectedSubclassCode) {
+        this.onCoverTypeChange(this.selectedCoverType)
+      }*/
 
     const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
     this.quickQuoteSectionList = JSON.parse(storedMandatorySectionsString);
@@ -351,7 +352,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
     }
 
-    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
+
     log.debug("Stored Data", this.storedData)
     this.computationPayloadCode = this.storedData.computationPayloadCode
     this.computationPayloadCode && this.fetchPremiumComputationPyload(this.computationPayloadCode);
@@ -382,9 +383,53 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
   }
 
+  fetchCoverTypeRelatedData(coverTypeCode: number) {
+    forkJoin(([
+      this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
+      this.quotationService.getExcesses(this.selectedSubclassCode),
+      this.quotationService.getLimitsOfLiability(this.selectedSubclassCode),
+      this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.storedData.selectedBinderCode, coverTypeCode)
+    ])).pipe(
+      untilDestroyed(this)
+    )
+      .subscribe(([clauses, excesses, limitOfLiabilities, applicablePremiumRates]) => {
+        this.clauseList = clauses._embedded ?? []
+        this.excessesList = excesses._embedded ?? []
+        this.limitsOfLiabilityList = limitOfLiabilities._embedded ?? []
+        const coverTypeSections = this.riskLevelPremiums
+          .filter(value => value.coverTypeDetails.coverTypeCode === coverTypeCode)
+          .map(section => section.limitPremiumDtos).flat()
+        log.debug("Comparing against >>>", coverTypeSections)
+        this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+          .map((value) => {
+            let matchingSection = coverTypeSections.find(section => section.sectCode === value.sectionCode);
+            log.debug("Found a matching >>>", matchingSection, value)
+            return {
+              ...value,
+              isChecked: !!matchingSection,
+              limitAmount: matchingSection?.limitAmount ?? null
+            }
+          })
+
+        /*  for (let premiumObj of this.temporaryPremiumList) {
+             log.debug("Limits  to compare >>>", premiumObj, coverTypeSections)
+             log.debug("Fetched premium rates>>>>", applicablePremiumRates)
+            let matchingSection = coverTypeSections.find(section => section.sectCode === premiumObj.sectionCode);
+             if (matchingSection) {
+               premiumObj.isChecked = true
+               premiumObj.limitAmount = matchingSection.limitAmount
+             }
+           }*/
+
+        log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
+      })
+  }
+
   passCovertypeDesc(selectedCoverCode: any) {
     log.debug("data from passcovertpes", selectedCoverCode);
-    const passedCoverObject = this.riskLevelPremiums?.find(coverDesc => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
+    const passedCoverObject = this.riskLevelPremiums?.find((coverDesc: {
+      coverTypeDetails: { coverTypeCode: any; };
+    }) => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
     log.debug("passed covertype object:", passedCoverObject);
 
     this.passedCovertypeDescription = passedCoverObject?.coverTypeDetails.coverTypeDescription;
@@ -532,7 +577,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   //     const inputValue = inputElement.value.trim(); // Trim spaces
   //     const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
 
-  
 
   //     // Update checkbox state based on input value
   //     checkbox.checked = !!(checkbox && inputValue);
@@ -585,7 +629,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       checkbox.checked = !!(checkbox && inputValue);
       section.typedWord = parseInt(inputValue, 10);
       section.isChecked = !!inputValue; // True only if input has a value
-     
+
 
       if (section.isChecked) {
         this.passedSections.push(section);
@@ -616,10 +660,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       console.debug('Selected Sections:', this.passedSections);
       sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
 
-      this.loadAllPremiums();
+      // this.loadAllPremiums();
     }, 500); // Trigger after 500ms of no typing
   }
-
 
 
   // Function to determine the checkbox state for each row
@@ -737,10 +780,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.isTempPremiumListUpdated = true;
         this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
 
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Section Created'});
         this.sectionDetailsForm.reset();
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Error, try again later'});
       }
       this.computeQuotePremium();
     });
@@ -980,9 +1023,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
   }
-  selectCoverButton(){
-    
+
+  selectCoverButton() {
+
   }
+
   selectCoverNew() {
     this.spinner.show()
     this.passedNumber = this.passedNumber === "null" ? null : this.passedNumber;
@@ -1329,14 +1374,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   addBenefits() {
     let isValid = true;
-
     this.temporaryPremiumList.forEach(section => {
       if (section.isChecked && !section.limitAmount) {
         document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
         isValid = false;
       }
     });
-  
+
     if (!isValid) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1344,15 +1388,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       );
       return;
     }
+
     log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputationPayload)
     log.debug("Passed Section", this.passedSections);
     log.debug("Selected Cover type:", this.selectedCoverType)
     log.debug("Sections to be removed", this.sectionToBeRemoved)
-    // for(let limit of this.temporaryPremiumList){
-    //   if(limit.isChecked && !)
-    // }
-    // Iterate over sections and mark empty ones as invalid
-  
+
     let limitsToModify = this.premiumComputationPayload.risks
       .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
 
@@ -1395,7 +1436,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
             multiplierRate: section.multiplierRate,
             description: section.sectionShortDescription,
             section: {
-              code: section.sectionCode
+              description: section.sectionDescription,
+              limitAmount: section.limitAmount,
+              code: section.sectionCode,
+              isMandatory: "N"
             },
             sectionType: section.sectionType,
             riskCode: null,
@@ -1409,7 +1453,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       log.debug("modified limits: ", limitsToModify);
       log.debug("Updated premium computation payload", this.premiumComputationPayload);
     }
-
     if (this.sectionToBeRemoved.length > 0) {
       log.debug("removing existing limit(s)")
 
@@ -1419,31 +1462,32 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           risk.limits = risk.limits.filter(limit =>
             !this.sectionToBeRemoved.includes(limit.section.code)
           );
-
         }
       });
       log.debug("Premium computation payload after removing sections ", this.premiumComputationPayload)
-
     }
+    this.performComputation()/*
+    let modalElement = document.getElementById('addMoreBenefits'); // Replace 'myModal' with the actual modal ID
+    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();*/
+  }
 
-
+  performComputation() {
     this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
           this.premiumResponse = response
-          // this.riskLevelPremiums = response.
           this.riskLevelPremiums = response.riskLevelPremiums
-          // const premiumComputationResponse = response
           log.debug("Premium Computation Response ", response);
-          this.cdr.detectChanges
+          sessionStorage.setItem('premiumResponse', JSON.stringify(response));
         },
         error: (error) => {
-
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }
+
 
   toggleClauseDetails() {
     this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
@@ -1500,7 +1544,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Selected cover type code:", this.selectedCoverType)
     log.info("On cover type change called")
     if (this.selectedCoverType) {
-      this.passCovertypeDesc(this.selectedCoverType)
+      this.fetchCoverTypeRelatedData(coverTypeCode)
     }
     // Collapse all expanded sections
     this.isClauseDetailsOpen = false;
@@ -1832,18 +1876,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     return this.quotationService
       .updatePremium(quotationCode, this.updatePremiumPayload)
       .subscribe({
-        next: (response: any) => {
-          const result = response;
-          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-        },
-        error: (error) => {
-          log.error("Failed to update details:", error);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
+          next: (response: any) => {
+            const result = response;
+            log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+          },
+          error: (error) => {
+            log.error("Failed to update details:", error);
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error.message
+            );
+          }
         }
-      }
       );
   }
 
@@ -2080,8 +2124,22 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         }
       });
   }
-  openRiskDeleteModal(){
-    
+
+  openRiskDeleteModal(limit: any) {
+    log.debug("About to delete >>>", limit)
+    log.debug("Before modification computation payload >>>", this.premiumComputationPayload)
+    log.debug('Selected Sections:', this.passedSections);
+    log.debug('Premium Rates:', this.premiumList);
+    this.premiumComputationPayload.risks.forEach((risk) => {
+      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
+        // Remove limits whose section code is in sectionToBeRemoved
+        risk.limits = risk.limits.filter(value =>
+          value.section.code !== limit.sectCode
+        );
+      }
+    });
+    log.debug("Modified computation payload >>>", this.premiumComputationPayload)
+    // this.performComputation()
   }
 }
 

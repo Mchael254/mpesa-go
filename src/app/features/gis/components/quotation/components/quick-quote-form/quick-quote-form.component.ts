@@ -43,7 +43,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom, forkJoin, from, mergeMap, tap } from 'rxjs';
+import { firstValueFrom, forkJoin, mergeMap, tap } from 'rxjs';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -53,7 +53,6 @@ import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { TableDetail } from '../../../../../../shared/data/table-detail';
 import { MenuService } from 'src/app/features/base/services/menu.service';
 import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { concatMap } from "rxjs/operators";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -1746,9 +1745,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           annualPremium: 0,
           multiplierDivisionFactor: 1,
           multiplierRate: rate.multiplierRate,
-          description: rate.sectionShortDescription,
+          description: rate.sectionDescription,
           section: {
-            code: rate.sectionCode
+            limitAmount: sumInsured || value,
+            description: rate.sectionDescription,
+            code: rate.sectionCode,
+            isMandatory: "Y"
           },
           sectionType: rate.sectionType,
           riskCode: null,
@@ -1967,7 +1969,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         value: quickQuoteDataModel?.value,
         modeOfTransport: quickQuoteDataModel?.modeOfTransport,
         existingClientSelected: this.existingClientSelected,
+        selectedBinderCode: this.selectedBinderCode,
         selectedClient: this.clientDetails ? this.clientDetails : null
+
       }
 
 
