@@ -20,6 +20,32 @@
   scrollbar-width: none;
   height: 35px; /* Set a fixed height */
 }
+/* Responsive Grid for small screens */
+@media screen and (max-width:767px) {
+  .top-bar{
+    display: grid;
+    grid-template-columns: 1fr; /* Each element takes full width */
+    gap: 10px; /* Space between items */
+    height: auto; /* Adjust height dynamically */
+
+    
+  }
+  .top-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Full width for better alignment */
+    margin-right: 0; /* Remove margin */
+  }
+
+  .top-select select {
+    flex-grow: 1; /* Ensure the select expands properly */
+  }
+  .org{
+    margin-left: 0 !important;
+  }
+  
+}
 /* Override for dropdowns inside the .top-bar */
 .top-bar .dropdown-icon {
   right: 2px !important; 
