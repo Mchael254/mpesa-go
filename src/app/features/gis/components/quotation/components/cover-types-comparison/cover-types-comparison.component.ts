@@ -1058,6 +1058,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       switchMap((quotationResponse) => {
         this.quotationCode = quotationResponse._embedded.quotationCode;
         this.quotationNo = quotationResponse._embedded.quotationNumber;
+        sessionStorage.setItem('quotationNumber',  JSON.stringify(this.quotationNo));
+        sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
         log.debug('Quotation saved successfully', quotationResponse);
         riskPayload = riskPayload.map((risk) => {
           return {
@@ -1080,7 +1083,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         const clauseCodes = this.clauseList.map((clause) => clause.code);
         const limitsOfLiability = this.limitsOfLiabilityList.map(item => ({
           code: item.code,
-          scheduleValueCode: item.quotationValueCode,
+          scheduleValueCode: item.code,
           quotationProductCode: this.quoteProductCode,
           value: item.value,
           narration: item.narration,
@@ -1088,7 +1091,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         }));
         const excesses = this.excessesList.map(item => ({
           code: item.code,
-          scheduleValueCode: item.quotationValueCode,
+          scheduleValueCode: item.code,
           quotationProductCode: this.quoteProductCode,
           value: item.value,
           narration: item.narration,
