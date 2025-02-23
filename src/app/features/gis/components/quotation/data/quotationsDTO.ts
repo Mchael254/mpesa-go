@@ -59,7 +59,12 @@ export interface quotationRisk {
   clientType: string;
   prospectCode: number;
   coverTypeDescription: string;
+  taxComputation:taxComputation[]
 
+}
+export interface taxComputation{
+  code:number,
+  premium:number
 }
 export interface riskSection {
   calcGroup: number,
