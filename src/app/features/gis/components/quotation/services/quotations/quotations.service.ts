@@ -187,6 +187,11 @@ export class QuotationsService {
 
   }
 
+
+  createRiskLimits(data: any): Observable<any>{
+    return this.api.POST(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+
   /**
    * Updates existing risk sections for a given quotation risk code using an HTTP PUT request.
    * @method updateRiskSection
@@ -534,8 +539,8 @@ export class QuotationsService {
     );
   }
 
-  processQuotation(data: QuotationPayload) {
-    return this.api.POST(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  processQuotation(data: QuotationPayload):Observable<any> {
+    return this.api.POST<any>(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 
@@ -628,9 +633,8 @@ export class QuotationsService {
     return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  addLimitsOfLiability(data: CreateLimitsOfLiability[]) {
-    return this.api.POST(`v2/limits-of-liability`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-
+  addLimitsOfLiability(data: CreateLimitsOfLiability[]): Observable<any> {
+    return this.api.POST<any>(`v2/limits-of-liability`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   addClauses(
@@ -638,7 +642,7 @@ export class QuotationsService {
     productCode: number,
     quotCode: number,
     riskCode: number
-  ) {
+  ):Observable<any> {
     // Construct the payload
     const payload = {
       clauseCodes, // Send all clause codes in a single object
@@ -651,7 +655,7 @@ export class QuotationsService {
       .set('riskCode', riskCode.toString());
 
     // Call the API with the payload and query parameters
-    return this.api.POST(`v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.POST<any>(`v2/clauses?${params.toString()}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   updateQuotationRisk(data: EditRisk) {
@@ -671,8 +675,8 @@ export class QuotationsService {
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
 
-  createQuotationRisk(quotationCode, data: quotationRisk[]) {
-    return this.api.POST(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  createQuotationRisk(quotationCode, data: quotationRisk[]):Observable<any> {
+    return this.api.POST<any>(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
 
