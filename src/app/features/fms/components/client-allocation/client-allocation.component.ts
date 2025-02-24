@@ -60,6 +60,8 @@ export class ClientAllocationComponent {
   manualExchangeRate: number;
   exchangeRate: number;
   otherRef: string;
+  bankAccountCode:number;
+  bankAccountType:string;
   manualRef: string;
   accountTypeShortDesc: string;
 
@@ -119,6 +121,7 @@ export class ClientAllocationComponent {
   totalRecords: number = 0; // Total number of records
   isAllocationComplete: boolean = false;
   isReceiptDownloading = false; // Tracks if the report is being downloaded
+  canShowUploadFileBtn:boolean=false;
   //file properties
   currentFileIndex: number = 0;
   fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
@@ -224,8 +227,8 @@ export class ClientAllocationComponent {
     let branchReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
     this.branchReceiptNumber = Number(branchReceiptNumber);
  
-    let defaultCurrencyId = this.sessionStorage.getItem('defaultCurrencyId');
-    this.defaultCurrencyId = Number(defaultCurrencyId);
+    // let defaultCurrencyId = this.sessionStorage.getItem('defaultCurrencyId');
+    // this.defaultCurrencyId = Number(defaultCurrencyId);
    
 
     
@@ -251,8 +254,8 @@ export class ClientAllocationComponent {
       this.selectedChargeType = storedData.selectedChargeType || '';
       this.chequeType = storedData.chequeType || '';
       this.bankAccount = storedData.bankAccount || 0;
-      this.exchangeRate = storedData.exchangeRate || 0;
-      this.manualExchangeRate = storedData.manualExchangeRate || 0;
+      this.exchangeRate = storedData.exchangeRate ;
+      this.manualExchangeRate = storedData.manualExchangeRate ;
       this.otherRef = storedData.otherRef || '';
       this.drawersBank = storedData.drawersBank || '';
       this.narration = storedData?.narration || '';
@@ -260,8 +263,8 @@ export class ClientAllocationComponent {
       this.grossReceiptAmount = storedData?.grossReceiptAmount || 0;
       this.receiptingPoint = storedData.receiptingPoint || '';
     }
-    let selectedBank = this.sessionStorage.getItem('selectedBank');
-    this.selectedBank = JSON.parse(selectedBank);
+    //let selectedBank = this.sessionStorage.getItem('selectedBank');
+    //this.selectedBank = JSON.parse(selectedBank);
     
     let globalBankAccountVariable = this.sessionStorage.getItem('globalBankAccount');
     this.globalBankAccountVariable = Number(this.globalBankAccountVariable);
@@ -288,8 +291,8 @@ export class ClientAllocationComponent {
     }
     this.totalRecords = this.transactions.length; // Set total records count
 
-    let exchangeRate = this.sessionStorage.getItem('exchangeRate');
-    this.exchangeRate = Number(exchangeRate);
+    // let exchangeRate = this.sessionStorage.getItem('exchangeRate');
+    // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
   }
@@ -440,17 +443,44 @@ export class ClientAllocationComponent {
   /**
    * Calculates the total allocated amount by summing up the allocated amounts in the FormArray.
    */
+  // calculateTotalAllocatedAmount(): void {
+  //   this.totalAllocatedAmount = this.allocatedAmountControls.value.reduce(
+  //     (total: number, item: { allocatedAmount: number }) =>
+  //       total + Number(item.allocatedAmount || 0),
+  //     0
+  //   );
+  //   this.sessionStorage.setItem(
+  //     'totalAllocatedAmount',
+  //     JSON.stringify(this.totalAllocatedAmount)
+  //   );
+  // }
   calculateTotalAllocatedAmount(): void {
-    this.totalAllocatedAmount = this.allocatedAmountControls.value.reduce(
+    // Sum previously posted allocations
+    const previousAllocations = this.getAllocation?.reduce(
+      (total, allocation) => total + allocation.receiptParticularDetails.reduce(
+        (sum, detail) => sum + detail.premiumAmount,
+        0
+      ),
+      0
+    ) || 0;
+  
+    // Sum currently allocated form values
+    const newAllocatedTotal = this.allocatedAmountControls.value.reduce(
       (total: number, item: { allocatedAmount: number }) =>
         total + Number(item.allocatedAmount || 0),
       0
     );
+  
+    // Ensure we are adding both previous allocations and new allocations
+    this.totalAllocatedAmount = previousAllocations + newAllocatedTotal;
+  
+    // Persist the total in session storage
     this.sessionStorage.setItem(
       'totalAllocatedAmount',
       JSON.stringify(this.totalAllocatedAmount)
     );
   }
+  
   /**
    * Handles the change event for the commission checkbox.
    * @param index The index of the transaction in the list
@@ -473,26 +503,29 @@ export class ClientAllocationComponent {
     return this.amountIssued - this.totalAllocatedAmount;
   }
 
+  // 
   updateTotalAllocatedAmount(): void {
-    // Keep the total posted amount so it persists
-    let totalPostedAmount = this.totalAllocatedAmount;
-
-    // Get new allocations made after the first post
+    let totalPostedAmount = this.getAllocation?.reduce(
+      (total, allocation) => total + allocation.receiptParticularDetails.reduce(
+        (sum, detail) => sum + detail.premiumAmount,
+        0
+      ),
+      0
+    ) || 0;
+  
     const newAllocatedTotal = this.transactions.reduce(
       (total, transaction, index) => {
-        const allocatedAmountControl = this.getFormControl(
-          index,
-          'allocatedAmount'
-        );
-        const allocatedAmount = allocatedAmountControl?.value || 0;
+        const allocatedAmountControl = this.getFormControl(index, 'allocatedAmount');
+        const allocatedAmount = Number(allocatedAmountControl?.value || 0);
         return total + allocatedAmount;
       },
       0
     );
-
-    // Update totalAllocatedAmount live (posted + new inputs)
+  
+    // Ensure the total includes previous allocations + new allocations
     this.totalAllocatedAmount = totalPostedAmount + newAllocatedTotal;
   }
+  
  /**
    * Allocates and posts the allocations to the backend.
    */
@@ -590,56 +623,93 @@ if (this.totalAllocatedAmount > this.amountIssued) {
     const allocationData: AllocationDTO = {
       receiptParticulars: [receiptParticulars],
     };
-   
     this.receiptService
-      .postAllocation(this.loggedInUser.code, allocationData)
-      .subscribe({
-        next: (response) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Allocations posted successfully'
+    .postAllocation(this.loggedInUser.code, allocationData)
+    .subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Allocations posted successfully'
+        );
+  
+        // ✅ Preserve previous allocated values
+        const newlyAllocatedTotal = allocatedTransactionsData.reduce(
+          (total, item) => total + item.allocatedAmount,
+          0
+        );
+        this.totalAllocatedAmount += newlyAllocatedTotal; // ✅ Keep accumulating
+  
+        // ✅ Reset allocated amounts after posting
+        this.transactions.forEach((transaction, index) => {
+          const allocatedAmountControl = this.getFormControl(
+            index,
+            'allocatedAmount'
           );
-          this.isAllocationComplete = true;
-            // Preserve amountIssued
-      const currentReceiptData = this.receiptDataService.getReceiptData();
+          if (allocatedAmountControl) {
+            allocatedAmountControl.setValue(0); // Reset only UI, not the total
+          }
+        });
+  
+        // ✅ Ensure newly posted amounts persist
+        this.getAllocations();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Failed to post allocations'
+        );
+      },
+    });
+  
+    // this.receiptService
+    //   .postAllocation(this.loggedInUser.code, allocationData)
+    //   .subscribe({
+    //     next: (response) => {
+    //       this.globalMessagingService.displaySuccessMessage(
+    //         'Success',
+    //         'Allocations posted successfully'
+    //       );
+    //       this.isAllocationComplete = true;
+    //         // Preserve amountIssued
+    //   const currentReceiptData = this.receiptDataService.getReceiptData();
      
 
-      this.amountIssued = currentReceiptData.amountIssued; // Ensure UI retains value
+    //   this.amountIssued = currentReceiptData.amountIssued; // Ensure UI retains value
     
-          // ✅ Update totalAllocatedAmount
-          const newlyAllocatedTotal = allocatedTransactionsData.reduce(
-            (total, item) => total + item.allocatedAmount,
-            0
-          );
-          this.totalAllocatedAmount += newlyAllocatedTotal;
+    //       // ✅ Update totalAllocatedAmount
+    //       const newlyAllocatedTotal = allocatedTransactionsData.reduce(
+    //         (total, item) => total + item.allocatedAmount,
+    //         0
+    //       );
+    //       this.totalAllocatedAmount += newlyAllocatedTotal;
 
-          // ✅ Reset allocated amounts after posting
-          this.transactions.forEach((transaction, index) => {
-            const allocatedAmountControl = this.getFormControl(
-              index,
-              'allocatedAmount'
-            );
-            if (allocatedAmountControl) {
-              allocatedAmountControl.setValue(0); // Reset allocated amount
+    //       // ✅ Reset allocated amounts after posting
+    //       this.transactions.forEach((transaction, index) => {
+    //         const allocatedAmountControl = this.getFormControl(
+    //           index,
+    //           'allocatedAmount'
+    //         );
+    //         if (allocatedAmountControl) {
+    //           allocatedAmountControl.setValue(0); // Reset allocated amount
 
-              //allocatedAmountControl.setValue(0); // Reset allocated amount
-            }
-          });
+    //           //allocatedAmountControl.setValue(0); // Reset allocated amount
+    //         }
+    //       });
 
-          // ✅ Refresh allocations
-          this.getAllocations();
-          this.isAllocationPosted = true;
-          this.transactions = this.receiptDataService.getTransactions();
-    this.filteredTransactions = this.transactions;
-    this.showSaveButton = true; // Ensure Save button is visible
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to post allocations'
-          );
-        },
-      });
+    //       // ✅ Refresh allocations
+    //       this.getAllocations();
+    //       this.isAllocationPosted = true;
+    //       this.transactions = this.receiptDataService.getTransactions();
+    // this.filteredTransactions = this.transactions;
+    // this.showSaveButton = true; // Ensure Save button is visible
+    //     },
+    //     error: (err) => {
+    //       this.globalMessagingService.displayErrorMessage(
+    //         'Error',
+    //         'Failed to post allocations'
+    //       );
+    //     },
+    //   });
   }
 
   /**
@@ -658,8 +728,11 @@ if (this.totalAllocatedAmount > this.amountIssued) {
               (detail) => detail.premiumAmount > 0
             )
           );
+          if(this.getAllocation){
+            this.canShowUploadFileBtn=true;
+          }
 this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
-          // ✅ Reset totalAllocatedAmount before recalculating
+        //  ✅ Reset totalAllocatedAmount before recalculating
           this.totalAllocatedAmount = this.getAllocation.reduce(
             (total, allocation) => {
               return (
@@ -680,19 +753,27 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           );
           // ✅ Set transactions for new allocations
           this.transactions = this.receiptDataService.getTransactions();
-
-          // ✅ Listen for changes in allocated amount inputs
           this.transactions.forEach((transaction, index) => {
-            const allocatedAmountControl = this.getFormControl(
-              index,
-              'allocatedAmount'
-            );
+            const allocatedAmountControl = this.getFormControl(index, 'allocatedAmount');
             if (allocatedAmountControl) {
               allocatedAmountControl.valueChanges.subscribe(() => {
-                this.updateTotalAllocatedAmount(); // ✅ Keeps running total live
+                this.calculateTotalAllocatedAmount(); // ✅ Keeps running total live
               });
             }
           });
+          
+          // // ✅ Listen for changes in allocated amount inputs
+          // this.transactions.forEach((transaction, index) => {
+          //   const allocatedAmountControl = this.getFormControl(
+          //     index,
+          //     'allocatedAmount'
+          //   );
+          //   if (allocatedAmountControl) {
+          //     allocatedAmountControl.valueChanges.subscribe(() => {
+          //       this.updateTotalAllocatedAmount(); // ✅ Keeps running total live
+          //     });
+          //   }
+          // });
           this.isAllocationCompleted = true;
           this.getAllocationStatus = true;
           this.allocationsReturned = true;
@@ -747,7 +828,8 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             'totalAllocatedAmount',
             JSON.stringify(this.totalAllocatedAmount)
           );
-
+ // Hide upload button if no allocations exist
+ this.canShowUploadFileBtn = this.getAllocation.length > 0;
           // Display success message
           this.globalMessagingService.displaySuccessMessage(
             'Success',
@@ -761,6 +843,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             'Failed to delete allocation'
           );
         }
+        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1183,7 +1266,7 @@ return true;
         : null, // Ensure it's a valid Date before calling toISOString()
       amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
       paidBy: this.receivedFrom,
-      currencyCode: String(this.defaultCurrencyId), // Add quotes to ensure it's treated as string before conversion
+      currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
 
       branchCode:
         String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
@@ -1193,7 +1276,7 @@ return true;
         ? this.documentDate.toISOString().split('T')[0]
         : null, // Ensure it's a valid Date before calling toISOString()
       //drawerBank: formValues.drawersBank || 'N/A',
-      drawerBank: this.drawersBank || 'N/A',
+      drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
       narration: this.narration,
       insurerAccount: null,
@@ -1210,7 +1293,7 @@ return true;
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType: this.chequeType || null,
+      receiptChequeType:  null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
       rctbbrCode:null,
@@ -1221,7 +1304,7 @@ return true;
       internalRemarks: null,
       // manualRef:formValues.manualRef || null,
       manualRef: this.manualRef || null,
-      bankAccountCode: String(this.selectedBank.code),
+      bankAccountCode: String(this.bankAccount),
       //bankAccountCode: Number(this.globalBankAccountVariable) || null, // Add quotes to ensure it's treated as string before conversion
       grossOrNetAdminCharge: 'G',
       insurerAcc: null,
@@ -1229,7 +1312,7 @@ return true;
       grossOrNetVat: null,
 
       sysCode: Number(this.selectedClient.systemCode),
-      bankAccountType: this.selectedBank.type,
+      bankAccountType: this.bankAccountType,
     };
     
     // Call the service to save the receipt
@@ -1311,7 +1394,7 @@ return false;
         : null, // Ensure it's a valid Date before calling toISOString()
       amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
       paidBy: this.receivedFrom,
-      currencyCode: String(this.defaultCurrencyId), // Add quotes to ensure it's treated as string before conversion
+      currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
 
       branchCode:
         String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
@@ -1321,7 +1404,7 @@ return false;
         ? this.documentDate.toISOString().split('T')[0]
         : null, // Ensure it's a valid Date before calling toISOString()
       //drawerBank: formValues.drawersBank || 'N/A',
-      drawerBank: this.drawersBank || 'N/A',
+      drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
       narration: this.narration,
       insurerAccount: null,
@@ -1338,10 +1421,10 @@ return false;
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType: this.chequeType || null,
+      receiptChequeType:  null,
       vatInclusive: null,
-     // rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
-     rctbbrCode:null,
+      //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
+      rctbbrCode:null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
@@ -1349,7 +1432,7 @@ return false;
       internalRemarks: null,
       // manualRef:formValues.manualRef || null,
       manualRef: this.manualRef || null,
-      bankAccountCode: String(this.selectedBank.code),
+      bankAccountCode: String(this.bankAccount),
       //bankAccountCode: Number(this.globalBankAccountVariable) || null, // Add quotes to ensure it's treated as string before conversion
       grossOrNetAdminCharge: 'G',
       insurerAcc: null,
@@ -1357,8 +1440,9 @@ return false;
       grossOrNetVat: null,
 
       sysCode: Number(this.selectedClient.systemCode),
-      bankAccountType: this.selectedBank.type,
+      bankAccountType: this.bankAccountType,
     };
+    
     // Call the service to save the receipt
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
