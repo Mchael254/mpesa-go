@@ -1,372 +1,388 @@
 <div class="container-fluid">
-  <div class="allocation-div">
-    <!-- Receipt Allocations Section -->
-    <div class="row mt-3">
-      <h5 class="text-primary text-start mt-1 mb-2">Receipt Allocations</h5>
+  <div class="breadcrumb-custom">
+    {{ "fms.receipting.finance" | translate }} > CB-Receipting >
+    {{ "base.Receipting" | translate }} >
+    <span class="breadcrumb-text">{{
+      "fms.receipting.allocateReceipt" | translate
+    }}</span>
+  </div>
+  <div class="main-form">
+    <div class="allocation-div">
+      <!-- Receipt Allocations Section -->
+      <div class="row">
+        <h5 class="text-primary text-start mb-3">Receipt Allocations</h5>
 
-      <!-- Amount Summary Row -->
-      <div class="row mb-3">
-        <div class="col-md-3">
-          <label for="receiptAmount" class="form-label">Receipt Amount</label>
-          <input
-            type="text"
-            id="receiptAmount"
-            class="form-control"
-            [value]="amountIssued"
-            readonly
-          />
-        </div>
-        <div class="col-md-3">
-          <label for="allocatedAmount" class="form-label"
-            >Allocated Amount</label
-          >
-          <input
-            type="text"
-            id="allocatedAmount"
-            class="form-control"
-            [value]="totalAllocatedAmount"
-            readonly
-          />
-        </div>
-        <div class="col-md-3">
-          <label for="unallocatedAmount" class="form-label"
-            >Unallocated Amount</label
-          >
-          <input
-            type="text"
-            id="unallocatedAmount"
-            class="form-control"
-            [value]="getRemainingAmount()"
-            readonly
-          />
+        <!-- Amount Summary Row -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <label for="receiptAmount" class="form-label">Receipt Amount</label>
+            <input
+              type="text"
+              id="receiptAmount"
+              class="form-control"
+              [value]="amountIssued"
+              readonly
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="allocatedAmount" class="form-label"
+              >Allocated Amount</label
+            >
+            <input
+              type="text"
+              id="allocatedAmount"
+              class="form-control"
+              [value]="totalAllocatedAmount"
+              readonly
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="unallocatedAmount" class="form-label"
+              >Unallocated Amount</label
+            >
+            <input
+              type="text"
+              id="unallocatedAmount"
+              class="form-control"
+              [value]="getRemainingAmount()"
+              readonly
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Transactions Table -->
-    <div class="row" id="allocationTable" *ngIf="allocation">
-      <div class="col-md-12">
-        <p-table
-          *ngIf="allocatedAmountControls.length > 0 && allocation"
-          [value]="filteredTransactions"
-          responsiveLayout="scroll"
-          class="table-striped"
-          [paginator]="true"
-          [rows]="5"
-          [rowsPerPageOptions]="[5, 10, 20]"
-        >
-          <!-- Table Header -->
-          <ng-template pTemplate="header">
-            <tr style="background-color: #89a8b2; color: white">
-              <th class="header-bg">
-                Client Name
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="applyFilter($event, 'clientName')"
-                  (input)="applyFilter($event, 'clientName')"
-                  placeholder="Filter"
-                />
-              </th>
-              <th class="header-bg">
-                Policy Number
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="applyFilter($event, 'policyNumber')"
-                  (input)="applyFilter($event, 'policyNumber')"
-                  placeholder="Filter"
-                />
-              </th>
-              <th class="header-bg">
-                Amount
-                <input
-                  type="number"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="applyFilter($event, 'amount')"
-                  (input)="applyFilter($event, 'amount')"
-                  placeholder="Filter"
-                />
-              </th>
-              <th class="header-bg">
-                Balance
-                <input
-                  type="number"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="applyFilter($event, 'balance')"
-                  (input)="applyFilter($event, 'balance')"
-                  placeholder="Filter"
-                />
-              </th>
-              <th class="header-bg">
-                Allocated Amount
-                <input
-                  type="number"
-                  class="form-control form-control-sm"
-                  disabled
-                />
-              </th>
-              <th class="header-bg">
-                Commission
-                <input
-                  type="number"
-                  class="form-control form-control-sm commission-input"
-                  (keyup.enter)="applyFilter($event, 'commission')"
-                  (input)="applyFilter($event, 'commission')"
-                  placeholder="Filter"
-                />
-              </th>
-              <th class="header-bg">
-                Comm?
-                <input
-                  type="checkbox"
-                  class="form-control form-control-sm comm-checkbox"
-                  disabled
-                />
-              </th>
-            </tr>
-          </ng-template>
-
-          <!-- Table Body -->
-          <ng-template pTemplate="body" let-transaction let-i="rowIndex">
-            <tr [pSelectableRow]="transaction">
-              <td>{{ transaction.clientName }}</td>
-              <td>{{ transaction.clientPolicyNumber }}</td>
-              <td>{{ transaction.amount }}</td>
-              <td>{{ transaction.balance }}</td>
-              <td>
-                <ng-container
-                  *ngIf="getFormControl(i, 'allocatedAmount') as control"
-                >
+      <!-- Transactions Table -->
+      <div class="row" id="allocationTable" *ngIf="allocation">
+        <div class="col-md-12">
+          <p-table
+            *ngIf="allocatedAmountControls.length > 0 && allocation"
+            [value]="filteredTransactions"
+            responsiveLayout="scroll"
+            class="table-striped"
+            [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
+          >
+            <!-- Table Header -->
+            <ng-template pTemplate="header">
+              <tr style="background-color: #89a8b2; color: white">
+                <th class="header-bg">
+                  Client Name
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    (keyup.enter)="applyFilter($event, 'clientName')"
+                    (input)="applyFilter($event, 'clientName')"
+                    placeholder="Filter"
+                  />
+                </th>
+                <th class="header-bg">
+                  Policy Number
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    (keyup.enter)="applyFilter($event, 'policyNumber')"
+                    (input)="applyFilter($event, 'policyNumber')"
+                    placeholder="Filter"
+                  />
+                </th>
+                <th class="header-bg">
+                  Amount
                   <input
                     type="number"
-                    [formControl]="control"
                     class="form-control form-control-sm"
-                    placeholder="Enter amount"
-                    (input)="calculateTotalAllocatedAmount()"
+                    (keyup.enter)="applyFilter($event, 'amount')"
+                    (input)="applyFilter($event, 'amount')"
+                    placeholder="Filter"
                   />
-                </ng-container>
-              </td>
-              <td>{{ transaction.commission }}</td>
-              <td>
-                <input
-                  type="checkbox"
-                  class="form-check-input checkbox"
-                  [checked]="
-                    getFormControl(i, 'commissionChecked')?.value === 'Y'
-                  "
-                  (change)="onCommissionCheckedChange(i, $event)"
-                />
-              </td>
-            </tr>
-          </ng-template>
+                </th>
+                <th class="header-bg">
+                  Balance
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    (keyup.enter)="applyFilter($event, 'balance')"
+                    (input)="applyFilter($event, 'balance')"
+                    placeholder="Filter"
+                  />
+                </th>
+                <th class="header-bg">
+                  Allocated Amount
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    disabled
+                  />
+                </th>
+                <th class="header-bg">
+                  Commission
+                  <input
+                    type="number"
+                    class="form-control form-control-sm commission-input"
+                    (keyup.enter)="applyFilter($event, 'commission')"
+                    (input)="applyFilter($event, 'commission')"
+                    placeholder="Filter"
+                  />
+                </th>
+                <th class="header-bg">
+                  Comm?
+                  <input
+                    type="checkbox"
+                    class="form-control form-control-sm comm-checkbox"
+                    disabled
+                  />
+                </th>
+              </tr>
+            </ng-template>
 
-          <!-- Pagination -->
-          <ng-template pTemplate="paginatorleft">
-            Showing {{ first }} to {{ first + rows }} of
-            {{ totalRecords }} entries
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
-    <div class="btn-actions" *ngIf="allocation || showSaveButton">
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="allocateAndPostAllocations()"
-      >
-        Save Allocation
-      </button>
-    </div>
-    <!-- Allocations Table -->
-    <div
-      *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0"
-      class="allocations-section"
-    >
-      <h3 class="allocations-title">Allocations</h3>
-      <!-- <div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-4"> -->
-      <!-- <h3 class="text-primary text-start fs-4">Allocations</h3> -->
+            <!-- Table Body -->
+            <ng-template pTemplate="body" let-transaction let-i="rowIndex">
+              <tr [pSelectableRow]="transaction">
+                <td>{{ transaction.clientName }}</td>
+                <td>{{ transaction.clientPolicyNumber }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.balance }}</td>
+                <td>
+                  <ng-container
+                    *ngIf="getFormControl(i, 'allocatedAmount') as control"
+                  >
+                    <input
+                      type="number"
+                      [formControl]="control"
+                      class="form-control form-control-sm"
+                      placeholder="Enter amount"
+                      (input)="calculateTotalAllocatedAmount()"
+                    />
+                  </ng-container>
+                </td>
+                <td>{{ transaction.commission }}</td>
+                <td>
+                  <input
+                    type="checkbox"
+                    class="form-check-input checkbox"
+                    [checked]="
+                      getFormControl(i, 'commissionChecked')?.value === 'Y'
+                    "
+                    (change)="onCommissionCheckedChange(i, $event)"
+                  />
+                </td>
+              </tr>
+            </ng-template>
 
-      <div class="col-md-12">
-        <p-table
-          [value]="getAllocation"
-          responsiveLayout="scroll"
-          class="table-striped"
-          [paginator]="true"
-          [rows]="5"
-          [rowsPerPageOptions]="[5, 10, 20]"
-        >
-          <!-- Table Header -->
-          <ng-template pTemplate="header">
-            <tr style="background-color: #89a8b2; color: white">
-              <th class="header-bg">Policy Number</th>
-              <th class="header-bg">Transaction Number</th>
-              <th class="header-bg">Batch Number</th>
-              <th class="header-bg">Allocated Amount</th>
-              <th class="header-bg commission-header">Commission Amount</th>
-              <th class="header-bg commission-header">Include Commission</th>
-              <th class="header-bg">Actions</th>
-            </tr>
-          </ng-template>
-
-          <!-- Table Body -->
-          <ng-template pTemplate="body" let-allocation>
-            <tr *ngFor="let detail of allocation.receiptParticularDetails">
-              <td>{{ detail.policyNumber }}</td>
-              <td>{{ detail.transactionNumber }}</td>
-              <td>{{ detail.batchNumber }}</td>
-              <td>{{ detail.premiumAmount | number : "1.2-2" }}</td>
-              <td>{{ detail.commissionAmount | number : "1.2-2" }}</td>
-              <td>{{ detail.includeCommission }}</td>
-              <td>
-                <button
-                  class="btn btn-danger btn-sm"
-                  (click)="deleteAllocation(detail.code)"
-                  title="Delete Allocation"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
-
-    <!-- Upload Button and Hidden File Input -->
-    <form [formGroup]="receiptingDetailsForm">
-      <div
-        class="row mt-3"
-        *ngIf="canShowUploadFileBtn && getAllocation.length > 0"
-      >
-        <div class="col-md-4">
-          <!-- Upload Button -->
-          <input
-            type="file"
-            #fileInput
-            (change)="onFileSelected($event)"
-            style="display: none"
-          />
-          <!-- [disabled]="!isFileUploadButtonDisabled" -->
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="fileInput.click()"
-          >
-            {{ "fms.receipting.uploadFiles" | translate }}
-          </button>
+            <!-- Pagination -->
+            <ng-template pTemplate="paginatorleft">
+              Showing {{ first }} to {{ first + rows }} of
+              {{ totalRecords }} entries
+            </ng-template>
+          </p-table>
         </div>
-        <div class="col-md-4 mt-2">
-          <div *ngFor="let fileDesc of fileDescriptions; let i = index">
-            <span>{{ fileDesc.file.name }}</span> -
+      </div>
+      <div class="btn-actions" *ngIf="allocation || showSaveButton">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="allocateAndPostAllocations()"
+        >
+          Save Allocation
+        </button>
+      </div>
+      <!-- Allocations Table -->
+      <div
+        *ngIf="
+          isAllocationCompleted && getAllocation && getAllocation.length > 0
+        "
+        class="allocations-section"
+      >
+        <h3 class="allocations-title">Allocations</h3>
+        <!-- <div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-4"> -->
+        <!-- <h3 class="text-primary text-start fs-4">Allocations</h3> -->
 
+        <div class="col-md-12">
+          <p-table
+            [value]="getAllocation"
+            responsiveLayout="scroll"
+            class="table-striped"
+            [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
+          >
+            <!-- Table Header -->
+            <ng-template pTemplate="header">
+              <tr style="background-color: #89a8b2; color: white">
+                <th class="header-bg">Policy Number</th>
+                <th class="header-bg">Transaction Number</th>
+                <th class="header-bg">Batch Number</th>
+                <th class="header-bg">Allocated Amount</th>
+                <th class="header-bg commission-header">Commission Amount</th>
+                <th class="header-bg commission-header">Include Commission</th>
+                <th class="header-bg">Actions</th>
+              </tr>
+            </ng-template>
+
+            <!-- Table Body -->
+            <ng-template pTemplate="body" let-allocation>
+              <tr *ngFor="let detail of allocation.receiptParticularDetails">
+                <td>{{ detail.policyNumber }}</td>
+                <td>{{ detail.transactionNumber }}</td>
+                <td>{{ detail.batchNumber }}</td>
+                <td>{{ detail.premiumAmount | number : "1.2-2" }}</td>
+                <td>{{ detail.commissionAmount | number : "1.2-2" }}</td>
+                <td>{{ detail.includeCommission }}</td>
+                <td>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="deleteAllocation(detail.code)"
+                    title="Delete Allocation"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+      <!-- Upload Button and Hidden File Input -->
+      <form [formGroup]="receiptingDetailsForm">
+        <div
+          class="row mt-3"
+          *ngIf="canShowUploadFileBtn && getAllocation.length > 0"
+        >
+          <div class="col-md-4">
+            <!-- Upload Button -->
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              (click)="clearFileInput($event)"
+              style="display: none"
+            />
+            <!-- [disabled]="!isFileUploadButtonDisabled" -->
             <button
               type="button"
-              class="btn btn-danger"
-              (click)="onRemoveFile(i)"
+              class="btn btn-primary"
+              (click)="fileInput.click()"
+              [disabled]="isFileUploadButtonDisabled"
             >
-              <i class="fas fa-trash"></i>
+              {{ "fms.receipting.uploadFiles" | translate }}
             </button>
+          </div>
+          <div class="col-md-4 mt-2">
+            <div *ngFor="let fileDesc of fileDescriptions; let i = index">
+              <span>{{ fileDesc.file.name }}</span> -
+
+              <button
+                type="button"
+                class="btn btn-danger"
+                (click)="onRemoveFile(i)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Display Uploaded Files in Vertical List -->
+          <div class="col-md-4 mt-2">
+            <div class="uploaded-files-container">
+              <div
+                *ngFor="let file of uploadedFiles; let i = index"
+                class="file-item"
+              >
+                <p class="file-name">
+                  <strong>File Name:</strong> {{ file.docName }}
+                </p>
+
+                <div class="file-actions">
+                  <button
+                    class="btn btn-primary me-2 d-flex align-items-center"
+                    (click)="openFile(file)"
+                  >
+                    <i class="fas fa-eye"></i> Open
+                  </button>
+
+                  <button
+                    class="btn btn-danger d-flex align-items-center"
+                    (click)="deleteFile(file, i)"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Display Uploaded Files in Vertical List -->
-        <div class="col-md-4 mt-2">
-          <div class="uploaded-files-container">
-            <div
-              *ngFor="let file of uploadedFiles; let i = index"
-              class="file-item"
-            >
-              <p class="file-name">
-                <strong>File Name:</strong> {{ file.docName }}
-              </p>
+        <!-- Modal for File Description -->
+        <div
+          id="fileDescriptionModal"
+          class="modal fade"
+          tabindex="-1"
+          role="dialog"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">File Description</h5>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="receiptingDetailsForm">
+                  <div class="form-group">
+                    <label for="description"
+                      >Enter File Description<span class="required"></span
+                    ></label>
+                    <input
+                      id="description"
+                      placeholder="enter desc"
+                      type="text"
+                      class="form-control"
+                      formControlName="description"
+                    />
 
-              <div class="file-actions">
+                    <div
+                      *ngIf="
+                        receiptingDetailsForm.get('description')?.invalid &&
+                        receiptingDetailsForm.get('description')?.touched
+                      "
+                      class="text-danger"
+                    >
+                      Description is required
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
                 <button
-                  class="btn btn-primary me-2 d-flex align-items-center"
-                  (click)="openFile(file)"
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="saveFileDescription()"
                 >
-                  <i class="fas fa-eye"></i> Open
-                </button>
-
-                <button
-                  class="btn btn-danger d-flex align-items-center"
-                  (click)="deleteFile(file, i)"
-                >
-                  <i class="fas fa-trash"></i>
+                  Save
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Modal for File Description -->
+      </form>
+    </div>
+    <div class="postbtn">
       <div
-        id="fileDescriptionModal"
-        class="modal fade"
-        tabindex="-1"
-        role="dialog"
-        aria-hidden="true"
+        class="sub_postbtn"
+        *ngIf="
+          fileDescriptions.length > 0 &&
+          canShowUploadFileBtn &&
+          getAllocation.length > 0
+        "
       >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">File Description</h5>
-            </div>
-            <div class="modal-body">
-              <form [formGroup]="receiptingDetailsForm">
-                <div class="form-group">
-                  <label for="description"
-                    >Enter File Description<span class="required"></span
-                  ></label>
-                  <input
-                    id="description"
-                    placeholder="enter desc"
-                    type="text"
-                    class="form-control"
-                    formControlName="description"
-                  />
-
-                  <div
-                    *ngIf="
-                      receiptingDetailsForm.get('description')?.invalid &&
-                      receiptingDetailsForm.get('description')?.touched
-                    "
-                    class="text-danger"
-                  >
-                    Description is required
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-primary"
-                (click)="saveFileDescription()"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
+        <button type="button" class="btn btn-primary" (click)="uploadFile()">
+          post File
+        </button>
       </div>
-    </form>
+    </div>
   </div>
-  <div
-    class="btn2"
-    *ngIf="
-      fileDescriptions.length > 0 && isAllocationComplete && isAllocationPosted
-    "
-  >
-    <button type="button" class="btn btn-primary" (click)="uploadFile()">
-      post File
-    </button>
-  </div>
-
-  <div class="btn2">
-    <div class="back-btn" style="justify-content: flex-start">
+  <div class="nav-btn">
+    <div class="back-btn">
       <button type="button" class="btn btn-link" (click)="onBack()">
         Back
       </button>
@@ -392,4 +408,5 @@
     </div>
   </div>
 </div>
+
 <!-- </div> -->
