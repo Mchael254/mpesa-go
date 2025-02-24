@@ -75,6 +75,8 @@ export class QuotationDetailsComponent {
   campaignList: any;
   clientId: number;
   today = new Date();
+  minExpiryDate: Date;
+  minEffectiveToDate: Date;
 
 
 
@@ -108,7 +110,8 @@ export class QuotationDetailsComponent {
 
     this.getIntroducers();
     this.getQuotationSources()
-    this.quickQuoteDetails()
+    this.quickQuoteDetails();
+    this.setMinDates();
 
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
@@ -150,7 +153,7 @@ export class QuotationDetailsComponent {
         this.quickQuotationDetails = res
         log.debug("QUICK QUOTE DETAILS",this.quickQuotationDetails)
         this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
-        this.quotationForm.controls['withEffectiveFromDate'].setValue(this.quickQuotationDetails.coverFrom);
+        this.quotationForm.controls['withEffectiveFromDate'].setValue(this.formatDate(this.quickQuotationDetails.coverFrom));
         this.quotationForm.controls['withEffectiveToDate'].setValue(this.quickQuotationDetails.coverTo);
         // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
         log.debug(this.quickQuotationDetails.source)
@@ -450,7 +453,7 @@ onResize(event: any) {
     // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(this.quotationForm.value.withEffectiveFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(this.quotationForm.value.withEffectiveToDate));
-    this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
+    this.quotationService.getQuotations(clientId,(fromDate),fromTo).subscribe(data=>{
       this.quotationsList = data
       this.quotation = this.quotationsList.content
 
@@ -503,32 +506,48 @@ onResize(event: any) {
    * @param {Event} e - The event containing the target value representing the cover from date.
    * @return {void}
    */
-    updateCoverToDate(e) {
+  updateCoverToDate(e) {
 
-      const coverFromDate= e;
+    const coverFromDate= this.formatDate(e);
+    this.quotationForm.controls['withEffectiveFromDate'].setValue(coverFromDate);
 
-      // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-      //   this.productDetails = res
-      //   log.debug(this.productDetails)
-        // if(this.productDetails.expires === 'Y'){
-          this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
-            this.midnightexpiry = res;
-            log.debug("midnightexpirydate", this.midnightexpiry);
-            log.debug(this.midnightexpiry)
-            this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
-          })
+    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
+    //   this.productDetails = res
+    //   log.debug(this.productDetails)
+      // if(this.productDetails.expires === 'Y'){
+        this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
+          this.midnightexpiry = res;
+          log.debug("midnightexpirydate", this.midnightexpiry);
+          log.debug(this.midnightexpiry)
+          this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
+        })
 
-        // }else {
-        //   const selectedDate = new Date(coverFromDate);
-        //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-        //   const coverToDate = selectedDate.toISOString().split('T')[0];
-        //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
+      // }else {
+      //   const selectedDate = new Date(coverFromDate);
+      //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+      //   const coverToDate = selectedDate.toISOString().split('T')[0];
+      //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
 
 
-        // }
-      // })
+      // }
+    // })
 
+  }
+
+  formatDate(date: string | Date): string {
+    if (typeof date === 'string' && date.includes('T')) {
+        date = new Date(date); // Convert ISO string to Date object
     }
+
+    if (date instanceof Date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    return date as string; // If already a formatted string, return as is
+  }
 
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
@@ -537,7 +556,9 @@ onResize(event: any) {
    * @return {void}
    */
 updateQuotationExpiryDate(e){
-  const RFQDate = e;
+  const RFQDate = this.formatDate(e);
+  this.quotationForm.controls['RFQDate'].setValue(RFQDate);
+
   if (RFQDate) {
     const selectedDate = new Date(RFQDate);
     selectedDate.setMonth(selectedDate.getMonth() + 3);
@@ -638,5 +659,15 @@ fetchCampaigns(){
 
   toggleDetails() {
     this.show = !this.show;
+  }
+
+  setMinDates() {
+    // Set minimum date for Effective To Date (3 months from today)
+    this.minEffectiveToDate = new Date();
+    this.minEffectiveToDate.setMonth(this.minEffectiveToDate.getMonth() + 3);
+
+    // Set minimum date for Expiry Date (1 year from today)
+    this.minExpiryDate = new Date();
+    this.minExpiryDate.setFullYear(this.minExpiryDate.getFullYear() + 1);
   }
 }

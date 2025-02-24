@@ -130,6 +130,7 @@
                           dateFormat="yy-mm-dd"
                           formControlName="RFQDate"
                           [placeholder]="today | date:'yyyy-MM-dd'"
+                          [minDate]="today"
                           (onSelect)="updateQuotationExpiryDate($event)">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
@@ -146,6 +147,7 @@
                           dateFormat="yy-mm-dd"
                           [placeholder]="'yyyy-MM-dd'"
                           formControlName="expiryDate"
+                          [minDate]="minEffectiveToDate"
                           [readonlyInput]="true">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
@@ -267,6 +269,7 @@
                           dateFormat="yy-mm-dd"
                           formControlName="withEffectiveFromDate"
                           [placeholder]="today | date:'yyyy-MM-dd'"
+                          [minDate]="today"
                           (onSelect)="updateCoverToDate($event)">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('withEffectiveFromDate').hasError('required') && quotationForm.get('withEffectiveFromDate').touched"
@@ -283,6 +286,7 @@
                           dateFormat="yy-mm-dd"
                           formControlName="withEffectiveToDate"
                           [placeholder]="'yyyy-MM-dd'"
+                          [minDate]="minExpiryDate"
                           [readonlyInput]="true">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('withEffectiveToDate').hasError('required') && quotationForm.get('withEffectiveToDate').touched"
