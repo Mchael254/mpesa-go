@@ -94,6 +94,13 @@ export class DefaultSubMenuComponent implements OnInit {
       modal.style.display = 'none';
     }
     sessionStorage.removeItem('quickQuoteData')
+    sessionStorage.removeItem('mandatorySections')
+    sessionStorage.removeItem('passedQuotationDetails')
+    sessionStorage.removeItem('passedQuotationNumber')
+    sessionStorage.removeItem('premiumComputationRequest')
+    sessionStorage.removeItem('quickQuotationNum')
+    sessionStorage.removeItem('quickQuotationCode')
+    sessionStorage.removeItem('quotationNumber')
   }
 
 }
