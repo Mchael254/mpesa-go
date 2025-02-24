@@ -14,16 +14,20 @@ import {
   GetAllocationDTO,
   TransactionDTO,
 } from '../../data/receipting-dto';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+
+import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
-import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
+
+import {StaffService} from '../../../../features/entities/services/staff/staff.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import { OrganizationService } from 'src/app/features/crm/services/organization.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import {OrganizationService } from '../../../../features/crm/services/organization.service';
+
+
+import {AuthService} from '../../../../shared/services/auth.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
+import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
 /**
  * @Component({
  *   selector: 'app-client-search',
@@ -62,8 +66,7 @@ export class ClientSearchComponent implements OnInit {
   /** @property {any} loggedInUser - Stores the currently logged-in user's information.*/
   loggedInUser: any;
 
-  /** @property {any} GlobalUser -  Potentially deprecated user data. Consider removing if unused.*/
-  GlobalUser: any;
+ 
 
   /** @property {OrganizationDTO[]} organization - Array of organizations. */
   organization: OrganizationDTO[];
@@ -83,39 +86,25 @@ export class ClientSearchComponent implements OnInit {
   /** @property {BranchDTO} defaultBranch - The default branch object.*/
   defaultBranch: BranchDTO;
 
-  /** @property {number} organizationId - ID of the organization.*/
- 
 
-  /** @property {number | null} selectedCountryId -  ID of the selected country (nullable).*/
-  selectedCountryId: number | null = null;
 
-  /** @property {number} defaultCountryId -  ID of the default  country .*/
+
 
   
 
-  /** @property {string | null} selectedOrganization -  Name of the selected organization (nullable).*/
-  selectedOrganization: string | null = null;
+ 
 
   /** @property {number} selectedOrgId - ID of the selected organization.*/
   selectedOrg:OrganizationDTO;
   
 
-  /**
-   * @property {any} selectedBranchId - ID of the selected branch.
-   * @deprecated Consider using defaultBranch.id or selectedBranch directly.
-   */
   
 
-  /**
-   * @property {any} defaultBranchId - ID of the default branch.
-   * @deprecated Consider using defaultBranch.id directly.
-   */
   
 
-  /**
-   * @property {string} defaultBranchName - Name of the default branch.
-   * @deprecated Consider accessing defaultBranch.name directly.
-   */
+  
+
+  
   
 
   /** @property {number} selectedBranch - ID of the selected branch.*/
@@ -211,8 +200,8 @@ export class ClientSearchComponent implements OnInit {
     this.selectedOrg = null;
   }
 
-  console.log('Selected Organization:', this.selectedOrg);
-  console.log('Default Organization:', this.defaultOrg);
+ // console.log('Selected Organization:', this.selectedOrg);
+  //console.log('Default Organization:', this.defaultOrg);
 
     // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
@@ -270,7 +259,7 @@ export class ClientSearchComponent implements OnInit {
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            err.error.error
+            err.error.msg
           );
         },
       });
@@ -383,6 +372,11 @@ export class ClientSearchComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          if (!response.data || response.data.length === 0) {
+            this.globalMessagingService.displayErrorMessage('Error:', 'No transactions found!');
+            return;
+          }
+  
           this.transactions = response.data;
           if (this.transactions.length > 0) {
             this.receiptDataService.setTransactions(this.transactions);
@@ -390,17 +384,12 @@ export class ClientSearchComponent implements OnInit {
               this.receiptingDetailsForm.value
             );
             this.router.navigate(['/home/fms/client-allocation']);
-          } else if(this.transactions==null){
-            this.globalMessagingService.displayErrorMessage(
-              'Error:',
-              'No transactions found!'
-            );
-          }
+          } 
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            err.error.error
+            err.error.msg
           );
         },
       });
@@ -439,7 +428,7 @@ export class ClientSearchComponent implements OnInit {
           error: (err) => {
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              err.error.error
+              err.error.msg
             );
           },
           complete: () => {
