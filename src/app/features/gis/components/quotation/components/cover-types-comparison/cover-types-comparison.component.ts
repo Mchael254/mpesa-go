@@ -969,7 +969,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     const selectedRisk = this.premiumPayload?.risks.find(
       (risk) => risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType
     );
+    const selectedRiskPremiumResponse = this.premiumResponse?.riskLevelPremiums.find(
+      (risk) => risk.coverTypeDetails.coverTypeCode === this.selectedCoverType
+    );
 
+    log.debug("Selected Risk premium", selectedRiskPremiumResponse)
     log.debug("Selected Risk", selectedRisk)
     const coverTypeSections = this.riskLevelPremiums
       .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
@@ -989,6 +993,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       wet: selectedRisk?.withEffectTo,
       prpCode: this.passedClientDetails?.id,
       coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
+      taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
+        code: tax.code,
+        premium: tax.premium
+    }))
     }
     return [risk]
     /*   const risk = this.riskDetailsForm.value;
