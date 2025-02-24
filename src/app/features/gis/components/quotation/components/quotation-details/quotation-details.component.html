@@ -4,15 +4,15 @@
     <form [formGroup]="quotationForm">
         <div class="card mb-4">
             <div class="card-body">
-                <h6>Quotation Details </h6>
-                <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationNum}}</strong></p>
+                <h6>Quotation details </h6>
+                <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{quickQuotationNum}}</strong></p>
                 <div class="row mb-4 mt-3">
                     <div class="col-xl-4">
                         <label for="" class="quote-label">Source<span class="required"></span></label>
                         <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="source"
                             placement="right">
                             <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let data of quotationSources" [value]="data.code">{{data.description}}
+                            <option *ngFor="let data of quotationSources" [value]="data.code">{{data.description |sentenceCase}}
                             </option>
                         </select>
                         <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
@@ -22,7 +22,7 @@
 
                     </div>
                     <div class="col-xl-4">
-                        <label for="" class="quote-label">Quotation Type</label>
+                        <label for="" class="quote-label">Quotation type</label>
                         <select class="form-select form-control-sm mb-1" id="quote-input"
                                  placement="right"
                                 #quotationTypeSelect
@@ -54,7 +54,7 @@
                                     <div class="float-start"></div>
                                     <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
-                                    <h5 class="text-start mt-2 mb-4">Select Intermediary</h5>
+                                    <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
                                     <div class="input-group mb-4" id="search-input">
 
                                         <span class="input-group-append" style="background-color: #F5F6F8;">
@@ -76,7 +76,7 @@
                                             <tr>
                                                 <th field="shortDesc">Code</th>
                                                 <th field="name">Name</th>
-                                                <th field="accountType">Intermediary Type </th>
+                                                <th field="accountType">Intermediary type </th>
 
                                             </tr>
                                         </ng-template>
@@ -84,8 +84,8 @@
                                             <tr [pSelectableRow]="data" style="cursor:pointer"
                                                 (click)="getAgentById(data.id)">
                                                 <td>{{ data.shortDesc }}</td>
-                                                <td>{{ data.name}}</td>
-                                                <td>{{ data.accountType }}</td>
+                                                <td>{{ data.name | sentenceCase}}</td>
+                                                <td>{{ data.accountType | sentenceCase }}</td>
                                             </tr>
                                         </ng-template>
                                     </p-table>
@@ -114,8 +114,9 @@
                 <div class="row mb-4">
                     <div class="col-xl-4">
                         <label for="" class="quote-label">Currency<span class="required"></span></label><br>
-                        <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
-                            [filterBy]="'name'" placeholder=" " [filter]="true"></p-dropdown>
+                        <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" value ="id"
+                            [filterBy]="'name'" [placeholder]="defaultCurrencyName " [filter]="true"
+                            (onChange)="fetchUserOrgId()"></p-dropdown>
                         <div *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
                             class="form-text text-danger">
                             Currency is required.
@@ -127,9 +128,9 @@
                           id="rfqDate"
                           inputId="rfqDate"
                           [showIcon]="true"
-                          dateFormat="yy-mm-dd"
+                          [dateFormat]="dateFormat"
                           formControlName="RFQDate"
-                          [placeholder]="today | date:'yyyy-MM-dd'"
+                          [placeholder]="todaysDate"
                           (onSelect)="updateQuotationExpiryDate($event)">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
@@ -138,19 +139,19 @@
                       </div>
                   </div>
                   <div class="col-xl-4">
-                      <label for="expiryDate" class="quote-label">Quotation Expiry Date</label>
+                      <label for="expiryDate" class="quote-label">Quotation expiry date</label>
                       <p-calendar
                           id="expiryDate"
                           inputId="expiryDate"
                           [showIcon]="true"
-                          dateFormat="yy-mm-dd"
-                          [placeholder]="'yyyy-MM-dd'"
+                          [dateFormat]="dateFormat"
                           formControlName="expiryDate"
+                          [placeholder]="expiryDate"
                           [readonlyInput]="true">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
                           class="form-text text-danger">
-                          Quotation Expiry Date is required.
+                          Quotation expiry date is required.
                       </div>
                   </div>
                 </div>
@@ -247,9 +248,10 @@
                     <div class="col-xl-4">
 
                         <label for="" class="quote-label">Product</label>
-                        <p-dropdown formControlName="productCode" [options]="products" optionLabel="description"
+                        <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" optionLabel="description"
                             [filterBy]="'description'" (onChange)="getProductClause()" placeholder=" "
                             [filter]="true"></p-dropdown>
+                            
                         <div *ngIf="quotationForm.get('productCode').hasError('required') && quotationForm.get('productCode').touched"
                             class="form-text text-danger">
                             Product is required.
@@ -260,7 +262,8 @@
 
                     <div class="col-xl-4">
                       <label for="coverFromDate" class="quote-label">Cover From</label><br>
-                      <p-calendar
+                      <!-- <p-calendar
+                      [dateFormat]="dateFormat"
                           id="coverFromDate"
                           inputId="coverFromDate"
                           [showIcon]="true"
@@ -268,26 +271,37 @@
                           formControlName="withEffectiveFromDate"
                           [placeholder]="today | date:'yyyy-MM-dd'"
                           (onSelect)="updateCoverToDate($event)">
-                      </p-calendar>
-                      <div *ngIf="quotationForm.get('withEffectiveFromDate').hasError('required') && quotationForm.get('withEffectiveFromDate').touched"
+                      </p-calendar> -->
+                      <p-calendar formControlName="wefDate" name="wefDate"
+                      id="coverFromDate"
+                      inputId="coverFromDate"
+                      [dateFormat]="dateFormat"
+                      inputStyleClass='form-control'
+                      
+                      [showIcon]="true"
+                      (onSelect)="updateCoverToDate($event)"
+                      [placeholder]="todaysDate" [minDate]="minDate">
+                    </p-calendar>
+                      <div *ngIf="quotationForm.get('wefDate').hasError('required') && quotationForm.get('wefDate').touched"
                           class="form-text text-danger">
                           Cover From is required.
                       </div>
                   </div>
                   <div class="col-xl-4">
-                      <label for="coverToDate" class="quote-label">Cover To</label><br>
-                      <p-calendar
+                      <label for="coverToDate" class="quote-label">Cover to</label><br>
+                      <p-calendar formControlName="wetDate" name="wetDate"
                           id="coverToDate"
                           inputId="coverToDate"
+                          [dateFormat]="dateFormat"
+                          inputStyleClass='form-control'
                           [showIcon]="true"
-                          dateFormat="yy-mm-dd"
-                          formControlName="withEffectiveToDate"
-                          [placeholder]="'yyyy-MM-dd'"
-                          [readonlyInput]="true">
+                          [placeholder]="coverToDate"
+                          >
                       </p-calendar>
-                      <div *ngIf="quotationForm.get('withEffectiveToDate').hasError('required') && quotationForm.get('withEffectiveToDate').touched"
+                      
+                      <div *ngIf="quotationForm.get('wetDate').hasError('required') && quotationForm.get('wetDate').touched"
                           class="form-text text-danger">
-                          Cover To is required.
+                          Cover to is required.
                       </div>
                   </div>
                 </div>
@@ -332,7 +346,7 @@
                       overflow-y: auto;
                       max-width: 250px;" pTooltip="{{selectedClauseList.heading }}" tooltipPosition="top">
                         <p-cellEditor>
-                          <ng-template pTemplate="input" *ngIf="selectedClauseList.is_editable  === 'Y'">
+                          <ng-template pTemplate="input" *ngIf="selectedClauseList.isEditable  === 'Y'">
                             <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
                               class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
                           </ng-template>
@@ -358,8 +372,8 @@
                         <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
                           icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
                       </td>
-                      <td *ngIf="selectedClauseList.is_editable  !== 'Y'" style="padding-left: 24px;"> -- </td>
-                      <td *ngIf="selectedClauseList.is_editable  === 'Y'">
+                      <td *ngIf="selectedClauseList.isEditable  !== 'Y'" style="padding-left: 24px;"> -- </td>
+                      <td *ngIf="selectedClauseList.isEditable  === 'Y'">
                         <div class="flex align-items-center justify-content-center gap-2">
                           <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
                             icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
@@ -402,21 +416,21 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="min-width:700px">
                 <div class="modal-body">
-                    <p class="title1 mb-4">Client's Already Existing Quotations</p>
-                    <p-table [value]="quotation" [resizableColumns]="true" styleClass="p-datatable-sm"
+                    <p class="title1 mb-4">Client's already existing quotations</p>
+                    <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
                         styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
                         [scrollable]="true" scrollHeight="400px">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th>Quotation Number</th>
+                                <th>Quotation number</th>
                                 <th>Status</th>
-                                <th>Cover From</th>
-                                <th>Cover To</th>
+                                <th>Cover from</th>
+                                <th>Cover to</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-data>
                             <tr>
-                                <td>{{data.no}}</td>
+                                <td>{{data.quotationNo}}</td>
                                 <td>{{data.status}}</td>
                                 <td>{{data.coverFrom}}</td>
                                 <td>{{data.coverTo}}</td>
@@ -424,7 +438,7 @@
                         </ng-template>
                     </p-table>
 
-                    <p class="title1 mt-4 float-start">Do you wish to Continue Creating the Quotation?</p>
+                    <p class="title1 mt-4 float-start">Do you wish to continue creating the quotation?</p>
                     <div class="mt-3 float-end">
                         <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
                         <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
