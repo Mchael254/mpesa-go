@@ -178,7 +178,7 @@ export class DynamicReportsComponent implements OnInit {
     log.info(formData);
 
     let payload = {
-      encode_format: "RAW",
+      encodeFormat: "RAW",
       params: Object.keys(formData).filter(key => key !== 'downloadOption').map(key => {
         const val = formData[key];
         // If the value is a string and matches the ISO date format, convert it
@@ -203,8 +203,8 @@ export class DynamicReportsComponent implements OnInit {
           value: formData[key]
         }
       }),*/
-      report_format: formData?.downloadOption,
-      rpt_code: report?.code,
+      reportFormat: formData?.downloadOption,
+      rptCode: report?.code,
       system: "CRM"
     }
 

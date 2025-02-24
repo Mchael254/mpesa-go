@@ -18,15 +18,15 @@ export class ReportsService {
 
   fetchReport(rpt_code: number){
     let payload = {
-      "encode_format": "RAW",
+      "encodeFormat": "RAW",
       "params": [
         {
           "name": "test",
           "value": ""
         }
       ],
-      "report_format": "PDF",
-      "rpt_code": rpt_code,
+      "reportFormat": "PDF",
+      "rptCode": rpt_code,
       "system": "GIS"
     }
 
