@@ -338,8 +338,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Passed Quotation Details", this.passedQuotationData)
     if (this.passedQuotationData) {
       this.isEditQuotationDetail = true
-      this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
-      this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber;
+      this.storedQuotationCode = this.passedQuotationData.code
+      this.storedQuotationNo = this.passedQuotationData?.quotationNo;
 
 
     }
@@ -985,7 +985,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
       value: this.sumInsuredValue, // TODO attach this to individual risk
       coverTypeShortDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeShortDescription,
-      premium:  coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
+      premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
       subclassCode: selectedRisk?.subclassSection.code,
       itemDesc: selectedRisk?.itemDescription,
       binderCode: selectedRisk?.binderDto?.code,
@@ -996,7 +996,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
         code: tax.code,
         premium: tax.premium
-    }))
+      }))
     }
     return [risk]
     /*   const risk = this.riskDetailsForm.value;
@@ -1062,11 +1062,16 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Limits of liabilities to save::", this.limitsOfLiabilityList)
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
-    this.quotationService.processQuotation(quotation).pipe(
+    const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
+      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
+      : this.quotationService.processQuotation(quotation);
+    this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
+    this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
+    processQuotation$.pipe(
       switchMap((quotationResponse) => {
         this.quotationCode = quotationResponse._embedded.quotationCode;
         this.quotationNo = quotationResponse._embedded.quotationNumber;
-        sessionStorage.setItem('quotationNumber',  JSON.stringify(this.quotationNo));
+        sessionStorage.setItem('quotationNumber', JSON.stringify(this.quotationNo));
         sessionStorage.setItem('quickQuotationNum', this.quotationNo);
         sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
         log.debug('Quotation saved successfully', quotationResponse);
@@ -2085,6 +2090,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,
       agentCode: 0,
+      premium: this.premiumResponse?.premiumAmount,
       agentShortDescription: "DIRECT",
       wefDate: this.premiumPayload?.dateWithEffectFrom,
       wetDate: this.premiumPayload?.dateWithEffectTo,

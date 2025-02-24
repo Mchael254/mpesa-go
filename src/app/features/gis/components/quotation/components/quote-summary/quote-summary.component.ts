@@ -15,7 +15,6 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
-import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, Excesses, LimitsOfLiability, StatusEnum, Status, QuickQuoteData } from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
@@ -209,7 +208,7 @@ export class QuoteSummaryComponent {
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
-      
+
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.quotationNo;
       log.debug("Quotation Number:", this.quotationNo)
@@ -313,10 +312,10 @@ export class QuoteSummaryComponent {
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
-   
+
     sessionStorage.setItem('quoteAction','A')
 
-   
+
 
 
     // Set the fields disable state to true
