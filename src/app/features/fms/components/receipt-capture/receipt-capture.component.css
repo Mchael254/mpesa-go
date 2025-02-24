@@ -25,6 +25,20 @@ body {
 .scroll-container::-webkit-scrollbar-thumb:hover {
   background-color: #495057;
 }
+.breadcrumb-custom {
+  font-size: 15px;
+  color: #0066cc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.breadcrumb-custom a {
+  color: #0066cc;
+  text-decoration: none;
+}
+.breadcrumb-text {
+  color: #333;
+}
 .top-bar {
   display: none;
   background-color: white;
@@ -77,19 +91,7 @@ body {
   display: none;
 }
 
-.breadcrumb-custom {
-  font-size: 10px;
-  color: #0066cc;
-  margin-bottom: 5px;
-}
 
-.breadcrumb-custom a {
-  color: #0066cc;
-  text-decoration: none;
-}
-.breadcrumb-text {
-  color: #333;
-}
 .chequeTypeText{
 font-size: 13px;
 }
@@ -255,7 +257,7 @@ select.form-control {
   display: flex;
   justify-content: space-between;
 
-  margin-top: 1px;
+  margin-top: 24px;
 }
 .btn-link {
   text-decoration: underline;
