@@ -25,8 +25,8 @@ import { ClientDTO } from "../../../../../entities/data/ClientDTO";
 import { ClientService } from "../../../../../entities/services/client/client.service";
 import { forkJoin } from 'rxjs';
 import { PolicyService } from '../../../policy/services/policy.service';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpErrorResponse } from '@angular/common/http';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -171,11 +171,6 @@ export class RiskSectionDetailsComponent {
   securityDevicesList:any;
   motorAccessoriesList:any;
   modelYear: any;
-  today = new Date;
-  currentDay = new Date;
-  minToDate: Date = new Date(
-    this.today.setFullYear(this.today.getFullYear() + 1)
-  );
   quotationNumber: string;
   passedCoverFromDate: any;
   passedCoverToDate: any;
@@ -232,7 +227,7 @@ export class RiskSectionDetailsComponent {
     }
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart",this.dateFormat)
-    
+
     this.createRiskDetailsForm();
     this.coverFrom = sessionStorage.getItem('coverFrom');
     this.coverTo = sessionStorage.getItem('coverTo');
@@ -769,14 +764,14 @@ export class RiskSectionDetailsComponent {
     if(this.selectedCoverType){
       this.filterMandatorySections();
     }
-    
+
   }
   onBinderSelected(event:any){
     const selectedValue = event.value;
     log.debug("Selected value(On binder selected",selectedValue)
     this.selectedBinderList=selectedValue;
     this.selectedBinderCode= this.selectedBinderList.code
-    
+
   }
   createRiskDetail() {
     let riskPayload = this.getQuotationRiskPayload();
@@ -817,7 +812,7 @@ export class RiskSectionDetailsComponent {
   }
   getQuotationRiskPayload(): any[] {
     log.debug("quotation code:", this.quotationCode)
-  
+
     log.debug("Currency code-quote creation",this.riskDetailsForm.value.propertyId)
     log.debug("Selected Cover",this.riskDetailsForm.value.coverTypeDescription)
     const formattedCoverFromDate = this.formatDate(new Date(this.passedCoverFromDate) );
@@ -838,10 +833,10 @@ export class RiskSectionDetailsComponent {
       wet: formattedCoverToDate,
       // prpCode: this.passedClientDetails?.id,
       coverTypeDescription: this.selectedCoverType.description,
-     
+
     }
     return [risk]
-   
+
   }
 
   /**
@@ -977,6 +972,68 @@ export class RiskSectionDetailsComponent {
  * to create a new risk section associated with the current risk, and handles
  * the response data by displaying a success or error message.
  */
+  // createRiskSection(){
+  //   const section = this.sectionDetailsForm.value;
+
+  //   if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
+  //     log.debug(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+
+  //     // Log the current premiumListIndex before incrementing
+  //     log.debug(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+
+  //     // Increment the premiumListIndex and wrap around using modulo
+  //     this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
+
+  //     // Log the updated premiumListIndex after incrementing
+  //     log.debug(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+
+  //     section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
+  //     section.sectionShortDescription = this.premiumList[this.premiumListIndex].sectionShortDescription;
+  //     section.sectionType = this.premiumList[this.premiumListIndex].sectionType;
+
+  //     // section.sectionCode=this.checkedSectionCode;
+  //     // section.sectionShortDescription=this.checkedSectionDesc;
+  //     // section.sectionType=this.sectionList.type;
+
+  //   } else {
+  //     // Handle scenario when premiumList is empty or index is out of bounds
+  //     console.error('Premium list is empty or index is out of bounds.');
+  //     return; // or throw an error, handle as per your requirement
+  //   }
+  //   this.sectionArray = [section];
+  //   section.calcGroup = 1;
+  //   section.code = null;
+  //   section.compute = "Y";
+  //   section.description = null;
+  //   section.freeLimit = 0;
+  //   section.limitAmount = 0;
+  //   section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
+  //   section.multiplierRate = 0;
+  //   section.premiumAmount = 0;
+  //   section.premiumRate = this.premiumList[0].rate;
+  //   section.rateDivisionFactor = this.premiumList[0].divisionFactor;
+  //   section.rateType = this.premiumList[0].rateType;
+  //   section.rowNumber = 0;
+  //   section.sumInsuredLimitType = null;
+  //   section.sumInsuredRate = 0;
+
+  //   // section.sectionCode=this.checkedSectionCode;
+  //   // section.sectionShortDescription=this.checkedSectionDesc;
+  //   // section.sectionType=this.sectionList.type;
+
+  //   log.debug("Section Form Array",this.sectionArray)
+
+  //   this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
+
+  //     try {
+  //       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+  //       this.sectionDetailsForm.reset()
+  //     } catch (error) {
+  //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+  //       this.sectionDetailsForm.reset()
+  //     }
+  //   })
+  // }
   createRiskSection() {
     const sectionTemplate = this.sectionDetailsForm.value;
 
@@ -1058,17 +1115,17 @@ export class RiskSectionDetailsComponent {
     this.quotationService.updateRiskSection(this.quotationRiskCode, this.sectionArray).subscribe((data) => {
       try {
         sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
-        const sumInsured = this.sectionDetailsForm.value.limitAmount
-        log.debug("SUMINSURED RISK DETAILS",sumInsured)
+const sumInsured = this.sectionDetailsForm.value.limitAmount
+log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
-        // Find the index of the section to be updated in the 'sections' array
-        const index = this.sections.findIndex(s => s.code === section.code);
+         // Find the index of the section to be updated in the 'sections' array
+      const index = this.sections.findIndex(s => s.code === section.code);
 
-        if (index !== -1) {
-          // Update the section in the array with the new values
-          this.sections[index] = { ...this.sections[index], ...section };
-          this.sections = [...this.sections]; // Trigger change detection
-        }
+      if (index !== -1) {
+        // Update the section in the array with the new values
+        this.sections[index] = { ...this.sections[index], ...section };
+        this.sections = [...this.sections]; // Trigger change detection
+      }
         this.sectionDetailsForm.reset()
         log.info(section)
 
@@ -1546,21 +1603,6 @@ getModelYear() {
     }
   })
 }
-
-formatDate(date: string | Date): string {
-  if (typeof date === 'string' && date.includes('T')) {
-      date = new Date(date); // Convert ISO string to Date object
-  }
-
-  if (date instanceof Date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-  }
-
-  return date as string; // If already a formatted string, return as is
-}
 // formatCurrency(event: any): void {
 //   let input = event.target.value.replace(/,/g, ''); // Remove existing commas
 //   if (input) {
@@ -1659,7 +1701,7 @@ formatDate(date: Date): string {
     log.debug('Converted date', this.convertedDate);
     return this.convertedDate
   }
-  
+
     fetchRegexPattern() {
       this.quotationService
         .getRegexPatterns(this.selectedSubclassCode)
@@ -1688,5 +1730,5 @@ formatDate(date: Date): string {
         .get('propertyId')
         ?.setValue(upperCaseValue, { emitEvent: false });
     }
-  
+
 }

@@ -47,8 +47,7 @@
                   <p class="label">Client</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{ clientDetails?.inputClientName || clientDetails?.firstName + " " +
-                    clientDetails?.lastName }}</p>
+                  <p class="content">{{ clientDetails?.inputClientName || clientDetails?.firstName + " " + clientDetails?.lastName || quickQuoteData.clientName }}</p>
                 </div>
               </div>
             </div>
@@ -382,7 +381,7 @@
 
 
                   <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }"  [rows]="5"
-                    
+
                     class='ui-datatable' responsiveLayout="scroll"  [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
                     <ng-template pTemplate="header">
                       <tr>
@@ -574,11 +573,11 @@
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </div>
-                 
+
                 </div>
               </div>
             </div>
-  
+
             <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'
               styleClass="p-datatable-striped" >
               <ng-template pTemplate="header">
