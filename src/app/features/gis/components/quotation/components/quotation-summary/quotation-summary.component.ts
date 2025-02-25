@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
@@ -115,6 +115,12 @@ export class QuotationSummaryComponent {
   conversionFlag: boolean = false;
   conversionFlagString: string;
   acceptedYear: number = new Date().getFullYear() + 6;
+  convertedDate: string;
+  coverFrom: string;
+  coverTo: string;
+  quotationSources: any;
+  source: number;
+  sourecDescription: string;
 
 
   constructor(
@@ -147,6 +153,8 @@ export class QuotationSummaryComponent {
   public showInternalClaims = false;
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
+      public cdr: ChangeDetectorRef;
+  
 
 
   ngOnInit(): void {
@@ -216,14 +224,15 @@ export class QuotationSummaryComponent {
     this.menuItems = [
       {
         label: 'Claims Experience',
+        expanded: false, // Initially expanded
         items: [
           {
             label: 'External',
-            command: () => { this.external(); }
+            command: () => { this.external();  this.closeMenu();}
           },
           {
             label: 'Internal',
-            command: () => { this.internal(); }
+            command: () => { this.internal(); this.closeMenu(); }
           }
         ]
       }
@@ -249,7 +258,11 @@ export class QuotationSummaryComponent {
     this.showInternalClaims = true;
     this.showExternalClaims = false;
   }
-
+  closeMenu() {
+    this.menuItems[0].expanded = false; // Collapse the section
+    this.menuItems = [...this.menuItems]; // Trigger change detection
+    this.cdr.detectChanges(); // Ensure UI updates
+  }
   /**
    * Retrieves quotation details based on the provided code.
    * @method getQuotationDetails
@@ -280,9 +293,16 @@ export class QuotationSummaryComponent {
       this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
       log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
 
-      this.subClassCodes = this.quotationView.riskInformation.map(risk => risk.subclass?.sclCode);
+      this.subClassCodes = this.quotationView.riskInformation.map(risk => risk.subclassCode);
       log.debug("Subclass Codes:", this.subClassCodes);
 
+      this.coverFrom =this.convertDate(this.quotationView.coverFrom)
+      this.coverTo =this.convertDate(this.quotationView.coverTo)
+      this.source = this.quotationView.sourceCode
+
+      if(this.source){
+        this.getQuotationSources()
+      }
 
       // Extract product details
       this.quotationProducts = this.quotationView.quotationProduct;
@@ -718,7 +738,7 @@ export class QuotationSummaryComponent {
         },
         error: (error) => {
           log.debug('Error fetching excesses:', error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       }
     );
@@ -795,6 +815,7 @@ export class QuotationSummaryComponent {
             const matchingSubclass = this.allSubclassList.find(
               subClass => subClass.code === element.sub_class_code
             );
+            log.debug("Product subclass",this.productSubclass)
 
             if (!matchingSubclass) {
               log.debug(`No matching subclass found for code: ${element.sub_class_code}`);
@@ -1346,5 +1367,32 @@ export class QuotationSummaryComponent {
         }
       }
     );
+  }
+  convertDate(date:any){
+    log.debug("DATE TO BE CONVERTED",date)
+    const rawDate = new Date(date);
+    log.debug(' Raw before being formatted', rawDate);
+
+    // Extract the day, month, and year
+    const day = rawDate.getDate();
+    const month = rawDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = rawDate.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    this.convertedDate = formattedDate;
+    log.debug('Converted date', this.convertedDate);
+    return this.convertedDate
+  }
+  getQuotationSources() {
+    this.quotationService.getAllQuotationSources().subscribe(res => {
+      const sources = res
+      this.quotationSources = sources.content
+      log.debug("SOURCES", this.quotationSources)
+      const selectedSource = this.quotationSources.filter(source => source.code == this.source)
+      log.debug("Selected Source:",selectedSource)
+      this.sourecDescription = selectedSource[0].description
+    })
   }
 }
