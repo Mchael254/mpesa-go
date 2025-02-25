@@ -91,6 +91,7 @@ export class QuotationDetailsComponent {
   exchangeRate: number;
   userOrgDetails: UserDetail;
   defaultCurrency: CurrencyDTO;
+  editConvertedQuote: string;
 
 
 
@@ -136,6 +137,12 @@ export class QuotationDetailsComponent {
 
     log.debug(quotationFormDetails)
 
+    this.editConvertedQuote = JSON.parse(sessionStorage.getItem("editFlag"));
+
+    if(this.editConvertedQuote) {
+      this.patchQuickQuoteData()
+    };
+
     if (quotationFormDetails) {
       const parsedData = JSON.parse(quotationFormDetails);
       this.quotationForm.patchValue(parsedData);
@@ -170,7 +177,7 @@ export class QuotationDetailsComponent {
         this.quotationForm.controls['wetDate'].setValue(this.quickQuotationDetails.coverTo);
         // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
         log.debug(this.quickQuotationDetails.source)
-        const productCode = this.quickQuotationDetails.quotationProduct[0].proCode
+        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode
         this.productService.getProductByCode(productCode).subscribe(res => {
           this.quotationForm.controls['productCode'].setValue(res);
         })
@@ -665,13 +672,24 @@ export class QuotationDetailsComponent {
     }
     )
   }
-  formatDate(date: Date): string {
-    log.debug('Date (formatDate method):', date);
-    const year = date?.getFullYear();
-    const month = String(date?.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date?.getDate()).padStart(2, '0');
+  formatDate(date: string | Date | null): string {
+    if (!date) return '';
+
+    // Ensure the date is a Date object
+    const parsedDate = typeof date === 'string' ? new Date(date) : date;
+
+    if (isNaN(parsedDate.getTime())) {
+      console.error('Invalid date:', date);
+      return '';
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+
     return `${year}-${month}-${day}`;
   }
+
   /**
  * Updates the cover to date in the quotation form based on the selected cover from date.
  * @method updateCoverToDate
@@ -849,27 +867,55 @@ export class QuotationDetailsComponent {
   toggleDetails() {
     this.show = !this.show;
   }
-    fetchUserOrgId() {
-      this.quotationService
-        .getUserOrgId(this.userCode)
-        .pipe(
-          mergeMap((organization) => {
-            this.userOrgDetails= organization
-            log.debug("User Organization Details  ", this.userOrgDetails);
-            this.organizationId = this.userOrgDetails.organizationId
-            const currencyCode = this.quotationForm.value.currencyCode.id
-            log.debug("Cuurency code",currencyCode)
-            return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
-          }),
-          untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            this.exchangeRate = response
-            log.debug("EXCHANGE RATE",this.exchangeRate)
-          },
-          error: (error) => {
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          }
-        });
-    }
+
+  fetchUserOrgId() {
+    this.quotationService
+      .getUserOrgId(this.userCode)
+      .pipe(
+        mergeMap((organization) => {
+          this.userOrgDetails= organization
+          log.debug("User Organization Details  ", this.userOrgDetails);
+          this.organizationId = this.userOrgDetails.organizationId
+          const currencyCode = this.quotationForm.value.currencyCode.id
+          log.debug("Cuurency code",currencyCode)
+          return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
+        }),
+        untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.exchangeRate = response
+          log.debug("EXCHANGE RATE",this.exchangeRate)
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+  }
+
+  patchQuickQuoteData() {
+    const storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
+
+    this.quotationForm.patchValue({
+      wefDate: this.formatDate(storedData.effectiveDateFrom), // effectiveDateFrom
+      carRegNo: storedData.carRegNo, // carRegNo
+      yearOfManufacture: storedData.yearOfManufacture, // yearOfManufacture
+      clientName: storedData.clientName, // clientName
+      clientEmail: storedData.clientEmail, // clientEmail
+      productCode: storedData.product?.code, // product.code
+      productDescription: storedData.product?.description, // product.description
+      subclassCode: storedData.subClass?.code, // subClass.code
+      subclassDescription: storedData.subClass?.description, // subClass.description
+      currencyCode: storedData.currency?.id, // currency.id
+      currencySymbol: storedData.currency?.symbol, // currency.symbol
+      currencyName: storedData.currency?.name, // currency.name
+      currencyRoundingOff: storedData.currency?.roundingOff, // currency.roundingOff
+      selfDeclaredValue: storedData.selfDeclaredValue, // selfDeclaredValue
+      clientPhoneNumber: storedData.clientPhoneNumber, // clientPhoneNumber
+      existingClientSelected: storedData.existingClientSelected, // existingClientSelected
+      bindCode: storedData.selectedBinderCode, // selectedBinderCode
+      computationPayloadCode: storedData.computationPayloadCode // computationPayloadCode
+    });
+
+  }
+
 }
