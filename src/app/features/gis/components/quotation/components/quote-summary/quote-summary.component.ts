@@ -644,37 +644,46 @@ export class QuoteSummaryComponent {
     });
   }
   convertToPolicy(){
-    if(this.passedNewClientDetails){
-    //NAVIGATE TO CREATE CLIENT SCREEN
-    log.debug("Passed new client details:",this.passedNewClientDetails)
 
-    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+    const selectedClient = this.quickQuoteData?.selectedClient;
 
-    const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
-    sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+    if(selectedClient){
 
-    const convertToPolicyFlag = "convertToPolicy";
-    sessionStorage.setItem('convertToPolicyFlag', convertToPolicyFlag);
-
-    this.router.navigate(['/home/gis/quotation/create-client']);
-
-
-
-    }else{
       // NAVIGATE TO POLICY SCREEN
       log.debug("existing client convert to polict and navigate to policy summary screen")
       this.convertQuoteToPolicy()
+
+    }else{
+      //NAVIGATE TO CREATE CLIENT SCREEN
+      // log.debug("Passed new client details:",this.passedNewClientDetails)
+
+      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+
+      const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+      sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+
+      const convertToPolicyFlag = "convertToPolicy";
+      sessionStorage.setItem('convertToPolicyFlag', convertToPolicyFlag);
+
+      this.router.navigate(['/home/gis/quotation/create-client']);
     }
   }
 
   convertToNormalQuote() {
-    if(this.passedNewClientDetails){
-      //NAVIGATE TO CREATE CLIENT SCREEN
-      log.debug("Passed new client details:",this.passedNewClientDetails)
+     const selectedClient = this.quickQuoteData?.selectedClient;
 
-      const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-      sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+    if(selectedClient) {
+      // NAVIGATE TO QUOTATION summary
+      log.debug("existing client convert to normal quote and navigate to quotation summary screen");
+      this.convertQuoteToNormalQuote();
+
+    } else {
+      //NAVIGATE TO CREATE CLIENT SCREEN
+      // log.debug("Passed new client details:",this.passedNewClientDetails)
+
+      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
@@ -683,11 +692,6 @@ export class QuoteSummaryComponent {
       sessionStorage.setItem('convertToNormalQuoteFlag', convertToNormalQuoteFlag);
 
       this.router.navigate(['/home/gis/quotation/create-client']);
-
-    } else {
-      // NAVIGATE TO QUOTATION summary
-      log.debug("existing client convert to normal quote and navigate to quotation summary screen");
-      this.convertQuoteToNormalQuote();
     }
   }
 
