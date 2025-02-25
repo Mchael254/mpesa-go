@@ -128,6 +128,12 @@ getPolicy() {
           this.policyStatus = this.policyDetailsData.policyStatus
           this.productDescription = this.policyDetailsData.product.description
           this.insureds = this.policyDetailsData.insureds[0]
+          this.wef=this.policyDetailsData.wefDt
+          this.wet=this.policyDetailsData.wetDt
+          this.underWritingOnly= this.policyDetailsData.underWritingOnly
+          this.currency =this.policyDetailsData.currency
+          this.transactionType = this.policyDetailsData.transactionType
+          this.renewalDate= this.policyDetailsData.renewalDate
 
           log.debug("Insureds", this.insureds)
           this.insureds = this.insureds.client.firstName + " " + this.insureds.client.lastName
