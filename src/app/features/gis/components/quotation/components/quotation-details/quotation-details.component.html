@@ -130,8 +130,7 @@
                           [showIcon]="true"
                           [dateFormat]="dateFormat"
                           formControlName="RFQDate"
-                          [placeholder]="today | date:'yyyy-MM-dd'"
-                          [minDate]="today"
+                          [placeholder]="todaysDate"
                           (onSelect)="updateQuotationExpiryDate($event)">
                       </p-calendar>
                       <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
@@ -147,7 +146,6 @@
                           [showIcon]="true"
                           [dateFormat]="dateFormat"
                           formControlName="expiryDate"
-                          [minDate]="minEffectiveToDate"
                           [placeholder]="expiryDate"
                           [readonlyInput]="true">
                       </p-calendar>
@@ -272,7 +270,6 @@
                           dateFormat="yy-mm-dd"
                           formControlName="withEffectiveFromDate"
                           [placeholder]="today | date:'yyyy-MM-dd'"
-                          [minDate]="today"
                           (onSelect)="updateCoverToDate($event)">
                       </p-calendar> -->
                       <p-calendar formControlName="wefDate" name="wefDate"
@@ -298,11 +295,8 @@
                           [dateFormat]="dateFormat"
                           inputStyleClass='form-control'
                           [showIcon]="true"
-                          dateFormat="yy-mm-dd"
-                          formControlName="withEffectiveToDate"
-                          [placeholder]="'yyyy-MM-dd'"
-                          [minDate]="minExpiryDate"
-                          [readonlyInput]="true">
+                          [placeholder]="coverToDate"
+                          >
                       </p-calendar>
                       
                       <div *ngIf="quotationForm.get('wetDate').hasError('required') && quotationForm.get('wetDate').touched"
