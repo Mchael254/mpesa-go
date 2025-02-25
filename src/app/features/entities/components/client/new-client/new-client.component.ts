@@ -153,8 +153,6 @@ export class NewClientComponent implements OnInit {
   isLoading: boolean = false;
   documentPayload: any;
   selectedFile: File;
-  minExpiryDate: Date;
-  minEffectiveToDate: Date;
 
   @Input() shouldReroute: boolean = true;
   @Output() onClickSaveClient: EventEmitter<any> = new EventEmitter<any>();
@@ -164,13 +162,12 @@ export class NewClientComponent implements OnInit {
   allUsersModalVisible: boolean = false;
   zIndex = 1;
   selectedMainUser: ClientDTO;
-  currentDay = new Date();
   public today = new Date();
   public tomorrow: Date = new Date(new Date().setDate(new Date().getDate() + 1));
   public eighteenYearsAgo: Date = new Date(
     this.today.setFullYear(this.today.getFullYear() - 18)
   );
-  public minDob = new Date(this.today.getFullYear() - 100, this.today.getMonth(), this.today.getDate()); // Example: 100 years ago
+  public minDate = new Date(this.today.getFullYear() - 100, this.today.getMonth(), this.today.getDate()); // Example: 100 years ago
   pinNumberRegex: string;
   selectedOption: IdentityModeDTO;
   SearchCountryField = SearchCountryField;
@@ -300,6 +297,8 @@ export class NewClientComponent implements OnInit {
         {
           clientBranch: [''],
           clientTitle: [''],
+          // smsNumber: [null],
+          // phoneNumber: [null],
           smsNumber: [''],
           phoneNumber: [''],
           email: [''],
@@ -365,7 +364,7 @@ export class NewClientComponent implements OnInit {
         },
       ),
     });
-    // this.defineSmsNumberFormat();
+    this.defineSmsNumberFormat();
     this.defineDisabledFormInputs();
     this.updateRegex();
     this.patchGISClientFormValues();
@@ -699,12 +698,16 @@ export class NewClientComponent implements OnInit {
             received Document- Field to be provided*/
         emailAddress: clientFormValues.contact_details.email, /*Todo: To add field for Email*/
         id: 0,
+        // phoneNumber: clientFormValues.contact_details.phoneNumber,
         receivedDocuments: "N", /*Todo: provide field to capture*/
-        phoneNumber: clientFormValues.contact_details.phoneNumber.internationalNumber,
-        smsNumber: clientFormValues.contact_details.smsNumber.internationalNumber,
-        titleId: clientFormValues.contact_details.clientTitle,
-        branchCode : clientFormValues.contact_details.clientBranch,
-        channel: clientFormValues.contact_details.channel
+        // smsNumber: clientFormValues.contact_details.smsNumber,
+        // titleShortDescription: "DR",
+        // phoneNumber: clientFormValues.contact_details.phoneNumber.e164Number,
+        // smsNumber: clientFormValues.contact_details.smsNumber.e164Number,
+
+        phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
+        smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
+        titleId: clientFormValues.contact_details.clientTitle
 
       }
 
@@ -733,8 +736,8 @@ export class NewClientComponent implements OnInit {
         account_number: clientFormValues.payment_details.account_number,
         bank_branch_id: clientFormValues.payment_details.branch,
         currency_id: clientFormValues.payment_details.currency,
-        effective_from_date: this.formatDate(clientFormValues.payment_details.effective_date_from),
-        effective_to_date: this.formatDate(clientFormValues.payment_details.effective_date_to),
+        effective_from_date: clientFormValues.payment_details.effective_date_from,
+        effective_to_date: clientFormValues.payment_details.effective_date_to,
         id: 0,
         is_default_channel: "N"
       }
@@ -781,7 +784,7 @@ export class NewClientComponent implements OnInit {
         contactDetails: contact,
         effectiveDateFrom: null,
         effectiveDateTo: null,
-        id: this.selectedMainUser ? this.selectedMainUser.id : null, // Set ID for existing client
+        id: null,
         createdBy: null,
         partyId: this.entityDetails?.id,
         partyTypeShortDesc: "CLIENT",
@@ -797,7 +800,7 @@ export class NewClientComponent implements OnInit {
         countryId: clientFormValues.citizenship,
         dateCreated: null,
         accountTypeId: clientFormValues.clientTypeId,
-        dateOfBirth: this.entityDetails?.dateOfBirth || this.formatDate(clientFormValues.dateOfBirth),
+        dateOfBirth: this.entityDetails?.dateOfBirth,
         organizationId: 2,
         modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
         idNumber: clientFormValues.idNumber,
@@ -807,7 +810,7 @@ export class NewClientComponent implements OnInit {
         modeOfIdentityNumber: this.entityDetails?.identityNumber,
 
       }
-      log.info("saved client details",saveClient);
+      log.info(saveClient)
       const clientPayload = JSON.stringify(saveClient);
       sessionStorage.setItem('clientPayload', clientPayload);
 
@@ -863,21 +866,6 @@ export class NewClientComponent implements OnInit {
 
     });
 
-  }
-
-  formatDate(date: string | Date): string {
-    if (typeof date === 'string' && date.includes('T')) {
-        date = new Date(date); // Convert ISO string to Date object
-    }
-
-    if (date instanceof Date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    return date as string; // If already a formatted string, return as is
   }
 
   /**
@@ -975,7 +963,6 @@ export class NewClientComponent implements OnInit {
       .subscribe(
         (data) => {
           this.identityTypeData = data;
-          log.debug("identity type data", this.identityTypeData);
         },
       );
   }
@@ -1203,7 +1190,6 @@ export class NewClientComponent implements OnInit {
 
   private toggleAllUsersModal(display: boolean) {
     this.allUsersModalVisible = display;
-    log.debug("all user modal visible", this.allUsersModalVisible);
   }
 
 
@@ -1240,7 +1226,7 @@ export class NewClientComponent implements OnInit {
       assignedTo: client?.id,
       surname: client?.lastName,
       otherName: client?.firstName,
-      identity_type: matchingIdentityType?.id,
+      identity_type: client?.modeOfIdentity,
       citizenship: client?.country,
       dateOfBirth: DOB,
       idNumber: client?.idNumber,
@@ -1250,16 +1236,8 @@ export class NewClientComponent implements OnInit {
       contact_details: {
         clientBranch: client?.branchCode,
         clientTitle: client?.clientTitle,
-        smsNumber: {
-          number: mobileNumber.number,
-          countryCode: mobileNumber.countryCode,
-          countryISO: mobileCountryISO
-        },
-        phoneNumber: {
-          number: phoneNumber.number,
-          countryCode: phoneNumber.countryCode,
-          countryISO: phoneCountryISO
-        },
+        smsNumber: client?.mobileNumber,
+        phoneNumber: client?.phoneNumber,
         email: client?.emailAddress,
         channel: client?.preferredChannel,
       },
@@ -1316,132 +1294,4 @@ export class NewClientComponent implements OnInit {
 
 
   }
-
-   parsePhoneNumber(phoneNumber: string): { countryCode: string, number: string } {
-    if (!phoneNumber) {
-      return { countryCode: '', number: '' };
-    }
-
-    // Remove all spaces and split by the plus sign
-    const cleanNumber = phoneNumber.replace(/\s+/g, '');
-    const parts = cleanNumber.split('+');
-
-    if (parts.length < 2) {
-      return { countryCode: '', number: cleanNumber };
-    }
-
-    // Get the country code (first three digits after +)
-    const countryCode = parts[1].substring(0, 3);
-    // Get the rest of the number
-    const number = parts[1].substring(3);
-
-    return { countryCode, number };
-  }
-
-   getCountryISOFromCode(countryCode: string): CountryISO {
-    // Convert country code to format expected by the library (e.g., +254)
-    const phoneNumberString = `+${countryCode}0000000000`; // Add dummy digits
-    try {
-      const parsedNumber = this.parsePhoneNumber(phoneNumberString);
-      if (parsedNumber) {
-        // The library will return the correct CountryISO based on the country code
-        return parsedNumber.countryCode as CountryISO;
-      }
-    } catch (error) {
-      console.warn('Could not parse country code:', countryCode);
-    }
-
-    return CountryISO.Kenya; // Fallback to Kenya if parsing fails
-  }
-
-  clearClientForm() {
-
-    this.selectedMainUser = null;
-    // Reset main form fields while preserving default values
-    this.clientRegistrationForm.patchValue({
-      partyTypeShtDesc: "CLIENT",
-      partyId: 16673590,
-      identity_type: '',
-      citizenship: '',
-      surname: '',
-      certRegNo: '',
-      regName: '',
-      tradeName: '',
-      regDate: '',
-      countryOfIncorporation: '',
-      parentCompany: '',
-      otherName: '',
-      dateOfBirth: '',
-      idNumber: '',
-      pinNumber: '',
-      gender: '',
-      clientTypeId: ''
-    });
-
-    // Reset nested form groups
-    const contactDetails = this.clientRegistrationForm.get('contact_details') as FormGroup;
-    contactDetails.reset({
-      clientBranch: '',
-      clientTitle: '',
-      smsNumber: '',
-      phoneNumber: '',
-      email: '',
-      channel: '',
-      pinNo: '',
-      eDocuments: '',
-      countryCodeSms: '',
-      countryCodeTel: ''
-    });
-
-    const address = this.clientRegistrationForm.get('address') as FormGroup;
-    address.reset({
-      box_number: '',
-      country: '',
-      county: '',
-      town: '',
-      physical_address: '',
-      road: '',
-      house_number: '',
-      utility_address_proof: '',
-      is_utility_address: ''
-    });
-
-    const paymentDetails = this.clientRegistrationForm.get('payment_details') as FormGroup;
-    paymentDetails.reset({
-      bank: '',
-      branch: '',
-      account_number: '',
-      currency: '',
-      effective_to_date: '',
-      effective_from_date: '',
-      mpayNo: '',
-      Iban: '',
-      is_default_channel: ''
-    });
-
-    const nextOfKinDetails = this.clientRegistrationForm.get('next_of_kin_details') as FormGroup;
-    nextOfKinDetails.reset({
-      mode_of_identity: '',
-      identity_number: '',
-      full_name: '',
-      relationship: '',
-      phone_number: '',
-      email_address: '',
-      dateofbirth: ''
-    });
-
-    const wealthDetails = this.clientRegistrationForm.get('wealth_details') as FormGroup;
-    wealthDetails.reset({
-      wealth_citizenship: '',
-      marital_status: '',
-      funds_source: '',
-      typeOfEmployment: '',
-      economic_sector: '',
-      occupation: '',
-      purposeinInsurance: '',
-      premiumFrequency: '',
-      distributeChannel: ''
-    });
-  }
-
 }

@@ -33,24 +33,7 @@ const log = new Logger('RiskSectionDetailsComponent');
 @Component({
   selector: 'app-risk-section-details',
   templateUrl: './risk-section-details.component.html',
-  styleUrls: ['./risk-section-details.component.css'],
-  animations: [
-    trigger('slideInOut', [
-      state('open', style({
-        height: '*', // Expand to fit content
-        opacity: 1,
-        overflow: 'hidden',
-      })),
-      state('closed', style({
-        height: '0', // Collapse to 0 height
-        opacity: 0,
-        overflow: 'hidden',
-      })),
-      transition('open <=> closed', [
-        animate('300ms ease-in-out') // Smooth transition
-      ]),
-    ]),
-  ],
+  styleUrls: ['./risk-section-details.component.css']
 })
 export class RiskSectionDetailsComponent {
 
@@ -213,7 +196,6 @@ export class RiskSectionDetailsComponent {
   public isOtherDetailsOpen = false;
   public isSectionDetailsOpen = false;
   public isThirdDetailsOpen = false;
-  public isClausesOpen = false;
 
   ngOnInit(): void {
 
@@ -330,10 +312,6 @@ export class RiskSectionDetailsComponent {
 */
   toggleThirdDetails() {
     this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
-  }
-
-  toggleRiskClauses() {
-    this.isClausesOpen =!this.isClausesOpen;
   }
 
   showSelectFromDateMessage() {
@@ -1298,7 +1276,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
     schedule.transactionType = "Q";
     schedule.version = 0;
 
-
+    
 
     // Remove specific fields from the payload
     delete schedule.details.level1.terrorismApplicable;
