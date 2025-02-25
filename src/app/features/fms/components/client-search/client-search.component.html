@@ -1,58 +1,69 @@
 <div class="container-fluid">
   <!-- Breadcrumb -->
   <div class="breadcrumb-custom">
-    Finance > CB-Receipting > Receipting >
+    {{ "fms.receipting.finance" | translate }} > CB-Receipting >
+    {{ "base.Receipting" | translate }} >
     <span class="breadcrumb-text">{{
       "fms.receipting.Allocate_Receipt" | translate
     }}</span>
   </div>
   <div class="main-form">
     <form [formGroup]="receiptingDetailsForm">
-      <h5 class="form-title">Account Selection</h5>
+      <h5 class="form-title">
+        {{ "fms.receipting.accountSelection" | translate }}
+      </h5>
       <div class="row mb-3">
         <div class="col-md-4">
-          <label for="accountType" class="form-label fw-bold"
-            >Account type</label
+          <label for="accountType" class="form-label fw-bold">{{
+            "fms.receipting.accountType" | translate
+          }}</label>
+
+          <select
+            class="form-select"
+            id="accountType"
+            formControlName="accountType"
+            (change)="onAccountTypeChange()"
           >
-          <div class="dropdown-container">
-            <select
-              class="form-select"
-              id="accountType"
-              formControlName="accountType"
-              class="form-control"
-              (change)="onAccountTypeChange()"
-            >
-              <option value="">Select</option>
-              <option *ngFor="let type of accountTypes" [value]="type.name">
-                {{ type.name }}
-              </option>
-            </select>
-            <i class="pi pi-chevron-down dropdown-icon"></i>
-          </div>
+            <option value="">
+              {{ "fms.receipting.select" | translate }}
+            </option>
+            <option *ngFor="let type of accountTypes" [value]="type.name">
+              {{ type.name }}
+            </option>
+          </select>
         </div>
         <!-- Search Criteria Section -->
         <div class="col-md-4">
-          <label for="searchCriteria" class="form-label fw-bold"
-            >Search criteria</label
+          <label for="searchCriteria" class="form-label fw-bold">{{
+            "fms.receipting.searchCriteria" | translate
+          }}</label>
+
+          <select
+            class="form-select"
+            id="searchCriteria"
+            formControlName="searchCriteria"
+            [disabled]="!isAccountTypeSelected"
           >
-          <div class="dropdown-container">
-            <select
-              class="form-select"
-              id="searchCriteria"
-              formControlName="searchCriteria"
-              [disabled]="!isAccountTypeSelected"
-            >
-              <option value="policyNumber">By Policy Number</option>
-              <option value="accountNumber">By Account Number</option>
-              <option value="debitNote">By Debit Note</option>
-              <option value="clientName">By Client Name</option>
-            </select>
-            <!-- <i class="pi pi-chevron-down dropdown-icon"></i> -->
-          </div>
+            <option value="policyNumber">
+              {{ "fms.receipting.byPolicyNumber" | translate }}
+            </option>
+            <option value="accountNumber">
+              {{ "fms.receipting.byAccountNumber" | translate }}
+            </option>
+            <option value="debitNote">
+              {{ "fms.receipting.byDebitNote" | translate }}
+            </option>
+            <option value="clientName">
+              {{ "fms.receipting.byClientName" | translate }}
+            </option>
+          </select>
+          <!-- <i class="pi pi-chevron-down dropdown-icon"></i> -->
         </div>
         <!-- Search Query Input -->
         <div class="col-md-4">
-          <label for="search" class="form-label fw-bold">Search</label>
+          <label for="search" class="form-label fw-bold">{{
+            "fms.receipting.search" | translate
+          }}</label>
           <div class="input-group">
             <input
               type="text"
@@ -93,15 +104,21 @@
           >
             <ng-template pTemplate="header">
               <tr>
-                <th class="header-bg">Description</th>
+                <th class="header-bg">
+                  {{ "fms.receipting.description" | translate }}
+                </th>
                 <th
                   class="header-bg"
                   style="min-width: 250px; white-space: nowrap"
                 >
-                  Name
+                  {{ "fms.receipting.name" | translate }}
                 </th>
-                <th class="header-bg">Type</th>
-                <th class="header-bg">Actions</th>
+                <th class="header-bg">
+                  {{ "fms.receipting.type" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.actions" | translate }}
+                </th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-client let-i="rowIndex">
@@ -128,14 +145,16 @@
                     "
                     (click)="onClickClient(client)"
                   >
-                    select
+                    {{ "fms.receipting.select" | translate }}
                   </button>
                 </td>
               </tr>
             </ng-template>
             <ng-template pTemplate="paginatorleft">
-              Showing {{ first }} to {{ first + rows }} of
-              {{ totalRecords }} entries
+              {{ "fms.receipting.showing" | translate }} {{ first }}
+              {{ "fms.receipting.to" | translate }} {{ first + rows }}
+              {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+              {{ "fms.receipting.entries" | translate }}
             </ng-template>
           </p-table>
         </div>
@@ -147,12 +166,12 @@
   <div class="btn-actions">
     <div class="btn-back">
       <button type="button" class="btn btn-link" (click)="onBack()">
-        Back
+        {{ "fms.receipting.back" | translate }}
       </button>
     </div>
     <div class="btn-next">
       <button type="button" class="btn-primary-outline" (click)="onNext()">
-        Next
+        {{ "fms.receipting.next" | translate }}
       </button>
       <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
     </div>
