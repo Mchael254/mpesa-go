@@ -13,15 +13,19 @@ export class ReceiptDataService {
   private selectedBranch: any = null;
   private receiptData: any = {};
   private selectedClient: any = null; // Store selected client globally
+  private selectedCurrency: number | null = null; // Store selected currency
+  private selectedBankCode: number | null = null; // Store selected bank
   private globalAccountTypeSelected: any = null;
   private transactions: TransactionDTO[] = [];
   private allocatedAmounts: {
     allocatedAmount: number;
     commissionChecked: string;
+    
   }[] = [];
   private receiptDataSubject = new BehaviorSubject<any>(null);
   receiptData$ = this.receiptDataSubject.asObservable();
-
+  private selectedCurrencySubject = new BehaviorSubject<number | null>(null);
+  private defaultCurrencySubject = new BehaviorSubject<number | null>(null);
   setReceiptData(data: any) {
     this.receiptData = { ...this.receiptData, ...data,
       amountIssued: this.receiptData.amountIssued ?? data.amountIssued, // Preserve amountIssued
@@ -33,7 +37,29 @@ export class ReceiptDataService {
   getReceiptData() {
     return this.receiptData;
   }
-  
+   // New methods to store/retrieve currency and bank
+   setSelectedCurrency(currencyId: number) {
+    this.selectedCurrency = currencyId;
+  }
+
+  getSelectedCurrency(): number | null {
+    return this.selectedCurrency;
+  }
+
+  setSelectedBank(bankCode: number) {
+    this.selectedBankCode = bankCode;
+  }
+
+  getSelectedBank(): number | null {
+    return this.selectedBankCode;
+  }
+  setDefaultCurrency(currencyId: number): void {
+    this.defaultCurrencySubject.next(currencyId);
+  }
+
+  getDefaultCurrency(): number | null {
+    return this.defaultCurrencySubject.value;
+  }
   setGlobalAccountTypeSelected(account: any): void {
     this.globalAccountTypeSelected = account;
     localStorage.setItem('globalAccountTypeSelected', JSON.stringify(account)); // Persist data

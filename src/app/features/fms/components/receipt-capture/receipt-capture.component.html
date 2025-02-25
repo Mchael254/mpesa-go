@@ -92,6 +92,9 @@
             formControlName="bankAccount"
             (change)="onBank($event)"
           >
+            <option value="" [disabled]="">
+              {{ "fms.receipting.select" | translate }}
+            </option>
             <option *ngFor="let bank of bankAccounts" [value]="bank.code">
               {{ bank.name }}
             </option>
