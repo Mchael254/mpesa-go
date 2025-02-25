@@ -163,7 +163,7 @@ export class QuotationSummaryComponent {
 
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
-    this.quotationNumber = sessionStorage.getItem('quickQuotationNum');
+    this.quotationNumber = sessionStorage.getItem('quickQuotationNum') || sessionStorage.getItem('quotationNum');
     log.debug("quick Quotation number", this.quotationNumber);
 
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
@@ -389,7 +389,9 @@ export class QuotationSummaryComponent {
    * @return {void}
    */
   editDetails() {
-    this.router.navigate(['/home/gis/quotation/quotation-details'])
+    this.router.navigate(['/home/gis/quotation/quotation-details']);
+    const editFlag = true;
+    sessionStorage.setItem("editFlag", JSON.stringify(editFlag));
   }
 
   /**

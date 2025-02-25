@@ -337,6 +337,7 @@
                         [style]="{ width: '100%', height: '38px' }"
                         [panelStyle]="{ width: '400px' }"
                         class="small-dropdown"
+                        [showClear]="true"
                         [ngClass]="{
                           'is-invalid': f['contact_details']['controls']['clientBranch']['invalid'] &&
                           (f['contact_details']['controls']['clientBranch']['dirty'] || f['contact_details']['controls']['clientBranch']['touched'])
@@ -354,13 +355,27 @@
                   <ng-container *ngIf="visibleStatus?.clientTitle === 'Y'">
                     <div class="col-sm-4">
                       <label for="clientTitle" class="label col-form-label">{{ 'entities.title' | translate }}</label>
-                      <select id="clientTitle" class="form-select" formControlName="clientTitle"
-                        [ngClass]="{ 'is-invalid': f['contact_details']['controls']['clientTitle']['invalid'] &&
-                  (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched']) }">
-                        <option value="" disabled selected>Select Title</option>
-                        <option *ngFor="let clientTitles of clientTitlesData" value="{{ clientTitles.id }}">{{ clientTitles.description | titlecase}}</option>
-                      </select>
-                      <div *ngIf="f['contact_details']['controls']['clientTitle']['invalid'] && (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])" class="form-text text-danger">
+                      <p-dropdown
+                        id="clientTitle"
+                        formControlName="clientTitle"
+                        [options]="clientTitlesData"
+                        optionLabel="description"
+                        optionValue="id"
+                        placeholder="Select Title"
+                        [style]="{ width: '100%', height: '38px' }"
+                        [panelStyle]="{ width: '400px' }"
+                        class="small-dropdown"
+                        [showClear]="true"
+                        [ngClass]="{
+                          'ng-invalid ng-dirty': f['contact_details']['controls']['clientTitle']['invalid'] &&
+                            (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])
+                        }"
+                      ></p-dropdown>
+                      <div
+                        *ngIf="f['contact_details']['controls']['clientTitle']['invalid'] &&
+                          (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])"
+                        class="form-text text-danger"
+                      >
                         <div *ngIf="f['contact_details']['controls']['clientTitle']['errors']['required']">
                           {{ 'entities.title' | translate }} {{ 'entities.required' | translate }}
                         </div>
@@ -985,6 +1000,7 @@
                         [monthNavigator]="true"
                         [yearNavigator]="true"
                         [readonlyInput]="true"
+                        [minDate]="currentDate"
                         dateFormat="yy-mm-dd"
                         [ngClass]="{ 'is-invalid': f['payment_details']['controls']['effective_from_date']['invalid']
                             && (f['payment_details']['controls']['effective_from_date']['dirty'] || f['payment_details']['controls']['effective_from_date']['touched']) }">
@@ -1010,6 +1026,7 @@
                         formControlName="effective_to_date"
                         name="WET"
                         [placeholder]="tomorrow | date:'yyyy-MM-dd'"
+                        [minDate]="tomorrow"
                         [showIcon]="true"
                         [showButtonBar]="true"
                         [monthNavigator]="true"
@@ -1108,6 +1125,7 @@
                         optionLabel="name"
                         placeholder="{{ 'entities.select_citizenship' | translate }}"
                         [filter]="true"
+                        [showClear]="true"
                         [filterBy]="'name'"
                         [style]="{ width: '100%', height: '38px' }"
                         [panelStyle]="{ width: '400px' }"
@@ -1201,7 +1219,11 @@
                         optionLabel="name"
                         placeholder="{{ 'entities.select_sector' | translate }}"
                         [filter]="true"
+                        [showClear]="true"
                         [filterBy]="'name'"
+                        [style]="{ width: '100%', height: '38px' }"
+                        [panelStyle]="{ width: '400px' }"
+                        class="small-dropdown"
                         [ngClass]="{
                           'is-invalid': f['wealth_details']['controls']['economic_sector']['invalid'] &&
                           (f['wealth_details']['controls']['economic_sector']['dirty'] || f['wealth_details']['controls']['economic_sector']['touched'])
@@ -1231,6 +1253,7 @@
                         optionLabel="name"
                         placeholder="{{ 'entities.select_occupation' | translate }}"
                         [filter]="true"
+                        [showClear]="true"
                         [filterBy]="'name'"
                         [style]="{ width: '100%', height: '38px' }"
                         [panelStyle]="{ width: '400px' }"

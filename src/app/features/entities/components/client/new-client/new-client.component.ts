@@ -162,6 +162,7 @@ export class NewClientComponent implements OnInit {
   allUsersModalVisible: boolean = false;
   zIndex = 1;
   selectedMainUser: ClientDTO;
+  public currentDate = new Date();
   public today = new Date();
   public tomorrow: Date = new Date(new Date().setDate(new Date().getDate() + 1));
   public eighteenYearsAgo: Date = new Date(
@@ -683,7 +684,7 @@ export class NewClientComponent implements OnInit {
         road: clientFormValues.address.road,
         state_id: 2,
         town_id: clientFormValues.address.town,
-        utility_address_proof: clientFormValues.address.utility_address_proof,
+        // utility_address_proof: clientFormValues.address.utility_address_proof,
         zip: "1022",
         phoneNumber: clientFormValues.address.phoneNumber
       }
@@ -702,14 +703,9 @@ export class NewClientComponent implements OnInit {
         receivedDocuments: "N", /*Todo: provide field to capture*/
         // smsNumber: clientFormValues.contact_details.smsNumber,
         // titleShortDescription: "DR",
-        // phoneNumber: clientFormValues.contact_details.phoneNumber.e164Number,
-        // smsNumber: clientFormValues.contact_details.smsNumber.e164Number,
 
         phoneNumber: clientFormValues.contact_details.phoneNumber.internationalNumber,
         smsNumber: clientFormValues.contact_details.smsNumber.internationalNumber,
-
-        // phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
-        // smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
         titleId: clientFormValues.contact_details.clientTitle
 
       }
@@ -738,7 +734,7 @@ export class NewClientComponent implements OnInit {
             Iban: not captured in endpoint,*/
         account_number: clientFormValues.payment_details.account_number,
         bank_branch_id: clientFormValues.payment_details.branch,
-        currency_id: clientFormValues.payment_details.currency,
+        currency_id: clientFormValues.payment_details.currency.id,
         effective_from_date: clientFormValues.payment_details.effective_date_from,
         effective_to_date: clientFormValues.payment_details.effective_date_to,
         id: 0,
@@ -754,7 +750,7 @@ export class NewClientComponent implements OnInit {
             distributeChannel: not captured in endpoint,
             cr_form_required: not on frontend,
             cr_form_year: not on frontend*/
-        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship,
+        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship.id,
         cr_form_required: "N",
         cr_form_year: 0,
         funds_source: clientFormValues.wealth_details.funds_source,
@@ -763,15 +759,15 @@ export class NewClientComponent implements OnInit {
         is_self_employed: "N",
         marital_status: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
         nationality_country_id: clientFormValues.wealth_details.country,
-        occupation_id: clientFormValues.wealth_details.occupation,
-        sector_id: clientFormValues.wealth_details.economic_sector,
+        occupation_id: clientFormValues.wealth_details.occupation.id,
+        sector_id: clientFormValues.wealth_details.economic_sector.id,
         certificate_registration_number: null,
         certificate_year_of_registration: null,
         distributeChannel: null,
-        insurancePurpose: null,
+        insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
         operating_country_id: null,
         parent_country_id: null,
-        premiumFrequency: null,
+        premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
         registeredName: null,
         source_of_wealth_id: null,
         tradingName: null
