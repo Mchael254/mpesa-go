@@ -1,34 +1,34 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MessageService} from 'primeng/api';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {SharedQuotationsService} from '../../services/shared-quotations.service';
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { SharedQuotationsService } from '../../services/shared-quotations.service';
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
-import {catchError, forkJoin, mergeMap, of, switchMap} from 'rxjs';
+import { catchError, forkJoin, mergeMap, of, switchMap } from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, PremiumRate,
   QuotationDetails, UserDetail, QuickQuoteData, Limit
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
+import { HttpErrorResponse } from '@angular/common/http';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -130,7 +130,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -699,25 +699,25 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
       log.debug("Matching Database limit >>", databaseLimit)
       limitsToSave.push({
-          calcGroup: 1,
-          code: databaseLimit?.code,
-          compute: "Y",
-          description: matchingSection?.description,
-          freeLimit: databaseLimit?.freeLimit || 0,
-          multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
-          multiplierRate: databaseLimit?.multiplierRate,
-          premiumAmount: matchingSection?.premium,
-          premiumRate: premiumRate?.premiumRate || 0,
-          rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
-          rateType: premiumRate?.rateType || "FXD",
-          rowNumber: 1,
-          sectionType: premiumRate?.sectionType,
-          sumInsuredLimitType: premiumRate?.sectionType || null,
-          sumInsuredRate: databaseLimit?.sumInsuredRate,
-          sectionShortDescription: premiumRate.sectionType,
-          sectionCode: databaseLimit?.sectionCode,
-          limitAmount: matchingSection?.limitAmount,
-        }
+        calcGroup: 1,
+        code: databaseLimit?.code,
+        compute: "Y",
+        description: matchingSection?.description,
+        freeLimit: databaseLimit?.freeLimit || 0,
+        multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
+        multiplierRate: databaseLimit?.multiplierRate,
+        premiumAmount: matchingSection?.premium,
+        premiumRate: premiumRate?.premiumRate || 0,
+        rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
+        rateType: premiumRate?.rateType || "FXD",
+        rowNumber: 1,
+        sectionType: premiumRate?.sectionType,
+        sumInsuredLimitType: premiumRate?.sectionType || null,
+        sumInsuredRate: databaseLimit?.sumInsuredRate,
+        sectionShortDescription: premiumRate.sectionType,
+        sectionCode: databaseLimit?.sectionCode,
+        limitAmount: matchingSection?.limitAmount,
+      }
       )
     }
     return limitsToSave;
@@ -1063,7 +1063,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
+      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
       : this.quotationService.processQuotation(quotation);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
@@ -1951,18 +1951,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     return this.quotationService
       .updatePremium(quotationCode, this.updatePremiumPayload)
       .subscribe({
-          next: (response: any) => {
-            const result = response;
-            log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-          },
-          error: (error) => {
-            log.error("Failed to update details:", error);
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          }
+        next: (response: any) => {
+          const result = response;
+          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+        },
+        error: (error) => {
+          log.error("Failed to update details:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
         }
+      }
       );
   }
 
@@ -2000,44 +2000,43 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   createQuotationForm(): void {
     this.quotationForm = this.fb.group({
-      quotationCode: [null],
+      quotationCode: [''],
       quotationNo: [null],
       user: ['', Validators.required],
-      policyData: this.fb.group({
-        action: [''],
-        wefDate: ['', Validators.required],
-        wetDate: ['', Validators.required],
-        branchCode: [, Validators.required],
-        currencyCode: [, Validators.required],
-        agentCode: [, Validators.required],
-        agentShortDescription: [''],
-        source: [, Validators.required],
-        clientType: [''],
-        productCode: [, Validators.required],
-        bindCode: [],
-        binderPolicy: [],
-        currencyRate: [],
-        introducerCode: [null],
-        internalComments: [null],
-        clientCode: [null],
-        polPropHoldingCoPrpCode: [null],
-        chequeRequisition: [null],
-        divisionCode: [null],
-        subAgentCode: [null],
-        prospectCode: [null],
-        marketerAgentCode: [null],
-        comments: [null],
-        gisPolicyNumber: [null],
-        polPipPfCode: [null],
-        endorsementStatus: [null],
-        polEnforceSfParam: [null],
-        creditDateNotified: [null],
-        multiUser: [null],
-        unitCode: [null],
-        locationCode: [null]
-      })
+      action: [''],
+      wefDate: ['', Validators.required],
+      wetDate: ['', Validators.required],
+      branchCode: [null, Validators.required],
+      currencyCode: [null, Validators.required],
+      agentCode: [null, Validators.required],
+      agentShortDescription: [''],
+      clientType: [''],
+      source: [null, Validators.required],
+      productCode: [null, Validators.required],
+      bindCode: [null],
+      binderPolicy: [null],
+      currencyRate: [null],
+      introducerCode: [null],
+      internalComments: [null],
+      clientCode: [null],
+      polPropHoldingCoPrpCode: [null],
+      chequeRequisition: [null],
+      divisionCode: [null],
+      subAgentCode: [null],
+      prospectCode: [null],
+      marketerAgentCode: [null],
+      comments: [null],
+      gisPolicyNumber: [null],
+      polPipPfCode: [null],
+      endorsementStatus: [null],
+      polEnforceSfParam: [null],
+      creditDateNotified: [null],
+      multiUser: [null],
+      unitCode: [null],
+      locationCode: [null]
     });
   }
+  
 
   fetchUserOrgId() {
     this.quotationService

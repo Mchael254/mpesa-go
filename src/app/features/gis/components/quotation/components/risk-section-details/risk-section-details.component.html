@@ -43,25 +43,38 @@
             <div class="row mt-2 mx-4 mb-4">
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required">{{'gis.quotation.subclass' | translate}}</label>
-                  <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event);loadSubclassSectionCovertype();" formControlName="subClassCode" >
+                  <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses" optionLabel="description" 
+                  [filterBy]="'description'"  [filter]="true"
+                  (onChange)="onSubclassSelected($event);loadSubclassSectionCovertype();"></p-dropdown>
+
+                  <!-- <select class="form-select form-control-sm" id="quote-dropdown" 
+                  (change)="onSubclassSelected($event);loadSubclassSectionCovertype();" formControlName="subclassCode" >
                     <option></option>
                     <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">{{subclass.description}}</option>
-                  </select>
+                  </select> -->
                 </div>
              
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_make' | translate}}</label>
-                  <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" (change)="onVehicleMakeSelected($event)">
+                  <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                   (change)="onVehicleMakeSelected($event)">
                     <option></option>
                     <option *ngFor="let vehicleMake of vehicleMakeList" [value]="vehicleMake.code">{{vehicleMake.name}}</option> 
-                  </select>
+                  </select> -->
+                  <p-dropdown  [options]="vehicleMakeList" optionLabel="name" 
+                  [filterBy]="'name'"  [filter]="true"
+                  (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
                 </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_model' | translate}}</label>
-                  <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" (change)="onVehicleModelSelected($event)">
+                  <p-dropdown  [options]="filteredVehicleModel" optionLabel="name" 
+                  [filterBy]="'name'"  [filter]="true"
+                  (onChange)="onVehicleModelSelected($event);"></p-dropdown>
+                  <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                   (change)="onVehicleModelSelected($event)">
                     <option></option>
                     <option *ngFor="let vehicleModel of filteredVehicleModel" [value]="vehicleModel.code">{{ vehicleModel.name }}</option>
-                  </select>
+                  </select> -->
                 </div>
                 
 
@@ -70,7 +83,13 @@
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.risk_id' | translate}}</label>
                   <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
-                  <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" (input)="riskIdPassed($event)" placeholder="KAA 123X">
+                  <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" 
+                  (input)="riskIdPassed($event); transformToUpperCase($event)" placeholder="KAA 123X" >
+                  <div
+                  *ngIf="riskDetailsForm?.get('propertyId')?.hasError('pattern') && riskDetailsForm?.get('propertyId').touched"
+                  class="form-text text-danger">
+                  {{'gis.quotation.risk_id' | translate}} is invalid
+                </div>
 
             </div>
             <div class="col-4">
@@ -80,12 +99,13 @@
             </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.cover_type' | translate}}</label>
-                  <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription" [(ngModel)]="selectedCoverType" (change)="filterMandatorySections()">
+                  <p-dropdown formControlName="coverTypeDescription"  [options]="subclassCoverType" optionLabel="description" 
+                  [filterBy]="'description'"  [filter]="true"
+                  (onChange)="onCoverTypeSelected($event);"></p-dropdown>
+
+                  <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeDescription">
                     <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.description}}</option>
                   </select> -->
-                  <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription">
-                    <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.description}}</option>
-                  </select>
                   
                 </div>
                
@@ -93,21 +113,42 @@
             <div class="row mt-2 mx-4 mb-4">
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"  class="required"> {{'gis.quotation.premium_band' | translate}}</label>
-                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="binderCode" >
+                <p-dropdown formControlName="binderCode"  [options]="binderListDetails" optionLabel="binder_name" 
+                [filterBy]="'binder_name'"  [filter]="true"
+                (onChange)="onBinderSelected($event);"></p-dropdown>
+                <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="binderCode" >
                     <option *ngFor="let binder of binderListDetails" [value]="binder.code">
                       {{binder.binder_name}}
                     </option>
-                </select>    
+                </select>     -->
             </div>
             <div class="col-xl-4">
               <label for="" id="quote-label"> {{'gis.quotation.cover_from' | translate}}</label>
-              <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="dateWithEffectFrom">
+              <p-calendar formControlName="wef" name="wef"
+              id="coverFromDate"
+              inputId="coverFromDate"
+              [dateFormat]="dateFormat"
+              inputStyleClass='form-control'
+              [showIcon]="true"
+              (onSelect)="updateCoverToDate($event)"
+              [placeholder]="passedCoverFromDate" >
+            </p-calendar>
+              <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="wef"> -->
 
           </div>
              
             <div class="col-xl-4">
               <label for="" id="quote-label"> {{'gis.quotation.cover_to' | translate}}</label>
-              <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="dateWithEffectTo">
+              <p-calendar formControlName="wet" name="wet"
+              id="coverToDate"
+              inputId="coverToDate"
+              [dateFormat]="dateFormat"
+              inputStyleClass='form-control'
+              [showIcon]="true"
+              [placeholder]="passedCoverToDate"
+              >
+          </p-calendar>
+              <!-- <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="wet"> -->
 
           </div>
             </div>
@@ -1224,43 +1265,7 @@
             </div>
           </div>
         </div>
-        <!-- <p-table  [value]="sectionArray" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single" [(selection)]="selectedSection" dataKey="code" >
-          <ng-template pTemplate="header">
-              <tr>
-                  <th>Group</th>
-                  <th>Row Num</th>
-                  <th>Code</th>
-                  <th>Short Description</th>
-                  <th>Description</th>
-                  <th>Limit Amount</th>
-                  <th>Premium Rate</th>
-                  <th>Rate Type</th>
-
-
-              </tr>
-          </ng-template>
-          <ng-template pTemplate="body"  let-sectionArray >
-              <tr  (click)="onSelectSection(sectionArray)" [pSelectableRow]="sectionArray" >
-                  <td>{{sectionArray.calcGroup}}</td>
-                  <td>{{sectionArray.rowNumber}}</td>
-                  <td>{{sectionArray.code}}</td>
-                  <td>{{sectionArray.sectionShortDescription}}</td>
-                  <td>{{sectionArray.description}}</td>
-                  <td>{{sectionArray.limitAmount}}</td>
-                  <td>{{sectionArray.premiumRate}}</td>
-                  <td>{{sectionArray.rateType}}</td>
-              </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="1"></td>
-
-                <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
-              </tr>
-
-            </ng-template>
-      </p-table> -->
-      <!-- <p-table [value]="sectionArray" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row"> -->
+    
         <p-table [value]="sections" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
           <ng-template pTemplate="header">
             <tr>
