@@ -197,6 +197,8 @@ export class RiskSectionDetailsComponent {
   public isOtherDetailsOpen = false;
   public isSectionDetailsOpen = false;
   public isThirdDetailsOpen = false;
+  public isClausesOpen = false;
+
 
   ngOnInit(): void {
 
@@ -1732,5 +1734,10 @@ formatDate(date: Date): string {
             );
           },
         });
+    }
+    toggleRiskClausesOpen(){
+      this.isClausesOpen = !this.isClausesOpen;
+    
+  
     }
 }
