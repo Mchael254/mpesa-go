@@ -136,7 +136,7 @@
                   <p class="label">Expiry Date</p>
                 </div>
                 <div class="col-7">
-                  <p class="content">{{(quotationDetails?.withEffectiveToDate || quotationDetails?.coverTo)}}</p>
+                  <p class="content">{{expiryDate }}</p>
                 </div>
               </div>
             </div>
@@ -568,10 +568,40 @@
                       <i class="fa-solid fa-pencil"></i>
                     </button>
                   </div>
-                  <div class="col-sm-3" >
+                  <!-- <div class="col-sm-3" >
                     <button type="button" id="icon" class="btn btn-danger me-2" title="Delete">
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
+                  </div> -->
+                  <div class="col-sm-3">
+                    <!-- <button
+                    type="button"
+                    id="openRiskModalButtonDelete"
+                    class="btn btn-primary"
+                    title="Delete"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteRisk"
+                    [hidden]="true"
+                   >
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                    <button
+                      type="button"
+                      id="icon"
+                      class="btn btn-primary"
+                      title="Delete"
+                      (click)="openRiskDeleteModal()"
+                      [disabled]="quotationDetails?.riskInformation?.length <= 1">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button> -->
+                    <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
+                    id="openRiskModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
+                    data-bs-target="#deleteRisk">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                  <button type="button" id="icon" class="btn btn-primary" title="Delete" >
+                    <i class="fa-solid fa-trash-can" (click)="openRiskDeleteModal()"></i>
+                  </button>
                   </div>
 
                 </div>
@@ -591,7 +621,7 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
-                <tr [pSelectableRow]="riskDetails" class="point" (click)="handleRowClick(data)"
+                <tr [class.p-highlight]="data === selectedRisk" [pSelectableRow]="riskDetails" class="point" (click)="handleRowClick(data)"
                   [class.disabled]="!data?.code">
                   <td>{{data?.quotationRiskNo || '-'}}</td>
                   <td>{{data?.propertyId || '-'}}</td>
@@ -602,6 +632,29 @@
                 </tr>
               </ng-template>
             </p-table>
+               <!-- Delete Risk Modal -->
+               <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+               aria-labelledby="deleteRisk" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-centered" role="document">
+                   <div class="modal-content" id="deleteRisk">
+                       <div class="modal-body ">
+                           <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
+                               translate}}</p>
+                           <div class="d-flex justify-content-center mb-3">
+                               <button type="button" class="btn btn-primary px-5" id="delete"
+                                   data-bs-dismiss="modal" (click)="deleteRisk()">{{'gis.policy.yes_delete'
+                                   | translate}}</button>
+                           </div>
+                           <div class="d-flex justify-content-center mb-2">
+                               <button type="button" class="btn btn-outline-primary px-5"
+                                   data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                           </div>
+
+
+                       </div>
+                   </div>
+               </div>
+           </div>
             <br>
             <ul class="nav nav-underline mt-2 mb-4">
               <li class="nav-item">
