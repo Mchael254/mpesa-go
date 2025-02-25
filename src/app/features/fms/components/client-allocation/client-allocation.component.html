@@ -388,17 +388,16 @@
       </button>
     </div>
     <div class="save-btns">
-      <!-- <button
+      <button
         type="button"
-        *ngIf="
-          showAcknowledgeBtn && !isAllocationComplete && !isAllocationCompleted
-        "
+        *ngIf="showAcknowledgeBtn"
+        [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-outline-primary"
-        (click)="saveAndPrint()"
       >
         Print Acknowledgement slip
-      </button> -->
+      </button>
       <button
+        *ngIf="!showAcknowledgeBtn"
         type="button"
         [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-outline-primary"
