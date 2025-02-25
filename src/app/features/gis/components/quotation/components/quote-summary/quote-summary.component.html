@@ -221,14 +221,14 @@
                   <ng-template pTemplate="body" let-risk>
                       <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
                           <td>{{ risk.propertyId || risk.propertyDescription  }}</td>
-                          <td>{{ risk.subclass.sclDescription | sentenceCase }}</td>
+                          <td>{{ risk.subclass.description | sentenceCase }}</td>
                           <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
                           <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
-                            {{ formatString(risk.propertyId + '_' + risk.subclass.sclDescription) }}
+                            {{ formatString(risk.propertyId + '_' + risk.subclass.description) }}
                           </td>
                           <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
                           <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
-                          <td appCommaFormat class="text-end">{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                          <td appCommaFormat class="text-end">{{ risk?.value | number }}</td>
                           <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
                       </tr>
                   </ng-template>

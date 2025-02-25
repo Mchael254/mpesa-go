@@ -390,7 +390,7 @@ export class ClientSearchComponent implements OnInit {
               this.receiptingDetailsForm.value
             );
             this.router.navigate(['/home/fms/client-allocation']);
-          } else {
+          } else if(this.transactions==null){
             this.globalMessagingService.displayErrorMessage(
               'Error:',
               'No transactions found!'

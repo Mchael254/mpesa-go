@@ -13,6 +13,13 @@
   font-weight: 700;
   line-height: 18px;
 }
+card-title-collapsed{
+  color: red;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 18px;
+}
 .title {
   color: #000;
   font-size: 14px;
@@ -41,14 +48,14 @@
   font-weight: 500;
   line-height: normal;
 }
-.cancel {
+/* .cancel {
   color: #00529b;
   font-size: 16px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
   text-decoration-line: underline;
-}
+} */
 
 li {
   cursor: pointer;
@@ -268,7 +275,7 @@ ul li a.active {
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
-  line-height: normal;
+  line-height: 18.75px;
   text-decoration-line: underline;
 }
 
@@ -285,7 +292,7 @@ li {
 }
 
 .nav-item > .nav-link {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* ::ng-deep
@@ -431,6 +438,7 @@ ul li a.active {
 .ui-datatable th,
 .ui-datatable td {
   white-space: nowrap;
+  /* color: #000; */
 }
 
 .scrollable-list {
@@ -444,7 +452,7 @@ ul li a.active {
   cursor: pointer;
   padding: 4px;
   border-bottom: 1px solid #ddd; /* Optional: Separates list items */
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .scrollable-list li:hover {
@@ -453,7 +461,7 @@ ul li a.active {
 
 .subclass-title {
   font-family: Roboto;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 16.8px;
   text-align: left;

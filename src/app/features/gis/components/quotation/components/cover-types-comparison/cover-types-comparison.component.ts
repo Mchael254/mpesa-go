@@ -12,11 +12,11 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
-import { forkJoin, mergeMap } from 'rxjs';
+import { catchError, forkJoin, mergeMap, of, switchMap } from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, PremiumRate,
-  QuotationDetails, UserDetail, QuickQuoteData
+  QuotationDetails, UserDetail, QuickQuoteData, Limit
 } from '../../data/quotationsDTO'
 import { Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
@@ -56,7 +56,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedMandatorySections: any[] = [];
 
   sectionDetailsForm: FormGroup;
-  sectionArray: any;
   taxInformation: any;
   riskInformation: any
   sumInsuredValue: any;
@@ -108,7 +107,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedClientCode: any;
   computationDetails: any;
 
-  selectedSectionCode: any;
   selectedSubclassCode: any;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
@@ -117,13 +115,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   sectionCodesArray: number[] = [];
   premiumList: Premiums[] = [];
   temporaryPremiumList: Premiums[] = [];
+  coverTypePremiumItems: Premiums[] = [];
 
   passedNumber: string;
   passedQuotationCode: number;
   passedQuotationDetails: any;
   emailForm: FormGroup;
   smsForm: FormGroup;
-  currentExpandedIndex: number = -1;
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null; // Initially set to null
   isUpdateQuoteCalled: boolean = false;
@@ -207,6 +205,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     public premiumRateService: PremiumRateService,
     public spinner: NgxSpinnerService,
   ) {
+    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
   }
 
   public isClauseDetailsOpen = false;
@@ -250,9 +249,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     // this.selectedCoverType = this.riskLevelPremiums[0].coverTypeDetails?.coverTypeCode;
     this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.coverTypeCode;
 
-    log.info("selectedCovertype when the page loads:", this.selectedCoverType)
+    log.info("selectedCovertype when the page loads:", this.selectedCoverType) //TODO check this out with HOPE
     if (this.selectedCoverType && this.selectedSubclassCode) {
-      this.onCoverTypeChange(this.selectedCoverType)
+      this.fetchCoverTypeRelatedData(this.selectedCoverType)
     }
 
     const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
@@ -338,8 +337,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Passed Quotation Details", this.passedQuotationData)
     if (this.passedQuotationData) {
       this.isEditQuotationDetail = true
-      this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
-      this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber;
+      this.storedQuotationCode = this.passedQuotationData.code
+      this.storedQuotationNo = this.passedQuotationData?.quotationNo;
 
 
     }
@@ -351,10 +350,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
     }
 
-    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
+
     log.debug("Stored Data", this.storedData)
     this.computationPayloadCode = this.storedData.computationPayloadCode
-    this.computationPayloadCode && this.fetchPremiumComputationPyload(this.computationPayloadCode);
+    this.fetchPremiumComputationPyload(this.computationPayloadCode);
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
     this.currencyObj = {
       prefix: this.storedData.currency.symbol + ' ',
@@ -382,36 +381,70 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
   }
 
-  passCovertypeDesc(selectedCoverCode: any) {
-    log.debug("data from passcovertpes", selectedCoverCode);
-    const passedCoverObject = this.riskLevelPremiums?.find(coverDesc => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
-    log.debug("passed covertype object:", passedCoverObject);
-
-    this.passedCovertypeDescription = passedCoverObject?.coverTypeDetails.coverTypeDescription;
-    this.passedCovertypeCode = selectedCoverCode;
-    if (this.passedCovertypeCode) {
-      log.debug("Fetch Clauses function")
-      this.fetchClauses()
-    }
-    this.fetchExcesses()
-
-    this.fetchLimitsOfLiability()
-    this.passedCoverTypeShortDes = passedCoverObject?.coverTypeDetails.coverTypeShortDescription;
-    log.debug("Passed covertype short desc:", this.passedCoverTypeShortDes)
-    log.debug("Passed covertype desc:", this.passedCovertypeDescription)
-    this.filteredSection = this.quickQuoteSectionList?.filter(section =>
-
-      this.passedCoverTypeShortDes == "COMP" ?
-        section.coverTypeDescription == "COMPREHENSIVE" :
-        section.coverTypeShortDescription == this.passedCoverTypeShortDes
-    );
-    log.debug("Filtered Section", this.filteredSection);
-    this.passedSections = this.quickQuoteSectionList?.filter(section => section.coverTypeCode == this.passedCovertypeCode);
-    log.debug("Passed Section", this.passedSections);
-
-    this.loadSubclassSectionCovertype();
-    this.loadAllPremiums();
+  fetchCoverTypeRelatedData(coverTypeCode: number) {
+    forkJoin(([
+      this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
+      this.quotationService.getExcesses(this.selectedSubclassCode),
+      this.quotationService.getLimitsOfLiability(this.selectedSubclassCode),
+      this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.storedData.selectedBinderCode, coverTypeCode)
+    ])).pipe(
+      untilDestroyed(this)
+    )
+      .subscribe(([clauses, excesses, limitOfLiabilities, applicablePremiumRates]) => {
+        this.clauseList = clauses._embedded ?? []
+        this.excessesList = excesses._embedded ?? []
+        this.limitsOfLiabilityList = limitOfLiabilities._embedded ?? []
+        const coverTypeSections = this.riskLevelPremiums
+          .filter(value => value.coverTypeDetails.coverTypeCode === coverTypeCode)
+          .map(section => section.limitPremiumDtos).flat()
+        log.debug("Comparing against >>>", coverTypeSections)
+        this.coverTypePremiumItems = applicablePremiumRates;
+        this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+          .map((value) => {
+            let matchingSection = coverTypeSections.find(section => section.sectCode === value.sectionCode);
+            log.debug("Found a matching >>>", matchingSection, value)
+            return {
+              ...value,
+              isChecked: !!matchingSection,
+              limitAmount: matchingSection?.limitAmount ?? null
+            }
+          })
+        log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
+      })
   }
+
+  /*  passCovertypeDesc(selectedCoverCode: any) {
+      log.debug("data from passcovertpes", selectedCoverCode);
+      const passedCoverObject = this.riskLevelPremiums?.find((coverDesc: {
+        coverTypeDetails: { coverTypeCode: any; };
+      }) => coverDesc.coverTypeDetails.coverTypeCode === selectedCoverCode);
+      log.debug("passed covertype object:", passedCoverObject);
+
+      this.passedCovertypeDescription = passedCoverObject?.coverTypeDetails.coverTypeDescription;
+      this.passedCovertypeCode = selectedCoverCode;
+      if (this.passedCovertypeCode) {
+        log.debug("Fetch Clauses function")
+        this.fetchClauses()
+      }
+      this.fetchExcesses()
+
+      this.fetchLimitsOfLiability()
+      this.passedCoverTypeShortDes = passedCoverObject?.coverTypeDetails.coverTypeShortDescription;
+      log.debug("Passed covertype short desc:", this.passedCoverTypeShortDes)
+      log.debug("Passed covertype desc:", this.passedCovertypeDescription)
+      this.filteredSection = this.quickQuoteSectionList?.filter(section =>
+
+        this.passedCoverTypeShortDes == "COMP" ?
+          section.coverTypeDescription == "COMPREHENSIVE" :
+          section.coverTypeShortDescription == this.passedCoverTypeShortDes
+      );
+      log.debug("Filtered Section", this.filteredSection);
+      this.passedSections = this.quickQuoteSectionList?.filter(section => section.coverTypeCode == this.passedCovertypeCode);
+      log.debug("Passed Section", this.passedSections);
+
+      this.loadSubclassSectionCovertype();
+      this.loadAllPremiums();
+    }*/
 
   calculateTotalPayablePremium(quotationDetail: QuotationDetails): number {
     let totalPremium = quotationDetail.premium || 0;
@@ -453,59 +486,60 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadSubclassSectionCovertype() {
-    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
-      this.subclassSectionCoverList = data;
-      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-      this.covertypeSectionList = this.subclassSectionCoverList.filter(section =>
-        section.subClassCode == this.selectedSubclassCode &&
-        section.isMandatory == null
-      );
-      log.debug("NOT MANDATORY", this.covertypeSectionList)
-      this.covertypeSpecificSection = this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
-      log.debug("COVER SPECIFIC SECTIONS", this.covertypeSpecificSection)
-      this.passedMandatorySections = this.covertypeSpecificSection;
+  /*
+    loadSubclassSectionCovertype() {
+      this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+        this.subclassSectionCoverList = data;
+        log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+        this.covertypeSectionList = this.subclassSectionCoverList.filter(section =>
+          section.subClassCode == this.selectedSubclassCode &&
+          section.isMandatory == null
+        );
+        log.debug("NOT MANDATORY", this.covertypeSectionList)
+        this.covertypeSpecificSection = this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
+        log.debug("COVER SPECIFIC SECTIONS", this.covertypeSpecificSection)
+        this.passedMandatorySections = this.covertypeSpecificSection;
 
 
-      log.debug('Selected Sections loadSubclass Section:', this.passedMandatorySections);
-      sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+        log.debug('Selected Sections loadSubclass Section:', this.passedMandatorySections);
+        sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
 
-      this.findTemporaryPremium();
-    })
+        this.findTemporaryPremium();
+      })
 
-  }
+    }*/
 
-  findTemporaryPremium() {
-    // Check if the temporary premium list has been updated for the same coverTypeCode
-    log.debug("Last updated Covertype:", this.lastUpdatedCoverTypeCode)
-    log.debug("New updated Covertype:", this.passedCovertypeCode)
-    if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
-      log.debug("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
-      // If the codes match, use the existing temporaryPremiumList
-      this.cdr.detectChanges();
-      log.debug("Premium List", this.temporaryPremiumList);
-      return; // Exit the method, no need to call the service
-    }
+  /*  findTemporaryPremium() {
+      // Check if the temporary premium list has been updated for the same coverTypeCode
+      log.debug("Last updated Covertype:", this.lastUpdatedCoverTypeCode)
+      log.debug("New updated Covertype:", this.passedCovertypeCode)
+      if (this.isTempPremiumListUpdated && this.lastUpdatedCoverTypeCode === this.passedCovertypeCode) {
+        log.debug("Using existing temporaryPremiumList for coverTypeCode:", this.passedCovertypeCode);
+        // If the codes match, use the existing temporaryPremiumList
+        this.cdr.detectChanges();
+        log.debug("Premium List", this.temporaryPremiumList);
+        return; // Exit the method, no need to call the service
+      }
 
-    const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
-    const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
-    const sections = this.passedMandatorySections;
+      const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
+      const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
+      const sections = this.passedMandatorySections;
 
-    // Create an array to store observables returned by each service call
-    const observables = sections?.map(section => {
-      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
-    });
+      // Create an array to store observables returned by each service call
+      const observables = sections?.map(section => {
+        return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+      });
 
-    // Use forkJoin to wait for all observables to complete
-    forkJoin(observables).subscribe(data => {
-      // data is an array containing the results of each service call
-      this.temporaryPremiumList = data.flat(); // Flatten the array if needed
-      this.cdr.detectChanges();
-      log.debug("Premium List", this.temporaryPremiumList);
-      // Reset the boolean since we've fetched new data
-      this.isTempPremiumListUpdated = false;
-    });
-  }
+      // Use forkJoin to wait for all observables to complete
+      forkJoin(observables).subscribe(data => {
+        // data is an array containing the results of each service call
+        this.temporaryPremiumList = data.flat(); // Flatten the array if needed
+        this.cdr.detectChanges();
+        log.debug("Premium List", this.temporaryPremiumList);
+        // Reset the boolean since we've fetched new data
+        this.isTempPremiumListUpdated = false;
+      });
+    }*/
 
 
   // onKeyUp(event: any, section: any): void {
@@ -532,7 +566,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   //     const inputValue = inputElement.value.trim(); // Trim spaces
   //     const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
 
-  
 
   //     // Update checkbox state based on input value
   //     checkbox.checked = !!(checkbox && inputValue);
@@ -585,8 +618,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       checkbox.checked = !!(checkbox && inputValue);
       section.typedWord = parseInt(inputValue, 10);
       section.isChecked = !!inputValue; // True only if input has a value
-     
-
       if (section.isChecked) {
         this.passedSections.push(section);
         if (!this.passedSections.includes(section)) {
@@ -613,13 +644,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.inputErrors[section.sectionCode] = false;
       }
 
-      console.debug('Selected Sections:', this.passedSections);
-      sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
-
-      this.loadAllPremiums();
+      // this.loadAllPremiums();
     }, 500); // Trigger after 500ms of no typing
   }
-
 
 
   // Function to determine the checkbox state for each row
@@ -629,121 +656,77 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-  createRiskSection(payload: any) {
-    // Your implementation for createRiskSection
-    log.debug('createRiskSection called with payload:', payload);
-    sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
-  }
+  /*  createRiskSection(payload: any) {
+      // Your implementation for createRiskSection
+      log.debug('createRiskSection called with payload:', payload);
+      sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
+    }*/
 
-  loadAllPremiums() {
-    const selectedBinder = this.premiumPayload?.risks?.[0]?.binderDto.code;
-    const selectedSubclassCode = this.premiumPayload?.risks?.[0]?.subclassSection.code;
-    const sections = this.passedSections;
+  /* loadAllPremiums() {
+     const selectedBinder = this.premiumPayload?.risks?.[0]?.binderDto.code;
+     const selectedSubclassCode = this.premiumPayload?.risks?.[0]?.subclassSection.code;
+     const sections = this.passedSections;
 
-    // Create an array to store observables returned by each service call
-    const observables = sections?.map(section => {
-      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
-    });
+     // Create an array to store observables returned by each service call
+     const observables = sections?.map(section => {
+       return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+     });
 
-    // Use forkJoin to wait for all observables to complete
-    forkJoin(observables).subscribe(data => {
-      // data is an array containing the results of each service call
-      this.premiumList = data.flat(); // Flatten the array if needed
-      this.cdr.detectChanges();
-      log.debug("Premium List", this.premiumList)
-    });
-  }
+     // Use forkJoin to wait for all observables to complete
+     forkJoin(observables).subscribe(data => {
+       // data is an array containing the results of each service call
+       this.premiumList = data.flat(); // Flatten the array if needed
+       this.cdr.detectChanges();
+       log.debug("Premium List", this.premiumList)
+     });
+   }*/
 
 
-  onCreateRiskSection() {
-    log.debug('Selected Sections:', this.passedSections);
-    log.debug('Premium Rates:', this.premiumList);
+  riskLimitPayload() {
+    let selectedLimits = this.premiumComputationPayload.risks
+      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
+    const coverTypeSections = this.riskLevelPremiums
+      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
+      .map(section => section.limitPremiumDtos).flat()
 
-    const interval = setInterval(() => {
-      if (this.premiumList && this.premiumList.length > 0) {
-        clearInterval(interval); // Stop the polling once data is available
 
-        log.debug('Premium Rates:', this.premiumList);
-        this.premiumRates = this.premiumList;
+    let assignedRows = selectedLimits.map(value => value.rowNumber);
 
-        if (this.premiumRates.length !== this.passedSections.length) {
-          log.error("Number of premium rates doesn't match the number of sections");
-          return;
+
+
+    const maxAssignedValue = Math.max(...assignedRows)
+
+    log.debug('Selected Sections:', selectedLimits);
+    log.debug('Premium Rates:', coverTypeSections);
+
+    let limitsToSave: any[] = [] //TODO check how to handle hardcoded values
+    for (let premiumRate of selectedLimits) {
+      const matchingSection = coverTypeSections.find(value => value.sectCode === premiumRate.section?.code);
+      const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
+      log.debug("Matching Database limit >>", databaseLimit)
+      limitsToSave.push({
+          calcGroup: 1,
+          code: databaseLimit?.code,
+          compute: "Y",
+          description: matchingSection?.description,
+          freeLimit: databaseLimit?.freeLimit || 0,
+          multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
+          multiplierRate: databaseLimit?.multiplierRate,
+          premiumAmount: matchingSection?.premium,
+          premiumRate: premiumRate?.premiumRate || 0,
+          rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
+          rateType: premiumRate?.rateType || "FXD",
+          rowNumber: premiumRate?.rowNumber,
+          sectionType: premiumRate?.sectionType,
+          sumInsuredLimitType: premiumRate?.sectionType || null,
+          sumInsuredRate: databaseLimit?.sumInsuredRate,
+          sectionShortDescription: premiumRate.sectionType,
+          sectionCode: databaseLimit?.sectionCode,
+          limitAmount: matchingSection?.limitAmount,
         }
-
-        // Proceed with further execution
-        console.log('Premium list validation passed!');
-      }
-    }, 100); // Check every 100ms
-
-    const payload = this.passedSections.map((section) => {
-      // Provide a default structure for premiumRate
-      const defaultPremiumRate: PremiumRate = {
-        sectionCode: null,
-        sectionShortDescription: null,
-        multiplierDivisionFactor: null,
-        multiplierRate: null,
-        rate: null,
-        divisionFactor: 1, // Default value if not provided
-        rateType: "FXD",   // Default value if not provided
-        sumInsuredLimitType: null,
-        sumInsuredRate: null,
-        limitAmount: null,
-      };
-      this.premiumRates = this.premiumList
-      log.debug("premium rates list", this.premiumRates)
-      log.debug("premium  list", this.premiumList)
-      log.debug("Current Section Code:", section.sectionCode);
-      log.debug("Available Section Codes in Premium Rates:", this.premiumRates.map(rate => rate.sectionCode));
-
-      // Ensure matching section code is found
-      const premiumRate = this.premiumRates.find(rate => String(rate.sectionCode) === String(section.sectionCode)) || defaultPremiumRate;
-
-      if (premiumRate === defaultPremiumRate) {
-        log.error(`No matching premium rate found for section: ${section.sectionCode}`);
-      }
-
-      log.debug("premium rate for a specific section", premiumRate);
-      return {
-        calcGroup: 1,
-        code: section.code,
-        compute: "Y",
-        description: premiumRate.sectionShortDescription || section.sectionShortDescription,
-        freeLimit: 0,
-        multiplierDivisionFactor: premiumRate?.multiplierDivisionFactor,
-        multiplierRate: premiumRate?.multiplierRate,
-        premiumAmount: 0,
-        premiumRate: premiumRate?.rate || 0,
-        rateDivisionFactor: premiumRate?.divisionFactor || 1,
-        rateType: premiumRate?.rateType || "FXD",
-        rowNumber: 1,
-        sumInsuredLimitType: premiumRate?.sumInsuredLimitType || null,
-        sumInsuredRate: premiumRate?.sumInsuredRate || 0,
-        sectionShortDescription: section.sectionShortDescription,
-        sectionCode: section.sectionCode,
-        limitAmount: premiumRate?.limitAmount != null ? premiumRate.limitAmount : section.limitAmount ? section.limitAmount : this.sumInsuredValue,
-      };
-    });
-
-    this.sectionArray = payload;
-    log.debug("THE SECTION ARRAY PASSED TO SERVICE", this.sectionArray);
-
-    this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
-      try {
-        this.temporaryPremiumList = this.temporaryPremiumList.filter(
-          (premium) => !this.passedSections.some((section) => section.code === premium.code)
-        );
-        log.debug("THE UPDATED TEMP PREMIUM LIST:", this.temporaryPremiumList);
-        this.isTempPremiumListUpdated = true;
-        this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
-
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
-        this.sectionDetailsForm.reset();
-      } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
-      }
-      this.computeQuotePremium();
-    });
+      )
+    }
+    return limitsToSave;
   }
 
   createRiskDetailsForm() {
@@ -870,7 +853,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         const quotationNumberString = JSON.stringify(this.quotationNo);
         sessionStorage.setItem('quotationNumber', quotationNumberString);
       }
-      this.createQuotationRisk();
+      // this.createQuotationRisk();
     })
   }
 
@@ -903,11 +886,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     })
   }
 
-  createQuotationRisk() {
-
+  getQuotationRiskPayload(): any[] {
     log.debug("quotation code:", this.quotationCode)
     log.debug("passed quotation code:", this.passedQuotationCode)
     log.debug("stored quote code when editing quote details or 2nd stepeer clicked", this.storedQuotationCode)
+    let existingRisk = JSON.parse(sessionStorage.getItem('passedSelectedRiskDetails'));
     let defaultCode
     if (this.quotationCode) {
       defaultCode = this.quotationCode;
@@ -922,57 +905,42 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       log.debug("F STATEMENT stored QUOTE CODE(2nd stepper called):", defaultCode)
 
     }
-
-    // Find the selected risk from premiumPayload.risks based on the selectedCoverType value
     const selectedRisk = this.premiumPayload?.risks.find(
       (risk) => risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType
     );
+    const selectedRiskPremiumResponse = this.premiumResponse?.riskLevelPremiums.find(
+      (risk) => risk.coverTypeDetails.coverTypeCode === this.selectedCoverType
+    );
 
+    log.debug("Selected Risk premium", selectedRiskPremiumResponse)
+    log.debug("Sum Insured>>>>", this.sumInsuredValue)
     log.debug("Selected Risk", selectedRisk)
-    const risk = this.riskDetailsForm.value;
-    // risk.quotationProductCode =
-
-    risk.coverTypeCode = this.passedCovertypeCode;
-    risk.quotationCode = defaultCode;
-    risk.productCode = this.premiumPayload?.product.code;
-    risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-    risk.value = this.sumInsuredValue;
-    risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
-    risk.subclassCode = this.premiumPayload?.risks[0].subclassSection.code;
-    if (selectedRisk) {
-      // Populate the risk object with details from the selected risk
-      risk.itemDesc = selectedRisk.subclassCoverTypeDto.coverTypeShortDescription;
-      // risk.itemDescription = selectedRisk.subclassCoverTypeDto.coverTypeDescription;
-      // risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
+    const coverTypeSections = this.riskLevelPremiums
+      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
+      .map(section => section.limitPremiumDtos).flat()
+    let risk = {
+      coverTypeCode: this.selectedCoverType,
+      quotationCode: defaultCode,
+      code: existingRisk ? existingRisk.code : null,
+      productCode: this.premiumPayload?.product.code,
+      propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
+      value: this.sumInsuredValue, // TODO attach this to individual risk
+      coverTypeShortDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeShortDescription,
+      premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
+      subclassCode: selectedRisk?.subclassSection.code,
+      itemDesc: selectedRisk?.itemDescription,
+      binderCode: selectedRisk?.binderDto?.code,
+      wef: selectedRisk?.withEffectFrom,
+      wet: selectedRisk?.withEffectTo,
+      prpCode: this.passedClientDetails?.id,
+      quotationProductCode: existingRisk ? existingRisk?.quotationProductCode: null,
+      coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
+      taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
+        code: tax.code,
+        premium: tax.premium
+      }))
     }
-    risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
-    risk.wef = this.premiumPayload?.risks[0].withEffectFrom;
-    risk.wet = this.premiumPayload?.risks[0].withEffectTo;
-    risk.prpCode = this.passedClientDetails?.id
-    risk.coverTypeDescription = this.passedCovertypeDescription;
-    log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
-    log.debug('Quick Form Risk', risk);
-    const riskArray = [risk];
-
-    return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
-      this.quotationRiskData = data;
-      log.debug("This is the quotation risk data", data)
-      const quotationRiskDetails = this.quotationRiskData._embedded[0];
-      log.debug("quotationRiskData", quotationRiskDetails);
-      if (quotationRiskDetails) {
-        this.riskCode = quotationRiskDetails.riskCode
-        this.quoteProductCode = quotationRiskDetails.quotProductCode
-
-      } else {
-        log.debug("The quotationRiskCode object is not defined.");
-      }
-
-      log.debug(this.quotationRiskData, "Quotation Risk Code Data");
-      log.debug(this.riskCode, "Quotation Risk Code ");
-      log.debug(this.quoteProductCode, "Quotation Product Code ");
-      this.onCreateRiskSection()
-
-    })
+    return [risk]
   }
 
   selectedRiskLevelPremium(data: any) {
@@ -980,96 +948,180 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
   }
-  selectCoverButton(){
-    
-  }
+
   selectCoverNew() {
-    this.spinner.show()
-    this.passedNumber = this.passedNumber === "null" ? null : this.passedNumber;
-    log.debug("PASSED QUOTATION NUMBER WHEN ADDING OR EDITING ADDITIONAL RISK:", this.passedNumber);
-    log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
-    log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
-    log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
-    log.debug("Check whether addBenefit method has been called:", this.isAddededBenefitsCalled);
+    const quotation = this.getQuotationPayload();
+    let riskPayload = this.getQuotationRiskPayload();
+    let limitsToSave = this.riskLimitPayload();
 
-
-    if (this.isEditQuotationDetail == true) {
-      log.debug("EDITING QUOTATION DETAILS: 2ND STEPPER WAS CLICKED")
-      log.debug("EDITING QUOTATION DETAILS Method called")
-      this.editQuotation();
-      // this.router.navigate(['/home/gis/quotation/quote-summary']);
-
-
-    } else {
-      if (this.isAddededBenefitsCalled == true) {
-        log.debug(" A BENEFIT HAS BEEN ADDED");
-        log.debug("Quotation Number:", this.quotationNo)
-        log.debug("Quotation Details(ADD BENEFITS):", this.quotationDetails)
-        log.debug("Selected Covertype", this.selectedCoverType)
-        const quotationNumber = this.quotationDetails?.quotationNo
-        log.debug("Quotation Number const:", quotationNumber)
-
-
-        // Filter risks where coverTypeCode does not match selectedCoverType
-        const filteredRisks = this.quotationDetails.riskInformation.filter(
-          (risk: any) => risk.coverTypeCode !== this.selectedCoverType
-        );
-
-        // Extract risk codes
-        const riskCode = filteredRisks.map((risk: any) => risk.code);
-
-        log.debug("Filtered Risk Codes:", riskCode);
-        this.extraRiskCode = riskCode
-        if (this.extraRiskCode.length > 0) {
-          this.deleteRisk()
-        } else {
-          const quotationNumberString = JSON.stringify(quotationNumber || this.quotationNo);
-          sessionStorage.setItem('quotationNumber', quotationNumberString);
-          this.loadClientQuotation()
-          log.debug("NAVIGATING TO POLICY SUMMARY");
-          this.router.navigate(['/home/gis/quotation/quote-summary']);
+    log.debug("Quotation payload>>>", quotation)
+    log.debug("Risk payload", riskPayload);
+    log.debug("About to save these limits", limitsToSave)
+    log.debug("Limits of liabilities to save::", this.limitsOfLiabilityList)
+    log.debug("Excesses to save >>>", this.excessesList)
+    log.debug("Clauses to save>>>", this.clauseList)
+    const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
+      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
+      : this.quotationService.processQuotation(quotation);
+    this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
+    this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
+    processQuotation$.pipe(
+      switchMap((quotationResponse) => {
+        this.quotationCode = quotationResponse._embedded.quotationCode;
+        this.quotationNo = quotationResponse._embedded.quotationNumber;
+        sessionStorage.setItem('quotationNumber', JSON.stringify(this.quotationNo));
+        sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
+        log.debug('Quotation saved successfully', quotationResponse);
+        riskPayload = riskPayload.map((risk) => {
+          return {
+            ...risk,
+            quotationCode: this.quotationCode
+          }
+        })
+        return this.quotationService.createQuotationRisk(this.quotationCode, riskPayload)
+      }),
+      switchMap((riskResponse) => {
+        log.debug('Risk saved successfully', riskResponse);
+        // Add the risk ID to sectionData before saving section
+        this.quotationRiskData = riskResponse;
+        log.debug("This is the quotation risk data", riskResponse)
+        const quotationRiskDetails = this.quotationRiskData._embedded[0];
+        if (quotationRiskDetails) {
+          this.riskCode = quotationRiskDetails.riskCode
+          this.quoteProductCode = quotationRiskDetails.quotProductCode
         }
+        const clauseCodes = this.clauseList.map((clause) => clause.code);
+        const limitsOfLiability = this.limitsOfLiabilityList.map(item => ({
+          code: item.code,
+          scheduleValueCode: item.code,
+          quotationProductCode: this.quoteProductCode,
+          value: item.value,
+          narration: item.narration,
+          type: "L"
+        }));
+        const excesses = this.excessesList.map(item => ({
+          code: item.code,
+          scheduleValueCode: item.code,
+          quotationProductCode: this.quoteProductCode,
+          value: item.value,
+          narration: item.narration,
+          type: "E"
+        }));
+        const limitsPayLoad = {
+          addOrEdit: 'A',
+          quotationRiskCode: this.riskCode,
+          riskSections:
+            limitsToSave.map((value) => {
+              return {
+                ...value,
+                quotationCode: this.quotationCode,
+                quotRiskCode: this.riskCode
+              }
+            })
+        }
+        return forkJoin(([
+          this.quotationService.addClauses(clauseCodes, this.premiumPayload?.product.code, this.quotationCode, this.riskCode),
+          this.quotationService.createRiskLimits(limitsPayLoad),
+          this.quotationService.addLimitsOfLiability(limitsOfLiability),
+          this.quotationService.addLimitsOfLiability(excesses)
+        ]))
+      })
+    ).subscribe({
+      next: (([clauses, riskSections, limits, excesses]) => {
+        log.debug(riskSections)
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }),
+      error: ((error) => log.error("Error>>>", error))
+    })
+    /*
+        return
+        this.spinner.show()
+        this.passedNumber = this.passedNumber === "null" ? null : this.passedNumber;
+        log.debug("PASSED QUOTATION NUMBER WHEN ADDING OR EDITING ADDITIONAL RISK:", this.passedNumber);
+        log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
+        log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
+        log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
+        log.debug("Check whether addBenefit method has been called:", this.isAddededBenefitsCalled);
 
 
-        if (this.passedNumber) {
-          // Both passedNumber and additional benefit have been added
-          log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
-          log.debug("NAVIGATING TO POLICY SUMMARY");
+        if (this.isEditQuotationDetail == true) {
+          log.debug("EDITING QUOTATION DETAILS: 2ND STEPPER WAS CLICKED")
+          log.debug("EDITING QUOTATION DETAILS Method called")
+          //  this.editQuotation();
           // this.router.navigate(['/home/gis/quotation/quote-summary']);
-        }
-      } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
-        // PassedNumber exists, but no additional benefit has been added
-        log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
-        log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
 
-        if (this.quoteAction === "E") {
-          log.debug("UPDATING EXISTING QUOTATION RISK", this.quoteAction);
-          this.updateQuotationRisk();
-          sessionStorage.removeItem('isEditRisk');
 
-          const quotationNumberString = JSON.stringify(this.passedNumber);
-          sessionStorage.setItem('quotationNumber', quotationNumberString);
-        } else if (this.quoteAction === "A") {
-          log.debug("ADDING ANOTHER QUOTATION RISK", this.quoteAction);
-          this.createQuotationRisk();
-          sessionStorage.removeItem('isAddRisk');
-
-          const quotationNumberString = JSON.stringify(this.passedNumber);
-          sessionStorage.setItem('quotationNumber', quotationNumberString);
         } else {
-          log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
-        }
+          if (this.isAddededBenefitsCalled == true) {
+            log.debug(" A BENEFIT HAS BEEN ADDED");
+            log.debug("Quotation Number:", this.quotationNo)
+            log.debug("Quotation Details(ADD BENEFITS):", this.quotationDetails)
+            log.debug("Selected Covertype", this.selectedCoverType)
+            const quotationNumber = this.quotationDetails?.quotationNo
+            log.debug("Quotation Number const:", quotationNumber)
 
-        const quotationNumberString = JSON.stringify(this.passedNumber);
-        sessionStorage.setItem('quotationNumber', quotationNumberString);
-      } else {
-        // Quotation data is empty, create a new quotation
-        log.debug("QUOTATION DATA IS EMPTY AND NO EXTRA BENEFIT HAS BEEN ADDED");
-        this.createQuotation();
-        this.getQuotationNumber();
-      }
-      this.spinner.hide()
-    }
+
+            // Filter risks where coverTypeCode does not match selectedCoverType
+            const filteredRisks = this.quotationDetails.riskInformation.filter(
+              (risk: any) => risk.coverTypeCode !== this.selectedCoverType
+            );
+
+            // Extract risk codes
+            const riskCode = filteredRisks.map((risk: any) => risk.code);
+
+            log.debug("Filtered Risk Codes:", riskCode);
+            this.extraRiskCode = riskCode
+            if (this.extraRiskCode.length > 0) {
+              this.deleteRisk()
+            } else {
+              const quotationNumberString = JSON.stringify(quotationNumber || this.quotationNo);
+              sessionStorage.setItem('quotationNumber', quotationNumberString);
+              this.loadClientQuotation()
+              log.debug("NAVIGATING TO POLICY SUMMARY");
+              this.router.navigate(['/home/gis/quotation/quote-summary']);
+            }
+
+
+            if (this.passedNumber) {
+              // Both passedNumber and additional benefit have been added
+              log.debug("BOTH PASSED QUOTATION NUMBER AND A BENEFIT HAS BEEN ADDED");
+              log.debug("NAVIGATING TO POLICY SUMMARY");
+              // this.router.navigate(['/home/gis/quotation/quote-summary']);
+            }
+          } else if (!this.isAddededBenefitsCalled && this.passedNumber) {
+            // PassedNumber exists, but no additional benefit has been added
+            log.debug("PASSED QUOTATION NUMBER EXISTS BUT NO ADDITIONAL BENEFIT HAS BEEN ADDED.");
+            log.debug("CALLING RISK HANDLING METHODS BASED ON SCENARIO.");
+
+            if (this.quoteAction === "E") {
+              log.debug("UPDATING EXISTING QUOTATION RISK", this.quoteAction);
+              this.updateQuotationRisk();
+              sessionStorage.removeItem('isEditRisk');
+
+              const quotationNumberString = JSON.stringify(this.passedNumber);
+              sessionStorage.setItem('quotationNumber', quotationNumberString);
+            } else if (this.quoteAction === "A") {
+              log.debug("ADDING ANOTHER QUOTATION RISK", this.quoteAction);
+              // this.createQuotationRisk();
+              sessionStorage.removeItem('isAddRisk');
+
+              const quotationNumberString = JSON.stringify(this.passedNumber);
+              sessionStorage.setItem('quotationNumber', quotationNumberString);
+            } else {
+              log.error("NO RISK FLAG DETECTED. PLEASE REVIEW BUSINESS LOGIC.");
+            }
+
+            const quotationNumberString = JSON.stringify(this.passedNumber);
+            sessionStorage.setItem('quotationNumber', quotationNumberString);
+          } else {
+            // Quotation data is empty, create a new quotation
+            log.debug("QUOTATION DATA IS EMPTY AND NO EXTRA BENEFIT HAS BEEN ADDED");
+            this.createQuotation();
+            this.getQuotationNumber();
+          }
+          this.spinner.hide()*/
+    // }
   }
 
   getQuotationNumber(): Promise<string> {
@@ -1329,14 +1381,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   addBenefits() {
     let isValid = true;
-
     this.temporaryPremiumList.forEach(section => {
       if (section.isChecked && !section.limitAmount) {
         document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
         isValid = false;
       }
     });
-  
+
     if (!isValid) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1344,106 +1395,75 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputationPayload)
-    log.debug("Passed Section", this.passedSections);
-    log.debug("Selected Cover type:", this.selectedCoverType)
-    log.debug("Sections to be removed", this.sectionToBeRemoved)
-    // for(let limit of this.temporaryPremiumList){
-    //   if(limit.isChecked && !)
-    // }
-    // Iterate over sections and mark empty ones as invalid
-  
+
     let limitsToModify = this.premiumComputationPayload.risks
       .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
 
-    log.debug("Limits to modify before update", limitsToModify);
-
-    if (this.passedSections.length > 0) {
-      // Ensure limitsToModify is initialized
-      if (!limitsToModify) {
-        limitsToModify = [];
+    let newListToCompute: Limit[] = []
+    for (let limit of limitsToModify) {
+      if (limit.section.isMandatory === "Y") {
+        newListToCompute.push(limit)
       }
-
-      this.passedSections.forEach((section) => {
-        let existingLimit = limitsToModify.find(limit => limit.section.code === section.sectionCode);
-
-        if (existingLimit) {
-          // Update existing limit
-          log.debug("Update existing limit")
-          existingLimit.rateDivisionFactor = section.divisionFactor;
-          existingLimit.premiumRate = section.rate;
-          existingLimit.rateType = section.rateType;
-          existingLimit.minimumPremium = section.minimumPremium;
-          existingLimit.multiplierDivisionFactor = section.multiplierDivisionFactor;
-          existingLimit.multiplierRate = section.multiplierRate;
-          existingLimit.limitAmount = section.limitAmount;
-          existingLimit.description = section.sectionShortDescription;
-        } else {
-          // Add new limit
-          log.debug("Adding new limit")
-
-          limitsToModify.push({
-            calculationGroup: 1,
-            declarationSection: "N",
-            rowNumber: 1,
-            rateDivisionFactor: section.divisionFactor,
-            premiumRate: section.rate,
-            rateType: section.rateType,
-            minimumPremium: section.minimumPremium,
-            annualPremium: 0,
-            multiplierDivisionFactor: section.multiplierDivisionFactor,
-            multiplierRate: section.multiplierRate,
-            description: section.sectionShortDescription,
-            section: {
-              code: section.sectionCode
-            },
-            sectionType: section.sectionType,
-            riskCode: null,
-            limitAmount: section.limitAmount,
-            compute: "Y",
-            dualBasis: "N"
-          });
-        }
-      });
-
-      log.debug("modified limits: ", limitsToModify);
-      log.debug("Updated premium computation payload", this.premiumComputationPayload);
     }
-
-    if (this.sectionToBeRemoved.length > 0) {
-      log.debug("removing existing limit(s)")
-
-      this.premiumComputationPayload.risks.forEach((risk) => {
-        if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
-          // Remove limits whose section code is in sectionToBeRemoved
-          risk.limits = risk.limits.filter(limit =>
-            !this.sectionToBeRemoved.includes(limit.section.code)
-          );
-
-        }
-      });
-      log.debug("Premium computation payload after removing sections ", this.premiumComputationPayload)
-
+    let rowNumbers = newListToCompute.map(value => value.rowNumber);
+    let maxValueAssigned = Math.max(...rowNumbers);
+    for (let limit of this.temporaryPremiumList) {
+      if (limit.isChecked && limit.limitAmount && limit.isMandatory !== 'Y') {
+        maxValueAssigned += 1;
+        newListToCompute.push({
+          calculationGroup: 1,
+          declarationSection: "N",
+          rowNumber: maxValueAssigned,
+          rateDivisionFactor: limit.divisionFactor,
+          premiumRate: limit.rate,
+          rateType: limit.rateType,
+          minimumPremium: limit.premiumMinimumAmount,
+          annualPremium: 0,
+          multiplierDivisionFactor: limit.multiplierDivisionFactor,
+          multiplierRate: limit.multiplierRate,
+          description: limit.sectionShortDescription,
+          section: {
+            description: limit.sectionDescription,
+            limitAmount: limit.limitAmount,
+            code: limit.sectionCode,
+            isMandatory: "N"
+          },
+          sectionType: limit.sectionType,
+          riskCode: null,
+          limitAmount: limit.limitAmount,
+          compute: "Y",
+          dualBasis: "N"
+        })
+      }
     }
-
-
-    this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.premiumResponse = response
-          // this.riskLevelPremiums = response.
-          this.riskLevelPremiums = response.riskLevelPremiums
-          // const premiumComputationResponse = response
-          log.debug("Premium Computation Response ", response);
-          this.cdr.detectChanges
-        },
-        error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        }
-      });
+    this.premiumComputationPayload.risks.forEach((risk) => {
+      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
+        risk.limits = newListToCompute
+      }
+    });
+    log.debug("Modified premium computation payload", this.premiumComputationPayload);
+    this.performComputation()
   }
+
+  performComputation() {
+    forkJoin(([
+      this.quotationService.updatePremiumComputationPayload(this.computationPayloadCode, this.premiumComputationPayload),
+      this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
+    ])).pipe(
+      untilDestroyed(this)
+    ).subscribe({
+      next: (([payloadUpdate, computationResponse]) => {
+        this.premiumResponse = computationResponse
+        this.premiumComputationPayload = payloadUpdate._embedded
+        this.riskLevelPremiums = computationResponse.riskLevelPremiums
+        sessionStorage.setItem('premiumResponse', JSON.stringify(computationResponse));
+      }),
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+      }
+    })
+  }
+
 
   toggleClauseDetails() {
     this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
@@ -1500,7 +1520,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Selected cover type code:", this.selectedCoverType)
     log.info("On cover type change called")
     if (this.selectedCoverType) {
-      this.passCovertypeDesc(this.selectedCoverType)
+      this.fetchCoverTypeRelatedData(coverTypeCode)
     }
     // Collapse all expanded sections
     this.isClauseDetailsOpen = false;
@@ -1716,7 +1736,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       log.debug(this.quotationRiskData, "Quotation Risk Code Data");
       log.debug(this.riskCode, "Quotation Risk Code ");
       log.debug(this.quoteProductCode, "Quotation Product Code ");
-      this.onCreateRiskSection()
+      //  this.onCreateRiskSection()
 
     })
   }
@@ -1881,44 +1901,43 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   createQuotationForm(): void {
     this.quotationForm = this.fb.group({
-      quotationCode: [null],
+      quotationCode: [''],
       quotationNo: [null],
       user: ['', Validators.required],
-      policyData: this.fb.group({
-        action: [''],
-        wefDate: ['', Validators.required],
-        wetDate: ['', Validators.required],
-        branchCode: [, Validators.required],
-        currencyCode: [, Validators.required],
-        agentCode: [, Validators.required],
-        agentShortDescription: [''],
-        source: [, Validators.required],
-        clientType: [''],
-        productCode: [, Validators.required],
-        bindCode: [],
-        binderPolicy: [],
-        currencyRate: [],
-        introducerCode: [null],
-        internalComments: [null],
-        clientCode: [null],
-        polPropHoldingCoPrpCode: [null],
-        chequeRequisition: [null],
-        divisionCode: [null],
-        subAgentCode: [null],
-        prospectCode: [null],
-        marketerAgentCode: [null],
-        comments: [null],
-        gisPolicyNumber: [null],
-        polPipPfCode: [null],
-        endorsementStatus: [null],
-        polEnforceSfParam: [null],
-        creditDateNotified: [null],
-        multiUser: [null],
-        unitCode: [null],
-        locationCode: [null]
-      })
+      action: [''],
+      wefDate: ['', Validators.required],
+      wetDate: ['', Validators.required],
+      branchCode: [null, Validators.required],
+      currencyCode: [null, Validators.required],
+      agentCode: [null, Validators.required],
+      agentShortDescription: [''],
+      clientType: [''],
+      source: [null, Validators.required],
+      productCode: [null, Validators.required],
+      bindCode: [null],
+      binderPolicy: [null],
+      currencyRate: [null],
+      introducerCode: [null],
+      internalComments: [null],
+      clientCode: [null],
+      polPropHoldingCoPrpCode: [null],
+      chequeRequisition: [null],
+      divisionCode: [null],
+      subAgentCode: [null],
+      prospectCode: [null],
+      marketerAgentCode: [null],
+      comments: [null],
+      gisPolicyNumber: [null],
+      polPipPfCode: [null],
+      endorsementStatus: [null],
+      polEnforceSfParam: [null],
+      creditDateNotified: [null],
+      multiUser: [null],
+      unitCode: [null],
+      locationCode: [null]
     });
   }
+
 
   fetchUserOrgId() {
     this.quotationService
@@ -1958,65 +1977,27 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       });
   }
 
-  editQuotation() {
+  getQuotationPayload(): any {
     const quoteForm = this.quotationForm.value;
-
     quoteForm.user = this.user;
-
-    log.debug("PREEEEMIUM PAYLOAD(CREATE QUOTATION)", this.premiumPayload)
-    log.debug("User Branch", this.userBranchId)
-    quoteForm.quotationCode = this.storedQuotationCode;
-    quoteForm.quotationNumber = this.storedQuotationNo;
-    quoteForm.source = 37;
-    quoteForm.user = this.user;
-    quoteForm.clientCode = this.passedClientDetails?.id || null,
-      quoteForm.productCode = this.premiumPayload?.product?.code;
-    quoteForm.currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
-      quoteForm.currencyRate = this.exchangeRate || 1,
-      quoteForm.agentCode = 0;
-    quoteForm.agentShortDescription = "DIRECT";
-    quoteForm.gisPolicyNumber = null;
-    quoteForm.multiUser = null
-    quoteForm.unitCode = null;
-    quoteForm.locationCode = null;
-    quoteForm.wefDate = this.premiumPayload?.dateWithEffectFrom;
-    quoteForm.wetDate = this.premiumPayload?.dateWithEffectTo;
-    quoteForm.bindCode = this.premiumPayload?.risks?.[0]?.binderDto?.code;
-    quoteForm.binderPolicy = null;
-    quoteForm.divisionCode = null;
-    quoteForm.subAgentCode = null;
-    quoteForm.clientType = "C";
-    quoteForm.prospectCode = null;
-    quoteForm.branchCode = this.userBranchId || 1,
-      quoteForm.marketerAgentCode = null;
-    quoteForm.comments = null;
-    quoteForm.polPipPfCode = null;
-    quoteForm.endorsementStatus = null;
-    quoteForm.polEnforceSfParam = null;
-    quoteForm.creditDateNotified = null;
-    quoteForm.introducerCode = null;
-    quoteForm.internalComments = null;
-    quoteForm.polPropHoldingCoPrpCode = null;
-    quoteForm.chequeRequisition = null;
-
-    this.quotationService
-      .processQuotation(quoteForm)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-
-          const updatedQuotationResponse = response
-          log.debug("Response after editing a quotation  ", updatedQuotationResponse);
-          if (updatedQuotationResponse) {
-            this.createQuotationRisk();
-          }
-
-        },
-        error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        }
-      });
+    return {
+      quotationCode: this.storedQuotationCode,
+      quotationNumber: this.storedQuotationNo,
+      source: 37,
+      user: this.user,
+      clientCode: this.passedClientDetails?.id || null,
+      productCode: this.premiumPayload?.product?.code,
+      currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
+      currencyRate: this.exchangeRate || 1,
+      agentCode: 0,
+      premium: this.premiumResponse?.premiumAmount,
+      agentShortDescription: "DIRECT",
+      wefDate: this.premiumPayload?.dateWithEffectFrom,
+      wetDate: this.premiumPayload?.dateWithEffectTo,
+      bindCode: this.premiumPayload?.risks?.[0]?.binderDto?.code,
+      clientType: "C",
+      branchCode: this.userBranchId || 1
+    }
   }
 
   deleteRisk() {
@@ -2056,7 +2037,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       },
       error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        this.globalMessagingService.displayErrorMessage('Error', error?.error?.message);
       }
     });
   }
@@ -2068,20 +2049,38 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-
           this.premiumComputationPayload = response._embedded
           log.debug("Premium computation paylod from the endpoint", this.premiumComputationPayload);
-
-
         },
         error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', error?.error?.message);
         }
       });
   }
-  openRiskDeleteModal(){
-    
+
+  openRiskDeleteModal(limitToDelete: any) {
+    for (let premiumRate of this.temporaryPremiumList) {
+      if (premiumRate.sectionCode == limitToDelete.sectCode) {
+        premiumRate.isChecked = false
+        premiumRate.limitAmount = null
+      }
+    }
+    let limitsToModify = this.premiumComputationPayload.risks
+      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
+    log.debug("Before Modification computation payload for deletion>>>", this.premiumComputationPayload, limitToDelete)
+    let newLimits: Limit[] = []
+    for (let limit of limitsToModify) {
+      if ((limit.section.code !== limitToDelete.sectCode) || limit.section.isMandatory === "Y") {
+        newLimits.push(limit);
+      }
+    }
+    this.premiumComputationPayload.risks.forEach((risk) => {
+      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
+        risk.limits = newLimits
+      }
+    });
+    log.debug("Modified computation payload for deletion>>>", this.premiumComputationPayload)
+    this.performComputation()
   }
 }
 

@@ -254,17 +254,13 @@
       <div class="col-5">
         <div class="d-flex justify-content-end">
           <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"
-            [routerLink]="'/home/gis/quotation/quick-quote'">Quick Quotation</button>
+            (click)="createQuote('QUICK')">Quick Quotation</button>
           <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"
-            [routerLink]="'/home/gis/quotation/quotations-client-details'"> Normal Quotation </button>
-
+            (click)="createQuote('NORMAL')"> Normal Quotation </button>
 
         </div>
       </div>
     </div>
-    <!-- <p-table [value]="LMS_IND" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'"
-    [resizableColumns]="true"
-      [reorderableColumns]="true"> -->
       <p-table
   #dt1
   (onLazyLoad)="fetchGISQuotations($event)"
