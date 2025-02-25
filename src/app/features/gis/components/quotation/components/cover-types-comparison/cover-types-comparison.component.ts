@@ -56,7 +56,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedMandatorySections: any[] = [];
 
   sectionDetailsForm: FormGroup;
-  sectionArray: any;
   taxInformation: any;
   riskInformation: any
   sumInsuredValue: any;
@@ -690,6 +689,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
       .map(section => section.limitPremiumDtos).flat()
 
+
+    let assignedRows = selectedLimits.map(value => value.rowNumber);
+
+
+
+    const maxAssignedValue = Math.max(...assignedRows)
+
     log.debug('Selected Sections:', selectedLimits);
     log.debug('Premium Rates:', coverTypeSections);
 
@@ -699,96 +705,28 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
       log.debug("Matching Database limit >>", databaseLimit)
       limitsToSave.push({
-        calcGroup: 1,
-        code: databaseLimit?.code,
-        compute: "Y",
-        description: matchingSection?.description,
-        freeLimit: databaseLimit?.freeLimit || 0,
-        multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
-        multiplierRate: databaseLimit?.multiplierRate,
-        premiumAmount: matchingSection?.premium,
-        premiumRate: premiumRate?.premiumRate || 0,
-        rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
-        rateType: premiumRate?.rateType || "FXD",
-        rowNumber: 1,
-        sectionType: premiumRate?.sectionType,
-        sumInsuredLimitType: premiumRate?.sectionType || null,
-        sumInsuredRate: databaseLimit?.sumInsuredRate,
-        sectionShortDescription: premiumRate.sectionType,
-        sectionCode: databaseLimit?.sectionCode,
-        limitAmount: matchingSection?.limitAmount,
-      }
+          calcGroup: 1,
+          code: databaseLimit?.code,
+          compute: "Y",
+          description: matchingSection?.description,
+          freeLimit: databaseLimit?.freeLimit || 0,
+          multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
+          multiplierRate: databaseLimit?.multiplierRate,
+          premiumAmount: matchingSection?.premium,
+          premiumRate: premiumRate?.premiumRate || 0,
+          rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
+          rateType: premiumRate?.rateType || "FXD",
+          rowNumber: premiumRate?.rowNumber,
+          sectionType: premiumRate?.sectionType,
+          sumInsuredLimitType: premiumRate?.sectionType || null,
+          sumInsuredRate: databaseLimit?.sumInsuredRate,
+          sectionShortDescription: premiumRate.sectionType,
+          sectionCode: databaseLimit?.sectionCode,
+          limitAmount: matchingSection?.limitAmount,
+        }
       )
     }
     return limitsToSave;
-    /*
-        const interval = setInterval(() => {
-          if (this.premiumList && this.premiumList.length > 0) {
-            clearInterval(interval); // Stop the polling once data is available
-
-            log.debug('Premium Rates:', this.premiumList);
-            this.premiumRates = this.premiumList;
-
-            if (this.premiumRates.length !== this.passedSections.length) {
-              log.error("Number of premium rates doesn't match the number of sections");
-              return;
-            }
-
-            // Proceed with further execution
-            console.log('Premium list validation passed!');
-          }
-        }, 100); // Check every 100ms
-
-        const payload = this.passedSections.map((section) => {
-          // Provide a default structure for premiumRate
-          const defaultPremiumRate: PremiumRate = {
-            sectionCode: null,
-            sectionShortDescription: null,
-            multiplierDivisionFactor: null,
-            multiplierRate: null,
-            rate: null,
-            divisionFactor: 1, // Default value if not provided
-            rateType: "FXD",   // Default value if not provided
-            sumInsuredLimitType: null,
-            sumInsuredRate: null,
-            limitAmount: null,
-          };
-          this.premiumRates = this.premiumList
-          log.debug("premium rates list", this.premiumRates)
-          log.debug("premium  list", this.premiumList)
-          log.debug("Current Section Code:", section.sectionCode);
-          log.debug("Available Section Codes in Premium Rates:", this.premiumRates.map(rate => rate.sectionCode));
-
-          // Ensure matching section code is found
-          const premiumRate = this.premiumRates.find(rate => String(rate.sectionCode) === String(section.sectionCode)) || defaultPremiumRate;
-
-          if (premiumRate === defaultPremiumRate) {
-            log.error(`No matching premium rate found for section: ${section.sectionCode}`);
-          }
-
-          log.debug("premium rate for a specific section", premiumRate);
-          return
-        });
-
-        this.sectionArray = payload;
-        log.debug("THE SECTION ARRAY PASSED TO SERVICE", this.sectionArray);
-
-        this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
-          try {
-            this.temporaryPremiumList = this.temporaryPremiumList.filter(
-              (premium) => !this.passedSections.some((section) => section.code === premium.code)
-            );
-            log.debug("THE UPDATED TEMP PREMIUM LIST:", this.temporaryPremiumList);
-            this.isTempPremiumListUpdated = true;
-            this.lastUpdatedCoverTypeCode = this.passedCovertypeCode;
-
-            this.messageService.add({severity: 'success', summary: 'Success', detail: 'Section Created'});
-            this.sectionDetailsForm.reset();
-          } catch (error) {
-            this.messageService.add({severity: 'error', summary: 'Error', detail: 'Error, try again later'});
-          }
-          this.computeQuotePremium();
-        });*/
   }
 
   createRiskDetailsForm() {
@@ -952,6 +890,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("quotation code:", this.quotationCode)
     log.debug("passed quotation code:", this.passedQuotationCode)
     log.debug("stored quote code when editing quote details or 2nd stepeer clicked", this.storedQuotationCode)
+    let existingRisk = JSON.parse(sessionStorage.getItem('passedSelectedRiskDetails'));
     let defaultCode
     if (this.quotationCode) {
       defaultCode = this.quotationCode;
@@ -974,6 +913,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     );
 
     log.debug("Selected Risk premium", selectedRiskPremiumResponse)
+    log.debug("Sum Insured>>>>", this.sumInsuredValue)
     log.debug("Selected Risk", selectedRisk)
     const coverTypeSections = this.riskLevelPremiums
       .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
@@ -981,6 +921,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     let risk = {
       coverTypeCode: this.selectedCoverType,
       quotationCode: defaultCode,
+      code: existingRisk ? existingRisk.code : null,
       productCode: this.premiumPayload?.product.code,
       propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
       value: this.sumInsuredValue, // TODO attach this to individual risk
@@ -992,6 +933,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       wef: selectedRisk?.withEffectFrom,
       wet: selectedRisk?.withEffectTo,
       prpCode: this.passedClientDetails?.id,
+      quotationProductCode: existingRisk ? existingRisk?.quotationProductCode: null,
       coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
       taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
         code: tax.code,
@@ -999,50 +941,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       }))
     }
     return [risk]
-    /*   const risk = this.riskDetailsForm.value;
-       // risk.quotationProductCode =
-
-       risk.coverTypeCode = ;
-       risk.quotationCode = defaultCode;
-       risk.productCode = ;
-       risk.propertyId = this.premiumPayload?.risks[0].propertyId;
-       risk.value = this.sumInsuredValue;
-       risk.coverTypeShortDescription = this.passedCoverTypeShortDes;
-       risk.subclassCode = this.premiumPayload?.risks[0].subclassSection.code;
-       if (selectedRisk) {
-         // Populate the risk object with details from the selected risk
-         risk.itemDesc = selectedRisk.subclassCoverTypeDto.coverTypeShortDescription;
-         // risk.itemDescription = selectedRisk.subclassCoverTypeDto.coverTypeDescription;
-         // risk.binderCode = this.premiumPayload?.risks[0].binderDto.code;
-       }
-       risk.binderCode =
-       risk.wef =
-       risk.wet = this.premiumPayload?.risks[0].withEffectTo;
-       risk.prpCode =
-       risk.coverTypeDescription = this.passedCovertypeDescription;
-       log.debug("PREMIUM PAYLOAD WHEN CREATING RISK", this.premiumPayload)
-       log.debug('Quick Form Risk', risk);
-       const riskArray = [risk];*/
-
-    /* return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
-       this.quotationRiskData = data;
-       log.debug("This is the quotation risk data", data)
-       const quotationRiskDetails = this.quotationRiskData._embedded[0];
-       log.debug("quotationRiskData", quotationRiskDetails);
-       if (quotationRiskDetails) {
-         this.riskCode = quotationRiskDetails.riskCode
-         this.quoteProductCode = quotationRiskDetails.quotProductCode
-
-       } else {
-         log.debug("The quotationRiskCode object is not defined.");
-       }*/
-
-    log.debug(this.quotationRiskData, "Quotation Risk Code Data");
-    log.debug(this.riskCode, "Quotation Risk Code ");
-    log.debug(this.quoteProductCode, "Quotation Product Code ");
-    // this.onCreateRiskSection()
-
-    // })
   }
 
   selectedRiskLevelPremium(data: any) {
@@ -1507,12 +1405,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         newListToCompute.push(limit)
       }
     }
+    let rowNumbers = newListToCompute.map(value => value.rowNumber);
+    let maxValueAssigned = Math.max(...rowNumbers);
     for (let limit of this.temporaryPremiumList) {
       if (limit.isChecked && limit.limitAmount && limit.isMandatory !== 'Y') {
+        maxValueAssigned += 1;
         newListToCompute.push({
           calculationGroup: 1,
           declarationSection: "N",
-          rowNumber: 1,
+          rowNumber: maxValueAssigned,
           rateDivisionFactor: limit.divisionFactor,
           premiumRate: limit.rate,
           rateType: limit.rateType,
@@ -2036,7 +1937,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       locationCode: [null]
     });
   }
-  
+
 
   fetchUserOrgId() {
     this.quotationService

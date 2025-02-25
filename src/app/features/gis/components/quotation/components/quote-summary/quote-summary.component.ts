@@ -331,9 +331,6 @@ export class QuoteSummaryComponent {
     log.debug("Quotation Details:", this.quotationDetails)
     log.debug("Selected Client Details", this.clientDetails);
     log.debug("Selected New Client Details", this.passedNewClientDetails);
-
-    // this.router.navigate(['/home/gis/quotation/quick-quote'])
-    // Use NgZone.run to execute the navigation code inside the Angular zone
     this.ngZone.run(() => {
       this.router.navigate(['/home/gis/quotation/quick-quote']);
     });

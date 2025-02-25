@@ -8,7 +8,7 @@ import {GroupQuotationsListDTO} from '../../../features/lms/models';
 import {MenuService} from '../../../features/base/services/menu.service';
 import {SidebarMenu} from '../../../features/base/model/sidebar.menu';
 import {QuotationsService} from '../../../features/gis/services/quotations/quotations.service';
-import {untilDestroyed} from '../../shared.module';
+import {untilDestroyed, UtilService} from '../../shared.module';
 import {QuotationList} from '../../../features/gis/components/quotation/data/quotationsDTO';
 import {GlobalMessagingService} from '../../services/messaging/global-messaging.service';
 
@@ -47,6 +47,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   constructor(
     private session_service:
     SessionStorageService,
+    private utilService: UtilService,
     private router: Router,
     private route: ActivatedRoute,
     private messageService: MessageService,
@@ -347,15 +348,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   createQuote(type: string) {
-    console.log("Creating >>>", type)
-    sessionStorage.removeItem('quickQuoteData')
-    sessionStorage.removeItem('mandatorySections')
-    sessionStorage.removeItem('passedQuotationDetails')
-    sessionStorage.removeItem('passedQuotationNumber')
-    sessionStorage.removeItem('premiumComputationRequest')
-    sessionStorage.removeItem('quickQuotationNum')
-    sessionStorage.removeItem('quickQuotationCode')
-    sessionStorage.removeItem('quotationNumber')
+    this.utilService.clearSessionStorageData()
     let nextPage = '/home/gis/quotation/quick-quote'
     if (type === 'NORMAL') {
       nextPage = '/home/gis/quotation/quotations-client-details'
