@@ -33,7 +33,25 @@ const log = new Logger('RiskSectionDetailsComponent');
 @Component({
   selector: 'app-risk-section-details',
   templateUrl: './risk-section-details.component.html',
-  styleUrls: ['./risk-section-details.component.css']
+  styleUrls: ['./risk-section-details.component.css'],
+  animations: [
+    trigger('slideInOut', [
+      state('open', style({
+        height: '*', // Expand to fit content
+        opacity: 1,
+        overflow: 'hidden',
+      })),
+      state('closed', style({
+        height: '0', // Collapse to 0 height
+        opacity: 0,
+        overflow: 'hidden',
+      })),
+      transition('open <=> closed', [
+        animate('300ms ease-in-out') // Smooth transition
+      ]),
+    ]),
+  ],
+
 })
 export class RiskSectionDetailsComponent {
 
@@ -199,7 +217,6 @@ export class RiskSectionDetailsComponent {
   public isThirdDetailsOpen = false;
   public isClausesOpen = false;
 
-
   ngOnInit(): void {
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
@@ -308,6 +325,10 @@ export class RiskSectionDetailsComponent {
 */
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
+  }
+
+  toggleClausesopen() {
+    this.isClausesOpen = !this.isClausesOpen;
   }
   /**
 * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
@@ -818,7 +839,7 @@ export class RiskSectionDetailsComponent {
 
       taxComputation: this.taxList.map(tax => ({
         code: tax.code,
-       
+
       }))
     }
     return [risk]
@@ -1284,7 +1305,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
     schedule.transactionType = "Q";
     schedule.version = 0;
 
-    
+
 
     // Remove specific fields from the payload
     delete schedule.details.level1.terrorismApplicable;
@@ -1620,12 +1641,19 @@ loadClientQuotation() {
 
   })
 }
-formatDate(date: Date): string {
-  log.debug('Date (formatDate method):', date);
-  const year = date?.getFullYear();
-  const month = String(date?.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const day = String(date?.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+formatDate(date: string | Date): string {
+  if (typeof date === 'string' && date.includes('T')) {
+      date = new Date(date); // Convert ISO string to Date object
+  }
+
+  if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+  }
+
+  return date as string; // If already a formatted string, return as is
 }
  updateCoverToDate(date) {
     log.debug("Cover from date:", date)
@@ -1717,7 +1745,7 @@ formatDate(date: Date): string {
         ?.setValue(upperCaseValue, { emitEvent: false });
     }
 
-  
+
     fetchTaxes() {
       this.quotationService
         .getTaxes(this.selectProductCode, this.selectedSubclassCode)
@@ -1734,10 +1762,5 @@ formatDate(date: Date): string {
             );
           },
         });
-    }
-    toggleRiskClausesOpen(){
-      this.isClausesOpen = !this.isClausesOpen;
-    
-  
     }
 }
