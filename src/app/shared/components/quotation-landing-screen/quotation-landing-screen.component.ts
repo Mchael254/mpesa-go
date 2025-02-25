@@ -1,18 +1,16 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { SessionStorageService } from '../../services/session-storage/session-storage.service';
-import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {SessionStorageService} from '../../services/session-storage/session-storage.service';
+import {SESSION_KEY} from '../../../features/lms/util/session_storage_enum';
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { LazyLoadEvent, MessageService } from 'primeng/api';
-import { GroupQuotationsListDTO } from '../../../features/lms/models';
-import { MenuService } from '../../../features/base/services/menu.service';
-import { SidebarMenu } from '../../../features/base/model/sidebar.menu';
-import { QuotationsService } from '../../../features/gis/services/quotations/quotations.service';
-import { Logger, untilDestroyed } from '../../shared.module';
-import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
-import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { Pagination } from '../../data/common/pagination';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MessageService} from 'primeng/api';
+import {GroupQuotationsListDTO} from '../../../features/lms/models';
+import {MenuService} from '../../../features/base/services/menu.service';
+import {SidebarMenu} from '../../../features/base/model/sidebar.menu';
+import {QuotationsService} from '../../../features/gis/services/quotations/quotations.service';
+import {untilDestroyed, UtilService} from '../../shared.module';
+import {QuotationList} from '../../../features/gis/components/quotation/data/quotationsDTO';
+import {GlobalMessagingService} from '../../services/messaging/global-messaging.service';
 
 // const log = new Logger('QuotationLandingScreenComponent');
 
@@ -20,7 +18,7 @@ import { Pagination } from '../../data/common/pagination';
   selector: 'app-quotation-landing-screen',
   templateUrl: './quotation-landing-screen.component.html',
   styleUrls: ['./quotation-landing-screen.component.css'],
-  standalone : false
+  standalone: false
 })
 export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
@@ -48,7 +46,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
   constructor(
     private session_service:
-      SessionStorageService,
+    SessionStorageService,
+    private utilService: UtilService,
     private router: Router,
     private route: ActivatedRoute,
     private messageService: MessageService,
@@ -56,9 +55,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
-
-
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.session_service.clear_store();
@@ -66,7 +64,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.getGroupQuotationsList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
-    if(this.activeIndex === 0) {
+    if (this.activeIndex === 0) {
       this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
     }
   }
@@ -76,7 +74,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.getGroupQuotationsList();
     }
   }
-  ngOnDestroy(): void { }
+
+  ngOnDestroy(): void {
+  }
 
 
   selectLmsIndRow(i: any) {
@@ -129,17 +129,17 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   grpQuotationsColumns = [
-    { field: 'clear', label: 'Clear Filters' },
-    { field: 'quotation_number', label: 'Quotation No.' },
-    { field: 'product', label: 'Product' },
-    { field: 'client_name', label: 'Client' },
-    { field: 'agency_name', label: 'Intermediary' },
-    { field: 'sum_assured', label: 'Sum Assured' },
-    { field: 'total_premium', label: 'Premium' },
-    { field: 'cover_from_date', label: 'Cover from' },
-    { field: 'cover_to_date', label: 'Cover to' },
-    { field: 'quotation_date', label: 'Date Created' },
-    { field: 'quotation_status', label: 'Status' }
+    {field: 'clear', label: 'Clear Filters'},
+    {field: 'quotation_number', label: 'Quotation No.'},
+    {field: 'product', label: 'Product'},
+    {field: 'client_name', label: 'Client'},
+    {field: 'agency_name', label: 'Intermediary'},
+    {field: 'sum_assured', label: 'Sum Assured'},
+    {field: 'total_premium', label: 'Premium'},
+    {field: 'cover_from_date', label: 'Cover from'},
+    {field: 'cover_to_date', label: 'Cover to'},
+    {field: 'quotation_date', label: 'Date Created'},
+    {field: 'quotation_status', label: 'Status'}
   ];
 
   // This method is triggered when the user types in the search box
@@ -209,18 +209,22 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   // Validate filter selections
   validateFilter(): void {
     if (this.filterValue && !this.selectedColumn) {
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a option first.' });
+      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a option first.'});
       this.filterValue = '';
       return;
     }
 
     if (this.filterValue && this.isNumericField(this.selectedColumn) && !this.selectedCondition) {
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a condition first.' });
+      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a condition first.'});
       return;
     }
 
     if (this.filterValue && this.selectedColumn && this.isNumericField(this.selectedColumn) && !this.selectedCondition) {
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a condition for the numeric field.' });
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Information',
+        detail: 'Please select a condition for the numeric field.'
+      });
       return;
     }
   }
@@ -343,42 +347,36 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     }
   }
 
-  onProcess() { }
+  createQuote(type: string) {
+    this.utilService.clearSessionStorageData()
+    let nextPage = '/home/gis/quotation/quick-quote'
+    if (type === 'NORMAL') {
+      nextPage = '/home/gis/quotation/quotations-client-details'
+    }
+    this.router.navigate([nextPage]).then(r => {
+    })
+  }
 
-  onReassign() { }
+  onProcess() {
+  }
 
-  // fetchGISQuotations() {
-  //   this.quotationService
-  //     .searchQuotations()
-  //     .pipe(untilDestroyed(this))
-  //     .subscribe({
-  //       next: (response: any) => {
+  onReassign() {
+  }
 
-  //         this.gisQuotationList = response._embedded
-  //         log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
-
-  //       },
-  //       error: (error) => {
-
-  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
-  //       }
-  //     });
-  // }
   fetchGISQuotations(event: any) {
-   console.log("FETCHING GIS QUOTATIONS LIST")
+    console.log("FETCHING GIS QUOTATIONS LIST")
     const pageIndex = event.first / event.rows;
     const pageSize = event.rows;
 
     // Call the API without sorting parameters
     this.quotationService.searchQuotations(
-     pageIndex,
+      pageIndex,
       pageSize
     ).pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
           // Assuming response._embedded holds the list of quotations
           this.gisQuotationList = response._embedded;
-
 
 
           // Set the table data (including rows and totalElements)
@@ -398,7 +396,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
 
-  onRevise(){}
+  onRevise() {
+  }
 
   onTabChange(event: any): void {
     this.activeIndex = event.index; // Update the active index
@@ -410,7 +409,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         [],
         {
           relativeTo: this.route,
-          queryParams: { tab: 'general' },
+          queryParams: {tab: 'general'},
           queryParamsHandling: 'merge'
         }
       );
@@ -421,7 +420,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         [],
         {
           relativeTo: this.route,
-          queryParams: { tab: null },
+          queryParams: {tab: null},
           queryParamsHandling: 'merge'
         }
       );

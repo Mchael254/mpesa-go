@@ -235,7 +235,10 @@
 
     <!-- Upload Button and Hidden File Input -->
     <form [formGroup]="receiptingDetailsForm">
-      <div class="row mt-3" *ngIf="isAllocationComplete">
+      <div
+        class="row mt-3"
+        *ngIf="canShowUploadFileBtn && getAllocation.length > 0"
+      >
         <div class="col-md-4">
           <!-- Upload Button -->
           <input

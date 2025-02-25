@@ -71,6 +71,7 @@
 
                         <ng-template pTemplate="header">
                           <tr>
+                            <th></th>
                             <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
                             <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
                             <th class="flexible-header"></th>
@@ -81,6 +82,7 @@
                         <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
                           <tr [pSelectableRow]="clauseList" [class.p-highlight]="clauseList === selectedClause"
                             class="custom-row">
+                            <td>{{ri + 1}} .</td>
                             <td class="flexible-header"
                               style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
                               pTooltip="{{clauseList.heading }}" tooltipPosition="top">
@@ -147,12 +149,14 @@
                         class='ui-datatable'>
                         <ng-template pTemplate="header">
                           <tr>
-                            <th> {{'gis.quotation.narration' | translate}}</th>
-                            <th> {{'gis.quotation.value' | translate}}</th>
+                            <th></th>
+                            <th class="flexible-header"> {{'gis.quotation.narration' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.value' | translate}}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-limits let-ri="rowIndex">
                           <tr>
+                            <td>{{ri + 1}}.</td>
                             <td style=" white-space: nowrap;
                                   overflow: hidden;
                                   text-overflow: ellipsis;
@@ -210,12 +214,14 @@
                         class='ui-datatable'>
                         <ng-template pTemplate="header">
                           <tr>
-                            <th> {{'gis.quotation.narration' | translate}}</th>
-                            <th> {{'gis.quotation.value' | translate}}</th>
+                            <th class="flexible-header"></th>
+                            <th class="flexible-header"> {{'gis.quotation.narration' | translate}}</th>
+                            <th class="flexible-header"> {{'gis.quotation.value' | translate}}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-limits let-ri="rowIndex">
                           <tr>
+                            <td>{{ri + 1}}.</td>
                             <td style=" white-space: nowrap;
                                 overflow: hidden;
                                 text-overflow: ellipsis;
@@ -264,7 +270,7 @@
                       </div>
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
-                      <button #openModalButton type="button" class="btn btn-outline-primary me-2 mb-3"
+                      <button *ngIf="temporaryPremiumList?.length > 0" #openModalButton type="button" class="btn btn-outline-primary me-2 mb-3"
                         id="btnCoverTypes" (click)="openAdditionalBenefitsModal()">
                         {{'gis.quotation.add_benefits' | translate}}</button>
                       <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
@@ -277,7 +283,7 @@
                             <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
                               <div class="row" *ngFor="let limit of risk.limitPremiumDtos">
                                 <div class="col-6">
-                                  <p class="details-label"> {{ limit.sectCode }}</p>
+                                  <p class="details-label"> {{ limit.description | sentenceCase }}</p>
                                 </div>
                                 <div class="col-6">
                                   <p class="details-label fw-semibold"> {{ limit.premium | number }}</p>
@@ -286,34 +292,36 @@
                             </ng-container>
                           </div>
                         </div> -->
-                        
-                        <p-table [value]="riskLevelPremiums" responsiveLayout="scroll" 
+
+                        <p-table [value]="riskLevelPremiums" responsiveLayout="scroll"
                         dataKey="sectionCode" selectionMode="single"
                          responsiveLayout="scroll"
                        [autoLayout]="true"
                         class='ui-datatable'>
                           <ng-template pTemplate="header">
                             <tr>
-                              <th>Section</th>
-                              <th>Limit amount</th>
-                              <th>Premium</th>
-                              <th></th>
+                              <th class="flexible-header"></th>
+                              <th class="flexible-header">Section</th>
+                              <th class="flexible-header">Limit amount</th>
+                              <th class="flexible-header">Premium</th>
+                              <th class="flexible-header"></th>
                             </tr>
                           </ng-template>
                           <ng-template pTemplate="body" let-risk>
                             <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
-                              <tr *ngFor="let limit of risk.limitPremiumDtos">
-                                <td>{{ limit.sectCode }}</td>
-                                <td></td>
+                              <tr *ngFor="let limit of risk.limitPremiumDtos; let i = index">
+                                <td>{{i + 1}}.</td>
+                                <td>{{ limit.description | sentenceCase }}</td>
+                                <td>{{ limit?.limitAmount | number}}</td>
                                 <td class="fw-semibold">{{ limit.premium | number }}</td>
-                               
                                 <td  id="action-buttons">
                                   <button
                                   type="button"
                                   id="icon"
                                   class="btn btn-primary"
                                   title="Delete"
-                                  (click)="openRiskDeleteModal()"
+                                  [disabled]="limit?.isMandatory === 'Y'"
+                                  (click)="openRiskDeleteModal(limit)"
                                  >
                                   <i class="fa-solid fa-trash-can"></i>
                                 </button>
@@ -322,8 +330,8 @@
                             </ng-container>
                           </ng-template>
                         </p-table>
-                        
-                       
+
+
 
                       </div>
                     </div>
@@ -347,7 +355,7 @@
 
 
       <button class="btn btn-primary" type="submit" id="btnCoverTypes"
-        (click)="passCovertypeDesc(selectedCoverType);selectCoverNew();">
+        (click)="selectCoverNew();">
         {{'gis.quotation.select_cover' | translate}}</button>
     </div>
   </div>
@@ -378,7 +386,7 @@
             <td>
               <input type="checkbox" id="check_section_{{ section.sectionCode }}" [(ngModel)]="section.isChecked">
             </td>
-            <td>{{ section.sectionShortDescription |sentenceCase }}</td>
+            <td>{{ section.sectionDescription |sentenceCase }}</td>
             <td>{{ section.freeLimit | number }}</td>
             <td [pEditableColumn]="section.limitAmount" pEditableColumnField="limitAmount">
               <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount" [options]="currencyObj"

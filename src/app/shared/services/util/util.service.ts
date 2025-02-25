@@ -637,4 +637,17 @@ export class UtilService {
     const datePipe = new DatePipe('en-US');
     return datePipe.transform(date, format);
   }
+
+  clearSessionStorageData(){
+    sessionStorage.removeItem('quickQuoteData')
+    sessionStorage.removeItem('mandatorySections')
+    sessionStorage.removeItem('passedQuotationDetails')
+    sessionStorage.removeItem('passedQuotationNumber')
+    sessionStorage.removeItem('premiumComputationRequest')
+    sessionStorage.removeItem('quickQuotationNum')
+    sessionStorage.removeItem('quickQuotationCode')
+    sessionStorage.removeItem('quotationNumber')
+    sessionStorage.removeItem('passedSelectedRiskDetails')
+    sessionStorage.removeItem('product')
+  }
 }

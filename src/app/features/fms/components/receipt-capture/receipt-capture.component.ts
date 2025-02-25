@@ -457,7 +457,8 @@ export class ReceiptCaptureComponent {
       organization: ['', Validators.required], // Set default value here as well
       amountIssued: ['', Validators.required],
       receiptingPoint: ['', Validators.required],
-      openCheque: [''],
+     bankAccountType:['',Validators.required],
+     //bankAccountCode:['',Validators.required],
       receiptNumber: ['', Validators.required],
       // receiptNumber: [{ value: '', disabled: true }],
       ipfFinancier: [''],
@@ -529,10 +530,10 @@ export class ReceiptCaptureComponent {
         if (defaultCurrency) {
           this.defaultCurrencyId = defaultCurrency.id;
           const defaultCurrencySymbol = defaultCurrency.symbol;
-          this.sessionStorage.setItem(
-            'defaultCurrencyId',
-            String(this.defaultCurrencyId)
-          );
+          // this.sessionStorage.setItem(
+          //   'defaultCurrencyId',
+          //   String(this.defaultCurrencyId)
+          // );
           this.defaultCurrencyName = defaultCurrency.symbol;
 
           this.receiptingDetailsForm.patchValue({
@@ -572,15 +573,16 @@ export class ReceiptCaptureComponent {
     const selectedCurrency = this.currencies.find(
       (currency) => currency.id === this.selectedCurrencyCode
     );
-
+    this.receiptingDetailsForm.patchValue({currency:this.selectedCurrencyCode});
+    
     // Get the symbol of the selected currency
     this.selectedCurrencySymbol = selectedCurrency
       ? selectedCurrency.symbol
       : '';
 // **STOP if the selected currency is the same as the default currency**
 if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
-  console.log('selectedCurrencyCode',this.selectedCurrencyCode);
-  console.log('defaultCurrencyId',this.defaultCurrencyId);
+
+
  this.isdefaultCurrencySelected=false;
   // this.exchangeRate = 0; // Reset exchange rate
   // this.exchangeFound = false; // Hide span text
@@ -615,7 +617,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
         } else if (matchingRates.length === 1) {
           this.exchangeRate = matchingRates[0].rate; // Assign exchange rate
           this.exchangeFound = true; // Show span text
-          this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
+          //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
           this.receiptingDetailsForm.patchValue({
             exchangeRate: this.exchangeRate,
           });
@@ -630,7 +632,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
 
           if (validRates.length > 0) {
             this.exchangeRate = validRates[0].rate; // Assign most recent exchange rate
-            this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
+            //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
             this.exchangeFound = true; // Show span text
             this.receiptingDetailsForm.patchValue({
               exchangeRate: this.exchangeRate,
@@ -835,9 +837,11 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
   updatePaymentModeFields(paymentMode: string): void {
     if (paymentMode === 'CASH') {
       this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
-
+      this.receiptingDetailsForm.get('chequeType')?.setValue(null);
       this.receiptingDetailsForm.get('drawersBank')?.disable();
       this.receiptingDetailsForm.get('paymentRef')?.disable();
+      this.receiptingDetailsForm.get('drawersBank')?.setValue(null);
+      this.receiptingDetailsForm.get('paymentRef')?.setValue(null);
     } else if (paymentMode === 'CHEQUE') {
       this.showChequeOptions = true;
 
@@ -846,6 +850,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
       this.receiptingDetailsForm.get('paymentRef')?.enable();
     } else {
       //  this.resetChequeFields(chequeTypeModal);
+      this.receiptingDetailsForm.get('chequeType')?.setValue(null);
       this.receiptingDetailsForm.get('drawersBank')?.enable();
       this.receiptingDetailsForm.get('paymentRef')?.enable();
     }
@@ -887,9 +892,10 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
 
     if (selectedBank) {
       this.selectedBank = selectedBank;
-
-     
-      this.sessionStorage.setItem('selectedBank', JSON.stringify(this.selectedBank));
+      
+//this.receiptingDetailsForm.patchValue({bankAccountCode:this.selectedBank.code});
+   this.receiptingDetailsForm.patchValue({bankAccountType:this.selectedBank.type});  
+      //this.sessionStorage.setItem('selectedBank', JSON.stringify(this.selectedBank));
     } else {
     }
 
@@ -1038,7 +1044,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
   // Fetch charge types
   fetchCharges(): void {
     this.receiptService
-      .getCharges(this.users.organizationId, this.defaultBranch?.id || this.selectedBranch?.id)
+      .getCharges(this.selectedOrg?.id || this.defaultOrg?.id, this.defaultBranch?.id || this.selectedBranch?.id)
       .subscribe({
         next: (response) => {
           this.charges = response.data;
@@ -1084,7 +1090,10 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
     if (option === 'yes') {
       this.chargesEnabled = true;
       this.fetchCharges();
-      this.fetchExistingCharges(this.globalReceiptNumber);
+      setTimeout(()=>{
+        this.fetchExistingCharges(this.globalReceiptNumber);
+      },1000)
+      //this.fetchExistingCharges(this.globalReceiptNumber);
       const chargeType =
         this.receiptingDetailsForm.get('selectedChargeType')?.value;
       const chargeAmount =
@@ -1145,6 +1154,12 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
           modalInstance.hide();
         } else {
         }
+        this.globalMessagingService.displaySuccessMessage('Success:','charges posted successfully');
+        setTimeout(()=>{
+          this.fetchExistingCharges(this.globalReceiptNumber);
+        },1000)
+
+        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1175,8 +1190,9 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
     this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
         //  console.log('Charge deleted successfully:', response);
-
+this.globalMessagingService.displaySuccessMessage('success','deletion was successful!');
         this.chargeList.splice(index, 1); // Remove from list
+        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1200,7 +1216,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
       (charge) => charge.name === chargeType
     );
     this.receiptChargeId = selectedCharge.id; // Fetch the receiptChargeId
-    console.log('charges>', selectedCharge);
+   
     if (chargeAmount && chargeType) {
       this.submitChargeManagement();
     } else {
@@ -1209,7 +1225,10 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
         'all fields are required!'
       );
     }
-    this.fetchExistingCharges(this.globalReceiptNumber);
+    setTimeout(()=>{
+      this.fetchExistingCharges(this.globalReceiptNumber);
+    },1000)
+    //this.fetchExistingCharges(this.globalReceiptNumber);
   }
   /**
    * Refreshes the list of charges by calling `fetchCharges()`.
@@ -1263,7 +1282,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
         // Optionally refresh the charge list or handle other UI updates'
         const modalElement = document.getElementById('chargesModal');
         const modalInstance = bootstrap.Modal.getInstance(modalElement!);
-
+this.globalMessagingService.displaySuccessMessage('success:','charges successfully saved');
         if (modalInstance) {
           modalInstance.hide();
         }

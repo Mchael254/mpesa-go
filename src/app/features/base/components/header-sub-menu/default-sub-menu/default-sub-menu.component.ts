@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {MenuService} from "../../../services/menu.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {EntityService} from "../../../../entities/services/entity/entity.service";
-import {Logger} from "../../../../../shared/services";
+import {Logger, UtilService} from "../../../../../shared/services";
 
 const log = new Logger("HeaderSubMenuComponent")
 
@@ -37,6 +37,7 @@ export class DefaultSubMenuComponent implements OnInit {
     private menuService: MenuService,
     private fb: FormBuilder,
     private entityService: EntityService,
+    private utilService: UtilService
   ) {
     this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
   }
@@ -93,7 +94,7 @@ export class DefaultSubMenuComponent implements OnInit {
       modal.classList.remove('show')
       modal.style.display = 'none';
     }
-    sessionStorage.removeItem('quickQuoteData')
+    this.utilService.clearSessionStorageData()
   }
 
 }

@@ -5,12 +5,13 @@ import { EntityService } from '../../../entities/services/entity/entity.service'
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { ReportServiceV2 } from '../../../reports-v2/services/report.service';
-import { Logger } from '../../../../shared/services';
+import {Logger, UtilService} from '../../../../shared/services';
 import cubejs from '@cubejs-client/core';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { ReportService } from '../../../reports/services/report.service';
 import { ChartConfiguration } from 'chart.js';
 import { Criteria } from '../../../../shared/data/reports/criteria';
+import {Router} from "@angular/router";
 
 const log = new Logger('DashboardComponent');
 
@@ -42,7 +43,9 @@ export class DashboardComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private authService: AuthService,
     private reportService: ReportService,
-    private reportServiceV2: ReportServiceV2
+    private reportServiceV2: ReportServiceV2,
+    private router: Router,
+    private utilService: UtilService
   ) {}
 
   ngOnInit() {
@@ -165,5 +168,14 @@ export class DashboardComponent implements OnInit {
       }
     });
     return { measures, dimensions };
+  }
+  createQuote(type: 'QUICK' | 'NORMAL'){
+    let url = '/home/gis/quotation/quick-quote'
+    if (type === 'NORMAL'){
+      url = '/home/gis/quotation/quotations-client-details'
+    }
+    this.utilService.clearSessionStorageData()
+    this.router.navigate([url]).then(r => {})
+
   }
 }

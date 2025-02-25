@@ -69,6 +69,12 @@ return throwError(errorMessage);
       catchError(this.errorHandl)
     )
   }
+  getCoverTypePremiums(subClassCode:number, binderCode: number, coverTypeCode: number):Observable<Premiums[]>{
+    return this.api.GET<Premiums[]>(`api/v1/premium-rates/cover-type?binderCode=${binderCode}&subclassCode=${subClassCode}&coverTypeCode=${coverTypeCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
   createPremium(data:Premiums[]) {
     console.log(JSON.stringify(data))
     return this.api.POST<Premiums[]>(`api/v1/premium-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)

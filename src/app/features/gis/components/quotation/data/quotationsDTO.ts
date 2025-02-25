@@ -59,7 +59,12 @@ export interface quotationRisk {
   clientType: string;
   prospectCode: number;
   coverTypeDescription: string;
+  taxComputation:taxComputation[]
 
+}
+export interface taxComputation{
+  code:number,
+  premium:number
 }
 export interface riskSection {
   calcGroup: number,
@@ -275,7 +280,10 @@ export interface Limit {
 }
 
 export interface Section {
+  description?: string
+  limitAmount?: number
   code: number
+  isMandatory?: string
 }
 
 export interface BinderDto {
@@ -518,9 +526,11 @@ export interface QuickQuoteData {
   coverTo: Date
   existingClientSelected: boolean
   selectedClient?: ClientDTO
+  selectedBinderCode?: number
   computationPayloadCode?:number
 
 }
+
 
 
 

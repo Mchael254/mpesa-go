@@ -183,14 +183,14 @@
               <a
                 type="button"
                 class="btn btn-primary btn-sm"
-                routerLink="/home/gis/quotation/quick-quote"
+                (click)="createQuote('QUICK')"
               >
                 {{ "entities.create_quick_quote" | translate }}
               </a>
               <a
                 type="button"
                 class="btn btn-primary btn-sm"
-                routerLink="/home/gis/quotation/quotations-client-details"
+                (click)="createQuote('NORMAL')"
               >
                 {{ "entities.create_normal_quote" | translate }}
               </a>
