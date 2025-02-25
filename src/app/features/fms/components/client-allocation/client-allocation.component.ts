@@ -299,6 +299,7 @@ export class ClientAllocationComponent {
     // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
+    this.confirmPaymentModeSelected()
   }
     /**
    * Initializes the receipt capture form with default values and validators.
@@ -1164,6 +1165,16 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
   }
   
 confirmPaymentModeSelected():any{
+  if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
+    this.message="Receipt will be issued upon cheque maturity";
+    alert('pd cheque selected');
+    this.showAcknowledgeBtn=true;
+    
+  }else{
+   
+    this.showAcknowledgeBtn=false;
+  
+  }
 }
 /**
    * Submits the receipt data to the backend.

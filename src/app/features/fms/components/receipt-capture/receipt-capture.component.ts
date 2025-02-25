@@ -341,6 +341,8 @@ export class ReceiptCaptureComponent {
   editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
   selectedBranch:BranchDTO;
   isdefaultCurrencySelected:boolean=true;
+  makeFieldRequired:boolean=false;
+  requireDocumentField:boolean=false;
 
 /**
    * Constructor for the `ReceiptCaptureComponent`.
@@ -836,6 +838,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
    */
   onPaymentModeSelected(event: any): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+   
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
   }
@@ -846,25 +849,42 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
    * @returns {void}
    */
   updatePaymentModeFields(paymentMode: string): void {
+    const drawersBankControl = this.receiptingDetailsForm.get('drawersBank');
+    const paymentRefControl = this.receiptingDetailsForm.get('paymentRef');
+    const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
     if (paymentMode === 'CASH') {
       this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-      this.receiptingDetailsForm.get('drawersBank')?.disable();
-      this.receiptingDetailsForm.get('paymentRef')?.disable();
-      this.receiptingDetailsForm.get('drawersBank')?.setValue(null);
-      this.receiptingDetailsForm.get('paymentRef')?.setValue(null);
+    
+     
+      drawersBankControl?.disable();
+      paymentRefControl?.disable();
+      drawersBankControl?.setValue(null);
+      paymentRefControl?.setValue(null);
+      this.makeFieldRequired=false;
     } else if (paymentMode === 'CHEQUE') {
-      this.showChequeOptions = true;
 
-      // // chequeTypeModal?.show(); // Always show the modal when "CHEQUE" is selected
-      this.receiptingDetailsForm.get('drawersBank')?.enable();
-      this.receiptingDetailsForm.get('paymentRef')?.enable();
-    } else {
+      this.showChequeOptions = true;
+      this.makeFieldRequired =true;
+
+    drawersBankControl?.enable();
+    paymentRefControl?.enable();
+    
+    // else if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque'){
+    //   this.requireDocumentField=true;
+    // }
+    }
+    
+     else {
+      
+      this.makeFieldRequired=true;
+      drawersBankControl?.enable();
+      paymentRefControl?.enable();
       //  this.resetChequeFields(chequeTypeModal);
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-      this.receiptingDetailsForm.get('drawersBank')?.enable();
-      this.receiptingDetailsForm.get('paymentRef')?.enable();
+    
     }
+
   }
   
   /**
