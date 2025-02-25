@@ -162,6 +162,7 @@ export class RiskSectionDetailsComponent {
   convertedDate: string;
   quoteProductCode: any;
   regexPattern: string;
+  taxList: any;
 
   constructor(
     private router: Router,
@@ -432,7 +433,8 @@ export class RiskSectionDetailsComponent {
     log.debug("Selected value:" ,selectedValue);
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
     if(this.selectedSubclassCode){
-      this.fetchRegexPattern()
+      this.fetchRegexPattern();
+      this.fetchTaxes();
     }
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
@@ -812,6 +814,10 @@ export class RiskSectionDetailsComponent {
       // prpCode: this.passedClientDetails?.id,
       coverTypeDescription: this.selectedCoverType.description,
 
+      taxComputation: this.taxList.map(tax => ({
+        code: tax.code,
+       
+      }))
     }
     return [risk]
 
@@ -1709,4 +1715,22 @@ formatDate(date: Date): string {
         ?.setValue(upperCaseValue, { emitEvent: false });
     }
 
+  
+    fetchTaxes() {
+      this.quotationService
+        .getTaxes(this.selectProductCode, this.selectedSubclassCode)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (response: any) => {
+            this.taxList = response._embedded;
+            log.debug('Tax List ', this.taxList);
+          },
+          error: (error) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error.message
+            );
+          },
+        });
+    }
 }

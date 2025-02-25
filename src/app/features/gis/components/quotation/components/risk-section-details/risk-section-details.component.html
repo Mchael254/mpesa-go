@@ -711,28 +711,28 @@
         <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
           <ng-template pTemplate="header">
             <tr>
-              <th>{{'gis.quotation.reg_no' | translate}}</th>
-              <th>{{'gis.quotation.vehicle_make' | translate}}</th>
-              <th>{{'gis.quotation.cubic_capacity' | translate}}</th>
-              <th>{{'gis.quotation.year_of_manufacture' | translate}}</th>
-              <th>{{'gis.quotation.seating_capacity' | translate}}</th>
-              <th>{{'gis.quotation.value' | translate}}</th>
-              <th>{{'gis.quotation.body_type' | translate}}</th>
-              <th>{{'gis.quotation.cover_type' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-schedule>
             <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
             [class.p-highlight]="schedule === selectedSchedule"
             >
-              <td>{{ schedule.details.level1.registrationNumber}}</td>
-              <td>{{ schedule.details.level1.Make }}</td>
-              <td>{{ schedule.details.level1.cubicCapacity }}</td>
-              <td>{{ schedule.details.level1.yearOfManufacture }}</td>
-              <td>{{ schedule.details.level1.carryCapacity }}</td>
-              <td>{{ schedule.details.level1.value |number }}</td>
-              <td>{{ schedule.details.level1.bodyType }}</td>
-              <td>{{ schedule.details.level1.coverType }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.registrationNumber}}</td>
+              <td class="flexible-header">{{ schedule.details.level1.Make }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.cubicCapacity }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.yearOfManufacture }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.carryCapacity }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.value |number }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.bodyType }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.coverType }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -865,20 +865,23 @@
             <p-table [value]="" [tableStyle]="{ 'min-width': '300px' }">
               <ng-template pTemplate="header">
                   <tr>
-                      <th>{{'gis.quotation.code' | translate}}</th>
-                      <th>{{'gis.quotation.limitation_use' | translate}}</th>
-                      <th>{{'gis.quotation.geographical_limits' | translate}}</th>
-                      <th>{{'gis.quotation.authorized_driver' | translate}}</th>
-                      <th>{{'gis.quotation.deductible_description' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.limitation_use' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.geographical_limits' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.authorized_driver' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.deductible_description' | translate}}</th>
+  
+  
                   </tr>
               </ng-template>
               <ng-template pTemplate="body" >
                   <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+  
                   </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -1278,28 +1281,28 @@
         <p-table [value]="sections" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
           <ng-template pTemplate="header">
             <tr>
-              <th>{{'gis.quotation.group' | translate}}</th>
-              <th> {{'gis.quotation.row_num' | translate}}</th>
-              <th>{{'gis.quotation.code' | translate}}</th>
-              <th> {{'gis.quotation.short_description' | translate}}</th>
-              <th>{{'gis.quotation.description' | translate}}</th>
-              <th>{{'gis.quotation.limit_amount' | translate}}</th>
-              <th> {{'gis.quotation.premium_rate' | translate}}</th>
-              <th>{{'gis.quotation.rate_type' | translate}}</th>
-              <th></th>
+              <th class="flexible-header">{{'gis.quotation.group' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.row_num' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.short_description' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.description' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.limit_amount' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.premium_rate' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.rate_type' | translate}}</th>
+              <th class="flexible-header"></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
             <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-              <td>{{sectionArray.calcGroup}}</td>
-              <td>{{sectionArray.rowNumber}}</td>
-              <td>{{sectionArray.code}}</td>
-              <td>{{sectionArray.sectionShortDescription}}</td>
-              <td>{{sectionArray.description}}</td>
-              <td>{{sectionArray.limitAmount}}</td>
-              <td>{{sectionArray.premiumRate}}</td>
-              <td>{{sectionArray.rateType}}</td>
-              <td>
+              <td class="flexible-header">{{sectionArray.calcGroup}}</td>
+              <td class="flexible-header">{{sectionArray.rowNumber}}</td>
+              <td class="flexible-header">{{sectionArray.code}}</td>
+              <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
+              <td class="flexible-header">{{sectionArray.description}}</td>
+              <td class="flexible-header">{{sectionArray.limitAmount}}</td>
+              <td class="flexible-header">{{sectionArray.premiumRate}}</td>
+              <td class="flexible-header">{{sectionArray.rateType}}</td>
+              <td class="flexible-header">
                 <!-- Edit Button -->
                 <button pButton pRipple type="button" pInitEditableRow class="p-button-rounded p-button-text"
                         (click)="onEditButtonClick(sectionArray)">
