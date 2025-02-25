@@ -23,6 +23,7 @@ export class CreateClientComponent {
   batchNo: any;
   convertToNormalQuoteFlag: string;
   convertToPolicyFlag: string;
+  quickQuoteData: any;
 
   constructor(
     public quotationService: QuotationsService,
@@ -47,11 +48,18 @@ export class CreateClientComponent {
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
     log.debug("Passed Quotation Details",this.passedQuotation)
 
+    const passedQuickQuoteData = sessionStorage.getItem('quickQuoteData');
+    log.debug("quick quote data",passedQuickQuoteData)
 
-    const inputClientName = this.passedNewClientDetails.inputClientName;
-    const inputClientEmail = this.passedNewClientDetails.inputClientEmail;
-    const inputClientPhone = this.passedNewClientDetails.inputClientPhone;
-    const inputClientZipCode = this.passedNewClientDetails.inputClientZipCode
+    this.quickQuoteData = JSON.parse(passedQuickQuoteData);
+    log.debug("quick quote data",this.quickQuoteData)
+
+
+    const inputClientName = this.quickQuoteData.clientName;
+    const inputClientEmail = this.quickQuoteData.clientEmail;
+    const inputClientPhone = this.quickQuoteData.clientPhoneNumber;
+    const inputClientZipCode = this.passedNewClientDetails?.inputClientZipCode;
+    log.debug("cient details", inputClientName, inputClientEmail,  inputClientPhone)
 
     const surname= inputClientName.split(' ').pop()
     const otherName= inputClientName.split(' ').slice(0, -1).join(' ')
@@ -110,6 +118,7 @@ export class CreateClientComponent {
 
   handleSaveClient(eventData: any) {
     log.debug('Event received in Component B:', eventData);
+    sessionStorage.setItem("clientCode", JSON.stringify(eventData.id));
 
     if(eventData) {
       this.convertToNormalQuoteFlag = sessionStorage.getItem("convertToNormalQuoteFlag") || "";

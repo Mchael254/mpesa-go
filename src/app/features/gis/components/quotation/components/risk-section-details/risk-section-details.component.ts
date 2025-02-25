@@ -26,6 +26,7 @@ import { ClientService } from "../../../../../entities/services/client/client.se
 import { forkJoin } from 'rxjs';
 import { PolicyService } from '../../../policy/services/policy.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -208,7 +209,7 @@ export class RiskSectionDetailsComponent {
     }
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart",this.dateFormat)
-    
+
     this.createRiskDetailsForm();
     this.coverFrom = sessionStorage.getItem('coverFrom');
     this.coverTo = sessionStorage.getItem('coverTo');
@@ -741,14 +742,14 @@ export class RiskSectionDetailsComponent {
     if(this.selectedCoverType){
       this.filterMandatorySections();
     }
-    
+
   }
   onBinderSelected(event:any){
     const selectedValue = event.value;
     log.debug("Selected value(On binder selected",selectedValue)
     this.selectedBinderList=selectedValue;
     this.selectedBinderCode= this.selectedBinderList.code
-    
+
   }
   createRiskDetail() {
     let riskPayload = this.getQuotationRiskPayload();
@@ -789,7 +790,7 @@ export class RiskSectionDetailsComponent {
   }
   getQuotationRiskPayload(): any[] {
     log.debug("quotation code:", this.quotationCode)
-  
+
     log.debug("Currency code-quote creation",this.riskDetailsForm.value.propertyId)
     log.debug("Selected Cover",this.riskDetailsForm.value.coverTypeDescription)
     const formattedCoverFromDate = this.formatDate(new Date(this.passedCoverFromDate) );
@@ -810,10 +811,10 @@ export class RiskSectionDetailsComponent {
       wet: formattedCoverToDate,
       // prpCode: this.passedClientDetails?.id,
       coverTypeDescription: this.selectedCoverType.description,
-     
+
     }
     return [risk]
-   
+
   }
 
   /**
@@ -1097,7 +1098,7 @@ log.debug("SUMINSURED RISK DETAILS",sumInsured)
 
          // Find the index of the section to be updated in the 'sections' array
       const index = this.sections.findIndex(s => s.code === section.code);
-      
+
       if (index !== -1) {
         // Update the section in the array with the new values
         this.sections[index] = { ...this.sections[index], ...section };
@@ -1678,7 +1679,7 @@ formatDate(date: Date): string {
     log.debug('Converted date', this.convertedDate);
     return this.convertedDate
   }
-  
+
     fetchRegexPattern() {
       this.quotationService
         .getRegexPatterns(this.selectedSubclassCode)
@@ -1707,5 +1708,5 @@ formatDate(date: Date): string {
         .get('propertyId')
         ?.setValue(upperCaseValue, { emitEvent: false });
     }
-  
+
 }
