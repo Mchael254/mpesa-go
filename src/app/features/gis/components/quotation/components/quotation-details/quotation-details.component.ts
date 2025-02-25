@@ -90,6 +90,7 @@ export class QuotationDetailsComponent {
   organizationId: number;
   exchangeRate: number;
   userOrgDetails: UserDetail;
+  defaultCurrency: CurrencyDTO;
 
 
 
@@ -216,6 +217,7 @@ export class QuotationDetailsComponent {
       );
       if (defaultCurrency) {
         log.debug('DEFAULT CURRENCY', defaultCurrency);
+        this.defaultCurrency = defaultCurrency
         this.defaultCurrencyName = defaultCurrency.name;
         log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
         this.defaultCurrencySymbol = defaultCurrency.symbol;
@@ -400,7 +402,7 @@ export class QuotationDetailsComponent {
         }, (error: HttpErrorResponse) => {
           log.info(error);
           this.spinner.hide()
-          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
 
         })
       }
@@ -497,7 +499,7 @@ export class QuotationDetailsComponent {
           quotationForm.wetDate = formattedCoverToDate
           quotationForm.user = this.user;
           log.debug("Currency code-quote creation",this.quotationForm.value.currencyCode.id)
-          quotationForm.currencyCode = this.quotationForm.value.currencyCode.id;
+          quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
           quotationForm.currencyRate = this.exchangeRate;
 
           log.debug("CREATE QUOTATION")

@@ -45,11 +45,11 @@
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {
     /* padding: 0.3rem 1rem;  */
     padding: 0.1rem 0.1rem;
-    color: rgba(105, 105, 105, 0.65);
+    color: #000;
     font-family: Roboto;
     font-size: 14px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 24px; /* 150% */
 }
 #icon{
@@ -273,6 +273,25 @@
           font-weight: 400;
           line-height: normal;
         }
+        .card{
+            border: none;
+            border-radius: 5px;
+
+          }
+          .flexible-header {
+            white-space: nowrap;
+            width: auto;
+            text-align: left;
+          }
+          
+          /* .ui-datatable th, .ui-datatable td {
+                  white-space: nowrap;
+              } */
+          .ui-datatable th,
+          .ui-datatable td {
+            white-space: nowrap;
+            /* color: #000; */
+          }
     
 
   

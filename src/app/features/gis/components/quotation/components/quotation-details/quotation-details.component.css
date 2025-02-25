@@ -132,3 +132,9 @@
 .pi-angle-double-down {
   transform: rotate(0deg);
 }
+.greyed-out {
+  /* background-color: #e0e0e0 !important; */
+  pointer-events: none;
+  opacity: 0.6;
+}
+

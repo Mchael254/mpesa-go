@@ -178,7 +178,7 @@
                 <p class="label">  {{ 'gis.policy.uw_year' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail"></p>
+                <p class="detail">{{policyDetailsData.riskInformation[0].underwritingYear}}</p>
 
             </div>
         </div>
@@ -236,7 +236,7 @@
 
             </div>
             <div class="col-6">
-                <p class="detail">{{transactionType}}</p>
+                <p class="detail">{{policyStatus}}</p>
             </div>
         </div>
     </div>
@@ -259,7 +259,7 @@
                 <p class="label">  {{ 'gis.policy.renewable' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail"></p>
+                <p class="detail">{{policyDetailsData.product.isRenewable}}</p>
 
             </div>
         </div>
