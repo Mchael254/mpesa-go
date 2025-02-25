@@ -122,6 +122,8 @@ export class ClientAllocationComponent {
   isAllocationComplete: boolean = false;
   isReceiptDownloading = false; // Tracks if the report is being downloaded
   canShowUploadFileBtn:boolean=false;
+  showAcknowledgeBtn:boolean=false;
+  message:string;
   //file properties
   currentFileIndex: number = 0;
   fileDescriptions: { file: File; description: string,uploaded: boolean}[] = []; // Initialize the array
@@ -1161,7 +1163,8 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
     })
   }
   
-
+confirmPaymentModeSelected():any{
+}
 /**
    * Submits the receipt data to the backend.
    */
@@ -1230,7 +1233,18 @@ return true;
            }
     const allocatedDetails =
       this.getAllocation?.[0]?.receiptParticularDetails || [];
-
+      if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
+        this.message="Receipt will be issued upon cheque maturity";
+        //alert('pd cheque selected');
+        this.showAcknowledgeBtn=true;
+        //post_dated_cheque open_cheque
+        //console.log('type>',this.chequeType);
+      //return;
+      }else{
+        this.message='success';
+        this.showAcknowledgeBtn=false;
+       //this.submitReceipt();
+      }
     // Map allocated transactions to receiptParticularDetailUpdateRequests format
     const receiptParticularDetailUpdateRequests = allocatedDetails.map(
       (detail) => ({
@@ -1305,8 +1319,8 @@ return true;
         this.receiptResponse = response.data;
         this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
         this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Receipt saved successfully'
+          this.message,
+          this.receiptResponse.message
         );
         //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
@@ -1315,10 +1329,10 @@ return true;
         //prepare receipt upload payload
       },
       error: (error) => {
-        console.error('Error saving receipt:', error);
+        
         this.globalMessagingService.displayErrorMessage(
           'Failed to save receipt',
-          error.error || 'your error'
+          error.error.msg
         );
       },
     });
