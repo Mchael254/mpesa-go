@@ -3,6 +3,7 @@ import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Router } from '@angular/router';
 import { AutoUnsubscribe } from '../../../../shared/services/AutoUnsubscribe';
+import {UtilService} from "../../../../shared/services";
 
 @Component({
   selector: 'app-sidebar',
@@ -16,13 +17,16 @@ export class SidebarComponent {
   lastVisitedMenuKey = 'lastVisitedMenu';
   expandedItems: { [key: string]: boolean } = {};
 
-  constructor(private menuService: MenuService, private router: Router) {
+  constructor(private menuService: MenuService, private router: Router, private utilService: UtilService) {
     this.menuService.sidebarMainMenuRead.subscribe((data) => {
       this.sidebarMainMenuList = data;
     });
   }
 
   clickURL(url: string) {
+    if (url === '/home/gis/quotation/quick-quote'){
+     this.utilService.clearSessionStorageData()
+    }
     if (url?.length > 0) this.router.navigate([url]);
   }
 

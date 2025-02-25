@@ -228,7 +228,7 @@
                           </td>
                           <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
                           <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
-                          <td appCommaFormat class="text-end">{{ risk.sectionsDetails[0]?.limitAmount }}</td>
+                          <td appCommaFormat class="text-end">{{ risk?.value | number }}</td>
                           <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
                       </tr>
                   </ng-template>
