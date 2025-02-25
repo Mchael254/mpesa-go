@@ -1234,6 +1234,7 @@ export class NewClientComponent implements OnInit {
      const phoneCountryISO = this.getCountryISOFromCode(phoneNumber.countryCode);
 
     const matchingIdentityType = this.identityTypeData.find(type => type.name === client?.modeOfIdentity);
+    const DOB = this.formatDate(client?.dateOfBirth);
 
     this.clientRegistrationForm.patchValue({
       assignedTo: client?.id,
@@ -1241,7 +1242,7 @@ export class NewClientComponent implements OnInit {
       otherName: client?.firstName,
       identity_type: matchingIdentityType?.id,
       citizenship: client?.country,
-      dateOfBirth: client?.dateOfBirth,
+      dateOfBirth: DOB,
       idNumber: client?.idNumber,
       pinNumber: client?.pinNumber,
       gender: client?.gender,
@@ -1307,6 +1308,7 @@ export class NewClientComponent implements OnInit {
         contact_details: {
           countryCodeSms: client.countryCodeSms,
           smsNumber: client?.smsNumber,
+          phoneNumber: client?.smsNumber,
           email: client?.email,
         },
       });

@@ -121,6 +121,7 @@ export class QuotationSummaryComponent {
   quotationSources: any;
   source: number;
   sourecDescription: string;
+  quickQuoteData: any;
 
 
   constructor(
@@ -154,13 +155,13 @@ export class QuotationSummaryComponent {
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
       public cdr: ChangeDetectorRef;
-  
+
 
 
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
-    this.quotationNumber = sessionStorage.getItem('quotationNum');
-    log.debug("Quotation number", this.quotationNumber);
+    this.quotationNumber = sessionStorage.getItem('quickQuotationNum');
+    log.debug("quick Quotation number", this.quotationNumber);
 
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
     this.conversionFlag = JSON.parse(this.conversionFlagString);
@@ -183,6 +184,9 @@ export class QuotationSummaryComponent {
       sessionStorage.getItem('newClientDetails') ||
       'null'
     );
+
+    this.quickQuoteData = sessionStorage.getItem('quickQuoteData');
+    log.debug("quick quote data", this.quickQuoteData);
 
     log.debug("client-Details quotation summary", this.clientDetails);
 
