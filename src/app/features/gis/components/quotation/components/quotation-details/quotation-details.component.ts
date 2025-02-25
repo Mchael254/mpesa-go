@@ -79,6 +79,8 @@ export class QuotationDetailsComponent {
   campaignList: any;
   clientId: number;
   today = new Date();
+  minExpiryDate: Date;
+  minEffectiveToDate: Date;
   userCode: number;
   dateFormat: any;
   minDate: Date | undefined;
@@ -123,7 +125,8 @@ export class QuotationDetailsComponent {
 
     this.getIntroducers();
     this.getQuotationSources()
-    this.quickQuoteDetails()
+    this.quickQuoteDetails();
+    this.setMinDates();
 
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
@@ -165,8 +168,8 @@ export class QuotationDetailsComponent {
         this.quickQuotationDetails = res
         log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails)
         this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
-        this.quotationForm.controls['wefDate'].setValue(this.quickQuotationDetails.coverFrom);
-        this.quotationForm.controls['wetDate'].setValue(this.quickQuotationDetails.coverTo);
+        this.quotationForm.controls['withEffectiveFromDate'].setValue(this.formatDate(this.quickQuotationDetails.coverFrom));
+        this.quotationForm.controls['withEffectiveToDate'].setValue(this.quickQuotationDetails.coverTo);
         // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
         log.debug(this.quickQuotationDetails.source)
         const productCode = this.quickQuotationDetails.quotationProduct[0].proCode
@@ -728,12 +731,16 @@ export class QuotationDetailsComponent {
 
   }
 
+    return date as string; // If already a formatted string, return as is
+  }
+
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
    * @method updateQuotationExpiryDate
    * @param {Event} e - The event containing the target value representing the RFQ date.
    * @return {void}
    */
+
   updateQuotationExpiryDate(date) {
     const RFQDate = date;
     if (RFQDate) {
@@ -846,6 +853,16 @@ export class QuotationDetailsComponent {
 
   toggleDetails() {
     this.show = !this.show;
+  }
+
+  setMinDates() {
+    // Set minimum date for Effective To Date (3 months from today)
+    this.minEffectiveToDate = new Date();
+    this.minEffectiveToDate.setMonth(this.minEffectiveToDate.getMonth() + 3);
+
+    // Set minimum date for Expiry Date (1 year from today)
+    this.minExpiryDate = new Date();
+    this.minExpiryDate.setFullYear(this.minExpiryDate.getFullYear() + 1);
   }
     fetchUserOrgId() {
       this.quotationService
