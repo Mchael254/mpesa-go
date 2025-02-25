@@ -16,18 +16,18 @@ body {
   height: 25px; /* Set a fixed height */
 }
 /* Override for dropdowns inside the .top-bar */
-.top-bar .dropdown-icon {
-  right: 2px !important; /* Increase the right spacing only for top-bar */
-}
-.top-select {
+/* .top-bar .dropdown-icon {
+  right: 2px !important; 
+} */
+/* .top-select {
   display: flex;
   align-items: center;
   margin-right: 60px;
 
   font-size: 13px;
   color: #333;
-  /* FMS Info bar */
-}
+  
+} */
 .org {
   margin-left: 20px;
 }
@@ -78,11 +78,7 @@ body {
   /* background-color: #f9fafb; */
   color: #333;
 }
-.dropdown-container {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
+
 
 select.form-control {
   width: 100%;
@@ -90,16 +86,6 @@ select.form-control {
   appearance: none; /* Removes default dropdown arrow */
 }
 
-.dropdown-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 10px;
-
-  pointer-events: none; /* Prevent interaction */
-  color: #555;
-}
 
 .breadcrumb-custom {
   font-size: 15px;
