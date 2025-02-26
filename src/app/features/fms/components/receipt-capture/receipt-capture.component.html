@@ -92,6 +92,9 @@
             formControlName="bankAccount"
             (change)="onBank($event)"
           >
+            <option value="" [disabled]="">
+              {{ "fms.receipting.select" | translate }}
+            </option>
             <option *ngFor="let bank of bankAccounts" [value]="bank.code">
               {{ bank.name }}
             </option>
@@ -115,8 +118,8 @@
         </div>
         <div class="col-md-4 mb-2">
           <label for="drawersBank" class="form-label"
-            >{{ "fms.receipting.drawers_bank" | translate }}
-          </label>
+            >{{ "fms.receipting.drawers_bank" | translate }} </label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
 
           <select
             id="drawersBank"
@@ -163,7 +166,8 @@
         <div class="col-md-4 mb-2">
           <label for="documentDate" class="form-label">{{
             "fms.receipting.document_date" | translate
-          }}</label>
+          }}</label
+          ><span *ngIf="requireDocumentField" class="required"></span>
           <div class="date-input">
             <input
               type="date"
@@ -203,7 +207,8 @@
         <div class="col-md-4 mb-2">
           <label for="paymentRef" class="form-label">{{
             "fms.receipting.payment_ref" | translate
-          }}</label>
+          }}</label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
           <input
             type="text"
             class="form-control"
