@@ -35,6 +35,7 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
+import {  CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { QuotationSourcesComponent } from './components/quotation-sources/quotat
         RadioButtonModule,
         NgxIntlTelInputModule,
         EntitiesModule,
+        CheckboxModule
     ],
   providers: [DatePipe],
 

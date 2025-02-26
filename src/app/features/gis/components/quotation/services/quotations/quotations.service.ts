@@ -428,7 +428,7 @@ export class QuotationsService {
       'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
-    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   postDocuments(data) {
