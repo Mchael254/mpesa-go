@@ -734,7 +734,7 @@ export class NewClientComponent implements OnInit {
             Iban: not captured in endpoint,*/
         account_number: clientFormValues.payment_details.account_number,
         bank_branch_id: clientFormValues.payment_details.branch,
-        currency_id: clientFormValues.payment_details.currency.id,
+        currency_id: clientFormValues.payment_details.currency?.id,
         effective_from_date: clientFormValues.payment_details.effective_date_from,
         effective_to_date: clientFormValues.payment_details.effective_date_to,
         id: 0,
@@ -750,7 +750,7 @@ export class NewClientComponent implements OnInit {
             distributeChannel: not captured in endpoint,
             cr_form_required: not on frontend,
             cr_form_year: not on frontend*/
-        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship.id,
+        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship?.id,
         cr_form_required: "N",
         cr_form_year: 0,
         funds_source: clientFormValues.wealth_details.funds_source,
@@ -759,8 +759,8 @@ export class NewClientComponent implements OnInit {
         is_self_employed: "N",
         marital_status: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
         nationality_country_id: clientFormValues.wealth_details.country,
-        occupation_id: clientFormValues.wealth_details.occupation.id,
-        sector_id: clientFormValues.wealth_details.economic_sector.id,
+        occupation_id: clientFormValues.wealth_details.occupation?.id,
+        sector_id: clientFormValues.wealth_details.economic_sector?.id,
         certificate_registration_number: null,
         certificate_year_of_registration: null,
         distributeChannel: null,

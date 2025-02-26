@@ -12,7 +12,7 @@
                         <p-dropdown id="quote-input-pdropdown" formControlName="source" [options]="quotationSources" optionLabel="description" optionValue="code" placeholder=" "
                         [filterBy]="'description'" [filter]="true"></p-dropdown>
 
-                        
+
                         <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
                             class="form-text text-danger">
                             Source is required.
@@ -149,7 +149,7 @@
                         <div class="col-xl-4">
                             <label for="" class="quote-label">Introducer</label>
 
-                            <p-dropdown id="quote-input-pdropdown" formControlName="introducerCode" [options]="introducers" optionLabel="surName" placeholder=" "
+                            <p-dropdown id="quote-input-pdropdown" formControlName="introducerCode" [options]="introducers" optionValue="code" optionLabel="surName" placeholder=" "
                         [filterBy]="'surName'" [filter]="true"></p-dropdown>
                             <!-- <select class="form-select form-control-sm mb-1" id="quote-input"
                                 formControlName="introducerCode" placement="right">
@@ -159,7 +159,7 @@
                         </div>
                         <div class="col-xl-4">
                             <label for="" class="quote-label">Results from campaign?</label>
-                            
+
                             <select class="form-select form-control-sm mb-1" id="quote-input" placement="right"
                                 #resultFromCampaignSelect
                                 (change)="onResultCampaignTypeChange(resultFromCampaignSelect.value)">

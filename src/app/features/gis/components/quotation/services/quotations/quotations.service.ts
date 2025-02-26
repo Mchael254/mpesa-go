@@ -204,6 +204,11 @@ export class QuotationsService {
 
   }
 
+  deleteRiskSections(riskSectionCode: number) {
+    return this.api.PUT(`v1/risk-sections?riskSectionCode=${riskSectionCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+  }
+
   /**
    * Retrieves details of a quotation using an HTTP GET request.
    * @method getQuotationDetails
