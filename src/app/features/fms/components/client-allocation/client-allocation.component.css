@@ -1,12 +1,32 @@
 body {
   background: #ffffff;
 }
-.container-fluid {
+/* .container-fluid {
   background-color: #ffffff;
-}
+} */
 .header-bg {
   background-color: rgb(186, 208, 228) !important;
   white-space: nowrap;
+}
+.breadcrumb-custom {
+  font-size: 15px;
+  color: #0066cc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.breadcrumb-custom a {
+  color: #0066cc;
+  text-decoration: none;
+}
+.breadcrumb-text {
+  color: #333;
+}
+.main-form {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 .form-label {
   font-size: 13px;
@@ -45,14 +65,30 @@ body {
   display: flex;
   flex-direction: row;
 }
+.postbtn{
+  display: flex;
+  justify-content: flex-end;
+}
+.sub_postbtn{
+  margin-bottom: 10px !important;
+}
 .btn2 {
   justify-content: space-between;
   /* display: flex; */
   margin-bottom: 2px;
-}
-.save-btns{
   margin-top: 10px;
+}
+.nav-btn{
+  margin-top: 15px;
   display: flex;
+  justify-content: space-between;
+}
+
+.save-btns{
+  /* margin-top: 10px; */
+  display: flex;
+  gap:25px;
+  max-height: 40px;
   justify-content: flex-end;
 }
 .btn-link {

@@ -186,6 +186,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   private typingTimer: any;// Timer reference
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
+  selectedClientCode: number;
 
 
   constructor(
@@ -216,6 +217,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+
     this.passedNumber = sessionStorage.getItem('passedQuotationNumber');
     log.debug("Passed Quotation Number:", this.passedNumber);
     this.passedQuotationCode = Number(sessionStorage.getItem('passedQuotationCode'));
@@ -353,6 +355,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
     log.debug("Stored Data", this.storedData)
+    // this.selectedClientCode= this.storedData.selectedClient.id
     this.computationPayloadCode = this.storedData.computationPayloadCode
     this.fetchPremiumComputationPyload(this.computationPayloadCode);
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
@@ -758,7 +761,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       binderCode: selectedRisk?.binderDto?.code,
       wef: selectedRisk?.withEffectFrom,
       wet: selectedRisk?.withEffectTo,
-      prpCode: this.passedClientDetails?.id,
+      prpCode: this.passedClientCode,
       quotationProductCode: existingRisk && this.quoteAction === "E" ? existingRisk?.quotationProductCode : null,
       coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
       taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
@@ -1772,6 +1775,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .getUserOrgId(this.userCode)
       .pipe(
         mergeMap((organization) => {
+          this.userOrgDetails =organization
           log.debug("User Organization Details  ", this.userOrgDetails);
           this.organizationId = this.userOrgDetails.organizationId
           const currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
@@ -1813,7 +1817,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       quotationNumber: this.storedQuotationNo,
       source: 37,
       user: this.user,
-      clientCode: this.passedClientDetails?.id || null,
+      clientCode: this.passedClientCode || null,
       productCode: this.premiumPayload?.product?.code,
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,

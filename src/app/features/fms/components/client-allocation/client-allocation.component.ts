@@ -64,7 +64,7 @@ export class ClientAllocationComponent {
   bankAccountType:string;
   manualRef: string;
   accountTypeShortDesc: string;
-
+  requests:any;
   //control flags
   receiptingDetailsForm: FormGroup;
   parameterStatus:string;
@@ -122,12 +122,16 @@ export class ClientAllocationComponent {
   isAllocationComplete: boolean = false;
   isReceiptDownloading = false; // Tracks if the report is being downloaded
   canShowUploadFileBtn:boolean=false;
+  showAcknowledgeBtn:boolean=false;
+  message:string;
   //file properties
   currentFileIndex: number = 0;
-  fileDescriptions: { file: File; description: string }[] = []; // Initialize the array
+  fileDescriptions: { file: File; description: string,uploaded: boolean}[] = []; // Initialize the array
   isUploadDisabled: boolean = true; // Initialize as true (button is inactive by default)
   isFileUploadButtonDisabled: boolean = false; // Controls the "File Upload" button state
   selectedFile: File | null = null;
+  
+
   description: string = '';
   base64Output: string = '';
   fileIsUploaded = false;
@@ -295,6 +299,7 @@ export class ClientAllocationComponent {
     // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
+    this.confirmPaymentModeSelected()
   }
     /**
    * Initializes the receipt capture form with default values and validators.
@@ -661,55 +666,7 @@ if (this.totalAllocatedAmount > this.amountIssued) {
       },
     });
   
-    // this.receiptService
-    //   .postAllocation(this.loggedInUser.code, allocationData)
-    //   .subscribe({
-    //     next: (response) => {
-    //       this.globalMessagingService.displaySuccessMessage(
-    //         'Success',
-    //         'Allocations posted successfully'
-    //       );
-    //       this.isAllocationComplete = true;
-    //         // Preserve amountIssued
-    //   const currentReceiptData = this.receiptDataService.getReceiptData();
-     
-
-    //   this.amountIssued = currentReceiptData.amountIssued; // Ensure UI retains value
-    
-    //       // ✅ Update totalAllocatedAmount
-    //       const newlyAllocatedTotal = allocatedTransactionsData.reduce(
-    //         (total, item) => total + item.allocatedAmount,
-    //         0
-    //       );
-    //       this.totalAllocatedAmount += newlyAllocatedTotal;
-
-    //       // ✅ Reset allocated amounts after posting
-    //       this.transactions.forEach((transaction, index) => {
-    //         const allocatedAmountControl = this.getFormControl(
-    //           index,
-    //           'allocatedAmount'
-    //         );
-    //         if (allocatedAmountControl) {
-    //           allocatedAmountControl.setValue(0); // Reset allocated amount
-
-    //           //allocatedAmountControl.setValue(0); // Reset allocated amount
-    //         }
-    //       });
-
-    //       // ✅ Refresh allocations
-    //       this.getAllocations();
-    //       this.isAllocationPosted = true;
-    //       this.transactions = this.receiptDataService.getTransactions();
-    // this.filteredTransactions = this.transactions;
-    // this.showSaveButton = true; // Ensure Save button is visible
-    //     },
-    //     error: (err) => {
-    //       this.globalMessagingService.displayErrorMessage(
-    //         'Error',
-    //         'Failed to post allocations'
-    //       );
-    //     },
-    //   });
+  
   }
 
   /**
@@ -730,6 +687,7 @@ if (this.totalAllocatedAmount > this.amountIssued) {
           );
           if(this.getAllocation){
             this.canShowUploadFileBtn=true;
+            
           }
 this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         //  ✅ Reset totalAllocatedAmount before recalculating
@@ -762,22 +720,11 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             }
           });
           
-          // // ✅ Listen for changes in allocated amount inputs
-          // this.transactions.forEach((transaction, index) => {
-          //   const allocatedAmountControl = this.getFormControl(
-          //     index,
-          //     'allocatedAmount'
-          //   );
-          //   if (allocatedAmountControl) {
-          //     allocatedAmountControl.valueChanges.subscribe(() => {
-          //       this.updateTotalAllocatedAmount(); // ✅ Keeps running total live
-          //     });
-          //   }
-          // });
+         
           this.isAllocationCompleted = true;
           this.getAllocationStatus = true;
           this.allocationsReturned = true;
-          //this.globalGetAllocation = this.getAllocation;
+          this.globalGetAllocation = this.getAllocation;
 
           
         },
@@ -894,11 +841,22 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
    */
   onRemoveFile(index: number): void {
     this.fileDescriptions.splice(index, 1);
+     // If no files are left, reset selectedFile and fileUploaded flags
+  if (this.fileDescriptions.length === 0) {
+    this.selectedFile = null;
+    this.fileUploaded = false; // Ensure submission check works properly
+  }
     this.globalMessagingService.displaySuccessMessage(
       'Success',
       'File removed successfully'
     );
+    this.isFileUploadButtonDisabled = false;
+
   }
+  clearFileInput(event: Event): void {
+    (event.target as HTMLInputElement).value = ''; // Clears previous selection
+  }
+  
 /**
    * Handles the file selection event.
    * @param event The file selection event
@@ -913,6 +871,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       this.fileDescriptions.push({
         file: this.selectedFile,
         description: this.description,
+        uploaded:false,
       });
      
       // Convert file to Base64 without the "data:" prefix
@@ -930,26 +889,36 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
 
       };
       reader.readAsDataURL(this.selectedFile);
-      this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
-
+      //this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
+     setTimeout(()=>{
+      this.openModal(this.fileDescriptions.length - 1);
+     },100); // Small delay to ensure UI updates
       this.isFileUploadButtonDisabled = true;
     } else {
       this.selectedFile = null; // Reset selectedFile if no file is selected
       this.isFileUploadButtonDisabled = false; // Keep "File Upload" button active
+      
     }
   }
   /**
    * Opens the file description modal.
    * @param index The index of the file to open the modal for
    */
+
   openModal(index: number): void {
     this.currentFileIndex = index;
-    const modalElement = document.getElementById('fileDescriptionModal');
-    if (modalElement) {
-      const modalInstance = new bootstrap.Modal(modalElement);
-      modalInstance.show();
-    }
+    setTimeout(() => {
+      const modalElement = document.getElementById('fileDescriptionModal');
+      if (modalElement) {
+        const modalInstance = new bootstrap.Modal(modalElement, {
+          backdrop: 'static', // Prevent closing on click outside
+          keyboard: false, // Prevent closing with keyboard ESC
+        });
+        modalInstance.show();
+      }
+    }, 100); // Small delay to ensure modal is found
   }
+  
   /**
    * Uploads the selected file to the backend.
    */
@@ -1045,7 +1014,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           this.base64Output = '';
           this.fileDescriptions = [];
           this.currentFileIndex = 0;
-          this.isFileUploadButtonDisabled = true; // Re-enable the "File Upload" button
+          this.isFileUploadButtonDisabled = false; // Re-enable the "File Upload" button
           this.fileIsUploaded = true;
           this.fetchDocByDocId(this.globalDocId);
         },
@@ -1063,7 +1032,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       );
     }
   }
-  
+
   /**
    * Fetches a document by its document ID.
    * @param docId The document ID to fetch
@@ -1195,12 +1164,41 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
     })
   }
   
-
+confirmPaymentModeSelected():any{
+  if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
+    this.message="Receipt will be issued upon cheque maturity";
+    alert('pd cheque selected');
+    this.showAcknowledgeBtn=true;
+    
+  }else{
+   
+    this.showAcknowledgeBtn=false;
+  
+  }
+}
 /**
    * Submits the receipt data to the backend.
    */
   submitReceipt(): any {
-   
+   // ✅ 1. Check if any selected file is not posted
+   const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
+
+   if (hasUnpostedFiles) {
+     this.globalMessagingService.displayErrorMessage(
+       'Error!',
+       'Please post or delete all selected files before saving the receipt.'
+     );
+     return; // Stop execution
+   }
+ 
+   // ✅ 2. Ensure no unposted selected file
+   if (this.selectedFile !== null) {
+     this.globalMessagingService.displayErrorMessage(
+       'Error!',
+       'Please post or delete the file before saving the receipt.'
+     );
+     return;
+   }
 
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
@@ -1246,7 +1244,18 @@ return true;
            }
     const allocatedDetails =
       this.getAllocation?.[0]?.receiptParticularDetails || [];
-
+      if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
+        this.message="Receipt will be issued upon cheque maturity";
+        //alert('pd cheque selected');
+        this.showAcknowledgeBtn=true;
+        //post_dated_cheque open_cheque
+        //console.log('type>',this.chequeType);
+      //return;
+      }else{
+        this.message='success';
+        this.showAcknowledgeBtn=false;
+       //this.submitReceipt();
+      }
     // Map allocated transactions to receiptParticularDetailUpdateRequests format
     const receiptParticularDetailUpdateRequests = allocatedDetails.map(
       (detail) => ({
@@ -1321,8 +1330,8 @@ return true;
         this.receiptResponse = response.data;
         this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
         this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Receipt saved successfully'
+          this.message,
+          this.receiptResponse.message
         );
         //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
@@ -1331,10 +1340,10 @@ return true;
         //prepare receipt upload payload
       },
       error: (error) => {
-        console.error('Error saving receipt:', error);
+        
         this.globalMessagingService.displayErrorMessage(
           'Failed to save receipt',
-          error.error || 'your error'
+          error.error.msg
         );
       },
     });
@@ -1343,7 +1352,26 @@ return true;
    * Saves the receipt and navigates to the receipt preview page.
    */
   saveAndPrint() {
-    console.log('receiptDoc>>',this.parameterStatus);
+   
+    // ✅ 1. Check if any selected file is not posted
+    const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
+
+    if (hasUnpostedFiles) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete all selected files before saving the receipt.'
+      );
+      return; // Stop execution
+    }
+  
+    // ✅ 2. Ensure no unposted selected file
+    if (this.selectedFile !== null) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete the file before saving the receipt.'
+      );
+      return;
+    }
   if(this.parameterStatus=='Y' && !this.fileUploaded )
     {
  

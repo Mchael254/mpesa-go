@@ -341,6 +341,9 @@ export class ReceiptCaptureComponent {
   editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
   selectedBranch:BranchDTO;
   isdefaultCurrencySelected:boolean=true;
+  makeFieldRequired:boolean=false;
+  requireDocumentField:boolean=false;
+  storedDefaultCurrency:number;
 
 /**
    * Constructor for the `ReceiptCaptureComponent`.
@@ -521,8 +524,19 @@ export class ReceiptCaptureComponent {
     this.currencyService.getCurrencies().subscribe({
       next: (currencies: CurrencyDTO[]) => {
         this.currencies = currencies;
-
+  // Check if user has previously selected a currency
+  const savedCurrencyId = this.receiptDataService.getSelectedCurrency();
         // Find the default currency - using string literal 'Y' directly
+        if (savedCurrencyId) {
+          this.selectedCurrencyCode = savedCurrencyId;
+          this.receiptingDetailsForm.patchValue({ currency: savedCurrencyId });
+             // Fetch banks for the selected currency
+             this.fetchBanks(
+              this.defaultBranch?.id || this.selectedBranch?.id,
+              savedCurrencyId
+            );
+          return;
+        }
         const defaultCurrency = currencies.find(
           (curr) => curr.currencyDefault === 'Y'
         );
@@ -530,6 +544,7 @@ export class ReceiptCaptureComponent {
         if (defaultCurrency) {
           this.defaultCurrencyId = defaultCurrency.id;
           const defaultCurrencySymbol = defaultCurrency.symbol;
+          this.receiptDataService.setDefaultCurrency(this.defaultCurrencyId);
           // this.sessionStorage.setItem(
           //   'defaultCurrencyId',
           //   String(this.defaultCurrencyId)
@@ -539,8 +554,7 @@ export class ReceiptCaptureComponent {
           this.receiptingDetailsForm.patchValue({
             currency: this.defaultCurrencyId, // Use ID instead of symbol
           });
-          console.log('default branch>',this.defaultBranch?.id);
-          console.log('selected branch>',this.selectedBranch?.id);
+        
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
             this.defaultCurrencyId
@@ -564,7 +578,8 @@ export class ReceiptCaptureComponent {
     this.exchangeRateText = true;
     const selectedCurrencyCodes = (event.target as HTMLSelectElement).value;
     this.selectedCurrencyCode = Number(selectedCurrencyCodes);
-    
+     // Store selected currency in the service
+  this.receiptDataService.setSelectedCurrency(this.selectedCurrencyCode);
     this.fetchBanks(
       this.defaultBranch?.id || this.selectedBranch?.id,
       this.selectedCurrencyCode
@@ -603,8 +618,8 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-
-    this.currencyService.getCurrenciesRate(this.defaultCurrencyId).subscribe({
+this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
+    this.currencyService.getCurrenciesRate(this.defaultCurrencyId || this.storedDefaultCurrency).subscribe({
       next: (rates) => {
         const matchingRates = rates.filter(
           (rate) => rate.targetCurrencyId === this.selectedCurrencyCode
@@ -647,9 +662,9 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error.error
+          err.error.status
         );
-        this.showExchangeRateModal2();
+       // this.showExchangeRateModal2();
       },
     });
   }
@@ -805,7 +820,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
    */
   onLeaveChequeOptions() {
     if (!this.receiptingDetailsForm.get('chequeType')?.value) {
-      this.showChequeOptions = false;
+      this.showChequeOptions = true;
     }
   }
 
@@ -825,6 +840,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
    */
   onPaymentModeSelected(event: any): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+   
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
   }
@@ -835,25 +851,42 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
    * @returns {void}
    */
   updatePaymentModeFields(paymentMode: string): void {
+    const drawersBankControl = this.receiptingDetailsForm.get('drawersBank');
+    const paymentRefControl = this.receiptingDetailsForm.get('paymentRef');
+    const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
     if (paymentMode === 'CASH') {
       this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-      this.receiptingDetailsForm.get('drawersBank')?.disable();
-      this.receiptingDetailsForm.get('paymentRef')?.disable();
-      this.receiptingDetailsForm.get('drawersBank')?.setValue(null);
-      this.receiptingDetailsForm.get('paymentRef')?.setValue(null);
+    
+     
+      drawersBankControl?.disable();
+      paymentRefControl?.disable();
+      drawersBankControl?.setValue(null);
+      paymentRefControl?.setValue(null);
+      this.makeFieldRequired=false;
     } else if (paymentMode === 'CHEQUE') {
-      this.showChequeOptions = true;
 
-      // // chequeTypeModal?.show(); // Always show the modal when "CHEQUE" is selected
-      this.receiptingDetailsForm.get('drawersBank')?.enable();
-      this.receiptingDetailsForm.get('paymentRef')?.enable();
-    } else {
+      this.showChequeOptions = true;
+      this.makeFieldRequired =true;
+
+    drawersBankControl?.enable();
+    paymentRefControl?.enable();
+    
+    // else if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque'){
+    //   this.requireDocumentField=true;
+    // }
+    }
+    
+     else {
+      
+      this.makeFieldRequired=true;
+      drawersBankControl?.enable();
+      paymentRefControl?.enable();
       //  this.resetChequeFields(chequeTypeModal);
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-      this.receiptingDetailsForm.get('drawersBank')?.enable();
-      this.receiptingDetailsForm.get('paymentRef')?.enable();
+    
     }
+
   }
   
   /**
@@ -866,8 +899,33 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
     this.receiptService.getBanks(branchCode, currCode).subscribe({
       next: (response) => {
         this.bankAccounts = response.data;
+        // Check if user has previously selected a bank
+      const savedBankCode = this.receiptDataService.getSelectedBank();
+      if (savedBankCode && this.bankAccounts.some(bank => bank.code === savedBankCode)) {
+        this.selectedBankCode = savedBankCode;
+        return;
+        // this.receiptingDetailsForm.patchValue({
+        //   bankAccount: this.selectedBankCode,
+        // });
+      }else{
+         // Clear bank selection if previous selection is invalid
+         this.selectedBankCode = null;
+         this.receiptingDetailsForm.patchValue({
+           bankAccount: null,
+         });
+      }
 
-        this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
+this.selectedBank = null;
+
+this.receiptingDetailsForm.patchValue({
+  bankAccount: null,
+  bankAccountType: null,
+});
+
+// Ensure `onBankSelected` is reset to false
+this.onBankSelected = false;
+        //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
+
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -885,20 +943,22 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
   onBank(event: Event): void {
     const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
     this.selectedBankCode = selectedBankCode; // Store the selected bank code
+    this.receiptDataService.setSelectedBank(this.selectedBankCode); // Store selected bank
+
     // Find the selected bank object based on the code
-    const selectedBank = this.bankAccounts.find(
+    this.selectedBank = this.bankAccounts.find(
       (bank) => bank.code === selectedBankCode
     );
 
-    if (selectedBank) {
-      this.selectedBank = selectedBank;
+    if (this.selectedBank) {
+      //this.selectedBank = selectedBank;
       
 //this.receiptingDetailsForm.patchValue({bankAccountCode:this.selectedBank.code});
    this.receiptingDetailsForm.patchValue({bankAccountType:this.selectedBank.type});  
-      //this.sessionStorage.setItem('selectedBank', JSON.stringify(this.selectedBank));
+      
     } else {
     }
-
+    this.onBankSelected = !!this.selectedBank;
     this.onBankSelected = true;
 
     this.receiptService
@@ -1402,21 +1462,8 @@ this.receiptingDetailsForm.reset();
    * @returns {void}
    */
   onNext() {
-//     const paymentMethod = this.receiptingDetailsForm.get('paymentMode')?.value;
-// const drawersBank = this.receiptingDetailsForm.get('drawersBank')?.value;
-// const paymentRef = this.receiptingDetailsForm.get('paymentRef')?.value;
-// const amountIssued = this.receiptingDetailsForm.get('amount Issued')?.value;
-// console.log('amount issued',amountIssued);
 
-    // if(paymentMethod==='CASH' && drawersBank !=null && paymentRef !=null){
-    //   this.receiptingDetailsForm.reset('paymentRef');
-    //   this.receiptingDetailsForm.get('paymentRef')?.setValue('');
-    //   this.receiptingDetailsForm.get('drawersBank')?.setValue('');
-    //   console.log('paymentRef',paymentRef);
-    //   console.log('drawersBank',drawersBank);
-    //   console.log('paymentModes',paymentMethod);
-
-    // }
+    
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
     console.log('form data>>',formData);

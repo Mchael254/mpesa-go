@@ -204,6 +204,11 @@ export class QuotationsService {
 
   }
 
+  deleteRiskSections(riskSectionCode: number) {
+    return this.api.PUT(`v1/risk-sections?riskSectionCode=${riskSectionCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+
+  }
+
   /**
    * Retrieves details of a quotation using an HTTP GET request.
    * @method getQuotationDetails
@@ -410,8 +415,8 @@ export class QuotationsService {
     )
   }
 
-  captureRiskClauses(riskCode: number,quoteCode: number,clauseCode: number, productCode: number,subclassCode:number) {
-    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}&subclassCode=${subclassCode}`,null, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  captureRiskClauses(riskCode: number,subClassCode :number,quoteCode: number,clauseCode: number, productCode: number) {
+    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&subClassCode=${subClassCode }&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}`,null, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 
@@ -428,7 +433,7 @@ export class QuotationsService {
       'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
-    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   postDocuments(data) {
