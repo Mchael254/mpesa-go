@@ -165,7 +165,7 @@ export class RiskSectionDetailsComponent {
 
   selectedSections: any[] = [];
   premiumListIndex = 0;
-  sections: any[] = [];
+  sectionDetails: any[] = [];
 
   bodytypesList:any;
   motorColorsList:any;
@@ -181,6 +181,7 @@ export class RiskSectionDetailsComponent {
   quoteProductCode: any;
   regexPattern: string;
   taxList: any;
+  currentDate = new Date();
 
   constructor(
     private router: Router,
@@ -870,7 +871,8 @@ export class RiskSectionDetailsComponent {
     this.subclassSectionCovertypeService.getSubclassCovertypeSectionsBySubClass(this.selectedSubclassCode).subscribe(data => {
       this.subclassSectionCoverList = data._embedded[0];
       log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-      this.mandatorySections = this.subclassSectionCoverList.filter(section => section.isMandatory == "Y");
+      // this.mandatorySections = this.subclassSectionCoverList.filter(section => section.isMandatory == "Y");
+      this.mandatorySections = this.subclassSectionCoverList;
 
       log.debug("Mandatory Section Covertype:", this.mandatorySections);
 
@@ -961,15 +963,27 @@ export class RiskSectionDetailsComponent {
   // }
 
   onCheckboxChange(section: any): void {
-    const index = this.selectedSections.findIndex(s => s.code === section.code);
-    if (index === -1) {
-      this.selectedSections.push(section);
-    } else {
-      this.selectedSections.splice(index, 1);
-    }
-    log.debug("Selected Sections", this.selectedSections);
-    this.getPremium(this.selectedSections);
+    log.debug("Checkbox changed for section:", section);
 
+    // Find the index of the section in the selectedSections array
+    const index = this.selectedSections.findIndex(s => s.code === section.code);
+    log.debug("Index of section in selectedSections:", index);
+
+    if (index === -1) {
+      // Section is not selected, so add it (immutable update)
+      log.debug("Adding section to selectedSections");
+      this.selectedSections = [...this.selectedSections, section];
+    } else {
+      // Section is already selected, so remove it (immutable update)
+      log.debug("Removing section from selectedSections");
+      this.selectedSections = this.selectedSections.filter(s => s.code !== section.code);
+    }
+
+    log.debug("Updated selectedSections:", this.selectedSections);
+    log.debug("Selected Sections", this.selectedSections);
+
+    // Trigger premium calculation
+    this.getPremium(this.selectedSections);
   }
 
 
@@ -979,68 +993,7 @@ export class RiskSectionDetailsComponent {
  * to create a new risk section associated with the current risk, and handles
  * the response data by displaying a success or error message.
  */
-  // createRiskSection(){
-  //   const section = this.sectionDetailsForm.value;
 
-  //   if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
-  //     log.debug(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
-
-  //     // Log the current premiumListIndex before incrementing
-  //     log.debug(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
-
-  //     // Increment the premiumListIndex and wrap around using modulo
-  //     this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
-
-  //     // Log the updated premiumListIndex after incrementing
-  //     log.debug(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
-
-  //     section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
-  //     section.sectionShortDescription = this.premiumList[this.premiumListIndex].sectionShortDescription;
-  //     section.sectionType = this.premiumList[this.premiumListIndex].sectionType;
-
-  //     // section.sectionCode=this.checkedSectionCode;
-  //     // section.sectionShortDescription=this.checkedSectionDesc;
-  //     // section.sectionType=this.sectionList.type;
-
-  //   } else {
-  //     // Handle scenario when premiumList is empty or index is out of bounds
-  //     console.error('Premium list is empty or index is out of bounds.');
-  //     return; // or throw an error, handle as per your requirement
-  //   }
-  //   this.sectionArray = [section];
-  //   section.calcGroup = 1;
-  //   section.code = null;
-  //   section.compute = "Y";
-  //   section.description = null;
-  //   section.freeLimit = 0;
-  //   section.limitAmount = 0;
-  //   section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
-  //   section.multiplierRate = 0;
-  //   section.premiumAmount = 0;
-  //   section.premiumRate = this.premiumList[0].rate;
-  //   section.rateDivisionFactor = this.premiumList[0].divisionFactor;
-  //   section.rateType = this.premiumList[0].rateType;
-  //   section.rowNumber = 0;
-  //   section.sumInsuredLimitType = null;
-  //   section.sumInsuredRate = 0;
-
-  //   // section.sectionCode=this.checkedSectionCode;
-  //   // section.sectionShortDescription=this.checkedSectionDesc;
-  //   // section.sectionType=this.sectionList.type;
-
-  //   log.debug("Section Form Array",this.sectionArray)
-
-  //   this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
-
-  //     try {
-  //       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
-  //       this.sectionDetailsForm.reset()
-  //     } catch (error) {
-  //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-  //       this.sectionDetailsForm.reset()
-  //     }
-  //   })
-  // }
   createRiskSection() {
     const sectionTemplate = this.sectionDetailsForm.value;
 
@@ -1063,6 +1016,7 @@ export class RiskSectionDetailsComponent {
         section.multiplierRate = 0;
         section.premiumAmount = 0;
         section.premiumRate = premiumItem.rate;
+        section.quotRiskCode = premiumItem.code;
         section.rateDivisionFactor = premiumItem.divisionFactor;
         section.rateType = premiumItem.rateType;
         section.rowNumber = 0;
@@ -1074,8 +1028,8 @@ export class RiskSectionDetailsComponent {
 
       // Log the sections array
       log.debug("Sections to be created:", sections);
-      this.sections = sections;
-      log.debug("Sections to be created:", this.sections);
+      this.sectionDetails = sections;
+      log.debug("Sections to be created:", this.sectionDetails);
 
       // Send the array of sections to the service
       this.quotationService.createRiskSection(this.quotationRiskCode, sections).subscribe(data => {
@@ -1104,6 +1058,7 @@ export class RiskSectionDetailsComponent {
     log.info("Patched section", this.selectedSection)
     this.sectionDetailsForm.patchValue(this.selectedSection)
   }
+
   onSaveDetailsClick() {
     this.updateRiskSection();
 
@@ -1113,42 +1068,84 @@ export class RiskSectionDetailsComponent {
       this.renderer.removeClass(modalElement, 'show'); // Remove 'show' class to hide the modal
       this.renderer.setStyle(modalElement, 'display', 'none'); // Set display property to 'none'
     }
-
   }
+
   updateRiskSection() {
     const section = this.sectionDetailsForm.value;
-    this.sectionArray = [section];
 
-    this.quotationService.updateRiskSection(this.quotationRiskCode, this.sectionArray).subscribe((data) => {
-      try {
-        sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
-const sumInsured = this.sectionDetailsForm.value.limitAmount
-log.debug("SUMINSURED RISK DETAILS",sumInsured)
+    // Ensure a section is selected
+    if (!this.selectedSection) {
+      console.error('No section selected for update.');
+      this.globalMessagingService.displayErrorMessage('Error', 'No section selected for update');
+      return;
+    }
 
-         // Find the index of the section to be updated in the 'sections' array
-      const index = this.sections.findIndex(s => s.code === section.code);
+    // Find the index of the selected section in the 'sectionDetails' array
+    const index = this.sectionDetails.findIndex(s => s.code === this.selectedSection.code);
 
-      if (index !== -1) {
-        // Update the section in the array with the new values
-        this.sections[index] = { ...this.sections[index], ...section };
-        this.sections = [...this.sections]; // Trigger change detection
-      }
-        this.sectionDetailsForm.reset()
-        log.info(section)
+    if (index !== -1) {
+      // Update the section in the array with the new values
+      const updatedSection = {
+        ...this.sectionDetails[index], // Preserve existing properties
+        ...section // Override with new values from the form
+      };
 
-        this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated')
+      // Log the updated section
+      log.debug("Updated section:", updatedSection);
 
-      } catch (error) {
-        log.info(section)
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+      // Send the updated section to the service
+      this.quotationService.updateRiskSection(this.quotationRiskCode, [updatedSection]).subscribe(
+        (response) => {
+          try {
+            // Store the response data back in the sectionDetails array
+            if (response) {
+              // Assuming the service returns the updated section(s)
+              const updatedSectionFromResponse = response[0] || response; // Handle both array and single object responses
 
-        this.sectionDetailsForm.reset()
-      }
-    })
+              // Update the specific section in the sectionDetails array
+              this.sectionDetails[index] = updatedSectionFromResponse;
+
+              // Make a new reference to trigger change detection
+              this.sectionDetails = [...this.sectionDetails];
+
+              // Log the complete sectionDetails array
+              log.debug("Complete sectionDetails array:", this.sectionDetails);
+            }
+
+            // Store the limit amount in sessionStorage
+            sessionStorage.setItem('limitAmount', updatedSection.limitAmount);
+            const sumInsured = updatedSection.limitAmount;
+            log.debug("Sum Insured Risk Details:", sumInsured);
+
+            // Reset the form and selected section
+            this.sectionDetailsForm.reset();
+            this.selectedSection = null;
+
+            // Display success message
+            this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
+            log.debug("Complete sectionDetails array:", this.sectionDetails);
+          } catch (error) {
+            log.error("Error processing response:", error);
+            this.globalMessagingService.displayErrorMessage('Error', 'Error processing response data');
+          }
+        },
+        (error) => {
+          log.error("Error updating section:", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          this.sectionDetailsForm.reset();
+        }
+      );
+    } else {
+      console.error('Selected section not found in the sections array.');
+      this.globalMessagingService.displayErrorMessage('Error', 'Selected section not found');
+    }
   }
-
   onEditButtonClick(selectedSection: any) {
-    this.selectedSection = selectedSection;
+    this.selectedSection = selectedSection; // Track the selected section
+    log.debug("Selected section:", this.selectedSection);
+
+    // Patch the form with the selected section's values
+    this.sectionDetailsForm.patchValue(this.selectedSection);
 
     // Open the modal
     const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;

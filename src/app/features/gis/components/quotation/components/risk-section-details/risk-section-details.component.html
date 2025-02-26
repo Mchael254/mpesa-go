@@ -131,6 +131,7 @@
               inputStyleClass='form-control'
               [showIcon]="true"
               (onSelect)="updateCoverToDate($event)"
+              [minDate]="currentDate"
               [placeholder]="passedCoverFromDate" >
             </p-calendar>
               <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="wef"> -->
@@ -145,6 +146,7 @@
               inputStyleClass='form-control'
               [showIcon]="true"
               [placeholder]="passedCoverToDate"
+              [minDate]="passedCoverToDate"
               >
           </p-calendar>
               <!-- <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="wet"> -->
@@ -1285,7 +1287,7 @@
           </div>
         </div>
 
-        <p-table [value]="sections" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
+        <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
           <ng-template pTemplate="header">
             <tr>
               <th class="flexible-header">{{'gis.quotation.group' | translate}}</th>
