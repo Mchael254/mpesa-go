@@ -1,654 +1,679 @@
 <div class="container ">
-    <p class="titleMain mt-3">{{'gis.quotation.quotation_summary' | translate}}</p>
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
-    <div class="container mx-2 mt-n1">
+  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_summary' | translate }}</p>
+  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <div class="container mx-2 mt-n1">
 
-        <div class="card">
-            <div class="card-body ms-3">
-                <!-- QOUTE DETAILS -->
-                <!-- <div class="row ">
-                    <div class="col-6">
-                    </div>
-                    <div class="col-6 d-flex justify-content-end" *ngIf="showQuoteActions">
+    <div class="card">
+      <div class="card-body ms-3">
+        <p class="title mt-2">{{ 'gis.quotation.quote_details' | translate }}</p>
 
-                            <button class="btn btn-primary" type="submit" >
-                                Reassign quote</button>
-                    </div>
-                </div> -->
-                <p class="title mt-2">{{'gis.quotation.quote_details' | translate}}</p>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p class="summary-label">{{ 'gis.quotation.quote_number' | translate }}:</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value">{{ quotationNo }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p
+                  class="summary-label whitespace-nowrap overflow-hidden text-ellipsis">{{ 'gis.quotation.contact_information' | translate }}
+                  :</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
+                <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}</p>
+                <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">
+                  {{ 'gis.quotation.no_contact_information_available' | translate }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-4">
+                <p class="summary-label">{{ 'gis.quotation.name' | translate }}:</p>
+              </div>
+              <div class="col-8">
+                <p class="summary-value" *ngIf="selectedClientName">{{ selectedClientName }}</p>
+                <p class="summary-value" *ngIf="!selectedClientName">{{ "null" }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label">{{ 'gis.quotation.quote_number' | translate }}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value">{{ quotationNo }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label whitespace-nowrap overflow-hidden text-ellipsis">{{ 'gis.quotation.contact_information' | translate }}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value" *ngIf="selectedEmail">{{ selectedEmail }}</p>
-                        <p class="summary-value" *ngIf="!selectedEmail && selectedPhoneNo">{{ selectedPhoneNo }}</p>
-                        <p class="summary-value" *ngIf="!selectedEmail && !selectedPhoneNo">
-                          {{ 'gis.quotation.no_contact_information_available' | translate }}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="row" >
-                      <div class="col-4">
-                        <p class="summary-label">{{ 'gis.quotation.name' | translate }}:</p>
-                      </div>
-                      <div class="col-8">
-                        <p class="summary-value" *ngIf="selectedClientName" >{{ selectedClientName }}</p>
-                        <p class="summary-value" *ngIf="!selectedClientName" >{{ "null" }}</p>
-                      </div>
-                    </div>
-                  </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p class="summary-label">{{ 'gis.quotation.effective_date' | translate }}:</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value">{{ coverFrom | date: 'MMMM d, yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p class="summary-label">{{ 'gis.quotation.cover_to' | translate }}:</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value">{{ coverTo | date: 'MMMM d, yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-4">
+                <p class="summary-label">{{ 'gis.quotation.premium' | translate }}:</p>
+              </div>
+              <div class="col-8">
+                <p class="summary-value" appCommaFormat>{{ quotationDetails?.quotationProducts[0].premium }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p class="summary-label">{{ 'gis.quotation.expiry_date' | translate }}:</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value">{{ expiryDate | date: 'MMMM d, yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-5">
+                <p class="summary-label">{{ 'gis.quotation.currency' | translate }}:</p>
+              </div>
+              <div class="col-7">
+                <p class="summary-value">{{ quotationDetails?.currency }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <!-- Empty div for alignment -->
+          </div>
+        </div>
+
+
+        <!-- PRODUCT DETAILS -->
+        <p class="title mt-4">{{ 'gis.quotation.product_details' | translate }}</p>
+        <p-table #dt1 [value]="quotationDetails?.quotationProducts ||  []" dataKey="code" editMode="row"
+                 selectionMode="single" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
+                 [(selection)]="selectedProduct"
+                 [paginator]="quotationDetails?.quotationProducts?.length > 3"
+                 [rows]="4"
+                 [showCurrentPageReport]="quotationDetails?.quotationProducts?.length > 3"
+                 class="ui-datatable" [autoLayout]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th> {{ 'gis.quotation.product' | translate }}</th>
+              <th> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
+              <th> {{ 'gis.quotation.total_taxes' | translate }}</th>
+              <th> {{ 'gis.quotation.premium' | translate }}</th>
+              <th> {{ 'gis.quotation.total_premium' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-product>
+            <tr [class.p-highlight]="product === selectedProduct" (click)="productSelected(product)"
+                style="cursor: default">
+              <td>{{ product.productName | sentenceCase }}</td>
+              <td> {{ product.totalSumInsured | number }}</td>
+              <td pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
+                {{ totalTaxes | number }}
+              </td>
+              <td>{{ premiumAmount | number }}</td>
+              <td>{{ product.premium |  number }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <!-- RISK DETAILS -->
+
+        <div class="row mt-5">
+          <div class="col-sm-3 ">
+            <p class="title">{{ 'gis.policy.risk_details'|translate }}</p>
+          </div>
+          <div class="col-sm-9 d-flex justify-content-end">
+            <div class="row mb-2" *ngIf="showQuoteActions">
+              <div class="col-2"></div>
+
+              <!-- Add Button -->
+              <div class="col-sm-3">
+                <button type="button" id="icon" class="btn btn-success" title="Add" (click)="addAnotherRisk()">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+
+              <!-- Edit Button -->
+              <div class="col-sm-3">
+                <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                  <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
+                </button>
+              </div>
+
+              <!-- Delete Button (Disabled if only one risk exists) -->
+              <div class="col-sm-3">
+                <button
+                  type="button"
+                  id="icon"
+                  class="btn btn-primary"
+                  title="Delete"
+                  (click)="openRiskDeleteModal()"
+                  [disabled]="quotationDetails?.riskInformation?.length <= 1">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p-table
+          [value]="quotationDetails?.riskInformation"
+          dataKey="code"
+          selectionMode="single"
+          [tableStyle]="{'min-width': '80rem'}"
+          [(selection)]="selectedRisk"
+          responsiveLayout="scroll"
+          [autoLayout]="false"
+          [paginator]="quotationDetails?.riskInformation?.length > 3"
+          [rows]="4"
+          [showCurrentPageReport]="quotationDetails?.riskInformation?.length > 3"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          class="ui-datatable"
+          [scrollable]="true"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="white-space: nowrap;"> {{ 'gis.policy.property_id' | translate }}</th>
+              <th style="white-space: nowrap;"> {{ 'gis.policy.subclass' | translate }}</th>
+              <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_type' | translate }}</th>
+              <th style="white-space: nowrap;"> {{ 'gis.quotation.description' | translate }}</th>
+              <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_from' | translate }}</th>
+              <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_to' | translate }}</th>
+              <th class="text-end" style="white-space: nowrap;"> {{ 'gis.quotation.sum_insured' | translate }}</th>
+              <th class="text-end" style="white-space: nowrap;"> {{ 'gis.quotation.premium' | translate }}</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-risk>
+            <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
+              <td>{{ risk.propertyId || risk.propertyDescription }}</td>
+              <td>{{ risk.subclass.description | sentenceCase }}</td>
+              <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase }}
+              </td>
+              <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                {{ formatString(risk.propertyId + '_' + risk.subclass.description) }}
+              </td>
+              <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
+              <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
+              <td appCommaFormat class="text-end">{{ risk?.value | number }}</td>
+              <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+
+        <!-- Delete Risk Modal -->
+        <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
+             aria-labelledby="deleteRisk" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="deleteRisk">
+              <div class="modal-body ">
+                <p class="deleteMessage mt-4 mb-4">{{
+                    'gis.policy.are_you_sure_you_want_to_delete' |
+                      translate
+                  }}</p>
+                <div class="d-flex justify-content-center mb-3">
+                  <button type="button" class="btn btn-primary px-5" id="delete"
+                          data-bs-dismiss="modal" (click)="deleteRisk()">{{
+                      'gis.policy.yes_delete'
+                        | translate
+                    }}
+                  </button>
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                  <button type="button" class="btn btn-outline-primary px-5"
+                          data-bs-dismiss="modal">{{ 'gis.policy.no_im_not' | translate }}
+                  </button>
                 </div>
 
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label">{{ 'gis.quotation.effective_date' | translate }}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value">{{ coverFrom | date: 'MMMM d, yyyy' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label">{{ 'gis.quotation.cover_to' | translate }}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value">{{ coverTo | date: 'MMMM d, yyyy' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-4">
-                        <p class="summary-label">{{ 'gis.quotation.premium' | translate }}:</p>
-                      </div>
-                      <div class="col-8">
-                        <p class="summary-value" appCommaFormat>{{ quotationDetails?.quotationProducts[0].premium }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label">{{ 'gis.quotation.expiry_date' | translate }}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value">{{ expiryDate | date: 'MMMM d, yyyy' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="row">
-                      <div class="col-5">
-                        <p class="summary-label">{{'gis.quotation.currency' | translate}}:</p>
-                      </div>
-                      <div class="col-7">
-                        <p class="summary-value">{{quotationDetails?.currency}}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <!-- Empty div for alignment -->
-                  </div>
-                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- TABS  -->
 
+        <ul class="nav  mt-5">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-risk-section"> {{ 'gis.policy.risk_sections' | translate }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-clauses"> {{ 'gis.quotation.clauses' | translate }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-limits-of-liability"> {{ 'gis.quotation.limits_of_liability' | translate }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-excesses"> {{ 'gis.quotation.excesses' | translate }}</a>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <!-- RISK SECTION TAB CONTENT -->
+          <div class="tab-pane fade show active mt-4 " id="pills-risk-section" role="tabpanel"
+               aria-labelledby="pills-home-tab">
 
-                <!-- PRODUCT DETAILS -->
-                <p class="title mt-4">{{'gis.quotation.product_details' | translate}}</p>
-                <p-table [value]="quotationDetails?.quotationProducts"[tableStyle]="{ 'min-width': '608px' }">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>{{'gis.quotation.product' | translate}}</th>
-                            <th class="text-end"> {{ 'gis.quotation.total_sum_insured' | translate }}</th>
-                            <th class="text-end">{{ 'gis.quotation.total_taxes' | translate }}</th>
-                            <th class="text-end">{{'gis.quotation.premium' | translate}}</th>
-                            <th class="text-end">{{'gis.quotation.total_premium' | translate}}</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-product let-i="index">
-                        <tr>
-                            <td>{{ product.productName | sentenceCase}}</td>
-                            <td class="text-end" appCommaFormat> {{product.totalSumInsured |
-                                number }}</td>
-                            <td class="text-end" pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
-                                {{ totalTaxes | number }}
-                            </td>
-                            <td class="text-end" appCommaFormat>{{premiumAmount | number }}</td>
-                            <td class="text-end" appCommaFormat>{{ product.premium |
-                                number }}</td>
-                        </tr>
+            <p-table #dt1 [value]="selectedRisk?.sectionsDetails || []" dataKey="code" editMode="row"
+                     selectionMode="single" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
+                     class="ui-datatable" [autoLayout]="true">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{ 'gis.policy.group' | translate }}</th>
+                  <th>{{ 'gis.policy.row_no' | translate }}</th>
+                  <th>{{ 'gis.policy.short_desc' | translate }}</th>
+                  <th>{{ 'gis.policy.description' | translate }}</th>
+                  <th>{{ 'gis.policy.premium_rate' | translate }}</th>
+                  <th>{{ 'gis.policy.rate_type' | translate }}</th>
+                  <th>{{ 'gis.policy.div_factor' | translate }}</th>
+                  <th class="text-end">{{ 'gis.policy.limit_amount' | translate }}</th>
+                  <th class="text-end">{{ 'gis.policy.premium' | translate }}</th>
 
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="7" style="padding: 20px; padding-left: 300px;" id="empty">No data to display.
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+                </tr>
+              </ng-template>
 
-                <!-- RISK DETAILS -->
-
-                <div class="row mt-5">
-                  <div class="col-sm-3 ">
-                    <p class="title">{{'gis.policy.risk_details'|translate}}</p>
-                  </div>
-                  <div class="col-sm-9 d-flex justify-content-end">
-                    <div class="row mb-2" *ngIf="showQuoteActions">
-                      <div class="col-2"></div>
-
-                      <!-- Add Button -->
-                      <div class="col-sm-3">
-                        <button type="button" id="icon" class="btn btn-success" title="Add" (click)="addAnotherRisk()">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                      </div>
-
-                      <!-- Edit Button -->
-                      <div class="col-sm-3">
-                        <button type="button" id="icon" class="btn btn-primary" title="Edit">
-                            <i class="fa-solid fa-pencil" (click)="openRiskEditModal()"></i>
-                        </button>
-                      </div>
-
-                      <!-- Delete Button (Disabled if only one risk exists) -->
-                      <div class="col-sm-3">
-                        <button
-                          type="button"
-                          id="icon"
-                          class="btn btn-primary"
-                          title="Delete"
-                          (click)="openRiskDeleteModal()"
-                          [disabled]="quotationDetails?.riskInformation?.length <= 1">
-                          <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <p-table
-                  [value]="quotationDetails?.riskInformation"
-                  dataKey="code"
-                  selectionMode="single"
-                  [tableStyle]="{'min-width': '80rem'}"
-                  [(selection)]="selectedRisk"
-                  responsiveLayout="scroll"
-                  [autoLayout]="false"
-                  [paginator]="quotationDetails?.riskInformation?.length > 3"
-                  [rows]="4"
-                  [showCurrentPageReport]="quotationDetails?.riskInformation?.length > 3"
-                  currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                  class="ui-datatable"
-                  [scrollable]="true"
-              >
-                  <ng-template pTemplate="header">
-                      <tr>
-                          <th style="white-space: nowrap;"> {{ 'gis.policy.property_id' | translate }}</th>
-                          <th style="white-space: nowrap;"> {{ 'gis.policy.subclass' | translate }}</th>
-                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_type' | translate }}</th>
-                          <th style="white-space: nowrap;"> {{ 'gis.quotation.description' | translate }}</th>
-                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_from' | translate }}</th>
-                          <th style="white-space: nowrap;"> {{ 'gis.quotation.cover_to' | translate }}</th>
-                          <th class="text-end" style="white-space: nowrap;"> {{ 'gis.quotation.sum_insured' | translate }}</th>
-                          <th class="text-end" style="white-space: nowrap;"> {{'gis.quotation.premium' | translate}}</th>
-                      </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="body" let-risk>
-                      <tr [class.p-highlight]="risk === selectedRisk" (click)="onRiskSelect(risk)" style="cursor: default">
-                          <td>{{ risk.propertyId || risk.propertyDescription  }}</td>
-                          <td>{{ risk.subclass.description | sentenceCase }}</td>
-                          <td class="text-start">{{ risk.coverTypeDescription || risk.coverTypeShortDescription | sentenceCase}}</td>
-                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
-                            {{ formatString(risk.propertyId + '_' + risk.subclass.description) }}
-                          </td>
-                          <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
-                          <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
-                          <td appCommaFormat class="text-end">{{ risk?.value | number }}</td>
-                          <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
-                      </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="emptymessage">
-                      <tr>
-                          <td colspan="8" style="text-align: center;">{{ 'gis.quotation.no_data_to_display' | translate }}</td>
-                      </tr>
-                  </ng-template>
-              </p-table>
+              <ng-template pTemplate="body" let-data let-ri="rowIndex">
+                <tr [pSelectableRow]="data">
+                  <td>{{ data.calculationGroup }}</td>
+                  <td>{{ data.rowNumber }}</td>
+                  <td>{{ data.sectionDescription |sentenceCase }}</td>
+                  <td>{{ data.sectionDescription |sentenceCase }}</td>
+                  <td>{{ data.rate }}</td>
+                  <td>{{ data.rateType }}</td>
+                  <td>{{ data.rateDivisionFactor }}</td>
+                  <td appCommaFormat class="text-end">{{ data.limitAmount | number }}</td>
+                  <td appCommaFormat class="text-end">{{ data.premium | number }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
 
 
-                <!-- Delete Risk Modal -->
-                <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog"
-                    aria-labelledby="deleteRisk" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content" id="deleteRisk">
-                            <div class="modal-body ">
-                                <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
-                                    translate}}</p>
-                                <div class="d-flex justify-content-center mb-3">
-                                    <button type="button" class="btn btn-primary px-5" id="delete"
-                                        data-bs-dismiss="modal" (click)="deleteRisk()">{{'gis.policy.yes_delete'
-                                        | translate}}</button>
-                                </div>
-                                <div class="d-flex justify-content-center mb-2">
-                                    <button type="button" class="btn btn-outline-primary px-5"
-                                        data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
-                                </div>
+          </div>
+          <!-- CLAUSES TAB CONTENT -->
+          <div class="tab-pane fade mt-4" id="pills-clauses" role="tabpanel"
+               aria-labelledby="pills-profile-tab">
 
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <p-table [value]="clauseList" dataKey="code" selectionMode="single"
+                     [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
+                     responsiveLayout="scroll" [autoLayout]="true" [paginator]="clauseList?.length > 5" [rows]="5"
+                     [showCurrentPageReport]="clauseList?.length > 5"
+                     currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
+                     class='ui-datatable' styleClass="p-datatable-sm">
 
-                <!-- TABS  -->
-
-                <ul class="nav  mt-5">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-risk-section"> {{'gis.policy.risk_sections' | translate}}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-clauses"> {{'gis.quotation.clauses' | translate}}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-limits-of-liability"> {{'gis.quotation.limits_of_liability' | translate}}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-excesses"> {{'gis.quotation.excesses' | translate}}</a>
-                </ul>
-                <div class="tab-content" id="pills-tabContent">
-                    <!-- RISK SECTION TAB CONTENT -->
-                    <div class="tab-pane fade show active mt-4 " id="pills-risk-section" role="tabpanel"
-                        aria-labelledby="pills-home-tab">
-
-                        <p-table #dt1 [value]="selectedRisk?.sectionsDetails || []" dataKey="code" editMode="row"
-                            selectionMode="single" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
-                            class="ui-datatable" [autoLayout]="true">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th>{{ 'gis.policy.group' | translate }}</th>
-                                    <th>{{ 'gis.policy.row_no' | translate }}</th>
-                                    <th>{{ 'gis.policy.short_desc' | translate }}</th>
-                                    <th>{{ 'gis.policy.description' | translate }}</th>
-                                    <th>{{ 'gis.policy.premium_rate' | translate }}</th>
-                                    <th>{{ 'gis.policy.rate_type' | translate }}</th>
-                                    <th>{{ 'gis.policy.div_factor' | translate }}</th>
-                                    <th class="text-end">{{ 'gis.policy.limit_amount' | translate }}</th>
-                                    <th class="text-end">{{ 'gis.policy.premium' | translate }}</th>
-
-                                </tr>
-                            </ng-template>
-
-                            <ng-template pTemplate="body" let-data let-ri="rowIndex">
-                                <tr [pSelectableRow]="data">
-                                    <td>{{ data.calculationGroup }}</td>
-                                    <td>{{ data.rowNumber }}</td>
-                                    <td>{{ data.sectionDescription |sentenceCase}}</td>
-                                    <td>{{ data.sectionDescription |sentenceCase}}</td>
-                                    <td>{{ data.rate }}</td>
-                                    <td>{{ data.rateType }}</td>
-                                    <td>{{ data.rateDivisionFactor }}</td>
-                                    <td appCommaFormat class="text-end">{{ data.limitAmount | number }}</td>
-                                    <td appCommaFormat class="text-end" >{{ data.premium | number }}</td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+              <ng-template pTemplate="header">
+                <tr>
+                  <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
+                  <th class="flexible-header"> {{ 'gis.quotation.heading' | translate }}</th>
+                  <th class="flexible-header"> {{ 'gis.quotation.description' | translate }}</th>
+                  <th class="flexible-header"></th>
+                  <th class="flexible-header"> {{ 'gis.quotation.mandatory' | translate }}</th>
 
 
-                    </div>
-                    <!-- CLAUSES TAB CONTENT -->
-                    <div class="tab-pane fade mt-4" id="pills-clauses" role="tabpanel"
-                        aria-labelledby="pills-profile-tab">
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
+                <tr [pSelectableRow]="clauseList"
+                    [class.p-highlight]="clauseList === selectedClause"
+                    class="custom-row">
 
 
-                        <p-table [value]="clauseList" dataKey="code" selectionMode="single"
-                            [tableStyle]="{'min-width': '50rem'}" [(selection)]="selectedClause"
-                            responsiveLayout="scroll" [autoLayout]="true" [paginator]="clauseList?.length > 5" [rows]="5"
-                            [showCurrentPageReport]="clauseList?.length > 5"
-                            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                            class='ui-datatable' styleClass="p-datatable-sm">
-
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <!-- <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th> -->
-                                    <th class="flexible-header"> {{'gis.quotation.heading' | translate}}</th>
-                                    <th class="flexible-header"> {{'gis.quotation.description' | translate}}</th>
-                                    <th class="flexible-header"></th>
-                                    <th class="flexible-header"> {{'gis.quotation.mandatory' | translate}}</th>
-
-
-
-
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-clauseList let-ri="rowIndex">
-                              <tr  [pSelectableRow]="clauseList"
-                              [class.p-highlight]="clauseList === selectedClause"
-                              class="custom-row">
-
-
-                                  <td class="flexible-header"  style=" white-space: nowrap;
+                  <td class="flexible-header" style=" white-space: nowrap;
                                       overflow: hidden;
                                       text-overflow: ellipsis;
                                       overflow-y: auto;
                                       max-width: 250px;" pTooltip="{{clauseList.heading }}"
-                                      tooltipPosition="top"
-                                    >
-                                     {{clauseList.heading}}
-                                  </td>
-                                  <td class="flexible-header"
-                                      style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
-                                      >
-                                      {{clauseList.wording}}
-                                  </td>
-                                  <td class="flexible-header">
-                                    <button pButton pRipple type="button"
-                                        (click)="openHelperModal(clauseList)"
-                                        icon="pi pi-info-circle"
-                                        class="p-button-rounded p-button-text"></button>
-                                </td>
-                                  <td class="flexible-header">{{clauseList.isMandatory}}</td>
+                      tooltipPosition="top"
+                  >
+                    {{ clauseList.heading }}
+                  </td>
+                  <td class="flexible-header"
+                      style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;"
+                  >
+                    {{ clauseList.wording }}
+                  </td>
+                  <td class="flexible-header">
+                    <button pButton pRipple type="button"
+                            (click)="openHelperModal(clauseList)"
+                            icon="pi pi-info-circle"
+                            class="p-button-rounded p-button-text"></button>
+                  </td>
+                  <td class="flexible-header">{{ clauseList.isMandatory }}</td>
 
-                              </tr>
-                                <!-- Modal for each row -->
-                                <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
-                                    [style]="{ 'width': '700px'}">
-                                    <ng-container *ngIf="clauseList">
-                                        <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
-                                            (onResize)="onResize($event)">
-                                            <p>{{ clauseList.wording }}</p>
-                                        </div>
-                                    </ng-container>
-                                </p-dialog>
-                            </ng-template>
-                             <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="1"></td>
-
-                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
-                                </tr>
-
-                            </ng-template>
-                        </p-table>
-
+                </tr>
+                <!-- Modal for each row -->
+                <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
+                          [style]="{ 'width': '700px'}">
+                  <ng-container *ngIf="clauseList">
+                    <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
+                         (onResize)="onResize($event)">
+                      <p>{{ clauseList.wording }}</p>
                     </div>
-                    <!-- LIMTS OF LIABILITY TAB CONTENT -->
-                    <div class="tab-pane fade mt-4" id="pills-limits-of-liability" role="tabpanel"
-                        aria-labelledby="pills-home-tab">
-                        <p-table #dt1 [value]="limitsOfLiabilityList" dataKey="code" selectionMode="single"
-                            [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [paginator]="limitsOfLiabilityList?.length > 5"
-                            [rows]="5" [showCurrentPageReport]="limitsOfLiabilityList?.length > 5"
-                            currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
-                            class='ui-datatable' styleClass="p-datatable-sm">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th> {{'gis.quotation.narration' | translate}}</th>
-                                    <th> {{'gis.quotation.value' | translate}}</th>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-limits let-ri="rowIndex">
-                                <tr>
-                                    <td style=" white-space: nowrap;
+                  </ng-container>
+                </p-dialog>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1"></td>
+
+                  <td colspan="10" style="padding:20px;padding-left: 30px;"
+                      id="empty">{{ 'gis.quotation.no_data_to_display' | translate }}
+                  </td>
+                </tr>
+
+              </ng-template>
+            </p-table>
+
+          </div>
+          <!-- LIMTS OF LIABILITY TAB CONTENT -->
+          <div class="tab-pane fade mt-4" id="pills-limits-of-liability" role="tabpanel"
+               aria-labelledby="pills-home-tab">
+            <p-table #dt1 [value]="limitsOfLiabilityList" dataKey="code" selectionMode="single"
+                     [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll"
+                     [paginator]="limitsOfLiabilityList?.length > 5"
+                     [rows]="5" [showCurrentPageReport]="limitsOfLiabilityList?.length > 5"
+                     currentPageReportTemplate=" {first} - {last} of {totalRecords}" [autoLayout]="true"
+                     class='ui-datatable' styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th> {{ 'gis.quotation.narration' | translate }}</th>
+                  <th> {{ 'gis.quotation.value' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-limits let-ri="rowIndex">
+                <tr>
+                  <td style=" white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             overflow-y: auto;
                             max-width: 250px;" pTooltip="{{limits.narration }}" tooltipPosition="top">
-                                        {{limits.narration}}</td>
-                                    <td>{{limits.value |number}} </td>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="1"></td>
+                    {{ limits.narration }}
+                  </td>
+                  <td>{{ limits.value |number }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1"></td>
 
-                                    <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
-                                </tr>
+                  <td colspan="10" style="padding:20px;padding-left: 30px;"
+                      id="empty">{{ 'gis.quotation.no_data_to_display' | translate }}
+                  </td>
+                </tr>
 
-                            </ng-template>
-                        </p-table>
-                    </div>
-                    <!-- EXCESSES TAB CONTENT -->
-                    <div class="tab-pane fade mt-4 " id="pills-excesses" role="tabpanel"
-                        aria-labelledby="pills-home-tab">
-                        <p-table
-                        #dt1
-                        [value]="excessesList"
-                        dataKey="code"
-                        selectionMode="single"
-                        [tableStyle]="{ 'min-width': '50rem' }"
-                        responsiveLayout="scroll"
-                        [paginator]="excessesList?.length > 5" [rows]="5" [showCurrentPageReport]="excessesList?.length > 5"
-                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
-                        [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm"
-                      >
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th> {{'gis.quotation.narration' | translate}}</th>
-                            <th> {{'gis.quotation.value' | translate}}</th>
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-limits let-ri="rowIndex">
-                          <tr>
-                            <td   style=" white-space: nowrap;
+              </ng-template>
+            </p-table>
+          </div>
+          <!-- EXCESSES TAB CONTENT -->
+          <div class="tab-pane fade mt-4 " id="pills-excesses" role="tabpanel"
+               aria-labelledby="pills-home-tab">
+            <p-table
+              #dt1
+              [value]="excessesList"
+              dataKey="code"
+              selectionMode="single"
+              [tableStyle]="{ 'min-width': '50rem' }"
+              responsiveLayout="scroll"
+              [paginator]="excessesList?.length > 5" [rows]="5" [showCurrentPageReport]="excessesList?.length > 5"
+              currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+              [autoLayout]="true" class='ui-datatable' styleClass="p-datatable-sm"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th> {{ 'gis.quotation.narration' | translate }}</th>
+                  <th> {{ 'gis.quotation.value' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-limits let-ri="rowIndex">
+                <tr>
+                  <td style=" white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             overflow-y: auto;
                             max-width: 250px;" pTooltip="{{limits.narration }}"
-                                      tooltipPosition="top">{{limits.narration}}</td>
-                            <td >{{limits.value |number}}  </td>
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage">
-                          <tr>
-                              <td colspan="1"></td>
+                      tooltipPosition="top">{{ limits.narration }}
+                  </td>
+                  <td>{{ limits.value |number }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1"></td>
 
-                              <td colspan="10" style="padding:20px;padding-left: 30px;" id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
-                          </tr>
+                  <td colspan="10" style="padding:20px;padding-left: 30px;"
+                      id="empty">{{ 'gis.quotation.no_data_to_display' | translate }}
+                  </td>
+                </tr>
 
-                      </ng-template>
-                      </p-table>
+              </ng-template>
+            </p-table>
 
-                    </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="float-start mt-4 mb-4 ">
+      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
+              id="btnCancelQuote" *ngIf="showQuoteActions">{{ 'gis.quotation.cancel_quote' | translate }}
+      </button>
+      <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
+              data-bs-target="#shareQuote" id="btnCancelQuote"
+              *ngIf="showQuoteActions"> {{ 'gis.quotation.share_quote' | translate }}
+      </button>
+    </div>
+    <div class="float-end mt-4 mb-4">
+      <button *ngIf="showQuoteActions" type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
+              data-bs-target="#convertQuoteToPolicy"
+              id="btnConvertPolicy">{{ 'gis.quotation.convert_to_policy' | translate }}
+      </button>
+      <button *ngIf="showQuoteActions" class="btn btn-primary" type="button" data-bs-toggle="modal"
+              data-bs-target="#convertQuote">
+        {{ 'gis.quotation.convert_to_normal_quote' | translate }}
+      </button>
+      <button *ngIf="!showQuoteActions" class="btn btn-primary" type="button" [routerLink]="'/home/lms/quotation/list'"
+              [queryParams]="{tab: 'general'}">
+        Back to dashboard
+      </button>
+    </div>
+
+    <!-- Convert Quote Modal -->
+    <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
+          <p class="convertQouteTitle mt-4 mb-2 ">{{ 'gis.quotation.convert_quote' | translate }}</p>
+          <p class="cancelQouteParagraph text-center">{{ 'gis.quotation.conversion_message' | translate }}</p>
+
+          <div class="d-flex justify-content-center mb-4" *ngIf="showQuoteActions">
+            <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
+              {{ 'gis.policy.cancel' | translate }}
+            </button>
+            <button class="btn btn-primary " type="button" id="btnConvertQuote" data-bs-dismiss="modal"
+                    (click)="convertToNormalQuote()">
+              {{ 'gis.quotation.convert_to_normal_quote' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" role="dialog"
+         aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="convertQuoteToPolicy">
+          <div class="modal-body ">
+            <p class="convertQouteTitle mt-2 mb-2">{{ 'gis.quotation.convert_quote' | translate }}</p>
+            <p class="cancelQouteParagraph text-center">{{ 'gis.quotation.conversion_message_policy' | translate }}</p>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="button" class="btn btn-outline-primary px-5" id="delete"
+                      data-bs-dismiss="modal">{{ 'gis.policy.cancel' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary px-5 ms-3"
+                      data-bs-dismiss="modal"
+                      (click)="convertToPolicy()">{{ 'gis.quotation.convert_to_policy' | translate }}
+              </button>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Convert Quote to policy Modal -->
+    <!-- <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+          <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
+          <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message_policy' | translate}}</p>
+
+          <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
+            <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
+              {{'gis.policy.cancel' | translate}}
+            </button>
+            <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToPolicy()" >
+              {{'gis.quotation.convert_to_policy' | translate}}
+            </button>
+        </div>
+        </div>
+      </div>
+    </div> -->
+
+
+    <!-- Cancel Quote Modal -->
+    <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content  ps-4 pt-4 pe-4">
+          <p class="cancelQouteTitle">{{ 'gis.quotation.provide_reason_for_cancellation' | translate }}</p>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" required
+                    [(ngModel)]="reasonCancelled"></textarea>
+
+          <div class="row mt-4 mb-4">
+            <div class="col-4"></div>
+            <div class="col-8">
+              <div class="row">
+                <div class="col-12 d-flex justify-content-end gap-2">
+                  <button type="button"
+                          class="btn btn-outline-primary"
+                          id="closeBtn"
+                          data-bs-dismiss="modal">
+                    {{ 'gis.quotation.close' | translate }}
+                  </button>
+                  <button type="button"
+                          class="btn btn-primary"
+                          id="cancelQoute"
+                          [attr.data-bs-dismiss]="reasonCancelled?.trim() ? 'modal' : null"
+                          (click)="cancelQuote()">
+                    {{ 'gis.quotation.cancel_quote' | translate }}
+                  </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="float-start mt-4 mb-4 ">
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
-                id="btnCancelQuote" *ngIf="showQuoteActions">{{'gis.quotation.cancel_quote' | translate}}</button>
-                <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
-                data-bs-target="#shareQuote" id="btnCancelQuote" *ngIf="showQuoteActions"> {{'gis.quotation.share_quote' | translate}}</button>
-        </div>
-        <div class="float-end mt-4 mb-4" >
-            <button *ngIf="showQuoteActions" type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#convertQuoteToPolicy"
-                id="btnConvertPolicy" >{{'gis.quotation.convert_to_policy' | translate}}</button>
-            <button *ngIf="showQuoteActions" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#convertQuote" >
-                {{'gis.quotation.convert_to_normal_quote' | translate}}</button>
-            <button *ngIf="!showQuoteActions" class="btn btn-primary" type="button" [routerLink]="'/home/lms/quotation/list'" [queryParams]="{tab: 'general'}" >
-              Back to dashboard</button>
-        </div>
-
-       <!-- Convert Quote Modal -->
-        <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <!-- Title and Message Styled Similarly to Cancel Quote Modal -->
-              <p class="convertQouteTitle mt-4 mb-2 ">{{'gis.quotation.convert_quote' | translate}}</p>
-              <p class="cancelQouteParagraph text-center">{{'gis.quotation.conversion_message' | translate}}</p>
-
-              <div class="d-flex justify-content-center mb-4" *ngIf="showQuoteActions">
-                <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
-                  {{'gis.policy.cancel' | translate}}
-                </button>
-                <button class="btn btn-primary " type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToNormalQuote()" >
-                  {{'gis.quotation.convert_to_normal_quote' | translate}}
-                </button>
-            </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" role="dialog"
-        aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" id="convertQuoteToPolicy">
-                <div class="modal-body ">
-                  <p class="convertQouteTitle mt-2 mb-2">{{'gis.quotation.convert_quote' | translate}}</p>
-                  <p class="cancelQouteParagraph text-center">{{'gis.quotation.conversion_message_policy' | translate}}</p>
-                  <div class="d-flex justify-content-center mb-3">
-                        <button type="button" class="btn btn-outline-primary px-5" id="delete"
-                            data-bs-dismiss="modal" >{{'gis.policy.cancel' | translate}}</button>
-                            <button type="button" class="btn btn-primary px-5 ms-3"
-                            data-bs-dismiss="modal" (click)="convertToPolicy()">{{'gis.quotation.convert_to_policy' | translate}}</button>
-                    </div>
-                    <div class="d-flex justify-content-center mb-2">
-
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-        <!-- Convert Quote to policy Modal -->
-        <!-- <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center">
-              <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
-              <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message_policy' | translate}}</p>
-
-              <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
-                <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
-                  {{'gis.policy.cancel' | translate}}
-                </button>
-                <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToPolicy()" >
-                  {{'gis.quotation.convert_to_policy' | translate}}
-                </button>
+    <!-- Share Quote Modal -->
+    <div class="modal fade" id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content  ps-4 pt-4 pe-4">
+          <div class="row">
+            <div class="col-3">
+              <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="email"
+                             inputId="flexRadioDefault2" [ngClass]="{ 'bold-label': selectedOption === 'email' }">
+              </p-radioButton>
+              <label class="ps-2" id="shareQuoteLabel" for="flexRadioDefault2"
+                     [ngClass]="{ 'bold-label': selectedOption === 'email' }">{{
+                  'gis.quotation.email' |
+                    translate
+                }}</label>
             </div>
+
+            <div class="col-3">
+              <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="sms"
+                             inputId="shareRadioSms" [ngClass]="{ 'bold-label': selectedOption === 'sms' }">
+              </p-radioButton>
+              <label class="ps-2" id="shareQuoteLabel" for="shareRadioSms"
+                     [ngClass]="{ 'bold-label': selectedOption === 'sms' }">{{
+                  'gis.quotation.sms' |
+                    translate
+                }}</label>
+            </div>
+
+            <div class="col-4">
+              <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="whatsapp"
+                             inputId="shareRadioWhatsApp"
+                             [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">
+              </p-radioButton>
+              <label class="ps-2" id="shareQuoteLabel" for="shareRadioWhatsApp"
+                     [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">{{
+                  'gis.quotation.whatsapp'
+                    |
+                    translate
+                }}</label>
             </div>
           </div>
-        </div> -->
 
+          <div class="form-group mt-3">
+            <label class="mb-1" for="clientName" id="shareLabel"> {{
+                'gis.quotation.client_name' |
+                  translate
+              }}</label>
+            <input type="text" [(ngModel)]="selectedClientName" id="clientName" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="mb-1 mt-3" id="shareLabel"
+                   [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
+            <!-- <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" /> -->
+            <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'"
+                   (ngModel)="selectedOption === 'email' ? selectedEmail : selectedPhoneNo"
+                   class="form-control"/>
 
-        <!-- Cancel Quote Modal -->
-        <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content  ps-4 pt-4 pe-4">
-                    <p class="cancelQouteTitle">{{'gis.quotation.provide_reason_for_cancellation' | translate}}</p>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" required [(ngModel)]="reasonCancelled"></textarea>
-
-                    <div class="row mt-4 mb-4">
-                      <div class="col-4"></div>
-                      <div class="col-8">
-                          <div class="row">
-                              <div class="col-12 d-flex justify-content-end gap-2">
-                                  <button type="button"
-                                          class="btn btn-outline-primary"
-                                          id="closeBtn"
-                                          data-bs-dismiss="modal">
-                                      {{'gis.quotation.close' | translate}}
-                                  </button>
-                                  <button type="button"
-                                          class="btn btn-primary"
-                                          id="cancelQoute"
-                                          [attr.data-bs-dismiss]="reasonCancelled?.trim() ? 'modal' : null"
-                                          (click)="cancelQuote()">
-                                      {{'gis.quotation.cancel_quote' | translate}}
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                </div>
+          </div>
+          <div class="row mt-4 mb-4">
+            <div class="col-6"></div>
+            <div class="col-6 d-flex justify-content-end">
+              <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal"
+                      (click)="handleShare()"> {{ 'gis.quotation.send' | translate }}
+              </button>
             </div>
+          </div>
         </div>
-        <!-- Share Quote Modal -->
-        <div class="modal fade" id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content  ps-4 pt-4 pe-4">
-                    <div class="row">
-                        <div class="col-3">
-                            <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="email"
-                                inputId="flexRadioDefault2" [ngClass]="{ 'bold-label': selectedOption === 'email' }">
-                            </p-radioButton>
-                            <label class="ps-2" id="shareQuoteLabel" for="flexRadioDefault2"
-                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">{{ 'gis.quotation.email' |
-                                translate }}</label>
-                        </div>
-
-                        <div class="col-3">
-                            <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="sms"
-                                inputId="shareRadioSms" [ngClass]="{ 'bold-label': selectedOption === 'sms' }">
-                            </p-radioButton>
-                            <label class="ps-2" id="shareQuoteLabel" for="shareRadioSms"
-                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">{{ 'gis.quotation.sms' |
-                                translate
-                                }}</label>
-                        </div>
-
-                        <div class="col-4">
-                            <p-radioButton name="flexRadioDefault" [(ngModel)]="selectedOption" value="whatsapp"
-                                inputId="shareRadioWhatsApp"
-                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">
-                            </p-radioButton>
-                            <label class="ps-2" id="shareQuoteLabel" for="shareRadioWhatsApp"
-                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">{{ 'gis.quotation.whatsapp'
-                                |
-                                translate }}</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group mt-3">
-                        <label class="mb-1" for="clientName" id="shareLabel"> {{'gis.quotation.client_name' |
-                            translate}}</label>
-                        <input type="text" [(ngModel)]="selectedClientName" id="clientName" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label class="mb-1 mt-3" id="shareLabel"
-                            [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
-                        <!-- <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" /> -->
-                        <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'"
-                            (ngModel)="selectedOption === 'email' ? selectedEmail : selectedPhoneNo"
-                            class="form-control" />
-
-                    </div>
-                    <div class="row mt-4 mb-4">
-                        <div class="col-6"></div>
-                        <div class="col-6 d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal"
-                                (click)="handleShare()"> {{'gis.quotation.send' | translate}}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+      </div>
     </div>
+
+  </div>
 </div>

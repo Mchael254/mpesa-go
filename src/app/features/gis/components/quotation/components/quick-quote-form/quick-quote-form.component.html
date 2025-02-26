@@ -73,6 +73,11 @@
               class="form-text text-danger">
               {{ 'gis.quotation.invalid_email_address' | translate }}
             </div>
+            <div
+              *ngIf="emailAddressUsed && quickQuoteForm?.get('emailAddress').touched"
+              class="form-text text-danger">
+              {{ 'gis.quotation.invalid_email_address_used' | translate }}
+            </div>
           </div>
           <div class="col-sm-4 col-6">
             <label for="Phone" class="quote-label" id="Phone"> {{
