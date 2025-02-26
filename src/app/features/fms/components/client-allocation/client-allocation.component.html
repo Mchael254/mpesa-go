@@ -390,6 +390,15 @@
     <div class="save-btns">
       <button
         type="button"
+        *ngIf="showAcknowledgeBtn"
+        [disabled]="!isAllocationComplete && !isAllocationCompleted"
+        class="btn btn-outline-primary"
+      >
+        Print Acknowledgement slip
+      </button>
+      <button
+        *ngIf="!showAcknowledgeBtn"
+        type="button"
         [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-outline-primary"
         (click)="saveAndPrint()"
