@@ -17,7 +17,7 @@ export class SubclassesService {
   // baseurl = this.appConfig.config.contextPath.gis_services;
   // crmurl = this.appConfig.config.contextPath.setup_services;
   // setupsbaseurl = "setups/api/v1"
-  
+
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
@@ -26,12 +26,12 @@ export class SubclassesService {
     ) { }
 
     httpOptions = {
-      headers: new HttpHeaders({ 
+      headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
-      
+
       })
     }
 
@@ -56,7 +56,7 @@ const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-  
+
   })
   // const params = new HttpParams()
   // .set('page', `${page}`)
@@ -73,6 +73,12 @@ getSubclasses(code: any): Observable<Subclasses>{
     catchError(this.errorHandl)
   )
 }
+getProductSubclasses(productCode: number): Observable<Subclasses[]>{
+  return this.api.GET<Subclasses[]>(`api/v1/sub-classes/product?productCode=${productCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  )
+}
 createSubClass(data:Subclasses[]) {
   console.log(JSON.stringify(data))
   return this.api.POST<Subclasses[]>(`api/v1/sub-classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
@@ -80,7 +86,7 @@ createSubClass(data:Subclasses[]) {
       retry(1),
       catchError(this.errorHandl)
     )
-  } 
+  }
   updateSubClass(data:Subclasses,id:any){
     console.log(JSON.stringify(data))
     return this.api.PUT<Subclasses>(`api/v1/sub-classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
@@ -108,7 +114,7 @@ createSubClass(data:Subclasses[]) {
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     const params = new HttpParams()
     .set('page', `${page}`)
@@ -125,7 +131,7 @@ createSubClass(data:Subclasses[]) {
         'Accept': 'application/json',
         'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
-      
+
       })
       const params = new HttpParams()
       .set('page', `${page}`)
