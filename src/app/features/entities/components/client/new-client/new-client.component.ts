@@ -825,41 +825,50 @@ export class NewClientComponent implements OnInit {
           this.clientRegistrationForm.reset();
           // this.clients = clientData;
           log.debug("Timestamp:", this.timeStamp)
+          log.debug("Timestamp:", this.normalQuoteTimeStamp)
           if (this.shouldReroute) {
-            if (this.timeStamp) {
-              log.debug("BACK TO GIS:")
-
+            if(this.timeStamp){
+              log.debug("BACK TO GIS-policy product:")
               this.router.navigate(['/home/gis/policy/policy-product']);
-
-            } else if (this.normalQuoteTimeStamp) {
-              log.debug("BACK TO GIS - Quotation details screen:")
-
-              this.router.navigate(['/home/gis/quotation/quotation-details']);
-
-              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
-
-            } else {
-              this.router.navigate(['/home/gis/policy/policy-product']);
+            }else{
               log.debug("BACK TO CRM:")
-
               this.router.navigate(['home/entity/client/list']);
             }
-          } else {
-            if (this.normalQuoteTimeStamp) {
-              log.debug("BACK TO GIS - Quotation details screen:")
-              const clientId = clientData.id
-              log.debug("Client id", clientId)
-              const clientCode = JSON.stringify(clientId);
-              sessionStorage.setItem('clientCode', clientCode);
+            // if (this.timeStamp) {
+            //   log.debug("BACK TO GIS:")
 
-              this.router.navigate(['/home/gis/quotation/quotation-details']);
+            //   this.router.navigate(['/home/gis/policy/policy-product']);
 
-              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+            // } else if (this.normalQuoteTimeStamp) {
+            //   // log.debug("BACK TO GIS - Quotation details screen:")
 
-            }
-          }
+            //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+            //   //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+            //   //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
+            // } else {
+            //   this.router.navigate(['/home/gis/policy/policy-product']);
+            //   log.debug("BACK TO CRM:")
+
+            //   this.router.navigate(['home/entity/client/list']);
+            // }
+          } 
+          // else {
+          //   if (this.normalQuoteTimeStamp) {
+          //     log.debug("BACK TO GIS - Quotation details screen:")
+          //     const clientId = clientData.id
+          //     log.debug("Client id", clientId)
+          //     const clientCode = JSON.stringify(clientId);
+          //     sessionStorage.setItem('clientCode', clientCode);
+
+          //     this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+          //     //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+          //     //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
+          //   }
+          // }
 
         });
 

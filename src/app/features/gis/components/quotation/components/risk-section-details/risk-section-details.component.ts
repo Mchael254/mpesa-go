@@ -185,6 +185,7 @@ export class RiskSectionDetailsComponent {
   defaultBinder: any;
   defaultBinderName: any;
   selectedRiskSection: any;
+  minDate: Date | undefined;
 
   constructor(
     private router: Router,
@@ -222,6 +223,7 @@ export class RiskSectionDetailsComponent {
   public isClausesOpen = false;
 
   ngOnInit(): void {
+    this.minDate = new Date();
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     this.formData = JSON.parse(quotationFormDetails);
