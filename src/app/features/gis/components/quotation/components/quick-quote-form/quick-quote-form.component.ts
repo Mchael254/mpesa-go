@@ -342,6 +342,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       sessionStorage.getItem('isReturnToQuickQuote')
     );
     this.PassedClientDetails = this.storedData?.selectedClient;
+    log.debug("Passed Client DETAILS:",this.PassedClientDetails)
     this.passedQuotation = JSON.parse(
       sessionStorage.getItem('passedQuotationDetails')
     );
@@ -349,6 +350,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+   
+
     this.minDate = new Date();
     this.loadAllproducts();
     this.loadAllClients();

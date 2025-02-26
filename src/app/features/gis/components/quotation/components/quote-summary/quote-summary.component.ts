@@ -659,6 +659,7 @@ export class QuoteSummaryComponent {
 
       // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
       // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+      log.debug("New client Proceed to client creation")
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
