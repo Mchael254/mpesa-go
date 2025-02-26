@@ -1,34 +1,34 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import stepData from '../../data/steps.json'
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
-import { AuthService } from '../../../../../../shared/services/auth.service';
-import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { BinderService } from '../../../setups/services/binder/binder.service';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuotationsService } from '../../services/quotations/quotations.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MessageService} from 'primeng/api';
+import {AuthService} from '../../../../../../shared/services/auth.service';
+import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
+import {BinderService} from '../../../setups/services/binder/binder.service';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 
-import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+import {SharedQuotationsService} from '../../services/shared-quotations.service';
+import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 
-import { catchError, forkJoin, mergeMap, of, switchMap } from 'rxjs';
+import {catchError, forkJoin, mergeMap, of, switchMap} from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, PremiumRate,
   QuotationDetails, UserDetail, QuickQuoteData, Limit
 } from '../../data/quotationsDTO'
-import { Premiums } from '../../../setups/data/gisDTO';
-import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { NgxSpinnerService } from 'ngx-spinner';
+import {Premiums} from '../../../setups/data/gisDTO';
+import {ClientDTO} from '../../../../../entities/data/ClientDTO';
+import {NgxSpinnerService} from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
-import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { Router } from '@angular/router';
-import { NgxCurrencyConfig } from "ngx-currency";
+import {HttpErrorResponse} from '@angular/common/http';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
+import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
+import {Router} from '@angular/router';
+import {NgxCurrencyConfig} from "ngx-currency";
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -129,7 +129,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
-  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -509,7 +509,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-
   riskLimitPayload() {
     let selectedLimits = this.premiumComputationPayload.risks
       .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
@@ -519,7 +518,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
     let assignedRows = selectedLimits.map(value => value.rowNumber);
-
 
 
     const maxAssignedValue = Math.max(...assignedRows)
@@ -761,7 +759,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       wef: selectedRisk?.withEffectFrom,
       wet: selectedRisk?.withEffectTo,
       prpCode: this.passedClientDetails?.id,
-      quotationProductCode: existingRisk ? existingRisk?.quotationProductCode: null,
+      quotationProductCode: existingRisk && this.quoteAction === "E" ? existingRisk?.quotationProductCode : null,
       coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
       taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
         code: tax.code,
@@ -789,7 +787,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
+      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
       : this.quotationService.processQuotation(quotation);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
@@ -1249,6 +1247,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           annualPremium: 0,
           multiplierDivisionFactor: limit.multiplierDivisionFactor,
           multiplierRate: limit.multiplierRate,
+          freeLimit: limit?.freeLimit,
           description: limit.sectionShortDescription,
           section: {
             description: limit.sectionDescription,
@@ -1259,6 +1258,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           sectionType: limit.sectionType,
           riskCode: null,
           limitAmount: limit.limitAmount,
+          limitPeriod: limit?.limitPeriod || 0,
           compute: "Y",
           dualBasis: "N"
         })
@@ -1680,18 +1680,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     return this.quotationService
       .updatePremium(quotationCode, this.updatePremiumPayload)
       .subscribe({
-        next: (response: any) => {
-          const result = response;
-          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-        },
-        error: (error) => {
-          log.error("Failed to update details:", error);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
+          next: (response: any) => {
+            const result = response;
+            log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+          },
+          error: (error) => {
+            log.error("Failed to update details:", error);
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error.message
+            );
+          }
         }
-      }
       );
   }
 

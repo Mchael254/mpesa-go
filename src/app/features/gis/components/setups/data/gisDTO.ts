@@ -936,6 +936,7 @@ export interface Premiums {
   agentName: string,
   rangeType: string,
   limitAmount: number,
+  limitPeriod?: number
   noClaimDiscountLevel: string
   doesCashBackApply: string,
   cashBackLevel: number,
