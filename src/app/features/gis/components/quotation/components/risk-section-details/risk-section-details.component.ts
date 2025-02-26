@@ -182,6 +182,8 @@ export class RiskSectionDetailsComponent {
   regexPattern: string;
   taxList: any;
   currentDate = new Date();
+  defaultBinder: any;
+  defaultBinderName: any;
 
   constructor(
     private router: Router,
@@ -222,6 +224,11 @@ export class RiskSectionDetailsComponent {
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     this.formData = JSON.parse(quotationFormDetails);
+    const clientFormDetails = sessionStorage.getItem('clientPayload');
+    const clientData = JSON.parse(clientFormDetails)
+      log.debug("Client form details:", clientData)
+    this.clientName= clientData.firstName+ ' '+ clientData.lastName
+
     this.clientFormData = this.sharedService.getFormData();
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
@@ -286,11 +293,11 @@ export class RiskSectionDetailsComponent {
     this.riskDetailsForm.get('wef').valueChanges.subscribe(() => {
       // this.updateCoverToDate();
     });
-    this.fetchBodyTypes();
-    this.fetchMotorColours();
-    this.fetchSecurityDevices();
-    this.fetchMotorAccessories();
-    this.getModelYear()
+    // this.fetchBodyTypes();
+    // this.fetchMotorColours();
+    // this.fetchSecurityDevices();
+    // this.fetchMotorAccessories();
+    // this.getModelYear()
 
 
 
@@ -402,7 +409,7 @@ export class RiskSectionDetailsComponent {
     this.getProductSubclass(this.selectProductCode);
     // this.getSubclasses();
 
-    this.getClient();
+    // this.getClient();
 
   }
 
@@ -436,7 +443,16 @@ export class RiskSectionDetailsComponent {
         const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
         this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
       });
-
+      this.allMatchingSubclasses = this.allMatchingSubclasses.map((value) => {
+        let capitalizedDescription =
+          value.description.charAt(0).toUpperCase() +
+          value.description.slice(1).toLowerCase();
+        return {
+          ...value,
+          description: capitalizedDescription,
+        };
+      });
+      // const allMatchingSubclasses= this.allMatchingSubclasses
       log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
 
 
@@ -472,7 +488,16 @@ export class RiskSectionDetailsComponent {
  */
   loadCovertypeBySubclassCode(code: number) {
     this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
-      this.subclassCoverType = data;
+      // this.subclassCoverType = data;
+      this.subclassCoverType = data.map((value) => {
+        let capitalizedDescription =
+          value.description.charAt(0).toUpperCase() +
+          value.description.slice(1).toLowerCase();
+        return {
+          ...value,
+          description: capitalizedDescription,
+        };
+      });
       this.coverTypeCode = this.subclassCoverType[0].coverTypeCode;
       log.debug(this.subclassCoverType, 'filtered covertype');
       log.debug(this.coverTypeCode, 'filtered covertype code');
@@ -482,7 +507,7 @@ export class RiskSectionDetailsComponent {
     // this.loadSubclassSectionCovertype();
 
   }
-
+ 
   /**
  * Fetches client data and updates properties.
  * Retrieves client details via an HTTP request and updates properties
@@ -498,7 +523,7 @@ export class RiskSectionDetailsComponent {
       this.selectedClientList = this.clientList.filter(client => client.id == this.insuredCode);
       log.debug("Selected Client ",this.selectedClientList )
 
-      this.clientName = this.selectedClientList[0].firstName + ' ' + this.selectedClientList[0].lastName;
+      this.clientName = this.selectedClientList[0].firstName + ' '+ this.selectedClientList[0].lastName;
 
       log.debug(this.clientName, "Client NAME")
 
@@ -585,7 +610,21 @@ export class RiskSectionDetailsComponent {
     this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
       this.binderList = data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      log.debug("All Binders Details:", this.binderListDetails); // Debugging
+      this.binderListDetails = this.binderListDetails.map((value) => {
+        let capitalizedDescription =
+          value.binder_name.charAt(0).toUpperCase() +
+          value.binder_name.slice(1).toLowerCase();
+        return {
+          ...value,
+          binder_name: capitalizedDescription,
+        };
+      });
+      log.debug("All Binders Details:", this.binderListDetails);
+       this.defaultBinder =this.binderListDetails.filter(binder => binder.is_default === "Y")
+       log.debug("Default Binder",this.defaultBinder)
+       this.defaultBinderName = this.defaultBinder[0].binder_name
+       log.debug("Default Binder name",this.defaultBinderName)
+
       // this.selectedBinderCode = this.binderListDetails[0].code;
 
       this.cdr.detectChanges();
@@ -676,7 +715,16 @@ export class RiskSectionDetailsComponent {
 
   getVehicleMake() {
     this.vehicleMakeService.getAllVehicleMake().subscribe(data => {
-      this.vehicleMakeList = data;
+      // this.vehicleMakeList = data;
+      this.vehicleMakeList = data.map((value) => {
+        let capitalizedDescription =
+          value.name.charAt(0).toUpperCase() +
+          value.name.slice(1).toLowerCase();
+        return {
+          ...value,
+          name: capitalizedDescription,
+        };
+      });
       log.debug("VehicleMake", this.vehicleMakeList)
     })
   }
@@ -725,10 +773,20 @@ export class RiskSectionDetailsComponent {
   getVehicleModel() {
     this.vehicleModelService.getAllVehicleModel().subscribe(data => {
       this.vehicleModelList = data;
+   
       log.debug("VehicleModel", this.vehicleModelList);
       this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
       log.debug("Vehicle Model Details", this.vehicleModelDetails);
       this.filteredVehicleModel = this.vehicleModelDetails.filter(model => model.vehicle_make_code == this.selectedVehicleMakeCode);
+      this.filteredVehicleModel = this.filteredVehicleModel.map((value) => {
+        let capitalizedDescription =
+          value.name.charAt(0).toUpperCase() +
+          value.name.slice(1).toLowerCase();
+        return {
+          ...value,
+          name: capitalizedDescription,
+        };
+      });
       log.debug("Filtered Vehicle Model Details", this.filteredVehicleModel);
 
     })
@@ -806,9 +864,9 @@ export class RiskSectionDetailsComponent {
       }
       sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
 
-      this.loadRiskSections();
       this.loadRiskSubclassSection();
       this.loadSubclassSectionCovertype();
+      this.fetchScheduleRelatedData()
       this.createSchedule();
       this.loadRiskClauses();
     })
@@ -832,7 +890,7 @@ export class RiskSectionDetailsComponent {
       // premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
       subclassCode: this.selectedSubclassCode,
       itemDesc: this.riskDetailsForm.value.propertyId,
-      binderCode: this.selectedBinderCode,
+      binderCode: this.selectedBinderCode || this.defaultBinder[0].code,
       wef: formattedCoverFromDate,
       wet: formattedCoverToDate,
       // prpCode: this.passedClientDetails?.id,
@@ -856,6 +914,7 @@ export class RiskSectionDetailsComponent {
     this.quotationService.getRiskSection(this.quotationRiskCode,).subscribe(data => {
       this.riskSectionList = data;
       log.debug("Section List", this.riskSectionList)
+      this.sectionDetails = this.riskSectionList
     })
   }
   loadRiskSubclassSection() {
@@ -1037,6 +1096,9 @@ export class RiskSectionDetailsComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
 
           this.sectionDetailsForm.reset();
+          if(data){
+            this.loadRiskSections();
+          }
         } catch (error) {
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
 
@@ -1072,7 +1134,8 @@ export class RiskSectionDetailsComponent {
 
   updateRiskSection() {
     const section = this.sectionDetailsForm.value;
-
+    log.debug("Selected Section(UpdateRiskSection):",this.selectedSection)
+    log.debug("Section Details(UpdateRiskSection):",this.sectionDetails)
     // Ensure a section is selected
     if (!this.selectedSection) {
       console.error('No section selected for update.');
@@ -1080,61 +1143,36 @@ export class RiskSectionDetailsComponent {
       return;
     }
 
-    // Find the index of the selected section in the 'sectionDetails' array
-    const index = this.sectionDetails.findIndex(s => s.code === this.selectedSection.code);
+    // Find the index of the selected section in the 'sections' array
+    const index = this.sectionDetails.findIndex(s => s.sectionCode === this.selectedSection.sectionCode);
 
     if (index !== -1) {
       // Update the section in the array with the new values
-      const updatedSection = {
-        ...this.sectionDetails[index], // Preserve existing properties
-        ...section // Override with new values from the form
-      };
+      this.sectionDetails[index] = { ...this.sectionDetails[index], ...section };
+      this.sectionDetails = [...this.sectionDetails]; // Trigger change detection
 
       // Log the updated section
-      log.debug("Updated section:", updatedSection);
+      log.debug("Updated section:", this.sectionDetails[index]);
 
       // Send the updated section to the service
-      this.quotationService.updateRiskSection(this.quotationRiskCode, [updatedSection]).subscribe(
-        (response) => {
-          try {
-            // Store the response data back in the sectionDetails array
-            if (response) {
-              // Assuming the service returns the updated section(s)
-              const updatedSectionFromResponse = response[0] || response; // Handle both array and single object responses
+      this.quotationService.updateRiskSection(this.quotationRiskCode, [this.sectionDetails[index]]).subscribe((data) => {
+        try {
 
-              // Update the specific section in the sectionDetails array
-              this.sectionDetails[index] = updatedSectionFromResponse;
+          sessionStorage.setItem('limitAmount', section.limitAmount);
+          const sumInsured = section.limitAmount;
+          log.debug("Sum Insured Risk Details:", sumInsured);
 
-              // Make a new reference to trigger change detection
-              this.sectionDetails = [...this.sectionDetails];
+          // Reset the form and selected section
+          this.sectionDetailsForm.reset();
+          this.selectedSection = null;
 
-              // Log the complete sectionDetails array
-              log.debug("Complete sectionDetails array:", this.sectionDetails);
-            }
-
-            // Store the limit amount in sessionStorage
-            sessionStorage.setItem('limitAmount', updatedSection.limitAmount);
-            const sumInsured = updatedSection.limitAmount;
-            log.debug("Sum Insured Risk Details:", sumInsured);
-
-            // Reset the form and selected section
-            this.sectionDetailsForm.reset();
-            this.selectedSection = null;
-
-            // Display success message
-            this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
-            log.debug("Complete sectionDetails array:", this.sectionDetails);
-          } catch (error) {
-            log.error("Error processing response:", error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Error processing response data');
-          }
-        },
-        (error) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
+        } catch (error) {
           log.error("Error updating section:", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
           this.sectionDetailsForm.reset();
         }
-      );
+      });
     } else {
       console.error('Selected section not found in the sections array.');
       this.globalMessagingService.displayErrorMessage('Error', 'Selected section not found');
@@ -1412,7 +1450,8 @@ export class RiskSectionDetailsComponent {
   }
   getPremiumRates() {
     const selectedSectionCode = this.checkedSectionCode;
-    this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
+    const selectedBinderCode = this.selectedBinderCode || this.defaultBinder[0].code
+    this.premiumRateService.getAllPremiums(selectedSectionCode, selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
       this.premiumList = data;
       log.debug(this.premiumList[0].multiplierDivisionFactor, "premium List");
       sessionStorage.setItem('premiumRate', this.premiumList[0].rate)
@@ -1759,5 +1798,32 @@ formatDate(date: string | Date): string {
             );
           },
         });
+    }
+    fetchScheduleRelatedData(){
+         forkJoin(([
+            this.policyService.getBodyTypes(),
+            this.policyService.getMotorColors(),
+            this.policyService.getSecurityDevices(),
+            this.policyService.getMotorAccessories(),
+            this.productService.getYearOfManufacture()
+          ])).pipe(
+            untilDestroyed(this)
+          )
+            .subscribe(([bodyTypes, motorColours, securityDevices, motorAccessories, modelYear]:any) => {
+              this.bodytypesList= bodyTypes._embedded ?? []
+              this.motorColorsList= motorColours._embedded ?? []
+              this.securityDevicesList= securityDevices._embedded ?? []
+              this.motorAccessoriesList= motorAccessories._embedded ?? []
+              const model = modelYear._embedded
+              this.modelYear = model[0]["List of cover years"]
+
+              log.debug("Body Types:",this.bodytypesList)
+              log.debug("Motor Colours:",this.motorColorsList)
+              log.debug("Security Devices:",this.securityDevicesList)
+              log.debug("Motor Accessories:",this.motorAccessoriesList)
+              log.debug("model year", this.modelYear)
+
+             
+            })
     }
 }
