@@ -1,21 +1,21 @@
-import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
 import stepData from '../../data/steps.json';
-import { Logger, untilDestroyed, UtilService } from '../../../../../../shared/shared.module';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
-import { ClientService } from '../../../../../entities/services/client/client.service';
-import { ProductService } from '../../../../services/product/product.service';
-import { AuthService } from '../../../../../../shared/services/auth.service';
+import {Logger, untilDestroyed, UtilService} from '../../../../../../shared/shared.module';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MessageService} from 'primeng/api';
+import {ClientService} from '../../../../../entities/services/client/client.service';
+import {ProductService} from '../../../../services/product/product.service';
+import {AuthService} from '../../../../../../shared/services/auth.service';
 
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { QuotationsService } from '../../services/quotations/quotations.service';
-import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { ClientDTO } from '../../../../../entities/data/ClientDTO';
-import { Router } from '@angular/router';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
-import { Clause, Excesses, LimitsOfLiability, StatusEnum, Status, QuickQuoteData } from '../../data/quotationsDTO';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
+import {SharedQuotationsService} from '../../services/shared-quotations.service';
+import {ClientDTO} from '../../../../../entities/data/ClientDTO';
+import {Router} from '@angular/router';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
+import {Clause, Excesses, LimitsOfLiability, StatusEnum, QuickQuoteData} from '../../data/quotationsDTO';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -71,6 +71,7 @@ export class QuoteSummaryComponent {
   userDetails: any
   userBranchId: any;
   selectedRisk: any;
+  selectedProduct: any;
   clauseList: Clause[] = []
   selectedClause: any;
   modalHeight: number = 200; // Initial height
@@ -106,9 +107,7 @@ export class QuoteSummaryComponent {
     public router: Router,
     private ngZone: NgZone,
     public globalMessagingService: GlobalMessagingService,
-    public utilService:UtilService
-
-
+    public utilService: UtilService
   ) {
 
   }
@@ -141,7 +140,7 @@ export class QuoteSummaryComponent {
     const quickQuoteDataString = sessionStorage.getItem('quickQuoteData');
     this.quickQuoteData = JSON.parse(quickQuoteDataString);
     log.debug("quick quote data", this.quickQuoteData)
-    
+
     if(this.quickQuoteData.selectedClient?.id){
       log.debug("SHOW CONVERT TO POLICY BUTTON")
     this.showConverToPolicyButton =true
@@ -154,25 +153,7 @@ export class QuoteSummaryComponent {
     const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
     this.showQuoteActions = JSON.parse(showQuoteActionsString);
 
-    // if (this.passedClientDetails) {
-    //   log.info("EXISTING CLIENT")
-    //   this.selectedClientName = this.utilService.getFullName(this.passedClientDetails)
-    //   this.selectedEmail = this.passedClientDetails?.emailAddress;
-    //   this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
-    // } else {
-    //   log.info("NEW CLIENT")
-    //   this.selectedClientName = this.passedNewClientDetails?.inputClientName;
-    //   log.info("Selected Name:", this.selectedClientName)
-
-    //   this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
-    //   log.info("Selected Email:", this.selectedEmail)
-
-    //   this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
-    //   log.info("Selected Phone:", this.selectedPhoneNo)
-
-    // }
-
-    if(this.quickQuoteData) {
+    if (this.quickQuoteData) {
       this.selectedClientName = this.quickQuoteData?.clientName;
       log.info("Selected Name:", this.selectedClientName)
 
@@ -190,22 +171,21 @@ export class QuoteSummaryComponent {
     this.selectedSubclassCode = JSON.parse(selectedSubclassCodeString);
     log.debug("Selected subclass code", this.selectedSubclassCode)
 
-    this.isAddRisk=false;
+    this.isAddRisk = false;
     sessionStorage.setItem("isAddRisk", JSON.stringify(this.isAddRisk))
-    log.debug("IS ADD RISK STATE:",this.isAddRisk)
-    this.isEditRisk=false;
+    log.debug("IS ADD RISK STATE:", this.isAddRisk)
+    this.isEditRisk = false;
     sessionStorage.setItem("isEditRisk", JSON.stringify(this.isEditRisk))
-    log.debug("IS EDIT RISK STATE:",this.isEditRisk)
+    log.debug("IS EDIT RISK STATE:", this.isEditRisk)
     this.fieldDisableState = false;
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
-    // this.isAddRisk = false;
-    // log.debug("IS ADD RISK STATE:", this.isAddRisk)
-    // this.isEditRisk = false;
-    // log.debug("IS EDIT RISK STATE:", this.isEditRisk)
+
 
   }
-  ngOnDestroy(): void { }
+
+  ngOnDestroy(): void {
+  }
 
   formatString(str: string): string {
     return str.replace(/\s+/g, '-');
@@ -254,23 +234,13 @@ export class QuoteSummaryComponent {
 
       this.getClient();
       this.getQuotationProduct();
-
+      if (this.quotationDetails?.riskInformation?.length == 1) {
+        this.selectedRisk = this.quotationDetails.riskInformation[0]
+        this.onRiskSelect(this.selectedRisk)
+      }
     })
   }
 
-
-
-  // showOptions(item: any): void {
-  //   item.showOptions = !item.showOptions;
-  // }
-
-  // editItem(item: any): void {
-  //   log.debug('Edit item clicked', item);
-  // }
-
-  // deleteItem(item: any): void {
-  //   log.debug('Delete item clicked', item);
-  // }
   getClient() {
     if (this.passedNewClientDetails) {
       log.debug("new client")
@@ -300,6 +270,7 @@ export class QuoteSummaryComponent {
 
     })
   }
+
   getQuotationProduct() {
     this.productService.getProductByCode(this.productCode).subscribe(data => {
       this.quotationproduct = data;
@@ -309,6 +280,7 @@ export class QuoteSummaryComponent {
       this.cdr.detectChanges()
     })
   }
+
   addAnotherRisk() {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
@@ -323,9 +295,7 @@ export class QuoteSummaryComponent {
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
 
-    sessionStorage.setItem('quoteAction','A')
-
-
+    sessionStorage.setItem('quoteAction', 'A')
 
 
     // Set the fields disable state to true
@@ -371,7 +341,7 @@ export class QuoteSummaryComponent {
 
     log.debug("Session storage items removed");
 
-    if(this.reasonCancelled !== '') {
+    if (this.reasonCancelled !== '') {
       this.updateQuoteStatus();
     } else {
       this.globalMessagingService.displayInfoMessage('Error', 'Provide a reason');
@@ -386,6 +356,7 @@ export class QuoteSummaryComponent {
     this.userBranchId = this.userDetails?.branchId;
     log.debug("Branch Id", this.userBranchId);
   }
+
   createEmailForm() {
 
     this.emailForm = this.fb.group({
@@ -402,6 +373,7 @@ export class QuoteSummaryComponent {
       address: ['', Validators.required],
     });
   }
+
   emaildetails() {
     const currentDate = new Date();
     const current = currentDate.toISOString();
@@ -434,6 +406,7 @@ export class QuoteSummaryComponent {
       sender: ['', Validators.required],
     });
   }
+
   sendSms() {
     const payload = {
       recipients: [
@@ -445,6 +418,7 @@ export class QuoteSummaryComponent {
 
     };
   }
+
   handleShare() {
     if (this.selectedOption === 'email') {
       this.emaildetails();
@@ -452,6 +426,7 @@ export class QuoteSummaryComponent {
       this.sendSms();
     }
   }
+
   openRiskDeleteModal() {
     log.debug("Selected Risk", this.selectedRisk)
     if (!this.selectedRisk) {
@@ -461,13 +436,16 @@ export class QuoteSummaryComponent {
 
     }
   }
+
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
   }
+
   onResize(event: any) {
     this.modalHeight = event.height;
   }
+
   getSumInsuredForSection(sectionsDetails: any[], sectionDescription: string): number {
     if (!sectionsDetails) {
       return 0; // Fallback if sectionsDetails is null or undefined
@@ -475,6 +453,11 @@ export class QuoteSummaryComponent {
     const section = sectionsDetails.find(sec => sec.description === sectionDescription);
     return section?.limitAmount || 0;
   }
+  productSelected(product: any){
+    log.debug("Selected >>>", product)
+    this.selectedProduct = product
+  }
+
   onRiskSelect(riskItem: any): void {
     this.selectedRisk = riskItem;
     log.debug('Selected Risk item:', riskItem);
@@ -515,13 +498,19 @@ export class QuoteSummaryComponent {
         if (tax.taxAmount) {
           this.totalTaxes += tax.taxAmount;
           log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({ description: tax.rateDescription, amount: tax.taxAmount, rate: tax.quotationRate, rateType: tax.rateType });
+          this.taxList.push({
+            description: tax.rateDescription,
+            amount: tax.taxAmount,
+            rate: tax.quotationRate,
+            rateType: tax.rateType
+          });
           log.debug("Total Taxes List:", this.taxList)
 
         }
       });
     }
   }
+
   getTaxTooltip(): string {
     return this.taxList
       .map(
@@ -547,6 +536,7 @@ export class QuoteSummaryComponent {
         }
       });
   }
+
   fetchExcesses() {
     this.quotationService
       .getExcesses(this.selectedSubclassCode)
@@ -564,6 +554,7 @@ export class QuoteSummaryComponent {
         }
       });
   }
+
   fetchLimitsOfLiability() {
     this.quotationService
       .getLimitsOfLiability(this.selectedSubclassCode)
@@ -581,6 +572,7 @@ export class QuoteSummaryComponent {
         }
       });
   }
+
   deleteRisk() {
     log.debug("Selected Risk to be deleted", this.selectedRisk)
     this.quotationService
@@ -606,6 +598,7 @@ export class QuoteSummaryComponent {
         }
       });
   }
+
   openRiskEditModal() {
     log.debug("Selected Risk", this.selectedRisk)
     if (!this.selectedRisk) {
@@ -615,6 +608,7 @@ export class QuoteSummaryComponent {
 
     }
   }
+
   editRisk() {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
@@ -638,7 +632,7 @@ export class QuoteSummaryComponent {
 
     // Add a unique flag for edit risk navigation
     sessionStorage.setItem('navigationSource', 'editRisk');
-    sessionStorage.setItem('quoteAction','E')
+    sessionStorage.setItem('quoteAction', 'E')
 
 
     log.debug("isEditRisk:", this.isEditRisk)
@@ -719,34 +713,35 @@ export class QuoteSummaryComponent {
       .updateQuotationStatus(this.quotationCode, StatusEnum.Rejected, this.reasonCancelled)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response: any) => {
-          log.debug("Response after updating quotation status succesfully", response);
-          this.showQuoteActions = false; // Hide the buttons after successful cancellation
-          const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
-          sessionStorage.setItem("showQuoteActions", showQuoteActionsString)
-          this.globalMessagingService.displaySuccessMessage('Success', 'Quote cancelled');
+          next: (response: any) => {
+            log.debug("Response after updating quotation status succesfully", response);
+            this.showQuoteActions = false; // Hide the buttons after successful cancellation
+            const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
+            sessionStorage.setItem("showQuoteActions", showQuoteActionsString)
+            this.globalMessagingService.displaySuccessMessage('Success', 'Quote cancelled');
 
-        },
-        error: (error) => {
-          log.debug("Could not update status", error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to cancel quote. Try again later');
+          },
+          error: (error) => {
+            log.debug("Could not update status", error);
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to cancel quote. Try again later');
+          }
         }
-      }
-    );
+      );
   }
-  convertQuoteToPolicy(){
-    log.debug("Quotation Details",this.quotationDetails)
+
+  convertQuoteToPolicy() {
+    log.debug("Quotation Details", this.quotationDetails)
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
-    log.debug("Quotation Code",quotationCode);
-    log.debug("Quotation Details",this.quotationDetails);
+    log.debug("Quotation Code", quotationCode);
+    log.debug("Quotation Details", this.quotationDetails);
 
     const conversionFlag = true;
     sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
-    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data:any) => {
+    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data: any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
-      log.debug("Batch number",this.batchNo)
+      log.debug("Batch number", this.batchNo)
       const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
       sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
       this.router.navigate(['/home/gis/policy/policy-summary']);
@@ -756,10 +751,10 @@ export class QuoteSummaryComponent {
   }
 
   convertQuoteToNormalQuote() {
-    log.debug("Quotation Details",this.quotationDetails);
+    log.debug("Quotation Details", this.quotationDetails);
 
     const quotationNumber = this.quotationDetails?.quotationNo;
-    log.debug("Quotation Number",quotationNumber);
+    log.debug("Quotation Number", quotationNumber);
     sessionStorage.setItem("quotationNum", quotationNumber);
 
     const conversionFlag = true;
@@ -767,17 +762,17 @@ export class QuoteSummaryComponent {
 
     // Get the quotCode
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
-    log.debug("Quotation Code",this.quotationCode);
+    log.debug("Quotation Code", this.quotationCode);
 
     // Call the API to convert quote to normal quote
     this.quotationService
       .convertToNormalQuote(quotationCode)
-      .subscribe((data:any) => {
-        log.debug("Response after converting quote to a normlaQuote:", data)
+      .subscribe((data: any) => {
+          log.debug("Response after converting quote to a normlaQuote:", data)
 
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-      }
-    );
+        }
+      );
   }
 }
