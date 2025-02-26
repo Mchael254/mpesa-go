@@ -45,7 +45,7 @@ return throwError(errorMessage);
 }
 getAllVehicleModel(): Observable<vehicleModel[]>{
   let page = 0;
-  let size = 1000
+  let size = 500
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',

@@ -199,7 +199,16 @@ export class QuotationDetailsComponent {
  */
   getbranch() {
     this.branchService.getBranches(2).subscribe(data => {
-      this.branch = data
+      // this.branch = data
+      this.branch = data.map((value) => {
+        let capitalizedDescription =
+          value.name.charAt(0).toUpperCase() +
+          value.name.slice(1).toLowerCase();
+        return {
+          ...value,
+          name: capitalizedDescription,
+        };
+      });
     })
   }
 
@@ -298,11 +307,22 @@ export class QuotationDetailsComponent {
 
     this.todaysDate = formattedDate;
     log.debug('Todays  Date', this.todaysDate);
+    this.updateQuotationExpiryDate(this.todaysDate)
   }
   getQuotationSources() {
     this.quotationService.getAllQuotationSources().subscribe(res => {
       const sources = res
       this.quotationSources = sources.content
+      this.quotationSources = this.quotationSources.map((value) => {
+        let capitalizedDescription =
+          value.description.charAt(0).toUpperCase() +
+          value.description.slice(1).toLowerCase();
+        return {
+          ...value,
+          description: capitalizedDescription,
+        };
+      });
+      
       log.debug("SOURCES", this.quotationSources)
     })
   }
@@ -485,7 +505,8 @@ export class QuotationDetailsComponent {
         } else {
           const fromDate = this.quotationForm.value.wefDate
           const toDate = this.quotationForm.value.wetDate
-          // const rfqDate = this.quotationForm.value.RFQDate
+          const rfqDate = this.quotationForm.value.RFQDate
+          const expiryDate = this.quotationForm.value.expiryDate
           const rawCoverTo = new Date(toDate)
 
           const coverFromDate = fromDate;
@@ -496,14 +517,20 @@ export class QuotationDetailsComponent {
           const formattedCoverToDate = this.formatDate(covertToDate);
           log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
 
-          // const covertRfqDate = rfqDate;
-          // const formattedRfqDate = this.formatDate(covertRfqDate);
-          // log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
+          const covertRfqDate = rfqDate;
+          const formattedRfqDate = this.formatDate(covertRfqDate);
+          log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
+
+          const covertExpiryDate = expiryDate;
+          const formattedExpiryDate = this.formatDate(covertExpiryDate);
+          log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
 
           const quotationForm = this.quotationForm.value;
           // quotationForm.RFQDate = formattedRfqDate
           quotationForm.wefDate = formattedCoverFromDate
           quotationForm.wetDate = formattedCoverToDate
+          quotationForm.RFQDate = formattedRfqDate
+          quotationForm.expiryDate = formattedExpiryDate
           quotationForm.user = this.user;
           log.debug("Currency code-quote creation",this.quotationForm.value.currencyCode.id)
           quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
@@ -730,7 +757,7 @@ export class QuotationDetailsComponent {
 
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            error.error.message
+            error.error?.message
           );
         },
 
@@ -760,7 +787,7 @@ export class QuotationDetailsComponent {
       const selectedDate = new Date(RFQDate);
       selectedDate.setMonth(selectedDate.getMonth() + 3);
       const expiryDate = selectedDate.toISOString().split('T')[0];
-      this.quotationForm.controls['expiryDate'].setValue(expiryDate);
+      // this.quotationForm.controls['expiryDate'].setValue(expiryDate);
       log.debug("Quotation Expiry date", expiryDate)
       // Extract the day, month, and year
       const expiryDateRaw = new Date(expiryDate)
@@ -785,27 +812,64 @@ export class QuotationDetailsComponent {
     this.productCode = this.quotationForm.value.productCode.code
     this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res => {
       this.clauses = res
+      // ✅ Ensure all mandatory clauses are selected on load
+  this.selectedClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
+  
+  // ✅ Mark mandatory clauses as checked
+  this.clauses.forEach(clause => {
+    clause.checked = clause.isMandatory === 'Y';
+  });
     })
   }
-  selectedProductClauses(quotationCode) {
-
-    if (this.selectedClause) {
-      this.selectedClause.forEach(el => {
-        this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
-          log.debug(res)
-        })
-        log.debug(el.code)
-      })
+// 🔹 Function called when a checkbox is checked/unchecked
+onClauseSelectionChange(selectedClauseList: any) {
+  if (selectedClauseList.checked) {
+    // ✅ Add to selectedClause if not already included
+    if (!this.selectedClause.includes(selectedClauseList)) {
+      this.selectedClause.push(selectedClauseList);
     }
-
-    // this.clauseService.getSingleClause(code).subscribe(
-    //   {
-    //     next:(res)=>{
-    //       log.debug(res)
-    //     }
-    //   }
-    // )
+  } else {
+    // ✅ Remove from selectedClause only if NOT mandatory
+    if (selectedClauseList.isMandatory !== 'Y') {
+      this.selectedClause = this.selectedClause.filter(item => item.code !== selectedClauseList.code);
+    }
   }
+
+  // ✅ Call API with updated selection
+  // this.selectedProductClauses(this.quotationCode);
+  log.debug("Selected clause:",this.selectedClause)
+}
+
+// 🔹 API call to add selected clauses
+selectedProductClauses(quotationCode: string) {
+  if (this.selectedClause && this.selectedClause.length > 0) {
+    this.selectedClause.forEach(el => {
+      this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
+        console.debug(res);
+      });
+      console.debug(el.code);
+    });
+  }
+}
+  // selectedProductClauses(quotationCode) {
+
+  //   if (this.selectedClause) {
+  //     this.selectedClause.forEach(el => {
+  //       this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
+  //         log.debug(res)
+  //       })
+  //       log.debug(el.code)
+  //     })
+  //   }
+
+  //   // this.clauseService.getSingleClause(code).subscribe(
+  //   //   {
+  //   //     next:(res)=>{
+  //   //       log.debug(res)
+  //   //     }
+  //   //   }
+  //   // )
+  // }
   unselectClause(event) {
     log.debug(this.selectedClause)
   }
