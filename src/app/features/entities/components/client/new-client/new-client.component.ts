@@ -162,6 +162,7 @@ export class NewClientComponent implements OnInit {
   allUsersModalVisible: boolean = false;
   zIndex = 1;
   selectedMainUser: ClientDTO;
+  public currentDate = new Date();
   public today = new Date();
   public tomorrow: Date = new Date(new Date().setDate(new Date().getDate() + 1));
   public eighteenYearsAgo: Date = new Date(
@@ -364,7 +365,7 @@ export class NewClientComponent implements OnInit {
         },
       ),
     });
-    this.defineSmsNumberFormat();
+    // this.defineSmsNumberFormat();
     this.defineDisabledFormInputs();
     this.updateRegex();
     this.patchGISClientFormValues();
@@ -683,7 +684,7 @@ export class NewClientComponent implements OnInit {
         road: clientFormValues.address.road,
         state_id: 2,
         town_id: clientFormValues.address.town,
-        utility_address_proof: clientFormValues.address.utility_address_proof,
+        // utility_address_proof: clientFormValues.address.utility_address_proof,
         zip: "1022",
         phoneNumber: clientFormValues.address.phoneNumber
       }
@@ -702,11 +703,9 @@ export class NewClientComponent implements OnInit {
         receivedDocuments: "N", /*Todo: provide field to capture*/
         // smsNumber: clientFormValues.contact_details.smsNumber,
         // titleShortDescription: "DR",
-        // phoneNumber: clientFormValues.contact_details.phoneNumber.e164Number,
-        // smsNumber: clientFormValues.contact_details.smsNumber.e164Number,
 
-        phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
-        smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
+        phoneNumber: clientFormValues.contact_details.phoneNumber.internationalNumber,
+        smsNumber: clientFormValues.contact_details.smsNumber.internationalNumber,
         titleId: clientFormValues.contact_details.clientTitle
 
       }
@@ -735,7 +734,7 @@ export class NewClientComponent implements OnInit {
             Iban: not captured in endpoint,*/
         account_number: clientFormValues.payment_details.account_number,
         bank_branch_id: clientFormValues.payment_details.branch,
-        currency_id: clientFormValues.payment_details.currency,
+        currency_id: clientFormValues.payment_details.currency?.id,
         effective_from_date: clientFormValues.payment_details.effective_date_from,
         effective_to_date: clientFormValues.payment_details.effective_date_to,
         id: 0,
@@ -751,7 +750,7 @@ export class NewClientComponent implements OnInit {
             distributeChannel: not captured in endpoint,
             cr_form_required: not on frontend,
             cr_form_year: not on frontend*/
-        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship,
+        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship?.id,
         cr_form_required: "N",
         cr_form_year: 0,
         funds_source: clientFormValues.wealth_details.funds_source,
@@ -760,15 +759,15 @@ export class NewClientComponent implements OnInit {
         is_self_employed: "N",
         marital_status: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
         nationality_country_id: clientFormValues.wealth_details.country,
-        occupation_id: clientFormValues.wealth_details.occupation,
-        sector_id: clientFormValues.wealth_details.economic_sector,
+        occupation_id: clientFormValues.wealth_details.occupation?.id,
+        sector_id: clientFormValues.wealth_details.economic_sector?.id,
         certificate_registration_number: null,
         certificate_year_of_registration: null,
         distributeChannel: null,
-        insurancePurpose: null,
+        insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
         operating_country_id: null,
         parent_country_id: null,
-        premiumFrequency: null,
+        premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
         registeredName: null,
         source_of_wealth_id: null,
         tradingName: null
@@ -784,7 +783,7 @@ export class NewClientComponent implements OnInit {
         contactDetails: contact,
         effectiveDateFrom: null,
         effectiveDateTo: null,
-        id: null,
+        id: this.selectedMainUser ? this.selectedMainUser.id : null, // Set ID for existing client
         createdBy: null,
         partyId: this.entityDetails?.id,
         partyTypeShortDesc: "CLIENT",
@@ -826,41 +825,50 @@ export class NewClientComponent implements OnInit {
           this.clientRegistrationForm.reset();
           // this.clients = clientData;
           log.debug("Timestamp:", this.timeStamp)
+          log.debug("Timestamp:", this.normalQuoteTimeStamp)
           if (this.shouldReroute) {
-            if (this.timeStamp) {
-              log.debug("BACK TO GIS:")
-
+            if(this.timeStamp){
+              log.debug("BACK TO GIS-policy product:")
               this.router.navigate(['/home/gis/policy/policy-product']);
-
-            } else if (this.normalQuoteTimeStamp) {
-              log.debug("BACK TO GIS - Quotation details screen:")
-
-              this.router.navigate(['/home/gis/quotation/quotation-details']);
-
-              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
-
-            } else {
-              this.router.navigate(['/home/gis/policy/policy-product']);
+            }else{
               log.debug("BACK TO CRM:")
-
               this.router.navigate(['home/entity/client/list']);
             }
-          } else {
-            if (this.normalQuoteTimeStamp) {
-              log.debug("BACK TO GIS - Quotation details screen:")
-              const clientId = clientData.id
-              log.debug("Client id", clientId)
-              const clientCode = JSON.stringify(clientId);
-              sessionStorage.setItem('clientCode', clientCode);
+            // if (this.timeStamp) {
+            //   log.debug("BACK TO GIS:")
 
-              this.router.navigate(['/home/gis/quotation/quotation-details']);
+            //   this.router.navigate(['/home/gis/policy/policy-product']);
 
-              //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-              //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+            // } else if (this.normalQuoteTimeStamp) {
+            //   // log.debug("BACK TO GIS - Quotation details screen:")
 
-            }
-          }
+            //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+            //   //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+            //   //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
+            // } else {
+            //   this.router.navigate(['/home/gis/policy/policy-product']);
+            //   log.debug("BACK TO CRM:")
+
+            //   this.router.navigate(['home/entity/client/list']);
+            // }
+          } 
+          // else {
+          //   if (this.normalQuoteTimeStamp) {
+          //     log.debug("BACK TO GIS - Quotation details screen:")
+          //     const clientId = clientData.id
+          //     log.debug("Client id", clientId)
+          //     const clientCode = JSON.stringify(clientId);
+          //     sessionStorage.setItem('clientCode', clientCode);
+
+          //     this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+          //     //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+          //     //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
+          //   }
+          // }
 
         });
 
@@ -1209,12 +1217,39 @@ export class NewClientComponent implements OnInit {
     this.toggleAllUsersModal(true);
   }
 
+  formatDate(date: string | Date): string {
+    if (typeof date === 'string' && date.includes('T')) {
+        date = new Date(date); // Convert ISO string to Date object
+    }
+
+    if (date instanceof Date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    return date as string; // If already a formatted string, return as is
+  }
+
   patchClientFormValues(client: any) {
+
+     // Parse phone numbers
+     const mobileNumber = this.parsePhoneNumber(client?.mobileNumber);
+     const phoneNumber = this.parsePhoneNumber(client?.phoneNumber);
+
+     // Get country ISOs
+     const mobileCountryISO = this.getCountryISOFromCode(mobileNumber.countryCode);
+     const phoneCountryISO = this.getCountryISOFromCode(phoneNumber.countryCode);
+
+    const matchingIdentityType = this.identityTypeData.find(type => type.name === client?.modeOfIdentity);
+    // const DOB = this.formatDate(client?.dateOfBirth);
+
     this.clientRegistrationForm.patchValue({
       assignedTo: client?.id,
       surname: client?.lastName,
       otherName: client?.firstName,
-      identity_type: client?.modeOfIdentity,
+      identity_type: matchingIdentityType?.id,
       citizenship: client?.country,
       dateOfBirth: client?.dateOfBirth,
       idNumber: client?.idNumber,
@@ -1224,8 +1259,16 @@ export class NewClientComponent implements OnInit {
       contact_details: {
         clientBranch: client?.branchCode,
         clientTitle: client?.clientTitle,
-        smsNumber: client?.mobileNumber,
-        phoneNumber: client?.phoneNumber,
+        smsNumber: {
+          number: mobileNumber.number,
+          countryCode: mobileNumber.countryCode,
+          countryISO: mobileCountryISO
+        },
+        phoneNumber: {
+          number: phoneNumber.number,
+          countryCode: phoneNumber.countryCode,
+          countryISO: phoneCountryISO
+        },
         email: client?.emailAddress,
         channel: client?.preferredChannel,
       },
@@ -1274,11 +1317,137 @@ export class NewClientComponent implements OnInit {
         contact_details: {
           countryCodeSms: client.countryCodeSms,
           smsNumber: client?.smsNumber,
+          phoneNumber: client?.smsNumber,
           email: client?.email,
         },
       });
     }
+  }
 
+  parsePhoneNumber(phoneNumber: string): { countryCode: string, number: string } {
+    if (!phoneNumber) {
+      return { countryCode: '', number: '' };
+    }
 
+    // Remove all spaces and split by the plus sign
+    const cleanNumber = phoneNumber.replace(/\s+/g, '');
+    const parts = cleanNumber.split('+');
+
+    if (parts.length < 2) {
+      return { countryCode: '', number: cleanNumber };
+    }
+
+    // Get the country code (first three digits after +)
+    const countryCode = parts[1].substring(0, 3);
+    // Get the rest of the number
+    const number = parts[1].substring(3);
+
+    return { countryCode, number };
+  }
+
+   getCountryISOFromCode(countryCode: string): CountryISO {
+    // Convert country code to format expected by the library (e.g., +254)
+    const phoneNumberString = `+${countryCode}0000000000`; // Add dummy digits
+    try {
+      const parsedNumber = this.parsePhoneNumber(phoneNumberString);
+      if (parsedNumber) {
+        // The library will return the correct CountryISO based on the country code
+        return parsedNumber.countryCode as CountryISO;
+      }
+    } catch (error) {
+      console.warn('Could not parse country code:', countryCode);
+    }
+
+    return CountryISO.Kenya; // Fallback to Kenya if parsing fails
+  }
+
+  clearClientForm() {
+
+    this.selectedMainUser = null;
+    // Reset main form fields while preserving default values
+    this.clientRegistrationForm.patchValue({
+      partyTypeShtDesc: "CLIENT",
+      partyId: 16673590,
+      identity_type: '',
+      citizenship: '',
+      surname: '',
+      certRegNo: '',
+      regName: '',
+      tradeName: '',
+      regDate: '',
+      countryOfIncorporation: '',
+      parentCompany: '',
+      otherName: '',
+      dateOfBirth: '',
+      idNumber: '',
+      pinNumber: '',
+      gender: '',
+      clientTypeId: ''
+    });
+
+    // Reset nested form groups
+    const contactDetails = this.clientRegistrationForm.get('contact_details') as FormGroup;
+    contactDetails.reset({
+      clientBranch: '',
+      clientTitle: '',
+      smsNumber: '',
+      phoneNumber: '',
+      email: '',
+      channel: '',
+      pinNo: '',
+      eDocuments: '',
+      countryCodeSms: '',
+      countryCodeTel: ''
+    });
+
+    const address = this.clientRegistrationForm.get('address') as FormGroup;
+    address.reset({
+      box_number: '',
+      country: '',
+      county: '',
+      town: '',
+      physical_address: '',
+      road: '',
+      house_number: '',
+      utility_address_proof: '',
+      is_utility_address: ''
+    });
+
+    const paymentDetails = this.clientRegistrationForm.get('payment_details') as FormGroup;
+    paymentDetails.reset({
+      bank: '',
+      branch: '',
+      account_number: '',
+      currency: '',
+      effective_to_date: '',
+      effective_from_date: '',
+      mpayNo: '',
+      Iban: '',
+      is_default_channel: ''
+    });
+
+    const nextOfKinDetails = this.clientRegistrationForm.get('next_of_kin_details') as FormGroup;
+    nextOfKinDetails.reset({
+      mode_of_identity: '',
+      identity_number: '',
+      full_name: '',
+      relationship: '',
+      phone_number: '',
+      email_address: '',
+      dateofbirth: ''
+    });
+
+    const wealthDetails = this.clientRegistrationForm.get('wealth_details') as FormGroup;
+    wealthDetails.reset({
+      wealth_citizenship: '',
+      marital_status: '',
+      funds_source: '',
+      typeOfEmployment: '',
+      economic_sector: '',
+      occupation: '',
+      purposeinInsurance: '',
+      premiumFrequency: '',
+      distributeChannel: ''
+    });
   }
 }

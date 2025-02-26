@@ -1,3 +1,4 @@
+
 <div class="mx-4 mt-3">
   <p class="screenTitle">{{'gis.quotation.quotation_risk_detail' | translate}} </p>
   <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
@@ -15,7 +16,7 @@
             </button>
           </div> -->
         </div>
-        
+
       </div>
       <div  id="collapseExample">
         <!-- <div class="card card-body">
@@ -27,47 +28,54 @@
             <div class="col-4">
                 <label for="minmax-buttons" id="quote-label">{{'gis.quotation.product' | translate}}</label>
                 <select class="form-select form-control-sm " id="quote-dropdown" formControlName="productCode">
-                  <option value="">{{description}}</option>
-                  
-              </select>                
+                  <option value="">{{description |sentenceCase}}</option>
+
+              </select>
             </div>
             <div class="col-4">
                 <label for="minmax-buttons" id="quote-label">{{'gis.quotation.insured' | translate}}</label>
-                <select class="form-select form-control-sm " id="quote-dropdown" formControlName="insuredCode" >
-                  <option value="">{{clientName}}</option>
-              </select>                
+                <input type="text"
+                id="quote-input"
+                class="form-control form-control-sm mb-1"
+
+                [value]="clientName"
+                readonly>
+
+                <!-- <select class="form-select form-control-sm " id="quote-dropdown" formControlName="insuredCode" >
+                  <option value="">{{clientName |sentenceCase}}</option>
+              </select> -->
             </div>
-            
+
 
         </div>
             <div class="row mt-2 mx-4 mb-4">
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required">{{'gis.quotation.subclass' | translate}}</label>
-                  <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses" optionLabel="description" 
+                  <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses" optionLabel="description"
                   [filterBy]="'description'"  [filter]="true"
                   (onChange)="onSubclassSelected($event);loadSubclassSectionCovertype();"></p-dropdown>
 
-                  <!-- <select class="form-select form-control-sm" id="quote-dropdown" 
+                  <!-- <select class="form-select form-control-sm" id="quote-dropdown"
                   (change)="onSubclassSelected($event);loadSubclassSectionCovertype();" formControlName="subclassCode" >
                     <option></option>
                     <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">{{subclass.description}}</option>
                   </select> -->
                 </div>
-             
+
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_make' | translate}}</label>
                   <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
                    (change)="onVehicleMakeSelected($event)">
                     <option></option>
-                    <option *ngFor="let vehicleMake of vehicleMakeList" [value]="vehicleMake.code">{{vehicleMake.name}}</option> 
+                    <option *ngFor="let vehicleMake of vehicleMakeList" [value]="vehicleMake.code">{{vehicleMake.name}}</option>
                   </select> -->
-                  <p-dropdown  [options]="vehicleMakeList" optionLabel="name" 
+                  <p-dropdown  [options]="vehicleMakeList" optionLabel="name"
                   [filterBy]="'name'"  [filter]="true"
                   (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
                 </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_model' | translate}}</label>
-                  <p-dropdown  [options]="filteredVehicleModel" optionLabel="name" 
+                  <p-dropdown  [options]="filteredVehicleModel" optionLabel="name"
                   [filterBy]="'name'"  [filter]="true"
                   (onChange)="onVehicleModelSelected($event);"></p-dropdown>
                   <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
@@ -76,14 +84,13 @@
                     <option *ngFor="let vehicleModel of filteredVehicleModel" [value]="vehicleModel.code">{{ vehicleModel.name }}</option>
                   </select> -->
                 </div>
-                
 
             </div>
             <div class="row mt-2 mx-4 mb-4">
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.risk_id' | translate}}</label>
                   <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
-                  <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" 
+                  <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId"
                   (input)="riskIdPassed($event); transformToUpperCase($event)" placeholder="KAA 123X" >
                   <div
                   *ngIf="riskDetailsForm?.get('propertyId')?.hasError('pattern') && riskDetailsForm?.get('propertyId').touched"
@@ -94,28 +101,29 @@
             </div>
             <div class="col-4">
                 <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.risk_description' | translate}}</label>
-                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="itemDescription" [value]="vehiclemakeModel" readonly> 
-               
+                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="itemDescription" [value]="vehiclemakeModel" readonly>
+
             </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.cover_type' | translate}}</label>
-                  <p-dropdown formControlName="coverTypeDescription"  [options]="subclassCoverType" optionLabel="description" 
+                  <p-dropdown formControlName="coverTypeDescription"  [options]="subclassCoverType" optionLabel="description"
                   [filterBy]="'description'"  [filter]="true"
                   (onChange)="onCoverTypeSelected($event);"></p-dropdown>
 
                   <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeDescription">
                     <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.description}}</option>
                   </select> -->
-                  
+
                 </div>
-               
+
             </div>
             <div class="row mt-2 mx-4 mb-4">
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"  class="required"> {{'gis.quotation.premium_band' | translate}}</label>
-                <p-dropdown formControlName="binderCode"  [options]="binderListDetails" optionLabel="binder_name" 
+                <p-dropdown formControlName="binderCode"  [options]="binderListDetails" optionLabel="binder_name"
                 [filterBy]="'binder_name'"  [filter]="true"
                 (onChange)="onBinderSelected($event);"></p-dropdown>
+
                 <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="binderCode" >
                     <option *ngFor="let binder of binderListDetails" [value]="binder.code">
                       {{binder.binder_name}}
@@ -131,12 +139,13 @@
               inputStyleClass='form-control'
               [showIcon]="true"
               (onSelect)="updateCoverToDate($event)"
-              [placeholder]="passedCoverFromDate" >
+              [minDate]="minDate"
+              
+              [ngModel]="passedCoverFromDate" >
             </p-calendar>
               <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="wef"> -->
 
           </div>
-             
             <div class="col-xl-4">
               <label for="" id="quote-label"> {{'gis.quotation.cover_to' | translate}}</label>
               <p-calendar formControlName="wet" name="wet"
@@ -145,7 +154,8 @@
               [dateFormat]="dateFormat"
               inputStyleClass='form-control'
               [showIcon]="true"
-              [placeholder]="passedCoverToDate"
+              [minDate]="minDate"
+              [ngModel]="passedCoverToDate"
               >
           </p-calendar>
               <!-- <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="wet"> -->
@@ -161,7 +171,7 @@
   <!-- schedule card -->
   <div class="card  mb-3">
     <div class="card-body">
-      
+
         <div class="row">
           <div class="col-4">
             <strong> {{'gis.quotation.schedule_details' | translate}}</strong>
@@ -180,21 +190,29 @@
               </div>
               <div class="col-4" *ngIf="isCollapsibleOpen">
                 <button type="button" id="icon" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteSchedule" title="Delete">
-                  
+
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
-              <div class="col-4">
-                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#scheduleDetails" [attr.aria-expanded]="!isCollapsibleOpen" (click)="toggleSchedule()">
-                  <i class="fa-solid fa-chevron-down"></i>
-                </button>
-              </div>
+                <div class="col-4">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sectionDetails"
+                    aria-expanded="false"
+                    [attr.aria-expanded]="isSectionDetailsOpen"
+                    (click)="toggleSchedule()">
+                    <i class="fa-solid" [ngClass]="isCollapsibleOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                  </button>
+                </div>
             </div>
-            
           </div>
         </div>
-      <div class="collapse" id="scheduleDetails" > 
-       
+
+        <div [@slideInOut]="isCollapsibleOpen ? 'open' : 'closed'" class="mt-2">
+
         <!-- Edit Schedule Modal -->
         <div class="modal fade" id="editSchedule" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -204,7 +222,7 @@
               </div>
 
               <div class="modal-body">
-                <h5 class="modal-title mt-2" id="editScheduleLabel">{{'gis.quotation.edit_motor_private_details' | translate}}</h5>                      
+                <h5 class="modal-title mt-2" id="editScheduleLabel">{{'gis.quotation.edit_motor_private_details' | translate}}</h5>
                 <form [formGroup]="scheduleDetailsForm">
                   <div formGroupName="details">
                       <div formGroupName="level1">
@@ -308,7 +326,7 @@
                                               <option value=""></option>
                                               <option *ngFor="let year of modelYear" [value]="year">{{ year }}</option>
                                           </select>
-                                         
+
                                       </div>
                                   </div>
                               </div>
@@ -322,7 +340,7 @@
                                           id="scheduleLabel">{{'gis.quotation.seating_capacity'
                                           | translate}}</label>
                                       <div class="col-7">
-                                          
+
                                           <input type="number"
                                               id="scheduleInput"
                                               class="form-control form-control-sm mb-1"
@@ -508,7 +526,8 @@
                                               optionLabel="desc"
                                               formControlName="color"
                                               [filterBy]="'desc'"
-                                              [filter]="true"></p-dropdown>
+                                              [filter]="true"
+                                             ></p-dropdown>
                                       </div>
                                   </div>
                               </div>
@@ -525,7 +544,8 @@
                                               optionLabel="name"
                                               formControlName="Make"
                                               [filterBy]="'name'"
-                                              [filter]="true"></p-dropdown>
+                                              [filter]="true"
+                                              [placeholder]="selectedVehicleModelName"></p-dropdown>
                                       </div>
                                   </div>
                               </div>
@@ -684,7 +704,7 @@
           </div>
         </div>
 
-       
+
         <!-- Delete Schedule Modal -->
         <div class="modal fade" id="deleteSchedule" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered ">
@@ -695,7 +715,7 @@
               </div> -->
               <div class="modal-body">
                 <p class="d-flex justify-content-center" id="deleteLabel">{{'gis.quotation.are_you_sure_you_want_to_delete_schedule' | translate}}?</p>
-                <div class="row d-flex justify-content-center">                    
+                <div class="row d-flex justify-content-center">
                   <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal" (click)="deleteSchedule()">{{'gis.quotation.yes_delete' | translate}}</button>
                 </div><br>
                 <div class="row d-flex justify-content-center">
@@ -709,28 +729,28 @@
         <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
           <ng-template pTemplate="header">
             <tr>
-              <th>{{'gis.quotation.reg_no' | translate}}</th>
-              <th>{{'gis.quotation.vehicle_make' | translate}}</th>
-              <th>{{'gis.quotation.cubic_capacity' | translate}}</th>
-              <th>{{'gis.quotation.year_of_manufacture' | translate}}</th>
-              <th>{{'gis.quotation.seating_capacity' | translate}}</th>
-              <th>{{'gis.quotation.value' | translate}}</th>
-              <th>{{'gis.quotation.body_type' | translate}}</th>
-              <th>{{'gis.quotation.cover_type' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-schedule>
             <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
             [class.p-highlight]="schedule === selectedSchedule"
             >
-              <td>{{ schedule.details.level1.registrationNumber}}</td>
-              <td>{{ schedule.details.level1.Make }}</td>
-              <td>{{ schedule.details.level1.cubicCapacity }}</td>
-              <td>{{ schedule.details.level1.yearOfManufacture }}</td>
-              <td>{{ schedule.details.level1.carryCapacity }}</td>
-              <td>{{ schedule.details.level1.value |number }}</td>
-              <td>{{ schedule.details.level1.bodyType }}</td>
-              <td>{{ schedule.details.level1.coverType }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.registrationNumber}}</td>
+              <td class="flexible-header">{{ schedule.details.level1.Make }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.cubicCapacity }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.yearOfManufacture }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.carryCapacity }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.value |number }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.bodyType }}</td>
+              <td class="flexible-header">{{ schedule.details.level1.coverType }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -773,10 +793,10 @@
                     </button>
                   </div> -->
                 </div>
-               
+
               </div>
             </div>
-            
+
           </div>
           <div class=" mt-2" id="otherDetails">
               <!-- Add Schedule-other details Modal -->
@@ -784,58 +804,58 @@
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
               <div class="modal-content">
                 <div class="modal-body">
-                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.add_other_details' | translate}}</h5> 
+                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.add_other_details' | translate}}</h5>
                   <form >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.code' | translate}}</label>
                     <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.geographical_limits' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >  
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.deductible_desc' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >    
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.limitation_use' | translate}}</label>
                     <select class="form-select form-control-sm mb-1" id="scheduleInput" >
                       <option ></option>
                       <option ></option>
-                    </select>                       
+                    </select>
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.authorized_driver' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >          
-                  </form> 
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
+                  </form>
                   <div class="mt-4 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal">{{'gis.quotation.save_details' | translate}}</button>
 
-                  </div>                    
-                 
+                  </div>
+
                 </div>
               </div>
             </div>
           </div>
-           
+
              <!-- Edit Schedule-other details Modal -->
           <div class="modal fade" id="editOtherDetails" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
               <div class="modal-content">
                 <div class="modal-body">
-                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.edit_Other_details' | translate}}</h5> 
+                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.edit_Other_details' | translate}}</h5>
                   <form >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.code' | translate}}</label>
                     <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.geographical_limits' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >  
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.deductible_desc' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >    
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.limitation_use' | translate}}</label>
                     <select class="form-select form-control-sm mb-1" id="scheduleInput" >
                       <option ></option>
                       <option ></option>
-                    </select>                       
+                    </select>
                     <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">{{'gis.quotation.authorized_driver' | translate}}</label>
-                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >          
-                  </form> 
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >
+                  </form>
                   <div class="mt-4 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal">{{'gis.quotation.save_details' | translate}}</button>
 
-                  </div>                    
-                 
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -850,7 +870,7 @@
                 </div> -->
                 <div class="modal-body">
                   <p class="d-flex justify-content-center" id="deleteLabel">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
-                  <div class="row d-flex justify-content-center">                    
+                  <div class="row d-flex justify-content-center">
                     <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">{{'gis.quotation.yes_delete' | translate}}</button>
                   </div><br>
                   <div class="row d-flex justify-content-center">
@@ -863,30 +883,30 @@
             <p-table [value]="" [tableStyle]="{ 'min-width': '300px' }">
               <ng-template pTemplate="header">
                   <tr>
-                      <th>{{'gis.quotation.code' | translate}}</th>
-                      <th>{{'gis.quotation.limitation_use' | translate}}</th>
-                      <th>{{'gis.quotation.geographical_limits' | translate}}</th>
-                      <th>{{'gis.quotation.authorized_driver' | translate}}</th>
-                      <th>{{'gis.quotation.deductible_description' | translate}}</th>
-  
-  
+                      <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.limitation_use' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.geographical_limits' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.authorized_driver' | translate}}</th>
+                      <th class="flexible-header">{{'gis.quotation.deductible_description' | translate}}</th>
+
+
                   </tr>
               </ng-template>
               <ng-template pTemplate="body" >
                   <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-  
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+                      <td class="flexible-header"></td>
+
                   </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td colspan="8"  style="padding: 20px; text-align:center " id="empty">{{'gis.quotation.no_data_to_display' | translate}}</td>
                 </tr>
-  
+
                 </ng-template>
           </p-table>
           </div>
@@ -916,14 +936,14 @@
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </div>
-                  
+
                   <!-- <div class="col-2" >
                     <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#thirdDetails" aria-expanded="false" aria-controls="otherDetails" [attr.aria-expanded]="!isThirdDetailsOpen" (click)="toggleThirdDetails()">
                       <i class="fa-solid fa-chevron-down"></i>
                     </button>
                   </div> -->
                 </div>
-               
+
               </div>
             </div>
             <div  id="thirdDetails">
@@ -931,19 +951,19 @@
           <div class="modal fade" id="addThirdDetails" tabindex="-1" role="dialog" aria-labelledby="addOtherDetailsLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
               <div class="modal-content">
-                <div class="modal-body">          
-                 
+                <div class="modal-body">
+
                 </div>
               </div>
             </div>
           </div>
-           
+
              <!-- Edit Third details Modal -->
           <div class="modal fade" id="editThirdDetails" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
               <div class="modal-content">
                 <div class="modal-body">
-                 
+
                 </div>
               </div>
             </div>
@@ -958,7 +978,7 @@
                 </div> -->
                 <div class="modal-body">
                   <p class="d-flex justify-content-center" id="deleteLabel">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
-                  <div class="row d-flex justify-content-center">                    
+                  <div class="row d-flex justify-content-center">
                     <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">{{'gis.quotation.yes_delete' | translate}}</button>
                   </div><br>
                   <div class="row d-flex justify-content-center">
@@ -968,15 +988,14 @@
               </div>
             </div>
           </div>
-         
+
           </div>
           </div>
         </div>
       </div>
-      
+
     </div>
   </div>
-   
      <!-- Section card -->
      <div class="card mb-3">
       <div class="card-body">
@@ -987,7 +1006,8 @@
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
-                <div class="col-3" *ngIf="isSectionDetailsOpen">
+                <div class="col-4" *ngIf="isSectionDetailsOpen">
+                  <button id="openModalButtonAdd" [hidden]="true"  data-bs-toggle="modal" data-bs-target="#addSection" >add</button>
                   <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSection" title="Edit">
                     <i class="fa-solid fa-plus"></i>
                   </button>
@@ -997,23 +1017,31 @@
                     <i class="fa-solid fa-pencil"></i>
                   </button>
                 </div> -->
-                <div class="col-3" *ngIf="isSectionDetailsOpen">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteSection" title="Edit">
+                <div class="col-4" *ngIf="isSectionDetailsOpen">
+                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteSection" title="Delete">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
                 </div>
-                <div class="col-3" >
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#sectionDetails" aria-expanded="false" aria-controls="sectionDetails" [attr.aria-expanded]="!isSectionDetailsOpen" (click)="toggleSectionDetails()">
-                    <i class="fa-solid fa-chevron-down"></i>
+                <div class="col-4">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sectionDetails"
+                    aria-expanded="false"
+                    [attr.aria-expanded]="isSectionDetailsOpen"
+                    (click)="toggleSectionDetails()">
+                    <i class="fa-solid" [ngClass]="isSectionDetailsOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                   </button>
                 </div>
               </div>
-             
+
             </div>
           </div>
-          
+
         </div>
-        <div class="collapse mt-2" id="sectionDetails">
+        <div [@slideInOut]="isSectionDetailsOpen ? 'open' : 'closed'" class="mt-2">
 
           <!-- Add Risk Section Modal -->
           <div class="modal fade" id="addSection" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel" aria-hidden="true">
@@ -1036,22 +1064,21 @@
                       </div>
                     </div>
                   </div>
-                
                   <div class="mt-4 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal" (click)="createRiskSection()">{{'gis.quotation.save_details' | translate}}</button>
                   </div>
                 </div>
-                
+
               </div>
             </div>
           </div>
-         
+
            <!-- Edit Risk Section Modal -->
         <div class="modal fade" id="editSection" #editSectionModal tabindex="-1" role="dialog" aria-labelledby="editSectionLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-body">
-                <h5 class="modal-title mt-2" id="editScheduleLabel">{{'gis.quotation.edit_risk_section_details' | translate}}</h5>                      
+                <h5 class="modal-title mt-2" id="editScheduleLabel">{{'gis.quotation.edit_risk_section_details' | translate}}</h5>
                 <form [formGroup]="sectionDetailsForm">
                     <!-- **ROW 1** -->
                     <div class="row" id="scheduleRows">
@@ -1059,7 +1086,7 @@
                           <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.id' | translate}} :</label>
                               <div class="col-7">
-                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="code">                            
+                                <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="code">
                               </div>
                             </div>
                       </div>
@@ -1083,7 +1110,8 @@
                                   <option value="RT">{{'gis.quotation.rate_table' | translate}}</option>
                                   <option value="ARG"> {{'gis.quotation.absolute_range' | translate}}</option>
                                   <option value="SRG">{{'gis.quotation.step_ranges' | translate}}</option>
-                                </select>                                          
+                                </select>
+
                               </div>
                             </div>
                       </div>
@@ -1092,8 +1120,9 @@
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.premium_type' | translate}}:</label>
                               <div class="col-7">
                                 <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
-                                  
-                                </select>                              
+
+                                </select>
+
                                 </div>
                               </div>
                           </div>
@@ -1104,7 +1133,7 @@
                         <div class="mb-3 row">
                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.free_limit' | translate}} :</label>
                             <div class="col-7">
-                              <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="freeLimit" >                            
+                              <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="freeLimit" >
                             </div>
                           </div>
                     </div>
@@ -1122,7 +1151,7 @@
                           <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.group' | translate}}:</label>
                               <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="calcGroup" >                            
+                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="calcGroup" >
                               </div>
                             </div>
                       </div>
@@ -1130,7 +1159,8 @@
                           <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
                               <div class="col-7">
-                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumRate">                            
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumRate">
+
                                 </div>
                               </div>
                           </div>
@@ -1210,7 +1240,7 @@
                                 <option ></option>
                                 <option >Yes{{'gis.policy.yes' | translate}}</option>
                                 <option >No{{'gis.policy.no' | translate}}</option>
-                              </select>    
+                              </select>
                             </div>
                           </div>
                         </div>
@@ -1221,16 +1251,16 @@
                           <div class="mb-3 row">
                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.compute' | translate}}:</label>
                             <div class="col-7">
-                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="compute">  
+                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="compute">
                             </div>
                           </div>
                         </div>
                         <div class="col-xl-6">
-                         
+
                         </div>
                       </div>
-                    
-                   
+
+
                 </form>
                 <div class="row mt-3 mb-2">
                   <div class="col-6 ">
@@ -1255,7 +1285,7 @@
               </div> -->
               <div class="modal-body">
                 <p class="d-flex justify-content-center" id="deleteLabel">{{'gis.quotation.are_you_sure_you_want_to_delete_section' | translate}}?</p>
-                <div class="row d-flex justify-content-center">                    
+                <div class="row d-flex justify-content-center">
                   <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">{{'gis.quotation.yes_delete' | translate}}</button>
                 </div><br>
                 <div class="row d-flex justify-content-center">
@@ -1265,32 +1295,30 @@
             </div>
           </div>
         </div>
-    
-        <p-table [value]="sections" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
+
+        <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
           <ng-template pTemplate="header">
             <tr>
-              <th>{{'gis.quotation.group' | translate}}</th>
-              <th> {{'gis.quotation.row_num' | translate}}</th>
-              <th>{{'gis.quotation.code' | translate}}</th>
-              <th> {{'gis.quotation.short_description' | translate}}</th>
-              <th>{{'gis.quotation.description' | translate}}</th>
-              <th>{{'gis.quotation.limit_amount' | translate}}</th>
-              <th> {{'gis.quotation.premium_rate' | translate}}</th>
-              <th>{{'gis.quotation.rate_type' | translate}}</th>
-              <th></th>
+              <th class="flexible-header">{{'gis.quotation.group' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.row_num' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.short_description' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.description' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.limit_amount' | translate}}</th>
+              <th class="flexible-header"> {{'gis.quotation.premium_rate' | translate}}</th>
+              <th class="flexible-header">{{'gis.quotation.rate_type' | translate}}</th>
+              <th class="flexible-header"></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
             <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-              <td>{{sectionArray.calcGroup}}</td>
-              <td>{{sectionArray.rowNumber}}</td>
-              <td>{{sectionArray.code}}</td>
-              <td>{{sectionArray.sectionShortDescription}}</td>
-              <td>{{sectionArray.description}}</td>
-              <td>{{sectionArray.limitAmount}}</td>
-              <td>{{sectionArray.premiumRate}}</td>
-              <td>{{sectionArray.rateType}}</td>
-              <td>
+              <td class="flexible-header">{{sectionArray.calcGroup}}</td>
+              <td class="flexible-header">{{sectionArray.rowNumber}}</td>
+              <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
+              <td class="flexible-header">{{sectionArray.description}}</td>
+              <td class="flexible-header">{{sectionArray.limitAmount |number}}</td>
+              <td class="flexible-header">{{sectionArray.premiumRate}}</td>
+              <td class="flexible-header">{{sectionArray.rateType}}</td>
+              <td class="flexible-header">
                 <!-- Edit Button -->
                 <button pButton pRipple type="button" pInitEditableRow class="p-button-rounded p-button-text"
                         (click)="onEditButtonClick(sectionArray)">
@@ -1300,9 +1328,7 @@
             </tr>
           </ng-template>
         </p-table>
-        
-      
-        
+
     </div>
       </div>
     </div>
@@ -1315,24 +1341,29 @@
             <strong>{{'gis.quotation.risk_clauses' | translate}}</strong>
           </div>
           <div class="col-8 d-flex justify-content-end">
-            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskClauses" aria-expanded="false" aria-controls="riskClauses">
+            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskClauses" aria-expanded="false" aria-controls="riskClauses"
+            (click)="toggleClausesopen()">
               <i class="fa-solid fa-chevron-down"></i>
             </button>
           </div>
         </div>
-        
-      </div>
-      <div class="collapse" id="riskClauses">
 
-            <p-table 
+      </div>
+      <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2">
+
+            <p-table
                 [value]="selectedClauseList"
-                dataKey="code" 
-                editMode="row" 
+                dataKey="code"
+                editMode="row"
                 [tableStyle]="{'min-width': '50rem'}"
-                styleClass="p-datatable-sm"
-                responsiveLayout="scroll" 
+                responsiveLayout="scroll"
                 class='ui-datatable'
-                [autoLayout]="true">
+                [autoLayout]="true"
+                selectionMode="multiple"
+                [(selection)]="selectedRiskClause"
+                [paginator]="selectedClauseList?.length > 5" [rows]="5"
+                [showCurrentPageReport]="selectedClauseList?.length > 5"
+                currentPageReportTemplate=" {first} - {last} of {totalRecords}">
                 <ng-template pTemplate="header">
                   <tr>
                             <th style="width: 5%;padding-right: 50px;">{{'gis.quotation.select' | translate}}</th>
@@ -1346,9 +1377,13 @@
                     <tr (click)="onSelectRiskClauses(selectedClauseList)" [pEditableRow]="selectedClauseList">
                           <td>
                               <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
+                              <!-- <p-checkbox [(ngModel)]="selectedClauseList.checked" [binary]="true"
+                              [disabled]="selectedClauseList.is_mandatory === 'Y'"
+                              >
+                          </p-checkbox> -->
                           </td>
-                      
-                          <td  
+
+                          <td
                               style=" white-space: nowrap;
                               overflow: hidden;
                               text-overflow: ellipsis;
@@ -1396,7 +1431,7 @@
                     </p-dialog>
                   </ng-template>
               </p-table>
-    
+
       </div>
     </div>
   </div>
@@ -1418,3 +1453,6 @@
   </div>
 </div>
 
+<!-- apps-fileview.texmex_20250213.01_p1
+risk-section-details.component.html
+Displaying risk-section-details.component.html. -->

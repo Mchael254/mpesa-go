@@ -1,4 +1,11 @@
 <div class="container">
+  <div class="breadcrumb-custom">
+    {{ "fms.receipting.finance" | translate }} > CB-Receipting >
+    {{ "base.Receipting" | translate }} >
+    <span class="breadcrumb-text">{{
+      "fms.receipting.receiptCapture" | translate
+    }}</span>
+  </div>
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
@@ -8,7 +15,7 @@
       </h5>
 
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="currency" class="form-label required">
             {{ "fms.receipting.currency" | translate }}
           </label>
@@ -40,32 +47,7 @@
           </div>
         </div>
 
-        <!-- <div class="col-md-4">
-                        <label for="paymentMode" class="form-label required">{{ 'fms.receipting.payment_mode' | translate }}</label>
-                        <div class="dropdown-container"
-                             (mouseleave)="onLeavePaymentMode()"> 
-                          <select id="paymentMode"
-                                  class="form-control"
-                                  formControlName="paymentMode"
-                                  (change)="onPaymentModeSelected($event)"
-                                  (mouseover)="onHoverPaymentMode($event)">
-                            <option *ngFor="let paymentMode of paymentModes" [value]="paymentMode.code">
-                              {{ paymentMode.code }}
-                            </option>
-                          </select>
-                          <i class="pi pi-chevron-down dropdown-icon"></i>
-                      
-                          Hidden Dropdown for Cheque Type
-                          <div *ngIf="showChequeOptions"
-                               class="cheque-options"
-                               (mouseleave)="onLeaveChequeOptions()">
-                            <div (click)="setChequeType('open_cheque')">Open Cheque</div>
-                            <div (click)="setChequeType('post_dated_cheque')">Post Dated Cheque</div>
-                          </div>
-                      
-                        </div>
-                      </div> -->
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="paymentMode" class="form-label required">{{
             "fms.receipting.payment_mode" | translate
           }}</label>
@@ -99,7 +81,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="bankAccount" class="form-label required"
             >{{ "fms.receipting.bank_account" | translate }}
           </label>
@@ -110,6 +92,9 @@
             formControlName="bankAccount"
             (change)="onBank($event)"
           >
+            <option value="" [disabled]="">
+              {{ "fms.receipting.select" | translate }}
+            </option>
             <option *ngFor="let bank of bankAccounts" [value]="bank.code">
               {{ bank.name }}
             </option>
@@ -119,7 +104,7 @@
       <!-- Second Row -->
 
       <div class="row mt-1">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="receiptingPoint" class="form-label">{{
             "fms.receipting.receipting_point" | translate
           }}</label>
@@ -131,10 +116,10 @@
             readonly
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="drawersBank" class="form-label"
-            >{{ "fms.receipting.drawers_bank" | translate }}
-          </label>
+            >{{ "fms.receipting.drawers_bank" | translate }} </label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
 
           <select
             id="drawersBank"
@@ -146,7 +131,7 @@
             </option>
           </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="amountIssued" class="form-label required">{{
             "fms.receipting.amount_issued" | translate
           }}</label>
@@ -162,7 +147,7 @@
 
       <!-- Third Row -->
       <div class="row mt-1">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="receiptDate" class="form-label required">{{
             "fms.receipting.receipt_date" | translate
           }}</label>
@@ -178,10 +163,11 @@
             />
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="documentDate" class="form-label">{{
             "fms.receipting.document_date" | translate
-          }}</label>
+          }}</label
+          ><span *ngIf="requireDocumentField" class="required"></span>
           <div class="date-input">
             <input
               type="date"
@@ -191,7 +177,7 @@
             />
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="receivedFrom" class="form-label required">{{
             "fms.receipting.received_from" | translate
           }}</label>
@@ -207,7 +193,7 @@
       <!-- Fourth Row -->
 
       <div class="row mt-1">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="manualRef" class="form-label">{{
             "fms.receipting.manual_ref" | translate
           }}</label>
@@ -218,10 +204,11 @@
             formControlName="manualRef"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="paymentRef" class="form-label">{{
             "fms.receipting.payment_ref" | translate
-          }}</label>
+          }}</label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
           <input
             type="text"
             class="form-control"
@@ -237,45 +224,50 @@
                       <input type="text" class="form-control" id="otherRef" formControlName="otherRef">
                        
                     </div> -->
-
-        <!-- Fifth Row -->
-
-        <div class="col-md-4">
+        <!-- 5th row -->
+        <div class="col-md-4 mb-2">
           <div class="form-group">
             <label for="narration" class="text-dark form-label w-100">
               {{ "fms.receipting.narration" | translate }}
               <span class="required"></span>
             </label>
-            <div class="row">
-              <select
-                id="narrationDropdown"
-                class="form-select w-25"
-                (change)="onNarrationDropdownChange($event)"
-              >
-                <option value="" disabled selected hidden></option>
-                <option
-                  *ngFor="let narrate of narrations"
-                  [value]="narrate?.narration"
+            <div class="row g-2 align-items-start">
+              <div class="col-3">
+                <!-- Reduce width of select -->
+                <select
+                  id="narrationDropdown"
+                  class="form-select"
+                  (change)="onNarrationDropdownChange($event)"
                 >
-                  {{ narrate?.narration }}
-                </option>
-              </select>
-
-              <textarea
-                class="form-control w-75"
-                rows="1"
-                style="flex: 7"
-                id="narrationTextarea"
-                formControlName="narration"
-                placeholder="{{ 'fms.receipting.editDescription' | translate }}"
-                (input)="onNarrationTextChange()"
-              ></textarea>
+                  <option value="" disabled selected hidden></option>
+                  <option
+                    *ngFor="let narrate of narrations"
+                    [value]="narrate?.narration"
+                  >
+                    {{ narrate?.narration }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-9">
+                <!-- Increase width of textarea -->
+                <textarea
+                  class="form-control"
+                  rows="1"
+                  id="narrationTextarea"
+                  formControlName="narration"
+                  placeholder="{{
+                    'fms.receipting.editDescription' | translate
+                  }}"
+                  (input)="onNarrationTextChange()"
+                ></textarea>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="row mt-1">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <div class="form-group">
             <label for="charges" class="form-label">{{
               "fms.receipting.charges" | translate
@@ -317,7 +309,7 @@
           </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="chargeAmount" class="form-label">{{
             "fms.receipting.chargeAmount" | translate
           }}</label>
@@ -368,7 +360,7 @@
                   </div>
 
                   <!-- Charge Amount -->
-                  <div class="form-group mb-3">
+                  <div class="form-group mb-2">
                     <label for="modalChargeAmount">Amount</label>
                     <input
                       type="number"
@@ -443,7 +435,7 @@
         </div>
         <!-- Sixth Row -->
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <label for="grossReceiptAmount" class="form-label">{{
             "fms.receipting.gross_receipt_amount" | translate
           }}</label>

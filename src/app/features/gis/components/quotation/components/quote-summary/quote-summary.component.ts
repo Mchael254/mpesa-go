@@ -89,6 +89,7 @@ export class QuoteSummaryComponent {
   batchNo: number;
   quickQuoteData: QuickQuoteData;
   quoteAction: string = null
+  showConverToPolicyButton: boolean =false;
 
 
   constructor(
@@ -140,6 +141,15 @@ export class QuoteSummaryComponent {
     this.quickQuoteData = JSON.parse(quickQuoteDataString);
     log.debug("quick quote data", this.quickQuoteData)
 
+    if(this.quickQuoteData.selectedClient?.id){
+      log.debug("SHOW CONVERT TO POLICY BUTTON")
+    this.showConverToPolicyButton =true
+    }else{
+      log.debug("HIDE CONVERT TO POLICY BUTTON")
+
+      this.showConverToPolicyButton =false
+
+    }
     const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
     this.showQuoteActions = JSON.parse(showQuoteActionsString);
 
@@ -637,14 +647,23 @@ export class QuoteSummaryComponent {
       this.router.navigate(['/home/gis/quotation/quick-quote']);
     });
   }
+  convertToPolicy(){
 
-  convertToPolicy() {
-    if (this.passedNewClientDetails) {
+    const selectedClient = this.quickQuoteData?.selectedClient;
+
+    if(selectedClient){
+
+      // NAVIGATE TO POLICY SCREEN
+      log.debug("existing client convert to polict and navigate to policy summary screen")
+      this.convertQuoteToPolicy()
+
+    }else{
       //NAVIGATE TO CREATE CLIENT SCREEN
-      log.debug("Passed new client details:", this.passedNewClientDetails)
+      // log.debug("Passed new client details:",this.passedNewClientDetails)
 
-      const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-      sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+      log.debug("New client Proceed to client creation")
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
@@ -653,22 +672,23 @@ export class QuoteSummaryComponent {
       sessionStorage.setItem('convertToPolicyFlag', convertToPolicyFlag);
 
       this.router.navigate(['/home/gis/quotation/create-client']);
-
-
-    } else {
-      // NAVIGATE TO POLICY SCREEN
-      log.debug("existing client convert to polict and navigate to policy summary screen")
-      this.convertQuoteToPolicy()
     }
   }
 
   convertToNormalQuote() {
-    if (this.passedNewClientDetails) {
-      //NAVIGATE TO CREATE CLIENT SCREEN
-      log.debug("Passed new client details:", this.passedNewClientDetails)
+     const selectedClient = this.quickQuoteData?.selectedClient;
 
-      const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-      sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+    if(selectedClient) {
+      // NAVIGATE TO QUOTATION summary
+      log.debug("existing client convert to normal quote and navigate to quotation summary screen");
+      this.convertQuoteToNormalQuote();
+
+    } else {
+      //NAVIGATE TO CREATE CLIENT SCREEN
+      // log.debug("Passed new client details:",this.passedNewClientDetails)
+
+      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
@@ -677,11 +697,6 @@ export class QuoteSummaryComponent {
       sessionStorage.setItem('convertToNormalQuoteFlag', convertToNormalQuoteFlag);
 
       this.router.navigate(['/home/gis/quotation/create-client']);
-
-    } else {
-      // NAVIGATE TO QUOTATION summary
-      log.debug("existing client convert to normal quote and navigate to quotation summary screen");
-      this.convertQuoteToNormalQuote();
     }
   }
 

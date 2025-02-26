@@ -484,29 +484,20 @@
       </div>
     </div>
 
-    <div class="float-start mt-4 mb-4 ">
-      <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
-              id="btnCancelQuote" *ngIf="showQuoteActions">{{ 'gis.quotation.cancel_quote' | translate }}
-      </button>
-      <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
-              data-bs-target="#shareQuote" id="btnCancelQuote"
-              *ngIf="showQuoteActions"> {{ 'gis.quotation.share_quote' | translate }}
-      </button>
-    </div>
-    <div class="float-end mt-4 mb-4">
-      <button *ngIf="showQuoteActions" type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
-              data-bs-target="#convertQuoteToPolicy"
-              id="btnConvertPolicy">{{ 'gis.quotation.convert_to_policy' | translate }}
-      </button>
-      <button *ngIf="showQuoteActions" class="btn btn-primary" type="button" data-bs-toggle="modal"
-              data-bs-target="#convertQuote">
-        {{ 'gis.quotation.convert_to_normal_quote' | translate }}
-      </button>
-      <button *ngIf="!showQuoteActions" class="btn btn-primary" type="button" [routerLink]="'/home/lms/quotation/list'"
-              [queryParams]="{tab: 'general'}">
-        Back to dashboard
-      </button>
-    </div>
+        <div class="float-start mt-4 mb-4 ">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
+                id="btnCancelQuote" *ngIf="showQuoteActions">{{'gis.quotation.cancel_quote' | translate}}</button>
+                <button type="button" class="btn btn-outline-primary ms-3" data-bs-toggle="modal"
+                data-bs-target="#shareQuote" id="btnCancelQuote" *ngIf="showQuoteActions"> {{'gis.quotation.share_quote' | translate}}</button>
+        </div>
+        <div class="float-end mt-4 mb-4" >
+            <button *ngIf="showConverToPolicyButton && showQuoteActions" type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#convertQuoteToPolicy"
+                id="btnConvertPolicy" >{{'gis.quotation.convert_to_policy' | translate}}</button>
+            <button *ngIf="showQuoteActions" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#convertQuote" >
+                {{'gis.quotation.convert_to_normal_quote' | translate}}</button>
+            <button *ngIf="!showQuoteActions" class="btn btn-primary" type="button" [routerLink]="'/home/lms/quotation/list'" [queryParams]="{tab: 'general'}" >
+              Back to dashboard</button>
+        </div>
 
     <!-- Convert Quote Modal -->
     <div class="modal fade" id="convertQuote" tabindex="-1" aria-labelledby="convertQuote" aria-hidden="true">
