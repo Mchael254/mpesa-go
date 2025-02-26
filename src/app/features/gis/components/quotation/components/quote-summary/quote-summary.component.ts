@@ -88,6 +88,7 @@ export class QuoteSummaryComponent {
   batchNo: number;
   quickQuoteData: QuickQuoteData;
   quoteAction: string = null
+  showConverToPolicyButton: boolean =false;
 
 
   constructor(
@@ -140,7 +141,16 @@ export class QuoteSummaryComponent {
     const quickQuoteDataString = sessionStorage.getItem('quickQuoteData');
     this.quickQuoteData = JSON.parse(quickQuoteDataString);
     log.debug("quick quote data", this.quickQuoteData)
+    
+    if(this.quickQuoteData.selectedClient?.id){
+      log.debug("SHOW CONVERT TO POLICY BUTTON")
+    this.showConverToPolicyButton =true
+    }else{
+      log.debug("HIDE CONVERT TO POLICY BUTTON")
 
+      this.showConverToPolicyButton =false
+
+    }
     const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
     this.showQuoteActions = JSON.parse(showQuoteActionsString);
 
