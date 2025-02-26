@@ -343,6 +343,7 @@ export class ReceiptCaptureComponent {
   isdefaultCurrencySelected:boolean=true;
   makeFieldRequired:boolean=false;
   requireDocumentField:boolean=false;
+  storedDefaultCurrency:number;
 
 /**
    * Constructor for the `ReceiptCaptureComponent`.
@@ -543,6 +544,7 @@ export class ReceiptCaptureComponent {
         if (defaultCurrency) {
           this.defaultCurrencyId = defaultCurrency.id;
           const defaultCurrencySymbol = defaultCurrency.symbol;
+          this.receiptDataService.setDefaultCurrency(this.defaultCurrencyId);
           // this.sessionStorage.setItem(
           //   'defaultCurrencyId',
           //   String(this.defaultCurrencyId)
@@ -616,8 +618,8 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-
-    this.currencyService.getCurrenciesRate(this.defaultCurrencyId).subscribe({
+this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
+    this.currencyService.getCurrenciesRate(this.defaultCurrencyId || this.storedDefaultCurrency).subscribe({
       next: (rates) => {
         const matchingRates = rates.filter(
           (rate) => rate.targetCurrencyId === this.selectedCurrencyCode
@@ -662,7 +664,7 @@ if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
           'Error',
           err.error.status
         );
-        this.showExchangeRateModal2();
+       // this.showExchangeRateModal2();
       },
     });
   }
