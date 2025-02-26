@@ -415,8 +415,8 @@ export class QuotationsService {
     )
   }
 
-  captureRiskClauses(riskCode: number,quoteCode: number,clauseCode: number, productCode: number,subclassCode:number) {
-    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}&subclassCode=${subclassCode}`,null, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  captureRiskClauses(riskCode: number,subClassCode :number,quoteCode: number,clauseCode: number, productCode: number) {
+    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&subClassCode=${subClassCode }&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}`,null, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 

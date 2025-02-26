@@ -82,6 +82,7 @@ export class QuotationDetailsComponent {
   userCode: number;
   dateFormat: any;
   minDate: Date | undefined;
+  
   todaysDate: string;
   expiryDate: string;
   coverToDate: string;
@@ -114,6 +115,8 @@ export class QuotationDetailsComponent {
   ) { }
 
   ngOnInit(): void {
+    this.minDate = new Date();
+
     this.fetchCampaigns()
     this.getbranch();
     this.getCurrency();

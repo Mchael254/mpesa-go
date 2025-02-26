@@ -122,7 +122,7 @@
                     <div class="col-xl-4">
                         <label for="rfqDate" class="quote-label">Request for quote date</label>
                         <p-calendar id="rfqDate" inputId="rfqDate" [showIcon]="true" [dateFormat]="dateFormat"
-                            formControlName="RFQDate" [(ngModel)]="todaysDate"
+                            formControlName="RFQDate" [(ngModel)]="todaysDate"  [minDate]="minDate"
                             (onSelect)="updateQuotationExpiryDate($event)">
                         </p-calendar>
 
@@ -134,7 +134,7 @@
                     <div class="col-xl-4">
                         <label for="expiryDate" class="quote-label">Quotation expiry date</label>
                         <p-calendar id="expiryDate" inputId="expiryDate" [showIcon]="true" [dateFormat]="dateFormat"
-                            formControlName="expiryDate" [(ngModel)]="expiryDate" [readonlyInput]="true">
+                            formControlName="expiryDate" [(ngModel)]="expiryDate" [readonlyInput]="true" [minDate]="minDate">
                         </p-calendar>
                         <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
                             class="form-text text-danger">
@@ -278,7 +278,7 @@
                         <label for="coverToDate" class="quote-label">Cover to</label><br>
                         <p-calendar formControlName="wetDate" name="wetDate" id="coverToDate" inputId="coverToDate"
                             [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-                            [ngModel]="coverToDate">
+                            [ngModel]="coverToDate" [minDate]="minDate">
                         </p-calendar>
 
                         <div *ngIf="quotationForm.get('wetDate').hasError('required') && quotationForm.get('wetDate').touched"
