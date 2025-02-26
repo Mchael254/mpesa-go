@@ -184,6 +184,7 @@ export class RiskSectionDetailsComponent {
   currentDate = new Date();
   defaultBinder: any;
   defaultBinderName: any;
+  selectedRiskSection: any;
 
   constructor(
     private router: Router,
@@ -507,7 +508,7 @@ export class RiskSectionDetailsComponent {
     // this.loadSubclassSectionCovertype();
 
   }
- 
+
   /**
  * Fetches client data and updates properties.
  * Retrieves client details via an HTTP request and updates properties
@@ -607,29 +608,49 @@ export class RiskSectionDetailsComponent {
   //   })
   // }
   loadAllBinders() {
-    this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
-      this.binderList = data;
-      this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      this.binderListDetails = this.binderListDetails.map((value) => {
-        let capitalizedDescription =
-          value.binder_name.charAt(0).toUpperCase() +
-          value.binder_name.slice(1).toLowerCase();
-        return {
-          ...value,
-          binder_name: capitalizedDescription,
-        };
-      });
-      log.debug("All Binders Details:", this.binderListDetails);
-       this.defaultBinder =this.binderListDetails.filter(binder => binder.is_default === "Y")
-       log.debug("Default Binder",this.defaultBinder)
-       this.defaultBinderName = this.defaultBinder[0].binder_name
-       log.debug("Default Binder name",this.defaultBinderName)
+    this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(
+      (data) => {
+        this.binderList = data;
+        this.binderListDetails = this.binderList._embedded.binder_dto_list;
 
-      // this.selectedBinderCode = this.binderListDetails[0].code;
+        // Map and capitalize binder names
+        this.binderListDetails = this.binderListDetails.map((value) => {
+          let capitalizedDescription = value.binder_name.charAt(0).toUpperCase() + value.binder_name.slice(1).toLowerCase();
+          return {
+            ...value,
+            binder_name: capitalizedDescription,
+          };
+        });
 
-      this.cdr.detectChanges();
-    });
+        log.debug("All Binders Details:", this.binderListDetails);
+
+        // Find default binder
+        this.defaultBinder = this.binderListDetails.filter(binder => binder.is_default === "Y");
+        log.debug("Default Binder", this.defaultBinder);
+
+        // Set default binder object (not just the name)
+        if (this.defaultBinder && this.defaultBinder.length > 0) {
+          this.defaultBinderName = this.defaultBinder[0].binder_name;
+          this.selectedBinderList = this.defaultBinder[0]; // Store the complete object
+          this.selectedBinderCode = this.defaultBinder[0].code; // Set the code as well
+          log.debug("Default Binder name", this.defaultBinderName);
+          log.debug("Selected binder code", this.selectedBinderCode);
+        }
+
+        this.cdr.detectChanges();
+
+        // Update form control value with default binder
+        if (this.riskDetailsForm && this.defaultBinder && this.defaultBinder.length > 0) {
+          this.riskDetailsForm.get('binderCode').setValue(this.defaultBinder[0]);
+        }
+      },
+      (error) => {
+        log.error("Error loading binders:", error);
+        // Handle error appropriately
+      }
+    );
   }
+
 
   /**
  * Retrieves subclass clauses and updates related properties.
@@ -773,7 +794,7 @@ export class RiskSectionDetailsComponent {
   getVehicleModel() {
     this.vehicleModelService.getAllVehicleModel().subscribe(data => {
       this.vehicleModelList = data;
-   
+
       log.debug("VehicleModel", this.vehicleModelList);
       this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
       log.debug("Vehicle Model Details", this.vehicleModelDetails);
@@ -1031,6 +1052,11 @@ export class RiskSectionDetailsComponent {
     if (index === -1) {
       // Section is not selected, so add it (immutable update)
       log.debug("Adding section to selectedSections");
+      // Get the maximum row number from existing selected sections
+      const maxRowNumber = this.getMaxRowNumber(this.selectedSections);
+
+      // Assign a new row number to the section
+      section.rowNumber = maxRowNumber + 1;
       this.selectedSections = [...this.selectedSections, section];
     } else {
       // Section is already selected, so remove it (immutable update)
@@ -1045,6 +1071,12 @@ export class RiskSectionDetailsComponent {
     this.getPremium(this.selectedSections);
   }
 
+  getMaxRowNumber(sections: any[]): number {
+    if (sections.length === 0) return 0; // If no sections exist, start from 0
+    const rowNumbers = sections.map(section => section.rowNumber || 0); // Extract row numbers
+    return Math.max(...rowNumbers); // Return the maximum row number
+  }
+
 
   /**
  * Creates a new risk section associated with the current risk.
@@ -1057,6 +1089,9 @@ export class RiskSectionDetailsComponent {
     const sectionTemplate = this.sectionDetailsForm.value;
 
     if (this.premiumList.length > 0) {
+      // Get the maximum row number from existing sections
+      const maxRowNumber = this.getMaxRowNumber(this.sectionDetails);
+
       const sections = this.premiumList.map((premiumItem, index) => {
         // Create a new section object from the template
         const section = { ...sectionTemplate };
@@ -1078,7 +1113,7 @@ export class RiskSectionDetailsComponent {
         section.quotRiskCode = premiumItem.code;
         section.rateDivisionFactor = premiumItem.divisionFactor;
         section.rateType = premiumItem.rateType;
-        section.rowNumber = 0;
+        section.rowNumber = maxRowNumber + index + 1; // Assign sequential row numbers
         section.sumInsuredLimitType = null;
         section.sumInsuredRate = 0;
 
@@ -1116,7 +1151,7 @@ export class RiskSectionDetailsComponent {
 
 
   onSelectSection(event: any) {
-    this.selectedSection = event;
+    this.selectedRiskSection = event;
     log.info("Patched section", this.selectedSection)
     this.sectionDetailsForm.patchValue(this.selectedSection)
   }
@@ -1182,14 +1217,37 @@ export class RiskSectionDetailsComponent {
     this.selectedSection = selectedSection; // Track the selected section
     log.debug("Selected section:", this.selectedSection);
 
-    // Patch the form with the selected section's values
-    this.sectionDetailsForm.patchValue(this.selectedSection);
+    // Patch the form with the selected section's values, including the row number
+    this.sectionDetailsForm.patchValue({
+      ...this.selectedSection,
+      rowNumber: this.selectedSection.rowNumber // Preserve the row number
+    });
 
     // Open the modal
     const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
     if (modalElement) {
       this.renderer.addClass(modalElement, 'show'); // Add 'show' class to make it visible
       this.renderer.setStyle(modalElement, 'display', 'block'); // Set display property to 'block'
+    }
+  }
+
+  deleteRiskSection() {
+
+    const riskSectionCode = this.selectedRiskSection.code;
+    log.debug("selected risk section code", riskSectionCode);
+
+    if(riskSectionCode) {
+      this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk section ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
+
+        },
+        error: (error) => {
+          log.debug("error when deleting a risk section", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
+        }
+      })
     }
   }
 
@@ -1823,7 +1881,7 @@ formatDate(date: string | Date): string {
               log.debug("Motor Accessories:",this.motorAccessoriesList)
               log.debug("model year", this.modelYear)
 
-             
+
             })
     }
 }
