@@ -114,7 +114,7 @@ export class QuotationSummaryComponent {
   activeTab: string = 'clauses';
   conversionFlag: boolean = false;
   conversionFlagString: string;
-  acceptedYear: number = new Date().getFullYear() + 6;
+  acceptedYear: number = new Date().getFullYear();
   convertedDate: string;
   coverFrom: string;
   coverTo: string;

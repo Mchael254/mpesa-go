@@ -34,13 +34,13 @@
             </div>
             <div class="col-4">
                 <label for="minmax-buttons" id="quote-label">{{'gis.quotation.insured' | translate}}</label>
-                <input type="text" 
-                id="quote-input" 
-                class="form-control form-control-sm mb-1" 
-                
-                [value]="clientName" 
+                <input type="text"
+                id="quote-input"
+                class="form-control form-control-sm mb-1"
+
+                [value]="clientName"
                 readonly>
-              
+
                 <!-- <select class="form-select form-control-sm " id="quote-dropdown" formControlName="insuredCode" >
                   <option value="">{{clientName |sentenceCase}}</option>
               </select> -->
@@ -121,9 +121,9 @@
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"  class="required"> {{'gis.quotation.premium_band' | translate}}</label>
                 <p-dropdown formControlName="binderCode"  [options]="binderListDetails" optionLabel="binder_name"
-                [filterBy]="'binder_name'"  [filter]="true" [ngModel]="defaultBinderName"
+                [filterBy]="'binder_name'"  [filter]="true"
                 (onChange)="onBinderSelected($event);"></p-dropdown>
-                
+
                 <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="binderCode" >
                     <option *ngFor="let binder of binderListDetails" [value]="binder.code">
                       {{binder.binder_name}}
@@ -140,7 +140,7 @@
               [showIcon]="true"
               (onSelect)="updateCoverToDate($event)"
               [minDate]="currentDate"
-              
+
               [ngModel]="passedCoverFromDate" >
             </p-calendar>
               <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="wef"> -->
