@@ -681,8 +681,8 @@
                 <p-table [value]="sections" [tableStyle]="{ 'min-width': '50rem' }" >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="flexible-header">Row Num</th>
                       <th class="flexible-header">Group</th>
+                      <th class="flexible-header">Row Num</th>
                       <th class="flexible-header">Section description</th>
                       <th class="flexible-header">Rate type</th>
                       <th class="flexible-header">Section rate</th>
@@ -693,8 +693,8 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">{{data.rowNumber}}</td>
                       <td class="flexible-header">{{data.calculationGroup}}</td>
+                      <td class="flexible-header">{{data.rowNumber}}</td>
                       <td class="flexible-header">{{data.sectionShortDescription}}</td>
                       <td class="flexible-header">{{data.rateType}}</td>
                       <td class="flexible-header">{{data.rate}}</td>
