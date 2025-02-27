@@ -122,7 +122,7 @@
                     <div class="col-xl-4">
                         <label for="rfqDate" class="quote-label">Request for quote date</label>
                         <p-calendar id="rfqDate" inputId="rfqDate" [showIcon]="true" [dateFormat]="dateFormat"
-                            formControlName="RFQDate" [(ngModel)]="todaysDate"  [minDate]="minDate"
+                            formControlName="RFQDate" [minDate]="minDate"
                             (onSelect)="updateQuotationExpiryDate($event)">
                         </p-calendar>
 

@@ -794,14 +794,11 @@ export class RiskSectionDetailsComponent {
 
 
   getVehicleModel() {
-    this.vehicleModelService.getAllVehicleModel().subscribe(data => {
+    this.vehicleModelService.getAllVehicleModel(this.selectedVehicleMakeCode).subscribe(data => {
       this.vehicleModelList = data;
 
-      log.debug("VehicleModel", this.vehicleModelList);
       this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
-      log.debug("Vehicle Model Details", this.vehicleModelDetails);
-      this.filteredVehicleModel = this.vehicleModelDetails.filter(model => model.vehicle_make_code == this.selectedVehicleMakeCode);
-      this.filteredVehicleModel = this.filteredVehicleModel.map((value) => {
+      this.vehicleModelDetails = this.vehicleModelDetails.map((value) => {
         let capitalizedDescription =
           value.name.charAt(0).toUpperCase() +
           value.name.slice(1).toLowerCase();
@@ -810,7 +807,7 @@ export class RiskSectionDetailsComponent {
           name: capitalizedDescription,
         };
       });
-      log.debug("Filtered Vehicle Model Details", this.filteredVehicleModel);
+      log.debug("Vehicle Model Details", this.vehicleModelDetails);
 
     })
   }
@@ -821,7 +818,7 @@ export class RiskSectionDetailsComponent {
     const typedSelectedValue = this.convertToCorrectType(selectedValue);
 
     // Find the selected object using the converted value
-    const selectedObject = this.filteredVehicleModel.find(vehicleModel => vehicleModel.code === typedSelectedValue);
+    const selectedObject = this.vehicleModelDetails.find(vehicleModel => vehicleModel.code === typedSelectedValue);
 
     // Check if the object is found
     if (selectedObject) {
@@ -904,6 +901,7 @@ export class RiskSectionDetailsComponent {
     const formattedCoverToDate = this.formatDate(new Date(this.passedCoverToDate) );
 
     let risk = {
+      action: "A",
       coverTypeCode: this.selectedCoverType.coverTypeCode,
       quotationCode: this.quotationCode,
       productCode: this.selectProductCode,

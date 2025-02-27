@@ -43,7 +43,7 @@ if(error.error instanceof ErrorEvent) {
 console.log(errorMessage);
 return throwError(errorMessage);
 }
-getAllVehicleModel(): Observable<vehicleModel[]>{
+getAllVehicleModel(makeCode?: number): Observable<vehicleModel[]>{
   let page = 0;
   let size = 500
  const headers = new HttpHeaders({
@@ -54,7 +54,7 @@ getAllVehicleModel(): Observable<vehicleModel[]>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.api.GET<vehicleModel[]>(`api/v1/vehicle-models?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  return this.api.GET<vehicleModel[]>(`api/v1/vehicle-models?makeCode=${makeCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   ) 
