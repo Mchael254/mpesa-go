@@ -529,7 +529,7 @@ export class QuotationSummaryComponent {
   getExternalClaimsExperience(clientCode: number) {
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res => {
       this.externalClaims = res;
-      this.externalTable = this.externalClaims.embedded;
+      this.externalTable = this.externalClaims._embedded;
       log.debug("external claims table", this.externalTable);
     })
   }
@@ -1032,20 +1032,19 @@ export class QuotationSummaryComponent {
 
   createInsurersForm() {
     this.insurersDetailsForm = this.fb.group({
-      action: [''],
       claimPaid: ['', [Validators.required]],
       clientCode: [''],
       code: [''],
       damageAmount: ['', [Validators.required]],
       insurer: ['', [Validators.required]],
       lossAmount: ['', [Validators.required]],
-      account: ['', [Validators.required]],
+      noAccrual: ['', [Validators.required]],
       otherAmount: ['', [Validators.required]],
       policyNumber: ['', [Validators.required]],
-      remark: ['', [Validators.required]],
+      remarks: ['', [Validators.required]],
       riskDetails: ['', [Validators.required]],
-      tpAmount: ['', [Validators.required]],
-      eceYear: ['', [
+      totalPaidAmount: ['', [Validators.required]],
+      year: ['', [
         Validators.required,
         Validators.min(1900),
         Validators.max(this.acceptedYear),
@@ -1084,11 +1083,11 @@ export class QuotationSummaryComponent {
     const damageAmountInt = parseInt(damageAmountString);
     log.debug('damageAmount (Integer):', damageAmountInt);
 
-    // Log and convert tpAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('tpAmount').value.replace(/,/g, '');
-    log.debug('tpAmount (String):', totalPaidAmountString);
+    // Log and convert totalPaidAmount
+    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
+    log.debug('totalPaidAmountInt (String):', totalPaidAmountString);
     const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('tpAmount (Integer):', totalPaidAmountInt);
+    log.debug('totalPaidAmountInt (Integer):', totalPaidAmountInt);
 
     // Log and convert otherAmount
     const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
@@ -1097,10 +1096,9 @@ export class QuotationSummaryComponent {
     log.debug('otherAmount (Integer):', otherAmountInt);
 
     insurer.damageAmount = damageAmountInt;
-    insurer.tpAmount = totalPaidAmountInt;
+    insurer.totalPaidAmount = totalPaidAmountInt;
     insurer.otherAmount = otherAmountInt;
     insurer.clientCode = this.clientCode;
-    insurer.action = "A";
 
 
     this.closebutton.nativeElement.click();
@@ -1118,7 +1116,7 @@ export class QuotationSummaryComponent {
 
         },
         error: (error) => {
-
+          log.debug("error after adding external Claim Experience", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
         }
       }
@@ -1155,11 +1153,11 @@ export class QuotationSummaryComponent {
     const damageAmountInt = parseInt(damageAmountString);
     log.debug('damageAmount (Integer):', damageAmountInt);
 
-    // Log and convert tpAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('tpAmount').value.replace(/,/g, '');
-    log.debug('tpAmount (String):', totalPaidAmountString);
+    // Log and convert totalPaidAmount
+    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
+    log.debug('totalPaidAmount (String):', totalPaidAmountString);
     const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('tpAmount (Integer):', totalPaidAmountInt);
+    log.debug('totalPaidAmount (Integer):', totalPaidAmountInt);
 
     // Log and convert otherAmount
     const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
@@ -1168,10 +1166,9 @@ export class QuotationSummaryComponent {
     log.debug('otherAmount (Integer):', otherAmountInt);
 
     insurer.damageAmount = damageAmountInt;
-    insurer.tpAmount = totalPaidAmountInt;
+    insurer.totalPaidAmount = totalPaidAmountInt;
     insurer.otherAmount = otherAmountInt;
     insurer.clientCode = this.clientCode;
-    insurer.action = "E";
     insurer.code = this.selectedExternalClaimExp.code;
 
 
@@ -1179,7 +1176,7 @@ export class QuotationSummaryComponent {
 
     log.debug("EXTERNAL CLAIMS FORM-EDITING", insurer)
     this.quotationService
-      .addExternalClaimExp(insurer)
+      .editExternalClaimExp(insurer)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
@@ -1250,15 +1247,15 @@ export class QuotationSummaryComponent {
     this.insurersDetailsForm.patchValue({
       policyNumber: this.selectedExternalClaimExp.policyNumber,
       insurer: selectedInsurer, // Pass the full insurer object for p-dropdown
-      eceYear: this.selectedExternalClaimExp.eceYear,
+      year: this.selectedExternalClaimExp.year,
       riskDetails: this.selectedExternalClaimExp.riskDetails,
       lossAmount: this.selectedExternalClaimExp.lossAmount,
       claimPaid: claimPaidValue, // Corrected mapping
-      account: this.selectedExternalClaimExp.account,
+      noAccrual: this.selectedExternalClaimExp.noAccrual,
       damageAmount: formatNumber(this.selectedExternalClaimExp.damageAmount),
-      tpAmount: formatNumber(this.selectedExternalClaimExp.tpAmount),
+      totalPaidAmount: formatNumber(this.selectedExternalClaimExp.totalPaidAmount),
       otherAmount: formatNumber(this.selectedExternalClaimExp.otherAmount),
-      remark: this.selectedExternalClaimExp.remark
+      remarks: this.selectedExternalClaimExp.remarks
     });
   }
 

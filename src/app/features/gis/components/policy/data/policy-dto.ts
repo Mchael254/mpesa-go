@@ -733,8 +733,7 @@ export interface ClientDDdetails{
   clientCode: number;
 }
 export interface ExternalClaimExp {
-  account: string | null;
-  action: string;
+  noAccrual: number;
   claimPaid: string;
   clientCode: number;
   code: number;
@@ -743,10 +742,10 @@ export interface ExternalClaimExp {
   lossAmount: number;
   otherAmount: number;
   policyNumber: string;
-  remark: string;
+  remarks: string;
   riskDetails: string;
-  tpAmount: number;
-  eceYear: number;
+  totalPaidAmount: number;
+  year: number;
 }
 export interface RiskService {
   rssCode: number;
