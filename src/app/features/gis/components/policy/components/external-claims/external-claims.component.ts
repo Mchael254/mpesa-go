@@ -267,15 +267,15 @@ export class ExternalClaimsComponent {
     this.insurersDetailsForm.patchValue({
         policyNo: this.selectedExternalClaim.policyNumber,
         insurer: selectedInsurer?.name || null, // Patch the dropdown with the correct name
-        year: this.selectedExternalClaim.eceYear,
+        year: this.selectedExternalClaim.year,
         riskDetails: this.selectedExternalClaim.riskDetails,
         lossAmount: this.selectedExternalClaim.lossAmount,
         claimPaid: this.selectedExternalClaim.claimPaid,
-        noAcc: this.selectedExternalClaim.account,
+        noAccrual: this.selectedExternalClaim.noAccrual,
         damageAmount: this.selectedExternalClaim.damageAmount,
-        totalPaidAmount: this.selectedExternalClaim.tpAmount,
+        totalPaidAmount: this.selectedExternalClaim.totalPaidAmount,
         otherAmount: this.selectedExternalClaim.otherAmount,
-        remarks: this.selectedExternalClaim.remark,
+        remarks: this.selectedExternalClaim.remarks,
     });
 
     log.debug("Form values after patching:", this.insurersDetailsForm.value);

@@ -140,7 +140,7 @@
               [showIcon]="true"
               (onSelect)="updateCoverToDate($event)"
               [minDate]="minDate"
-              
+
               [ngModel]="passedCoverFromDate" >
             </p-calendar>
               <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="wef"> -->
@@ -1141,7 +1141,7 @@
                         <div class="mb-3 row">
                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
                             <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="limitAmount">                             </div>
+                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="limitAmount" currencyMask >                             </div>
                             </div>
                         </div>
                     </div>
@@ -1315,7 +1315,7 @@
               <td class="flexible-header">{{sectionArray.rowNumber}}</td>
               <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
               <td class="flexible-header">{{sectionArray.description}}</td>
-              <td class="flexible-header">{{sectionArray.limitAmount |number}}</td>
+              <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
               <td class="flexible-header">{{sectionArray.premiumRate}}</td>
               <td class="flexible-header">{{sectionArray.rateType}}</td>
               <td class="flexible-header">
