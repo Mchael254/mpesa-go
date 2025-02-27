@@ -1,5 +1,13 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
 import {Logger, UtilService} from '../../../../../../shared/services';
@@ -51,7 +59,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, switchMap, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, mergeMap, Observable, of, switchMap, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -62,6 +70,7 @@ import {TableDetail} from '../../../../../../shared/data/table-detail';
 import {MenuService} from 'src/app/features/base/services/menu.service';
 import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
+import {catchError, map} from "rxjs/operators";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -219,8 +228,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
   coverFrom: any;
-  passedClientDetailsString: string;
-  passedNewClientDetailsString: string;
+
+  minCoverToDate = new Date()
 
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
@@ -231,7 +240,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     CountryISO.UnitedStates,
     CountryISO.UnitedKingdom,
   ];
-  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   selectedEffectiveDate: any;
   effectiveFromDate: string;
   todaysDate: string;
@@ -352,15 +361,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       sessionStorage.getItem('isReturnToQuickQuote')
     );
     this.PassedClientDetails = this.storedData?.selectedClient;
-    log.debug("Passed Client DETAILS:",this.PassedClientDetails)
+    log.debug("Passed Client DETAILS:", this.PassedClientDetails)
     this.passedQuotation = JSON.parse(
       sessionStorage.getItem('passedQuotationDetails')
     );
-
+    this.clientDetails = this.storedData?.selectedClient
   }
 
   ngOnInit(): void {
-   
+
 
     this.minDate = new Date();
     this.loadAllproducts();
@@ -428,6 +437,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         phoneNumber: this.storedData.clientPhoneNumber,
         effectiveDate: new Date(this.storedData.effectiveDateFrom),
       });
+      if (this.quoteAction == 'A'){
+        this.quickQuoteForm?.get('effectiveDate')?.disable()
+      }
     }
     log.debug('Quotation Action:', this.quoteAction);
     log.debug('Quotation Details:', this.passedQuotation);
@@ -445,26 +457,44 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
-   /* this.quickQuoteForm.get('emailAddress').valueChanges.pipe(
-      debounceTime(300),
-      switchMap((value) => {
-        return this.quotationService.searchClients('emailAddress', value, 0, 5, '')
-      })
-    ).subscribe((value) => {
-      this.emailAddressUsed = value.content.length > 0;
-      if (value.content.length > 0) {
-        log.debug("Found a client")
-      } else {
-        log.debug("Client not found")
+  }
+
+  emailOrPhoneNumberExistsValidator(field: 'emailAddress' | 'phoneNumber'): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value || this.existingClientSelected) {
+        return of(null);
       }
-    })*/
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const phonePattern = /^\d{10}$/;
+      const emailValid = emailPattern.test(control.value)
+      const phoneNumberValid = phonePattern.test(control.value)
+      if (field === 'emailAddress' && !emailValid) {
+        return of(null);
+      }
+      if (field === 'phoneNumber' && !phoneNumberValid) {
+        return of(null);
+      }
+      log.debug("Testing email validity", emailValid)
+      log.debug("Testing phone validity", phoneNumberValid)
+      return this.quotationService.searchClients(field, control.value, 0, 5, '').pipe(
+        debounceTime(300),
+        map(response => (response.numberOfElements > 0 ? {alreadyUsed: true} : null)),
+        catchError(() => of(null))
+      );
+    };
   }
 
   createQuickQuiteForm() {
     this.quickQuoteForm = this.fb.group({
       clientName: [''],
-      emailAddress: ['', [Validators.email]],
-      phoneNumber: [''],
+      emailAddress: ['', {
+        validators: [Validators.email],
+        asyncValidators: [this.emailOrPhoneNumberExistsValidator('emailAddress')]
+      }],
+      phoneNumber: ['',{
+        validator: [],
+        asyncValidators: [this.emailOrPhoneNumberExistsValidator('phoneNumber')]
+      }],
       product: ['', [Validators.required]],
       subClass: ['', [Validators.required]],
       effectiveDate: ['', [Validators.required]],
@@ -1002,7 +1032,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     );
     log.debug('Default currency here', defaultCurrency);
     this.quickQuoteForm.get('currency').setValue(defaultCurrency);
-    this.quickQuoteForm.get('effectiveDate').setValue(new Date());
+    this.selectedEffectiveDate = new Date();
+    this.quickQuoteForm.get('effectiveDate').setValue(this.selectedEffectiveDate);
     this.setCurrencySymbol(defaultCurrency.symbol);
     this.getProductSubclass(this.selectedProductCode);
 
@@ -1025,76 +1056,32 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       'Selected Product Code-coverdate method',
       this.selectedProductCode
     );
-    log.debug('Selected Covercoverdate method', this.coverFromDate);
     log.debug('selected Effective date', this.selectedEffectiveDate);
-    if (this.coverFromDate) {
-      let date: Date;
 
-      // Check if the value is already a Date or a string
-      if (typeof this.coverFromDate === 'string') {
-        // Parse the string to a Date object
-        date = new Date(this.coverFromDate);
-        log.debug('Was a string object', date);
-        log.debug('Was a string object', this.coverFromDate);
-      } else {
-        date = this.coverFromDate; // It's already a Date object
-        const stringRepresentation = JSON.stringify(date);
-        log.debug('Was a date object', date);
-      }
-
-      const formattedCoverFromDate = this.formatDate(date);
-      log.debug('FORMATTED DATE:', formattedCoverFromDate);
-
-      if (this.selectedEffectiveDate) {
-        const SelectedFormatedDate = this.formatDate(
-          this.selectedEffectiveDate
-        );
-        log.debug(' SELECTED FORMATTED DATE:', SelectedFormatedDate);
-
-        this.effectiveFromDate = SelectedFormatedDate;
-        log.debug('effective date from selected date:', this.effectiveFromDate);
-
-        // this.coverFrom = SelectedFormatedDate
-        // log.debug("COVER FROM selected date", this.coverFrom)
-      } else {
-        this.effectiveFromDate = formattedCoverFromDate;
-        log.debug('effective date from todays date:', this.effectiveFromDate);
-        // this.coverFrom = formattedCoverFromDate
-        // log.debug("COVER FROM todays date", this.coverFrom)
-      }
-      log.debug(
-        'selected Effective date raw format',
-        this.selectedEffectiveDate
-      );
-      const selectedDateString = JSON.stringify(this.effectiveFromDate);
-      sessionStorage.setItem('selectedDate', selectedDateString);
-
+    let dateFrom = this.formatDate(this.selectedEffectiveDate);
+    if (dateFrom) {
+      sessionStorage.setItem('selectedDate', JSON.stringify(dateFrom));
       this.productService
-        .getCoverToDate(this.effectiveFromDate, this.selectedProductCode)
+        .getCoverToDate(dateFrom, this.selectedProductCode)
         .subscribe((data) => {
           log.debug('DATA FROM COVERFROM:', data);
           const dataDate = data;
           this.passedCoverToDate = dataDate._embedded[0].coverToDate;
           log.debug('cover date:', this.passedCoverToDate);
           const passedCoverTo = new Date(this.passedCoverToDate);
-
           // Extract the day, month, and year
           const day = passedCoverTo.getDate();
           const month = passedCoverTo.toLocaleString('default', {
             month: 'long',
           }); // 'long' gives the full month name
           const year = passedCoverTo.getFullYear();
-
           // Format the date in 'dd-Month-yyyy' format
           const formattedDate = `${day}-${month}-${year}`;
-
           this.formattedCoverToDate = formattedDate;
           log.debug('formatted cover to  Date', this.formattedCoverToDate);
-
-          // this.coverFrom =this.effectiveFromDate
           log.debug('DATe FROM DATA:', this.passedCoverToDate);
           this.selectedCoverToDate = this.passedCoverToDate;
-          // this.getPremiumRates(); //TODO confirm this
+          this.quickQuoteForm?.get('coverTo')?.setValue(new Date(this.selectedCoverToDate))
         });
     }
   }
@@ -1197,22 +1184,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.selectedProductCode,
       this.selectedSubclassCode
     );
-    // this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-    // this.loadAllBinders(this.selectedSubclassCode);
-    // this.loadSubclassSectionCovertype(this.selectedSubclassCode);
-    //  sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
-    //   this.getPremiumRates()
     this.fetchRegexPattern();
-    // this.fetchTaxes();
   }
 
   onDateInputChange(date: any) {
-    log.debug('selected Effective date raaaaaw', date);
+    log.debug('selected Effective date', date.value);
     this.selectedEffectiveDate = date;
+    this.minCoverToDate = this.selectedEffectiveDate
     this.getCoverToDate();
-    log.debug('selected Effective date', this.selectedEffectiveDate);
   }
 
   /**
@@ -1454,6 +1435,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
               dynamic: true,
             };
           });
+          if(this.quoteAction === 'A'){
+            this.quickQuoteForm?.get('coverTo')?.disable()
+          }
+
         });
       Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
         const control = this.quickQuoteForm.get(controlName);
@@ -1670,7 +1655,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
       let risk: Risk = {
         propertyId: propertyId,
-        withEffectFrom: this.effectiveFromDate,
+        withEffectFrom: this.selectedEffectiveDate,
         withEffectTo: this.passedCoverToDate,
         prorata: 'F',
         subclassSection: {
@@ -1886,7 +1871,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
       sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
       this.premiumComputationRequest = {
-        dateWithEffectFrom: this.effectiveFromDate,
+        dateWithEffectFrom: this.selectedEffectiveDate,
         dateWithEffectTo: this.passedCoverToDate,
         underwritingYear: new Date().getFullYear(),
         age: null,
@@ -1973,8 +1958,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           this.dynamicRegexPattern = this.regexPattern;
           this.quickQuoteForm
             ?.get('carRegNo')
-            .addValidators(Validators.pattern(this.dynamicRegexPattern));
-          this.quickQuoteForm?.get('carRegNo').updateValueAndValidity();
+            ?.addValidators(Validators.pattern(this.dynamicRegexPattern));
+          this.quickQuoteForm?.get('carRegNo')?.updateValueAndValidity();
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
