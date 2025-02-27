@@ -180,16 +180,16 @@
         </div>
 
         <p-table
-          [value]="quotationDetails?.riskInformation"
+          [value]="activeRiskInformation"
           dataKey="code"
           selectionMode="single"
           [tableStyle]="{'min-width': '80rem'}"
           [(selection)]="selectedRisk"
           responsiveLayout="scroll"
           [autoLayout]="false"
-          [paginator]="quotationDetails?.riskInformation?.length > 3"
+          [paginator]="activeRiskInformation?.length > 3"
           [rows]="4"
-          [showCurrentPageReport]="quotationDetails?.riskInformation?.length > 3"
+          [showCurrentPageReport]="activeRiskInformation?.length > 3"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
           class="ui-datatable"
           [scrollable]="true"

@@ -649,5 +649,6 @@ export class UtilService {
     sessionStorage.removeItem('quotationNumber')
     sessionStorage.removeItem('passedSelectedRiskDetails')
     sessionStorage.removeItem('product')
+    sessionStorage.removeItem('quoteAction')
   }
 }

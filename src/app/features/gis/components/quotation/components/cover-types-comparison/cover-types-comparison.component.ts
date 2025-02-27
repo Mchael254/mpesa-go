@@ -749,7 +749,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .map(section => section.limitPremiumDtos).flat()
     let risk = {
       coverTypeCode: this.selectedCoverType,
-      quotationCode: defaultCode,
+      action: this.quoteAction ? this.quoteAction : "A",
+      //quotationCode: defaultCode,
       code: existingRisk && this.quoteAction === "E" ? existingRisk.code : null,
       productCode: this.premiumPayload?.product.code,
       propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
@@ -1817,7 +1818,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       quotationNumber: this.storedQuotationNo,
       source: 37,
       user: this.user,
-      clientCode: this.passedClientCode || null,
+      clientCode: this.storedData?.selectedClient?.id || null,
       productCode: this.premiumPayload?.product?.code,
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,
