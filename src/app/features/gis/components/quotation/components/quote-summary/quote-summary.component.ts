@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import stepData from '../../data/steps.json';
 import {Logger, untilDestroyed, UtilService} from '../../../../../../shared/shared.module';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -16,6 +16,7 @@ import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {Router} from '@angular/router';
 import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
 import {Clause, Excesses, LimitsOfLiability, StatusEnum, QuickQuoteData} from '../../data/quotationsDTO';
+import {mergeMap} from "rxjs";
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -24,7 +25,7 @@ const log = new Logger('QuoteSummaryComponent');
   templateUrl: './quote-summary.component.html',
   styleUrls: ['./quote-summary.component.css']
 })
-export class QuoteSummaryComponent {
+export class QuoteSummaryComponent implements OnInit, OnDestroy {
   selectedOption: string = 'email';
   clientName: string = '';
   contactValue: string = '';
@@ -75,10 +76,9 @@ export class QuoteSummaryComponent {
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   totalTaxes: number = 0;
   premiumAmount: number = 0;
-  taxList: { description: string; amount: number; rate: number; rateType: string }[] = [];
+  taxList: { description: string; amount: number; rate: number; rateType: string, productCode?: number }[] = [];
   selectedSubclassCode: any;
   excessesList: Excesses[] = []
-  selectedExcess: any;
   isEditRisk: boolean = false;
   reasonCancelled: string = '';
   cancelQuoteClicked: boolean = false;
@@ -192,11 +192,15 @@ export class QuoteSummaryComponent {
 
   loadClientQuotation() {
     log.debug("Load CLient quotation has been called")
-    this.quotationService.getClientQuotations(this.coverQuotationNo).subscribe(data => {
-      this.quotationDetails = data;
+    this.quotationService.getClientQuotations(this.coverQuotationNo)
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe(data => {
+        this.quotationDetails = data;
 
-      const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
-      sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+        const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+        sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
       log.debug("Quotation Details:", this.quotationDetails)
       this.quotationNo = this.quotationDetails.quotationNo;
@@ -207,42 +211,42 @@ export class QuoteSummaryComponent {
         this.getPremiumAmount()
       }
 
-      this.insuredCode = this.quotationDetails.clientCode;
-      log.debug("Insured Code:", this.insuredCode)
+        this.insuredCode = this.quotationDetails.clientCode;
+        log.debug("Insured Code:", this.insuredCode)
 
-      this.coverFrom = this.quotationDetails.coverFrom;
-      log.debug("Cover From:", this.coverFrom)
+        this.coverFrom = this.quotationDetails.coverFrom;
+        log.debug("Cover From:", this.coverFrom)
 
-      this.coverTo = this.quotationDetails.coverTo;
-      log.debug("Cover To:", this.coverTo)
+        this.coverTo = this.quotationDetails.coverTo;
+        log.debug("Cover To:", this.coverTo)
 
-      this.expiryDate = this.quotationDetails.expiryDate;
-      log.debug("Cover To:", this.expiryDate)
-
-
-      this.productInformation = this.quotationDetails.quotationProducts;
-      log.debug("Product Information:", this.productInformation);
-      this.productCode = this.productInformation[0].proCode;
-      log.debug("ProductCode:", this.productCode)
-
-      this.quoteDate = this.productInformation[0].wef;
+        this.expiryDate = this.quotationDetails.expiryDate;
+        log.debug("Cover To:", this.expiryDate)
 
 
-      this.agentDesc = this.productInformation[0].agentShortDescription;
-      log.debug("Agent Description:", this.agentDesc)
+        this.productInformation = this.quotationDetails.quotationProducts;
+        log.debug("Product Information:", this.productInformation);
+        this.productCode = this.productInformation[0].proCode;
+        log.debug("ProductCode:", this.productCode)
 
-      this.getClient();
-      this.getQuotationProduct();
-      if (this.quotationDetails?.riskInformation?.length == 1) {
-        this.selectedRisk = this.quotationDetails.riskInformation[0]
-        this.activeRiskInformation = this.quotationDetails.riskInformation
-        log.debug("Active risks to display >>>", this.activeRiskInformation)
-        this.onRiskSelect(this.selectedRisk)
-      } else {
-        this.selectedProduct = this.quotationDetails.quotationProducts[0];
-        this.riskToDisplay(this.selectedProduct)
-      }
-    })
+        this.quoteDate = this.productInformation[0].wef;
+
+
+        this.agentDesc = this.productInformation[0].agentShortDescription;
+        log.debug("Agent Description:", this.agentDesc)
+
+        this.getClient();
+        this.getQuotationProduct();
+        if (this.quotationDetails?.riskInformation?.length == 1) {
+          this.selectedRisk = this.quotationDetails.riskInformation[0]
+          this.activeRiskInformation = this.quotationDetails.riskInformation
+          log.debug("Active risks to display >>>", this.activeRiskInformation)
+          this.onRiskSelect(this.selectedRisk)
+        } else {
+          this.selectedProduct = this.quotationDetails.quotationProducts[0];
+          this.riskToDisplay(this.selectedProduct)
+        }
+      })
   }
 
   getClient() {
@@ -436,8 +440,8 @@ export class QuoteSummaryComponent {
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
     } else {
-      document.getElementById("openRiskModalButtonDelete").click();
-
+      this.deleteRisk()
+      // document.getElementById("openRiskModalButtonDelete").click();
     }
   }
 
@@ -524,6 +528,24 @@ export class QuoteSummaryComponent {
         }
       });
     }
+   /* if (this.quotationDetails.taxInformation) {
+      return this.quotationDetails.taxInformation.filter(value => value.productCode === product.code)
+        .reduce((total, tax) => total + (tax.amount || 0), 0);
+      /!*this.quotationDetails.taxInformation.forEach((tax: any) => {
+        if (tax.taxAmount) {
+          this.totalTaxes += tax.taxAmount;
+          log.debug("Total Taxes:", this.totalTaxes)
+          this.taxList.push({
+            description: tax.rateDescription,
+            amount: tax.taxAmount,
+            rate: tax.quotationRate,
+            rateType: tax.rateType
+          });
+          log.debug("Total Taxes List:", this.taxList)
+        }
+      });*!/
+    }
+    return 0;*/
   }
 
   getTaxTooltip(): string {
@@ -532,6 +554,13 @@ export class QuoteSummaryComponent {
         tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
       )
       .join('\n\n');
+
+   /* return this.taxList
+      .filter(value => value.productCode === product.code)
+      .map(
+        tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
+      )
+      .join('\n\n');*/
   }
 
   fetchClauses() {
@@ -597,21 +626,19 @@ export class QuoteSummaryComponent {
         next: (response: any) => {
           log.debug("Response after deleting a risk ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
-
           // Remove the deleted risk from the riskDetails array
           const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
-          if (index !== -1) {
-            this.quotationDetails?.riskInformation.splice(index, 1);
-          }
+          /*  if (index !== -1) {
+              this.quotationDetails?.riskInformation.splice(index, 1);
+            }*/
           // Clear the selected risk
           this.selectedRisk = null;
-
         },
         error: (error) => {
-
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
         }
       });
+    this.loadClientQuotation()
   }
 
   openRiskEditModal() {
