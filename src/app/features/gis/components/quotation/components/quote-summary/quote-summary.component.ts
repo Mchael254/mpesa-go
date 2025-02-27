@@ -55,9 +55,6 @@ export class QuoteSummaryComponent {
   quotationproduct: any;
   productDesc: any;
 
-  formattedCoverFrom: string;
-  formattedCoverTo: string;
-
   isAddRisk: boolean = false;
   fieldDisableState: boolean = false;
   passedPremium: any;
@@ -89,7 +86,9 @@ export class QuoteSummaryComponent {
   batchNo: number;
   quickQuoteData: QuickQuoteData;
   quoteAction: string = null
-  showConverToPolicyButton: boolean =false;
+  showConverToPolicyButton: boolean = false;
+
+  activeRiskInformation: any[] = []
 
 
   constructor(
@@ -141,13 +140,13 @@ export class QuoteSummaryComponent {
     this.quickQuoteData = JSON.parse(quickQuoteDataString);
     log.debug("quick quote data", this.quickQuoteData)
 
-    if(this.quickQuoteData.selectedClient?.id){
+    if (this.quickQuoteData.selectedClient?.id) {
       log.debug("SHOW CONVERT TO POLICY BUTTON")
-    this.showConverToPolicyButton =true
-    }else{
+      this.showConverToPolicyButton = true
+    } else {
       log.debug("HIDE CONVERT TO POLICY BUTTON")
 
-      this.showConverToPolicyButton =false
+      this.showConverToPolicyButton = false
 
     }
     const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
@@ -236,7 +235,12 @@ export class QuoteSummaryComponent {
       this.getQuotationProduct();
       if (this.quotationDetails?.riskInformation?.length == 1) {
         this.selectedRisk = this.quotationDetails.riskInformation[0]
+        this.activeRiskInformation = this.quotationDetails.riskInformation
+        log.debug("Active risks to display >>>", this.activeRiskInformation)
         this.onRiskSelect(this.selectedRisk)
+      } else {
+        this.selectedProduct = this.quotationDetails.quotationProducts[0];
+        this.riskToDisplay(this.selectedProduct)
       }
     })
   }
@@ -453,9 +457,19 @@ export class QuoteSummaryComponent {
     const section = sectionsDetails.find(sec => sec.description === sectionDescription);
     return section?.limitAmount || 0;
   }
-  productSelected(product: any){
+
+  productSelected(product: any) {
     log.debug("Selected >>>", product)
+    this.riskToDisplay(product)
+  }
+
+  riskToDisplay(product: any) {
+    this.activeRiskInformation = this.quotationDetails.riskInformation.filter(value => value?.quotationProductCode === product?.code)
     this.selectedProduct = product
+    if (this.activeRiskInformation?.length == 1) {
+      this.onRiskSelect(this.activeRiskInformation[0])
+    }
+
   }
 
   onRiskSelect(riskItem: any): void {
@@ -648,17 +662,18 @@ export class QuoteSummaryComponent {
       this.router.navigate(['/home/gis/quotation/quick-quote']);
     });
   }
-  convertToPolicy(){
+
+  convertToPolicy() {
 
     const selectedClient = this.quickQuoteData?.selectedClient;
 
-    if(selectedClient){
+    if (selectedClient) {
 
       // NAVIGATE TO POLICY SCREEN
       log.debug("existing client convert to polict and navigate to policy summary screen")
       this.convertQuoteToPolicy()
 
-    }else{
+    } else {
       //NAVIGATE TO CREATE CLIENT SCREEN
       // log.debug("Passed new client details:",this.passedNewClientDetails)
 
@@ -677,9 +692,9 @@ export class QuoteSummaryComponent {
   }
 
   convertToNormalQuote() {
-     const selectedClient = this.quickQuoteData?.selectedClient;
+    const selectedClient = this.quickQuoteData?.selectedClient;
 
-    if(selectedClient) {
+    if (selectedClient) {
       // NAVIGATE TO QUOTATION summary
       log.debug("existing client convert to normal quote and navigate to quotation summary screen");
       this.convertQuoteToNormalQuote();
