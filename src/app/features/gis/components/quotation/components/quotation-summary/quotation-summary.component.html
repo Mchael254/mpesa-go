@@ -1070,14 +1070,14 @@
 
                 <!-- noAccrual -->
                 <div class="mb-3 d-flex align-items-center">
-                  <label for="noAccrual" class="form-label external-claim-label col-3 mb-0 pe-2">noAccrual</label>
+                  <label for="noAccrual" class="form-label external-claim-label col-3 mb-0 pe-2">No Accrual</label>
                   <div class="col-8 ps-0">
                     <input type="number" class="form-control external-claim-input" id="noAccrual" placeholder=""
                       formControlName="noAccrual">
                     <div
                       *ngIf="insurersDetailsForm.get('noAccrual').hasError('required') && insurersDetailsForm.get('noAccrual').touched"
                       class="form-text text-danger">
-                      noAccrual is required
+                      No accrual is required
                     </div>
                   </div>
                 </div>

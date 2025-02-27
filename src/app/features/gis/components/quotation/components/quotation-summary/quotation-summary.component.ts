@@ -1184,6 +1184,7 @@ export class QuotationSummaryComponent {
 
           log.debug("Response after editing external Claim Experience", response);
           this.getExternalClaimsExperience(this.clientCode);
+          this.selectedExternalClaimExp = null;
 
         },
         error: (error) => {
@@ -1209,6 +1210,7 @@ export class QuotationSummaryComponent {
           log.debug("Response after deleting an external claim experience ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
           this.getExternalClaimsExperience(this.clientCode);
+          this.selectedExternalClaimExp = null;
         },
         error: (error) => {
           log.debug('Error deleteing external claim exp', error);
