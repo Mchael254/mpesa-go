@@ -93,7 +93,7 @@ export class QuotationDetailsComponent {
   userOrgDetails: UserDetail;
   defaultCurrency: CurrencyDTO;
   editConvertedQuote: string;
-
+  quotationFormDetails: any = null
 
 
   constructor(
@@ -112,7 +112,15 @@ export class QuotationDetailsComponent {
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
 
-  ) { }
+  ) { 
+
+    this. quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    const clientFormDetails = sessionStorage.getItem('clientPayload');
+    log.debug("Client form details:", clientFormDetails)
+    const clientCode = sessionStorage.getItem('clientCode');
+    this.clientId = JSON.parse(clientCode)
+    log.debug("Client Code- session storage",this.clientId)
+  }
 
   ngOnInit(): void {
     this.minDate = new Date();
@@ -131,14 +139,6 @@ export class QuotationDetailsComponent {
     this.quickQuoteDetails()
 
 
-    const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
-    const clientFormDetails = sessionStorage.getItem('clientPayload');
-    log.debug("Client form details:", clientFormDetails)
-    const clientCode = sessionStorage.getItem('clientCode');
-    this.clientId = JSON.parse(clientCode)
-    log.debug("Client Id:", this.clientId)
-
-    log.debug(quotationFormDetails)
 
     this.editConvertedQuote = JSON.parse(sessionStorage.getItem("editFlag"));
 
@@ -146,20 +146,19 @@ export class QuotationDetailsComponent {
       this.patchQuickQuoteData()
     };
 
-    if (quotationFormDetails) {
-      const parsedData = JSON.parse(quotationFormDetails);
-      this.quotationForm.patchValue(parsedData);
+    // if (this.quotationFormDetails) {
+    //   this.quotationForm.patchValue(parsedData);
 
-      log.debug(parsedData)
-    }
-    if (clientFormDetails) {
-      const clientData = JSON.parse(clientFormDetails)
-      log.debug("Client form details:", clientData)
+    //   log.debug(parsedData)
+    // }
+    // if (clientFormDetails) {
+    //   const clientData = JSON.parse(clientFormDetails)
+    //   log.debug("Client form details:", clientData)
 
-      this.quotationForm.controls['clientCode'].setValue(this.clientId);
-      this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
-      this.quotationForm.controls['clientType'].setValue(clientData.category);
-    }
+    //   this.quotationForm.controls['clientCode'].setValue(this.clientId);
+    //   this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
+    //   this.quotationForm.controls['clientType'].setValue(clientData.category);
+    // }
 
     log.debug(this.quotationForm.value)
 
@@ -266,6 +265,7 @@ export class QuotationDetailsComponent {
     this.producSetupService.getAllProducts().subscribe(res => {
       const ProdList = res
       this.products = ProdList
+    
       this.products.forEach((product) => {
         productDescription.push({
           code: product.code,
@@ -273,6 +273,14 @@ export class QuotationDetailsComponent {
         });
       });
       this.ProductDescriptionArray.push(...productDescription);
+      if(this.quotationFormDetails){
+        this.quotationForm.patchValue({
+          productCode: this.ProductDescriptionArray
+          .find(product => product.code === this.quotationFormDetails?.productCode)
+        })
+      }
+      log.info("Quotation form >>>", this.quotationForm)
+     
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info('modified product description', this.ProductDescriptionArray);
     })
@@ -325,7 +333,12 @@ export class QuotationDetailsComponent {
           description: capitalizedDescription,
         };
       });
-      
+      if(this.quotationFormDetails){
+        this.quotationForm.patchValue({
+          source: this.quotationSources
+          .find(source => source.code == this.quotationFormDetails?.source)
+        })
+      }
       log.debug("SOURCES", this.quotationSources)
     })
   }
@@ -370,8 +383,10 @@ export class QuotationDetailsComponent {
       multiUser: [null],
       unitCode: [null],
       locationCode: [null],
-      RFQDate: [''],
-      expiryDate: ['']
+      RFQDate: [this.quotationFormDetails ?
+         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
+      expiryDate: [this.quotationFormDetails ?
+        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate]
     });
   }
 
@@ -386,7 +401,8 @@ export class QuotationDetailsComponent {
 
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
     sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-
+    const quotationFormJson =this.quotationForm.value
+    log.debug("Quotation form details",quotationFormJson)
     if (this.quotationForm.value.multiUser == 'Y') {
       /**
    * Creates a new quotation with multi-user and navigates to quote assigning.
@@ -538,7 +554,12 @@ export class QuotationDetailsComponent {
           log.debug("Currency code-quote creation",this.quotationForm.value.currencyCode.id)
           quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
           quotationForm.currencyRate = this.exchangeRate;
+          quotationForm.clientCode = this.clientId
+          quotationForm.clientType ="I"
 
+          sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+          const quotationFormJson =this.quotationForm.value
+          log.debug("Quotation form details",quotationFormJson)
           log.debug("CREATE QUOTATION")
           this.quotationService.processQuotation(this.quotationForm.value).subscribe(data => {
             this.quotationNo = data;
@@ -655,7 +676,7 @@ export class QuotationDetailsComponent {
     // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
-    this.quotationService.getQuotations(clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
+    this.quotationService.getQuotations(this.clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
       this.quotationsList = data
       this.clientExistingQuotations = this.quotationsList.content
 
@@ -922,7 +943,7 @@ selectedProductClauses(quotationCode: string) {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  campaign details.Try again later');
+          // this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  campaign details.Try again later');
         }
       })
   }
