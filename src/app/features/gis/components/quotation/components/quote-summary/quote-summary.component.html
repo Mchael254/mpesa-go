@@ -165,6 +165,11 @@
 
               <!-- Delete Button (Disabled if only one risk exists) -->
               <div class="col-sm-3">
+                <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
+                        id="openRiskModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
+                        data-bs-target="#deleteRisk">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
                 <button
                   type="button"
                   id="icon"
