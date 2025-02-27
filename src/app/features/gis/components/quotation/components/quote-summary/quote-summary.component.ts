@@ -460,6 +460,7 @@ export class QuoteSummaryComponent {
 
   onRiskSelect(riskItem: any): void {
     this.selectedRisk = riskItem;
+    this.selectedSubclassCode = riskItem?.subclass?.code
     log.debug('Selected Risk item:', riskItem);
     if (this.selectedRisk) {
       this.fetchClauses();

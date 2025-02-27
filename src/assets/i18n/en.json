@@ -827,6 +827,7 @@
       "product_is_required": "Product is required",
       "invalid_email_address": "Invalid email address",
       "invalid_email_address_used": "Email address already used",
+      "invalid_phone_number_used": "phone number already used",
       "client_is_required": "Select a client",
       "invalid_phone_format": "Please provide a valid phone number.",
       "invalid_email_format": "Please provide a valid Email Address.",
