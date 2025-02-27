@@ -871,10 +871,10 @@
                   <!-- <td>{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</td> -->
                   <td class="flexible-header">{{externalClaim.insurer}}</td>
                   <td class="flexible-header">{{externalClaim.policyNumber}}</td>
-                  <td class="flexible-header">{{externalClaim.eceYear}}</td>
+                  <td class="flexible-header">{{externalClaim.year}}</td>
                   <td class="flexible-header">{{externalClaim.riskDetails}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{externalClaim.damageAmount}}</td>
-                  <td appCommaFormat class="text-end flexible-header">{{externalClaim.tpAmount}}</td>
+                  <td appCommaFormat class="text-end flexible-header">{{externalClaim.totalPaidAmount}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{externalClaim.otherAmount}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{externalClaim.claimPaid}}</td>
                 </tr>
@@ -1001,23 +1001,23 @@
 
                 <!-- Year -->
                 <div class="mb-3 d-flex align-items-center">
-                  <label for="eceYear" class="form-label external-claim-label col-3 mb-0 pe-2">Year</label>
+                  <label for="year" class="form-label external-claim-label col-3 mb-0 pe-2">Year</label>
                   <div class="col-8 ps-0">
                     <input type="number"
                       class="form-control external-claim-input"
-                      id="eceYear"
+                      id="year"
                       placeholder="YYYY"
-                      formControlName="eceYear"
+                      formControlName="year"
                       [min]="1900"
                       [max]="acceptedYear">
-                    <div *ngIf="insurersDetailsForm.get('eceYear').touched" class="form-text text-danger">
-                      <div *ngIf="insurersDetailsForm.get('eceYear').hasError('required')">
+                    <div *ngIf="insurersDetailsForm.get('year').touched" class="form-text text-danger">
+                      <div *ngIf="insurersDetailsForm.get('year').hasError('required')">
                         Year is required
                       </div>
-                      <div *ngIf="insurersDetailsForm.get('eceYear').hasError('max')">
+                      <div *ngIf="insurersDetailsForm.get('year').hasError('max')">
                         Year cannot be past {{  acceptedYear }}
                       </div>
-                      <div *ngIf="insurersDetailsForm.get('eceYear').hasError('pattern') && insurersDetailsForm.get('eceYear').hasError('min')">
+                      <div *ngIf="insurersDetailsForm.get('year').hasError('pattern') && insurersDetailsForm.get('year').hasError('min')">
                         Please enter a valid year
                       </div>
                     </div>
@@ -1068,16 +1068,16 @@
                   </div>
                 </div>
 
-                <!-- Account -->
+                <!-- noAccrual -->
                 <div class="mb-3 d-flex align-items-center">
-                  <label for="account" class="form-label external-claim-label col-3 mb-0 pe-2">Account</label>
+                  <label for="noAccrual" class="form-label external-claim-label col-3 mb-0 pe-2">noAccrual</label>
                   <div class="col-8 ps-0">
-                    <input type="number" class="form-control external-claim-input" id="account" placeholder=""
-                      formControlName="account">
+                    <input type="number" class="form-control external-claim-input" id="noAccrual" placeholder=""
+                      formControlName="noAccrual">
                     <div
-                      *ngIf="insurersDetailsForm.get('account').hasError('required') && insurersDetailsForm.get('account').touched"
+                      *ngIf="insurersDetailsForm.get('noAccrual').hasError('required') && insurersDetailsForm.get('noAccrual').touched"
                       class="form-text text-danger">
-                      Account is required
+                      noAccrual is required
                     </div>
                   </div>
                 </div>
@@ -1103,9 +1103,9 @@
                     amount</label>
                   <div class="col-8 ps-0">
                     <input type="text" class="form-control external-claim-input" id="thirdPartyAmount" placeholder=""
-                      formControlName="tpAmount" appCommaFormat>
+                      formControlName="totalPaidAmount" appCommaFormat>
                     <div
-                      *ngIf="insurersDetailsForm.get('tpAmount').hasError('required') && insurersDetailsForm.get('tpAmount').touched"
+                      *ngIf="insurersDetailsForm.get('totalPaidAmount').hasError('required') && insurersDetailsForm.get('totalPaidAmount').touched"
                       class="form-text text-danger">
                       Third party amount is required
                     </div>
@@ -1128,12 +1128,12 @@
 
                 <!-- Remarks -->
                 <div class="mb-3 d-flex align-items-center">
-                  <label for="remark" class="form-label external-claim-label col-3 mb-0 pe-2">Remarks</label>
+                  <label for="remarks" class="form-label external-claim-label col-3 mb-0 pe-2">Remarks</label>
                   <div class="col-8">
-                    <input type="text" class="form-control external-claim-input" id="remark" placeholder=""
-                      formControlName="remark">
+                    <input type="text" class="form-control external-claim-input" id="remarks" placeholder=""
+                      formControlName="remarks">
                     <div
-                      *ngIf="insurersDetailsForm.get('remark').hasError('required') && insurersDetailsForm.get('remark').touched"
+                      *ngIf="insurersDetailsForm.get('remarks').hasError('required') && insurersDetailsForm.get('remarks').touched"
                       class="form-text text-danger">
                       Remarks are required
                     </div>
