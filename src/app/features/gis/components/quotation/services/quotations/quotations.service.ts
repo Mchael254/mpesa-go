@@ -27,6 +27,7 @@ import {ApiService} from '../../../../../../shared/services/api/api.service';
 import {ExternalClaimExp} from '../../../policy/data/policy-dto';
 import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {UtilService} from '../../../../../../shared/services/util/util.service';
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -188,7 +189,7 @@ export class QuotationsService {
   }
 
 
-  createRiskLimits(data: any): Observable<any>{
+  createRiskLimits(data: any): Observable<any> {
     return this.api.POST(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
@@ -415,8 +416,8 @@ export class QuotationsService {
     )
   }
 
-  captureRiskClauses(riskCode: number,subClassCode :number,quoteCode: number,clauseCode: number, productCode: number) {
-    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&subClassCode=${subClassCode }&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}`,null, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  captureRiskClauses(riskCode: number, subClassCode: number, quoteCode: number, clauseCode: number, productCode: number) {
+    return this.api.POST(`v2/risk-clauses?riskCode=${riskCode}&subClassCode=${subClassCode}&quoteCode=${quoteCode}&clauseCode=${clauseCode}&productCode=${productCode}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 
@@ -433,7 +434,7 @@ export class QuotationsService {
       'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
-    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   postDocuments(data) {
@@ -544,7 +545,7 @@ export class QuotationsService {
     );
   }
 
-  processQuotation(data: QuotationPayload):Observable<any> {
+  processQuotation(data: QuotationPayload): Observable<any> {
     return this.api.POST<any>(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
@@ -647,7 +648,7 @@ export class QuotationsService {
     productCode: number,
     quotCode: number,
     riskCode: number
-  ):Observable<any> {
+  ): Observable<any> {
     // Construct the payload
     const payload = {
       clauseCodes, // Send all clause codes in a single object
@@ -671,8 +672,23 @@ export class QuotationsService {
     return this.api.DELETE(`v2/quotationRisks?quotRiskCode=${quotRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
-  getClientQuotations(quotationNo) {
-    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getClientQuotations(quotationNo): Observable<any> {
+    return this.api.GET<any>(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      map((details) => {
+        const mappedProductsData = details.quotationProducts.map((product) => {
+          const totalTax = product.taxInformation.reduce((sum, tax) => sum + tax.taxAmount, 0);
+          return {
+            ...product,
+            totalTax: totalTax,
+            premiumAmount: product.premium - totalTax
+          }
+        })
+        return {
+          ...details,
+          quotationProducts: mappedProductsData
+        }
+      })
+    )
   }
 
   updatePremium(quotationCode: any, data: premiumPayloadData) {
@@ -680,7 +696,7 @@ export class QuotationsService {
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
 
-  createQuotationRisk(quotationCode, data: quotationRisk[]):Observable<any> {
+  createQuotationRisk(quotationCode, data: quotationRisk[]): Observable<any> {
     return this.api.POST<any>(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 

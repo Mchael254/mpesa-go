@@ -2,21 +2,16 @@ import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/
 import stepData from '../../data/steps.json';
 import {Logger, untilDestroyed, UtilService} from '../../../../../../shared/shared.module';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MessageService} from 'primeng/api';
 import {ClientService} from '../../../../../entities/services/client/client.service';
-import {ProductService} from '../../../../services/product/product.service';
 import {AuthService} from '../../../../../../shared/services/auth.service';
 
 import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
 import {QuotationsService} from '../../services/quotations/quotations.service';
-import {SharedQuotationsService} from '../../services/shared-quotations.service';
 import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {Router} from '@angular/router';
 import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
 import {Clause, Excesses, LimitsOfLiability, StatusEnum, QuickQuoteData} from '../../data/quotationsDTO';
-import {mergeMap} from "rxjs";
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -28,7 +23,6 @@ const log = new Logger('QuoteSummaryComponent');
 export class QuoteSummaryComponent implements OnInit, OnDestroy {
   selectedOption: string = 'email';
   clientName: string = '';
-  contactValue: string = '';
   steps = stepData;
 
   quickQuotationCode: any;
@@ -95,14 +89,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     public fb: FormBuilder,
     public productService: ProductsService,
     public quotationService: QuotationsService,
-    private subclassCoverTypesService: SubClassCoverTypesService,
     public subclassService: SubclassesService,
-    private gisService: ProductService,
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
-    private messageService: MessageService,
     private clientService: ClientService,
-    public sharedService: SharedQuotationsService,
     public router: Router,
     private ngZone: NgZone,
     public globalMessagingService: GlobalMessagingService,
@@ -197,19 +187,19 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe(data => {
-        this.quotationDetails = data;
-
+        this.quotationDetails = data
+        log.debug("Mapped quotation details>>>>", this.quotationDetails)
         const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
         sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
 
-      log.debug("Quotation Details:", this.quotationDetails)
-      this.quotationNo = this.quotationDetails.quotationNo;
-      log.debug("Quotation Number:", this.quotationNo)
-      if (this.quotationDetails) {
-        log.info("CALCULATE TAXES XALLED")
-        this.calculateTaxes()
-        this.getPremiumAmount()
-      }
+        log.debug("Quotation Details:", this.quotationDetails)
+        this.quotationNo = this.quotationDetails.quotationNo;
+        log.debug("Quotation Number:", this.quotationNo)
+        if (this.quotationDetails) {
+          log.info("CALCULATE TAXES XALLED")
+          this.calculateTaxes()
+          this.getPremiumAmount()
+        }
 
         this.insuredCode = this.quotationDetails.clientCode;
         log.debug("Insured Code:", this.insuredCode)
@@ -468,7 +458,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   riskToDisplay(product: any) {
-    this.activeRiskInformation = this.quotationDetails.riskInformation.filter(value => value?.quotationProductCode === product?.code)
+    this.activeRiskInformation = product.riskInformation
     this.selectedProduct = product
     if (this.activeRiskInformation?.length == 1) {
       this.onRiskSelect(this.activeRiskInformation[0])
@@ -528,39 +518,14 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         }
       });
     }
-   /* if (this.quotationDetails.taxInformation) {
-      return this.quotationDetails.taxInformation.filter(value => value.productCode === product.code)
-        .reduce((total, tax) => total + (tax.amount || 0), 0);
-      /!*this.quotationDetails.taxInformation.forEach((tax: any) => {
-        if (tax.taxAmount) {
-          this.totalTaxes += tax.taxAmount;
-          log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({
-            description: tax.rateDescription,
-            amount: tax.taxAmount,
-            rate: tax.quotationRate,
-            rateType: tax.rateType
-          });
-          log.debug("Total Taxes List:", this.taxList)
-        }
-      });*!/
-    }
-    return 0;*/
   }
 
-  getTaxTooltip(): string {
-    return this.taxList
+  getTaxTooltip(product: any): string {
+    return product.taxInformation
       .map(
-        tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
+        tax => `${tax.rateDescription}: ${tax.taxAmount}\nRate Type: ${tax.rateType}\n Rate: ${tax.quotationRate}`
       )
       .join('\n\n');
-
-   /* return this.taxList
-      .filter(value => value.productCode === product.code)
-      .map(
-        tax => `${tax.description}: ${tax.amount}\nRate Type: ${tax.rateType}\n Rate: ${tax.rate}`
-      )
-      .join('\n\n');*/
   }
 
   fetchClauses() {
@@ -628,17 +593,14 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
           // Remove the deleted risk from the riskDetails array
           const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
-          /*  if (index !== -1) {
-              this.quotationDetails?.riskInformation.splice(index, 1);
-            }*/
-          // Clear the selected risk
+          this.loadClientQuotation()
           this.selectedRisk = null;
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
         }
       });
-    this.loadClientQuotation()
+
   }
 
   openRiskEditModal() {
@@ -660,9 +622,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
     const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
     sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-
-    const passedSelectedRiskDetailsString = JSON.stringify(this.selectedRisk);
-    sessionStorage.setItem('passedSelectedRiskDetails', passedSelectedRiskDetailsString);
+    sessionStorage.setItem('passedSelectedRiskDetails', JSON.stringify(this.selectedRisk));
     this.isEditRisk = true;
     const passedIsEditRiskString = JSON.stringify(this.isEditRisk);
     sessionStorage.setItem('isEditRisk', passedIsEditRiskString);
@@ -701,11 +661,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       this.convertQuoteToPolicy()
 
     } else {
-      //NAVIGATE TO CREATE CLIENT SCREEN
-      // log.debug("Passed new client details:",this.passedNewClientDetails)
-
-      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
       log.debug("New client Proceed to client creation")
 
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
