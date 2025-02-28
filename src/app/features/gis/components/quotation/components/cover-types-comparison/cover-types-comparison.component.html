@@ -287,20 +287,6 @@
                               title="open">
                       </button>
                       <div class="row ">
-                        <!-- <div class="col-lg-6 col-12">
-                          <div class="row" *ngFor="let risk of riskLevelPremiums">
-                            <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
-                              <div class="row" *ngFor="let limit of risk.limitPremiumDtos">
-                                <div class="col-6">
-                                  <p class="details-label"> {{ limit.description | sentenceCase }}</p>
-                                </div>
-                                <div class="col-6">
-                                  <p class="details-label fw-semibold"> {{ limit.premium | number }}</p>
-                                </div>
-                              </div>
-                            </ng-container>
-                          </div>
-                        </div> -->
 
                         <p-table [value]="riskLevelPremiums" responsiveLayout="scroll"
                                  dataKey="sectionCode" selectionMode="single"
