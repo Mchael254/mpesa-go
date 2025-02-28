@@ -457,15 +457,6 @@ export class AuthService implements OnDestroy {
    */
   getCurrentUserName(): string {
     const user = this.getCurrentUser();
-    // let user_name;
-    // if (this.utilService.isUserAgent(user)) {
-    //   user_name = user.acccUsername || '';
-    // } else if (this.utilService.isUserClient(user)) {
-    //   user_name = user.acwaUsername;
-    // } else if (this.utilService.isUserAdmin(user)) {
-    //   user_name = user.username;
-    // }
-    // return user_name;
     return user?.userName
   }
 

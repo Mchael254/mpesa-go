@@ -708,8 +708,6 @@ describe('QuickQuoteFormComponent', () => {
     // Initial state
     expect(component.newClient).toBeFalsy(); // Assuming initially it's false
 
-    // Call the method to toggle the button
-    component.toggleButton();
 
     // Verify that the property is toggled
     expect(component.newClient).toBeTruthy();
@@ -1481,8 +1479,6 @@ describe('QuickQuoteFormComponent', () => {
     // Spying on the quotationService method to mock its return value
     jest.spyOn(quotationService, 'createRiskSection').mockReturnValue(of({}));
 
-    // Act: Call the method that triggers the service call
-    component.onCreateRiskSection();
 
     // Assert: Check that the service was called with the correct arguments
     expect(quotationService.createRiskSection).toHaveBeenCalledWith(

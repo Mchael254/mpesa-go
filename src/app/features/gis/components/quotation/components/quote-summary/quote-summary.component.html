@@ -130,10 +130,10 @@
                 style="cursor: default">
               <td>{{ product.productName | sentenceCase }}</td>
               <td> {{ product.totalSumInsured | number }}</td>
-              <td pTooltip="{{ getTaxTooltip() }}" tooltipPosition="bottom">
-                {{ totalTaxes | number }}
+              <td pTooltip="{{ getTaxTooltip(product) }}" tooltipPosition="bottom">
+                {{ product.totalTax | number }}
               </td>
-              <td>{{ premiumAmount | number }}</td>
+              <td>{{ product.premiumAmount | number }}</td>
               <td>{{ product.premium |  number }}</td>
             </tr>
           </ng-template>
@@ -544,24 +544,6 @@
         </div>
       </div>
     </div>
-    <!-- Convert Quote to policy Modal -->
-    <!-- <div class="modal fade" id="convertQuoteToPolicy" tabindex="-1" aria-labelledby="convertQuoteToPolicy" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-center">
-          <p class="cancelQouteTitle">{{'gis.quotation.convert_quote' | translate}}</p>
-          <p class="cancelQouteParagraph">{{'gis.quotation.conversion_message_policy' | translate}}</p>
-
-          <div class="float-end mt-4 mb-4" *ngIf="showQuoteActions">
-            <button type="button" class="btn btn-outline-primary me-3" id="closeBtn" data-bs-dismiss="modal">
-              {{'gis.policy.cancel' | translate}}
-            </button>
-            <button class="btn btn-primary" type="button" id="btnConvertQuote" data-bs-dismiss="modal" (click)="convertToPolicy()" >
-              {{'gis.quotation.convert_to_policy' | translate}}
-            </button>
-        </div>
-        </div>
-      </div>
-    </div> -->
 
 
     <!-- Cancel Quote Modal -->
