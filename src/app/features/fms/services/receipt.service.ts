@@ -26,6 +26,7 @@ import {
   UsersDTO,
   printDTO,
   ReceiptUploadRequest,
+ 
 } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
@@ -369,5 +370,14 @@ export class ReceiptService {
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
       params
     );
+  }
+  updateReceiptStatus(data: number[]):Observable<any>{
+    return this.api.POST<any>(
+        `receipts/update-print-status`,
+        data,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+      )
+    
+
   }
 }

@@ -18,13 +18,19 @@ import {
   ReceiptingPointsDTO,
   ReceiptNumberDTO,
 } from '../../data/receipting-dto';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
-import { OrganizationService } from 'src/app/features/crm/services/organization.service';
+
+import {AuthService}  from '../../../../shared/services/auth.service';
+
+import {StaffService} from '../../../../features/entities/services/staff/staff.service';
+
+import {OrganizationService} from '../../../../features/crm/services/organization.service';
 import { ReceiptService } from '../../services/receipt.service';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+
+import {CurrencyService} from '../../../../shared/services/setups/currency/currency.service';
+
+import {BankService} from '../../../../shared/services/setups/bank/bank.service';
+
+import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 import { FmsService } from '../../services/fms.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
@@ -32,8 +38,10 @@ import { Router } from '@angular/router';
 import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
-import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+
+import {LocalStorageService} from '../../../../shared/services/local-storage/local-storage.service';
+
+import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -420,7 +428,8 @@ export class ReceiptCaptureComponent {
    
     
     let users = this.sessionStorage.getItem('user');
-    this.users = JSON.parse(users);
+    this.users = users? JSON.parse(users) : null;
+    
 
     
 
@@ -511,7 +520,7 @@ export class ReceiptCaptureComponent {
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
           'error',
-          'error fetching payments modes'
+          error.error.msg || 'error fetching payments modes'
         );
       },
     });
@@ -575,6 +584,10 @@ export class ReceiptCaptureComponent {
    * @returns {void}
    */
   onCurrencyChanged(event: Event): any {
+    this.receiptingDetailsForm.patchValue({bankAccountType:null}); 
+    this.receiptingDetailsForm.patchValue({bankAccount:null});
+    this.receiptingDetailsForm.patchValue({receiptingPoint:null});
+    this.receiptingDetailsForm.patchValue({receiptNumber:null});
     this.exchangeRateText = true;
     const selectedCurrencyCodes = (event.target as HTMLSelectElement).value;
     this.selectedCurrencyCode = Number(selectedCurrencyCodes);
@@ -584,6 +597,7 @@ export class ReceiptCaptureComponent {
       this.defaultBranch?.id || this.selectedBranch?.id,
       this.selectedCurrencyCode
     );
+    
     // Find the currency from the list
     const selectedCurrency = this.currencies.find(
       (currency) => currency.id === this.selectedCurrencyCode
@@ -786,10 +800,10 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       next: (data) => {
         this.drawersBanks = data;
       },
-      error: (error) => {
+      error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to fetch drawer banks'
+          err.error.msg || 'Failed to fetch drawer banks'
         );
       },
     });
@@ -904,9 +918,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       if (savedBankCode && this.bankAccounts.some(bank => bank.code === savedBankCode)) {
         this.selectedBankCode = savedBankCode;
         return;
-        // this.receiptingDetailsForm.patchValue({
-        //   bankAccount: this.selectedBankCode,
-        // });
+       
       }else{
          // Clear bank selection if previous selection is invalid
          this.selectedBankCode = null;
@@ -941,13 +953,27 @@ this.onBankSelected = false;
    * @returns {void}
    */
   onBank(event: Event): void {
-    const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
-    this.selectedBankCode = selectedBankCode; // Store the selected bank code
+    const selectedBankValue = (event.target as HTMLSelectElement).value;
+    //const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
+     // Prevent further processing if "Select" is chosen (value is empty string)
+ 
+     // 🚨 Guard clause - Exit immediately if 'Select' option is chosen
+     if (selectedBankValue === '' || selectedBankValue === 'Select') {  // Add 'Select' if that's actually the value in the options
+      this.selectedBankCode = null;
+      this.receiptingDetailsForm.patchValue({receiptingPoint:null});
+      this.receiptingDetailsForm.patchValue({receiptNumber:null});
+      this.selectedBank = null;
+      this.onBankSelected = false;
+
+      return;  // <=== Critical: Exit and do not fetch receipting points or receipt number
+  }
+  this.selectedBankCode = +selectedBankValue;
+   // this.selectedBankCode = selectedBankCode; // Store the selected bank code
     this.receiptDataService.setSelectedBank(this.selectedBankCode); // Store selected bank
 
     // Find the selected bank object based on the code
     this.selectedBank = this.bankAccounts.find(
-      (bank) => bank.code === selectedBankCode
+      (bank) => bank.code === this.selectedBankCode
     );
 
     if (this.selectedBank) {
@@ -955,12 +981,15 @@ this.onBankSelected = false;
       
 //this.receiptingDetailsForm.patchValue({bankAccountCode:this.selectedBank.code});
    this.receiptingDetailsForm.patchValue({bankAccountType:this.selectedBank.type});  
-      
+   this.onBankSelected = !!this.selectedBank;
+   this.onBankSelected = true;
     } else {
+      // this.onBankSelected = !!this.selectedBank;
+     // this.onBankSelected = false;
     }
-    this.onBankSelected = !!this.selectedBank;
-    this.onBankSelected = true;
-
+   
+ // Only fetch points/receipts if a valid bank is selected
+ if (this.onBankSelected) {
     this.receiptService
       .getReceiptingPoints(
         this.defaultBranch?.id || this.selectedBranch?.id,
@@ -1002,6 +1031,7 @@ this.onBankSelected = false;
       this.loggedInUser.code
     );
   }
+  }
   /**
    * Fetches the receipt number from the `ReceiptService` for the selected branch and user.
    * @param {number} branchCode - The branch code.
@@ -1029,10 +1059,10 @@ this.onBankSelected = false;
         } else {
         }
       },
-      error: (error) => {
+      error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to fetch receipt number'
+         err.error.msg ||  'Failed to fetch receipt number'
         );
       },
     });
@@ -1051,7 +1081,7 @@ this.onBankSelected = false;
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error.error
+          err.error.error || 'failed to fetch narrations'
         );
       },
     });
@@ -1108,7 +1138,7 @@ this.onBankSelected = false;
       .subscribe({
         next: (response) => {
           this.charges = response.data;
-          // console.log(this.charges);
+         
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
@@ -1128,7 +1158,7 @@ this.onBankSelected = false;
       next: (response) => {
         this.chargeList = response.data;
 
-        //  console.log('Existing charges:', this.chargeList);
+       
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1249,7 +1279,7 @@ this.onBankSelected = false;
 
     this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
-        //  console.log('Charge deleted successfully:', response);
+      
 this.globalMessagingService.displaySuccessMessage('success','deletion was successful!');
         this.chargeList.splice(index, 1); // Remove from list
         
@@ -1466,7 +1496,7 @@ this.receiptingDetailsForm.reset();
     
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
-    console.log('form data>>',formData);
+    //console.log('form data>>',formData);
     this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

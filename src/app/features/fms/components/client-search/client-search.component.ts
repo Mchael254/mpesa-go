@@ -180,7 +180,7 @@ export class ClientSearchComponent implements OnInit {
     if (storedReceiptNumber) {
       this.branchReceiptNumber = Number(storedReceiptNumber);
     }
-    console.log('this.globalReceiptNumber',this.branchReceiptNumber)
+    
     this.loggedInUser = this.authService.getCurrentUser();
     
     let users = this.sessionStorage.getItem('user');
@@ -200,8 +200,7 @@ export class ClientSearchComponent implements OnInit {
     this.selectedOrg = null;
   }
 
- // console.log('Selected Organization:', this.selectedOrg);
-  //console.log('Default Organization:', this.defaultOrg);
+ 
 
     // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
@@ -217,9 +216,7 @@ export class ClientSearchComponent implements OnInit {
       this.selectedBranch = null;
     }
   
-    console.log('Selected Branch:', this.selectedBranch?.id);
-    console.log('Default Branch:', this.defaultBranch?.id);
-   
+    
     
     this.fetchAccountTypes();
   }
