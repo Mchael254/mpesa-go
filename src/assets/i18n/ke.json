@@ -721,7 +721,20 @@
     "documentsAttached": "Nyaraka Zilizounganishwa",
     "selectUpload": "Chagua faili kupakia",
     "documents": "Nyaraka",
-    "preview": "Onyesho la awali"
+    "preview": "Onyesho la awali",
+    "prospect": "Mtarajiwa",
+    "new_prospect": "Mtarajiwa Mpya",
+    "import_prospect": "Ingiza Mtarajiwa",
+    "download_template": "Pakua Kiolezo",
+    "convert_to_client": "Badilisha Kuwa Mteja",
+    "contact_address_details": "Maelezo ya Anwani na Mawasiliano",
+    "certRegistrationNumber": "Nambari ya Usajili wa Cheti",
+    "registrationName": "Jina la Usajili",
+    "tradeName": "Jina la Biashara",
+    "registrationDate": "Tarehe ya Usajili",
+    "parentCompany": "Kampuni Mama",
+    "contactPerson": "Mtu wa Mawasiliano",
+    "contactPersonTelephone": "Nambari ya Simu ya Mtu wa Mawasiliano"
   },
   "gis": {
     "quotation": {
