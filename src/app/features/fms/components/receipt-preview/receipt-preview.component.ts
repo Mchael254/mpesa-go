@@ -12,6 +12,7 @@ import { GlobalMessagingService } from 'src/app/shared/services/messaging/global
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { ReceiptService } from '../../services/receipt.service';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -30,10 +31,10 @@ const log = new Logger('ReceiptPreviewComponent');
   templateUrl: './receipt-preview.component.html',
   styleUrls: ['./receipt-preview.component.css'],
 })
-export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
+export class ReceiptPreviewComponent implements OnInit{
   // Reference to the iframe
 
-  @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
+
   filePath: string = '';
 
  
@@ -64,7 +65,8 @@ export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
     private receiptDataService: ReceiptDataService,
-    private sessionStorage:SessionStorageService
+    private sessionStorage:SessionStorageService,
+    private receiptService:ReceiptService
   ) {}
 
   /**
@@ -75,61 +77,19 @@ export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
   ngOnInit(): void {
     let receiptResponse = this.sessionStorage.getItem('receiptResponse');
     this.receiptResponse = Number(receiptResponse);
-    //console.log('receipt', this.receiptResponse);
+    
     let receiptNo = this.sessionStorage.getItem('receiptNo');
     this.receiptResponse = Number(receiptNo);
-    //console.log('receiptNo>>', this.receiptResponse);
+    
     let globalOrgId = this.sessionStorage.getItem('OrgId');
     this.orgId = Number(globalOrgId);
     this.getReceipt();
   }
-  // Add event listeners after the view is fully initialized
-  // ngAfterViewInit() {
-  //   setTimeout(() => this.addEventListeners(), 1000); // Delay to ensure DOM is ready
-  // }
- 
+  
 
 
    
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.detectPrintAndDownload();
-    }, 2000); // Delay to allow iframe to load
-  }
-
-  detectPrintAndDownload() {
-    const iframe = this.docViewerIframe?.nativeElement?.querySelector('iframe');
-    if (!iframe) {
-      console.warn('No iframe found inside ngx-doc-viewer');
-      return;
-    }
-
-    const observer = new MutationObserver(() => {
-      const printButton = iframe.contentDocument?.querySelector('button[title="Print"]');
-      const downloadButton = iframe.contentDocument?.querySelector('button[title="Download"]');
-
-      if (printButton && downloadButton) {
-        printButton.addEventListener('click', () => {
-          console.log('Printed');
-          this.updateRecord('printed');
-        });
-
-        downloadButton.addEventListener('click', () => {
-          console.log('Downloaded');
-          this.updateRecord('downloaded');
-        });
-
-        observer.disconnect(); // Stop observing once buttons are found
-      }
-    });
-
-    observer.observe(iframe, { childList: true, subtree: true });
-  }
-
-  updateRecord(action: string) {
-    console.log('Receipt ${action} recorded');
-    // Call API here if needed
-  }
+ 
   /**
    * Generates the receipt report by calling the `ReportsService`.
    * Builds the `ReportDto` payload with the receipt number and organization ID and subscribes to the result.
@@ -157,7 +117,7 @@ export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
 
     this.reportService.generateReport(reportPayload).subscribe({
       next: (response) => {
-        log.info('Report Response:', response);
+        //log.info('Report Response:', response);
 
         // Create a Blob from the response
         const blob = new Blob([response], { type: 'application/pdf' });
@@ -193,6 +153,37 @@ export class ReceiptPreviewComponent implements OnInit,AfterViewInit {
   }
   
  
+  onPrintStatusChange(status: string): void {
+    if (status === 'yes') {
+      this.updatePrintStatus();
+      
+    } else if(status === 'no') {
+      this.navigateToReceiptCapture();
+    }
+  }
+
+  updatePrintStatus() {
+
+  const receiptId = Number(this.receiptResponse);
+
+  // Construct the payload as an array of numbers
+  const payload: number[] = [receiptId];
+   this.receiptService.updateReceiptStatus(payload).subscribe({
+    next:(response)=>{
+this.globalMessagingService.displaySuccessMessage('success:',response.message);
+this.receiptDataService.clearReceiptData();
+this.router.navigate(['/home/fms/receipt-capture']);
+    },
+    error:(err)=>{
+      this.globalMessagingService.displayErrorMessage('failed',err.error.msg);
+    }
+   })
+  }
+
+  navigateToReceiptCapture(): void {
+    this.receiptDataService.clearReceiptData();
+    this.router.navigate(['/home/fms/receipt-capture']);
+  }
   
   /**
    * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
