@@ -13,7 +13,7 @@ import {
   StateDto,
   SubCountyDTO,
   SubadminstrativeUnitDTO,
-  TownDto,
+  TownDto, PostalCodesDTO,
 } from '../../../data/common/countryDto';
 import { Logger } from '../../logger/logger.service';
 import { ApiService } from '../../api/api.service';
@@ -22,6 +22,7 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 import { SESSION_KEY } from '../../../../features/lms/util/session_storage_enum';
 import { StringManipulation } from '../../../../features/lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import {UtilService} from "../../util/util.service";
 
 const log = new Logger('CountryService');
 
@@ -33,7 +34,10 @@ const log = new Logger('CountryService');
   providedIn: 'root',
 })
 export class CountryService {
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private utilService: UtilService
+  ) {}
 
   /**
    * Fetch all countries
@@ -282,6 +286,16 @@ export class CountryService {
     return this.api.DELETE<PostCountryHolidayDTO>(
       `country-holidays/${id}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  getPostalCodes(townCode: number): Observable<PostalCodesDTO[]> {
+    const params = new HttpParams().set('townCode', `${townCode}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    return this.api.GET<PostalCodesDTO[]>(
+      `postal-codes`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
     );
   }
 }
