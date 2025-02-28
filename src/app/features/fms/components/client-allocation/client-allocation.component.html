@@ -1,7 +1,8 @@
 <div class="container-fluid">
   <div class="breadcrumb-custom">
-    {{ "fms.receipting.finance" | translate }} > CB-Receipting >
-    {{ "base.Receipting" | translate }} >
+    {{ "fms.receipting.finance" | translate }} >
+    {{ "fms.receipting.cbReceipting" | translate }}>
+    {{ "fms.receipting.receipting" | translate }}>
     <span class="breadcrumb-text">{{
       "fms.receipting.allocateReceipt" | translate
     }}</span>
@@ -10,12 +11,16 @@
     <div class="allocation-div">
       <!-- Receipt Allocations Section -->
       <div class="row">
-        <h5 class="text-primary text-start mb-3">Receipt Allocations</h5>
+        <h5 class="text-primary text-start mb-3">
+          {{ "fms.receipting.receiptAllocations" | translate }}
+        </h5>
 
         <!-- Amount Summary Row -->
         <div class="row mb-3">
           <div class="col-md-3">
-            <label for="receiptAmount" class="form-label">Receipt Amount</label>
+            <label for="receiptAmount" class="form-label">{{
+              "fms.receipting.receiptAmount" | translate
+            }}</label>
             <input
               type="text"
               id="receiptAmount"
@@ -25,9 +30,9 @@
             />
           </div>
           <div class="col-md-3">
-            <label for="allocatedAmount" class="form-label"
-              >Allocated Amount</label
-            >
+            <label for="allocatedAmount" class="form-label">{{
+              "fms.receipting.allocatedAmount" | translate
+            }}</label>
             <input
               type="text"
               id="allocatedAmount"
@@ -37,9 +42,9 @@
             />
           </div>
           <div class="col-md-3">
-            <label for="unallocatedAmount" class="form-label"
-              >Unallocated Amount</label
-            >
+            <label for="unallocatedAmount" class="form-label">{{
+              "fms.receipting.unallocatedAmount" | translate
+            }}</label>
             <input
               type="text"
               id="unallocatedAmount"
@@ -67,47 +72,47 @@
             <ng-template pTemplate="header">
               <tr style="background-color: #89a8b2; color: white">
                 <th class="header-bg">
-                  Client Name
+                  {{ "fms.receipting.client_name" | translate }}
                   <input
                     type="text"
                     class="form-control form-control-sm"
                     (keyup.enter)="applyFilter($event, 'clientName')"
                     (input)="applyFilter($event, 'clientName')"
-                    placeholder="Filter"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
                 <th class="header-bg">
-                  Policy Number
+                  {{ "fms.receipting.policyNumber" | translate }}
                   <input
                     type="text"
                     class="form-control form-control-sm"
                     (keyup.enter)="applyFilter($event, 'policyNumber')"
                     (input)="applyFilter($event, 'policyNumber')"
-                    placeholder="Filter"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
                 <th class="header-bg">
-                  Amount
+                  {{ "fms.receipting.amount" | translate }}
                   <input
                     type="number"
                     class="form-control form-control-sm"
                     (keyup.enter)="applyFilter($event, 'amount')"
                     (input)="applyFilter($event, 'amount')"
-                    placeholder="Filter"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
                 <th class="header-bg">
-                  Balance
+                  {{ "fms.receipting.balance" | translate }}
                   <input
                     type="number"
                     class="form-control form-control-sm"
                     (keyup.enter)="applyFilter($event, 'balance')"
                     (input)="applyFilter($event, 'balance')"
-                    placeholder="Filter"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
                 <th class="header-bg">
-                  Allocated Amount
+                  {{ "fms.receipting.allocatedAmount" | translate }}
                   <input
                     type="number"
                     class="form-control form-control-sm"
@@ -115,17 +120,17 @@
                   />
                 </th>
                 <th class="header-bg">
-                  Commission
+                  {{ "fms.receipting.commission" | translate }}
                   <input
                     type="number"
                     class="form-control form-control-sm commission-input"
                     (keyup.enter)="applyFilter($event, 'commission')"
                     (input)="applyFilter($event, 'commission')"
-                    placeholder="Filter"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
                 <th class="header-bg">
-                  Comm?
+                  {{ "fms.receipting.comm?" | translate }}
                   <input
                     type="checkbox"
                     class="form-control form-control-sm comm-checkbox"
@@ -150,7 +155,9 @@
                       type="number"
                       [formControl]="control"
                       class="form-control form-control-sm"
-                      placeholder="Enter amount"
+                      placeholder="{{
+                        'fms.receipting.enterAmount' | translate
+                      }}"
                       (input)="calculateTotalAllocatedAmount()"
                     />
                   </ng-container>
@@ -171,8 +178,10 @@
 
             <!-- Pagination -->
             <ng-template pTemplate="paginatorleft">
-              Showing {{ first }} to {{ first + rows }} of
-              {{ totalRecords }} entries
+              {{ "fms.receipting.showing" | translate }} {{ first }}
+              {{ "fms.receipting.to" | translate }} {{ first + rows }}
+              {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+              {{ "fms.receipting.entries" | translate }}
             </ng-template>
           </p-table>
         </div>
@@ -183,7 +192,7 @@
           class="btn btn-primary"
           (click)="allocateAndPostAllocations()"
         >
-          Save Allocation
+          {{ "fms.receipting.saveAllocation" | translate }}
         </button>
       </div>
       <!-- Allocations Table -->
@@ -193,7 +202,9 @@
         "
         class="allocations-section"
       >
-        <h3 class="allocations-title">Allocations</h3>
+        <h3 class="allocations-title">
+          {{ "fms.receipting.allocations" | translate }}
+        </h3>
         <!-- <div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-4"> -->
         <!-- <h3 class="text-primary text-start fs-4">Allocations</h3> -->
 
@@ -209,13 +220,27 @@
             <!-- Table Header -->
             <ng-template pTemplate="header">
               <tr style="background-color: #89a8b2; color: white">
-                <th class="header-bg">Policy Number</th>
-                <th class="header-bg">Transaction Number</th>
-                <th class="header-bg">Batch Number</th>
-                <th class="header-bg">Allocated Amount</th>
-                <th class="header-bg commission-header">Commission Amount</th>
-                <th class="header-bg commission-header">Include Commission</th>
-                <th class="header-bg">Actions</th>
+                <th class="header-bg">
+                  {{ "fms.receipting.policyNumber" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.transactionNumber" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.batchNumber" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.allocatedAmount" | translate }}
+                </th>
+                <th class="header-bg commission-header">
+                  {{ "fms.receipting.commissionAmount" | translate }}
+                </th>
+                <th class="header-bg commission-header">
+                  {{ "fms.receipting.includeCommission" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.actions" | translate }}
+                </th>
               </tr>
             </ng-template>
 
@@ -290,7 +315,8 @@
                 class="file-item"
               >
                 <p class="file-name">
-                  <strong>File Name:</strong> {{ file.docName }}
+                  <strong>{{ "fms.receipting.filename" | translate }}</strong>
+                  {{ file.docName }}
                 </p>
 
                 <div class="file-actions">
@@ -298,7 +324,8 @@
                     class="btn btn-primary me-2 d-flex align-items-center"
                     (click)="openFile(file)"
                   >
-                    <i class="fas fa-eye"></i> Open
+                    <i class="fas fa-eye"></i>
+                    {{ "fms.receipting.open" | translate }}
                   </button>
 
                   <button
@@ -324,13 +351,16 @@
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title">File Description</h5>
+                <h5 class="modal-title">
+                  {{ "fms.receipting.fileDescription" | translate }}
+                </h5>
               </div>
               <div class="modal-body">
                 <form [formGroup]="receiptingDetailsForm">
                   <div class="form-group">
                     <label for="description"
-                      >Enter File Description<span class="required"></span
+                      >{{ "fms.receipting.enterFileDescription" | translate
+                      }}<span class="required"></span
                     ></label>
                     <input
                       id="description"
@@ -347,7 +377,7 @@
                       "
                       class="text-danger"
                     >
-                      Description is required
+                      {{ "fms.receipting.descriptionIsRequired" | translate }}
                     </div>
                   </div>
                 </form>
@@ -358,7 +388,7 @@
                   class="btn btn-primary"
                   (click)="saveFileDescription()"
                 >
-                  Save
+                  {{ "fms.receipting.save" | translate }}
                 </button>
               </div>
             </div>
@@ -376,7 +406,7 @@
         "
       >
         <button type="button" class="btn btn-primary" (click)="uploadFile()">
-          post File
+          {{ "fms.receipting.postFile" | translate }}
         </button>
       </div>
     </div>
@@ -384,7 +414,7 @@
   <div class="nav-btn">
     <div class="back-btn">
       <button type="button" class="btn btn-link" (click)="onBack()">
-        Back
+        {{ "fms.receipting.back" | translate }}
       </button>
     </div>
     <div class="save-btns">
@@ -394,7 +424,7 @@
         [disabled]="!isAllocationComplete && !isAllocationCompleted"
         class="btn btn-outline-primary"
       >
-        Print Acknowledgement slip
+        {{ "fms.receipting.generateAcknowledgement" | translate }}
       </button>
       <button
         *ngIf="!showAcknowledgeBtn"
@@ -403,7 +433,7 @@
         class="btn btn-outline-primary"
         (click)="saveAndPrint()"
       >
-        Save and Print
+        {{ "fms.receipting.save&print" | translate }}
       </button>
 
       <button
@@ -412,7 +442,7 @@
         class="btn btn-primary"
         (click)="submitReceipt()"
       >
-        Save receipt
+        {{ "fms.receipting.save_receipt" | translate }}
       </button>
     </div>
   </div>
