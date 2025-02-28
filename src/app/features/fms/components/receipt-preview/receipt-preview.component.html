@@ -1,5 +1,7 @@
 <div class="container-fluid">
-  <h5 class="text-primary" style="padding-top: 10px">Receipt summary</h5>
+  <h5 class="text-primary" style="padding-top: 10px">
+    {{ "fms.receipting.receiptSummary" | translate }}
+  </h5>
   <div class="receipt-section">
     <ngx-doc-viewer
       #docViewerIframe
@@ -9,8 +11,38 @@
     >
     </ngx-doc-viewer>
   </div>
+
+  <h6 class="text mt-2">
+    {{ "fms.receipting.isReceiptPrinted?" | translate }}
+  </h6>
+  <div class="radiobtn">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="printStatus"
+        id="printYes"
+        (change)="onPrintStatusChange('yes')"
+      />
+      <label class="form-check-label" for="flexRadioDefault1">{{
+        "fms.receipting.yes" | translate
+      }}</label>
+    </div>
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="printStatus"
+        id="printNo"
+        (change)="onPrintStatusChange('no')"
+      />
+      <label class="form-check-label" for="flexRadioDefault2">
+        {{ "fms.receipting.no" | translate }}
+      </label>
+    </div>
+  </div>
   <!-- Action Buttons -->
-  <div class="btn-actions">
+  <!-- <div class="btn-actions">
     <div class="btn-back">
       <button type="button" class="btn btn-link" (click)="onBack()">
         Back
@@ -24,7 +56,7 @@
       >
         Print
       </button>
-      <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
+    
     </div>
-  </div>
+  </div> -->
 </div>
