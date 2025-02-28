@@ -16,6 +16,7 @@ import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-ca
 import { ClientSearchComponent } from './components/client-search/client-search.component';
 import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
 import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
+import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-preview.component';
 
 
 
@@ -31,7 +32,8 @@ import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-pr
     ReceiptCaptureComponent,
     ClientSearchComponent,
     ClientAllocationComponent,
-    ReceiptPreviewComponent
+    ReceiptPreviewComponent,
+    PdSlipPreviewComponent
     
    
   ],
