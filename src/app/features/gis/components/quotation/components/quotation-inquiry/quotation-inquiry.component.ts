@@ -281,7 +281,7 @@ export class QuotationInquiryComponent {
     log.debug('Selected Product:', event);
 
     // Call fetchQuotations when the client code changes
-    this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
+    // this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
   }
 
   onStatusSelected(selectedValue: any) {
