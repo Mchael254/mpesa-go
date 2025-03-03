@@ -533,7 +533,7 @@
     "new_policy": "New Policy",
     "new_quote": "New Quote",
     "new_service_provider": "New Service Provider",
-    "next": "Next",
+    "next": "next",
     "next_of_kins": "Next of Kins",
     "no": "No",
     "no_agent_found": "No Agent Found",
@@ -2774,6 +2774,9 @@
       "of":"of",
       "entries":"entries",
       "finance":"Finance",
+      "receiptPreview":"receipt Preview",
+      
+      "clientSearch":"client Search",
       "receiptCapture":"Receipt Capture",
       "allocateReceipt":"Allocate Receipt",
       "accountSelection":"Account Selection",
@@ -2792,8 +2795,10 @@
      "amount":"Amount",
      "unallocatedAmount":"Unallocated Amount",
       "client_name": "Client Name",
-      
-      "allocated_amount": "Allocated Amount"
+      "unPrinted":"Not Printed",
+      "allocated_amount": "Allocated Amount",
+      "slipPreview":"Slip preview",
+      "acknowledgementSlip":"Acknowledgement Slip Summary"
      
     },
     "allocation": {

@@ -144,7 +144,7 @@ export class BaseFmsComponent {
             this.sessionStorage.removeItem('defaultOrg');
           }
           if (!defaultOrg) {
-            console.warn('No default organization found. Setting first available organization.');
+            //console.warn('No default organization found. Setting first available organization.');
             this.defaultOrg = this.organization.length > 0 ? this.organization[0] : null;
           }
         }
