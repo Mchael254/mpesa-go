@@ -1,12 +1,37 @@
 <div class="container-fluid">
   <!-- Breadcrumb -->
-  <div class="breadcrumb-custom">
+  <!-- <div class="breadcrumb-custom">
     {{ "fms.receipting.finance" | translate }} >
     {{ "fms.receipting.cbReceipting" | translate }}>
     {{ "fms.receipting.receipting" | translate }} >
     <span class="breadcrumb-text">{{
       "fms.receipting.allocateReceipt" | translate
     }}</span>
+  </div> -->
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label: this.translate.instant('fms.receipting.cbReceipting'),
+        url: '/home/fms/',
+      },
+      {
+        label:this.translate.instant('fms.receipting.receipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('fms.receipting.clientSearch'),
+        url: ''
+      }
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
   </div>
   <div class="main-form">
     <form [formGroup]="receiptingDetailsForm">
