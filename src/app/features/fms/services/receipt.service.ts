@@ -26,6 +26,7 @@ import {
   UsersDTO,
   printDTO,
   ReceiptUploadRequest,
+  acknowledgementSlipDTO,
  
 } from '../data/receipting-dto';
 
@@ -324,15 +325,7 @@ export class ReceiptService {
     );
   }
 
-  // deleteAllocation(receiptDetailCode: number): Observable<DeleteAllocationResponseDTO> {
 
-  //   const params = new HttpParams().set('receiptDetailCode', `${receiptDetailCode}`);
-  //   return this.api.DELETE<DeleteAllocationResponseDTO>(
-  //    `allocations/delete`,
-  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-  //     params
-  //   );
-  // }
   deleteAllocation(
     receiptDetailCode: number
   ): Observable<DeleteAllocationResponseDTO> {
@@ -374,6 +367,22 @@ export class ReceiptService {
   updateReceiptStatus(data: number[]):Observable<any>{
     return this.api.POST<any>(
         `receipts/update-print-status`,
+        data,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+      )
+    
+
+  }
+  updateSlipStatus(data: number[]){
+    return this.api.POST<any>(
+      `receipts/update-print-status`,
+      data,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    )
+  }
+  generateAcknowledgementSlip(data:acknowledgementSlipDTO ):Observable<any>{
+    return this.api.POST<any>(
+        `acknowledgement-slips/generate`,
         data,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
       )

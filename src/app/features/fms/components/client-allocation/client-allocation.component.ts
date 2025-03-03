@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import {
+  acknowledgementSlipDTO,
   AllocationDTO,
   BanksDTO,
   BranchDTO,
@@ -32,6 +33,7 @@ import {SessionStorageService} from '../../../../shared/services/session-storage
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import {DmsService} from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
  * for receipts. It handles form inputs, allocation calculations, file uploads, and interactions
@@ -104,6 +106,7 @@ export class ClientAllocationComponent {
   isAllocationPosted: boolean = false;
   fileUploaded: boolean = false;
   receiptResponse: any;
+  receiptSlipResponse:any;
   defaultOrg: OrganizationDTO;
   selectedOrg:OrganizationDTO;
   selectedBranch: BranchDTO;
@@ -168,7 +171,8 @@ export class ClientAllocationComponent {
     private dmsService: DmsService,
     private reportService: ReportsService,
     private sessionStorage:SessionStorageService,
-    private fmsSetupService:FmsSetupService
+    private fmsSetupService:FmsSetupService,
+    public translate:TranslateService
   ) {}
    /**
    * Angular lifecycle hook that initializes the component.
@@ -1457,13 +1461,182 @@ return false;
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
           'Failed to save receipt',
-          error.error || 'your error'
+          error.error.msg || 'an error occured'
         );
       },
     });
   }
-  GeneratePdSlip(){
+ handleSaveAndPrint(){
+  this.saveAndGenerateSlip();
+  setTimeout(()=>{
+    this.generateSlip();
+  },1000)
+ }
+  saveAndGenerateSlip() {
+   
+    // ✅ 1. Check if any selected file is not posted
+    const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
 
+    if (hasUnpostedFiles) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete all selected files before saving the receipt.'
+      );
+      return; // Stop execution
+    }
+  
+    // ✅ 2. Ensure no unposted selected file
+    if (this.selectedFile !== null) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete the file before saving the receipt.'
+      );
+      return;
+    }
+  if(this.parameterStatus=='Y' && !this.fileUploaded )
+    {
+ 
+     if(confirm('do you want to save receipt without uploading file?')==true){
+
+return true;
+     }else{
+      return false;
+     }
+
+
+     }
+     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
+this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
+return false;
+     }
+    if (!this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please enter the amount issued.'
+      );
+      return false; // Stop further execution
+    }
+
+    // Step 2: Validate the total allocated amount against the issued amount
+    if (this.totalAllocatedAmount < this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Amount issued is not fully allocated.'
+      );
+
+      return false; // Stop further execution
+    }
+    if (this.totalAllocatedAmount > this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Total Allocated Amount Exceeds Amount Issued'
+      );
+
+      return false;
+    }
+    const receiptData: ReceiptSaveDTO = {
+      //this is the branch receiptNumber that is used via out receipting process
+      receiptNo: this.branchReceiptNumber,
+      receiptCode: this.receiptCode,
+      receiptDate: this.receiptDate
+        ? this.receiptDate.toISOString().split('T')[0]
+        : null, // Ensure it's a valid Date before calling toISOString()
+      amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
+      paidBy: this.receivedFrom,
+      currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
+
+      branchCode:
+        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
+      paymentMode: this.paymentMode,
+      paymentMemo: this.paymentRef || null,
+      docDate: this.documentDate
+        ? this.documentDate.toISOString().split('T')[0]
+        : null, // Ensure it's a valid Date before calling toISOString()
+      //drawerBank: formValues.drawersBank || 'N/A',
+      drawerBank: this.drawersBank || null,
+      userCode: this.loggedInUser.code,
+      narration: this.narration,
+      insurerAccount: null,
+      receivedFrom: this.receivedFrom || null,
+      grossOrNet: 'G',
+      //  grossOrNet: null,
+      sysShtDesc: this.selectedClient?.systemShortDesc,
+      receiptingPointId: this.receiptingPointObject.id,
+      receiptingPointAutoManual: this.receiptingPointObject.autoManual,
+
+      // capitalInjection:  "N",
+      //capitalInjection: this.capitalInjection || this.NoCapitalInjection ,
+      capitalInjection: 'N',
+      chequeNo: null,
+      ipfFinancier: null,
+      receiptSms: 'Y',
+      receiptChequeType:  null,
+      vatInclusive: null,
+      //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
+      rctbbrCode:null,
+      directType: null,
+      pmBnkCode: null,
+      dmsKey: null,
+      currencyRate: this.exchangeRate || this.manualExchangeRate || null,
+      internalRemarks: null,
+      // manualRef:formValues.manualRef || null,
+      manualRef: this.manualRef || null,
+      bankAccountCode: String(this.bankAccount),
+      //bankAccountCode: Number(this.globalBankAccountVariable) || null, // Add quotes to ensure it's treated as string before conversion
+      grossOrNetAdminCharge: 'G',
+      insurerAcc: null,
+      grossOrNetWhtax: null,
+      grossOrNetVat: null,
+
+      sysCode: Number(this.selectedClient.systemCode),
+      bankAccountType: this.bankAccountType,
+    };
+    
+    // Call the service to save the receipt
+    this.receiptService.saveReceipt(receiptData).subscribe({
+      next: (response) => {
+        this.receiptResponse = response.data;
+        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Receipt saved successfully'
+        );
+        //this.router.navigate(['/home/fms/slip-preview']);
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Failed to save receipt',
+          error.error.msg || 'an error occured'
+        );
+      },
+    });
+  }
+  generateSlip(){
+    const payload:acknowledgementSlipDTO = {
+      receiptNumbers:[this.receiptResponse.receiptNumber],
+      userCode:this.loggedInUser.code
+  }
+  //console.log('payloade>',payload)
+    this.receiptService.generateAcknowledgementSlip(payload).subscribe({
+next:(response)=>{
+  this.receiptSlipResponse = response.data;
+  this.globalMessagingService.displaySuccessMessage(
+    'Success',
+    'slip generated successfully'
+  );
+  //this.sessionStorage.setItem('receiptSlipResponse',this.receiptSlipResponse.receiptNo);
+  this.router.navigate(['/home/fms/slip-preview']);
+  
+},
+
+  error:(err)=>{
+    this.globalMessagingService.displayErrorMessage(
+      'Failed to save receipt',
+      err.error.msg || 'an error occured'
+    );
+  }
+
+    })
   }
  /**
    * Navigates back to the previous screen.
