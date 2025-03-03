@@ -11,7 +11,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { Calendar } from 'primeng/calendar';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { QuotationDetails, riskSection } from '../../data/quotationsDTO';
+import { QuotationDetails, quotationRisk, riskSection } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
@@ -186,6 +186,12 @@ export class RiskSectionDetailsComponent {
   defaultBinderName: any;
   selectedRiskSection: any;
   minDate: Date | undefined;
+  motorClassAllowed: string;
+  showMotorSubclassFields: boolean = false;
+  showNonMotorSubclassFields: boolean =false;
+  productDescription: string;
+  storedRiskFormDetails: quotationRisk =null
+  quotationFormDetails: any = null
 
   constructor(
     private router: Router,
@@ -215,7 +221,20 @@ export class RiskSectionDetailsComponent {
     public cdr: ChangeDetectorRef,
     private renderer: Renderer2
 
-  ) { }
+  ) { 
+    const motorClassAllowed = sessionStorage.getItem('motorClassAllowed');
+    this.motorClassAllowed =motorClassAllowed;
+    log.debug("Motor Class Allowed Value", this.motorClassAllowed);
+    if (this.motorClassAllowed === 'Y') {
+      this.showMotorSubclassFields = true;
+      // this.motorProduct = true;
+    }else if(this.motorClassAllowed=="N"){
+      this.showNonMotorSubclassFields = true;
+      // this.motorProduct = false;
+    }
+    this.storedRiskFormDetails = JSON.parse(sessionStorage.getItem('riskFormDetails'));
+    log.debug("RISK FORM DETAILS",this.storedRiskFormDetails)
+  }
   public isCollapsibleOpen = false;
   public isOtherDetailsOpen = false;
   public isSectionDetailsOpen = false;
@@ -256,7 +275,6 @@ export class RiskSectionDetailsComponent {
     this.getVehicleMake();
     // this.getVehicleModel();
 
-    // this.loadFormData();
 
     this.createSectionDetailsForm();
     this.createScheduleDetailsForm();
@@ -305,6 +323,7 @@ export class RiskSectionDetailsComponent {
 
 
 
+    this.loadFormData()
 
   }
   ngOnDestroy(): void { }
@@ -394,7 +413,6 @@ export class RiskSectionDetailsComponent {
       this.allSubclassList = data;
       log.debug(this.allSubclassList, " from the service All Subclass List");
       this.cdr.detectChanges();
-      this.loadFormData()
     })
   }
   /**
@@ -409,7 +427,7 @@ export class RiskSectionDetailsComponent {
     this.town = this.formData.clientCode
     log.debug(this.selectProductCode, "Selected Product Code")
     this.getProductByCode();
-    this.getProductSubclass(this.selectProductCode);
+    // this.getProductSubclass(this.selectProductCode);
     // this.getSubclasses();
 
     // this.getClient();
@@ -436,33 +454,58 @@ export class RiskSectionDetailsComponent {
   //   })
   // }
 
+  // getProductSubclassold(code: number) {
+  //   this.gisService.getProductSubclasses(code).subscribe(data => {
+  //     this.subClassList = data._embedded.product_subclass_dto_list;
+  //     log.debug(this.subClassList, 'Product Subclass List');
+
+
+  //     this.subClassList.forEach(element => {
+  //       const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
+  //       this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
+  //     });
+  //     this.allMatchingSubclasses = this.allMatchingSubclasses.map((value) => {
+  //       let capitalizedDescription =
+  //         value.description.charAt(0).toUpperCase() +
+  //         value.description.slice(1).toLowerCase();
+  //       return {
+  //         ...value,
+  //         description: capitalizedDescription,
+  //       };
+  //     });
+  //     // const allMatchingSubclasses= this.allMatchingSubclasses
+  //     log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
+
+
+  //     this.cdr.detectChanges();
+  //   });
+  // }
+  /**
+   * Retrieves and matches product subclasses for a given product code.
+   * - Makes an HTTP GET request to GISService for product subclasses.
+   * - Matches and combines subclasses with the existing 'allSubclassList'.
+   * - Logs the final list of matching subclasses.
+   * - Forces change detection to reflect updates.
+   * @method getProductSubclass
+   * @param {number} code - The product code to fetch subclasses.
+   * @return {void}
+   */
   getProductSubclass(code: number) {
-    this.gisService.getProductSubclasses(code).subscribe(data => {
-      this.subClassList = data._embedded.product_subclass_dto_list;
-      log.debug(this.subClassList, 'Product Subclass List');
-
-
-      this.subClassList.forEach(element => {
-        const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
-        this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
-      });
-      this.allMatchingSubclasses = this.allMatchingSubclasses.map((value) => {
-        let capitalizedDescription =
-          value.description.charAt(0).toUpperCase() +
-          value.description.slice(1).toLowerCase();
+    this.subclassService.getProductSubclasses(code).pipe(
+      untilDestroyed(this)
+    ).subscribe((subclasses) => {
+      this.allMatchingSubclasses = subclasses.map((value) => {
         return {
           ...value,
-          description: capitalizedDescription,
-        };
-      });
-      // const allMatchingSubclasses= this.allMatchingSubclasses
-      log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
-
-
-      this.cdr.detectChanges();
-    });
+          description: this.capitalizeWord(value.description),
+        }
+      })
+     
+    })
   }
-
+  capitalizeWord(value: String): string {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
   /**
   * Handles subclass selection.
   * Updates the selected subclass code, logs the selection, and loads related data.
@@ -541,8 +584,11 @@ export class RiskSectionDetailsComponent {
   getProductByCode() {
     this.gisService.getProductDetailsByCode(this.selectProductCode).subscribe(res => {
       this.productList = res;
-      this.description = this.productList.description;
-      log.debug(this.description, 'Description');
+      this.productDescription = this.productList.description;
+      log.debug( 'Product Description',this.productDescription);
+      this.getProductSubclass(this.selectProductCode)
+    
+  
     })
   }
 
@@ -551,40 +597,74 @@ export class RiskSectionDetailsComponent {
  * It defines form controls for various risk-related fields,
  *  setting initial values and validation rules.
  */
+  // createRiskDetailsForm() {
+  //   this.riskDetailsForm = this.fb.group({
+  //     insuredCode: [''],
+  //     location: [''],
+  //     town: ['',],
+  //     ncdLevel: [''],
+  //     schedules: [''],
+  //     coverTypeCode: ['', Validators.required],
+  //     addEdit: [''],
+  //     quotationRevisionNumber: [''],
+  //     code: ['',],
+  //     quotationProductCode: ['',],
+  //     quotationRiskNo: [''],
+  //     quotationCode: ['', Validators.required],
+  //     productCode: ['', Validators.required],
+  //     propertyId: ['', Validators.required],
+  //     // propertyId: ['', [Validators.required, Validators.pattern(this.regexPattern)]],
+  //     value: ['', [Validators.required]],
+  //     coverTypeShortDescription: [''],
+  //     premium: ['', Validators.required],
+  //     subclassCode: ['', Validators.required],
+  //     itemDesc: ['', Validators.required],
+  //     binderCode: ['', Validators.required],
+  //     wef: ['', Validators.required],
+  //     wet: ['', Validators.required],
+  //     commissionRate: ['',],
+  //     commissionAmount: ['',],
+  //     prpCode: ['', Validators.required],
+  //     clientShortDescription: [''],
+  //     annualPremium: ['',],
+  //     coverDays: ['',],
+  //     clientType: ['',],
+  //     prospectCode: ['',],
+  //     coverTypeDescription: [''],
+  //   });
+  // }
   createRiskDetailsForm() {
     this.riskDetailsForm = this.fb.group({
-      insuredCode: [''],
+      insuredCode: [null],
       location: [''],
-      town: ['',],
-      ncdLevel: [''],
-      schedules: [''],
-      coverTypeCode: ['', Validators.required],
+      town: [''],
+      ncdLevel: [null],
+      coverTypeCode: [null, Validators.required],
       addEdit: [''],
-      quotationRevisionNumber: [''],
-      code: ['',],
-      quotationProductCode: ['',],
+      quotationRevisionNumber: [null],
+      code: [null],
+      quotationProductCode: [null],
       quotationRiskNo: [''],
-      quotationCode: ['', Validators.required],
-      productCode: ['', Validators.required],
-      propertyId: ['', Validators.required],
-      // propertyId: ['', [Validators.required, Validators.pattern(this.regexPattern)]],
-      value: ['', [Validators.required]],
+      quotationCode: [null],
+      productCode: [null],
+      propertyId: [this.storedRiskFormDetails ? this.storedRiskFormDetails.propertyId:'' , Validators.required],
+      value: [null],
       coverTypeShortDescription: [''],
-      premium: ['', Validators.required],
-      subclassCode: ['', Validators.required],
-      itemDesc: ['', Validators.required],
-      binderCode: ['', Validators.required],
+      premium: [null],
+      subclassCode: [null, Validators.required],
+      itemDesc: [this.storedRiskFormDetails ? this.storedRiskFormDetails.itemDesc:'', Validators.required],
+      binderCode: [null, Validators.required],
       wef: ['', Validators.required],
       wet: ['', Validators.required],
-      commissionRate: ['',],
-      commissionAmount: ['',],
-      prpCode: ['', Validators.required],
+      commissionRate: [null],
+      commissionAmount: [null],
+      prpCode: [null],
       clientShortDescription: [''],
-      annualPremium: ['',],
-      coverDays: ['',],
-      clientType: ['',],
-      prospectCode: ['',],
-      coverTypeDescription: [''],
+      annualPremium: [null],
+      coverDays: [null],
+      clientType: [''],
+      prospectCode: [null],
+      coverTypeDescription: [this.storedRiskFormDetails ? this.storedRiskFormDetails.coverTypeDescription:''],
     });
   }
   get f() {
@@ -857,6 +937,7 @@ export class RiskSectionDetailsComponent {
   }
   createRiskDetail() {
     let riskPayload = this.getQuotationRiskPayload();
+    this.updateRiskDetailsForm(riskPayload);
 
     const riskArray = [riskPayload];
     // const propertyIdValue = this.riskDetailsForm.get('propertyId').value;
@@ -897,6 +978,7 @@ export class RiskSectionDetailsComponent {
 
     log.debug("Currency code-quote creation",this.riskDetailsForm.value.propertyId)
     log.debug("Selected Cover",this.riskDetailsForm.value.coverTypeDescription)
+    log.debug("ITEM DESC:",this.riskDetailsForm.value.itemDesc)
     const formattedCoverFromDate = this.formatDate(new Date(this.passedCoverFromDate) );
     const formattedCoverToDate = this.formatDate(new Date(this.passedCoverToDate) );
 
@@ -910,7 +992,7 @@ export class RiskSectionDetailsComponent {
       coverTypeShortDescription: this.selectedCoverType.coverTypeShortDescription,
       // premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
       subclassCode: this.selectedSubclassCode,
-      itemDesc: this.riskDetailsForm.value.propertyId,
+      itemDesc: this.riskDetailsForm.value.itemDesc || this.vehiclemakeModel,
       binderCode: this.selectedBinderCode || this.defaultBinder[0].code,
       wef: formattedCoverFromDate,
       wet: formattedCoverToDate,
@@ -925,6 +1007,32 @@ export class RiskSectionDetailsComponent {
     return [risk]
 
   }
+  updateRiskDetailsForm(riskPayload: any) {
+    if (riskPayload && riskPayload.length === 0) {
+      return;
+    }
+      const riskData = riskPayload[0]; // Extracting first item
+  
+    this.riskDetailsForm.patchValue({
+      coverTypeCode: riskData.coverTypeCode || null,
+      quotationCode: riskData.quotationCode || null,
+      productCode: riskData.productCode || null,
+      propertyId: riskData.propertyId || '',
+      coverTypeShortDescription: riskData.coverTypeShortDescription || '',
+      subclassCode: riskData.subclassCode || null,
+      itemDesc: riskData.itemDesc || '',
+      binderCode: riskData.binderCode || null,
+      wef: riskData.wef || '',
+      wet: riskData.wet || '',
+      coverTypeDescription: riskData.coverTypeDescription || ''
+    });
+    sessionStorage.setItem('riskFormDetails', JSON.stringify(this.riskDetailsForm.value));
+
+    log.debug("RISK DETAILS FOR VALUES",this.riskDetailsForm.value)
+  
+  
+  }
+  
 
   /**
  * Loads and updates risk sections for the created risk.
@@ -1193,9 +1301,9 @@ export class RiskSectionDetailsComponent {
       this.quotationService.updateRiskSection(this.quotationRiskCode, [this.sectionDetails[index]]).subscribe((data) => {
         try {
 
-          sessionStorage.setItem('limitAmount', section.limitAmount);
-          const sumInsured = section.limitAmount;
-          log.debug("Sum Insured Risk Details:", sumInsured);
+          // sessionStorage.setItem('limitAmount', section.limitAmount);
+          // const sumInsured = section.limitAmount;
+          // log.debug("Sum Insured Risk Details:", sumInsured);
 
           // Reset the form and selected section
           this.sectionDetailsForm.reset();
@@ -1491,8 +1599,11 @@ export class RiskSectionDetailsComponent {
 
 
   finish() {
-    log.debug('sections', this.sectionArray)
+    log.debug('sections-RISK SECTION COMP', this.sectionArray)
     log.debug('Schedules', this.scheduleList)
+    // sessionStorage.setItem('limitAmount', section.limitAmount);
+    // const sumInsured = section.limitAmount;
+    // log.debug("Sum Insured Risk Details:", sumInsured);
 
     sessionStorage.setItem('sections', JSON.stringify(this.sectionArray))
     sessionStorage.setItem('schedules', JSON.stringify(this.scheduleList))
@@ -1884,4 +1995,16 @@ formatDate(date: string | Date): string {
 
             })
     }
+    // onProductSelected() {
+    //   log.debug("allow moto class field", this.policyDetails.product.allowMotorClass)
+    //   this.motorClassAllowed = this.policyDetails.product.allowMotorClass;
+    //   log.debug("Motor Class Allowed Value", this.motorClassAllowed);
+    //   if (this.motorClassAllowed === 'Y') {
+    //     this.showMotorSubclassFields = true;
+    //     this.motorProduct = true;
+    //   }else if(this.motorClassAllowed=="N"){
+    //     this.showNonMotorSubclassFields = true;
+    //     this.motorProduct = false;
+    //   }
+    // }
 }
