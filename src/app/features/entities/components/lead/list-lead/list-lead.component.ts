@@ -14,6 +14,7 @@ import { Pagination } from '../../../../../shared/data/common/pagination';
 import { Leads } from '../../../../../features/crm/data/leads';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { TableDetail } from "../../../../../shared/data/table-detail";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('ListLeadComponent');
 
@@ -67,7 +68,8 @@ export class ListLeadComponent implements OnInit {
     private leadService: LeadsService,
     private accountService: AccountService,
     private cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private globalMessagingService: GlobalMessagingService
   ) {}
 
   ngOnInit(): void {
@@ -100,6 +102,7 @@ export class ListLeadComponent implements OnInit {
             this.spinner.hide();
           },
           (error) => {
+            this.globalMessagingService.displayErrorMessage("Error", error.error.message)
             this.spinner.hide();
           }
         );
