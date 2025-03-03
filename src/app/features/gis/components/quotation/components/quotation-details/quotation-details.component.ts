@@ -26,8 +26,9 @@ import { AccountContact } from "../../../../../../shared/data/account-contact";
 import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
 import { WebAdmin } from 'src/app/shared/data/web-admin';
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
-import { mergeMap } from 'rxjs';
-import { UserDetail } from '../../data/quotationsDTO';
+import { forkJoin, mergeMap } from 'rxjs';
+import { QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { Products } from '../../../setups/data/gisDTO';
 const log = new Logger('QuotationDetails');
 @Component({
   selector: 'app-quotation-details',
@@ -40,7 +41,7 @@ export class QuotationDetailsComponent {
   branch: OrganizationBranchDto[];
   currency: CurrencyDTO[]
   clauses: any;
-  products: any;
+  products: Products[]=[];
   ProductDescriptionArray: any = [];
 
   user: any;
@@ -56,12 +57,12 @@ export class QuotationDetailsComponent {
   show: boolean = false;
   showProduct: boolean = false;
   quotationNum: string;
-  introducers: any;
+  introducers: introducersDTO[]=[];
   productSubclassList: any
   productDetails: any
   userDetails: any;
   selected: any;
-  quotationSources: any
+  quotationSources: QuotationSource[] = [];
   midnightexpiry: any
   modalHeight: number = 200;
   quickQuotationDetails: any
@@ -82,7 +83,7 @@ export class QuotationDetailsComponent {
   userCode: number;
   dateFormat: any;
   minDate: Date | undefined;
-  
+
   todaysDate: string;
   expiryDate: string;
   coverToDate: string;
@@ -94,6 +95,7 @@ export class QuotationDetailsComponent {
   defaultCurrency: CurrencyDTO;
   editConvertedQuote: string;
   quotationFormDetails: any = null
+  motorClassAllowed: string;
 
 
   constructor(
@@ -112,37 +114,31 @@ export class QuotationDetailsComponent {
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
 
-  ) { 
+  ) {
 
-    this. quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    log.debug("QUOTATION FORM DETAILS",this.quotationFormDetails)
     const clientFormDetails = sessionStorage.getItem('clientPayload');
     log.debug("Client form details:", clientFormDetails)
     const clientCode = sessionStorage.getItem('clientCode');
     this.clientId = JSON.parse(clientCode)
-    log.debug("Client Code- session storage",this.clientId)
+    log.debug("Client Code- session storage", this.clientId)
   }
 
   ngOnInit(): void {
     this.minDate = new Date();
-
-    this.fetchCampaigns()
-    this.getbranch();
-    this.getCurrency();
-    this.getProduct();
+    this.fetchQuotationRelatedData()
+   
     this.getuser();
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
-    this.getAgents()
-
-    this.getIntroducers();
-    this.getQuotationSources()
     this.quickQuoteDetails()
 
 
 
     this.editConvertedQuote = JSON.parse(sessionStorage.getItem("editFlag"));
 
-    if(this.editConvertedQuote) {
+    if (this.editConvertedQuote) {
       this.patchQuickQuoteData()
     };
 
@@ -196,53 +192,9 @@ export class QuotationDetailsComponent {
     }
   }
 
-  /**
- * Retrieves branch data from the branch service and assigns it to the 'branch' property.
- */
-  getbranch() {
-    this.branchService.getBranches(2).subscribe(data => {
-      // this.branch = data
-      this.branch = data.map((value) => {
-        let capitalizedDescription =
-          value.name.charAt(0).toUpperCase() +
-          value.name.slice(1).toLowerCase();
-        return {
-          ...value,
-          name: capitalizedDescription,
-        };
-      });
-    })
-  }
 
-  /**
-   * Retrieves currency data from the bank service and assigns it to the 'currency' property.
-   */
-  getCurrency() {
-    this.bankService.getCurrencies().subscribe(data => {
-      // this.currency = data
-      this.currency = data.map((value) => {
-        let capitalizedDescription =
-          value.name.charAt(0).toUpperCase() +
-          value.name.slice(1).toLowerCase();
-        return {
-          ...value,
-          name: capitalizedDescription,
-        };
-      });
-      log.info(this.currency, 'this is a currency list');
-      const defaultCurrency = this.currency.find(
-        (currency) => currency.currencyDefault == 'Y'
-      );
-      if (defaultCurrency) {
-        log.debug('DEFAULT CURRENCY', defaultCurrency);
-        this.defaultCurrency = defaultCurrency
-        this.defaultCurrencyName = defaultCurrency.name;
-        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-        this.defaultCurrencySymbol = defaultCurrency.symbol;
-        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-      }
-    })
-  }
+
+
   /**
  * Sets the 'currencyCode' control value in the quotation form based on the selected currency code.
  * Logs the current value of the quotation form.
@@ -255,37 +207,7 @@ export class QuotationDetailsComponent {
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
-  /**
-   * Retrieves all products from the product service, processes the data, and assigns it to the 'products' property.
-   */
-
-  getProduct() {
-    const productDescription = [];
-
-    this.producSetupService.getAllProducts().subscribe(res => {
-      const ProdList = res
-      this.products = ProdList
-    
-      this.products.forEach((product) => {
-        productDescription.push({
-          code: product.code,
-          description: this.capitalizeWord(product.description),
-        });
-      });
-      this.ProductDescriptionArray.push(...productDescription);
-      if(this.quotationFormDetails){
-        this.quotationForm.patchValue({
-          productCode: this.ProductDescriptionArray
-          .find(product => product.code === this.quotationFormDetails?.productCode)
-        })
-      }
-      log.info("Quotation form >>>", this.quotationForm)
-     
-      // Now 'combinedWords' contains the result with words instead of individual characters
-      log.info('modified product description', this.ProductDescriptionArray);
-    })
-
-  }
+ 
   /**
   * Retrieves the current user and stores it in the 'user' property.
   * @method getUser
@@ -320,28 +242,7 @@ export class QuotationDetailsComponent {
     log.debug('Todays  Date', this.todaysDate);
     this.updateQuotationExpiryDate(this.todaysDate)
   }
-  getQuotationSources() {
-    this.quotationService.getAllQuotationSources().subscribe(res => {
-      const sources = res
-      this.quotationSources = sources.content
-      this.quotationSources = this.quotationSources.map((value) => {
-        let capitalizedDescription =
-          value.description.charAt(0).toUpperCase() +
-          value.description.slice(1).toLowerCase();
-        return {
-          ...value,
-          description: capitalizedDescription,
-        };
-      });
-      if(this.quotationFormDetails){
-        this.quotationForm.patchValue({
-          source: this.quotationSources
-          .find(source => source.code == this.quotationFormDetails?.source)
-        })
-      }
-      log.debug("SOURCES", this.quotationSources)
-    })
-  }
+ 
   /**
     * Creates a new quotation form using Angular Reactive Forms.
     * @method createQuotationForm
@@ -353,8 +254,10 @@ export class QuotationDetailsComponent {
       quotationNo: [null],
       user: ['', Validators.required],
       action: [''],
-      wefDate: ['', Validators.required],
-      wetDate: ['', Validators.required],
+      wefDate: [this.quotationFormDetails ?
+        new Date(this.quotationFormDetails?.wefDate) : this.todaysDate, Validators.required],
+      wetDate: [this.quotationFormDetails ?
+        new Date(this.quotationFormDetails?.wetDate) : this.coverToDate, Validators.required],
       branchCode: [Validators.required],
       currencyCode: [Validators.required],
       agentCode: [null, Validators.required],
@@ -384,7 +287,7 @@ export class QuotationDetailsComponent {
       unitCode: [null],
       locationCode: [null],
       RFQDate: [this.quotationFormDetails ?
-         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
+        new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
       expiryDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate]
     });
@@ -401,8 +304,8 @@ export class QuotationDetailsComponent {
 
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
     sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-    const quotationFormJson =this.quotationForm.value
-    log.debug("Quotation form details",quotationFormJson)
+    const quotationFormJson = this.quotationForm.value
+    log.debug("Quotation form details", quotationFormJson)
     if (this.quotationForm.value.multiUser == 'Y') {
       /**
    * Creates a new quotation with multi-user and navigates to quote assigning.
@@ -551,15 +454,18 @@ export class QuotationDetailsComponent {
           quotationForm.RFQDate = formattedRfqDate
           quotationForm.expiryDate = formattedExpiryDate
           quotationForm.user = this.user;
-          log.debug("Currency code-quote creation",this.quotationForm.value.currencyCode.id)
+          log.debug("Currency code-quote creation", this.quotationForm.value.currencyCode.id)
           quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
+          quotationForm.source = this.quotationForm.value.source.code;
+
           quotationForm.currencyRate = this.exchangeRate;
           quotationForm.clientCode = this.clientId
-          quotationForm.clientType ="I"
+          quotationForm.clientType = "I"
 
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-          const quotationFormJson =this.quotationForm.value
-          log.debug("Quotation form details",quotationFormJson)
+         
+          const quotationFormJson = this.quotationForm.value
+          log.debug("Quotation form details", quotationFormJson)
           log.debug("CREATE QUOTATION")
           this.quotationService.processQuotation(this.quotationForm.value).subscribe(data => {
             this.quotationNo = data;
@@ -695,16 +601,7 @@ export class QuotationDetailsComponent {
 
 
   }
-  /**
- * Retrieves introducers and populates the 'introducers' property.
- * @method getIntroducers
- * @return {void}
- */
-  getIntroducers() {
-    this.quotationService.getIntroducers().subscribe(res => {
-      this.introducers = res
-    })
-  }
+
 
   /**
  * Edits a row by updating a clause based on details and code.
@@ -826,6 +723,13 @@ export class QuotationDetailsComponent {
       log.debug("expiry date formatted", this.expiryDate)
     }
   }
+  checkMotorClass(){
+    const productCode =  this.quotationForm.value.productCode.code
+    const selectedProductDetails = this.products.find(product => product.code === productCode)
+    this.motorClassAllowed = selectedProductDetails.allowMotorClass
+    sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
+    log.debug("Is motor class:",this.motorClassAllowed)
+  }
   /**
    * Retrieves product clauses based on the provided product code.
    * @method getProductClause
@@ -837,63 +741,45 @@ export class QuotationDetailsComponent {
     this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
-  this.selectedClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
-  
-  // ✅ Mark mandatory clauses as checked
-  this.clauses.forEach(clause => {
-    clause.checked = clause.isMandatory === 'Y';
-  });
+      this.selectedClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
+
+      // ✅ Mark mandatory clauses as checked
+      this.clauses.forEach(clause => {
+        clause.checked = clause.isMandatory === 'Y';
+      });
     })
   }
-// 🔹 Function called when a checkbox is checked/unchecked
-onClauseSelectionChange(selectedClauseList: any) {
-  if (selectedClauseList.checked) {
-    // ✅ Add to selectedClause if not already included
-    if (!this.selectedClause.includes(selectedClauseList)) {
-      this.selectedClause.push(selectedClauseList);
+  // 🔹 Function called when a checkbox is checked/unchecked
+  onClauseSelectionChange(selectedClauseList: any) {
+    if (selectedClauseList.checked) {
+      // ✅ Add to selectedClause if not already included
+      if (!this.selectedClause.includes(selectedClauseList)) {
+        this.selectedClause.push(selectedClauseList);
+      }
+    } else {
+      // ✅ Remove from selectedClause only if NOT mandatory
+      if (selectedClauseList.isMandatory !== 'Y') {
+        this.selectedClause = this.selectedClause.filter(item => item.code !== selectedClauseList.code);
+      }
     }
-  } else {
-    // ✅ Remove from selectedClause only if NOT mandatory
-    if (selectedClauseList.isMandatory !== 'Y') {
-      this.selectedClause = this.selectedClause.filter(item => item.code !== selectedClauseList.code);
-    }
+
+    // ✅ Call API with updated selection
+    // this.selectedProductClauses(this.quotationCode);
+    log.debug("Selected clause:", this.selectedClause)
   }
 
-  // ✅ Call API with updated selection
-  // this.selectedProductClauses(this.quotationCode);
-  log.debug("Selected clause:",this.selectedClause)
-}
-
-// 🔹 API call to add selected clauses
-selectedProductClauses(quotationCode: string) {
-  if (this.selectedClause && this.selectedClause.length > 0) {
-    this.selectedClause.forEach(el => {
-      this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
-        console.debug(res);
+  // 🔹 API call to add selected clauses
+  selectedProductClauses(quotationCode: string) {
+    if (this.selectedClause && this.selectedClause.length > 0) {
+      this.selectedClause.forEach(el => {
+        this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
+          console.debug(res);
+        });
+        console.debug(el.code);
       });
-      console.debug(el.code);
-    });
+    }
   }
-}
-  // selectedProductClauses(quotationCode) {
 
-  //   if (this.selectedClause) {
-  //     this.selectedClause.forEach(el => {
-  //       this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
-  //         log.debug(res)
-  //       })
-  //       log.debug(el.code)
-  //     })
-  //   }
-
-  //   // this.clauseService.getSingleClause(code).subscribe(
-  //   //   {
-  //   //     next:(res)=>{
-  //   //       log.debug(res)
-  //   //     }
-  //   //   }
-  //   // )
-  // }
   unselectClause(event) {
     log.debug(this.selectedClause)
   }
@@ -908,18 +794,20 @@ selectedProductClauses(quotationCode: string) {
       this.quotationForm.get('agentCode').reset();
 
     }
+    this.getAgents()
 
     // if (!this.showFacultativeFields) {
     //   this.policyProductForm.get('agentCode').reset();
 
     // }
   }
+
   onResultCampaignTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
     this.resultFromCampaign = value;
     log.debug("Result from campaign  ", this.resultFromCampaign)
     this.showCampaignField = value === 'C';
-
+    this.fetchCampaigns();
 
     if (!this.showCampaignField) {
       this.quotationForm.get('agentCode').reset();
@@ -961,18 +849,18 @@ selectedProductClauses(quotationCode: string) {
       .getUserOrgId(this.userCode)
       .pipe(
         mergeMap((organization) => {
-          this.userOrgDetails= organization
+          this.userOrgDetails = organization
           log.debug("User Organization Details  ", this.userOrgDetails);
           this.organizationId = this.userOrgDetails.organizationId
           const currencyCode = this.quotationForm.value.currencyCode.id
-          log.debug("Cuurency code",currencyCode)
+          log.debug("Cuurency code", currencyCode)
           return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
         }),
         untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
           this.exchangeRate = response
-          log.debug("EXCHANGE RATE",this.exchangeRate)
+          log.debug("EXCHANGE RATE", this.exchangeRate)
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
@@ -1005,5 +893,91 @@ selectedProductClauses(quotationCode: string) {
     });
 
   }
+  fetchQuotationRelatedData() {
+    forkJoin([
+      this.bankService.getCurrencies(),
+      this.quotationService.getAllQuotationSources(),
+      this.branchService.getBranches(2),
+      this.quotationService.getIntroducers(),
+      this.producSetupService.getAllProducts()
+    ])
+    .pipe(untilDestroyed(this))
+    .subscribe(([currencies, sources, branches, introducers, products]: any) => {
+      // CURRENCIES
+      this.currency = currencies.map((value) => {
+        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+        return { ...value, name: capitalizedDescription };
+      });
+  
+      log.info(this.currency, 'this is a currency list');
+  
+      const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+      if (defaultCurrency) {
+        log.debug('DEFAULT CURRENCY', defaultCurrency);
+        this.defaultCurrency = defaultCurrency;
+        this.defaultCurrencyName = defaultCurrency.name;
+        this.defaultCurrencySymbol = defaultCurrency.symbol;
+        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        this.fetchUserOrgId()
+      }
+      if (this.quotationFormDetails) {
+        const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+        if (selectedBranch) {
+          this.quotationForm.patchValue({ currencyCode: selectedBranch });
+        }
+      }else{
+        this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
 
+      }
+      // QUOTATION SOURCES
+      this.quotationSources = sources?.content || []; 
+      this.quotationSources = this.quotationSources.map((value) => {
+        let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+        return { ...value, description: capitalizedDescription };
+      });
+  
+      if (this.quotationFormDetails) {
+        const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
+        if (selectedSource) {
+          this.quotationForm.patchValue({ source: selectedSource });
+        }
+      }
+  
+      log.debug("SOURCES", this.quotationSources);
+  
+      // BRANCHES
+      this.branch = branches.map((value) => {
+        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+        return { ...value, name: capitalizedDescription };
+      });
+      if (this.quotationFormDetails) {
+        const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
+        if (selectedBranch) {
+          this.quotationForm.patchValue({ branchCode: selectedBranch });
+        }
+      }
+  
+      // INTRODUCERS
+      this.introducers = introducers;
+  
+      // PRODUCTS
+      this.products = products;
+      this.ProductDescriptionArray = this.products.map(product => ({
+        code: product.code,
+        description: this.capitalizeWord(product.description),
+      }));
+  
+      if (this.quotationFormDetails) {
+        const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
+        if (selectedProduct) {
+          this.quotationForm.patchValue({ productCode: selectedProduct });
+        }
+      }
+  
+      log.info("Quotation form >>>", this.quotationForm);
+      log.info('Modified product description', this.ProductDescriptionArray);
+    });
+  }
+  
 }
