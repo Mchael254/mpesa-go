@@ -42,6 +42,7 @@ import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 import {LocalStorageService} from '../../../../shared/services/local-storage/local-storage.service';
 
 import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -124,7 +125,7 @@ export class ReceiptCaptureComponent {
    */
   
  
-
+   isDateRequired:boolean=false;
 
   /**
    * @property {number} receiptigPointId - The ID of the receipting point.
@@ -381,7 +382,8 @@ export class ReceiptCaptureComponent {
     private receiptDataService: ReceiptDataService,
     private router: Router,
     private localStorage:LocalStorageService,
-    private sessionStorage:SessionStorageService
+    private sessionStorage:SessionStorageService,
+    public translate: TranslateService 
   ) {}
  /**
    * Lifecycle hook called once the component is initialized.
@@ -846,6 +848,8 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
   setChequeType(type: string) {
     this.receiptingDetailsForm.get('chequeType')?.setValue(type);
     this.showChequeOptions = false; // Hide the options after selection
+    this.updateDateRestrictions();
+    this.isDateRequired=true;
   }
  /**
    * Handles the selection of a payment mode, updating the form fields accordingly.
@@ -857,6 +861,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
    
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
+    this.updateDateRestrictions();  
   }
 
   /**
@@ -886,9 +891,9 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     drawersBankControl?.enable();
     paymentRefControl?.enable();
     
-    // else if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque'){
-    //   this.requireDocumentField=true;
-    // }
+    
+    }else if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque'){
+      this.makeFieldRequired=true;
     }
     
      else {
@@ -901,6 +906,37 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     
     }
 
+  }
+  updateDateRestrictions(): void {
+    const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+    const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
+
+    const dateInput = document.getElementById('documentDate') as HTMLInputElement;
+
+    if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
+        const today = new Date();
+        today.setDate(today.getDate() + 1);  // Tomorrow
+
+        // Set the `min` attribute on the date input to tomorrow (disables today & past dates)
+        dateInput.min = this.formatDates(today);
+
+        const currentDocumentDate = this.receiptingDetailsForm.get('documentDate')?.value;
+        if (currentDocumentDate) {
+            const selectedDate = new Date(currentDocumentDate);
+            if (selectedDate < today) {
+                this.receiptingDetailsForm.patchValue({ documentDate: this.formatDates(today) });
+            }
+        } else {
+            // If documentDate is empty (initial load), set to tomorrow
+            this.receiptingDetailsForm.patchValue({ documentDate: this.formatDates(today) });
+        }
+    } else {
+        dateInput.min = '';  // Clear restrictions
+    }
+}
+
+  formatDates(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
   
   /**
@@ -1413,6 +1449,7 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
       'currency',
       'receiptDate',
       'receivedFrom',
+      
     ];
     let isValid = true;
     const formData = this.receiptingDetailsForm;
@@ -1433,7 +1470,7 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
     const paymentMode = formData.get('paymentMode')?.value;
     const paymentRef = formData.get('paymentRef')?.value;
     const drawersBank = formData.get('drawersBank')?.value;
-
+const documentDate = formData.get('documentDate')?.value;
     if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
       isValid = false;
       this.globalMessagingService.displayErrorMessage(
@@ -1447,6 +1484,14 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'Drawers Bank is required for non-cash payment modes'
+      );
+      return false;
+    }
+    if(!documentDate){
+      isValid = false;
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'document date is required '
       );
       return false;
     }

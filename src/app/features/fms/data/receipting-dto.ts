@@ -605,41 +605,9 @@ export interface Allocation {
   referenceNo: string;
   amount: number;
   policyNumber: string;
-  // ... add other allocation properties you need
+ 
 }
-// export interface YearDTO {
-//   msg: string;
-//   success: boolean;
-//   data: DataItem[];
-// }
 
-// export interface DataItem {
-//   year: string;
-//   branch_code: number;
-//   wef: Date;
-//   wet: Date;
-//   state: string;
-//   balance: string;
-//   transaction: string;
-//   periods: Period[];
-// }
-
-// export interface Period {
-//   period: string;
-//   branch_code: number;
-//   year: string;
-//   wef: Date;
-//   wet: Date;
-//   counter: number;
-//   state: string;
-//   start: string;
-//   orgCode: number;
-//   currentPeriod: number;
-//   curPeriod: number;
-//   transacted: string;
-//   closedByUser: number;
-//   closedByUserName: string;
-// }
 export interface YearDTO {
   msg: string;
   success: boolean;
@@ -674,3 +642,7 @@ export interface Period {
   closedByUserName?: string | null;
 }
 
+export interface acknowledgementSlipDTO {
+  receiptNumbers: number[];
+  userCode: number;
+}
