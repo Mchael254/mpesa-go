@@ -1,12 +1,37 @@
 <div class="container-fluid">
-  <div class="breadcrumb-custom">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label: this.translate.instant('fms.cbReceipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('fms.receipting.receipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('fms.receipting.allocateReceipt'),
+        url: ''
+      }
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <!-- <div class="breadcrumb-custom">
     {{ "fms.receipting.finance" | translate }} >
     {{ "fms.receipting.cbReceipting" | translate }}>
     {{ "fms.receipting.receipting" | translate }}>
     <span class="breadcrumb-text">{{
       "fms.receipting.allocateReceipt" | translate
     }}</span>
-  </div>
+  </div> -->
   <div class="main-form">
     <div class="allocation-div">
       <!-- Receipt Allocations Section -->
@@ -422,6 +447,7 @@
         type="button"
         *ngIf="showAcknowledgeBtn"
         [disabled]="!isAllocationComplete && !isAllocationCompleted"
+        (click)="handleSaveAndPrint()"
         class="btn btn-outline-primary"
       >
         {{ "fms.receipting.generateAcknowledgement" | translate }}

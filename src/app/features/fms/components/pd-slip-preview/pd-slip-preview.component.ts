@@ -12,6 +12,10 @@ import { GlobalMessagingService } from 'src/app/shared/services/messaging/global
 import { ReportsService } from 'src/app/shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { ReceiptService } from '../../services/receipt.service';
+import { TranslateService } from '@ngx-translate/core';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -30,10 +34,10 @@ const log = new Logger('ReceiptPreviewComponent');
   templateUrl: './pd-slip-preview.component.html',
   styleUrls: ['./pd-slip-preview.component.css'],
 })
-export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
+export class PdSlipPreviewComponent implements OnInit {
   // Reference to the iframe
 
-  @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
+  
   filePath: string = '';
 
  
@@ -51,7 +55,10 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
 
   /** @property {any} documentData - Currently unused, but could contain more complex data associated with the receipt document. */
   documentData: any;
-
+  loggedInUser: any;
+  selectedOrg:OrganizationDTO;
+  defaultOrg:OrganizationDTO;
+  receiptNumberResponse:number;
   /**
    * Constructs a new `ReceiptPreviewComponent`.
    * @param {ReportsService} reportService - The service used to generate reports (e.g., the receipt PDF).
@@ -64,7 +71,10 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
     private receiptDataService: ReceiptDataService,
-    private sessionStorage:SessionStorageService
+    private sessionStorage:SessionStorageService,
+    private authService:AuthService,
+    private receiptService:ReceiptService,
+    public translate: TranslateService
   ) {}
 
   /**
@@ -73,63 +83,34 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
    * @returns {void}
    */
   ngOnInit(): void {
-    let receiptResponse = this.sessionStorage.getItem('receiptResponse');
-    this.receiptResponse = Number(receiptResponse);
-    //console.log('receipt', this.receiptResponse);
+    // let receiptResponse = this.sessionStorage.getItem('receiptResponse');
+    // this.receiptResponse = Number(receiptResponse);
+   
     let receiptNo = this.sessionStorage.getItem('receiptNo');
-    this.receiptResponse = Number(receiptNo);
-    //console.log('receiptNo>>', this.receiptResponse);
-    let globalOrgId = this.sessionStorage.getItem('OrgId');
-    this.orgId = Number(globalOrgId);
+    this.receiptResponse = receiptNo ? Number(receiptNo) : null;
+    
+    let defaultOrg = this.sessionStorage.getItem('defaultOrg');
+    let selectedOrg = this.sessionStorage.getItem('selectedOrg');
+
+    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg ) : null;
+    this.selectedOrg =selectedOrg? JSON.parse(selectedOrg) : null;
+   // console.log('org id>',this.selectedOrg);
+   // console.log('defaultOrg>>',this.defaultOrg);
+    this.loggedInUser = this.authService.getCurrentUser();
+    //let receiptSlipResponse = this.sessionStorage.getItem('receiptSlipResponse');
+    //this.receiptNumberResponse=receiptSlipResponse ? Number(receiptSlipResponse) : null;
     this.getReceipt();
+    
   }
-  // Add event listeners after the view is fully initialized
-  // ngAfterViewInit() {
-  //   setTimeout(() => this.addEventListeners(), 1000); // Delay to ensure DOM is ready
-  // }
+  
  
 
 
    
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.detectPrintAndDownload();
-    }, 2000); // Delay to allow iframe to load
-  }
 
-  detectPrintAndDownload() {
-    const iframe = this.docViewerIframe?.nativeElement?.querySelector('iframe');
-    if (!iframe) {
-      console.warn('No iframe found inside ngx-doc-viewer');
-      return;
-    }
 
-    const observer = new MutationObserver(() => {
-      const printButton = iframe.contentDocument?.querySelector('button[title="Print"]');
-      const downloadButton = iframe.contentDocument?.querySelector('button[title="Download"]');
 
-      if (printButton && downloadButton) {
-        printButton.addEventListener('click', () => {
-          console.log('Printed');
-          this.updateRecord('printed');
-        });
 
-        downloadButton.addEventListener('click', () => {
-          console.log('Downloaded');
-          this.updateRecord('downloaded');
-        });
-
-        observer.disconnect(); // Stop observing once buttons are found
-      }
-    });
-
-    observer.observe(iframe, { childList: true, subtree: true });
-  }
-
-  updateRecord(action: string) {
-    console.log('Receipt ${action} recorded');
-    // Call API here if needed
-  }
   /**
    * Generates the receipt report by calling the `ReportsService`.
    * Builds the `ReportDto` payload with the receipt number and organization ID and subscribes to the result.
@@ -146,18 +127,22 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
           value: String(this.receiptResponse), // Use the receiptNumber
         },
         {
+          name: 'UP_USER_CODE',
+          value: String(this.loggedInUser.code)
+        },
+        {
           name: 'UP_ORG_CODE',
-          value: String(this.orgId), // Use the orgId
+          value: String(this.defaultOrg.id || this.selectedOrg.id), // Use the orgId
         },
       ],
       reportFormat: 'PDF',
-      rptCode: 300,
+      rptCode: 25000,
       system: 'CRM',
     };
-
+console.log('receiptno>',this.receiptResponse);
     this.reportService.generateReport(reportPayload).subscribe({
       next: (response) => {
-        log.info('Report Response:', response);
+        //log.info('Report Response:', response);
 
         // Create a Blob from the response
         const blob = new Blob([response], { type: 'application/pdf' });
@@ -166,7 +151,7 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error.status
+          err.error.status || 'an error occured processing your request'
         );
       },
     });
@@ -193,7 +178,35 @@ export class PdSlipPreviewComponent implements OnInit,AfterViewInit {
   }
   
  
-  
+  onPrintStatusChange(status: string): void {
+    if (status === 'yes') {
+      this.updatePrintStatus();
+      
+    } else if(status === 'no') {
+      this.navigateToReceiptCapture();
+    }
+  }
+  navigateToReceiptCapture(): void {
+    this.receiptDataService.clearReceiptData();
+    this.router.navigate(['/home/fms/receipt-capture']);
+  }
+  updatePrintStatus() {
+
+    const receiptId = Number(this.receiptResponse);
+  console.log('reciptid>',receiptId);
+    // Construct the payload as an array of numbers
+    const payload: number[] = [receiptId];
+     this.receiptService.updateSlipStatus(payload).subscribe({
+      next:(response)=>{
+  this.globalMessagingService.displaySuccessMessage('success:',response.message);
+  this.receiptDataService.clearReceiptData();
+  this.router.navigate(['/home/fms/receipt-capture']);
+      },
+      error:(err)=>{
+        this.globalMessagingService.displayErrorMessage('failed',err.error.msg || 'failed to update slip status');
+      }
+     })
+    }
   /**
    * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
    * @returns {void}

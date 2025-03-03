@@ -13,6 +13,8 @@ import { ReportsService } from 'src/app/shared/services/reports/reports.service'
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { ReceiptService } from '../../services/receipt.service';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { TranslateService } from '@ngx-translate/core';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -36,7 +38,8 @@ export class ReceiptPreviewComponent implements OnInit{
 
 
   filePath: string = '';
-
+selectedOrg:OrganizationDTO;
+  defaultOrg:OrganizationDTO;
  
   //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
   //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
@@ -66,7 +69,8 @@ export class ReceiptPreviewComponent implements OnInit{
     private router: Router,
     private receiptDataService: ReceiptDataService,
     private sessionStorage:SessionStorageService,
-    private receiptService:ReceiptService
+    private receiptService:ReceiptService,
+    public translate: TranslateService 
   ) {}
 
   /**
@@ -75,14 +79,19 @@ export class ReceiptPreviewComponent implements OnInit{
    * @returns {void}
    */
   ngOnInit(): void {
-    let receiptResponse = this.sessionStorage.getItem('receiptResponse');
-    this.receiptResponse = Number(receiptResponse);
+    // let receiptResponse = this.sessionStorage.getItem('receiptResponse');
+    // this.receiptResponse = receiptResponse ? Number(receiptResponse) : null;
     
     let receiptNo = this.sessionStorage.getItem('receiptNo');
-    this.receiptResponse = Number(receiptNo);
+    this.receiptResponse = receiptNo ? Number(receiptNo) : null;
     
     let globalOrgId = this.sessionStorage.getItem('OrgId');
     this.orgId = Number(globalOrgId);
+    let defaultOrg = this.sessionStorage.getItem('defaultOrg');
+    let selectedOrg = this.sessionStorage.getItem('selectedOrg');
+
+    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg ) : null;
+    this.selectedOrg =selectedOrg? JSON.parse(selectedOrg) : null;
     this.getReceipt();
   }
   
@@ -107,7 +116,7 @@ export class ReceiptPreviewComponent implements OnInit{
         },
         {
           name: 'UP_ORG_CODE',
-          value: String(this.orgId), // Use the orgId
+          value: String(this.defaultOrg.id || this.selectedOrg.id), // Use the orgId
         },
       ],
       reportFormat: 'PDF',
@@ -192,5 +201,4 @@ this.router.navigate(['/home/fms/receipt-capture']);
   onBack() {
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
-  }
-}
+  }}
