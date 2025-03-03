@@ -219,9 +219,9 @@ export class QuotationSummaryComponent {
     this.limitAmount = Number(sessionStorage.getItem('limitAmount'));
     log.debug('SUM INSURED NGONIT', this.limitAmount);
 
-    if (this.limitAmount) {
-      this.sumInsured = this.limitAmount;
-    }
+    // if (this.limitAmount) {
+    //   this.sumInsured = this.limitAmount;
+    // }
 
     this.createEmailForm();
     this.loadAllSubclass();
@@ -288,9 +288,9 @@ export class QuotationSummaryComponent {
         log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
       }
 
-      if (!this.limitAmount) {
+
         this.sumInsured = this.quotationView.sumInsured;
-      }
+      
 
       if (!this.quotationCodeString) {
         this.quotationCode = this.quotationView.riskInformation[0].quotationCode;
@@ -554,42 +554,43 @@ export class QuotationSummaryComponent {
     log.debug("Quotation code when computing premium", this.quotationCode);
     this.quotationService.quotationUtils(this.quotationCode).subscribe({
       next: (res) => {
+        log.debug("Response before modifyig limits",res)
         this.computationDetails = res
         this.computationDetails.underwritingYear = new Date().getFullYear();
-        // Modify the prorata field for all risks
-        this.computationDetails.risks.forEach((risk: any) => {
-          risk.prorata = 'F';
-          risk.limits.forEach((limit: any) => {
-            // Retrieve and log session storage values
-            const premiumRate = Number(sessionStorage.getItem('premiumRate'));
-            const sectionDescription = sessionStorage.getItem('sectionDescription');
-            const sectionType = sessionStorage.getItem('sectionType');
-            const multiplierDivisionFactor = 1
-            const rateType = "FXD"
-            //  const divisionFactor = sessionStorage.getItem('divisionFactor');
-            const limitAmount = this.sumInsured
+        // // Modify the prorata field for all risks
+        // this.computationDetails.risks.forEach((risk: any) => {
+        //   risk.prorata = 'F';
+        //   risk.limits.forEach((limit: any) => {
+        //     // Retrieve and log session storage values
+        //     const premiumRate = Number(sessionStorage.getItem('premiumRate'));
+        //     const sectionDescription = sessionStorage.getItem('sectionDescription');
+        //     const sectionType = sessionStorage.getItem('sectionType');
+        //     const multiplierDivisionFactor = 1
+        //     const rateType = "FXD"
+        //     //  const divisionFactor = sessionStorage.getItem('divisionFactor');
+        //     const limitAmount = this.sumInsured
 
 
-            log.debug('Retrieved values from session storage:', {
-              premiumRate,
-              sectionType,
-              multiplierDivisionFactor,
-              rateType,
-              sectionDescription,
-              //  divisionFactor,
-              limitAmount
-            });
-            // Update the fields you want to modify
-            limit.premiumRate = Number(sessionStorage.getItem('premiumRate'));
-            limit.description = sessionStorage.getItem('sectionDescription');
-            // limit.sectionType = sessionStorage.getItem('sectionType');
-            limit.multiplierDivisionFactor = 1
-            limit.rateType = "FXD"
-            // limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
-            limit.limitAmount = this.sumInsured
-          });
-        });
-        log.debug("Latest COMPUTATION Details", this.computationDetails.risks)
+        //     log.debug('Retrieved values from session storage:', {
+        //       premiumRate,
+        //       sectionType,
+        //       multiplierDivisionFactor,
+        //       rateType,
+        //       sectionDescription,
+        //       //  divisionFactor,
+        //       limitAmount
+        //     });
+        //     // Update the fields you want to modify
+        //     limit.premiumRate = Number(sessionStorage.getItem('premiumRate'));
+        //     limit.description = sessionStorage.getItem('sectionDescription');
+        //     // limit.sectionType = sessionStorage.getItem('sectionType');
+        //     limit.multiplierDivisionFactor = 1
+        //     limit.rateType = "FXD"
+        //     // limit.rateDivisionFactor = sessionStorage.getItem('divisionFactor');
+        //     limit.limitAmount = this.sumInsured
+        //   });
+        // });
+        // log.debug("Latest COMPUTATION Details", this.computationDetails.risks)
       },
       error: (error: HttpErrorResponse) => {
         log.info(error);
