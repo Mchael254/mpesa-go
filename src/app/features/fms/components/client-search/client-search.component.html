@@ -1,10 +1,11 @@
 <div class="container-fluid">
   <!-- Breadcrumb -->
   <div class="breadcrumb-custom">
-    {{ "fms.receipting.finance" | translate }} > CB-Receipting >
-    {{ "base.Receipting" | translate }} >
+    {{ "fms.receipting.finance" | translate }} >
+    {{ "fms.receipting.cbReceipting" | translate }}>
+    {{ "fms.receipting.receipting" | translate }} >
     <span class="breadcrumb-text">{{
-      "fms.receipting.Allocate_Receipt" | translate
+      "fms.receipting.allocateReceipt" | translate
     }}</span>
   </div>
   <div class="main-form">
@@ -33,7 +34,7 @@
           </select>
         </div>
         <!-- Search Criteria Section -->
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="searchCriteria" class="form-label fw-bold">{{
             "fms.receipting.searchCriteria" | translate
           }}</label>
@@ -60,7 +61,7 @@
           <!-- <i class="pi pi-chevron-down dropdown-icon"></i> -->
         </div>
         <!-- Search Query Input -->
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="search" class="form-label fw-bold">{{
             "fms.receipting.search" | translate
           }}</label>
@@ -69,7 +70,7 @@
               type="text"
               class="form-control"
               id="search"
-              placeholder="Enter search term"
+              placeholder="{{ 'fms.receipting.EnterSearchTerm' | translate }}"
               formControlName="searchQuery"
               [disabled]="!isAccountTypeSelected"
               (keyup.enter)="onSearch()"

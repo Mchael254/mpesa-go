@@ -673,3 +673,4 @@ export interface Period {
   closedByUser?: number | null;
   closedByUserName?: string | null;
 }
+

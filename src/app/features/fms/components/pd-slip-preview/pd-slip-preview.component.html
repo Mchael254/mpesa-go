@@ -1,0 +1,30 @@
+<div class="container-fluid">
+  <h5 class="text-primary" style="padding-top: 10px">Receipt summary</h5>
+  <div class="receipt-section">
+    <ngx-doc-viewer
+      #docViewerIframe
+      [fileName]="documentData?.fileName ?? ''"
+      [srcUrl]="filePath ?? ''"
+      style="margin: 20px; margin-top: 10px; width: 80%"
+    >
+    </ngx-doc-viewer>
+  </div>
+  <!-- Action Buttons -->
+  <div class="btn-actions">
+    <div class="btn-back">
+      <button type="button" class="btn btn-link" (click)="onBack()">
+        Back
+      </button>
+    </div>
+    <div class="btn-next">
+      <button
+        type="button"
+        class="btn-primary-outline"
+        (click)="downloadReceipt()"
+      >
+        Print
+      </button>
+      <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
+    </div>
+  </div>
+</div>

@@ -18,16 +18,19 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+
+import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
+
+import {AuthService} from '../../../../shared/services/auth.service';
 import { filter } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
-import { DmsService } from 'src/app/shared/services/dms/dms.service';
-import { ReportsService } from 'src/app/shared/services/reports/reports.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+
+import {ReportsService} from '../../../../shared/services/reports/reports.service';
+import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import {DmsService} from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
@@ -177,7 +180,7 @@ export class ClientAllocationComponent {
     const storedData = this.receiptDataService.getReceiptData();
     this.storedData = storedData;
 
-    //console.log('form data>',this.storedData);
+  
     // Retrieve organization from localStorage or receiptDataService
   let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
   let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -211,11 +214,9 @@ export class ClientAllocationComponent {
   
    
 
-    //     let globalUserId=localStorage.getItem('UserId');
-    //     this.userId =  Number(globalUserId);
-    // this.userId = globalUserId ? Number(globalUserId ) : null;
+  
     let receiptingPoint = this.sessionStorage.getItem('receiptingPoint');
-    this.receiptingPointObject = JSON.parse(receiptingPoint);
+    this.receiptingPointObject = receiptingPoint ? JSON.parse(receiptingPoint) : {};
     this.transactions = this.receiptDataService.getTransactions();
     this.filteredTransactions = this.transactions;
     if (this.transactions) {
@@ -231,14 +232,6 @@ export class ClientAllocationComponent {
     let branchReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
     this.branchReceiptNumber = Number(branchReceiptNumber);
  
-    // let defaultCurrencyId = this.sessionStorage.getItem('defaultCurrencyId');
-    // this.defaultCurrencyId = Number(defaultCurrencyId);
-   
-
-    
-    // let receiptDefaultBranch = this.sessionStorage.getItem('receiptDefaultBranch');
-    // this.receiptDefaultBranch = JSON.parse(receiptDefaultBranch);
-    // console.log('receiptBranchCode>',this.receiptDefaultBranch);
 
     if (storedData) {
       this.amountIssued = storedData.amountIssued || 0;
@@ -445,20 +438,7 @@ export class ClientAllocationComponent {
     const formGroup = this.allocatedAmountControls.at(index) as FormGroup;
     return formGroup ? (formGroup.get(controlName) as FormControl) : null;
   }
-  /**
-   * Calculates the total allocated amount by summing up the allocated amounts in the FormArray.
-   */
-  // calculateTotalAllocatedAmount(): void {
-  //   this.totalAllocatedAmount = this.allocatedAmountControls.value.reduce(
-  //     (total: number, item: { allocatedAmount: number }) =>
-  //       total + Number(item.allocatedAmount || 0),
-  //     0
-  //   );
-  //   this.sessionStorage.setItem(
-  //     'totalAllocatedAmount',
-  //     JSON.stringify(this.totalAllocatedAmount)
-  //   );
-  // }
+  
   calculateTotalAllocatedAmount(): void {
     // Sum previously posted allocations
     const previousAllocations = this.getAllocation?.reduce(
@@ -567,15 +547,7 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-// Step 2: Validate the total allocated amount against the issued amount
-// if (this.totalAllocatedAmount < this.amountIssued) {
-//   this.globalMessagingService.displayErrorMessage(
-//     'Error',
-//     'Amount issued is not fully allocated.'
-//   );
 
-//   return false; // Stop further execution
-// }
 if (this.totalAllocatedAmount > this.amountIssued) {
   this.globalMessagingService.displayErrorMessage(
     'Error',
@@ -661,7 +633,7 @@ if (this.totalAllocatedAmount > this.amountIssued) {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to post allocations'
+          err.error?.msg || 'Failed to post allocations'
         );
       },
     });
@@ -730,8 +702,8 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
-            'Failed to fetch Allocations',
-            err
+            'error fetched',
+            err.error?.msg  || 'Failed to fetch Allocation'
           );
         },
       });
@@ -931,7 +903,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       return;
     }
     if (!this.selectedFile || !this.base64Output) {
-      //alert('No selected file');
+      
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No selected file found!'
@@ -944,7 +916,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         'Error',
         'No fetched allocations'
       );
-      /// alert('No fetched allocations');
+     
       return;
     }
 
@@ -1021,7 +993,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Failed to upload receipt'
+              error.error?.error || 'Failed to upload receipt'
           );
         },
       });
@@ -1051,7 +1023,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          error.error.error
+          error.error?.error || 'failed to fetch doc'
         );
       },
     });
@@ -1145,7 +1117,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         console.error('Error deleting file:', error);
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to delete file'
+          error.error?.error || 'failed to delete file'
         );
       },
     });
@@ -1167,7 +1139,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
 confirmPaymentModeSelected():any{
   if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
     this.message="Receipt will be issued upon cheque maturity";
-    alert('pd cheque selected');
+    
     this.showAcknowledgeBtn=true;
     
   }else{
@@ -1246,7 +1218,7 @@ return true;
       this.getAllocation?.[0]?.receiptParticularDetails || [];
       if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
         this.message="Receipt will be issued upon cheque maturity";
-        //alert('pd cheque selected');
+        
         this.showAcknowledgeBtn=true;
         //post_dated_cheque open_cheque
         //console.log('type>',this.chequeType);
@@ -1489,6 +1461,9 @@ return false;
         );
       },
     });
+  }
+  GeneratePdSlip(){
+
   }
  /**
    * Navigates back to the previous screen.

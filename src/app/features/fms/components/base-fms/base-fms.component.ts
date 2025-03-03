@@ -347,7 +347,7 @@ onYearChange(event: any) {
 
     let selectedPeriod = this.periods.find(p => p.period === currentMonth)?.period || this.periods[0]?.period;
 
-    console.log(`Selected Year: ${this.selectedYear}, Period Set: ${selectedPeriod}`);
+    //console.log(`Selected Year: ${this.selectedYear}, Period Set: ${selectedPeriod}`);
 
     // Use setTimeout to ensure change detection
     setTimeout(() => {
