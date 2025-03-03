@@ -225,7 +225,7 @@ export class QuotationsService {
    * @method getIntroducers
    * @return {Observable<introducersDTO>} - An observable of the response containing introducers data.
    */
-  getIntroducers(): Observable<introducersDTO> {
+  getIntroducers(): Observable<introducersDTO[]> {
     let page = 0;
     let size = 10
 
@@ -234,7 +234,7 @@ export class QuotationsService {
       Accept: 'application/json',
       'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
-    return this.api.GET<introducersDTO>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
+    return this.api.GET<introducersDTO[]>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
   /**

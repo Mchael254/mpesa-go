@@ -530,6 +530,11 @@ export interface QuickQuoteData {
   computationPayloadCode?:number
 
 }
+export interface QuotationSource{
+  code:number;
+  description:string;
+  applicableModule:string;
+}
 
 
 
