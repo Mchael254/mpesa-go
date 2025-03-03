@@ -169,3 +169,8 @@
   border-radius: 5px;
 
 }
+.form-check-label{
+  color: #000;
+  font-family: Roboto;
+  font-size: 14px;
+}
