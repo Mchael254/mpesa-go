@@ -1470,6 +1470,7 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
     const paymentMode = formData.get('paymentMode')?.value;
     const paymentRef = formData.get('paymentRef')?.value;
     const drawersBank = formData.get('drawersBank')?.value;
+    const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
 const documentDate = formData.get('documentDate')?.value;
     if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
       isValid = false;
@@ -1487,11 +1488,11 @@ const documentDate = formData.get('documentDate')?.value;
       );
       return false;
     }
-    if(!documentDate){
+    if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque' && !documentDate){
       isValid = false;
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'document date is required '
+        'document date is required for pd cheques '
       );
       return false;
     }
