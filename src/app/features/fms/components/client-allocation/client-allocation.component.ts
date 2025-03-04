@@ -1468,9 +1468,10 @@ return false;
   }
  handleSaveAndPrint(){
   this.saveAndGenerateSlip();
-  setTimeout(()=>{
-    this.generateSlip();
-  },1000)
+  // setTimeout(()=>{
+  //   this.generateSlip();
+  // },1000)
+  this.generateSlip();
  }
   saveAndGenerateSlip() {
    
@@ -1601,7 +1602,10 @@ return false;
           'Success',
           'Receipt saved successfully'
         );
-        //this.router.navigate(['/home/fms/slip-preview']);
+        setTimeout(()=>{
+          this.router.navigate(['/home/fms/slip-preview']);
+        },100)
+        
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1625,7 +1629,7 @@ next:(response)=>{
     'slip generated successfully'
   );
   //this.sessionStorage.setItem('receiptSlipResponse',this.receiptSlipResponse.receiptNo);
-  this.router.navigate(['/home/fms/slip-preview']);
+  //this.router.navigate(['/home/fms/slip-preview']);
   
 },
 
