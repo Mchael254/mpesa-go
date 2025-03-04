@@ -430,8 +430,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     if (!this.selectedRisk) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select Risk to continue');
     } else {
-      this.deleteRisk()
-      // document.getElementById("openRiskModalButtonDelete").click();
+      // this.deleteRisk()
+      document.getElementById("openRiskModalButtonDelete").click();
     }
   }
 
@@ -540,7 +540,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
         },
         error: (error) => {
-
+          log.debug("eerror fetching clauses", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch clauses. Try again later');
         }
       });
@@ -558,7 +558,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
         },
         error: (error) => {
-
+          log.debug("eerror fetching excesses", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses. Try again later');
         }
       });
@@ -576,7 +576,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
         },
         error: (error) => {
-
+          log.debug("eerror fetching limits of liability", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
         }
       });
@@ -592,11 +592,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
           log.debug("Response after deleting a risk ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
           // Remove the deleted risk from the riskDetails array
-          const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
+          // const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
           this.loadClientQuotation()
           this.selectedRisk = null;
         },
         error: (error) => {
+          log.debug("eerror deleting risk", error);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
         }
       });
