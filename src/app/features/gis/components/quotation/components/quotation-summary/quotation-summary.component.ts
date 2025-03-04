@@ -290,17 +290,21 @@ export class QuotationSummaryComponent {
 
 
         this.sumInsured = this.quotationView.sumInsured;
-      
+
 
       if (!this.quotationCodeString) {
-        this.quotationCode = this.quotationView.riskInformation[0].quotationCode;
+        // Access the quotationCode from the first riskInformation object
+        this.quotationCode = this.quotationView.quotationProducts[0]?.riskInformation[0]?.quotationCode;
         log.debug("quotaion code", this.quotationCode)
       }
 
       this.marketerCommissionAmount = this.quotationView.marketerCommissionAmount;
       log.debug("marketerCommissionAmount", this.marketerCommissionAmount);
 
-      this.subClassCodes = this.quotationView.riskInformation.map(risk => risk.subclassCode);
+      // Assuming `quotationView` is the quotation object
+      this.subClassCodes = this.quotationView.quotationProducts
+      .flatMap(product => product.riskInformation) // Flatten the riskInformation arrays
+      .map(risk => risk.subclassCode); // Extract the subclassCode from each risk
       log.debug("Subclass Codes:", this.subClassCodes);
 
       this.coverFrom = this.convertDate(this.quotationView.coverFrom)
@@ -314,7 +318,7 @@ export class QuotationSummaryComponent {
 
       // Extract product details
       this.quotationProducts = this.quotationView.quotationProduct;
-      this.riskDetails = this.quotationView.riskInformation;
+      this.riskDetails = this.quotationView.quotationProducts[0]?.riskInformation;
       log.debug("Risk Details quotation-summary", this.riskDetails);
 
       this.productDetails = this.quotationView.quotationProducts
@@ -390,8 +394,6 @@ export class QuotationSummaryComponent {
    */
   editDetails() {
     this.router.navigate(['/home/gis/quotation/quotation-details']);
-    const editFlag = true;
-    sessionStorage.setItem("editFlag", JSON.stringify(editFlag));
   }
 
   /**
