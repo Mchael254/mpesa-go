@@ -182,7 +182,15 @@
     "FinalReports": "Informes Finales del Libro Mayor",
     "Invoices/DR Notes": "Facturas/Notas de Débito",
     "invoicesCrNotes": "Facturas/Notas de Crédito",
-
+    
+      "Invoices/Cr Notes": "Facturas/Notas de crédito",
+      "Gl-Inquiries": "Consultas de libro mayor",
+      "Gl-Transactions": "Transacciones de libro mayor",
+      "Inquires": "Consultas",
+      "GL-Parameters": "Parámetros de libro mayor",
+      "Gl-Final Reports": "Informes finales de libro mayor",
+ 
+  
     "Requisitions": "Requisiciones",
     "Cheques": "Cheques",
     "Petty cash": "Caja Chica",
@@ -2598,10 +2606,36 @@
     "signSelect": "Firmar selección",
     "correction": "Enviar para corrección",
     "reject": "Rechazar",
+    
+      "base-fms": {
+          "parameters": "Parámetros",
+          "reconciliation": "Conciliación",
+          "transactions": "Transacciones",
+          "requistions": "Solicitudes",
+          "cheques": "Cheques",
+          "pettyCash": "Caja chica",
+          "receipts": "Recibos",
+          "receiptingPoints": "Puntos de recepción",
+          "narration": "Narraciones",
+          "manageReceipt": "Gestionar recibos",
+          "receipting": "Recepción",
+          "receiptingExceptions": "Excepciones de recepción",
+          "receiptAuthorization": "Autorización de recibo",
+          "receiptUpload": "Subir recibo",
+          "premiumSuspense": "Suspensión de prima",
+          "directDebits": "Débitos directos"
+      },
+  
+  
+  
     "receipting": {
       "receipting":"Emisión de recibos",
       "cbReceipting":"Libro de caja-Emisión de recibos",
       "receipt_details": "Detalles del Recibo",
+    
+        "clientSearch": "Búsqueda de cliente",
+ 
+    
       "capture_receipt": "Capturar Recibo",
       "currency": "Moneda",
       "payment_mode": "Modo de Pago",
