@@ -179,6 +179,16 @@
     "Parameters": "Hauptbuch-Parameter",
     "Transactions": "Hauptbuch-Transaktionen",
     "Inquiries": "Hauptbuch-Anfragen",
+   
+      "Invoices/Cr Notes": "Rechnungen/Gutschriften",
+      "Gl-Inquiries": "Hauptbuch-Anfragen",
+      "Gl-Transactions": "Hauptbuch-Transaktionen",
+      "Inquires": "Anfragen",
+      "GL-Parameters": "Hauptbuch-Parameter",
+  
+
+  
+
     "Gl-Final Reports": "Hauptbuch-Abschlussberichte",
     "invoicesDrNotes": "Rechnungen/Belastungsanzeigen",
     "Cheques": "Schecks",
@@ -2060,9 +2070,34 @@
     "signSelect": "Auswahl unterschreiben",
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
+ 
+      "base-fms": {
+          "parameters": "Parameter",
+          "reconciliation": "Abstimmung",
+          "transactions": "Transaktionen",
+          "requistions": "Anforderungen",
+          "cheques": "Schecks",
+          "pettyCash": "Portokasse",
+          "receipts": "Quittungen",
+          "receiptingPoints": "Quittierungspunkte",
+          "narration": "Erzählungen",
+          "manageReceipt": "Quittungen verwalten",
+          "receipting": "Quittierung",
+          "receiptingExceptions": "Quittierungsausnahmen",
+          "receiptAuthorization": "Quittungsgenehmigung",
+          "receiptUpload": "Quittungs-Upload",
+          "premiumSuspense": "Prämienkonto",
+          "directDebits": "Lastschriften"
+      },
+  
+  
     "receipting": {
       "receipting":"Belegerstellung",
       "cbReceipting":"Kassenbuch-Belegerstellung",
+    
+        "clientSearch": "Kundensuche",
+    
+    
       "capture_receipt": "Quittung erfassen",
       "receipt_details": "Empfangsdetails",
       "currency": "Währung",

@@ -2,7 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { BranchDTO, DataItem, Period, YearDTO } from '../../data/receipting-dto';
+import {
+  BranchDTO,
+  DataItem,
+  Period,
+  YearDTO,
+} from '../../data/receipting-dto';
 import { OrganizationService } from 'src/app/features/crm/services/organization.service';
 import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -12,6 +17,7 @@ import { ReceiptDataService } from '../../services/receipt-data.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-base-fms',
@@ -34,8 +40,8 @@ export class BaseFmsComponent {
   organization: OrganizationDTO[]; // List of organizations
   years: DataItem[] = []; // Store only the `data` array, not `YearDTO`
   periods: Period[] = []; // Stores periods based on selected year
-  curentPeriod:Period[];
- selectedPeriod:any;
+  curentPeriod: Period[];
+  selectedPeriod: any;
   selectedYear: string = ''; // Stores the selected year
   /**
    * Angular lifecycle hook that initializes the component.
@@ -44,7 +50,6 @@ export class BaseFmsComponent {
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
-    
 
     this.fetchUserDetails();
     this.fetchOrganization();
@@ -69,7 +74,8 @@ export class BaseFmsComponent {
     private receiptDataService: ReceiptDataService,
     private localStorage: LocalStorageService,
     private sessionStorage: SessionStorageService,
-    private fmsSetupService: FmsSetupService 
+    private fmsSetupService: FmsSetupService,
+    private translate: TranslateService
   ) {}
   /**
    * Initializes the receipt capture form with default values and validators.
@@ -78,10 +84,9 @@ export class BaseFmsComponent {
     this.receiptingDetailsForm = this.fb.group({
       selectedBranch: ['', Validators.required],
       organization: ['', Validators.required], // Set default value here as well
-      year:['',Validators.required],
-      period:['',Validators.required]
+      year: ['', Validators.required],
+      period: ['', Validators.required],
     });
-
   }
   /**
    * Fetches the details of the logged-in user.
@@ -91,7 +96,7 @@ export class BaseFmsComponent {
       next: (data) => {
         this.userDetails = data;
 
-        this.sessionStorage.setItem('user', JSON.stringify(this.userDetails ));
+        this.sessionStorage.setItem('user', JSON.stringify(this.userDetails));
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.err.err);
@@ -131,10 +136,12 @@ export class BaseFmsComponent {
 
             //this.receiptDataService.setDefaultOrg(defaultOrg);
             this.fetchBranches(this.defaultOrg.id);
- // Use setTimeout to ensure form updates correctly
- setTimeout(() => {
-  this.receiptingDetailsForm.patchValue({ organization: this.defaultOrg.id });
-});
+            // Use setTimeout to ensure form updates correctly
+            setTimeout(() => {
+              this.receiptingDetailsForm.patchValue({
+                organization: this.defaultOrg.id,
+              });
+            });
             // this.receiptingDetailsForm.patchValue({
             //   organization: this.defaultOrg.id,
             // });
@@ -145,7 +152,8 @@ export class BaseFmsComponent {
           }
           if (!defaultOrg) {
             //console.warn('No default organization found. Setting first available organization.');
-            this.defaultOrg = this.organization.length > 0 ? this.organization[0] : null;
+            this.defaultOrg =
+              this.organization.length > 0 ? this.organization[0] : null;
           }
         }
       },
@@ -234,20 +242,24 @@ export class BaseFmsComponent {
               'receiptDefaultBranch',
               JSON.stringify(this.defaultBranch)
             );
-             // Use setTimeout to ensure UI updates
-  setTimeout(() => {
-    this.receiptingDetailsForm.patchValue({ selectedBranch: defaultBranch.id });
-  });
+            // Use setTimeout to ensure UI updates
+            setTimeout(() => {
+              this.receiptingDetailsForm.patchValue({
+                selectedBranch: defaultBranch.id,
+              });
+            });
             // this.receiptingDetailsForm.patchValue({
             //   selectedBranch: defaultBranch.id,
             // });
           }
           if (!defaultBranch) {
-            console.warn('No default branch found. Setting first available branch.');
-            this.defaultBranch = this.branches.length > 0 ? this.branches[0] : null;
+            console.warn(
+              'No default branch found. Setting first available branch.'
+            );
+            this.defaultBranch =
+              this.branches.length > 0 ? this.branches[0] : null;
           }
         }
-        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -257,7 +269,6 @@ export class BaseFmsComponent {
       },
     });
   }
-
 
   /**
    * this function handles the change event for the branch dropdown.
@@ -295,68 +306,77 @@ export class BaseFmsComponent {
     }
   }
 
+  fetchYears(branchCode: number) {
+    this.fmsSetupService.getYears(branchCode).subscribe({
+      next: (response) => {
+        this.years = response.data;
 
-fetchYears(branchCode: number) {
-  this.fmsSetupService.getYears(branchCode).subscribe({
-    next: (response) => {
-      this.years = response.data;
-      
-      // Set default year to current year
-      const currentYear = new Date().getFullYear().toString();
-      const currentYearData = this.years.find(y => y.year === currentYear);
+        // Set default year to current year
+        const currentYear = new Date().getFullYear().toString();
+        const currentYearData = this.years.find((y) => y.year === currentYear);
 
-      if (currentYearData) {
-        // Set the default year
-        this.receiptingDetailsForm.patchValue({ year: currentYearData.year });
+        if (currentYearData) {
+          // Set the default year
+          this.receiptingDetailsForm.patchValue({ year: currentYearData.year });
 
-        // Set periods based on selected year
-        this.periods = currentYearData.periods;
+          // Set periods based on selected year
+          this.periods = currentYearData.periods;
 
-        // Wait for periods to be assigned before setting the default month
-        if (this.periods.length > 0) {
-          const currentMonth = new Date().toLocaleString('default', { month: 'short' }).toUpperCase();
-          const currentMonthData = this.periods.find(p => p.period === currentMonth);
-          
-          if (currentMonthData) {
-            // Correctly set the value of period to its string value
-            this.receiptingDetailsForm.patchValue({ period: currentMonthData.period });
+          // Wait for periods to be assigned before setting the default month
+          if (this.periods.length > 0) {
+            const currentMonth = new Date()
+              .toLocaleString('default', { month: 'short' })
+              .toUpperCase();
+            const currentMonthData = this.periods.find(
+              (p) => p.period === currentMonth
+            );
+
+            if (currentMonthData) {
+              // Correctly set the value of period to its string value
+              this.receiptingDetailsForm.patchValue({
+                period: currentMonthData.period,
+              });
+            }
           }
         }
-      }
-    },
-    error: (err) => {
-      this.globalMessagingService.displayErrorMessage('Error fetching periods', err.error.error);
-    }
-  });
-}
-
-
-onYearChange(event: any) {
-  this.selectedYear = event.target.value; // Get selected year
-
-  // Find the selected year's data
-  const selectedData = this.years.find(y => y.year === this.selectedYear);
-
-  // Update periods dropdown
-  this.periods = selectedData ? selectedData.periods : [];
-
-  if (this.periods.length > 0) {
-    // Get the current year as a string
-    const currentYear = new Date().getFullYear().toString();
-    const currentMonth = new Date().toLocaleString('en-US', { month: 'short' }).toUpperCase();
-
-    let selectedPeriod = this.periods.find(p => p.period === currentMonth)?.period || this.periods[0]?.period;
-
-    //console.log(`Selected Year: ${this.selectedYear}, Period Set: ${selectedPeriod}`);
-
-    // Use setTimeout to ensure change detection
-    setTimeout(() => {
-      this.receiptingDetailsForm.patchValue({ period: selectedPeriod });
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error fetching periods',
+          err.error.error
+        );
+      },
     });
   }
-}
 
+  onYearChange(event: any) {
+    this.selectedYear = event.target.value; // Get selected year
 
+    // Find the selected year's data
+    const selectedData = this.years.find((y) => y.year === this.selectedYear);
+
+    // Update periods dropdown
+    this.periods = selectedData ? selectedData.periods : [];
+
+    if (this.periods.length > 0) {
+      // Get the current year as a string
+      const currentYear = new Date().getFullYear().toString();
+      const currentMonth = new Date()
+        .toLocaleString('en-US', { month: 'short' })
+        .toUpperCase();
+
+      let selectedPeriod =
+        this.periods.find((p) => p.period === currentMonth)?.period ||
+        this.periods[0]?.period;
+
+      //console.log(`Selected Year: ${this.selectedYear}, Period Set: ${selectedPeriod}`);
+
+      // Use setTimeout to ensure change detection
+      setTimeout(() => {
+        this.receiptingDetailsForm.patchValue({ period: selectedPeriod });
+      });
+    }
+  }
 
   /* The `items` property is an array of objects. Each object represents a menu item in a CRM (Customer
 Relationship Management) application. Each object has the following properties: */
@@ -367,22 +387,22 @@ Relationship Management) application. Each object has the following properties: 
     subItems?: Array<{ label: string; link?: string }>;
   }> = [
     {
-      label: 'GL-Parameters',
+      label: this.translate.instant('base.GL-Parameters'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'GL-Transactions',
+      label: this.translate.instant('base.Gl-Transactions'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'GL-Inquiries',
+      label: this.translate.instant('base.Gl-Inquiries'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'GL-Final Reports',
+      label: this.translate.instant('base.Gl-Final Reports'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
@@ -395,22 +415,22 @@ Relationship Management) application. Each object has the following properties: 
     subItems?: Array<{ label: string; link?: string }>;
   }> = [
     {
-      label: 'Parameters',
+      label: this.translate.instant('fms.base-fms.parameters'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Transactions',
+      label: this.translate.instant('fms.base-fms.transactions'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Invoices/Dr Notes',
+      label: this.translate.instant('base.Invoices/DR Notes'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Inquires',
+      label: this.translate.instant('base.Inquires'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
@@ -423,54 +443,81 @@ Relationship Management) application. Each object has the following properties: 
     subItems?: Array<{ label: string; link?: string }>;
   }> = [
     {
-      label: 'Parameters',
+      label: this.translate.instant('fms.base-fms.parameters'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Transactions',
+      label: this.translate.instant('fms.base-fms.transactions'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Requistions',
+      label: this.translate.instant('fms.base-fms.requistions'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Cheques',
+      label: this.translate.instant('fms.base-fms.cheques'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Petty cash',
+      label: this.translate.instant('fms.base-fms.pettyCash'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Receipts',
+      label: this.translate.instant('fms.base-fms.receipts'),
       showSubItems: false,
       subItems: [
-        { label: 'Receipting Points', link: '/home/fms/' },
+        {
+          label: this.translate.instant('fms.base-fms.receiptingPoints'),
+          link: '/home/fms/',
+        },
 
-        { label: 'Narrations', link: '/home/fms/' },
-        { label: 'Manage Receipts', link: '/home/fms/' },
-        { label: 'Receipting', link: '/home/fms/receipt-capture' },
-        { label: 'Receipting Exceptions', link: '/home/fms/' },
-        { label: 'Receipt Authorization', link: '/home/fms/authorize' },
-        { label: 'Receipt Upload', link: '/home/fms/' },
-        { label: 'Premium Suspense', link: '/home/fms/' },
+        {
+          label: this.translate.instant('fms.base-fms.narration'),
+          link: '/home/fms/',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.manageReceipt'),
+          link: '/home/fms/',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.receipting'),
+          link: '/home/fms/receipt-capture',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.receiptingExceptions'),
+          link: '/home/fms/',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.receiptAuthorization'),
+          link: '/home/fms/authorize',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.receiptUpload'),
+          link: '/home/fms/',
+        },
+        {
+          label: this.translate.instant('fms.base-fms.premiumSuspense'),
+          link: '/home/fms/',
+        },
 
-        { label: 'Direct Debits', link: '/home/fms/' },
+        {
+          label: this.translate.instant('fms.base-fms.directDebits'),
+          link: '/home/fms/',
+        },
       ],
     },
     {
-      label: 'Reconciliation',
+      label: this.translate.instant('fms.base-fms.reconciliation'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Inquires',
+      label: this.translate.instant('base.Inquires'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
@@ -482,22 +529,22 @@ Relationship Management) application. Each object has the following properties: 
     subItems?: Array<{ label: string; link?: string }>;
   }> = [
     {
-      label: 'Parameters',
+      label: this.translate.instant('fms.base-fms.parameters'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Transactions',
+      label: this.translate.instant('fms.base-fms.transactions'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Invoices/cr Notes',
+      label: this.translate.instant('base.Invoices/Cr Notes'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
     {
-      label: 'Inquires',
+      label: this.translate.instant('base.Inquires'),
       showSubItems: false,
       subItems: [{ label: '', link: '' }],
     },
