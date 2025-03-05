@@ -57,7 +57,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, of, switchMap, tap} from 'rxjs';
+import {distinctUntilKeyChanged, firstValueFrom, forkJoin, mergeMap, Observable, of, switchMap, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -68,7 +68,7 @@ import {TableDetail} from '../../../../../../shared/data/table-detail';
 import {MenuService} from 'src/app/features/base/services/menu.service';
 import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {catchError, map} from "rxjs/operators";
+import {catchError, distinctUntilChanged, map} from "rxjs/operators";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -424,7 +424,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Quotation Action:', this.quoteAction);
     log.debug('Quotation Details:', this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.quotationNo ?? null;
-    log.debug('passed QUOYTATION number', this.passedQuotationNo);
     if (this.passedQuotation) {
       this.existingPropertyIds = this.passedQuotation.riskInformation?.map(
         (risk) => risk.propertyId
@@ -434,7 +433,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
 
-    log.debug('passed QUOYTATION CODE', this.passedQuotationCode);
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
   }
@@ -1181,7 +1179,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.formData = [];
           this.formContent = data;
-          log.debug(this.formContent, 'Form-content'); // Debugging: Check the received data
+          log.debug(this.formContent, 'Form-content');
           this.formData = this.formContent[0]?.fields;
           log.debug(this.formData, 'formData is defined here');
           Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
@@ -1246,22 +1244,36 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    */
   validateCarRegNo() {
     const control = this.quickQuoteForm.get('carRegNo');
-    if (!control) return;
-    // this.existingPropertyIds = ['WER 324R']
-    if (this.existingPropertyIds) {
-      const value = control.value.replace(/\s+/g, '').toUpperCase();
-      log.debug('Doing validation of ', value, this.existingPropertyIds);
-      const isDuplicate = this.existingPropertyIds.some(
-        (existingValue) =>
-          existingValue.replace(/\s+/g, '').toUpperCase() === value
-      );
-      if (isDuplicate) {
-        control.addValidators([this.uniqueValidator]);
-      } else {
-        control.removeValidators([this.uniqueValidator]);
+    const value = control.value
+    log.debug("Keyed In value>>>", value)
+    if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
+    this.quotationService.validateRiskExistence({
+      propertyId: value,
+      subClassCode: this.selectedSubclassCode,
+      withEffectFrom: this.formatDate(this.selectedEffectiveDate),
+      withEffectTo: this.selectedCoverToDate,
+      addOrEdit: 'A'
+    }).pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      untilDestroyed(this)
+    ).subscribe((response) => {
+      const canProceed = response?._embedded?.duplicateAllowed
+      log.debug("Risk allowed>>>", canProceed)
+      if (this.existingPropertyIds) {
+        log.debug('Doing validation of ', value, this.existingPropertyIds);
+        const isDuplicate = this.existingPropertyIds.some(
+          (existingValue) =>
+            existingValue.replace(/\s+/g, '').toUpperCase() === value
+        );
+        if (isDuplicate || !canProceed) {
+          control.addValidators([this.uniqueValidator]);
+        } else {
+          control.removeValidators([this.uniqueValidator]);
+        }
+        control.updateValueAndValidity({emitEvent: false});
       }
-      control.updateValueAndValidity({emitEvent: false});
-    }
+    })
   }
 
   uniqueValidator(control: AbstractControl) {
