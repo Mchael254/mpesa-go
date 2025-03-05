@@ -124,6 +124,7 @@ export class QuotationSummaryComponent {
   quickQuoteData: any;
   expiryDate: string;
   selectedRisk: any;
+  fetchedQuoteNum: string;
 
 
   constructor(
@@ -279,6 +280,8 @@ export class QuotationSummaryComponent {
   getQuotationDetails(code: any) {
     this.quotationService.getQuotationDetails(code).subscribe(res => {
       this.quotationView = res;
+
+      this.fetchedQuoteNum = this.quotationView.quotationNo;
       log.debug("DETAILS TEST quotation data", this.quotationView);
       log.debug(code, "code");
 
