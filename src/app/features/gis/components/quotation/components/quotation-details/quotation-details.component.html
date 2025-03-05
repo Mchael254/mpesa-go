@@ -29,7 +29,7 @@
                         <br>
                         <label for="" class="quote-label">Quotation type</label>
                         <select class="form-select form-control-sm mb-1" id="quote-input" placement="right"
-                            #quotationTypeSelect (change)="onQuotationTypeChange(quotationTypeSelect.value)">
+                           formControlName="quotationType" #quotationTypeSelect (change)="onQuotationTypeChange(quotationTypeSelect.value)">
                             <option selected="true" disabled="disabled"></option>
                             <option value="D">Direct</option>
                             <option value="I">Intermediary</option>

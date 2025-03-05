@@ -180,6 +180,15 @@
     "Transactions": "Transactions",
     "Invoices/Cr Notes": "Factures/Notes de Crédit",
     "Invoices/DR Notes": "Factures/Notes de Débit",
+    
+      
+      "Gl-Inquiries": "Requêtes du grand livre",
+      "Gl-Transactions": "Transactions du grand livre",
+      "Inquires": "Requêtes",
+      "GL-Parameters": "Paramètres du grand livre",
+      
+
+  
     "Inquiries": "Demandes",
     "Requisitions": "Réquisitions",
     "Gl-Final Reports": "Rapports Finaux du Grand Livre",
@@ -2597,10 +2606,35 @@
     "signSelect": "Signer la sélection",
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
+   
+      "base-fms": {
+          "parameters": "Paramètres",
+          "reconciliation": "Rapprochement",
+          "transactions": "Transactions",
+          "requistions": "Réquisitions",
+          "cheques": "Chèques",
+          "pettyCash": "Petite caisse",
+          "receipts": "Reçus",
+          "receiptingPoints": "Points de réception",
+          "narration": "Narrations",
+          "manageReceipt": "Gérer les reçus",
+          "receipting": "Encaissement",
+          "receiptingExceptions": "Exceptions d'encaissement",
+          "receiptAuthorization": "Autorisation de reçu",
+          "receiptUpload": "Téléchargement de reçu",
+          "premiumSuspense": "Compte d'attente de primes",
+          "directDebits": "Prélèvements automatiques"
+      },
+  
+  
     "receipting": {
       "receipting":"Emission de reçus",
       "cbReceipting":"Livre de caisse-Emission de reçus",
       "receipt_details": "Détails du Reçu",
+     
+        "clientSearch": "Recherche de client",
+    
+    
       "capture_receipt": "Capturer le reçu",
       "currency": "Devise",
       "payment_mode": "Mode de Paiement",

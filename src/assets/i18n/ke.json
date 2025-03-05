@@ -181,6 +181,14 @@
     "Invoices/DR Notes": "Ankara/Notisi za Madeni",
     "Cheque signing": "Kusaini hundi",
      "Inquiries": "Maswali",
+    
+      "Invoices/Cr Notes": "Ankara/Noti za Mkopo",
+      "Gl-Inquiries": "Uchunguzi wa Kitabu Kikuu",
+      "Gl-Transactions": "Miamala ya Kitabu Kikuu",
+      "Inquires": "Uchunguzi",
+      "GL-Parameters": "Vigezo vya Kitabu Kikuu",
+      
+ 
      "Parameters": "Vigezo",
      "Transactions": "Miamala",
      "Requisitions": "Maombi",
@@ -2064,11 +2072,31 @@
     "signSelect": "Chagua sahihi",
     "correction": "Tuma kwa marekebisho",
     "reject": "Kataa",
+ 
+  "base-fms": {
+    "parameters": "Vigezo",
+    "reconciliation": "Upatanisho",
+    "transactions": "Miamala",
+    "requistions": "Maombi",
+    "cheques": "Hundi",
+    "pettyCash": "Fedha Ndogo",
+    "receipts": "Risiti",
+    "receiptingPoints": "Vituo vya Upokeaji",
+    "narration": "Maelezo",
+    "manageReceipt": "Dhibiti Risiti",
+    "receipting": "Upokeaji",
+    "receiptingExceptions": "Mwelekeo wa Upokeaji",
+    "receiptAuthorization": "Idhini ya Risiti",
+    "receiptUpload": "Pakia Risiti",
+    "premiumSuspense": "Akaunti ya Malipo ya Bima",
+    "directDebits": "Malipo ya Moja kwa Moja"
+},
     "receipting": {
       "receipting":"Utoaji wa risiti",
       "cbReceipting":"Kitabu cha fedha-Utoaji wa risiti",
       "capture_receipt": "Shika Risiti",
-      "receipt_details": "Maelezo ya Risiti",
+ "clientSearch": "Utafutaji wa Mteja",
+"receipt_details": "Maelezo ya Risiti",
       "currency": "Fedha",
       "payment_mode": "Njia ya Malipo",
       "bank_account": "Akaunti ya Benki",
