@@ -59,7 +59,9 @@ export interface quotationRisk {
   clientType: string;
   prospectCode: number;
   coverTypeDescription: string;
-  taxComputation:taxComputation[]
+  taxComputation:taxComputation[];
+  vehicleModel:string;
+  vehicleMake:string;
 
 }
 export interface taxComputation{
@@ -67,25 +69,26 @@ export interface taxComputation{
   premium:number
 }
 export interface riskSection {
-  calcGroup: number,
-  code: number,
-  compute: string,
-  description: string,
-  freeLimit: number,
-  limitAmount: number,
-  multiplierDivisionFactor: number,
-  multiplierRate: number,
-  premiumAmount: number,
-  premiumRate: number,
-  quotRiskCode: number,
-  rateDivisionFactor: number,
-  rateType: string,
-  rowNumber: number,
-  sectionCode: number,
-  sectionShortDescription: string,
-  sectionType: string,
-  sumInsuredLimitType: string,
-  sumInsuredRate: number
+  sectionCode: number;
+  sectionShortDescription: string;
+  description: string | null;
+  rateType: string;
+  limitAmount: number | null;
+  quotRiskCode: number;
+  premiumRate: number;
+  freeLimit: number;
+  premiumAmount: number;
+  rateDivisionFactor: number;
+  multiplierRate: number | null;
+  multiplierDivisionFactor: number | null;
+  compute: string;
+  sumInsuredLimitType: string | null;
+  sumInsuredRate: number | null;
+  sectionType: string;
+  calcGroup: number;
+  rowNumber: number;
+  code: number;
+  quotationCode: number;
 }
 export interface QuotationDetails {
   agentCode: number;
@@ -535,6 +538,32 @@ export interface QuotationSource{
   description:string;
   applicableModule:string;
 }
+export interface ScheduleDetailsDto {
+  code: number;
+  riskCode: number;
+  details: {
+    level1: {
+      bodyType: string | null;
+      yearOfManufacture: number | null;
+      color: string;
+      engineNumber: string | null;
+      cubicCapacity: number | null;
+      Make: string;
+      coverType: string;
+      registrationNumber: string;
+      chasisNumber: string | null;
+      tonnage: number | null;
+      carryCapacity: number | null;
+      logBook: string | null;
+      value: number | null;
+    };
+  };
+  transactionType: string;
+  organizationCode: number;
+  version: number;
+}
+
+
 
 export interface RiskValidationDto{
   riskId?: string
