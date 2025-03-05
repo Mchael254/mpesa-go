@@ -196,7 +196,7 @@
     "Requistions": "Requistions",
     "Receipting": "Receipting",
     "Cheques": "Cheques",
-
+"GL-Parameters":"GL-Parameters",
     "Receipts": "Receipts",
     "Invoices/Cr Notes": "Invoices/Cr Notes",
     "Inquires": "Inquires",
@@ -2857,7 +2857,27 @@
       "statement_no": "Statement No.",
       "total_amount": "Total Amount",
       "send_sms_alerts": "Send SMS Alerts"
-    }
+    },
+      "base-fms":{
+        "parameters":"Parameters",
+        "reconciliation":"reconcilation",
+        "transactions":"Transactions",
+        "requistions":"Requistions",
+        "cheques":"Cheques",
+        "pettyCash":"Petty cash",
+        "receipts":"Receipts",
+        "receiptingPoints":"Receipting Points",
+"narration":"Narrations",
+"manageReceipt":"Manage Receipts",
+"receipting":"Receipting",
+"receiptingExceptions":"Receipting Exceptions",
+"receiptAuthorization":"Receipt Authorization",
+"receiptUpload":"Receipt Upload",
+"premiumSuspense":"Premium Suspense",
+"directDebits":"Direct Debits"
+
+      }
+    
   },
   "campaignMngmt": {
     "campaigns": "Campaigns",

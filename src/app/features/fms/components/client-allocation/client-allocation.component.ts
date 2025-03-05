@@ -20,18 +20,18 @@ import {
   Validators,
 } from '@angular/forms';
 
-import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
 
-import {AuthService} from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
 import { filter } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
 
-import {ReportsService} from '../../../../shared/services/reports/reports.service';
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import {DmsService} from '../../../../shared/services/dms/dms.service';
+import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
 /**
@@ -65,14 +65,14 @@ export class ClientAllocationComponent {
   manualExchangeRate: number;
   exchangeRate: number;
   otherRef: string;
-  bankAccountCode:number;
-  bankAccountType:string;
+  bankAccountCode: number;
+  bankAccountType: string;
   manualRef: string;
   accountTypeShortDesc: string;
-  requests:any;
+  requests: any;
   //control flags
   receiptingDetailsForm: FormGroup;
-  parameterStatus:string;
+  parameterStatus: string;
   // receiptingPointId:number;
   selectedBranchId: number;
   receiptingPointObject: ReceiptingPointsDTO;
@@ -102,17 +102,17 @@ export class ClientAllocationComponent {
   isFileSaved: boolean = false;
   getAllocation: GetAllocationDTO[] = [];
   filteredTransactions: any[] = [];
-  showSaveButton:boolean=false;
+  showSaveButton: boolean = false;
   isAllocationPosted: boolean = false;
   fileUploaded: boolean = false;
   receiptResponse: any;
-  receiptSlipResponse:any;
+  receiptSlipResponse: any;
   defaultOrg: OrganizationDTO;
-  selectedOrg:OrganizationDTO;
+  selectedOrg: OrganizationDTO;
   selectedBranch: BranchDTO;
   defaultBranch: BranchDTO;
   orgId: number;
-  receiptDefaultBranch:BranchDTO;
+  receiptDefaultBranch: BranchDTO;
   branchReceiptNumber: number;
   receiptCode: string;
   // Existing properties...
@@ -127,16 +127,16 @@ export class ClientAllocationComponent {
   totalRecords: number = 0; // Total number of records
   isAllocationComplete: boolean = false;
   isReceiptDownloading = false; // Tracks if the report is being downloaded
-  canShowUploadFileBtn:boolean=false;
-  showAcknowledgeBtn:boolean=false;
-  message:string;
+  canShowUploadFileBtn: boolean = false;
+  showAcknowledgeBtn: boolean = false;
+  message: string;
   //file properties
   currentFileIndex: number = 0;
-  fileDescriptions: { file: File; description: string,uploaded: boolean}[] = []; // Initialize the array
+  fileDescriptions: { file: File; description: string; uploaded: boolean }[] =
+    []; // Initialize the array
   isUploadDisabled: boolean = true; // Initialize as true (button is inactive by default)
   isFileUploadButtonDisabled: boolean = false; // Controls the "File Upload" button state
   selectedFile: File | null = null;
-  
 
   description: string = '';
   base64Output: string = '';
@@ -147,7 +147,7 @@ export class ClientAllocationComponent {
   uploadedFiles: any[] = []; // Store multiple files
   filePath: string | null = null;
 
-   /**
+  /**
    * Constructor for `ClientAllocationComponent`.
    * @param receiptDataService Service for managing receipt data
    * @param fb FormBuilder for creating reactive forms
@@ -170,11 +170,11 @@ export class ClientAllocationComponent {
     private router: Router,
     private dmsService: DmsService,
     private reportService: ReportsService,
-    private sessionStorage:SessionStorageService,
-    private fmsSetupService:FmsSetupService,
-    public translate:TranslateService
+    private sessionStorage: SessionStorageService,
+    private fmsSetupService: FmsSetupService,
+    public translate: TranslateService
   ) {}
-   /**
+  /**
    * Angular lifecycle hook that initializes the component.
    * Fetches necessary data and sets up the form.
    */
@@ -184,62 +184,59 @@ export class ClientAllocationComponent {
     const storedData = this.receiptDataService.getReceiptData();
     this.storedData = storedData;
 
-  
     // Retrieve organization from localStorage or receiptDataService
-  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
-  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
-  
-  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
-  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+    let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+    let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
 
-   // Ensure only one organization is active at a time
-   if (this.selectedOrg) {
-    this.defaultOrg = null;
-  } else if (this.defaultOrg) {
-    this.selectedOrg = null;
-  }
+    this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+    this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
 
-  
+    // Ensure only one organization is active at a time
+    if (this.selectedOrg) {
+      this.defaultOrg = null;
+    } else if (this.defaultOrg) {
+      this.selectedOrg = null;
+    }
 
     // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
-  
-    this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
-    this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
-  
+
+    this.selectedBranch = storedSelectedBranch
+      ? JSON.parse(storedSelectedBranch)
+      : null;
+    this.defaultBranch = storedDefaultBranch
+      ? JSON.parse(storedDefaultBranch)
+      : null;
+
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
     } else if (this.defaultBranch) {
       this.selectedBranch = null;
     }
-  
-  
-   
 
-  
     let receiptingPoint = this.sessionStorage.getItem('receiptingPoint');
-    this.receiptingPointObject = receiptingPoint ? JSON.parse(receiptingPoint) : {};
+    this.receiptingPointObject = receiptingPoint
+      ? JSON.parse(receiptingPoint)
+      : {};
     this.transactions = this.receiptDataService.getTransactions();
     this.filteredTransactions = this.transactions;
     if (this.transactions) {
       this.allocation = true;
     }
-   
-    
-    
-   
+
     let receiptCode = this.sessionStorage.getItem('receiptCode');
     this.receiptCode = receiptCode;
-    
-    let branchReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
+
+    let branchReceiptNumber = this.sessionStorage.getItem(
+      'branchReceiptNumber'
+    );
     this.branchReceiptNumber = Number(branchReceiptNumber);
- 
 
     if (storedData) {
       this.amountIssued = storedData.amountIssued || 0;
-     // this.amountIssued = this.amountIssued ?? (storedData.amountIssued || 0);
+      // this.amountIssued = this.amountIssued ?? (storedData.amountIssued || 0);
       this.paymentMode = storedData.paymentMode || '';
       this.paymentRef = storedData.paymentRef || '';
       this.manualRef = storedData.manualRef || '';
@@ -255,8 +252,8 @@ export class ClientAllocationComponent {
       this.selectedChargeType = storedData.selectedChargeType || '';
       this.chequeType = storedData.chequeType || '';
       this.bankAccount = storedData.bankAccount || 0;
-      this.exchangeRate = storedData.exchangeRate ;
-      this.manualExchangeRate = storedData.manualExchangeRate ;
+      this.exchangeRate = storedData.exchangeRate;
+      this.manualExchangeRate = storedData.manualExchangeRate;
       this.otherRef = storedData.otherRef || '';
       this.drawersBank = storedData.drawersBank || '';
       this.narration = storedData?.narration || '';
@@ -266,8 +263,9 @@ export class ClientAllocationComponent {
     }
     //let selectedBank = this.sessionStorage.getItem('selectedBank');
     //this.selectedBank = JSON.parse(selectedBank);
-    
-    let globalBankAccountVariable = this.sessionStorage.getItem('globalBankAccount');
+
+    let globalBankAccountVariable =
+      this.sessionStorage.getItem('globalBankAccount');
     this.globalBankAccountVariable = Number(this.globalBankAccountVariable);
     let globalBankType = this.sessionStorage.getItem('globalBankType');
     this.globalBankType = globalBankType;
@@ -283,12 +281,12 @@ export class ClientAllocationComponent {
       this.globalAccountTypeSelected &&
       this.globalAccountTypeSelected.actTypeShtDesc
     ) {
-    
     }
-    let accountTypeShortDesc = this.sessionStorage.getItem('accountTypeShortDesc');
+    let accountTypeShortDesc = this.sessionStorage.getItem(
+      'accountTypeShortDesc'
+    );
     this.accountTypeShortDesc = accountTypeShortDesc;
     if (this.selectedClient && this.selectedClient.code) {
-    
     }
     this.totalRecords = this.transactions.length; // Set total records count
 
@@ -296,9 +294,9 @@ export class ClientAllocationComponent {
     // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
-    this.confirmPaymentModeSelected()
+    this.confirmPaymentModeSelected();
   }
-    /**
+  /**
    * Initializes the receipt capture form with default values and validators.
    */
   captureReceiptForm() {
@@ -317,7 +315,7 @@ export class ClientAllocationComponent {
     this.receiptDataService.updateAllocatedAmount(index, amount);
     this.calculateTotalAllocatedAmount();
   }
-   /**
+  /**
    * Applies a filter to the transactions based on the specified field and value.
    * @param event The event triggered by the filter input
    * @param field The field to filter by (e.g., 'clientName', 'policyNumber')
@@ -325,7 +323,7 @@ export class ClientAllocationComponent {
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
-    
+
     switch (field) {
       case 'clientName':
         this.clientNameFilter = filterValue;
@@ -345,7 +343,7 @@ export class ClientAllocationComponent {
 
     this.filterTransactions(); // Ensure this is called
   }
-   /**
+  /**
    * Filters the transactions based on the current filter values.
    */
   filterTransactions(): void {
@@ -404,10 +402,8 @@ export class ClientAllocationComponent {
       })
       .filter((transaction) => transaction.score > 0) // Only keep transactions that match at least one filter
       .sort((a, b) => b.score - a.score); // Sort by relevance
-
-   
   }
- /**
+  /**
    * Initializes form controls for each transaction in the allocated amounts FormArray.
    */
   // ✅ Initialize form controls for each transaction
@@ -428,11 +424,11 @@ export class ClientAllocationComponent {
    * Returns the allocatedAmount FormArray from the form.
    * @returns The FormArray for allocated amounts
    */
-  
+
   get allocatedAmountControls(): FormArray {
     return this.receiptingDetailsForm.get('allocatedAmount') as FormArray;
   }
-    /**
+  /**
    * Returns a specific form control from the allocatedAmount FormArray.
    * @param index The index of the control in the FormArray
    * @param controlName The name of the control
@@ -442,34 +438,37 @@ export class ClientAllocationComponent {
     const formGroup = this.allocatedAmountControls.at(index) as FormGroup;
     return formGroup ? (formGroup.get(controlName) as FormControl) : null;
   }
-  
+
   calculateTotalAllocatedAmount(): void {
     // Sum previously posted allocations
-    const previousAllocations = this.getAllocation?.reduce(
-      (total, allocation) => total + allocation.receiptParticularDetails.reduce(
-        (sum, detail) => sum + detail.premiumAmount,
+    const previousAllocations =
+      this.getAllocation?.reduce(
+        (total, allocation) =>
+          total +
+          allocation.receiptParticularDetails.reduce(
+            (sum, detail) => sum + detail.premiumAmount,
+            0
+          ),
         0
-      ),
-      0
-    ) || 0;
-  
+      ) || 0;
+
     // Sum currently allocated form values
     const newAllocatedTotal = this.allocatedAmountControls.value.reduce(
       (total: number, item: { allocatedAmount: number }) =>
         total + Number(item.allocatedAmount || 0),
       0
     );
-  
+
     // Ensure we are adding both previous allocations and new allocations
     this.totalAllocatedAmount = previousAllocations + newAllocatedTotal;
-  
+
     // Persist the total in session storage
     this.sessionStorage.setItem(
       'totalAllocatedAmount',
       JSON.stringify(this.totalAllocatedAmount)
     );
   }
-  
+
   /**
    * Handles the change event for the commission checkbox.
    * @param index The index of the transaction in the list
@@ -483,8 +482,7 @@ export class ClientAllocationComponent {
     }
   }
 
-
-    /**
+  /**
    * Calculates the remaining amount by subtracting the total allocated amount from the amount issued.
    * @returns The remaining amount
    */
@@ -492,35 +490,39 @@ export class ClientAllocationComponent {
     return this.amountIssued - this.totalAllocatedAmount;
   }
 
-  // 
+  //
   updateTotalAllocatedAmount(): void {
-    let totalPostedAmount = this.getAllocation?.reduce(
-      (total, allocation) => total + allocation.receiptParticularDetails.reduce(
-        (sum, detail) => sum + detail.premiumAmount,
+    let totalPostedAmount =
+      this.getAllocation?.reduce(
+        (total, allocation) =>
+          total +
+          allocation.receiptParticularDetails.reduce(
+            (sum, detail) => sum + detail.premiumAmount,
+            0
+          ),
         0
-      ),
-      0
-    ) || 0;
-  
+      ) || 0;
+
     const newAllocatedTotal = this.transactions.reduce(
       (total, transaction, index) => {
-        const allocatedAmountControl = this.getFormControl(index, 'allocatedAmount');
+        const allocatedAmountControl = this.getFormControl(
+          index,
+          'allocatedAmount'
+        );
         const allocatedAmount = Number(allocatedAmountControl?.value || 0);
         return total + allocatedAmount;
       },
       0
     );
-  
+
     // Ensure the total includes previous allocations + new allocations
     this.totalAllocatedAmount = totalPostedAmount + newAllocatedTotal;
   }
-  
- /**
+
+  /**
    * Allocates and posts the allocations to the backend.
    */
   allocateAndPostAllocations(): any {
-    
-
     const allocatedTransactionsData = this.transactions
       .map((transaction, index) => {
         const allocatedAmountControl = this.getFormControl(
@@ -552,14 +554,14 @@ export class ClientAllocationComponent {
       return false; // Stop further execution
     }
 
-if (this.totalAllocatedAmount > this.amountIssued) {
-  this.globalMessagingService.displayErrorMessage(
-    'Error',
-    'Total Allocated Amount Exceeds Amount Issued'
-  );
+    if (this.totalAllocatedAmount > this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Total Allocated Amount Exceeds Amount Issued'
+      );
 
-  return false;
-}
+      return false;
+    }
     const receiptParticulars = {
       receiptNumber: this.branchReceiptNumber,
       capturedBy: this.loggedInUser.code,
@@ -591,7 +593,7 @@ if (this.totalAllocatedAmount > this.amountIssued) {
           commissionAmount: transaction.commission,
           narration: this.narration || '',
           overAllocated: 0,
-          includeVat:  'N',
+          includeVat: 'N',
           clientPolicyNumber: transaction.clientPolicyNumber,
           policyType: null,
           accountNumber: null,
@@ -605,44 +607,42 @@ if (this.totalAllocatedAmount > this.amountIssued) {
       receiptParticulars: [receiptParticulars],
     };
     this.receiptService
-    .postAllocation(this.loggedInUser.code, allocationData)
-    .subscribe({
-      next: (response) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Allocations posted successfully'
-        );
-  
-        // ✅ Preserve previous allocated values
-        const newlyAllocatedTotal = allocatedTransactionsData.reduce(
-          (total, item) => total + item.allocatedAmount,
-          0
-        );
-        this.totalAllocatedAmount += newlyAllocatedTotal; // ✅ Keep accumulating
-  
-        // ✅ Reset allocated amounts after posting
-        this.transactions.forEach((transaction, index) => {
-          const allocatedAmountControl = this.getFormControl(
-            index,
-            'allocatedAmount'
+      .postAllocation(this.loggedInUser.code, allocationData)
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Allocations posted successfully'
           );
-          if (allocatedAmountControl) {
-            allocatedAmountControl.setValue(0); // Reset only UI, not the total
-          }
-        });
-  
-        // ✅ Ensure newly posted amounts persist
-        this.getAllocations();
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error?.msg || 'Failed to post allocations'
-        );
-      },
-    });
-  
-  
+
+          // ✅ Preserve previous allocated values
+          const newlyAllocatedTotal = allocatedTransactionsData.reduce(
+            (total, item) => total + item.allocatedAmount,
+            0
+          );
+          this.totalAllocatedAmount += newlyAllocatedTotal; // ✅ Keep accumulating
+
+          // ✅ Reset allocated amounts after posting
+          this.transactions.forEach((transaction, index) => {
+            const allocatedAmountControl = this.getFormControl(
+              index,
+              'allocatedAmount'
+            );
+            if (allocatedAmountControl) {
+              allocatedAmountControl.setValue(0); // Reset only UI, not the total
+            }
+          });
+
+          // ✅ Ensure newly posted amounts persist
+          this.getAllocations();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err.error?.msg || 'Failed to post allocations'
+          );
+        },
+      });
   }
 
   /**
@@ -661,12 +661,14 @@ if (this.totalAllocatedAmount > this.amountIssued) {
               (detail) => detail.premiumAmount > 0
             )
           );
-          if(this.getAllocation){
-            this.canShowUploadFileBtn=true;
-            
+          if (this.getAllocation) {
+            this.canShowUploadFileBtn = true;
           }
-this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
-        //  ✅ Reset totalAllocatedAmount before recalculating
+          this.sessionStorage.setItem(
+            'allocations',
+            JSON.stringify(this.getAllocation)
+          );
+          //  ✅ Reset totalAllocatedAmount before recalculating
           this.totalAllocatedAmount = this.getAllocation.reduce(
             (total, allocation) => {
               return (
@@ -688,31 +690,31 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           // ✅ Set transactions for new allocations
           this.transactions = this.receiptDataService.getTransactions();
           this.transactions.forEach((transaction, index) => {
-            const allocatedAmountControl = this.getFormControl(index, 'allocatedAmount');
+            const allocatedAmountControl = this.getFormControl(
+              index,
+              'allocatedAmount'
+            );
             if (allocatedAmountControl) {
               allocatedAmountControl.valueChanges.subscribe(() => {
                 this.calculateTotalAllocatedAmount(); // ✅ Keeps running total live
               });
             }
           });
-          
-         
+
           this.isAllocationCompleted = true;
           this.getAllocationStatus = true;
           this.allocationsReturned = true;
           this.globalGetAllocation = this.getAllocation;
-
-          
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
             'error fetched',
-            err.error?.msg  || 'Failed to fetch Allocation'
+            err.error?.msg || 'Failed to fetch Allocation'
           );
         },
       });
   }
- /**
+  /**
    * Deletes an allocation by its receipt detail code.
    * @param receiptDetailCode The code of the receipt detail to delete
    */
@@ -751,8 +753,8 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             'totalAllocatedAmount',
             JSON.stringify(this.totalAllocatedAmount)
           );
- // Hide upload button if no allocations exist
- this.canShowUploadFileBtn = this.getAllocation.length > 0;
+          // Hide upload button if no allocations exist
+          this.canShowUploadFileBtn = this.getAllocation.length > 0;
           // Display success message
           this.globalMessagingService.displaySuccessMessage(
             'Success',
@@ -766,7 +768,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             'Failed to delete allocation'
           );
         }
-        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -776,7 +777,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       },
     });
   }
- /**
+  /**
    * Saves the file description for the currently selected file.
    */
   saveFileDescription(): void {
@@ -790,7 +791,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         // Check if description is not empty
         this.fileDescriptions[this.currentFileIndex].description = description; // Update the description for the current file
 
-       
         // Close the modal after saving the description
         this.closeFileModal();
       } else {
@@ -811,45 +811,43 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       modalInstance.hide();
     }
   }
-/**
+  /**
    * Removes a file from the file descriptions array.
    * @param index The index of the file to remove
    */
   onRemoveFile(index: number): void {
     this.fileDescriptions.splice(index, 1);
-     // If no files are left, reset selectedFile and fileUploaded flags
-  if (this.fileDescriptions.length === 0) {
-    this.selectedFile = null;
-    this.fileUploaded = false; // Ensure submission check works properly
-  }
+    // If no files are left, reset selectedFile and fileUploaded flags
+    if (this.fileDescriptions.length === 0) {
+      this.selectedFile = null;
+      this.fileUploaded = false; // Ensure submission check works properly
+    }
     this.globalMessagingService.displaySuccessMessage(
       'Success',
       'File removed successfully'
     );
     this.isFileUploadButtonDisabled = false;
-
   }
   clearFileInput(event: Event): void {
     (event.target as HTMLInputElement).value = ''; // Clears previous selection
   }
-  
-/**
+
+  /**
    * Handles the file selection event.
    * @param event The file selection event
    */
   onFileSelected(event: any): void {
     if (event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
-      
 
       // Add file to descriptions array
       this.currentFileIndex = this.fileDescriptions.length;
       this.fileDescriptions.push({
         file: this.selectedFile,
         description: this.description,
-        uploaded:false,
+        uploaded: false,
       });
-     
+
       // Convert file to Base64 without the "data:" prefix
       const reader = new FileReader();
       reader.onload = () => {
@@ -861,19 +859,16 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         } else {
           this.base64Output = base64String;
         }
-
-
       };
       reader.readAsDataURL(this.selectedFile);
       //this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
-     setTimeout(()=>{
-      this.openModal(this.fileDescriptions.length - 1);
-     },100); // Small delay to ensure UI updates
+      setTimeout(() => {
+        this.openModal(this.fileDescriptions.length - 1);
+      }, 100); // Small delay to ensure UI updates
       this.isFileUploadButtonDisabled = true;
     } else {
       this.selectedFile = null; // Reset selectedFile if no file is selected
       this.isFileUploadButtonDisabled = false; // Keep "File Upload" button active
-      
     }
   }
   /**
@@ -894,7 +889,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       }
     }, 100); // Small delay to ensure modal is found
   }
-  
+
   /**
    * Uploads the selected file to the backend.
    */
@@ -907,7 +902,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       return;
     }
     if (!this.selectedFile || !this.base64Output) {
-      
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No selected file found!'
@@ -920,7 +914,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         'Error',
         'No fetched allocations'
       );
-     
+
       return;
     }
 
@@ -959,12 +953,8 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         }
       });
 
-
-
       this.receiptService.uploadFiles(requests).subscribe({
         next: (response) => {
-       
-
           this.globalDocId = response.docId;
           this.globalMessagingService.displaySuccessMessage(
             'Success',
@@ -973,7 +963,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           this.fileUploaded = true;
           if (response.docId) {
             this.globalDocId = response.docId;
-         
 
             // Store file in uploadedFiles immediately
             const uploadedFile = {
@@ -984,7 +973,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
             };
 
             this.uploadedFiles.push(uploadedFile);
-            
           }
           this.selectedFile = null;
           this.base64Output = '';
@@ -997,7 +985,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-              error.error?.error || 'Failed to upload receipt'
+            error.error?.error || 'Failed to upload receipt'
           );
         },
       });
@@ -1022,7 +1010,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           'Success',
           'Doc retrieved successfullly'
         );
-        
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1032,7 +1019,7 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       },
     });
   }
-/**
+  /**
    * Opens a file in a new tab or initiates a download.
    * @param file The file to open
    */
@@ -1091,8 +1078,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
    * @param index The index of the file in the list
    */
   deleteFile(file: any, index: number): void {
-    
-
     if (!file || !file.docId) {
       //console.error('File missing docId:', file); // Debugging log
       this.globalMessagingService.displayErrorMessage(
@@ -1110,7 +1095,6 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
           'Success',
           'File deleted successfully'
         );
-        
 
         // Reset globalDocId if needed
         if (this.globalDocId === file.docId) {
@@ -1126,55 +1110,59 @@ this.sessionStorage.setItem('allocations',JSON.stringify(this.getAllocation));
       },
     });
   }
-  fetchParamStatus(){
-    this.fmsSetupService.getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS').subscribe({
-      next:(response)=>{
-  
-        this.parameterStatus=response.data;
-  
-  
-      },
-      error:(err)=>{
-        this.globalMessagingService.displayErrorMessage('Error:Failed to fetch Param Status',err.err.error);
-      }
-    })
+  fetchParamStatus() {
+    this.fmsSetupService
+      .getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS')
+      .subscribe({
+        next: (response) => {
+          this.parameterStatus = response.data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error:Failed to fetch Param Status',
+            err.err.error
+          );
+        },
+      });
   }
-  
-confirmPaymentModeSelected():any{
-  if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
-    this.message="Receipt will be issued upon cheque maturity";
-    
-    this.showAcknowledgeBtn=true;
-    
-  }else{
-   
-    this.showAcknowledgeBtn=false;
-  
+
+  confirmPaymentModeSelected(): any {
+    if (
+      this.paymentMode === 'CHEQUE' &&
+      this.chequeType === 'post_dated_cheque'
+    ) {
+      this.message = 'Receipt will be issued upon cheque maturity';
+
+      this.showAcknowledgeBtn = true;
+    } else {
+      this.showAcknowledgeBtn = false;
+    }
   }
-}
-/**
+  /**
    * Submits the receipt data to the backend.
    */
   submitReceipt(): any {
-   // ✅ 1. Check if any selected file is not posted
-   const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
+    // ✅ 1. Check if any selected file is not posted
+    const hasUnpostedFiles = this.fileDescriptions.some(
+      (file) => !file.uploaded
+    );
 
-   if (hasUnpostedFiles) {
-     this.globalMessagingService.displayErrorMessage(
-       'Error!',
-       'Please post or delete all selected files before saving the receipt.'
-     );
-     return; // Stop execution
-   }
- 
-   // ✅ 2. Ensure no unposted selected file
-   if (this.selectedFile !== null) {
-     this.globalMessagingService.displayErrorMessage(
-       'Error!',
-       'Please post or delete the file before saving the receipt.'
-     );
-     return;
-   }
+    if (hasUnpostedFiles) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete all selected files before saving the receipt.'
+      );
+      return; // Stop execution
+    }
+
+    // ✅ 2. Ensure no unposted selected file
+    if (this.selectedFile !== null) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error!',
+        'Please post or delete the file before saving the receipt.'
+      );
+      return;
+    }
 
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
@@ -1183,55 +1171,65 @@ confirmPaymentModeSelected():any{
       );
       return false; // Stop further execution
     }
-// Step 2: Validate the total allocated amount against the issued amount
-if (this.totalAllocatedAmount < this.amountIssued) {
-  this.globalMessagingService.displayErrorMessage(
-    'Error',
-    'Amount issued is not fully allocated.'
-  );
+    // Step 2: Validate the total allocated amount against the issued amount
+    if (this.totalAllocatedAmount < this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Amount issued is not fully allocated.'
+      );
 
-  return false; // Stop further execution
-}
-if (this.totalAllocatedAmount > this.amountIssued) {
-  this.globalMessagingService.displayErrorMessage(
-    'Error',
-    'Total Allocated Amount Exceeds Amount Issued'
-  );
+      return false; // Stop further execution
+    }
+    if (this.totalAllocatedAmount > this.amountIssued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Total Allocated Amount Exceeds Amount Issued'
+      );
 
-  return false;
-}
-     
-// console.log('receiptDoc>>',this.parameterStatus);
-  if(this.parameterStatus=='Y' && !this.fileUploaded )
-    {
- 
-     if(confirm('do you want to save receipt without uploading file?')==true){
-
-return true;
-     }else{
       return false;
-     }
+    }
 
-
-     }
-     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
-      this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
+    // console.log('receiptDoc>>',this.parameterStatus);
+    if (this.parameterStatus == 'Y' && !this.fileUploaded) {
+      if (
+        confirm('do you want to save receipt without uploading file?') == true
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (
+      !this.amountIssued &&
+      !this.receivedFrom &&
+      !this.receiptDate &&
+      !this.narration &&
+      !this.paymentMode &&
+      !this.bankAccount
+    ) {
+      this.globalMessagingService.displayErrorMessage(
+        'Failed',
+        'please fill all fields marked with * in receipt capture!'
+      );
       return false;
-           }
+    }
     const allocatedDetails =
       this.getAllocation?.[0]?.receiptParticularDetails || [];
-      if(this.paymentMode === 'CHEQUE' && this.chequeType==='post_dated_cheque'){
-        this.message="Receipt will be issued upon cheque maturity";
-        
-        this.showAcknowledgeBtn=true;
-        //post_dated_cheque open_cheque
-        //console.log('type>',this.chequeType);
+    if (
+      this.paymentMode === 'CHEQUE' &&
+      this.chequeType === 'post_dated_cheque'
+    ) {
+      this.message = 'Receipt will be issued upon cheque maturity';
+
+      this.showAcknowledgeBtn = true;
+      //post_dated_cheque open_cheque
+      //console.log('type>',this.chequeType);
       //return;
-      }else{
-        this.message='success';
-        this.showAcknowledgeBtn=false;
-       //this.submitReceipt();
-      }
+    } else {
+      this.message = 'success';
+      this.showAcknowledgeBtn = false;
+      //this.submitReceipt();
+    }
     // Map allocated transactions to receiptParticularDetailUpdateRequests format
     const receiptParticularDetailUpdateRequests = allocatedDetails.map(
       (detail) => ({
@@ -1253,8 +1251,7 @@ return true;
       paidBy: this.receivedFrom,
       currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
 
-      branchCode:
-        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
+      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), // Add quotes to ensure it's treated as string before conversion
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
@@ -1278,10 +1275,10 @@ return true;
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType:  null,
+      receiptChequeType: null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
-      rctbbrCode:null,
+      rctbbrCode: null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
@@ -1299,12 +1296,15 @@ return true;
       sysCode: Number(this.selectedClient.systemCode),
       bankAccountType: this.bankAccountType,
     };
-    
+
     // Call the service to save the receipt
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
-        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.sessionStorage.setItem(
+          'receiptNo',
+          this.receiptResponse.receiptNumber
+        );
         this.globalMessagingService.displaySuccessMessage(
           this.message,
           this.receiptResponse.message
@@ -1316,7 +1316,6 @@ return true;
         //prepare receipt upload payload
       },
       error: (error) => {
-        
         this.globalMessagingService.displayErrorMessage(
           'Failed to save receipt',
           error.error.msg
@@ -1328,9 +1327,10 @@ return true;
    * Saves the receipt and navigates to the receipt preview page.
    */
   saveAndPrint() {
-   
     // ✅ 1. Check if any selected file is not posted
-    const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
+    const hasUnpostedFiles = this.fileDescriptions.some(
+      (file) => !file.uploaded
+    );
 
     if (hasUnpostedFiles) {
       this.globalMessagingService.displayErrorMessage(
@@ -1339,7 +1339,7 @@ return true;
       );
       return; // Stop execution
     }
-  
+
     // ✅ 2. Ensure no unposted selected file
     if (this.selectedFile !== null) {
       this.globalMessagingService.displayErrorMessage(
@@ -1348,22 +1348,29 @@ return true;
       );
       return;
     }
-  if(this.parameterStatus=='Y' && !this.fileUploaded )
-    {
- 
-     if(confirm('do you want to save receipt without uploading file?')==true){
-
-return true;
-     }else{
+    if (this.parameterStatus == 'Y' && !this.fileUploaded) {
+      if (
+        confirm('do you want to save receipt without uploading file?') == true
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (
+      !this.amountIssued &&
+      !this.receivedFrom &&
+      !this.receiptDate &&
+      !this.narration &&
+      !this.paymentMode &&
+      !this.bankAccount
+    ) {
+      this.globalMessagingService.displayErrorMessage(
+        'Failed',
+        'please fill all fields marked with * in receipt capture!'
+      );
       return false;
-     }
-
-
-     }
-     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
-this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
-return false;
-     }
+    }
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1400,8 +1407,7 @@ return false;
       paidBy: this.receivedFrom,
       currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
 
-      branchCode:
-        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
+      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), // Add quotes to ensure it's treated as string before conversion
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
@@ -1425,10 +1431,10 @@ return false;
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType:  null,
+      receiptChequeType: null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
-      rctbbrCode:null,
+      rctbbrCode: null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
@@ -1446,12 +1452,15 @@ return false;
       sysCode: Number(this.selectedClient.systemCode),
       bankAccountType: this.bankAccountType,
     };
-    
+
     // Call the service to save the receipt
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
-        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.sessionStorage.setItem(
+          'receiptNo',
+          this.receiptResponse.receiptNumber
+        );
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Receipt saved successfully'
@@ -1466,17 +1475,18 @@ return false;
       },
     });
   }
- handleSaveAndPrint(){
-  this.saveAndGenerateSlip();
-  // setTimeout(()=>{
-  //   this.generateSlip();
-  // },1000)
-  this.generateSlip();
- }
+  handleSaveAndPrint() {
+    this.saveAndGenerateSlip();
+    // setTimeout(()=>{
+    //   this.generateSlip();
+    // },1000)
+    this.generateSlip();
+  }
   saveAndGenerateSlip() {
-   
     // ✅ 1. Check if any selected file is not posted
-    const hasUnpostedFiles = this.fileDescriptions.some(file => !file.uploaded); 
+    const hasUnpostedFiles = this.fileDescriptions.some(
+      (file) => !file.uploaded
+    );
 
     if (hasUnpostedFiles) {
       this.globalMessagingService.displayErrorMessage(
@@ -1485,7 +1495,7 @@ return false;
       );
       return; // Stop execution
     }
-  
+
     // ✅ 2. Ensure no unposted selected file
     if (this.selectedFile !== null) {
       this.globalMessagingService.displayErrorMessage(
@@ -1494,22 +1504,29 @@ return false;
       );
       return;
     }
-  if(this.parameterStatus=='Y' && !this.fileUploaded )
-    {
- 
-     if(confirm('do you want to save receipt without uploading file?')==true){
-
-return true;
-     }else{
+    if (this.parameterStatus == 'Y' && !this.fileUploaded) {
+      if (
+        confirm('do you want to save receipt without uploading file?') == true
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if (
+      !this.amountIssued &&
+      !this.receivedFrom &&
+      !this.receiptDate &&
+      !this.narration &&
+      !this.paymentMode &&
+      !this.bankAccount
+    ) {
+      this.globalMessagingService.displayErrorMessage(
+        'Failed',
+        'please fill all fields marked with * in receipt capture!'
+      );
       return false;
-     }
-
-
-     }
-     if(!this.amountIssued && !this.receivedFrom && !this.receiptDate && !this.narration && !this.paymentMode && !this.bankAccount ){
-this.globalMessagingService.displayErrorMessage('Failed','please fill all fields marked with * in receipt capture!');
-return false;
-     }
+    }
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1546,8 +1563,7 @@ return false;
       paidBy: this.receivedFrom,
       currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
 
-      branchCode:
-        String(this.defaultBranch?.id || this.selectedBranch?.id) , // Add quotes to ensure it's treated as string before conversion
+      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), // Add quotes to ensure it's treated as string before conversion
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
@@ -1571,10 +1587,10 @@ return false;
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType:  null,
+      receiptChequeType: null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
-      rctbbrCode:null,
+      rctbbrCode: null,
       directType: null,
       pmBnkCode: null,
       dmsKey: null,
@@ -1592,20 +1608,22 @@ return false;
       sysCode: Number(this.selectedClient.systemCode),
       bankAccountType: this.bankAccountType,
     };
-    
+
     // Call the service to save the receipt
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
-        this.sessionStorage.setItem('receiptNo', this.receiptResponse.receiptNumber);
+        this.sessionStorage.setItem(
+          'receiptNo',
+          this.receiptResponse.receiptNumber
+        );
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Receipt saved successfully'
         );
-        setTimeout(()=>{
+        setTimeout(() => {
           this.router.navigate(['/home/fms/slip-preview']);
-        },100)
-        
+        }, 100);
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1615,34 +1633,32 @@ return false;
       },
     });
   }
-  generateSlip(){
-    const payload:acknowledgementSlipDTO = {
-      receiptNumbers:[this.receiptResponse.receiptNumber],
-      userCode:this.loggedInUser.code
-  }
-  //console.log('payloade>',payload)
+  generateSlip() {
+    const payload: acknowledgementSlipDTO = {
+      receiptNumbers: [this.receiptResponse.receiptNumber],
+      userCode: this.loggedInUser.code,
+    };
+    //console.log('payloade>',payload)
     this.receiptService.generateAcknowledgementSlip(payload).subscribe({
-next:(response)=>{
-  this.receiptSlipResponse = response.data;
-  this.globalMessagingService.displaySuccessMessage(
-    'Success',
-    'slip generated successfully'
-  );
-  //this.sessionStorage.setItem('receiptSlipResponse',this.receiptSlipResponse.receiptNo);
-  //this.router.navigate(['/home/fms/slip-preview']);
-  
-},
+      next: (response) => {
+        this.receiptSlipResponse = response.data;
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'slip generated successfully'
+        );
+        //this.sessionStorage.setItem('receiptSlipResponse',this.receiptSlipResponse.receiptNo);
+        //this.router.navigate(['/home/fms/slip-preview']);
+      },
 
-  error:(err)=>{
-    this.globalMessagingService.displayErrorMessage(
-      'Failed to save receipt',
-      err.error.msg || 'an error occured'
-    );
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Failed to save receipt',
+          err.error.msg || 'an error occured'
+        );
+      },
+    });
   }
-
-    })
-  }
- /**
+  /**
    * Navigates back to the previous screen.
    */
   onBack() {

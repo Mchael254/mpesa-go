@@ -3,7 +3,13 @@
  * It fetches the receipt data, generates a report using the `ReportsService`, and provides a download link.
  */
 
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
@@ -37,13 +43,11 @@ const log = new Logger('ReceiptPreviewComponent');
 export class PdSlipPreviewComponent implements OnInit {
   // Reference to the iframe
 
-  
   filePath: string = '';
 
- 
   //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
   //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
- // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
+  // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
   /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
   receiptResponse: any;
 
@@ -56,9 +60,9 @@ export class PdSlipPreviewComponent implements OnInit {
   /** @property {any} documentData - Currently unused, but could contain more complex data associated with the receipt document. */
   documentData: any;
   loggedInUser: any;
-  selectedOrg:OrganizationDTO;
-  defaultOrg:OrganizationDTO;
-  receiptNumberResponse:number;
+  selectedOrg: OrganizationDTO;
+  defaultOrg: OrganizationDTO;
+  receiptNumberResponse: number;
   /**
    * Constructs a new `ReceiptPreviewComponent`.
    * @param {ReportsService} reportService - The service used to generate reports (e.g., the receipt PDF).
@@ -71,9 +75,9 @@ export class PdSlipPreviewComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
     private receiptDataService: ReceiptDataService,
-    private sessionStorage:SessionStorageService,
-    private authService:AuthService,
-    private receiptService:ReceiptService,
+    private sessionStorage: SessionStorageService,
+    private authService: AuthService,
+    private receiptService: ReceiptService,
     public translate: TranslateService
   ) {}
 
@@ -85,31 +89,22 @@ export class PdSlipPreviewComponent implements OnInit {
   ngOnInit(): void {
     // let receiptResponse = this.sessionStorage.getItem('receiptResponse');
     // this.receiptResponse = Number(receiptResponse);
-   
+
     let receiptNo = this.sessionStorage.getItem('receiptNo');
     this.receiptResponse = receiptNo ? Number(receiptNo) : null;
-    
+
     let defaultOrg = this.sessionStorage.getItem('defaultOrg');
     let selectedOrg = this.sessionStorage.getItem('selectedOrg');
 
-    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg ) : null;
-    this.selectedOrg =selectedOrg? JSON.parse(selectedOrg) : null;
-   // console.log('org id>',this.selectedOrg);
-   // console.log('defaultOrg>>',this.defaultOrg);
+    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
+    this.selectedOrg = selectedOrg ? JSON.parse(selectedOrg) : null;
+    // console.log('org id>',this.selectedOrg);
+    // console.log('defaultOrg>>',this.defaultOrg);
     this.loggedInUser = this.authService.getCurrentUser();
     //let receiptSlipResponse = this.sessionStorage.getItem('receiptSlipResponse');
     //this.receiptNumberResponse=receiptSlipResponse ? Number(receiptSlipResponse) : null;
     this.getReceipt();
-    
   }
-  
- 
-
-
-   
-
-
-
 
   /**
    * Generates the receipt report by calling the `ReportsService`.
@@ -128,7 +123,7 @@ export class PdSlipPreviewComponent implements OnInit {
         },
         {
           name: 'UP_USER_CODE',
-          value: String(this.loggedInUser.code)
+          value: String(this.loggedInUser.code),
         },
         {
           name: 'UP_ORG_CODE',
@@ -139,7 +134,7 @@ export class PdSlipPreviewComponent implements OnInit {
       rptCode: 25000,
       system: 'CRM',
     };
-console.log('receiptno>',this.receiptResponse);
+    console.log('receiptno>', this.receiptResponse);
     this.reportService.generateReport(reportPayload).subscribe({
       next: (response) => {
         //log.info('Report Response:', response);
@@ -156,8 +151,8 @@ console.log('receiptno>',this.receiptResponse);
       },
     });
   }
-  downloadReceipt(){
-    this.download(this.filePath,'receipt.pdf');
+  downloadReceipt() {
+    this.download(this.filePath, 'receipt.pdf');
     this.router.navigate(['/home/fms/receipt-capture']);
   }
 
@@ -176,13 +171,11 @@ console.log('receiptno>',this.receiptResponse);
       link.click();
     }
   }
-  
- 
+
   onPrintStatusChange(status: string): void {
     if (status === 'yes') {
       this.updatePrintStatus();
-      
-    } else if(status === 'no') {
+    } else if (status === 'no') {
       this.navigateToReceiptCapture();
     }
   }
@@ -191,22 +184,27 @@ console.log('receiptno>',this.receiptResponse);
     this.router.navigate(['/home/fms/receipt-capture']);
   }
   updatePrintStatus() {
-
     const receiptId = Number(this.receiptResponse);
-  console.log('reciptid>',receiptId);
+    console.log('reciptid>', receiptId);
     // Construct the payload as an array of numbers
     const payload: number[] = [receiptId];
-     this.receiptService.updateSlipStatus(payload).subscribe({
-      next:(response)=>{
-  this.globalMessagingService.displaySuccessMessage('success:',response.message);
-  this.receiptDataService.clearReceiptData();
-  this.router.navigate(['/home/fms/receipt-capture']);
+    this.receiptService.updateSlipStatus(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success:',
+          response.message
+        );
+        this.receiptDataService.clearReceiptData();
+        this.router.navigate(['/home/fms/receipt-capture']);
       },
-      error:(err)=>{
-        this.globalMessagingService.displayErrorMessage('failed',err.error.msg || 'failed to update slip status');
-      }
-     })
-    }
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'failed',
+          err.error.msg || 'failed to update slip status'
+        );
+      },
+    });
+  }
   /**
    * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
    * @returns {void}

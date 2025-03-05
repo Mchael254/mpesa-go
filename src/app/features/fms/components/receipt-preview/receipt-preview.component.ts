@@ -35,7 +35,8 @@ const log = new Logger('ReceiptPreviewComponent');
 })
 export class ReceiptPreviewComponent implements OnInit{
   // Reference to the iframe
-
+  @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
+  iframeInitialized = false; // Flag to track if the iframe has been initialized
 
   filePath: string = '';
 selectedOrg:OrganizationDTO;
@@ -95,9 +96,61 @@ selectedOrg:OrganizationDTO;
     this.getReceipt();
   }
   
-
-
+  ngAfterViewInit(): void {
+    const interval = setInterval(() => {
+      const iframe = this.docViewerIframe?.nativeElement as HTMLIFrameElement;
+      if (iframe) {
+        this.monitorIframeButtons(iframe);
+        clearInterval(interval); // Stop checking once the iframe is found
+      }
+    }, 100); // Check every 100ms
+  }
    
+  setupIframeObserver(): void {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'childList') {
+          const iframe = this.docViewerIframe?.nativeElement as HTMLIFrameElement;
+          if (iframe) {
+            this.monitorIframeButtons(iframe);
+            observer.disconnect(); // Stop observing once the iframe is found
+          }
+        }
+      }
+    });
+    // Start observing the container for changes
+    const container = document.querySelector('.receipt-section'); // Adjust selector as needed
+    if (container) {
+      observer.observe(container, { childList: true });
+    }
+  }
+  
+  monitorIframeButtons(iframe: HTMLIFrameElement): void {
+    alert('called');
+    iframe.onload = () => {
+      const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+
+      if (iframeDocument) {
+
+        const downloadButton = iframeDocument.querySelector('[aria-label="Download"]');
+        const printButton = iframeDocument.querySelector('[aria-label="Print"]');
+
+        if (downloadButton) {
+          alert('clicked');
+          downloadButton.addEventListener('click', () => {
+            this.updatePrintStatus();
+          });
+        }
+
+        if (printButton) {
+          alert('clicked');
+          printButton.addEventListener('click', () => {
+            this.updatePrintStatus();
+          });
+        }
+      }
+    };
+  }
  
   /**
    * Generates the receipt report by calling the `ReportsService`.
