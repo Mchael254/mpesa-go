@@ -536,6 +536,17 @@ export interface QuotationSource{
   applicableModule:string;
 }
 
+export interface RiskValidationDto{
+  riskId?: string
+  batchNumber?: number
+  subClassCode: number
+  withEffectFrom: string
+  withEffectTo: string
+  addOrEdit: string
+  propertyId: string
+}
+
+
 
 
 
