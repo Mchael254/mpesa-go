@@ -83,6 +83,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   showConverToPolicyButton: boolean = false;
 
   activeRiskInformation: any[] = []
+  riskDetails: any;
 
 
   constructor(
@@ -224,6 +225,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
         this.agentDesc = this.productInformation[0].agentShortDescription;
         log.debug("Agent Description:", this.agentDesc)
+
+        this.riskDetails = this.quotationDetails.quotationProducts[0]?.riskInformation;
 
         this.getClient();
         this.getQuotationProduct();
@@ -593,6 +596,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
           // Remove the deleted risk from the riskDetails array
           // const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
+          // Remove the deleted risk from the riskDetails array
+          // const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
+          // if (index !== -1) {
+          //   this.riskDetails.splice(index, 1);
+          // }
           this.loadClientQuotation()
           this.selectedRisk = null;
         },
