@@ -15,17 +15,19 @@
         url: '/home/crm'
       },
       {
-        label: 'Request Status',
-        url: '/home/crm/request-status'
+        label: 'Request Categories',
+        url: '/home/crm/request-categories'
       }
     ]">
       </app-dynamic-breadcrumb>
     </div>
     <div class="card border-0">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">{{'serviceDesk.serviceRequestCategories' | translate}}</h6>
         <div class="row mb-3">
-          <div class="col-12">
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
+            <h6 class="my-3 fw-semibold">{{'serviceDesk.serviceRequestCategories' | translate}}</h6>
+          </div>
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
             <div class="float-end">
               <span class="icon-circle">
                 <i class="fa-solid fa-plus" (click)="openServiceRequestCategoryModal()"></i>
@@ -61,18 +63,20 @@
           dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['campaign.campaignName']"
+          [globalFilterFields]="['desc', 'shtDesc', 'user.name']"
         >
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.description'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-              <th pSortableColumn="campaign.objective">{{'serviceDesk.defaultUser'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th pSortableColumn="desc">{{'serviceDesk.name'| translate }} <p-sortIcon field="desc"></p-sortIcon></th>
+              <th pSortableColumn="shtDesc">{{'serviceDesk.description'| translate }} <p-sortIcon field="shtDesc"></p-sortIcon></th>
+              <th pSortableColumn="user.name">{{'serviceDesk.defaultUser'| translate }} <p-sortIcon field="user.name"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-requestCategory>
             <tr class="custom-table" [pSelectableRow]="requestCategory">
               <td>{{requestCategory?.desc | titlecase}}</td>
+              <td>{{requestCategory?.shtDesc | titlecase}}</td>
               <td>{{requestCategory?.user?.name | titlecase}}</td>
             </tr>
           </ng-template>
@@ -87,9 +91,11 @@
 
     <div class="card border-0 mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start mt-3 fw-semibold">{{'serviceDesk.incidents' | translate}}</h6>
         <div class="row mb-3">
-          <div class="col-12">
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
+            <h6 class="my-3 fw-semibold">{{'serviceDesk.incidents' | translate}}</h6>
+          </div>
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
             <div class="float-end">
               <span class="icon-circle"
               ><i class="fa-solid fa-plus" (click)="openRequestEscalationModal()"></i
@@ -125,33 +131,41 @@
           dataKey="code"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['campaign.campaignName']"
+          [globalFilterFields]="['name', 'validity', 'user.name']"
         >
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.name'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-              <th pSortableColumn="campaign.objective">{{'serviceDesk.validityInDays'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-              <th pSortableColumn="campaign.description">{{'serviceDesk.escalatedTo'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th>{{ 'serviceDesk.system' | translate }}</th>
+              <th>{{ 'serviceDesk.assignTo' | translate }}</th>
+              <th>{{ 'serviceDesk.levelOneDuration' | translate }}</th>
+              <th>{{ 'serviceDesk.escalatedTo' | translate }}</th>
+              <th>{{ 'serviceDesk.levelTwoDuration' | translate }}</th>
+              <th>{{ 'serviceDesk.escalatedTo' | translate }}</th>
+              <th>{{ 'serviceDesk.messageTemplate' | translate }}</th>
+              <!--<th pSortableColumn="name">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="validity">{{ 'serviceDesk.validityInDays' | translate }} <p-sortIcon field="validity"></p-sortIcon></th>
+              <th pSortableColumn="user.name">{{ 'serviceDesk.escalatedTo' | translate }} <p-sortIcon field="user.name"></p-sortIcon></th>-->
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-requestStatus>
+          <ng-template pTemplate="body" let-requestIncident>
             <tr class="custom-table">
-              <td>
-
+              <!--<td>
+                {{ requestIncident.name | titlecase }}
               </td>
               <td>
-
+                {{ requestIncident.validity }}
               </td>
               <td>
+                {{ requestIncident.user?.name | titlecase }}
+              </td>-->
 
-              </td>
-
+              <!--TODO: Endpoint needs modification to get the data-->
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="3">No Service Request Status Detail(s) Found.</td>
+              <td colspan="3">No Service Request Incident Detail(s) Found.</td>
             </tr>
           </ng-template>
         </p-table>
@@ -185,7 +199,7 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.name === 'Y'">
               <div class="col-md-6">
-                <label for="name" class="form-label">Name</label>
+                <label for="name" class="form-label">{{ 'serviceDesk.name' | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -200,7 +214,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.shtDesc === 'Y'">
               <div class="col-md-6">
-                <label for="shtDesc" class="form-label">Short Description</label>
+                <label for="shtDesc" class="form-label">{{ 'serviceDesk.shortDescription' | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -215,17 +229,26 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.assignee === 'Y'">
               <div class="col-md-6">
-                <label for="assignee" class="form-label">Category default assignee</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="assignee"
-                  value="{{!this.editMode ? selectedMainUser?.name : selectedRequestCategory?.user?.name}}"
-                  id="assignee"
-                  readonly
-                  (click)="openAllUsersModal()"
-                  [ngClass]="{ 'is-invalid': f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched) }"
-                />
+                <label for="assignee" class="form-label">{{ 'serviceDesk.categoryDefaultAssignee' | translate | titlecase }}</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="assignee"
+                    value="{{!this.editMode ? selectedMainUser?.name : selectedRequestCategory?.user?.name}}"
+                    id="assignee"
+                    readonly
+                    [ngClass]="{ 'is-invalid': f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched) }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon2"
+                    (click)="openAllUsersModal('assignee')"
+                  >
+                    <i class="fa-solid fa-angle-double-down"></i>
+                  </button>
+                </div>
                 <div *ngIf="f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['assignee']?.errors['required']">Assignee is required</div>
                 </div>
@@ -235,7 +258,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveServiceRequestCategory()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveServiceRequestCategory()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -265,7 +288,7 @@
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.system === 'Y'">
               <div class="col-md-6">
-                <label for="system" class="form-label">System</label>
+                <label for="system" class="form-label">{{ 'serviceDesk.system' | translate | titlecase }}</label>
                 <p-dropdown
                   [options]="systems"
                   optionLabel="shortDesc"
@@ -276,7 +299,6 @@
                   filterBy="shortDesc"
                   [showClear]="true"
                   [style]="{ width: '100%', height: '50%' }"
-                  appendTo="body"
                   placeholder="Select option"
                   [ngClass]="{ 'is-invalid': g['system']?.invalid && (g['system']?.dirty || g['system']?.touched) }"
                 >
@@ -288,7 +310,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.requestCategory === 'Y'">
               <div class="col-md-6">
-                <label for="requestCategory" class="form-label">Request category</label>
+                <label for="requestCategory" class="form-label">{{ 'serviceDesk.requestCategory' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -303,7 +325,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelOneDuration === 'Y'">
               <div class="col-md-6">
-                <label for="levelOneDuration" class="form-label">Level one duration</label>
+                <label for="levelOneDuration" class="form-label">{{ 'serviceDesk.levelOneDuration' | translate | titlecase }}</label>
                 <input
                   type="number"
                   class="form-control"
@@ -318,15 +340,15 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelOneEscalatedTo === 'Y'">
               <div class="col-md-6">
-                <label for="levelOneEscalatedTo" class="form-label">Escalated to</label>
+                <label for="levelOneEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
                   formControlName="levelOneEscalatedTo"
-                  value="{{selectedMainUser?.name}}"
+                  value="{{levelOneEscalatedToUser?.name}}"
                   id="levelOneEscalatedTo"
                   readonly
-                  (click)="openAllUsersModal()"
+                  (click)="openAllUsersModal('levelOneEscalatedTo')"
                   [ngClass]="{ 'is-invalid': g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched) }"
                 />
                 <div *ngIf="g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched)" class="form-text text-danger">
@@ -336,7 +358,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelTwoDuration === 'Y'">
               <div class="col-md-6">
-                <label for="levelTwoDuration" class="form-label">Level two duration</label>
+                <label for="levelTwoDuration" class="form-label">{{ 'serviceDesk.levelTwoDuration' | translate | titlecase }}</label>
                 <input
                   type="number"
                   class="form-control"
@@ -351,15 +373,15 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelTwoEscalatedTo === 'Y'">
               <div class="col-md-6">
-                <label for="levelTwoEscalatedTo" class="form-label">Escalated to</label>
+                <label for="levelTwoEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
                   formControlName="levelTwoEscalatedTo"
-                  value="{{selectedMainUser?.name}}"
+                  value="{{levelTwoEscalatedToUser?.name}}"
                   id="levelTwoEscalatedTo"
                   readonly
-                  (click)="openAllUsersModal()"
+                  (click)="openAllUsersModal('levelTwoEscalatedTo')"
                   [ngClass]="{ 'is-invalid': g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched) }"
                 />
                 <div *ngIf="g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched)" class="form-text text-danger">
@@ -369,15 +391,15 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.assignTo === 'Y'">
               <div class="col-md-6">
-                <label for="assignTo" class="form-label">Assign to</label>
+                <label for="assignTo" class="form-label">{{ 'serviceDesk.assignTo' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
                   formControlName="assignTo"
-                  value="{{selectedMainUser?.name}}"
+                  value="{{assignToUser?.name}}"
                   id="assignTo"
                   readonly
-                  (click)="openAllUsersModal()"
+                  (click)="openAllUsersModal('assignTo')"
                   [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
                 />
                 <div *ngIf="g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched)" class="form-text text-danger">
@@ -387,7 +409,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus.messageTemplate === 'Y'">
               <div class="col-md-6">
-                <label for="messageTemplate" class="form-label">Message template</label>
+                <label for="messageTemplate" class="form-label">{{ 'serviceDesk.messageTemplate' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -406,7 +428,7 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveRequestEscalation()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveRequestEscalation()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>

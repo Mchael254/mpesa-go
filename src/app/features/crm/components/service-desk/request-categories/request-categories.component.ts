@@ -9,7 +9,7 @@ import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
 import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
 import {ServiceRequestService} from "../../../services/service-request.service";
 import {NgxSpinnerService} from "ngx-spinner";
-import {ServiceRequestCategoryDTO} from "../../../data/service-request-dto";
+import {ServiceRequestCategoryDTO, ServiceRequestIncidentDTO} from "../../../data/service-request-dto";
 
 const log = new Logger('RequestCategoriesComponent');
 @Component({
@@ -19,7 +19,7 @@ const log = new Logger('RequestCategoriesComponent');
 })
 export class RequestCategoriesComponent implements OnInit {
   pageSize: 5;
-  incidentsData: any;
+  incidentsData: ServiceRequestIncidentDTO[];
   requestCategoriesData: ServiceRequestCategoryDTO[];
   selectedRequestCategory: ServiceRequestCategoryDTO;
 
@@ -50,6 +50,17 @@ export class RequestCategoriesComponent implements OnInit {
 
   groupId: string = 'serviceDeskTab';
 
+  public activeFormField:
+    | 'levelOneEscalatedTo'
+    | 'levelTwoEscalatedTo'
+    | 'assignTo'
+    | 'assignee'
+    | null = null;
+
+  public levelOneEscalatedToUser: any;
+  public levelTwoEscalatedToUser: any;
+  public assignToUser: any;
+
   constructor(
     private fb: FormBuilder,
     private globalMessagingService: GlobalMessagingService,
@@ -65,6 +76,7 @@ export class RequestCategoriesComponent implements OnInit {
     this.requestEscalationCreateForm();
     this.getAllSystems();
     this.fetchServiceCategory();
+    this.fetchServiceIncidents();
   }
 
   /**
@@ -214,12 +226,16 @@ export class RequestCategoriesComponent implements OnInit {
   processSelectedUser($event: void) {
     this.toggleAllUsersModal(false);
     this.zIndex = 1;
+    this.activeFormField = null;
   }
 
   /**
    * Opens the "Select User" modal for selecting the assignee of a Service Request Category.
    */
-  openAllUsersModal() {
+  openAllUsersModal(formType: 'levelOneEscalatedTo' | 'levelTwoEscalatedTo' | 'assignTo' | 'assignee'
+  ) {
+    this.activeFormField = formType;
+    log.info('Active form', this.activeFormField);
     this.zIndex  = -1;
     this.toggleAllUsersModal(true);
   }
@@ -228,20 +244,37 @@ export class RequestCategoriesComponent implements OnInit {
    * Called when a user is selected in the "Select User" modal.
    */
   getSelectedUser(event: StaffDto) {
-    this.selectedMainUser = event;
-    log.info(this.selectedMainUser)
-    this.serviceRequestCategoryForm.patchValue({
-      assignee: event?.id
-    });
+    switch (this.activeFormField) {
+      case 'levelOneEscalatedTo':
+        this.levelOneEscalatedToUser = event;
+        this.requestEscalationForm.patchValue({
+          levelOneEscalatedTo: event?.id
+        });
+        break;
+      case 'levelTwoEscalatedTo':
+        this.levelTwoEscalatedToUser = event;
+        this.requestEscalationForm.patchValue({
+          levelTwoEscalatedTo: event?.id
+        });
+        break;
+      case 'assignTo':
+        this.assignToUser = event;
+        this.requestEscalationForm.patchValue({
+          assignTo: event?.id
+        });
+        break;
+      case 'assignee':
+        this.selectedMainUser = event;
+        this.serviceRequestCategoryForm.patchValue({
+          assignee: event?.id
+        });
+        break;
+      default:
+        log.warn('No active form field set for patching.');
+    }
+    this.activeFormField = null;
   }
 
-  /*getSelectedUser(event: StaffDto, formGroup: FormGroup, controlName: string) {
-    this.selectedMainUser = event;
-    console.log(this.selectedMainUser);
-    formGroup.patchValue({
-      [controlName]: event?.id
-    });
-  }*/
 
   /**
    * Retrieves the list of systems.
@@ -273,6 +306,23 @@ export class RequestCategoriesComponent implements OnInit {
           this.spinner.hide();
 
           log.info("requests>>", data);
+        },
+        error: (err) => {
+          this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        }
+      });
+  }
+
+  fetchServiceIncidents() {
+    this.spinner.show();
+    this.serviceRequestService.getRequestIncidents()
+      .subscribe({
+        next: (data) => {
+          this.incidentsData = data;
+          this.spinner.hide();
+
+          log.info("incidents>>", data);
         },
         error: (err) => {
           this.spinner.hide();
