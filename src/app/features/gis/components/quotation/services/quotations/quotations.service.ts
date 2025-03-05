@@ -10,7 +10,7 @@ import {
   QuotationPayload,
   quotationRisk,
   RegexPattern,
-  riskSection,
+  riskSection, RiskValidationDto,
   scheduleDetails,
   Sources
 } from '../../data/quotationsDTO';
@@ -758,5 +758,10 @@ export class QuotationsService {
   updatePremiumComputationPayload(code: number, payload: any): Observable<any> {
     return this.api.PUT<any[]>(`api/v1/computation-payload/${code}`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION)
   }
+
+  validateRiskExistence(payload: RiskValidationDto): Observable<any> {
+    return this.api.POST<any>(`v2/risks/validate`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
 }
 
