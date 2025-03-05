@@ -599,7 +599,12 @@
                     data-bs-target="#deleteRisk">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
-                  <button type="button" id="icon" class="btn btn-primary" title="Delete" >
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    title="Delete"
+                    [disabled]="!quotationDetails?.quotationProducts?.[0]?.riskInformation || quotationDetails.quotationProducts[0].riskInformation.length <= 1">
                     <i class="fa-solid fa-trash-can" (click)="openRiskDeleteModal()"></i>
                   </button>
                   </div>
