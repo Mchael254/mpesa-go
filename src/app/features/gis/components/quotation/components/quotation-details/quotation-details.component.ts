@@ -41,7 +41,7 @@ export class QuotationDetailsComponent {
   branch: OrganizationBranchDto[];
   currency: CurrencyDTO[]
   clauses: any;
-  products: Products[]=[];
+  products: Products[] = [];
   ProductDescriptionArray: any = [];
 
   user: any;
@@ -57,7 +57,7 @@ export class QuotationDetailsComponent {
   show: boolean = false;
   showProduct: boolean = false;
   quotationNum: string;
-  introducers: introducersDTO[]=[];
+  introducers: introducersDTO[] = [];
   productSubclassList: any
   productDetails: any
   userDetails: any;
@@ -117,7 +117,7 @@ export class QuotationDetailsComponent {
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
-    log.debug("QUOTATION FORM DETAILS",this.quotationFormDetails)
+    log.debug("QUOTATION FORM DETAILS", this.quotationFormDetails)
     const clientFormDetails = sessionStorage.getItem('clientPayload');
     log.debug("Client form details:", clientFormDetails)
     const clientCode = sessionStorage.getItem('clientCode');
@@ -128,7 +128,7 @@ export class QuotationDetailsComponent {
   ngOnInit(): void {
     this.minDate = new Date();
     this.fetchQuotationRelatedData()
-   
+
     this.getuser();
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
@@ -142,19 +142,7 @@ export class QuotationDetailsComponent {
       this.patchQuickQuoteData()
     };
 
-    // if (this.quotationFormDetails) {
-    //   this.quotationForm.patchValue(parsedData);
 
-    //   log.debug(parsedData)
-    // }
-    // if (clientFormDetails) {
-    //   const clientData = JSON.parse(clientFormDetails)
-    //   log.debug("Client form details:", clientData)
-
-    //   this.quotationForm.controls['clientCode'].setValue(this.clientId);
-    //   this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
-    //   this.quotationForm.controls['clientType'].setValue(clientData.category);
-    // }
 
     log.debug(this.quotationForm.value)
 
@@ -195,19 +183,11 @@ export class QuotationDetailsComponent {
 
 
 
-  /**
- * Sets the 'currencyCode' control value in the quotation form based on the selected currency code.
- * Logs the current value of the quotation form.
- */
-  // getCurrencyCode(){
-  //   log.debug(this.quotationForm.value.currencyCode)
-  //   this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-  // log.debug(this.quotationForm.value)
-  // }
+ 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
- 
+
   /**
   * Retrieves the current user and stores it in the 'user' property.
   * @method getUser
@@ -242,7 +222,7 @@ export class QuotationDetailsComponent {
     log.debug('Todays  Date', this.todaysDate);
     this.updateQuotationExpiryDate(this.todaysDate)
   }
- 
+
   /**
     * Creates a new quotation form using Angular Reactive Forms.
     * @method createQuotationForm
@@ -289,7 +269,9 @@ export class QuotationDetailsComponent {
       RFQDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
       expiryDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate]
+        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
+      quotationType: [null]
+
     });
   }
 
@@ -463,7 +445,7 @@ export class QuotationDetailsComponent {
           quotationForm.clientType = "I"
 
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-         
+
           const quotationFormJson = this.quotationForm.value
           log.debug("Quotation form details", quotationFormJson)
           log.debug("CREATE QUOTATION")
@@ -723,12 +705,12 @@ export class QuotationDetailsComponent {
       log.debug("expiry date formatted", this.expiryDate)
     }
   }
-  checkMotorClass(){
-    const productCode =  this.quotationForm.value.productCode.code
+  checkMotorClass() {
+    const productCode = this.quotationForm.value.productCode.code
     const selectedProductDetails = this.products.find(product => product.code === productCode)
     this.motorClassAllowed = selectedProductDetails.allowMotorClass
     sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
-    log.debug("Is motor class:",this.motorClassAllowed)
+    log.debug("Is motor class:", this.motorClassAllowed)
   }
   /**
    * Retrieves product clauses based on the provided product code.
@@ -901,83 +883,83 @@ export class QuotationDetailsComponent {
       this.quotationService.getIntroducers(),
       this.producSetupService.getAllProducts()
     ])
-    .pipe(untilDestroyed(this))
-    .subscribe(([currencies, sources, branches, introducers, products]: any) => {
-      // CURRENCIES
-      this.currency = currencies.map((value) => {
-        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-        return { ...value, name: capitalizedDescription };
-      });
-  
-      log.info(this.currency, 'this is a currency list');
-  
-      const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
-      if (defaultCurrency) {
-        log.debug('DEFAULT CURRENCY', defaultCurrency);
-        this.defaultCurrency = defaultCurrency;
-        this.defaultCurrencyName = defaultCurrency.name;
-        this.defaultCurrencySymbol = defaultCurrency.symbol;
-        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-        this.fetchUserOrgId()
-      }
-      if (this.quotationFormDetails) {
-        const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
-        if (selectedBranch) {
-          this.quotationForm.patchValue({ currencyCode: selectedBranch });
-        }
-      }else{
-        this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+      .pipe(untilDestroyed(this))
+      .subscribe(([currencies, sources, branches, introducers, products]: any) => {
+        // CURRENCIES
+        this.currency = currencies.map((value) => {
+          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+          return { ...value, name: capitalizedDescription };
+        });
 
-      }
-      // QUOTATION SOURCES
-      this.quotationSources = sources?.content || []; 
-      this.quotationSources = this.quotationSources.map((value) => {
-        let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
-        return { ...value, description: capitalizedDescription };
+        log.info(this.currency, 'this is a currency list');
+
+        const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrency = defaultCurrency;
+          this.defaultCurrencyName = defaultCurrency.name;
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          this.fetchUserOrgId()
+        }
+        if (this.quotationFormDetails) {
+          const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+          if (selectedBranch) {
+            this.quotationForm.patchValue({ currencyCode: selectedBranch });
+          }
+        } else {
+          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+
+        }
+        // QUOTATION SOURCES
+        this.quotationSources = sources?.content || [];
+        this.quotationSources = this.quotationSources.map((value) => {
+          let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+          return { ...value, description: capitalizedDescription };
+        });
+
+        if (this.quotationFormDetails) {
+          const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
+          if (selectedSource) {
+            this.quotationForm.patchValue({ source: selectedSource });
+          }
+        }
+
+        log.debug("SOURCES", this.quotationSources);
+
+        // BRANCHES
+        this.branch = branches.map((value) => {
+          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+          return { ...value, name: capitalizedDescription };
+        });
+        if (this.quotationFormDetails) {
+          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
+          if (selectedBranch) {
+            this.quotationForm.patchValue({ branchCode: selectedBranch });
+          }
+        }
+
+        // INTRODUCERS
+        this.introducers = introducers;
+
+        // PRODUCTS
+        this.products = products;
+        this.ProductDescriptionArray = this.products.map(product => ({
+          code: product.code,
+          description: this.capitalizeWord(product.description),
+        }));
+
+        if (this.quotationFormDetails) {
+          const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
+          if (selectedProduct) {
+            this.quotationForm.patchValue({ productCode: selectedProduct });
+          }
+        }
+
+        log.info("Quotation form >>>", this.quotationForm);
+        log.info('Modified product description', this.ProductDescriptionArray);
       });
-  
-      if (this.quotationFormDetails) {
-        const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
-        if (selectedSource) {
-          this.quotationForm.patchValue({ source: selectedSource });
-        }
-      }
-  
-      log.debug("SOURCES", this.quotationSources);
-  
-      // BRANCHES
-      this.branch = branches.map((value) => {
-        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-        return { ...value, name: capitalizedDescription };
-      });
-      if (this.quotationFormDetails) {
-        const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
-        if (selectedBranch) {
-          this.quotationForm.patchValue({ branchCode: selectedBranch });
-        }
-      }
-  
-      // INTRODUCERS
-      this.introducers = introducers;
-  
-      // PRODUCTS
-      this.products = products;
-      this.ProductDescriptionArray = this.products.map(product => ({
-        code: product.code,
-        description: this.capitalizeWord(product.description),
-      }));
-  
-      if (this.quotationFormDetails) {
-        const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
-        if (selectedProduct) {
-          this.quotationForm.patchValue({ productCode: selectedProduct });
-        }
-      }
-  
-      log.info("Quotation form >>>", this.quotationForm);
-      log.info('Modified product description', this.ProductDescriptionArray);
-    });
   }
-  
+
 }
