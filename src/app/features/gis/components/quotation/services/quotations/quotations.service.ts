@@ -10,7 +10,7 @@ import {
   QuotationPayload,
   quotationRisk,
   RegexPattern,
-  riskSection,
+  riskSection, RiskValidationDto,
   scheduleDetails,
   Sources
 } from '../../data/quotationsDTO';
@@ -170,8 +170,8 @@ export class QuotationsService {
    * @param {string} quotationRiskCode - The quotation risk code for which to retrieve risk sections.
    * @return {Observable<riskSection[]>} - An observable of the response containing risk sections.
    */
-  getRiskSection(quotationRiskCode): Observable<riskSection[]> {
-    return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getRiskSection(quotationCode:number): Observable<riskSection[]> {
+    return this.api.GET<riskSection[]>(`v2/risk-limits?quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 
@@ -758,5 +758,10 @@ export class QuotationsService {
   updatePremiumComputationPayload(code: number, payload: any): Observable<any> {
     return this.api.PUT<any[]>(`api/v1/computation-payload/${code}`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION)
   }
+
+  validateRiskExistence(payload: RiskValidationDto): Observable<any> {
+    return this.api.POST<any>(`v2/risks/validate`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
 }
 
