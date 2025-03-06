@@ -28,59 +28,26 @@
     {{ "fms.receipting.acknowledgementSlip" | translate }}
   </h5>
   <div class="receipt-section">
-    <ngx-doc-viewer
-      #docViewerIframe
-      [fileName]="documentData?.fileName ?? ''"
-      [srcUrl]="filePath ?? ''"
-      style="margin: 20px; margin-top: 10px; width: 80%"
+    <pdf-viewer
+      [src]="filePath"
+      [render-text]="true"
+      [original-size]="false"
+      style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
+      (after-load-complete)="onPdfLoad($event)"
+    ></pdf-viewer>
+  </div>
+
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+    <button type="button" class="btn btn-primary" (click)="downloadReceipt()">
+      Download
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="navigateToReceiptCapture()"
     >
-    </ngx-doc-viewer>
+      Exit
+    </button>
   </div>
-  <h6 class="text mt-2 ms-5">
-    {{ "fms.receipting.select" | translate }}
-  </h6>
-  <div class="radiobtn">
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="printStatus"
-        id="printYes"
-        (change)="onPrintStatusChange('yes')"
-      />
-      <label class="form-check-label" for="flexRadioDefault1">{{
-        "fms.receipting.printed" | translate
-      }}</label>
-    </div>
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="printStatus"
-        id="printNo"
-        (change)="onPrintStatusChange('no')"
-      />
-      <label class="form-check-label" for="flexRadioDefault2">
-        {{ "fms.receipting.unPrinted" | translate }}
-      </label>
-    </div>
-  </div>
-  <!-- Action Buttons -->
-  <!-- <div class="btn-actions">
-    <div class="btn-back">
-      <button type="button" class="btn btn-link" (click)="onBack()">
-        Back
-      </button>
-    </div>
-    <div class="btn-next">
-      <button
-        type="button"
-        class="btn-primary-outline"
-        (click)="downloadReceipt()"
-      >
-        Print
-      </button>
-     
-    </div>
-  </div> -->
 </div>
