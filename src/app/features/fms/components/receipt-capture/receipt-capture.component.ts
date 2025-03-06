@@ -712,6 +712,9 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
               'Exchange rate saved successfully'
             );
             this.closeModal2();
+//             setTimeout(()=>{
+// this.fetchCurrencyRate();
+//             },1000);
           },
           error: (err) => {
             this.globalMessagingService.displayErrorMessage(
@@ -1542,7 +1545,7 @@ this.receiptingDetailsForm.reset();
     
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
-    //console.log('form data>>',formData);
+    console.log('form data>>',formData);
     this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

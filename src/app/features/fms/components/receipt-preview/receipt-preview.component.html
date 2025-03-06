@@ -28,19 +28,26 @@
     {{ "fms.receipting.receiptSummary" | translate }}
   </h5>
   <div class="receipt-section">
-    <ngx-doc-viewer
+    <pdf-viewer
+      [src]="filePath"
+      [render-text]="true"
+      [original-size]="false"
+      style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
+      (after-load-complete)="onPdfLoad($event)"
+    ></pdf-viewer>
+    <!-- <ngx-doc-viewer
       #docViewerIframe
       [fileName]="documentData?.fileName ?? ''"
       [srcUrl]="filePath ?? ''"
       style="margin: 20px; margin-top: 10px; width: 80%"
     >
-    </ngx-doc-viewer>
+    </ngx-doc-viewer> -->
   </div>
 
-  <h6 class="text-secondary fw-400 mt-2 ms-5">
+  <!-- <h6 class="text-secondary fw-400 mt-2 ms-5">
     {{ "fms.receipting.select" | translate }}
-  </h6>
-  <div class="radiobtn">
+  </h6> -->
+  <!-- <div class="radiobtn">
     <div class="form-check">
       <input
         class="form-check-input"
@@ -65,5 +72,19 @@
         {{ "fms.receipting.unPrinted" | translate }}
       </label>
     </div>
+   
+</div> -->
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+    <button type="button" class="btn btn-primary" (click)="downloadReceipt()">
+      Download
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="navigateToReceiptCapture()"
+    >
+      Exit
+    </button>
   </div>
 </div>
