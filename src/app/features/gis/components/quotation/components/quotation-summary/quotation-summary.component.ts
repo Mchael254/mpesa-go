@@ -396,6 +396,8 @@ export class QuotationSummaryComponent {
    * @return {void}
    */
   editDetails() {
+    const action = "E";
+    sessionStorage.setItem("quotationAction", action);
     this.router.navigate(['/home/gis/quotation/quotation-details']);
   }
 

@@ -924,13 +924,6 @@ export class QuotationDetailsComponent {
         return { ...value, description: capitalizedDescription };
       });
 
-      if (this.quotationFormDetails) {
-        const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
-        if (selectedSource) {
-          this.quotationForm.patchValue({ source: selectedSource });
-        }
-      }
-
       log.debug("SOURCES", this.quotationSources);
 
       // BRANCHES
