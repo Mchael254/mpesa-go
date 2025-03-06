@@ -198,6 +198,10 @@ export class RiskSectionDetailsComponent {
   passedSubclassCode: number;
   passedCoverTypeCode: number;
   passedPropertyId: string;
+  riskLevelPremiums: any;
+  sumInsuredValue: number;
+
+  passedClientDetails: any;
 
   constructor(
     private router: Router,
@@ -239,10 +243,13 @@ export class RiskSectionDetailsComponent {
       this.showNonMotorSubclassFields = true;
       // this.motorProduct = false;
     }
-    this.storedRiskFormDetails = JSON.parse(sessionStorage.getItem('riskFormDetails'));
-    log.debug("RISK FORM DETAILS", this.storedRiskFormDetails)
-    if (this.storedRiskFormDetails) {
-      this.loadCovertypeBySubclassCode(this.storedRiskFormDetails?.subclassCode);
+    const quotationAction = sessionStorage.getItem("quotationAction");
+    if(!quotationAction) {
+      this.storedRiskFormDetails = JSON.parse(sessionStorage.getItem('riskFormDetails'));
+      log.debug("RISK FORM DETAILS", this.storedRiskFormDetails)
+      if (this.storedRiskFormDetails) {
+        this.loadCovertypeBySubclassCode(this.storedRiskFormDetails?.subclassCode);
+      }
     }
     this.storedScheduleDetails = JSON.parse(sessionStorage.getItem('scheduleDetails'));
     this.scheduleList=this.storedScheduleDetails
@@ -265,10 +272,12 @@ export class RiskSectionDetailsComponent {
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     this.formData = JSON.parse(quotationFormDetails);
-    const clientFormDetails = sessionStorage.getItem('clientDetails');
+    const clientFormDetails = sessionStorage.getItem('clientDetails') || sessionStorage.getItem('clientPayload');
     const clientData = JSON.parse(clientFormDetails)
     log.debug("Client form details:", clientData)
-    this.clientName = clientData.firstName + ' ' + clientData.lastName
+    this.clientName = clientData.firstName + ' ' + clientData.lastName;
+
+    this.passedClientDetails = sessionStorage.getItem('clientDetails');
 
     this.clientFormData = this.sharedService.getFormData();
     this.quotationCode = sessionStorage.getItem('quotationCode');
@@ -278,6 +287,8 @@ export class RiskSectionDetailsComponent {
     }
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart", this.dateFormat)
+
+    this.sumInsuredValue = JSON.parse(sessionStorage.getItem('sumInsuredValue'));
 
     this.createRiskDetailsForm();
     this.getVehicleMake();
@@ -841,6 +852,9 @@ export class RiskSectionDetailsComponent {
   }
 
   createRiskDetail() {
+
+    const currentFormValues = this.riskDetailsForm ? {...this.riskDetailsForm.value} : null;
+
     log.debug("vehicleMake SELECTED", this.selectedVehicleMakeName)
     log.debug("vehicleMODEL SELECTED", this.selectedVehicleModelName)
     // const riskForm = this.riskDetailsForm.value;
@@ -850,6 +864,7 @@ export class RiskSectionDetailsComponent {
     this.riskDetailsForm.controls['vehicleMake'].setValue(this.selectedVehicleMakeName)
 
     let riskPayload = this.getQuotationRiskPayload();
+    log.debug("risk payload when creating a risk or editing", riskPayload);
     this.updateRiskDetailsForm(riskPayload);
 
     const riskArray = [riskPayload];
@@ -864,7 +879,11 @@ export class RiskSectionDetailsComponent {
           this.quoteProductCode = quotationRiskDetails.quotProductCode;
         }
 
-        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Created');
+        // Determine the success message based on the action
+        const successMessage = riskPayload[0].action === "E"
+          ? 'Risk Edited Successfully'
+          : 'Risk Created Successfully';
+        this.globalMessagingService.displaySuccessMessage('Success', successMessage);
         sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
 
         // Prepare schedule payload
@@ -872,7 +891,7 @@ export class RiskSectionDetailsComponent {
         const subclasscode = this.selectedSubclassCode
         const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
         const coverTypeCode =  this.selectedCoverType.coverTypeCode
-        // Call services directly
+
         return forkJoin([
           this.quotationService.createSchedule(schedulePayload),
           this.quotationService.getRiskClauses(this.quotationRiskCode),
@@ -894,13 +913,22 @@ export class RiskSectionDetailsComponent {
 
         this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
         this.fetchScheduleRelatedData();
+        this.loadClientQuotation()
 
       },
       // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
       error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        this.globalMessagingService.displayErrorMessage('Error', error.message);
       }
     });
+
+    // If we had form values, restore them
+    if (currentFormValues) {
+      // Wait for form to be recreated in ngOnInit
+      setTimeout(() => {
+        this.riskDetailsForm.patchValue(currentFormValues);
+      }, 0);
+    }
 
   }
   getQuotationRiskPayload(): any[] {
@@ -918,29 +946,40 @@ export class RiskSectionDetailsComponent {
 
     // Determine the action based on whether riskInformation has a code
     const action = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.code ? "E" : "A";
+    const existingRisk =  this.quotationDetails.quotationProducts[0]?.riskInformation;
+    log.debug("existing risk", existingRisk);
+
+    // const coverTypeSections = this.riskLevelPremiums
+    //   .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
+    //   .map(section => section.limitPremiumDtos).flat()
 
     let risk = {
-      action: action, // Set action to "A" (Add) or "E" (Edit) based on the condition
       coverTypeCode: this.selectedCoverType.coverTypeCode,
-      quotationCode: this.quotationCode,
+      action: action, // Set action to "A" (Add) or "E" (Edit) based on the condition
+      quotationCode: JSON.parse(this.quotationCode),
+      code: existingRisk && action === "E" ? existingRisk[0].code : null,
       productCode: this.selectProductCode,
       propertyId: this.riskDetailsForm.value.propertyId,
-      // value: this.sumInsuredValue, // TODO attach this to individual risk
+      value: this.sumInsuredValue, // TODO attach this to individual risk
       coverTypeShortDescription: this.selectedCoverType.coverTypeShortDescription,
       // premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
+      premium: existingRisk ? existingRisk[0].premium : null,
       subclassCode: this.selectedSubclassCode,
       itemDesc: this.riskDetailsForm.value.itemDesc || this.vehiclemakeModel,
       binderCode: this.selectedBinderCode || this.defaultBinder[0].code,
       wef: FormCoverFrom || formattedCoverFromDate,
       wet: FormCoverTo || formattedCoverToDate,
-      // prpCode: this.passedClientDetails?.id,
+      prpCode: this.passedClientDetails?.id,
+      quotationProductCode: existingRisk && action === "E" ? existingRisk[0]?.quotationProductCode : null,
       coverTypeDescription: this.selectedCoverType.description,
+
 
       taxComputation: this.taxList.map(tax => ({
         code: tax.code,
-
+        premium: tax.premium
       }))
     }
+    log.debug("created risk payload", risk);
     return [risk]
 
   }
@@ -1621,6 +1660,8 @@ export class RiskSectionDetailsComponent {
       log.debug("passed product code:", this.passedProductCode)
       log.debug("passed product subclass code:", this.passedSubclassCode)
       log.debug("passed property ID:", this.passedPropertyId)
+      log.debug("passedCoverTypeCode:", this.passedCoverTypeCode)
+
 
 
       if (this.storedRiskFormDetails) {
@@ -1875,6 +1916,7 @@ export class RiskSectionDetailsComponent {
     this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).pipe(untilDestroyed(this)).subscribe({
       next: (response: any) => {
         const result = response._embedded;
+        this.riskLevelPremiums = result;
         log.debug("RESPONSE AFTER getting premium rates ", result);
       },
       error: (error) => {

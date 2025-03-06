@@ -1281,12 +1281,12 @@
           </ng-template>
           <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
             <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-              <td class="flexible-header">{{sectionArray.calcGroup}}</td>
+              <td class="flexible-header">{{sectionArray.calculationGroup}}</td>
               <td class="flexible-header">{{sectionArray.rowNumber}}</td>
               <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
-              <td class="flexible-header">{{sectionArray.description}}</td>
+              <td class="flexible-header">{{sectionArray.sectionDescription}}</td>
               <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
-              <td class="flexible-header">{{sectionArray.premiumRate}}</td>
+              <td class="flexible-header">{{sectionArray.rate}}</td>
               <td class="flexible-header">{{sectionArray.rateType}}</td>
               <td class="flexible-header">
                 <!-- Edit Button -->
