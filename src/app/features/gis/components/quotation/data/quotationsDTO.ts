@@ -190,11 +190,21 @@ export interface scheduleDetails {
       driverRelationInsured: string,
       driverEmailAddress: string
 
+    },
+    level2?: {  // Making level2 optional
+      code: number,
+      geographicalLimits: string,
+      deductibleDesc: string,
+      limitationUse: string,
+      authorisedDriver: string
     }
+
   },
   riskCode: number,
   transactionType: string,
-  version: number
+  version: number,
+  code?: number,
+  organizationCode?: number
 }
 
 ///////////////////////////////////////////
