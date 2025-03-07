@@ -3,7 +3,7 @@ import {
   Component,
   EventEmitter,
   OnInit,
-  Output,
+  Output, ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -11,6 +11,7 @@ import { GlobalMessagingService } from '../../../../../../../shared/services/mes
 import { Extras } from '../entity-other-details.component';
 import { Logger } from '../../../../../../../shared/services/logger/logger.service';
 import { LeadsService } from '../../../../../../../features/crm/services/leads.service';
+import {ReusableInputComponent} from "../../../../../../../shared/components/reusable-input/reusable-input.component";
 
 const log = new Logger('EditCommentFormComponent');
 
@@ -32,6 +33,9 @@ export class EditCommentFormComponent implements OnInit {
 
   public commentDetails: any;
   public extras: Extras;
+
+  @ViewChild('commentConfirmationModal')
+  commentConfirmationModal!: ReusableInputComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -146,5 +150,40 @@ export class EditCommentFormComponent implements OnInit {
         },
       });
     }
+  }
+
+  deleteComment(commentDetails: any) {
+    this.commentConfirmationModal.show();
+    // this.commentDetails = commentDetails;
+  }
+
+  confirmCommentDelete(commentDetails: any): void {
+    const commentCode = commentDetails?.code;
+    if (commentCode) {
+      this.leadService.deleteLeadComment(commentCode).subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully Deleted Comment'
+          );
+          this.closeEditModal.emit();
+          this.commentUpdated.emit(true);
+          this.isFormDetailsReady.emit(false);
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            errorMessage
+          );
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Select a comment to delete'
+      );
+    }
+
   }
 }
