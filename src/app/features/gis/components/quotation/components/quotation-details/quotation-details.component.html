@@ -55,20 +55,20 @@
                         <br>
                         <label for="" class="quote-label">Branch<span class="required"></span></label>
                         <p-dropdown id="quote-input-pdropdown" formControlName="branchCode" [options]="branch"
-                            optionLabel="name" placeholder=" " [filterBy]="'name'" [filter]="true"></p-dropdown>
+                            optionLabel="name" placeholder=" " value="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
                         <div *ngIf="quotationForm.get('branchCode').hasError('required') && quotationForm.get('branchCode').touched"
                             class="form-text text-danger">
                             Branch is required.
                         </div>
                     </div>
                 </div>
-               
+
                 <div class="col-sm-4 col-6">
                     <div class="form-group form-group-sm">
                         <br>
                         <label for="" class="quote-label">Currency<span class="required"></span></label><br>
                         <p-dropdown id="quote-input-pdropdown" formControlName="currencyCode" [options]="currency"
-                            optionLabel="name" value="id" [filterBy]="'name'" 
+                            optionLabel="name" value="id" [filterBy]="'name'"
                             [filter]="true" (onChange)="fetchUserOrgId()"></p-dropdown>
                         <div *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
                             class="form-text text-danger">
@@ -96,7 +96,7 @@
                         <br>
                         <label for="expiryDate" class="quote-label">Quotation expiry date</label>
                         <p-calendar id="expiryDate" inputId="expiryDate" [showIcon]="true" [dateFormat]="dateFormat"
-                            formControlName="expiryDate"  
+                            formControlName="expiryDate"
                             [minDate]="minDate">
                         </p-calendar>
                         <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
@@ -194,7 +194,7 @@
                     <div class="form-group form-group-sm">
                         <br>
                         <label for="" class="quote-label">Product</label>
-                        <p-dropdown id="quote-input-pdropdown" formControlName="productCode"
+                        <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
                             [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
                             (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown>
 
