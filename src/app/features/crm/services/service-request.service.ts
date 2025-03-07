@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import {ApiService} from "../../../shared/services/api/api.service";
 import {Observable} from "rxjs";
 import {API_CONFIG} from "../../../../environments/api_service_config";
-import {ServiceRequestCategoryDTO, ServiceRequestStatusDTO} from "../data/service-request-dto";
+import {
+  ServiceRequestCategoryDTO,
+  ServiceRequestIncidentDTO,
+  ServiceRequestStatusDTO
+} from "../data/service-request-dto";
 import {HttpParams} from "@angular/common/http";
 import {UtilService} from "../../../shared/services";
 import {Pagination} from "../../../shared/data/common/pagination";
@@ -110,6 +114,13 @@ export class ServiceRequestService {
   getRequestAccTypes(): Observable<any> {
     return this.apiService.GET<any>(
       `service-request/account-types`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  getRequestIncidents(): Observable<ServiceRequestIncidentDTO[]> {
+    return this.apiService.GET<ServiceRequestIncidentDTO[]>(
+      `service-request/incidents`,
       API_CONFIG.CRM_SERVICE_REQUEST
     );
   }

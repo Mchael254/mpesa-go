@@ -20,3 +20,14 @@ interface UserDTO {
   username: string,
   emailAddress: string
 }
+
+export interface ServiceRequestIncidentDTO {
+  id: number,
+  name: string,
+  validity: number,
+  userCode: number,
+  branchCode: number,
+  requestTypeCode: number,
+  isDefault: string,
+  user: UserDTO
+}
