@@ -135,4 +135,33 @@ export class EditActivityFormComponent implements OnInit {
       },
     });
   }
+
+  confirmActivityDelete(activityDetails: any): void {
+    const activityCode = activityDetails?.code;
+    if (activityCode) {
+      this.leadService.deleteLeadActivity(activityCode).subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully Deleted Activity'
+          );
+          this.closeEditModal.emit();
+          this.activityAssigned.emit(true);
+          this.isFormDetailsReady.emit(false);
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            errorMessage
+          );
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Select an activity to delete'
+      );
+    }
+  }
 }

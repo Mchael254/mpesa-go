@@ -32,24 +32,21 @@
 
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="client" formControlName="accountRadio">
-                  <label class="form-check-label">Clients</label>
+                  <label class="form-check-label">{{ 'serviceDesk.clients' | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="intermediary" formControlName="accountRadio">
-                  <label class="form-check-label">Intermediary</label>
+                  <label class="form-check-label">{{ 'serviceDesk.intermediary' | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="service provider" formControlName="accountRadio">
-                  <label class="form-check-label">Service providers</label>
+                  <label class="form-check-label">{{ 'serviceDesk.serviceProviders' | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="others" formControlName="accountRadio">
-                  <label class="form-check-label">Others</label>
+                  <label class="form-check-label">{{ 'serviceDesk.others' | translate }}</label>
                 </div>
-
-
             </div>
-
           </div>
 
           <div class="row col-lg-12 pb-2">
@@ -116,13 +113,13 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">Surname <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Other names <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.objective">Short Desc <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-                <th pSortableColumn="campaign.description">ID No. <p-sortIcon field="campaign.description"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Email <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.objective">Telephone <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-                <th pSortableColumn="campaign.description">Status <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.surname' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.otherNames' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.objective">{{ 'serviceDesk.shortDesc' | translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                <th pSortableColumn="campaign.description">{{ 'serviceDesk.IDNo' | translate }}. <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.email' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.objective">{{ 'serviceDesk.telephone' | translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+                <th pSortableColumn="campaign.description">{{ 'serviceDesk.status' | translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-client>
@@ -165,8 +162,8 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">Short description <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-agent>
@@ -204,8 +201,8 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">Short description <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-serviceProvider>
@@ -244,11 +241,11 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">Name <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">ID no. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Telephone no. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Physical address <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">Email address <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.IDNo' | translate }}. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.telephoneNo' | translate }}. <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.physicalAddress' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.emailAddress' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
 
               </tr>
             </ng-template>
@@ -287,7 +284,7 @@
         <form>
           <div class="row my-2">
             <div class="col-md-12">
-              <label for="name" class="form-label">Name</label>
+              <label for="name" class="form-label">{{ 'serviceDesk.name' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -295,7 +292,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="telNo" class="form-label">Telephone no.</label>
+              <label for="telNo" class="form-label">{{ 'serviceDesk.telephoneNo' | translate }}.</label>
               <input
                 type="text"
                 class="form-control"
@@ -303,7 +300,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="email" class="form-label">Email address</label>
+              <label for="email" class="form-label">{{ 'serviceDesk.emailAddress' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -311,7 +308,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="address" class="form-label">Physical address</label>
+              <label for="address" class="form-label">{{ 'serviceDesk.physicalAddress' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -319,7 +316,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="id" class="form-label">ID number</label>
+              <label for="id" class="form-label">{{ 'serviceDesk.IDNo' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -330,7 +327,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>

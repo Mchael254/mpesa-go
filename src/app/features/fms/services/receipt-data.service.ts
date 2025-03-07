@@ -27,8 +27,8 @@ export class ReceiptDataService {
   private selectedCurrencySubject = new BehaviorSubject<number | null>(null);
   private defaultCurrencySubject = new BehaviorSubject<number | null>(null);
   setReceiptData(data: any) {
-    this.receiptData = { ...this.receiptData, ...data,
-      amountIssued: this.receiptData.amountIssued ?? data.amountIssued, // Preserve amountIssued
+    this.receiptData = { ...this.receiptData, ...data
+     // amountIssued: this.receiptData.amountIssued ?? data.amountIssued, // Preserve amountIssued
      };
      this.receiptDataSubject.next(this.receiptData); // Notify subscribers
     

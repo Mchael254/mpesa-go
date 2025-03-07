@@ -138,15 +138,19 @@ export class EntityOtherDetailsComponent implements OnInit {
 
   onCommentUpdated(isUpdated: boolean): void {
     if (isUpdated) {
-      this.getCommentList();
-      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.getCommentList();
+        this.cdr.detectChanges();
+      }, 2000)
     }
   }
 
   onActivityAssigned(isUpdated: boolean): void {
     if (isUpdated) {
-      this.getActivityList();
-      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.getActivityList();
+        this.cdr.detectChanges();
+      }, 2000)
     }
   }
 
@@ -191,17 +195,16 @@ export class EntityOtherDetailsComponent implements OnInit {
     const leadActivities = this.partyAccountDetails?.leadDto?.leadActivities;
     if (leadActivities && leadActivities.length) {
       // Extract activity codes from lead activities
-      const activityCodes = leadActivities.map(
-        (activity) => activity.activityCode
-      );
+      const activityCodes = leadActivities.map(activity => activity.activityCode);
       log.info(`ActivityCodes`, activityCodes);
-      this.fetchActivityDetails(activityCodes);
+
+      // Store leadActivities for later merging
+      this.fetchActivityDetails(activityCodes, leadActivities);
     }
   }
 
-  fetchActivityDetails(activityCodes: number[]): void {
-    // Map each activity code to an observable that calls the API
-    const activityRequests = activityCodes.map((code) =>
+  fetchActivityDetails(activityCodes: number[], leadActivities: any[]): void {
+    const activityRequests = activityCodes.map(code =>
       this.activityService.getActivityById(code)
     );
 
@@ -209,10 +212,17 @@ export class EntityOtherDetailsComponent implements OnInit {
     forkJoin(activityRequests).subscribe({
       next: (activities) => {
         if (activities) {
-          // this.activitiesData = activities;
-          this.activitiesData = [...activities];
+          // Create a new list combining activityCodes with activitiesData
+          this.activitiesData = leadActivities.map(activity => {
+            const activityDetail = activities.find(a => a.id === activity.activityCode);
+            return {
+              ...activity, // Keep existing leadActivity properties
+              activityDetails: activityDetail || null, // Attach fetched details
+            };
+          });
+
           this.cdr.detectChanges();
-          log.info('Fetched Activities', this.activitiesData);
+          log.info('Merged Activities Data', this.activitiesData);
         } else {
           this.errorOccurred = true;
           this.errorMessage = 'Something went wrong. Please try Again';
@@ -225,12 +235,9 @@ export class EntityOtherDetailsComponent implements OnInit {
       error: (err) => {
         this.errorOccurred = true;
         this.errorMessage = err?.message || 'An error occurred';
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
+        this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+        log.info(`Error fetching activities`, err);
+      }
     });
   }
 
@@ -282,8 +289,8 @@ export class EntityOtherDetailsComponent implements OnInit {
       partyAccountId: this.partyAccountDetails.id,
       countryId: this.partyAccountDetails?.address?.country_id,
       leadId: this.partyAccountDetails?.leadDto?.code,
-      prospectId: this.partyAccountDetails?.prospectDto.id,
-      userCode: this.partyAccountDetails?.leadDto?.userCode,
+      prospectId: this.partyAccountDetails?.prospectDto?.id,
+      userCode: this.partyAccountDetails?.leadDto?.userAssignedToDto?.id,
     };
 
     switch (this.activeTab) {
@@ -317,8 +324,8 @@ export class EntityOtherDetailsComponent implements OnInit {
       case 'primary':
         this.editPrimaryFormComponent.prepareUpdateDetails(
           {
-            campaingName: this.leadDetails.campCode,
-            leadSource: this.leadDetails.leadSourceCode,
+            campaingName: this.leadDetails.campaignDto?.code,
+            leadSource: this.leadDetails.leadSourceDto?.code,
             occupation: this.leadDetails.occupation,
             date: this.leadDetails.leadDate,
           },
@@ -331,7 +338,7 @@ export class EntityOtherDetailsComponent implements OnInit {
             mobileNumber: this.leadDetails.mobileNumber,
             emailAddress: this.leadDetails.emailAddress,
             campTel: this.leadDetails.campTel,
-            title: this.leadDetails.title,
+            title: this.leadDetails.clientTitleDto?.id,
             website: this.leadDetails.website,
           },
           extras
@@ -341,11 +348,11 @@ export class EntityOtherDetailsComponent implements OnInit {
         this.editResidentialFormComponent.prepareUpdateDetails(
           {
             physicalAddress: this.leadDetails.physicalAddress,
-            townCode: this.leadDetails.townCode,
+            townCode: this.leadDetails.townDto?.id,
             postalAddress: this.leadDetails.postalAddress,
             postalCode: this.leadDetails.postalCode,
-            stateCode: this.leadDetails.stateCode,
-            countryCode: this.leadDetails.countryCode,
+            stateCode: this.leadDetails.stateDto?.id,
+            countryCode: this.leadDetails.countryDto?.id,
           },
           extras
         );
@@ -353,13 +360,13 @@ export class EntityOtherDetailsComponent implements OnInit {
       case 'organization':
         this.editOrganizationFormComponent.prepareUpdateDetails(
           {
-            userCode: this.leadDetails.userCode,
-            organizationCode: this.leadDetails.organizationCode,
-            divisionCode: this.leadDetails.divisionCode,
-            teamCode: this.leadDetails.teamCode,
-            systemCode: this.leadDetails.systemCode,
+            userCode: this.leadDetails.userAssignedToDto?.id,
+            organizationCode: this.leadDetails.organizationDto?.id,
+            divisionCode: this.leadDetails.organizationDivisionDto?.id,
+            teamCode: this.leadDetails.userTeamDto?.id,
+            systemCode: this.leadDetails.systemDto?.id,
             productCode: this.leadDetails.productCode,
-            accountCode: this.leadDetails.accountCode,
+            accountCode: this.leadDetails.agentDto?.id,
           },
           extras
         );
@@ -367,8 +374,8 @@ export class EntityOtherDetailsComponent implements OnInit {
       case 'other':
         this.editOtherFormComponent.prepareUpdateDetails(
           {
-            industry: this.leadDetails.industry,
-            currencyCode: this.leadDetails.currencyCode,
+            industry: this.leadDetails.sectorDto?.id,
+            currencyCode: this.leadDetails.currencyDto?.id,
             annualRevenue: this.leadDetails.annualRevenue,
             potentialAmount: this.leadDetails.potentialAmount,
             potentialCloseDate: this.leadDetails.potentialCloseDate,
@@ -462,7 +469,7 @@ export class EntityOtherDetailsComponent implements OnInit {
     const extras: Extras = {
       partyAccountId: this.partyAccountDetails.id,
       leadId: this.partyAccountDetails?.leadDto?.code,
-      userCode: this.partyAccountDetails?.leadDto?.userCode,
+      userCode: this.partyAccountDetails?.leadDto?.userAssignedToDto?.id,
       leadActivities: this.partyAccountDetails?.leadDto?.leadActivities,
     };
 
@@ -483,6 +490,15 @@ export class EntityOtherDetailsComponent implements OnInit {
 
   deleteItem(): void {
     // Logic to delete item based on the active tab
+    if (this.activeTab === 'activity') {
+      this.editActivityFormComponent.confirmActivityDelete(this.selectedActivity);
+      log.info("Delete activity selected", this.selectedActivity);
+    } else if (this.activeTab === 'comment') {
+      this.editCommentFormComponent.confirmCommentDelete(this.selectedComment);
+      log.info("Delete comment");
+    } else {
+      log.warn('Add operation not supported for this tab.');
+    }
   }
 }
 

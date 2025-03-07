@@ -93,21 +93,21 @@ export class EditOrganizationFormComponent implements OnInit {
     });
   }
 
-  onSystemChange(systemId: number): Observable<void> {
+  onSystemChange(systemId: number) {
     this.selectedSystem = systemId;
     this.productsData = [];
 
     if (systemId === 37) {
-      return this.fetchGisProducts();
+      this.fetchGisProducts();
     } else if (systemId === 27) {
-      return this.fetchLmsProducts();
+      this.fetchLmsProducts();
     } else {
       return of();
     }
   }
 
-  fetchGisProducts(): Observable<void> {
-    return this.gisProductService.getAllProducts().pipe(
+  fetchGisProducts() {
+    this.gisProductService.getAllProducts().pipe(
       take(1),
       map((data) => {
         this.productsData = data.map((product) => ({
@@ -115,12 +115,17 @@ export class EditOrganizationFormComponent implements OnInit {
           description: product.description,
         }));
         log.info('GIS products:', this.productsData);
+        return this.productsData;
       })
-    );
+    ).subscribe(
+      (data) => {
+        this.productsData = data;
+        log.info('GIS products:', this.productsData);
+      });
   }
 
-  fetchLmsProducts(): Observable<void> {
-    return this.lmsProductService.getListOfProduct().pipe(
+  fetchLmsProducts() {
+    this.lmsProductService.getListOfProduct().pipe(
       take(1),
       map((data) => {
         this.productsData = data.map((product) => ({
@@ -128,8 +133,13 @@ export class EditOrganizationFormComponent implements OnInit {
           description: product.description,
         }));
         log.info('LMS products:', this.productsData);
+        return this.productsData;
       })
-    );
+    ).subscribe(
+      (data) => {
+        this.productsData = data;
+        log.info('LMS products:', this.productsData);
+      });
   }
 
   fetchSystemApps(organizationId?: number) {

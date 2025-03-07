@@ -72,7 +72,7 @@
             <input
               type="text"
               class="form-control w-75"
-              (keyup.enter)="filter($event)"
+              (keyup.enter)="filter($event, 0, 5, 'otherNames')"
               (input)="inputName($event)"
             />
           </th>
@@ -80,7 +80,7 @@
             <input
               type="text"
               class="form-control w-75"
-              (keyup.enter)="filter($event)"
+              (keyup.enter)="filter($event, 0, 5, 'modeOfIdentity')"
               (input)="inputModeOfIdentity($event)"
             />
           </th>
@@ -88,7 +88,7 @@
             <input
               type="text"
               class="form-control w-75"
-              (keyup.enter)="filter($event)"
+              (keyup.enter)="filter($event, 0, 5, 'idNumber')"
               (input)="inputIdNumber($event)"
             />
           </th>
@@ -96,7 +96,7 @@
             <input
               type="text"
               class="form-control w-75"
-              (keyup.enter)="filter($event)"
+              (keyup.enter)="filter($event, 0, 5, 'clientTypeDto.category')"
               (input)="inputClientTypeName($event)"
             />
           </th>
@@ -111,11 +111,7 @@
           <td>{{ lead.idNumber }}</td>
           <td>
             {{
-              lead.clientType === "13I"
-                ? "Individual"
-                : lead.clientType === "14C"
-                ? "Corporate"
-                : (lead.clientType | titlecase)
+              lead.clientTypeDto?.category | titlecase
             }}
           </td>
           <td>
@@ -123,7 +119,7 @@
               <button
                 type="button"
                 class="btn btn-link text-primary"
-                (click)="viewDetailsWithId(lead.id)"
+                (click)="viewDetailsWithId(lead.code)"
               >
                 <i class="pi pi-eye" style="padding: 0 2px 0 0"> </i
                 >{{ "entities.view" | translate }}

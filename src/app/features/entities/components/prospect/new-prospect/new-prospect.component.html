@@ -68,7 +68,7 @@
                     </option>
                     <option
                       *ngFor="let type of clientsTypeData"
-                      [value]="type.description"
+                      [value]="type.code"
                     >
                       {{ type.clientTypeName }}
                     </option>
@@ -699,6 +699,7 @@
                   <label for="town">{{ "entities.town" | translate }}</label>
                   <p-dropdown
                     [options]="townData"
+                    [(ngModel)]="selectedTown"
                     optionLabel="name"
                     optionValue="id"
                     formControlName="town"
@@ -711,6 +712,7 @@
                     filterBy="name"
                     [showClear]="true"
                     ngDefaultControl
+                    (onChange)="onTownChange()"
                     [ngClass]="{
                       'is-invalid':
                         f['addressDetails']['controls']['town']['invalid'] &&
@@ -780,7 +782,7 @@
                   <label for="postalCode">{{
                     "entities.postal_code" | translate
                   }}</label>
-                  <input
+                  <!--<input
                     type="text"
                     class="form-control"
                     id="postalCode"
@@ -798,7 +800,29 @@
                             'touched'
                           ])
                     }"
-                  />
+                  />-->
+                  <p-dropdown
+                    [options]="postalCodesData"
+                    optionLabel="description"
+                    optionValue="id"
+                    [style]="{ width: '100%', height: '50%' }"
+                    placeholder="Postal Code"
+                    formControlName="postalCode"
+                    id="postalCode"
+                    [filter]="true"
+                    filterBy="description"
+                    [showClear]="true"
+                    appendTo="body"
+                    class="center-placeholder"
+                    ngDefaultControl
+                    [ngClass]="{
+                      'is-invalid':
+                        f['addressDetails']['controls']['postalCode']['invalid'] &&
+                        (f['addressDetails']['controls']['postalCode']['dirty'] ||
+                          f['addressDetails']['controls']['postalCode']['touched'])
+                    }"
+                  >
+                  </p-dropdown>
                   <div
                     *ngIf="f?.['addressDetails']['controls']['postalCode']['invalid'] && (f['addressDetails']['controls']['postalCode']['dirty'] || f['addressDetails']['controls']['postalCode']['touched'])"
                     class="form-text text-danger"
@@ -886,7 +910,7 @@
                       }"
                     >
                       <option
-                        *ngFor="let value of countryData"
+                        *ngFor="let value of filteredZipCodes"
                         [value]="'+' + value?.zipCode"
                       >
                         {{ "+" + value?.zipCode }}
@@ -994,7 +1018,7 @@
                       }"
                     >
                       <option
-                        *ngFor="let value of countryData"
+                        *ngFor="let value of filteredZipCodes"
                         [value]="'+' + value?.zipCode"
                       >
                         {{ "+" + value?.zipCode }}

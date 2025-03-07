@@ -3,7 +3,13 @@
  * It fetches the receipt data, generates a report using the `ReportsService`, and provides a download link.
  */
 
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
@@ -13,6 +19,9 @@ import { ReportsService } from 'src/app/shared/services/reports/reports.service'
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { ReceiptService } from '../../services/receipt.service';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { TranslateService } from '@ngx-translate/core';
+import { saveAs } from 'file-saver';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -31,16 +40,17 @@ const log = new Logger('ReceiptPreviewComponent');
   templateUrl: './receipt-preview.component.html',
   styleUrls: ['./receipt-preview.component.css'],
 })
-export class ReceiptPreviewComponent implements OnInit{
+export class ReceiptPreviewComponent implements OnInit {
   // Reference to the iframe
-
+  @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
 
   filePath: string = '';
+  selectedOrg: OrganizationDTO;
+  defaultOrg: OrganizationDTO;
 
- 
   //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
   //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
- // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
+  // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
   /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
   receiptResponse: any;
 
@@ -52,7 +62,7 @@ export class ReceiptPreviewComponent implements OnInit{
 
   /** @property {any} documentData - Currently unused, but could contain more complex data associated with the receipt document. */
   documentData: any;
-
+  downloadCompleted: boolean = false;
   /**
    * Constructs a new `ReceiptPreviewComponent`.
    * @param {ReportsService} reportService - The service used to generate reports (e.g., the receipt PDF).
@@ -65,8 +75,10 @@ export class ReceiptPreviewComponent implements OnInit{
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
     private receiptDataService: ReceiptDataService,
-    private sessionStorage:SessionStorageService,
-    private receiptService:ReceiptService
+    private sessionStorage: SessionStorageService,
+    private receiptService: ReceiptService,
+   
+    public translate: TranslateService
   ) {}
 
   /**
@@ -75,21 +87,22 @@ export class ReceiptPreviewComponent implements OnInit{
    * @returns {void}
    */
   ngOnInit(): void {
-    let receiptResponse = this.sessionStorage.getItem('receiptResponse');
-    this.receiptResponse = Number(receiptResponse);
-    
+    // let receiptResponse = this.sessionStorage.getItem('receiptResponse');
+    // this.receiptResponse = receiptResponse ? Number(receiptResponse) : null;
+
     let receiptNo = this.sessionStorage.getItem('receiptNo');
-    this.receiptResponse = Number(receiptNo);
-    
+    this.receiptResponse = receiptNo ? Number(receiptNo) : null;
+
     let globalOrgId = this.sessionStorage.getItem('OrgId');
     this.orgId = Number(globalOrgId);
+    let defaultOrg = this.sessionStorage.getItem('defaultOrg');
+    let selectedOrg = this.sessionStorage.getItem('selectedOrg');
+
+    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
+    this.selectedOrg = selectedOrg ? JSON.parse(selectedOrg) : null;
     this.getReceipt();
   }
-  
 
-
-   
- 
   /**
    * Generates the receipt report by calling the `ReportsService`.
    * Builds the `ReportDto` payload with the receipt number and organization ID and subscribes to the result.
@@ -107,7 +120,7 @@ export class ReceiptPreviewComponent implements OnInit{
         },
         {
           name: 'UP_ORG_CODE',
-          value: String(this.orgId), // Use the orgId
+          value: String(this.defaultOrg.id || this.selectedOrg.id), // Use the orgId
         },
       ],
       reportFormat: 'PDF',
@@ -131,11 +144,66 @@ export class ReceiptPreviewComponent implements OnInit{
       },
     });
   }
-  downloadReceipt(){
-    this.download(this.filePath,'receipt.pdf');
-    this.router.navigate(['/home/fms/receipt-capture']);
+
+  downloadReceipt(): void {
+    if (this.filePath) {
+      // Reset download status
+      this.downloadCompleted = false;
+
+      // Add beforeunload event listener
+      window.addEventListener('beforeunload', this.handleBeforeUnload);
+
+      // Fetch the PDF file as a Blob
+      fetch(this.filePath)
+        .then((response) => response.blob())
+        .then((blob) => {
+          // Save the file using file-saver
+          saveAs(blob, 'receipt.pdf');
+
+          // Mark download as completed
+          this.downloadCompleted = true;
+
+          // Call updatePrintStatus after the file is saved
+          this.updatePrintStatus();
+        })
+        .catch((error) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to download receipt.'
+          );
+        })
+        .finally(() => {
+          // Remove the beforeunload event listener
+          window.removeEventListener('beforeunload', this.handleBeforeUnload);
+        });
+    }
+  }
+  onPdfLoad(pdf: any): void {
+    // You can now access the PDF document and its pages
+    this.monitorButtons();
+  }
+  handleBeforeUnload = (event: BeforeUnloadEvent): void => {
+    if (!this.downloadCompleted) {
+      // If download is not completed, prevent the default behavior
+      event.preventDefault();
+      event.returnValue = ''; // Required for Chrome
+    }
+  };
+  monitorButtons(): void {
+    const buttons = document.querySelectorAll('.pdf-viewer-button'); // Adjust the selector based on the button class or ID
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        this.handleButtonClick(button.textContent || 'Unknown Button');
+      });
+    });
   }
 
+  handleButtonClick(buttonText: string): void {
+    //console.log(`Button clicked: ${buttonText}`);
+    // Update print status or perform other actions
+    this.updatePrintStatus();
+  }
   /**
    * Triggers a download of the file at the given URL.
    * Creates a temporary `<a>` element, sets its `href` and `download` attributes, and simulates a click to start the download.
@@ -143,48 +211,52 @@ export class ReceiptPreviewComponent implements OnInit{
    * @param {string} fileName - The name to use for the downloaded file.
    * @returns {void}
    */
-  download(fileUrl: string, fileName: string): void {
-    if (fileUrl) {
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.download = fileName;
-      link.click();
-    }
-  }
-  
- 
-  onPrintStatusChange(status: string): void {
-    if (status === 'yes') {
-      this.updatePrintStatus();
-      
-    } else if(status === 'no') {
-      this.navigateToReceiptCapture();
-    }
-  }
+  // download(fileUrl: string, fileName: string): void {
+  //   if (fileUrl) {
+  //     const link = document.createElement('a');
+  //     link.href = fileUrl;
+  //     link.download = fileName;
+  //     link.click();
+  //   }
+  // }
+
+  // onPrintStatusChange(status: string): void {
+  //   if (status === 'yes') {
+  //     this.updatePrintStatus();
+
+  //   } else if(status === 'no') {
+  //     this.navigateToReceiptCapture();
+  //   }
+  // }
 
   updatePrintStatus() {
+    const receiptId = Number(this.receiptResponse);
 
-  const receiptId = Number(this.receiptResponse);
-
-  // Construct the payload as an array of numbers
-  const payload: number[] = [receiptId];
-   this.receiptService.updateReceiptStatus(payload).subscribe({
-    next:(response)=>{
-this.globalMessagingService.displaySuccessMessage('success:',response.message);
-this.receiptDataService.clearReceiptData();
-this.router.navigate(['/home/fms/receipt-capture']);
-    },
-    error:(err)=>{
-      this.globalMessagingService.displayErrorMessage('failed',err.error.msg);
-    }
-   })
+    // Construct the payload as an array of numbers
+    const payload: number[] = [receiptId];
+    this.receiptService.updateReceiptStatus(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success:',
+          response.message
+        );
+        //this.receiptDataService.clearReceiptData();
+        //this.router.navigate(['/home/fms/receipt-capture']);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'failed',
+          err.error.msg
+        );
+      },
+    });
   }
 
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
-  
+
   /**
    * Navigates back to the first screen (`/home/fms/screen1`) and clears the receipt data using the `ReceiptDataService`.
    * @returns {void}
