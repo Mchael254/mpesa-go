@@ -77,7 +77,7 @@
   >
     <p-tabPanel header="Contact Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -93,7 +93,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -110,7 +110,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -131,7 +131,7 @@
       *ngIf="bankDetails"
     >
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -145,7 +145,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -159,7 +159,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -179,7 +179,7 @@
       (click)="getWealthAmlDetails()"
     >
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -197,7 +197,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -211,7 +211,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -226,7 +226,7 @@
 
     <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails?.id">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -244,7 +244,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -258,7 +258,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -328,12 +328,12 @@
   >
     <p-tabPanel header="Primary Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Campaign Name</td>
-                <th>{{ partyAccountDetails?.leadDto?.campCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.campaignDto?.campaignName | titlecase }}</th>
               </tr>
               <tr>
                 <td>Date</td>
@@ -346,25 +346,25 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Occupation</td>
                 <th>
-                  {{ partyAccountDetails?.leadDto?.occupation }}
+                  {{ partyAccountDetails?.leadDto?.occupation | titlecase }}
                 </th>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Source</td>
                 <th>
-                  {{ partyAccountDetails?.leadDto?.leadSourceCode }}
+                  {{ partyAccountDetails?.leadDto?.leadSourceDto?.description | titlecase }}
                 </th>
               </tr>
             </tbody>
@@ -374,12 +374,12 @@
     </p-tabPanel>
     <p-tabPanel header="Contact Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Title</td>
-                <th>{{ partyAccountDetails?.leadDto?.title }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.clientTitleDto?.description | titlecase }}</th>
               </tr>
               <tr>
                 <td>Email Address</td>
@@ -390,7 +390,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -406,7 +406,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -421,12 +421,12 @@
 
     <p-tabPanel header="Residential Address">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Country</td>
-                <th>{{ partyAccountDetails?.leadDto?.countryCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.countryDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Postal Code</td>
@@ -437,12 +437,12 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>County</td>
-                <th>{{ partyAccountDetails?.leadDto?.stateCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.stateDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Postal Address</td>
@@ -453,12 +453,12 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Town</td>
-                <th>{{ partyAccountDetails?.leadDto?.townCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.townDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Physical Address</td>
@@ -474,48 +474,48 @@
 
     <p-tabPanel header="Organization Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Assigned To</td>
-                <th>{{ partyAccountDetails?.leadDto?.userCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.userAssignedToDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Team</td>
-                <th>{{ partyAccountDetails?.leadDto?.teamCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.userTeamDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Account Name</td>
                 <th>
-                  {{ partyAccountDetails?.leadDto?.accountCode }}
+                  {{ partyAccountDetails?.leadDto?.agentDto?.name | titlecase }}
                 </th>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Organization</td>
                 <th>
-                  {{ partyAccountDetails?.leadDto?.organizationCode }}
+                  {{ partyAccountDetails?.leadDto?.organizationDto?.name | titlecase }}
                 </th>
               </tr>
               <tr>
                 <td>System</td>
-                <th>{{ partyAccountDetails?.leadDto?.systemCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.systemDto?.shortDesc | titlecase }}</th>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Organization Division</td>
-                <th>{{ partyAccountDetails?.leadDto?.divisionCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.organizationDivisionDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Product</td>
@@ -529,12 +529,12 @@
 
     <p-tabPanel header="Other Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Sector</td>
-                <th>{{ partyAccountDetails?.leadDto?.industry }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.sectorDto?.name | titlecase }}</th>
               </tr>
               <tr>
                 <td>Potential Amount</td>
@@ -551,17 +551,17 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
                 <td>Currency</td>
-                <th>{{ partyAccountDetails?.leadDto?.currencyCode }}</th>
+                <th>{{ partyAccountDetails?.leadDto?.currencyDto?.symbol }}</th>
               </tr>
               <tr>
                 <td>Potential Name</td>
                 <th>
-                  {{ partyAccountDetails?.leadDto?.potentialName }}
+                  {{ partyAccountDetails?.leadDto?.potentialName | titlecase }}
                 </th>
               </tr>
               <tr>
@@ -573,7 +573,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -682,8 +682,8 @@
           </ng-template>
           <ng-template pTemplate="body" let-activity>
             <tr [pSelectableRow]="activity">
-              <td class="body">{{ activity.subject | titlecase }}</td>
-              <td class="body">{{ activity.location | titlecase }}</td>
+              <td class="body">{{ activity.activityDetails.subject | titlecase }}</td>
+              <td class="body">{{ activity.activityDetails.location | titlecase }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -703,7 +703,7 @@
   >
     <p-tabPanel header="Contact and Address Details">
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -723,7 +723,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>
@@ -743,7 +743,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-sm-3 offset-1">
+        <div class="col-sm-4">
           <table class="table table-borderless">
             <tbody>
               <tr>

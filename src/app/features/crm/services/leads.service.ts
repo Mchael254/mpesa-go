@@ -43,23 +43,23 @@ export class LeadsService {
   searchLeads(
     page: number,
     size: number = 5,
-    name: string,
+    columnName: string = null,
+    columnValue: string = null
+    /*name: string,
     modeOfIdentity: string = null,
     idNumber: string = null,
-    clientTypeName: string = null
-  ): Observable<Leads> {
+    clientTypeName: string = null*/
+  ): Observable<Pagination<Leads>> {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('name', `${name}`)
-      .set('modeOfIdentity', `${modeOfIdentity}`)
-      .set('idNumber', `${idNumber}`)
-      .set('clientTypeName', `${clientTypeName}`);
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.api.GET<Leads>(
-      ``,
+    return this.api.GET<Pagination<Leads>>(
+      `leads`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       paramObject
     );
@@ -207,6 +207,13 @@ export class LeadsService {
       data,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       params
+    );
+  }
+
+  deleteLeadActivity(leadActivityId: number) {
+    return this.api.DELETE<LeadActivityDto>(
+      `lead-activities/${leadActivityId}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 }
