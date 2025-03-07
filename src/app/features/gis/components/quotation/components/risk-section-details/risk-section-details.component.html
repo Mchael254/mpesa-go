@@ -697,33 +697,39 @@
             <!-- Add Schedule-other details Modal -->
             <div class="modal fade" id="addOtherDetails" tabindex="-1" role="dialog"
               aria-labelledby="addOtherDetailsLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+              <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                   <div class="modal-body">
                     <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.add_other_details' |
                       translate}}</h5>
-                    <form>
-                      <label for="minmax-buttons" class="col-5 col-form-label "
-                        id="scheduleLabel">{{'gis.quotation.code' | translate}}</label>
-                      <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1">
-                      <label for="minmax-buttons" class="col-5 col-form-label "
-                        id="scheduleLabel">{{'gis.quotation.geographical_limits' | translate}}</label>
-                      <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1">
-                      <label for="minmax-buttons" class="col-5 col-form-label "
-                        id="scheduleLabel">{{'gis.quotation.deductible_desc' | translate}}</label>
-                      <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1">
-                      <label for="minmax-buttons" class="col-5 col-form-label "
-                        id="scheduleLabel">{{'gis.quotation.limitation_use' | translate}}</label>
-                      <select class="form-select form-control-sm mb-1" id="scheduleInput">
-                        <option></option>
-                        <option></option>
-                      </select>
-                      <label for="minmax-buttons" class="col-5 col-form-label "
-                        id="scheduleLabel">{{'gis.quotation.authorized_driver' | translate}}</label>
-                      <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1">
+                    <form [formGroup]="scheduleDetailsForm">
+                      <div formGroupName="details">
+                        <div formGroupName="level2">
+                           <!-- Level2 Fields -->
+                          <label for="code" class="col-5 col-form-label">{{'gis.quotation.code' | translate}}</label>
+                          <input type="number" id="code" class="form-control form-control-sm mb-1" formControlName="code">
+
+                          <label for="geographicalLimits" class="col-5 col-form-label">{{'gis.quotation.geographical_limits' | translate}}</label>
+                          <input type="text" id="geographicalLimits" class="form-control form-control-sm mb-1" formControlName="geographicalLimits">
+
+                          <label for="deductibleDesc" class="col-5 col-form-label">{{'gis.quotation.deductible_desc' | translate}}</label>
+                          <input type="text" id="deductibleDesc" class="form-control form-control-sm mb-1" formControlName="deductibleDesc">
+
+                          <label for="limitationUse" class="col-5 col-form-label">{{'gis.quotation.limitation_use' | translate}}</label>
+                          <select class="form-select form-control-sm mb-1" id="limitationUse" formControlName="limitationUse">
+                            <option value=""></option>
+                            <option value="Option1">Option 1</option>
+                            <option value="Option2">Option 2</option>
+                          </select>
+
+                          <label for="authorisedDriver" class="col-5 col-form-label">{{'gis.quotation.authorized_driver' | translate}}</label>
+                          <input type="text" id="authorisedDriver" class="form-control form-control-sm mb-1" formControlName="authorisedDriver">
+
+                        </div>
+                      </div>
                     </form>
                     <div class="mt-4 d-flex justify-content-end">
-                      <button type="button" class="btn btn-primary " id="saveDetails"
+                      <button type="button" class="btn btn-primary " id="saveDetails" (click)="updateSchedule()"
                         data-bs-dismiss="modal">{{'gis.quotation.save_details' | translate}}</button>
 
                     </div>
@@ -795,7 +801,7 @@
                 </div>
               </div>
             </div>
-            <p-table [value]="" [tableStyle]="{ 'min-width': '300px' }">
+            <p-table [value]="scheduleList" [tableStyle]="{ 'min-width': '300px' }" dataKey="code">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
@@ -807,13 +813,13 @@
 
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body">
+              <ng-template pTemplate="body" let-schedule >
                 <tr>
-                  <td class="flexible-header"></td>
-                  <td class="flexible-header"></td>
-                  <td class="flexible-header"></td>
-                  <td class="flexible-header"></td>
-                  <td class="flexible-header"></td>
+                  <td class="flexible-header">{{ schedule.details.level2.code}}</td>
+                  <td class="flexible-header">{{ schedule.details.level2.geographicalLimits}}</td>
+                  <td class="flexible-header">{{ schedule.details.level2.deductibleDesc}}</td>
+                  <td class="flexible-header">{{ schedule.details.level2.limitationUse}}</td>
+                  <td class="flexible-header">{{ schedule.details.level2.authorisedDriver}}</td>
 
                 </tr>
               </ng-template>
