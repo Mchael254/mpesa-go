@@ -17,7 +17,7 @@ export class ProspectService {
   getAllProspects(
     page: number,
     size: number = 10,
-    sortField: string = 'type',
+    sortField: string = 'createdDate',
     order: string = 'desc'
   ): Observable<Pagination<ProspectDto>> {
     const params = new HttpParams()
@@ -41,19 +41,21 @@ export class ProspectService {
     name: string,
     modeOfIdentity: string = null,
     idNumber: string = null,
-    clientTypeName: string = null
-  ): Observable<ProspectDto> {
+    clientType: string = null,
+    sortField: string = 'createdDate'
+  ): Observable<Pagination<ProspectDto>> {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('name', `${name}`)
       .set('modeOfIdentity', `${modeOfIdentity}`)
       .set('idNumber', `${idNumber}`)
-      .set('clientTypeName', `${clientTypeName}`);
+      .set('clientType', `${clientType}`)
+      .set('sortListFields', `${sortField}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.api.GET<ProspectDto>(
+    return this.api.GET<Pagination<ProspectDto>>(
       `prospects`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       paramObject

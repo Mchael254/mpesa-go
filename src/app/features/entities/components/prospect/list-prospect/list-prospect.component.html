@@ -72,6 +72,10 @@
             {{ "entities.client_type" | translate }}
             <p-sortIcon field="clientType"></p-sortIcon>
           </th>
+          <th pSortableColumn="converted">
+            {{ "entities.converted" | translate }}
+            <p-sortIcon field="converted"></p-sortIcon>
+          </th>
           <th class="head">{{ "entities.actions" | translate }}</th>
         </tr>
         <tr>
@@ -107,6 +111,12 @@
               (input)="inputClientTypeName($event)"
             />
           </th>
+          <th>
+            <input
+              type="text"
+              class="form-control w-75"
+            />
+          </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-prospect>
@@ -126,6 +136,7 @@
                 : (prospect.clientType | titlecase)
             }}
           </td>
+          <td>{{ prospect.converted | titlecase }}</td>
           <td>
             <div class="actions">
               <button

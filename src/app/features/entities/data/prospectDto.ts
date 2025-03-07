@@ -21,4 +21,7 @@ export interface ProspectDto {
   telephoneNumber: string;
   townId: number;
   type: string;
+  converted: string;
+  modeOfIdentity: string;
+  companyName: string;
 }

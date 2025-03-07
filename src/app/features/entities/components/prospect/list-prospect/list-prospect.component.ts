@@ -45,19 +45,22 @@ export class ListProspectComponent {
     'firstName',
     'modeOfIdentity',
     'idNumber',
-    'clientTypeName',
+    'clientType',
+    'converted'
   ];
 
   filterObject: {
     name: string;
     modeOfIdentity: string;
     idNumber: string;
-    clientTypeName: string;
+    clientType: string;
+    converted: string;
   } = {
     name: '',
     modeOfIdentity: '',
     idNumber: '',
-    clientTypeName: '',
+    clientType: '',
+    converted: ''
   };
 
   constructor(
@@ -83,7 +86,7 @@ export class ListProspectComponent {
       };
       this.filter(searchEvent, pageIndex, pageSize);
     } else {
-      this.getPropspects(pageIndex, pageSize, sortField, sortOrder)
+      this.getProspects(pageIndex, pageSize, sortField, sortOrder)
         .pipe(
           untilDestroyed(this),
           tap((data) => log.info(`Fetching Prospects>>>`, data))
@@ -101,10 +104,10 @@ export class ListProspectComponent {
     }
   }
 
-  getPropspects(
+  getProspects(
     pageIndex: number,
     pageSize: number,
-    sortField: any = 'type',
+    sortField: any,
     sortOrder: string = 'desc'
   ): Observable<Pagination<ProspectDto>> {
     return this.prospectService
@@ -142,6 +145,7 @@ export class ListProspectComponent {
     this.prospectData = null;
 
     this.isSearching = true;
+
     this.prospectService
       .searchProspects(
         pageIndex,
@@ -149,11 +153,11 @@ export class ListProspectComponent {
         this.filterObject?.name,
         this.filterObject?.modeOfIdentity,
         this.filterObject?.idNumber,
-        this.filterObject?.clientTypeName
+        this.filterObject?.clientType
       )
       .subscribe(
-        (data) => {
-          // this.prospectData = data;
+        (data: Pagination<ProspectDto>) => {
+          this.prospectData = data;
         },
         (error) => {}
       );
@@ -176,6 +180,6 @@ export class ListProspectComponent {
 
   inputClientTypeName(event) {
     const value = (event.target as HTMLInputElement).value;
-    this.filterObject['clientTypeName'] = value;
+    this.filterObject['clientType'] = value;
   }
 }
