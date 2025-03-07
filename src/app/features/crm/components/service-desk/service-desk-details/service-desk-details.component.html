@@ -38,31 +38,31 @@
         <div class="row">
           <div class="col-sm-4">
             <p>
-              <label class="ticketLabel">Name:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.name' | translate }}:</label>
               <span class="ticketDesc">John Doe</span>
             </p>
             <p>
-              <label class="ticketLabel">Telephone no:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.telephoneNo' | translate }}:</label>
               <span class="ticketDesc">John Doe</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
-              <label class="ticketLabel">Sht Desc:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.shortDescription' | translate }}:</label>
               <span class="ticketDesc">John Doe</span>
             </p>
             <p>
-              <label class="ticketLabel">Email Address:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.emailAddress' | translate }}:</label>
               <span class="ticketDesc">johndoe@turnkey.co.ke</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
-              <label class="ticketLabel">Account No.:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.accountNo' | translate }}.:</label>
               <span class="ticketDesc">John Doe</span>
             </p>
             <p>
-              <label class="ticketLabel">Physical Address:</label>
+              <label class="ticketLabel">{{ 'serviceDesk.physicalAddress' | translate }}:</label>
               <span class="ticketDesc">John Doe</span>
             </p>
           </div>
@@ -73,7 +73,7 @@
     <div class="card mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
         <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.openRequests' | translate}}</h6>
-        <button class="btn btn-primary float-end" (click)="openRequestDetailsModal()">New case</button>
+        <button class="btn btn-primary float-end" (click)="openRequestDetailsModal()">{{ 'serviceDesk.newCase' | translate }}</button>
       </div>
       <div class="card-body p-0">
 
@@ -376,9 +376,11 @@
 
     <div class="card mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.serviceRequestDocs' | translate}}</h6>
         <div class="row mb-3">
-          <div class="col-12">
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
+            <h6 class="my-3 fw-semibold">{{'serviceDesk.serviceRequestDocs' | translate}}</h6>
+          </div>
+          <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
             <div class="float-end">
               <span class="icon-circle">
                 <i class="fa-solid fa-plus" (click)="openRequestDocsModal()"></i>
@@ -470,7 +472,7 @@
         <form [formGroup]="clientDetailsForm">
           <div class="row my-3">
             <div class="col-md-6">
-              <label for="telNo" class="form-label">Telephone no.</label>
+              <label for="telNo" class="form-label">{{ 'serviceDesk.telephoneNo' | translate }}.</label>
               <input
                 type="text"
                 class="form-control"
@@ -479,7 +481,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="telNoTwo" class="form-label">Telephone no. II</label>
+              <label for="telNoTwo" class="form-label">{{ 'serviceDesk.TelephoneNoII' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -488,7 +490,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="emailAddress" class="form-label">Email address</label>
+              <label for="emailAddress" class="form-label">{{ 'serviceDesk.emailAddress' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -497,7 +499,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="emailAddressTwo" class="form-label">Email address II</label>
+              <label for="emailAddressTwo" class="form-label">{{ 'serviceDesk.emailAddressII' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -506,21 +508,21 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="gender" class="form-label">Gender</label>
+              <label for="gender" class="form-label">{{ 'serviceDesk.gender' | translate }}</label>
               <select class="form-select" id="gender" formControlName="gender">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
             <div class="col-md-6">
-              <label for="marital" class="form-label">Marital status</label>
+              <label for="marital" class="form-label">{{ 'serviceDesk.maritalStatus' | translate }}</label>
               <select class="form-select" id="marital" formControlName="marital">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
             <div class="col-md-6">
-              <label for="tinNo" class="form-label">TIN no.</label>
+              <label for="tinNo" class="form-label">{{ 'serviceDesk.TINno' | translate }}.</label>
               <input
                 type="text"
                 class="form-control"
@@ -529,7 +531,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="postalAddress" class="form-label">Postal address</label>
+              <label for="postalAddress" class="form-label">{{ 'serviceDesk.postalAddress' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -538,7 +540,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="physicalAddress" class="form-label">Physical address</label>
+              <label for="physicalAddress" class="form-label">{{ 'serviceDesk.physicalAddress' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -550,7 +552,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -564,7 +566,7 @@
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
 >
-  <div class="modal-dialog modal-xl align-items-center">
+  <div class="modal-dialog modal-lg align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
         <h5 class="modal-title" id="newCaseLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'request details' : 'new request' }}</h5>
@@ -578,15 +580,15 @@
       <div class="modal-body">
         <form [formGroup]="requestDetailsForm">
           <div class="mb-3 row">
-            <label for="polNo" class="col-sm-2 form-label">Policy No</label>
-            <div class="col-sm-4">
+            <label for="polNo" class="col-sm-3 form-label">{{ 'serviceDesk.policyNo' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="polNo" formControlName="polNo">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="requestCategory" class="col-sm-2 form-label">Request category</label>
-            <div class="col-sm-4">
+            <label for="requestCategory" class="col-sm-3 form-label">{{ 'serviceDesk.requestCategory' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="requestCategory" formControlName="requestCategory">
                 <option value=""></option>
                 <option value=""></option>
@@ -594,15 +596,15 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="incident" class="col-sm-2 form-label">Incident</label>
-            <div class="col-sm-4">
+            <label for="incident" class="col-sm-3 form-label">{{ 'serviceDesk.incident' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="incident" formControlName="incident">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="requestCategory" class="col-sm-2 form-label">Request source</label>
-            <div class="col-sm-4">
+            <label for="requestCategory" class="col-sm-3 form-label">{{ 'serviceDesk.requestSource' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="requestSource" formControlName="requestSource">
                 <option value=""></option>
                 <option value=""></option>
@@ -610,15 +612,15 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="accountType" class="col-sm-2 form-label">Account type</label>
-            <div class="col-sm-4">
+            <label for="accountType" class="col-sm-3 form-label">{{ 'serviceDesk.accountType' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="accountType" formControlName="accountType">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="account" class="col-sm-2 form-label">Account</label>
-            <div class="col-sm-4">
+            <label for="account" class="col-sm-3 form-label">{{ 'serviceDesk.account' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="account" formControlName="account">
                 <option value=""></option>
                 <option value=""></option>
@@ -626,8 +628,8 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="summary" class="col-sm-2 form-label">Summary</label>
-            <div class="col-sm-4">
+            <label for="summary" class="col-sm-3 form-label">{{ 'serviceDesk.summary' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -635,8 +637,8 @@
                 formControlName="summary"
               />
             </div>
-            <label for="desc" class="col-sm-2 form-label">Description</label>
-            <div class="col-sm-4">
+            <label for="desc" class="col-sm-3 form-label">{{ 'serviceDesk.description' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -646,8 +648,8 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="captureDate" class="col-sm-2 form-label">Capture date</label>
-            <div class="col-sm-4">
+            <label for="captureDate" class="col-sm-3 form-label">{{ 'serviceDesk.captureDate' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="date"
                 class="form-control"
@@ -655,8 +657,8 @@
                 formControlName="captureDate"
               />
             </div>
-            <label for="requestDate" class="col-sm-2 form-label">Request date</label>
-            <div class="col-sm-4">
+            <label for="requestDate" class="col-sm-3 form-label">{{ 'serviceDesk.requestDate' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="date"
                 class="form-control"
@@ -666,8 +668,8 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="receiveDate" class="col-sm-2 form-label">Receive date</label>
-            <div class="col-sm-4">
+            <label for="receiveDate" class="col-sm-3 form-label">{{ 'serviceDesk.receiveDate' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="date"
                 class="form-control"
@@ -675,8 +677,8 @@
                 formControlName="receiveDate"
               />
             </div>
-            <label for="dueDate" class="col-sm-2 form-label">Due date</label>
-            <div class="col-sm-4">
+            <label for="dueDate" class="col-sm-3 form-label">{{ 'serviceDesk.dueDate' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="date"
                 class="form-control"
@@ -686,15 +688,15 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="assignee" class="col-sm-2 form-label">Assignee</label>
-            <div class="col-sm-4">
+            <label for="assignee" class="col-sm-3 form-label">{{ 'serviceDesk.assignee' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="assignee" formControlName="assignee">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="reporter" class="col-sm-2 form-label">Reporter/Initiator</label>
-            <div class="col-sm-4">
+            <label for="reporter" class="col-sm-3 form-label">{{ 'serviceDesk.reporterInitiator' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="reporter" formControlName="reporter">
                 <option value=""></option>
                 <option value=""></option>
@@ -702,15 +704,15 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="ownerAccountType" class="col-sm-2 form-label">Owner account type</label>
-            <div class="col-sm-4">
+            <label for="ownerAccountType" class="col-sm-3 form-label">{{ 'serviceDesk.ownerAccountType' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="ownerAccountType" formControlName="ownerAccountType">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="status" class="col-sm-2 form-label">Status</label>
-            <div class="col-sm-4">
+            <label for="status" class="col-sm-3 form-label">{{ 'serviceDesk.status' | translate  }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="status" formControlName="status">
                 <option value=""></option>
                 <option value=""></option>
@@ -718,8 +720,8 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="closedBy" class="col-sm-2 form-label">Closed by</label>
-            <div class="col-sm-4">
+            <label for="closedBy" class="col-sm-3 form-label">{{ 'serviceDesk.closedBy' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -727,8 +729,8 @@
                 formControlName="closedBy"
               />
             </div>
-            <label for="resolutionDate" class="col-sm-2 form-label">Resolution date</label>
-            <div class="col-sm-4">
+            <label for="resolutionDate" class="col-sm-3 form-label">{{ 'serviceDesk.resolutionDate' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="date"
                 class="form-control"
@@ -738,8 +740,8 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="solution" class="col-sm-2 form-label">Solution</label>
-            <div class="col-sm-4">
+            <label for="solution" class="col-sm-3 form-label">{{ 'serviceDesk.solution' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -747,8 +749,8 @@
                 formControlName="solution"
               />
             </div>
-            <label for="comments" class="col-sm-2 form-label">Comments</label>
-            <div class="col-sm-4">
+            <label for="comments" class="col-sm-3 form-label">{{ 'serviceDesk.comments' | translate  }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -758,15 +760,15 @@
             </div>
           </div>
           <div class="mb-3 row">
-            <label for="prefCommMode" class="col-sm-2 form-label">Preferred comms' mode</label>
-            <div class="col-sm-4">
+            <label for="prefCommMode" class="col-sm-3 form-label">{{ 'serviceDesk.preferredCommsMode' | translate }}</label>
+            <div class="col-sm-3">
               <select class="form-select" id="prefCommMode" formControlName="prefCommMode">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <label for="primaryMode" class="col-sm-2 form-label">Primary mode</label>
-            <div class="col-sm-4">
+            <label for="primaryMode" class="col-sm-3 form-label">{{ 'serviceDesk.primaryMode' | translate }}</label>
+            <div class="col-sm-3">
               <input
                 type="text"
                 class="form-control"
@@ -778,7 +780,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveRequestDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveRequestDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -807,7 +809,7 @@
         <form [formGroup]="clientCommentsForm">
           <div class="row my-3">
             <div class="col-md-6">
-              <label for="dateCaptured" class="form-label">Date captured</label>
+              <label for="dateCaptured" class="form-label">{{ 'serviceDesk.dateCaptured' | translate }}</label>
               <input
                 type="date"
                 class="form-control"
@@ -816,7 +818,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="postedBy" class="form-label">Posted by</label>
+              <label for="postedBy" class="form-label">{{ 'serviceDesk.postedBy' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -825,18 +827,18 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="clientComments" class="form-label">Client comments</label>
+              <label for="clientComments" class="form-label">{{ 'serviceDesk.clientComments' | translate }}</label>
               <textarea class="form-control" id="clientComments" rows="3" formControlName="clientComments"></textarea>
             </div>
             <div class="col-md-6">
-              <label for="sol" class="form-label">Solution</label>
+              <label for="sol" class="form-label">{{ 'serviceDesk.solution' | translate }}</label>
               <textarea class="form-control" id="sol" rows="3" formControlName="solution"></textarea>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -865,7 +867,7 @@
         <form [formGroup]="requestDocsForm">
           <div class="row my-3">
             <div class="col-md-6">
-              <label for="dateCaptured" class="form-label">Document type</label>
+              <label for="dateCaptured" class="form-label">{{ 'serviceDesk.documentType' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -874,7 +876,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="referenceNo" class="form-label">Reference No.</label>
+              <label for="referenceNo" class="form-label">{{ 'serviceDesk.referenceNo' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -884,7 +886,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="receivedBy" class="form-label">Received by</label>
+              <label for="receivedBy" class="form-label">{{ 'serviceDesk.receivedBy' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -894,7 +896,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="dateCreated" class="form-label">Date created</label>
+              <label for="dateCreated" class="form-label">{{ 'serviceDesk.dateCreated' | translate }}</label>
               <input
                 type="date"
                 class="form-control"
@@ -903,7 +905,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="remarks" class="form-label">Remarks</label>
+              <label for="remarks" class="form-label">{{ 'serviceDesk.remarks' | translate }}</label>
               <input
                 type="date"
                 class="form-control"
@@ -912,7 +914,7 @@
               />
             </div>
             <div class="col-md-6">
-              <label for="dateCreated" class="form-label">Upload document</label>
+              <label for="dateCreated" class="form-label">{{ 'serviceDesk.uploadDocument' | translate }}</label>
               <button class="btn btn-primary">Upload file</button>
 
             </div>
@@ -920,7 +922,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -949,7 +951,7 @@
         <form [formGroup]="serviceProviderFeesForm">
           <div class="row my-3">
             <div class="col-md-12">
-              <label for="clientName" class="form-label">Client name</label>
+              <label for="clientName" class="form-label">{{ 'serviceDesk.clientName' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -958,7 +960,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="policyNo" class="form-label">Policy No.</label>
+              <label for="policyNo" class="form-label">{{ 'serviceDesk.policyNo' | translate }}.</label>
               <input
                 type="text"
                 class="form-control"
@@ -967,7 +969,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="description" class="form-label">Description</label>
+              <label for="description" class="form-label">{{ 'serviceDesk.description' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -976,7 +978,7 @@
               />
             </div>
             <div class="col-md-12">
-              <label for="fee" class="form-label">Fee</label>
+              <label for="fee" class="form-label">{{ 'serviceDesk.fee' | translate }}</label>
               <input
                 type="text"
                 class="form-control"
@@ -988,7 +990,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveServiceProviderFeeDetails()">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveServiceProviderFeeDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
