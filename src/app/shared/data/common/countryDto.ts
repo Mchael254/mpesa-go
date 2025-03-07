@@ -172,3 +172,11 @@ export interface PostCountryHolidayDTO {
   month: number;
   status: string;
 }
+
+export interface PostalCodesDTO {
+  description: string,
+  id: number,
+  townCode: number,
+  townName: number,
+  zipCode: number
+}

@@ -755,7 +755,20 @@
     "documentsAttached": "Documents joints",
     "selectUpload": "Sélectionner un fichier à télécharger",
     "documents": "Documents",
-    "preview": "Aperçu"
+    "preview": "Aperçu",
+    "prospect": "Prospect",
+    "new_prospect": "Nouveau Prospect",
+    "import_prospect": "Importer Prospect",
+    "download_template": "Télécharger le Modèle",
+    "convert_to_client": "Convertir en Client",
+    "contact_address_details": "Détails de contact et d'adresse",
+    "certRegistrationNumber": "Numéro d'enregistrement du certificat",
+    "registrationName": "Nom d'enregistrement",
+    "tradeName": "Nom commercial",
+    "registrationDate": "Date d'enregistrement",
+    "parentCompany": "Société mère",
+    "contactPerson": "Personne de contact",
+    "contactPersonTelephone": "Téléphone de la personne de contact"
   },
   "gis": {
     "quotation": {

@@ -726,7 +726,20 @@
     "documentsAttached": "附件文件",
     "selectUpload": "选择文件上传",
     "documents": "文件",
-    "preview": "预览"
+    "preview": "预览",
+    "prospect": "潜在客户",
+    "new_prospect": "新潜在客户",
+    "import_prospect": "导入潜在客户",
+    "download_template": "下载模板",
+    "convert_to_client": "转换为客户",
+    "contact_address_details": "联系和地址详情",
+    "certRegistrationNumber": "证书注册号",
+    "registrationName": "注册名称",
+    "tradeName": "商号",
+    "registrationDate": "注册日期",
+    "parentCompany": "母公司",
+    "contactPerson": "联系人",
+    "contactPersonTelephone": "联系人电话"
   },
   "gis": {
     "quotation": {

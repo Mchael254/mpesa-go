@@ -728,7 +728,20 @@
     "documentsAttached": "Angehängte Dokumente",
     "selectUpload": "Datei zum Hochladen auswählen",
     "documents": "Dokumente",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "prospect": "Interessent",
+    "new_prospect": "Neuer Interessent",
+    "import_prospect": "Interessenten importieren",
+    "download_template": "Vorlage herunterladen",
+    "convert_to_client": "In Kunden umwandeln",
+    "contact_address_details": "Kontakt- und Adressdetails",
+    "certRegistrationNumber": "Zertifikatsregistrierungsnummer",
+    "registrationName": "Registrierungsname",
+    "tradeName": "Handelsname",
+    "registrationDate": "Registrierungsdatum",
+    "parentCompany": "Muttergesellschaft",
+    "contactPerson": "Ansprechpartner",
+    "contactPersonTelephone": "Telefon des Ansprechpartners"
   },
   "gis": {
     "quotation": {
