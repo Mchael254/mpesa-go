@@ -132,17 +132,7 @@ export class QuotationDetailsComponent {
     this.getuser();
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
-    this.quickQuoteDetails()
-
-
-
-    this.editConvertedQuote = JSON.parse(sessionStorage.getItem("editFlag"));
-
-    if (this.editConvertedQuote) {
-      this.patchQuickQuoteData()
-    };
-
-
+    // this.quickQuoteDetails()
 
     log.debug(this.quotationForm.value)
 
@@ -150,40 +140,80 @@ export class QuotationDetailsComponent {
   ngOnDestroy(): void { }
 
   quickQuoteDetails() {
-    this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
     this.quickQuotationCode = sessionStorage.getItem('quickQuotationCode');
     if (this.quickQuotationCode) {
       sessionStorage.setItem('quotationNum', this.quickQuotationNum);
       sessionStorage.setItem('quotationCode', this.quickQuotationCode);
       this.quotationService.getQuotationDetails(this.quickQuotationNum).subscribe(res => {
-        this.quickQuotationDetails = res
-        log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails)
-        this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
-        this.quotationForm.controls['wefDate'].setValue(this.quickQuotationDetails.coverFrom);
-        this.quotationForm.controls['wetDate'].setValue(this.quickQuotationDetails.coverTo);
-        // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
-        log.debug(this.quickQuotationDetails.source)
-        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode
-        this.productService.getProductByCode(productCode).subscribe(res => {
-          this.quotationForm.controls['productCode'].setValue(res);
-        })
+        this.quickQuotationDetails = res;
+        log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails);
 
-        log.debug("Test currency", this.currency)
+        // Set form values from the response
+        this.quotationForm.patchValue({
+          quotationCode: this.quickQuotationDetails.code,
+          quotationNo: this.quickQuotationDetails.quotationNo,
+          user: this.quickQuotationDetails.preparedBy,
+          wefDate: new Date(this.quickQuotationDetails.coverFrom),
+          wetDate: new Date(this.quickQuotationDetails.coverTo),
+          expiryDate: new Date(this.quickQuotationDetails.expiryDate),
+          branchCode: this.quickQuotationDetails.branchCode,
+          currencyCode: this.quickQuotationDetails.currencyCode,
+          agentCode: this.quickQuotationDetails.agentCode,
+          agentShortDescription: this.quickQuotationDetails.agentShortDescription,
+          clientType: this.quickQuotationDetails.clientType,
+          source: this.quickQuotationDetails.sourceCode,
+          clientCode: this.quickQuotationDetails.clientCode,
+          comments: this.quickQuotationDetails.comments,
+          internalComments: this.quickQuotationDetails.internalComments,
+          RFQDate: this.quickQuotationDetails.preparedDate ? new Date(this.quickQuotationDetails.preparedDate) : null,
+          multiUser: this.quickQuotationDetails.multiUser,
+          unitCode: this.quickQuotationDetails.unitCode,
+          locationCode: this.quickQuotationDetails.locationCode,
+          // Add other fields as needed
+        });
+
+        // Set product code
+        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode;
+        this.productService.getProductDetailsByCode(productCode).subscribe(res => {
+          log.debug("response product", res);
+
+          // Find the matching product object in ProductDescriptionArray
+          const selectedProduct = this.ProductDescriptionArray.find((product: { code: number; }) => product.code === res?.code);
+
+          // Set the entire product object as the form control value
+          if (selectedProduct) {
+            this.quotationForm.controls['productCode'].setValue(selectedProduct);
+            this.getProductClause();
+            this.checkMotorClass();
+          }
+        });
+
+        // Set currency code
         this.currency.forEach(el => {
-
           if (el.symbol === this.quickQuotationDetails.currency) {
-            log.debug("Test currency", el)
             this.quotationForm.controls['currencyCode'].setValue(el);
           }
-        })
-      })
+        });
+
+        // set branch
+        this.branch.forEach(el => {
+          if (el.id === this.quickQuotationDetails.branchCode) {
+            this.quotationForm.controls['branchCode'].setValue(el);
+          }
+        });
+
+        // Set source if needed
+        if (this.quickQuotationDetails.source) {
+          this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
+        }
+
+        // Debugging
+        log.debug("Form Values After Patch", this.quotationForm.value);
+      });
     }
   }
 
 
-
-
- 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
@@ -850,31 +880,6 @@ export class QuotationDetailsComponent {
       });
   }
 
-  patchQuickQuoteData() {
-    const storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
-
-    this.quotationForm.patchValue({
-      wefDate: this.formatDate(storedData.effectiveDateFrom), // effectiveDateFrom
-      carRegNo: storedData.carRegNo, // carRegNo
-      yearOfManufacture: storedData.yearOfManufacture, // yearOfManufacture
-      clientName: storedData.clientName, // clientName
-      clientEmail: storedData.clientEmail, // clientEmail
-      productCode: storedData.product?.code, // product.code
-      productDescription: storedData.product?.description, // product.description
-      subclassCode: storedData.subClass?.code, // subClass.code
-      subclassDescription: storedData.subClass?.description, // subClass.description
-      currencyCode: storedData.currency?.id, // currency.id
-      currencySymbol: storedData.currency?.symbol, // currency.symbol
-      currencyName: storedData.currency?.name, // currency.name
-      currencyRoundingOff: storedData.currency?.roundingOff, // currency.roundingOff
-      selfDeclaredValue: storedData.selfDeclaredValue, // selfDeclaredValue
-      clientPhoneNumber: storedData.clientPhoneNumber, // clientPhoneNumber
-      existingClientSelected: storedData.existingClientSelected, // existingClientSelected
-      bindCode: storedData.selectedBinderCode, // selectedBinderCode
-      computationPayloadCode: storedData.computationPayloadCode // computationPayloadCode
-    });
-
-  }
   fetchQuotationRelatedData() {
     forkJoin([
       this.bankService.getCurrencies(),
@@ -883,83 +888,84 @@ export class QuotationDetailsComponent {
       this.quotationService.getIntroducers(),
       this.producSetupService.getAllProducts()
     ])
-      .pipe(untilDestroyed(this))
-      .subscribe(([currencies, sources, branches, introducers, products]: any) => {
-        // CURRENCIES
-        this.currency = currencies.map((value) => {
-          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return { ...value, name: capitalizedDescription };
-        });
-
-        log.info(this.currency, 'this is a currency list');
-
-        const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
-        if (defaultCurrency) {
-          log.debug('DEFAULT CURRENCY', defaultCurrency);
-          this.defaultCurrency = defaultCurrency;
-          this.defaultCurrencyName = defaultCurrency.name;
-          this.defaultCurrencySymbol = defaultCurrency.symbol;
-          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-          this.fetchUserOrgId()
-        }
-        if (this.quotationFormDetails) {
-          const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
-          if (selectedBranch) {
-            this.quotationForm.patchValue({ currencyCode: selectedBranch });
-          }
-        } else {
-          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
-
-        }
-        // QUOTATION SOURCES
-        this.quotationSources = sources?.content || [];
-        this.quotationSources = this.quotationSources.map((value) => {
-          let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
-          return { ...value, description: capitalizedDescription };
-        });
-
-        if (this.quotationFormDetails) {
-          const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
-          if (selectedSource) {
-            this.quotationForm.patchValue({ source: selectedSource });
-          }
-        }
-
-        log.debug("SOURCES", this.quotationSources);
-
-        // BRANCHES
-        this.branch = branches.map((value) => {
-          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return { ...value, name: capitalizedDescription };
-        });
-        if (this.quotationFormDetails) {
-          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
-          if (selectedBranch) {
-            this.quotationForm.patchValue({ branchCode: selectedBranch });
-          }
-        }
-
-        // INTRODUCERS
-        this.introducers = introducers;
-
-        // PRODUCTS
-        this.products = products;
-        this.ProductDescriptionArray = this.products.map(product => ({
-          code: product.code,
-          description: this.capitalizeWord(product.description),
-        }));
-
-        if (this.quotationFormDetails) {
-          const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
-          if (selectedProduct) {
-            this.quotationForm.patchValue({ productCode: selectedProduct });
-          }
-        }
-
-        log.info("Quotation form >>>", this.quotationForm);
-        log.info('Modified product description', this.ProductDescriptionArray);
+    .pipe(untilDestroyed(this))
+    .subscribe(([currencies, sources, branches, introducers, products]: any) => {
+      // CURRENCIES
+      this.currency = currencies.map((value) => {
+        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+        return { ...value, name: capitalizedDescription };
       });
+
+      log.info(this.currency, 'this is a currency list');
+
+      const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+      if (defaultCurrency) {
+        log.debug('DEFAULT CURRENCY', defaultCurrency);
+        this.defaultCurrency = defaultCurrency;
+        this.defaultCurrencyName = defaultCurrency.name;
+        this.defaultCurrencySymbol = defaultCurrency.symbol;
+        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        this.fetchUserOrgId()
+      }
+      if (this.quotationFormDetails) {
+        const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+        if (selectedBranch) {
+          this.quotationForm.patchValue({ currencyCode: selectedBranch });
+        }
+      }else{
+        this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+
+      }
+      // QUOTATION SOURCES
+      this.quotationSources = sources?.content || [];
+      this.quotationSources = this.quotationSources.map((value) => {
+        let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+        return { ...value, description: capitalizedDescription };
+      });
+
+      log.debug("SOURCES", this.quotationSources);
+
+      // BRANCHES
+      this.branch = branches.map((value) => {
+        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+        return { ...value, name: capitalizedDescription };
+      });
+
+      log.info(this.branch, 'this is a branch list');
+
+      if (this.quotationFormDetails) {
+        const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
+        if (selectedBranch) {
+          this.quotationForm.patchValue({ branchCode: selectedBranch });
+        }
+      }
+
+      // INTRODUCERS
+      this.introducers = introducers;
+
+      // PRODUCTS
+      this.products = products;
+      this.ProductDescriptionArray = this.products.map(product => ({
+        code: product.code,
+        description: this.capitalizeWord(product.description),
+      }));
+
+      if (this.quotationFormDetails) {
+        const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
+        if (selectedProduct) {
+          this.quotationForm.patchValue({ productCode: selectedProduct });
+        }
+      }
+
+      log.info("Quotation form >>>", this.quotationForm);
+      log.info('Modified product description', this.ProductDescriptionArray);
+
+      this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
+      if (this.quickQuotationNum) {
+        this.quickQuoteDetails();
+      }
+    });
   }
 
 }

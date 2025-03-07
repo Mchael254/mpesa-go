@@ -37,7 +37,7 @@
                   <p class="label">Quotation Number</p>
                 </div>
                 <div class="col-7">
-                  <p class="content">{{quotationNumber}}</p>
+                  <p class="content">{{ fetchedQuoteNum }}</p>
                 </div>
               </div>
             </div>
@@ -113,7 +113,7 @@
                   <p class="label">Proposer</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.introducerCode }}</p>
+                  <p class="content">{{quotationView?.introducerCode }}</p>
                 </div>
               </div>
             </div>
@@ -123,7 +123,7 @@
                   <p class="label">Introducer</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.introducerCode }}</p>
+                  <p class="content">{{quotationView?.introducerCode }}</p>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@
                   <p class="label">Internal Comments</p>
                 </div>
                 <div class="col-7">
-                  <p class="content">{{quotationDetails?.internalComments }}</p>
+                  <p class="content">{{quotationView?.internalComments }}</p>
                 </div>
               </div>
             </div>
@@ -215,7 +215,7 @@
                   <p class="label">External Comments</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{quotationDetails?.comments }}</p>
+                  <p class="content">{{quotationView?.comments }}</p>
                 </div>
               </div>
             </div>
