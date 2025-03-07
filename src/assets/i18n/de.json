@@ -179,6 +179,16 @@
     "Parameters": "Hauptbuch-Parameter",
     "Transactions": "Hauptbuch-Transaktionen",
     "Inquiries": "Hauptbuch-Anfragen",
+   
+      "Invoices/Cr Notes": "Rechnungen/Gutschriften",
+      "Gl-Inquiries": "Hauptbuch-Anfragen",
+      "Gl-Transactions": "Hauptbuch-Transaktionen",
+      "Inquires": "Anfragen",
+      "GL-Parameters": "Hauptbuch-Parameter",
+  
+
+  
+
     "Gl-Final Reports": "Hauptbuch-Abschlussberichte",
     "invoicesDrNotes": "Rechnungen/Belastungsanzeigen",
     "Cheques": "Schecks",
@@ -702,7 +712,8 @@
     "potential_sale_stage_required": "Potentiële Verkoopfase is vereist",
     "potential_contr": "Potentiële Contract",
     "potential_contr_required": "Potentiële Contract is vereist",
-    "converted": "geconverteerd",
+    "converted": "Geconverteerd",
+    "is_lead_converted": "Wurde der Lead bereits konvertiert?",
     "converted_required": "Conversie is vereist",
     "potential_close_date": "Potentiële Sluitdatum",
     "potential_close_date_required": "Potentiële Sluitdatum is vereist",
@@ -717,7 +728,20 @@
     "documentsAttached": "Angehängte Dokumente",
     "selectUpload": "Datei zum Hochladen auswählen",
     "documents": "Dokumente",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "prospect": "Interessent",
+    "new_prospect": "Neuer Interessent",
+    "import_prospect": "Interessenten importieren",
+    "download_template": "Vorlage herunterladen",
+    "convert_to_client": "In Kunden umwandeln",
+    "contact_address_details": "Kontakt- und Adressdetails",
+    "certRegistrationNumber": "Zertifikatsregistrierungsnummer",
+    "registrationName": "Registrierungsname",
+    "tradeName": "Handelsname",
+    "registrationDate": "Registrierungsdatum",
+    "parentCompany": "Muttergesellschaft",
+    "contactPerson": "Ansprechpartner",
+    "contactPersonTelephone": "Telefon des Ansprechpartners"
   },
   "gis": {
     "quotation": {
@@ -2060,9 +2084,34 @@
     "signSelect": "Auswahl unterschreiben",
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
+ 
+      "base-fms": {
+          "parameters": "Parameter",
+          "reconciliation": "Abstimmung",
+          "transactions": "Transaktionen",
+          "requistions": "Anforderungen",
+          "cheques": "Schecks",
+          "pettyCash": "Portokasse",
+          "receipts": "Quittungen",
+          "receiptingPoints": "Quittierungspunkte",
+          "narration": "Erzählungen",
+          "manageReceipt": "Quittungen verwalten",
+          "receipting": "Quittierung",
+          "receiptingExceptions": "Quittierungsausnahmen",
+          "receiptAuthorization": "Quittungsgenehmigung",
+          "receiptUpload": "Quittungs-Upload",
+          "premiumSuspense": "Prämienkonto",
+          "directDebits": "Lastschriften"
+      },
+  
+  
     "receipting": {
       "receipting":"Belegerstellung",
       "cbReceipting":"Kassenbuch-Belegerstellung",
+    
+        "clientSearch": "Kundensuche",
+    
+    
       "capture_receipt": "Quittung erfassen",
       "receipt_details": "Empfangsdetails",
       "currency": "Währung",
@@ -2379,6 +2428,49 @@
     "authBy": "Genehmigt von",
     "clientName": "Kundenname",
     "fee": "Gebühr",
-    "servProviderFees": "Servicegebühren"
+    "servProviderFees": "Dienstleistergebühren",
+    "categoryDefaultAssignee": "Standardzuweisung der Kategorie",
+    "system": "System",
+    "requestCategory": "Anfragkategorie",
+    "levelOneDuration": "Dauer der ersten Stufe",
+    "levelTwoDuration": "Dauer der zweiten Stufe",
+    "assignTo": "Zuweisen an",
+    "messageTemplate": "Nachrichtenvorlage",
+    "saveDetails": "Details speichern",
+    "telephoneNo": "Telefonnummer",
+    "emailAddress": "E-Mail-Adresse",
+    "accountNo": "Konto-Nr.",
+    "newCase": "Neuer Fall",
+    "TelephoneNoII": "Telefonnummer II",
+    "emailAddressII": "E-Mail-Adresse II",
+    "gender": "Geschlecht",
+    "maritalStatus": "Familienstand",
+    "TINno": "Steuernummer",
+    "postalAddress": "Postadresse",
+    "incident": "Vorfall",
+    "requestSource": "Anfragequelle",
+    "accountType": "Kontotyp",
+    "account": "Konto",
+    "captureDate": "Erfassungsdatum",
+    "requestDate": "Anfragedatum",
+    "reporterInitiator": "Reporter/Initiator",
+    "ownerAccountType": "Besitzer-Kontotyp",
+    "closedBy": "Geschlossen von",
+    "resolutionDate": "Lösungsdatum",
+    "preferredCommsMode": "Bevorzugter Kommunikationsmodus",
+    "primaryMode": "Primärmodus",
+    "postedBy": "Veröffentlicht von",
+    "documentType": "Dokumenttyp",
+    "receivedBy": "Erhalten von",
+    "uploadDocument": "Dokument hochladen",
+    "clients": "Kunden",
+    "intermediary": "Vermittler",
+    "serviceProviders": "Dienstanbieter",
+    "others": "Andere",
+    "surname": "Nachname",
+    "otherNames": "Weitere Namen",
+    "shortDesc": "Kurzbeschreibung",
+    "IDNo": "Ausweisnummer",
+    "telephone": "Telefon"
   }
 }

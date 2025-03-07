@@ -594,13 +594,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           log.debug("Response after deleting a risk ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
-          // Remove the deleted risk from the riskDetails array
-          // const index = this.quotationDetails?.riskInformation.findIndex(risk => risk.code === this.selectedRisk.code);
-          // Remove the deleted risk from the riskDetails array
-          // const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
-          // if (index !== -1) {
-          //   this.riskDetails.splice(index, 1);
-          // }
+
           this.loadClientQuotation()
           this.selectedRisk = null;
         },

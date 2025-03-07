@@ -66,7 +66,7 @@ export class ProspectsComponent implements OnInit {
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const pageSize = event.rows;
 
-    this.getPropspects(pageIndex, pageSize, sortField, sortOrder)
+    this.getProspects(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
         untilDestroyed(this),
         tap((data) => log.info(`Fetching Prospects>>>`, data))
@@ -80,10 +80,10 @@ export class ProspectsComponent implements OnInit {
       );
   }
 
-  getPropspects(
+  getProspects(
     pageIndex: number,
     pageSize: number,
-    sortField: any = 'type',
+    sortField: any = 'createdDate',
     sortOrder: string = 'desc'
   ): Observable<Pagination<ProspectDto>> {
     return this.prospectService

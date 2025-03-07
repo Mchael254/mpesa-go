@@ -28,6 +28,7 @@ import { ReceiptDataService } from '../../services/receipt-data.service';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
 import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * @Component({
  *   selector: 'app-client-search',
@@ -165,6 +166,7 @@ export class ClientSearchComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
+    public translate: TranslateService,
     private sessionStorage:SessionStorageService
   ) {}
 

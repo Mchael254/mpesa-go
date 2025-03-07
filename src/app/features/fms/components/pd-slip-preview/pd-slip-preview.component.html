@@ -1,30 +1,53 @@
 <div class="container-fluid">
-  <h5 class="text-primary" style="padding-top: 10px">Receipt summary</h5>
-  <div class="receipt-section">
-    <ngx-doc-viewer
-      #docViewerIframe
-      [fileName]="documentData?.fileName ?? ''"
-      [srcUrl]="filePath ?? ''"
-      style="margin: 20px; margin-top: 10px; width: 80%"
-    >
-    </ngx-doc-viewer>
-  </div>
-  <!-- Action Buttons -->
-  <div class="btn-actions">
-    <div class="btn-back">
-      <button type="button" class="btn btn-link" (click)="onBack()">
-        Back
-      </button>
-    </div>
-    <div class="btn-next">
-      <button
-        type="button"
-        class="btn-primary-outline"
-        (click)="downloadReceipt()"
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label: this.translate.instant('fms.receipting.cbReceipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('fms.receipting.receipting'),
+        url: '/home/fms/',
+      },
+      {
+        label:this.translate.instant('fms.receipting.slipPreview'),
+        url: ''
+      }
+    ]"
       >
-        Print
-      </button>
-      <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->
+      </app-dynamic-breadcrumb>
     </div>
+  </div>
+  <h5 class="text-primary" style="padding-top: 5px">
+    {{ "fms.receipting.acknowledgementSlip" | translate }}
+  </h5>
+  <div class="receipt-section">
+    <pdf-viewer
+      [src]="filePath"
+      [render-text]="true"
+      [original-size]="false"
+      style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
+      (after-load-complete)="onPdfLoad($event)"
+    ></pdf-viewer>
+  </div>
+
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+    <button type="button" class="btn btn-primary" (click)="downloadReceipt()">
+      Download
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="navigateToReceiptCapture()"
+    >
+      Exit
+    </button>
   </div>
 </div>

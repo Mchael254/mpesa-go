@@ -15,7 +15,7 @@ import { EntityService } from '../../../services/entity/entity.service';
 import { CountryService } from '../../../../../shared/services/setups/country/country.service';
 import { AccountService } from '../../../services/account/account.service';
 import {
-  CountryDto,
+  CountryDto, PostalCodesDTO,
   StateDto,
   TownDto,
 } from '../../../../../shared/data/common/countryDto';
@@ -40,6 +40,7 @@ export class NewProspectComponent implements OnInit {
   public createProspectForm: FormGroup;
 
   public countryData: CountryDto[] = [];
+  public filteredZipCodes: CountryDto[] = [];
   public statesData: StateDto[] = [];
   public townData: TownDto[] = [];
   public modeIdentityType: IdentityModeDTO[] = [];
@@ -48,6 +49,8 @@ export class NewProspectComponent implements OnInit {
   private partyId: number;
   public selectedCountry: number;
   public selectedState: number;
+  public selectedTown: number;
+  public selectedModeofIdentity: any;
 
   public prospectType: string = 'I';
   public phoneNumberRegex: string;
@@ -57,6 +60,9 @@ export class NewProspectComponent implements OnInit {
   public submitted = false;
   public response: any;
   public isCardOpen: boolean[] = [];
+
+  public postalCodesData: PostalCodesDTO[] = [];
+  private entityDetails: EntityDto;
 
   prospectBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -142,7 +148,7 @@ export class NewProspectComponent implements OnInit {
       idNumber: new FormControl({ value: '', disabled: true }),
       pinNumber: new FormControl({ value: '', disabled: true }),
       gender: [''],
-      certRegistrationNumber: [''],
+      certRegistrationNumber: [{ value: '', disabled: true }],
       registrationName: [''],
       tradeName: [''],
       registrationDate: [''],
@@ -258,6 +264,7 @@ export class NewProspectComponent implements OnInit {
         next: (entityDetails: EntityDto) => {
           log.info(`fetched lead details`, entityDetails);
           this.patchLeadFormValues(entityDetails);
+          this.entityDetails = entityDetails;
         },
         error: (err) => {},
       });
@@ -277,6 +284,13 @@ export class NewProspectComponent implements OnInit {
       ),
       idNumber: entityDetails?.identityNumber,
       identityType: entityDetails?.modeOfIdentity?.id,
+      certRegistrationNumber: entityDetails?.identityNumber,
+      registrationName: otherName,
+      tradeName: surname,
+      registrationDate: this.datePipe.transform(
+        entityDetails?.dateOfBirth,
+        'yyy-MM-dd'
+      ),
     });
   }
 
@@ -306,6 +320,27 @@ export class NewProspectComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.townData = data;
+      });
+  }
+
+  onTownChange() {
+    this.countryService
+      .getPostalCodes(this.selectedTown)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next:(data) => {
+          this.postalCodesData = data;
+          log.info(`postal codes data`, this.postalCodesData);
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.message || 'An error occurred';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
       });
   }
 
@@ -377,6 +412,7 @@ export class NewProspectComponent implements OnInit {
         next: (data) => {
           if (data) {
             this.countryData = data;
+            this.filteredZipCodes = data.filter(value => value.zipCode != null);
             log.info('Fetched Countries', this.countryData);
           } else {
             this.errorOccurred = true;
@@ -428,37 +464,51 @@ export class NewProspectComponent implements OnInit {
     const saveProspect: ProspectDto = {
       accountId: null,
       clientType: prospectFormValues.clientType,
-      contact: prospectFormValues.addressDetails.contact,
-      contactTelephone: prospectFormValues.addressDetails.telNumber,
+      contact: prospectFormValues.addressDetails.contactPerson,
+      contactTelephone: this.prospectType == 'I' ? prospectFormValues.addressDetails.telNumber : prospectFormValues.addressDetails.contactPersonTelephone,
       countryId: prospectFormValues.addressDetails.country,
-      dateOfBirth: prospectFormValues.dateOfBirth,
+      dateOfBirth: this.prospectType == 'I' ? prospectFormValues.dateOfBirth : prospectFormValues.registrationDate,
       emailAddress: prospectFormValues.addressDetails.emailAddress,
       id: null,
-      idRegistrationNumber: prospectFormValues.idNumber,
+      idRegistrationNumber: this.prospectType == 'I' ? prospectFormValues.idNumber : prospectFormValues.certRegistrationNumber,
       ldsCode: null,
       mobileNumber: prospectFormValues.addressDetails.mobileNumber,
       organizationId: 2,
-      otherNames: prospectFormValues.otherName,
+      otherNames: this.prospectType == 'I' ? prospectFormValues.otherName: prospectFormValues.registrationName,
       partyCode: this.partyId,
       physicalAddress: prospectFormValues.addressDetails.physicalAddress,
       pinNumber: prospectFormValues.pinNumber,
       postalAddress: prospectFormValues.addressDetails.postalAddress,
       postalCode: prospectFormValues.addressDetails.postalCode,
-      surname: prospectFormValues.surname,
+      surname: this.prospectType == 'I' ? prospectFormValues.surname : prospectFormValues.tradeName,
       telephoneNumber: prospectFormValues.addressDetails.telNumber,
       townId: prospectFormValues.addressDetails.town,
-      type: prospectFormValues.clientType,
+      type: null,
+      converted: null,
+      modeOfIdentity: this.entityDetails?.modeOfIdentity?.name,
+      companyName: prospectFormValues.parentCompany
     };
 
-    log.info('Prospect Form Values to be saved', saveProspect);
+    log.info('Prospect Form Values to be saved', saveProspect, this.selectedModeofIdentity);
 
-    this.prospectService.createProspect(saveProspect).subscribe((data) => {
-      this.globalMessagingService.clearMessages();
-      this.globalMessagingService.displaySuccessMessage(
-        'Success',
-        'Successfully Created a Prospect'
-      );
-      this.router.navigate(['/home/entity/prospect/list']);
+    this.prospectService.createProspect(saveProspect).subscribe({
+      next: (data) => {
+        this.globalMessagingService.clearMessages();
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Successfully Created a Prospect'
+        );
+        this.router.navigate(['/home/entity/prospect/list']);
+      },
+      error: (err) => {
+        this.errorOccurred = true;
+        this.errorMessage = err?.message || 'An error occurred';
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
     });
   }
 }

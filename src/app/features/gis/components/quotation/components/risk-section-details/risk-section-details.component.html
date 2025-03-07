@@ -24,11 +24,10 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label">{{'gis.quotation.product' | translate}}</label>
-            <select class="form-select form-control-sm " id="quote-dropdown" formControlName="productCode">
-              <option value="">{{productDescription |sentenceCase}}</option>
+            <p-dropdown formControlName="productCode" [options]="productList" optionLabel="description"
+            [filterBy]="'description'" [filter]="true"
+           ></p-dropdown>
 
-            </select>
-          
           </div>
         </div>
         <div class="col-sm-4 col-6">
@@ -38,7 +37,7 @@
               translate}}</label>
             <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses" optionLabel="description"
               [filterBy]="'description'" [filter]="true"
-              (onChange)="onSubclassSelected($event);loadSubclassSectionCovertype();"></p-dropdown>
+              (onChange)="onSubclassSelected($event);"></p-dropdown>
 
           </div>
         </div>
@@ -47,8 +46,8 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_make' | translate}}</label>
-             
-            <p-dropdown [options]="vehicleMakeList" optionLabel="name" [filterBy]="'name'" [filter]="true"
+
+            <p-dropdown formControlName="vehicleMake" [options]="vehicleMakeList" optionLabel="name" [filterBy]="'name'" [filter]="true"
               (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
           </div>
         </div>
@@ -56,7 +55,7 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_model' | translate}}</label>
-            <p-dropdown [options]="vehicleModelDetails" optionLabel="name" [filterBy]="'name'" [filter]="true"
+            <p-dropdown formControlName="vehicleModel" [options]="vehicleModelDetails" optionLabel="name" [filterBy]="'name'" [filter]="true"
               (onChange)="onVehicleModelSelected($event);"></p-dropdown>
           </div>
         </div>
@@ -129,14 +128,17 @@
 
           </div>
         </div>
+
+        <!-- date fields -->
         <div class="col-sm-4 col-6">
           <div class="form-group form-group-sm">
             <br>
             <label for="" id="quote-label"> {{'gis.quotation.cover_from' | translate}}</label>
             <p-calendar formControlName="wef" name="wef" id="coverFromDate" inputId="coverFromDate"
               [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-              (onSelect)="updateCoverToDate($event)" [minDate]="minDate" [ngModel]="passedCoverFromDate">
+              (onSelect)="updateCoverToDate($event)" [minDate]="minDate" >
             </p-calendar>
+
           </div>
         </div>
         <div class="col-sm-4 col-6">
@@ -145,16 +147,16 @@
             <label for="" id="quote-label"> {{'gis.quotation.cover_to' | translate}}</label>
             <p-calendar formControlName="wet" name="wet" id="coverToDate" inputId="coverToDate"
               [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true" [minDate]="minDate"
-              [ngModel]="passedCoverToDate">
+              >
             </p-calendar>
           </div>
         </div>
-       
+
       </div>
       <button type="button" class="btn btn-primary float-end " (click)="createRiskDetail()">
         {{'gis.quotation.save_details' | translate}}</button>
 
-   
+
     </div>
   </div>
   <!-- schedule card -->
@@ -976,7 +978,7 @@
                   <input type="text" placeholder="Search" id="search-input-Rsection" [(ngModel)]="searchText" />
                 </div>
                 <div class="scrollable-list">
-                  <div *ngFor="let section of filteredMandatorySections">
+                  <div *ngFor="let section of sectionPremium">
                     <!-- Add a check to see if the section matches the search text -->
                     <div class="form-check" *ngIf="matchesSearch(section.sectionShortDescription)">
                       <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code"
@@ -1279,12 +1281,12 @@
           </ng-template>
           <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
             <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-              <td class="flexible-header">{{sectionArray.calcGroup}}</td>
+              <td class="flexible-header">{{sectionArray.calculationGroup}}</td>
               <td class="flexible-header">{{sectionArray.rowNumber}}</td>
               <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
-              <td class="flexible-header">{{sectionArray.description}}</td>
+              <td class="flexible-header">{{sectionArray.sectionDescription}}</td>
               <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
-              <td class="flexible-header">{{sectionArray.premiumRate}}</td>
+              <td class="flexible-header">{{sectionArray.rate}}</td>
               <td class="flexible-header">{{sectionArray.rateType}}</td>
               <td class="flexible-header">
                 <!-- Edit Button -->

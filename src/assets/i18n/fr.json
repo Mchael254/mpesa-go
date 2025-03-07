@@ -180,6 +180,15 @@
     "Transactions": "Transactions",
     "Invoices/Cr Notes": "Factures/Notes de Crédit",
     "Invoices/DR Notes": "Factures/Notes de Débit",
+    
+      
+      "Gl-Inquiries": "Requêtes du grand livre",
+      "Gl-Transactions": "Transactions du grand livre",
+      "Inquires": "Requêtes",
+      "GL-Parameters": "Paramètres du grand livre",
+      
+
+  
     "Inquiries": "Demandes",
     "Requisitions": "Réquisitions",
     "Gl-Final Reports": "Rapports Finaux du Grand Livre",
@@ -730,7 +739,8 @@
     "potential_sale_stage_required": "L'étape de vente potentielle est requise",
     "potential_contr": "Contrat potentiel",
     "potential_contr_required": "Le contrat potentiel est requis",
-    "converted": "converti",
+    "converted": "Converti",
+    "is_lead_converted": "Le prospect est-il déjà converti?",
     "converted_required": "La conversion est requise",
     "potential_close_date": "Date de clôture potentielle",
     "potential_close_date_required": "La date de clôture potentielle est requise",
@@ -745,7 +755,20 @@
     "documentsAttached": "Documents joints",
     "selectUpload": "Sélectionner un fichier à télécharger",
     "documents": "Documents",
-    "preview": "Aperçu"
+    "preview": "Aperçu",
+    "prospect": "Prospect",
+    "new_prospect": "Nouveau Prospect",
+    "import_prospect": "Importer Prospect",
+    "download_template": "Télécharger le Modèle",
+    "convert_to_client": "Convertir en Client",
+    "contact_address_details": "Détails de contact et d'adresse",
+    "certRegistrationNumber": "Numéro d'enregistrement du certificat",
+    "registrationName": "Nom d'enregistrement",
+    "tradeName": "Nom commercial",
+    "registrationDate": "Date d'enregistrement",
+    "parentCompany": "Société mère",
+    "contactPerson": "Personne de contact",
+    "contactPersonTelephone": "Téléphone de la personne de contact"
   },
   "gis": {
     "quotation": {
@@ -2597,10 +2620,35 @@
     "signSelect": "Signer la sélection",
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
+   
+      "base-fms": {
+          "parameters": "Paramètres",
+          "reconciliation": "Rapprochement",
+          "transactions": "Transactions",
+          "requistions": "Réquisitions",
+          "cheques": "Chèques",
+          "pettyCash": "Petite caisse",
+          "receipts": "Reçus",
+          "receiptingPoints": "Points de réception",
+          "narration": "Narrations",
+          "manageReceipt": "Gérer les reçus",
+          "receipting": "Encaissement",
+          "receiptingExceptions": "Exceptions d'encaissement",
+          "receiptAuthorization": "Autorisation de reçu",
+          "receiptUpload": "Téléchargement de reçu",
+          "premiumSuspense": "Compte d'attente de primes",
+          "directDebits": "Prélèvements automatiques"
+      },
+  
+  
     "receipting": {
       "receipting":"Emission de reçus",
       "cbReceipting":"Livre de caisse-Emission de reçus",
       "receipt_details": "Détails du Reçu",
+     
+        "clientSearch": "Recherche de client",
+    
+    
       "capture_receipt": "Capturer le reçu",
       "currency": "Devise",
       "payment_mode": "Mode de Paiement",
@@ -2906,6 +2954,49 @@
     "authBy": "Autorisé par",
     "clientName": "Nom du Client",
     "fee": "Frais",
-    "servProviderFees": "Frais de Prestataire de Service"
+    "servProviderFees": "Frais du prestataire de service",
+    "categoryDefaultAssignee": "Affectation par défaut de la catégorie",
+    "system": "Système",
+    "requestCategory": "Catégorie de demande",
+    "levelOneDuration": "Durée du niveau un",
+    "levelTwoDuration": "Durée du niveau deux",
+    "assignTo": "Attribuer à",
+    "messageTemplate": "Modèle de message",
+    "saveDetails": "Enregistrer les détails",
+    "telephoneNo": "Numéro de téléphone",
+    "emailAddress": "Adresse e-mail",
+    "accountNo": "Numéro de compte",
+    "newCase": "Nouveau cas",
+    "TelephoneNoII": "Numéro de téléphone II",
+    "emailAddressII": "Adresse e-mail II",
+    "gender": "Genre",
+    "maritalStatus": "État civil",
+    "TINno": "Numéro d’identification fiscale",
+    "postalAddress": "Adresse postale",
+    "incident": "Incident",
+    "requestSource": "Source de la demande",
+    "accountType": "Type de compte",
+    "account": "Compte",
+    "captureDate": "Date d’enregistrement",
+    "requestDate": "Date de demande",
+    "reporterInitiator": "Rapporteur/Initiateur",
+    "ownerAccountType": "Type de compte du propriétaire",
+    "closedBy": "Fermé par",
+    "resolutionDate": "Date de résolution",
+    "preferredCommsMode": "Mode de communication préféré",
+    "primaryMode": "Mode principal",
+    "postedBy": "Posté par",
+    "documentType": "Type de document",
+    "receivedBy": "Reçu par",
+    "uploadDocument": "Téléverser un document",
+    "clients": "Clients",
+    "intermediary": "Intermédiaire",
+    "serviceProviders": "Fournisseurs de services",
+    "others": "Autres",
+    "surname": "Nom de famille",
+    "otherNames": "Autres prénoms",
+    "shortDesc": "Brève description",
+    "IDNo": "Numéro d'identité",
+    "telephone": "Téléphone"
   }
 }

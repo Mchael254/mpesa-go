@@ -41,7 +41,7 @@ export class QuotationDetailsComponent {
   branch: OrganizationBranchDto[];
   currency: CurrencyDTO[]
   clauses: any;
-  products: Products[]=[];
+  products: Products[] = [];
   ProductDescriptionArray: any = [];
 
   user: any;
@@ -57,7 +57,7 @@ export class QuotationDetailsComponent {
   show: boolean = false;
   showProduct: boolean = false;
   quotationNum: string;
-  introducers: introducersDTO[]=[];
+  introducers: introducersDTO[] = [];
   productSubclassList: any
   productDetails: any
   userDetails: any;
@@ -117,7 +117,7 @@ export class QuotationDetailsComponent {
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
-    log.debug("QUOTATION FORM DETAILS",this.quotationFormDetails)
+    log.debug("QUOTATION FORM DETAILS", this.quotationFormDetails)
     const clientFormDetails = sessionStorage.getItem('clientPayload');
     log.debug("Client form details:", clientFormDetails)
     const clientCode = sessionStorage.getItem('clientCode');
@@ -128,33 +128,11 @@ export class QuotationDetailsComponent {
   ngOnInit(): void {
     this.minDate = new Date();
     this.fetchQuotationRelatedData()
-   
+
     this.getuser();
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
-    this.quickQuoteDetails()
-
-
-
-    this.editConvertedQuote = JSON.parse(sessionStorage.getItem("editFlag"));
-
-    if (this.editConvertedQuote) {
-      this.patchQuickQuoteData()
-    };
-
-    // if (this.quotationFormDetails) {
-    //   this.quotationForm.patchValue(parsedData);
-
-    //   log.debug(parsedData)
-    // }
-    // if (clientFormDetails) {
-    //   const clientData = JSON.parse(clientFormDetails)
-    //   log.debug("Client form details:", clientData)
-
-    //   this.quotationForm.controls['clientCode'].setValue(this.clientId);
-    //   this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
-    //   this.quotationForm.controls['clientType'].setValue(clientData.category);
-    // }
+    // this.quickQuoteDetails()
 
     log.debug(this.quotationForm.value)
 
@@ -162,52 +140,84 @@ export class QuotationDetailsComponent {
   ngOnDestroy(): void { }
 
   quickQuoteDetails() {
-    this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
     this.quickQuotationCode = sessionStorage.getItem('quickQuotationCode');
     if (this.quickQuotationCode) {
       sessionStorage.setItem('quotationNum', this.quickQuotationNum);
       sessionStorage.setItem('quotationCode', this.quickQuotationCode);
       this.quotationService.getQuotationDetails(this.quickQuotationNum).subscribe(res => {
-        this.quickQuotationDetails = res
-        log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails)
-        this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
-        this.quotationForm.controls['wefDate'].setValue(this.quickQuotationDetails.coverFrom);
-        this.quotationForm.controls['wetDate'].setValue(this.quickQuotationDetails.coverTo);
-        // this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
-        log.debug(this.quickQuotationDetails.source)
-        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode
-        this.productService.getProductByCode(productCode).subscribe(res => {
-          this.quotationForm.controls['productCode'].setValue(res);
-        })
+        this.quickQuotationDetails = res;
+        log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails);
 
-        log.debug("Test currency", this.currency)
+        // Set form values from the response
+        this.quotationForm.patchValue({
+          quotationCode: this.quickQuotationDetails.code,
+          quotationNo: this.quickQuotationDetails.quotationNo,
+          user: this.quickQuotationDetails.preparedBy,
+          wefDate: new Date(this.quickQuotationDetails.coverFrom),
+          wetDate: new Date(this.quickQuotationDetails.coverTo),
+          expiryDate: new Date(this.quickQuotationDetails.expiryDate),
+          branchCode: this.quickQuotationDetails.branchCode,
+          currencyCode: this.quickQuotationDetails.currencyCode,
+          agentCode: this.quickQuotationDetails.agentCode,
+          agentShortDescription: this.quickQuotationDetails.agentShortDescription,
+          clientType: this.quickQuotationDetails.clientType,
+          source: this.quickQuotationDetails.sourceCode,
+          clientCode: this.quickQuotationDetails.clientCode,
+          comments: this.quickQuotationDetails.comments,
+          internalComments: this.quickQuotationDetails.internalComments,
+          RFQDate: this.quickQuotationDetails.preparedDate ? new Date(this.quickQuotationDetails.preparedDate) : null,
+          multiUser: this.quickQuotationDetails.multiUser,
+          unitCode: this.quickQuotationDetails.unitCode,
+          locationCode: this.quickQuotationDetails.locationCode,
+          // Add other fields as needed
+        });
+
+        // Set product code
+        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode;
+        this.productService.getProductDetailsByCode(productCode).subscribe(res => {
+          log.debug("response product", res);
+
+          // Find the matching product object in ProductDescriptionArray
+          const selectedProduct = this.ProductDescriptionArray.find((product: { code: number; }) => product.code === res?.code);
+
+          // Set the entire product object as the form control value
+          if (selectedProduct) {
+            this.quotationForm.controls['productCode'].setValue(selectedProduct);
+            this.getProductClause();
+            this.checkMotorClass();
+          }
+        });
+
+        // Set currency code
         this.currency.forEach(el => {
-
           if (el.symbol === this.quickQuotationDetails.currency) {
-            log.debug("Test currency", el)
             this.quotationForm.controls['currencyCode'].setValue(el);
           }
-        })
-      })
+        });
+
+        // set branch
+        this.branch.forEach(el => {
+          if (el.id === this.quickQuotationDetails.branchCode) {
+            this.quotationForm.controls['branchCode'].setValue(el);
+          }
+        });
+
+        // Set source if needed
+        if (this.quickQuotationDetails.source) {
+          this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
+        }
+
+        // Debugging
+        log.debug("Form Values After Patch", this.quotationForm.value);
+      });
     }
   }
 
 
-
-
-  /**
- * Sets the 'currencyCode' control value in the quotation form based on the selected currency code.
- * Logs the current value of the quotation form.
- */
-  // getCurrencyCode(){
-  //   log.debug(this.quotationForm.value.currencyCode)
-  //   this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-  // log.debug(this.quotationForm.value)
-  // }
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
- 
+
   /**
   * Retrieves the current user and stores it in the 'user' property.
   * @method getUser
@@ -242,7 +252,7 @@ export class QuotationDetailsComponent {
     log.debug('Todays  Date', this.todaysDate);
     this.updateQuotationExpiryDate(this.todaysDate)
   }
- 
+
   /**
     * Creates a new quotation form using Angular Reactive Forms.
     * @method createQuotationForm
@@ -289,7 +299,9 @@ export class QuotationDetailsComponent {
       RFQDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
       expiryDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate]
+        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
+      quotationType: [null]
+
     });
   }
 
@@ -463,7 +475,7 @@ export class QuotationDetailsComponent {
           quotationForm.clientType = "I"
 
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-         
+
           const quotationFormJson = this.quotationForm.value
           log.debug("Quotation form details", quotationFormJson)
           log.debug("CREATE QUOTATION")
@@ -723,12 +735,12 @@ export class QuotationDetailsComponent {
       log.debug("expiry date formatted", this.expiryDate)
     }
   }
-  checkMotorClass(){
-    const productCode =  this.quotationForm.value.productCode.code
+  checkMotorClass() {
+    const productCode = this.quotationForm.value.productCode.code
     const selectedProductDetails = this.products.find(product => product.code === productCode)
     this.motorClassAllowed = selectedProductDetails.allowMotorClass
     sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
-    log.debug("Is motor class:",this.motorClassAllowed)
+    log.debug("Is motor class:", this.motorClassAllowed)
   }
   /**
    * Retrieves product clauses based on the provided product code.
@@ -868,31 +880,6 @@ export class QuotationDetailsComponent {
       });
   }
 
-  patchQuickQuoteData() {
-    const storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
-
-    this.quotationForm.patchValue({
-      wefDate: this.formatDate(storedData.effectiveDateFrom), // effectiveDateFrom
-      carRegNo: storedData.carRegNo, // carRegNo
-      yearOfManufacture: storedData.yearOfManufacture, // yearOfManufacture
-      clientName: storedData.clientName, // clientName
-      clientEmail: storedData.clientEmail, // clientEmail
-      productCode: storedData.product?.code, // product.code
-      productDescription: storedData.product?.description, // product.description
-      subclassCode: storedData.subClass?.code, // subClass.code
-      subclassDescription: storedData.subClass?.description, // subClass.description
-      currencyCode: storedData.currency?.id, // currency.id
-      currencySymbol: storedData.currency?.symbol, // currency.symbol
-      currencyName: storedData.currency?.name, // currency.name
-      currencyRoundingOff: storedData.currency?.roundingOff, // currency.roundingOff
-      selfDeclaredValue: storedData.selfDeclaredValue, // selfDeclaredValue
-      clientPhoneNumber: storedData.clientPhoneNumber, // clientPhoneNumber
-      existingClientSelected: storedData.existingClientSelected, // existingClientSelected
-      bindCode: storedData.selectedBinderCode, // selectedBinderCode
-      computationPayloadCode: storedData.computationPayloadCode // computationPayloadCode
-    });
-
-  }
   fetchQuotationRelatedData() {
     forkJoin([
       this.bankService.getCurrencies(),
@@ -908,9 +895,9 @@ export class QuotationDetailsComponent {
         let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
         return { ...value, name: capitalizedDescription };
       });
-  
+
       log.info(this.currency, 'this is a currency list');
-  
+
       const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
       if (defaultCurrency) {
         log.debug('DEFAULT CURRENCY', defaultCurrency);
@@ -931,53 +918,54 @@ export class QuotationDetailsComponent {
 
       }
       // QUOTATION SOURCES
-      this.quotationSources = sources?.content || []; 
+      this.quotationSources = sources?.content || [];
       this.quotationSources = this.quotationSources.map((value) => {
         let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
         return { ...value, description: capitalizedDescription };
       });
-  
-      if (this.quotationFormDetails) {
-        const selectedSource = this.quotationSources.find(source => source.code === this.quotationFormDetails?.source);
-        if (selectedSource) {
-          this.quotationForm.patchValue({ source: selectedSource });
-        }
-      }
-  
+
       log.debug("SOURCES", this.quotationSources);
-  
+
       // BRANCHES
       this.branch = branches.map((value) => {
         let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
         return { ...value, name: capitalizedDescription };
       });
+
+      log.info(this.branch, 'this is a branch list');
+
       if (this.quotationFormDetails) {
         const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
         if (selectedBranch) {
           this.quotationForm.patchValue({ branchCode: selectedBranch });
         }
       }
-  
+
       // INTRODUCERS
       this.introducers = introducers;
-  
+
       // PRODUCTS
       this.products = products;
       this.ProductDescriptionArray = this.products.map(product => ({
         code: product.code,
         description: this.capitalizeWord(product.description),
       }));
-  
+
       if (this.quotationFormDetails) {
         const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
         if (selectedProduct) {
           this.quotationForm.patchValue({ productCode: selectedProduct });
         }
       }
-  
+
       log.info("Quotation form >>>", this.quotationForm);
       log.info('Modified product description', this.ProductDescriptionArray);
+
+      this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
+      if (this.quickQuotationNum) {
+        this.quickQuoteDetails();
+      }
     });
   }
-  
+
 }

@@ -237,7 +237,20 @@ export class DynamicReportsComponent implements OnInit {
           this.download(this.filePath, this.fileName);
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.status);
+          if (err.error instanceof Blob) {
+            err.error.text().then((errorMessage) => {
+              try {
+                const parsedError = JSON.parse(errorMessage);
+                log.error('Error generating report:', parsedError.message);
+                this.globalMessagingService.displayErrorMessage('Error', parsedError.message);
+              } catch (e) {
+                log.error('Could not parse error message:', errorMessage);
+                this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+              }
+            });
+          } else {
+            log.error('Unexpected error format:', err);
+          }
         }
       })
   }

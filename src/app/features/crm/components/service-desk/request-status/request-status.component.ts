@@ -74,11 +74,16 @@ export class RequestStatusComponent implements OnInit {
   fetchRequestStatus() {
     this.spinner.show();
     this.serviceRequestService.getRequestStatus()
-      .subscribe((data) => {
-        this.requestStatusData = data;
-        this.spinner.hide();
-
-        log.info("request status>>", data);
+      .subscribe({
+        next: (data) => {
+          this.requestStatusData = data;
+          this.spinner.hide();
+          log.info("request status>>", data);;
+        },
+        error: (err) => {
+          this.spinner.hide();
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        }
       });
   }
 
@@ -87,10 +92,15 @@ export class RequestStatusComponent implements OnInit {
    */
   fetchMainStatus() {
     this.serviceRequestService.getMainStatus()
-      .subscribe((data) => {
-        this.mainStatusData = data;
+      .subscribe({
+        next: (data) => {
+          this.mainStatusData = data;
 
-        log.info("main status>>", data);
+          log.info("main status>>", data);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        }
       });
   }
 
