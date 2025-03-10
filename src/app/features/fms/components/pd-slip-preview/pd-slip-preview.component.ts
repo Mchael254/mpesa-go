@@ -153,67 +153,28 @@ export class PdSlipPreviewComponent implements OnInit {
       },
     });
   }
-  // downloadReceipt() {
-  //   this.download(this.filePath, 'receipt.pdf');
-  //   this.router.navigate(['/home/fms/receipt-capture']);
-  // }
-  onPdfLoad(pdf: any): void {
-    // You can now access the PDF document and its pages
-    this.monitorButtons();
-  }
-  monitorButtons(): void {
-    const buttons = document.querySelectorAll('.pdf-viewer-button'); // Adjust the selector based on the button class or ID
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        this.handleButtonClick(button.textContent || 'Unknown Button');
-      });
-    });
-  }
-  handleButtonClick(buttonText: string): void {
-    // Update print status or perform other actions
-    this.updatePrintStatus();
-  }
-  downloadReceipt(): void {
+  download() {
     if (this.filePath) {
-      // Reset download status
-      this.downloadCompleted = false;
+      // 1. Create a temporary <a> element
+      const link = document.createElement('a');
+      // 2. Set the file URL (could be local Blob URL or remote URL)
+      link.href = this.filePath;
+      // 3. Set the suggested filename for the download
+      link.download = 'acknowledmentSlip';
 
-      // Add beforeunload event listener
-      window.addEventListener('beforeunload', this.handleBeforeUnload);
+      // 4. Simulate a click on the link to trigger the browser's download
+      link.click();
 
-      // Fetch the PDF file as a Blob
-      fetch(this.filePath)
-        .then((response) => response.blob())
-        .then((blob) => {
-          // Save the file using file-saver
-          saveAs(blob, 'receipt.pdf');
-
-          // Mark download as completed
-          this.downloadCompleted = true;
-
-          // Call updatePrintStatus after the file is saved
-          this.updatePrintStatus();
-        })
-        .catch((error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to download receipt.'
-          );
-        })
-        .finally(() => {
-          // Remove the beforeunload event listener
-          window.removeEventListener('beforeunload', this.handleBeforeUnload);
-        });
+      this.updatePrintStatus();
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'failed!',
+        'Download failed: Invalid file URL'
+      );
     }
   }
-  handleBeforeUnload = (event: BeforeUnloadEvent): void => {
-    if (!this.downloadCompleted) {
-      // If download is not completed, prevent the default behavior
-      event.preventDefault();
-      event.returnValue = ''; // Required for Chrome
-    }
-  };
+
   /**
    * Triggers a download of the file at the given URL.
    * Creates a temporary `<a>` element, sets its `href` and `download` attributes, and simulates a click to start the download.
@@ -221,22 +182,7 @@ export class PdSlipPreviewComponent implements OnInit {
    * @param {string} fileName - The name to use for the downloaded file.
    * @returns {void}
    */
-  // download(fileUrl: string, fileName: string): void {
-  //   if (fileUrl) {
-  //     const link = document.createElement('a');
-  //     link.href = fileUrl;
-  //     link.download = fileName;
-  //     link.click();
-  //   }
-  // }
 
-  // onPrintStatusChange(status: string): void {
-  //   if (status === 'yes') {
-  //     this.updatePrintStatus();
-  //   } else if (status === 'no') {
-  //     this.navigateToReceiptCapture();
-  //   }
-  // }
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.router.navigate(['/home/fms/receipt-capture']);
@@ -252,8 +198,6 @@ export class PdSlipPreviewComponent implements OnInit {
           'success:',
           response.message
         );
-        // this.receiptDataService.clearReceiptData();
-        //this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
