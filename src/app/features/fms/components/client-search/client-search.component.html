@@ -1,13 +1,4 @@
 <div class="container-fluid">
-  <!-- Breadcrumb -->
-  <!-- <div class="breadcrumb-custom">
-    {{ "fms.receipting.finance" | translate }} >
-    {{ "fms.receipting.cbReceipting" | translate }}>
-    {{ "fms.receipting.receipting" | translate }} >
-    <span class="breadcrumb-text">{{
-      "fms.receipting.allocateReceipt" | translate
-    }}</span>
-  </div> -->
   <div class="row me-4">
     <div class="col-8">
       <app-dynamic-breadcrumb
@@ -39,7 +30,7 @@
         {{ "fms.receipting.accountSelection" | translate }}
       </h5>
       <div class="row mb-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="accountType" class="form-label fw-bold">{{
             "fms.receipting.accountType" | translate
           }}</label>
@@ -51,7 +42,7 @@
             (change)="onAccountTypeChange()"
           >
             <option value="">
-              {{ "fms.receipting.select" | translate }}
+              {{ "fms.receipting.select" | translate | uppercase }}
             </option>
             <option *ngFor="let type of accountTypes" [value]="type.name">
               {{ type.name }}
@@ -113,8 +104,7 @@
         </div>
       </div>
       <!-- Search Results Table -->
-      <!-- Search Results Table -->
-      <!-- added a paginator -->
+
       <div class="row" *ngIf="clients.length > 0">
         <div class="col-md-12">
           <p-table
@@ -127,6 +117,8 @@
             selectionMode="single"
             [(selection)]="selectedClient"
             dataKey="code"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
           >
             <ng-template pTemplate="header">
               <tr>
@@ -176,11 +168,55 @@
                 </td>
               </tr>
             </ng-template>
-            <ng-template pTemplate="paginatorleft">
+
+            <!-- <ng-template pTemplate="paginatorleft">
               {{ "fms.receipting.showing" | translate }} {{ first }}
               {{ "fms.receipting.to" | translate }} {{ first + rows }}
               {{ "fms.receipting.of" | translate }} {{ totalRecords }}
               {{ "fms.receipting.entries" | translate }}
+            </ng-template> -->
+            <!-- Custom paginator template -->
+            <ng-template pTemplate="paginator" let-state>
+              <div class="custom-paginator">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-left"
+                  (click)="moveFirst(state)"
+                  [disabled]="state.first === 0"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-left"
+                  (click)="movePrev(state)"
+                  [disabled]="state.first === 0"
+                ></button>
+
+                <span
+                  >{{ "fms.receipting.showing" | translate }}
+                  {{ state.first + 1 }} {{ "fms.receipting.to" | translate }}
+                  {{ first + rows }} {{ state.first + state.rows }}
+                  {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+                  {{ state.totalRecords
+                  }}{{ "fms.receipting.entries" | translate }}</span
+                >
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-right"
+                  (click)="moveNext(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-right"
+                  (click)="moveLast(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+              </div>
             </ng-template>
           </p-table>
         </div>

@@ -13,11 +13,15 @@ import {
 import { Router } from '@angular/router';
 import { SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
-import { Logger } from 'src/app/shared/services';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { ReportsService } from 'src/app/shared/services/reports/reports.service';
+//import { Logger } from 'src/app/shared/services';
+import { Logger } from '../../../../shared/services';
+
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptService } from '../../services/receipt.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { TranslateService } from '@ngx-translate/core';
@@ -77,7 +81,7 @@ export class ReceiptPreviewComponent implements OnInit {
     private receiptDataService: ReceiptDataService,
     private sessionStorage: SessionStorageService,
     private receiptService: ReceiptService,
-   
+
     public translate: TranslateService
   ) {}
 
@@ -135,6 +139,8 @@ export class ReceiptPreviewComponent implements OnInit {
         // Create a Blob from the response
         const blob = new Blob([response], { type: 'application/pdf' });
         this.filePath = window.URL.createObjectURL(blob);
+        //you can call the download() automatically here
+        //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -144,66 +150,27 @@ export class ReceiptPreviewComponent implements OnInit {
       },
     });
   }
-
-  downloadReceipt(): void {
+  download() {
     if (this.filePath) {
-      // Reset download status
-      this.downloadCompleted = false;
+      // 1. Create a temporary <a> element
+      const link = document.createElement('a');
+      // 2. Set the file URL (could be local Blob URL or remote URL)
+      link.href = this.filePath;
+      // 3. Set the suggested filename for the download
+      link.download = 'receipt';
 
-      // Add beforeunload event listener
-      window.addEventListener('beforeunload', this.handleBeforeUnload);
+      // 4. Simulate a click on the link to trigger the browser's download
+      link.click();
 
-      // Fetch the PDF file as a Blob
-      fetch(this.filePath)
-        .then((response) => response.blob())
-        .then((blob) => {
-          // Save the file using file-saver
-          saveAs(blob, 'receipt.pdf');
-
-          // Mark download as completed
-          this.downloadCompleted = true;
-
-          // Call updatePrintStatus after the file is saved
-          this.updatePrintStatus();
-        })
-        .catch((error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to download receipt.'
-          );
-        })
-        .finally(() => {
-          // Remove the beforeunload event listener
-          window.removeEventListener('beforeunload', this.handleBeforeUnload);
-        });
+      this.updatePrintStatus();
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'failed!',
+        'Download failed: Invalid file URL'
+      );
     }
   }
-  onPdfLoad(pdf: any): void {
-    // You can now access the PDF document and its pages
-    this.monitorButtons();
-  }
-  handleBeforeUnload = (event: BeforeUnloadEvent): void => {
-    if (!this.downloadCompleted) {
-      // If download is not completed, prevent the default behavior
-      event.preventDefault();
-      event.returnValue = ''; // Required for Chrome
-    }
-  };
-  monitorButtons(): void {
-    const buttons = document.querySelectorAll('.pdf-viewer-button'); // Adjust the selector based on the button class or ID
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        this.handleButtonClick(button.textContent || 'Unknown Button');
-      });
-    });
-  }
-
-  handleButtonClick(buttonText: string): void {
-    //console.log(`Button clicked: ${buttonText}`);
-    // Update print status or perform other actions
-    this.updatePrintStatus();
-  }
   /**
    * Triggers a download of the file at the given URL.
    * Creates a temporary `<a>` element, sets its `href` and `download` attributes, and simulates a click to start the download.
@@ -211,23 +178,6 @@ export class ReceiptPreviewComponent implements OnInit {
    * @param {string} fileName - The name to use for the downloaded file.
    * @returns {void}
    */
-  // download(fileUrl: string, fileName: string): void {
-  //   if (fileUrl) {
-  //     const link = document.createElement('a');
-  //     link.href = fileUrl;
-  //     link.download = fileName;
-  //     link.click();
-  //   }
-  // }
-
-  // onPrintStatusChange(status: string): void {
-  //   if (status === 'yes') {
-  //     this.updatePrintStatus();
-
-  //   } else if(status === 'no') {
-  //     this.navigateToReceiptCapture();
-  //   }
-  // }
 
   updatePrintStatus() {
     const receiptId = Number(this.receiptResponse);
@@ -240,8 +190,6 @@ export class ReceiptPreviewComponent implements OnInit {
           'success:',
           response.message
         );
-        //this.receiptDataService.clearReceiptData();
-        //this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(

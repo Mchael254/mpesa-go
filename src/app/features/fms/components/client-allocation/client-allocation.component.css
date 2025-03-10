@@ -65,11 +65,11 @@ body {
   display: flex;
   flex-direction: row;
 }
-.postbtn{
+.postbtn {
   display: flex;
   justify-content: flex-end;
 }
-.sub_postbtn{
+.sub_postbtn {
   margin-bottom: 10px !important;
 }
 .btn2 {
@@ -78,16 +78,17 @@ body {
   margin-bottom: 2px;
   margin-top: 10px;
 }
-.nav-btn{
+.nav-btn {
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
 }
 
-.save-btns{
+.save-btns {
   /* margin-top: 10px; */
   display: flex;
-  gap:25px;
+  flex-wrap: wrap; /* Ensures buttons wrap to new lines on small screens */
+  gap: 25px;
   max-height: 40px;
   justify-content: flex-end;
 }

@@ -1,13 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { ReceiptPreviewComponent } from './receipt-preview.component';
-import { ReportsService } from 'src/app/shared/services/reports/reports.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { Router } from '@angular/router';
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { ReceiptService } from '../../services/receipt.service';
+import { Router } from '@angular/router';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ElementRef } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ReportDto } from 'src/app/shared/data/common/reports-dto';
 
 describe('ReceiptPreviewComponent', () => {
   let component: ReceiptPreviewComponent;
@@ -16,13 +20,17 @@ describe('ReceiptPreviewComponent', () => {
   let mockGlobalMessagingService: any;
   let mockRouter: any;
   let mockReceiptDataService: any;
+  let mockSessionStorageService: any;
+  let mockReceiptService: any;
+  let mockTranslateService: any;
 
   beforeEach(async () => {
     mockReportService = {
-      generateReport: jest.fn(),
+      generateReport: jest.fn().mockReturnValue(of(new Blob())),
     };
     mockGlobalMessagingService = {
       displayErrorMessage: jest.fn(),
+      displaySuccessMessage: jest.fn(),
     };
     mockRouter = {
       navigate: jest.fn(),
@@ -30,32 +38,47 @@ describe('ReceiptPreviewComponent', () => {
     mockReceiptDataService = {
       clearReceiptData: jest.fn(),
     };
+    mockSessionStorageService = {
+      getItem: jest.fn().mockImplementation((key: string) => {
+        if (key === 'receiptNo') return '123';
+        if (key === 'OrgId') return '456';
+        if (key === 'defaultOrg') return JSON.stringify({ id: 1, name: 'Default Org' }); // Mock defaultOrg
+        if (key === 'selectedOrg') return JSON.stringify({ id: 2, name: 'Selected Org' }); // Mock selectedOrg
+        return null;
+      }),
+    };
+    mockReceiptService = {
+      updateReceiptStatus: jest.fn(),
+    };
+    mockTranslateService = {
+      setDefaultLang: jest.fn(),
+      use: jest.fn(),
+      instant: jest.fn().mockReturnValue('translated value'), // Mock instant
+       get: jest.fn().mockReturnValue(of('translated message'))
+    };
 
     await TestBed.configureTestingModule({
       declarations: [ReceiptPreviewComponent],
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [RouterTestingModule, TranslateModule.forRoot(),HttpClientTestingModule], // Import TranslateModule
       providers: [
         { provide: ReportsService, useValue: mockReportService },
         { provide: GlobalMessagingService, useValue: mockGlobalMessagingService },
         { provide: Router, useValue: mockRouter },
         { provide: ReceiptDataService, useValue: mockReceiptDataService },
+        { provide: SessionStorageService, useValue: mockSessionStorageService },
+        { provide: ReceiptService, useValue: mockReceiptService },
+        { provide: TranslateService, useValue: mockTranslateService },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReceiptPreviewComponent);
     component = fixture.componentInstance;
+
+     // Trigger ngOnInit
+    component.ngOnInit();
+
+    // Trigger change detection *AFTER* ngOnInit and mock setup
     fixture.detectChanges();
-
-    // Provide mock implementation for localStorage methods
-    const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
-
-    // Assign it to the window object
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
   });
 
   it('should create', () => {
@@ -63,57 +86,97 @@ describe('ReceiptPreviewComponent', () => {
   });
 
   it('should call getReceipt on ngOnInit', () => {
+    mockSessionStorageService.getItem.mockReturnValue('123');
     jest.spyOn(component, 'getReceipt');
     component.ngOnInit();
     expect(component.getReceipt).toHaveBeenCalled();
   });
 
   it('should load and set receiptNo and OrgId on OnInit', () => {
-    const localStorageMock = window.localStorage;
-     localStorageMock.getItem = jest.fn()
-    //localStorageMock.getItem.mockReturnValueOnce('123');
-     //localStorageMock.getItem.mockReturnValueOnce('1');
-      component.ngOnInit()
-        expect(component.receiptResponse).toBe(123);
-         expect(component.orgId).toBe(1);
-  });
-  
-  it('should call generateReport and set filePath on getReceipt success', () => {
-      const mockBlob = new Blob(['mock data'], { type: 'application/pdf' });
-     mockReportService.generateReport.mockReturnValue(of(mockBlob));
-    const mockReceiptNumber = 123;
-    const mockOrgId = 1;
+    mockSessionStorageService.getItem.mockImplementation((key: string) => {
+      if (key === 'receiptNo') return '123';
+      if (key === 'OrgId') return '456';
+      return null;
+    });
 
-    const expectedReportPayload: ReportDto = {
-      encodeFormat: 'RAW',
-      params: [
-        { name: 'UP_RCT_NO', value: String(mockReceiptNumber) },
-        { name: 'UP_ORG_CODE', value: String(mockOrgId) },
-      ],
-      reportFormat: 'PDF',
-      rptCode: 300,
-      system: 'CRM',
-    };
-    // Set the localStorage values before calling the method
-    const localStorageMock = window.localStorage;
-    localStorageMock.getItem = jest.fn()
-   // localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(mockReceiptNumber));
-    // localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(mockOrgId));
     component.ngOnInit();
-    component.getReceipt();
 
-    expect(mockReportService.generateReport).toHaveBeenCalledWith(expectedReportPayload);
+    expect(component.receiptResponse).toBe(123);
+    expect(component.orgId).toBe(456);
+  });
+
+  it('should generate report on getReceipt', () => {
+    const mockBlob = new Blob(['test'], { type: 'application/pdf' });
+    const mockUrl = 'mockURL';
+    window.URL.createObjectURL = jest.fn().mockReturnValue(mockUrl);
+    mockReportService.generateReport.mockReturnValue(of(new Blob()));
+    mockSessionStorageService.getItem.mockReturnValue('123');
+      mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({id:1,country:{id:1}}))
+    component.ngOnInit();
+    expect(component.filePath).toEqual(mockUrl);
   });
 
   it('should call displayErrorMessage if generateReport errors', () => {
-      mockReportService.generateReport.mockReturnValue(throwError(() => new Error('Test error')));
-    component.getReceipt();
-    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalled();
-  });
-   it('should clear reciept data and navigate to next screen', () => {
-       component.onBack()
-        expect(mockReceiptDataService.clearReceiptData).toHaveBeenCalled();
-         expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/screen1']);
+    mockReportService.generateReport.mockReturnValue(
+      throwError(() => ({ error: { status: 'error' } }))
+    );
 
-   });
+    component.getReceipt();
+
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+      'Error',
+      'error'
+    );
+  });
+
+  it('should clear reciept data and navigate to next screen', () => {
+    component.navigateToReceiptCapture();
+
+    expect(mockReceiptDataService.clearReceiptData).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']);
+  });
+
+  it('should clear receipt data and navigate to receipt capture on onBack', () => {
+    component.onBack();
+    expect(mockReceiptDataService.clearReceiptData).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']);
+  });
+
+  it('should update print status successfully', () => {
+    const mockMessage = 'Update successful';
+    mockReceiptService.updateReceiptStatus.mockReturnValue(of({ message: mockMessage }));
+    component.receiptResponse = '123';
+    component.updatePrintStatus();
+
+    expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalledWith([123]);
+    expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('success:', mockMessage);
+  });
+
+  it('should display error message on updatePrintStatus error', () => {
+    const mockError = { error: { msg: 'Update failed' } };
+    mockReceiptService.updateReceiptStatus.mockReturnValue(throwError(() => mockError));
+    component.receiptResponse = '123';
+    component.updatePrintStatus();
+
+    expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalledWith([123]);
+     expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('failed',mockError.error.msg);
+  });
+
+   it('should download success', () => {
+      const mockElement = document.createElement('a');
+      const mockUrl = 'mockURL';
+
+      mockElement.href=mockUrl;
+      mockElement.download = 'receipt';
+
+       const clickSpy = jest.spyOn(mockElement, 'click');
+
+      component.filePath=mockUrl;
+        component.download()
+     });
+      it('should display error if filepath is invalid during download', () => {
+        component.filePath='';
+       component.download();
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('failed!','Download failed: Invalid file URL');
+     });
 });

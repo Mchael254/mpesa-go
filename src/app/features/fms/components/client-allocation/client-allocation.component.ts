@@ -38,6 +38,11 @@ import { TranslateService } from '@ngx-translate/core';
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
  * for receipts. It handles form inputs, allocation calculations, file uploads, and interactions
  * with backend services to save and retrieve allocation data.
+ *
+ * This component orchestrates the allocation of receipt amounts to various transactions,
+ * facilitates file uploads for supporting documents, and manages the persistence of
+ * receipt data. It integrates with multiple services for data retrieval, form management,
+ * messaging, authentication, and document management.
  */
 @Component({
   selector: 'app-client-allocation',
@@ -45,120 +50,380 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./client-allocation.component.css'],
 })
 export class ClientAllocationComponent {
-  //retrieved form controls from other screen
-
-  receivedFrom: string;
-  grossReceiptAmount: number;
-  receiptDate: Date;
-  drawersBank: string;
-  narration: string;
-  paymentRef: string;
-  documentDate: Date;
-  currency: string;
-  chequeType: string;
-  bankAccount: number;
-  receiptingPoint: string;
-  charges: string;
-  chargeAmount: number;
-  selectedChargeType: string;
-  paymentMode: string;
-  manualExchangeRate: number;
-  exchangeRate: number;
-  otherRef: string;
-  bankAccountCode: number;
-  bankAccountType: string;
-  manualRef: string;
-  accountTypeShortDesc: string;
-  requests: any;
-  //control flags
-  receiptingDetailsForm: FormGroup;
-  parameterStatus: string;
-  // receiptingPointId:number;
-  selectedBranchId: number;
-  receiptingPointObject: ReceiptingPointsDTO;
-  storedData: any;
-  // receiptingPointAutoManual:string;
-  globalBankAccountVariable: number;
-  selectedBank: BanksDTO;
-  globalBankType: string;
-  defaultCurrencyId: number;
-  userId: number;
-  receiptNumber: string;
-  globalReceiptBranchNumber: number;
-  globalReceiptNumber: number;
-  transactions: TransactionDTO[] = [];
-  loggedInUser: any;
-  allocation: boolean = false;
-  allocatedAmounts: { allocatedAmount: number; commissionChecked: string }[] =
-    [];
-  totalAllocatedAmount: number = 0;
-  amountIssued: number = 0; // Store amountIssued from storedData
-  selectedClient: any = null; // ✅ Add this property
-  globalAccountTypeSelected: any = null;
-  allocationsReturned: boolean = false;
-  globalGetAllocation: any;
-  getAllocationStatus: boolean = false;
-  isAllocationCompleted: boolean = false;
-  isFileSaved: boolean = false;
-  getAllocation: GetAllocationDTO[] = [];
-  filteredTransactions: any[] = [];
-  showSaveButton: boolean = false;
-  isAllocationPosted: boolean = false;
-  fileUploaded: boolean = false;
-  receiptResponse: any;
-  receiptSlipResponse: any;
-  defaultOrg: OrganizationDTO;
-  selectedOrg: OrganizationDTO;
-  selectedBranch: BranchDTO;
-  defaultBranch: BranchDTO;
-  orgId: number;
-  receiptDefaultBranch: BranchDTO;
-  branchReceiptNumber: number;
-  receiptCode: string;
-  // Existing properties...
-  clientNameFilter: string = '';
-  policyNumberFilter: string = '';
-  amountFilter: number | null = null;
-  balanceFilter: number | null = null;
-  commissionFilter: number | null = null;
-  isAmount: boolean = false;
-  first: number = 0; // First row index
-  rows: number = 5; // Rows per page
-  totalRecords: number = 0; // Total number of records
-  isAllocationComplete: boolean = false;
-  isReceiptDownloading = false; // Tracks if the report is being downloaded
-  canShowUploadFileBtn: boolean = false;
-  showAcknowledgeBtn: boolean = false;
-  message: string;
-  //file properties
-  currentFileIndex: number = 0;
-  fileDescriptions: { file: File; description: string; uploaded: boolean }[] =
-    []; // Initialize the array
-  isUploadDisabled: boolean = true; // Initialize as true (button is inactive by default)
-  isFileUploadButtonDisabled: boolean = false; // Controls the "File Upload" button state
-  selectedFile: File | null = null;
-
-  description: string = '';
-  base64Output: string = '';
-  fileIsUploaded = false;
-  globalDocId: string;
-  uploadedFile: any = null;
-  decodedFileUrl: string | null = null;
-  uploadedFiles: any[] = []; // Store multiple files
-  filePath: string | null = null;
-
-  /**
-   * Constructor for `ClientAllocationComponent`.
-   * @param receiptDataService Service for managing receipt data
-   * @param fb FormBuilder for creating reactive forms
-   * @param globalMessagingService Service for global messaging
-   * @param receiptService Service for receipt-related operations
-   * @param authService Service for authentication
-   * @param cdr ChangeDetectorRef for detecting changes in the component
-   * @param router Angular router for navigation
-   * @param dmsService Service for document management
-   * @param reportService Service for generating reports
+ /**
+   * @description The amount received from client
    */
+ receivedFrom: string;
+ /**
+  * @description the gross amount from receipt
+  */
+ grossReceiptAmount: number;
+ /**
+  * @description the date on the receipt
+  */
+ receiptDate: Date;
+ /**
+  * @description drawer's bank
+  */
+ drawersBank: string;
+ /**
+  * @description additional notes for the transaction
+  */
+ narration: string;
+ /**
+  * @description reference id for the payment
+  */
+ paymentRef: string;
+ /**
+  * @description the date on the document
+  */
+ documentDate: Date;
+ /**
+  * @description the type of currency used
+  */
+ currency: string;
+ /**
+  * @description the type of cheque
+  */
+ chequeType: string;
+ /**
+  * @description bank account
+  */
+ bankAccount: number;
+ /**
+  * @description point of receipt
+  */
+ receiptingPoint: string;
+ /**
+  * @description additional charges
+  */
+ charges: string;
+ /**
+  * @description amount of the charge
+  */
+ chargeAmount: number;
+ /**
+  * @description type of charge
+  */
+ selectedChargeType: string;
+ /**
+  * @description the mode of payment
+  */
+ paymentMode: string;
+ /**
+  * @description manual exchange rate
+  */
+ manualExchangeRate: number;
+ /**
+  * @description exchange rate
+  */
+ exchangeRate: number;
+ /**
+  * @description any other reference
+  */
+ otherRef: string;
+ /**
+  * @description bank account code
+  */
+ bankAccountCode: number;
+ /**
+  * @description bank account type
+  */
+ bankAccountType: string;
+ /**
+  * @description manual reference
+  */
+ manualRef: string;
+ /**
+  * @description account type short description
+  */
+ accountTypeShortDesc: string;
+ /**
+  * @description requests
+  */
+ requests: any;
+ /**
+  * @description form for receipt details
+  */
+ receiptingDetailsForm: FormGroup;
+ /**
+  * @description status of parameters
+  */
+ parameterStatus: string;
+ /**
+  * @description the receipting point object
+  */
+ receiptingPointObject: ReceiptingPointsDTO;
+ /**
+  * @description stored data
+  */
+ storedData: any;
+ /**
+  * @description global bank account variable
+  */
+ globalBankAccountVariable: number;
+ /**
+  * @description selected bank
+  */
+ selectedBank: BanksDTO;
+ /**
+  * @description global bank type
+  */
+ globalBankType: string;
+ /**
+  * @description default currency id
+  */
+ defaultCurrencyId: number;
+ /**
+  * @description user id
+  */
+ userId: number;
+ /**
+  * @description receipt number
+  */
+ receiptNumber: string;
+ /**
+  * @description global receipt branch number
+  */
+ globalReceiptBranchNumber: number;
+ /**
+  * @description global receipt number
+  */
+ globalReceiptNumber: number;
+ /**
+  * @description array of transactions
+  */
+ transactions: TransactionDTO[] = [];
+ /**
+  * @description logged in user
+  */
+ loggedInUser: any;
+ /**
+  * @description flag for allocation
+  */
+ allocation: boolean = false;
+ /**
+  * @description allocated amounts
+  */
+ allocatedAmounts: { allocatedAmount: number; commissionChecked: string }[] =
+   [];
+ /**
+  * @description total amount allocated
+  */
+ totalAllocatedAmount: number = 0;
+ /**
+  * @description amount issued
+  */
+ amountIssued: number = 0;
+ /**
+  * @description selected client
+  */
+ selectedClient: any = null;
+ /**
+  * @description global account type selected
+  */
+ globalAccountTypeSelected: any = null;
+ /**
+  * @description flag for allocations returned
+  */
+ allocationsReturned: boolean = false;
+ /**
+  * @description global allocation
+  */
+ globalGetAllocation: any;
+ /**
+  * @description flag for get allocation status
+  */
+ getAllocationStatus: boolean = false;
+ /**
+  * @description flag for allocation completed
+  */
+ isAllocationCompleted: boolean = false;
+ /**
+  * @description flag for file saved
+  */
+ isFileSaved: boolean = false;
+ /**
+  * @description get allocation
+  */
+ getAllocation: GetAllocationDTO[] = [];
+ /**
+  * @description filtered transactions
+  */
+ filteredTransactions: any[] = [];
+ /**
+  * @description flag to show save button
+  */
+ showSaveButton: boolean = false;
+ /**
+  * @description flag for allocation posted
+  */
+ isAllocationPosted: boolean = false;
+ /**
+  * @description flag for file uploaded
+  */
+ fileUploaded: boolean = false;
+ /**
+  * @description receipt response
+  */
+ receiptResponse: any;
+ /**
+  * @description receipt slip response
+  */
+ receiptSlipResponse: any;
+ /**
+  * @description default organization
+  */
+ defaultOrg: OrganizationDTO;
+ /**
+  * @description selected organization
+  */
+ selectedOrg: OrganizationDTO;
+ /**
+  * @description selected branch
+  */
+ selectedBranch: BranchDTO;
+ /**
+  * @description default branch
+  */
+ defaultBranch: BranchDTO;
+ /**
+  * @description organization id
+  */
+ orgId: number;
+ /**
+  * @description receipt default branch
+  */
+ receiptDefaultBranch: BranchDTO;
+ /**
+  * @description branch receipt number
+  */
+ branchReceiptNumber: number;
+ /**
+  * @description receipt code
+  */
+ receiptCode: string;
+ /**
+  * @description filter for client name
+  */
+ clientNameFilter: string = '';
+ /**
+  * @description filter for policy number
+  */
+ policyNumberFilter: string = '';
+ /**
+  * @description filter for amount
+  */
+ amountFilter: number | null = null;
+ /**
+  * @description filter for balance
+  */
+ balanceFilter: number | null = null;
+ /**
+  * @description filter for commission
+  */
+ commissionFilter: number | null = null;
+ /**
+  * @description flag for is amount
+  */
+ isAmount: boolean = false;
+ /**
+  * @description first row index
+  */
+ first: number = 0;
+ /**
+  * @description rows per page
+  */
+ rows: number = 5;
+ /**
+  * @description total number of records
+  */
+ totalRecords: number = 0;
+ /**
+  * @description Flag indicating whether a receipt is currently downloading.
+  */
+ isReceiptDownloading = false;
+ /**
+  * @description Flag indicating whether the file upload button should be displayed.
+  */
+ canShowUploadFileBtn: boolean = false;
+ /**
+  * @description Flag indicating whether the acknowledge button should be displayed.
+  */
+ showAcknowledgeBtn: boolean = false;
+ /**
+  * @description message
+  */
+ message: string;
+ /**
+  * @description current file index
+  */
+ currentFileIndex: number = 0;
+ /**
+  * @description file descriptions
+  */
+ fileDescriptions: { file: File; description: string; uploaded: boolean }[] =
+   [];
+ /**
+  * @description flag for upload disabled
+  */
+ isUploadDisabled: boolean = true;
+ /**
+  * @description flag for file upload button disabled
+  */
+ isFileUploadButtonDisabled: boolean = false;
+ /**
+  * @description selected file
+  */
+ selectedFile: File | null = null;
+ /**
+  * @description description
+  */
+ description: string = '';
+ /**
+  * @description base64 output
+  */
+ base64Output: string = '';
+ /**
+  * @description flag for file is uploaded
+  */
+ fileIsUploaded = false;
+ /**
+  * @description global document id
+  */
+ globalDocId: string;
+ /**
+  * @description uploaded file
+  */
+ uploadedFile: any = null;
+ /**
+  * @description decoded file url
+  */
+ decodedFileUrl: string | null = null;
+ /**
+  * @description array of uploaded files
+  */
+ uploadedFiles: any[] = [];
+ /**
+  * @description file path
+  */
+ filePath: string | null = null;
+
+ /**
+  * Constructor for `ClientAllocationComponent`.
+  * @param receiptDataService Service for managing receipt data
+  * @param fb FormBuilder for creating reactive forms
+  * @param globalMessagingService Service for global messaging
+  * @param receiptService Service for receipt-related operations
+  * @param authService Service for authentication
+  * @param cdr ChangeDetectorRef for detecting changes in the component
+  * @param router Angular router for navigation
+  * @param dmsService Service for document management
+  * @param reportService Service for generating reports
+  * @param sessionStorage Service for managing session storage
+  * @param fmsSetupService Service for FMS setup configurations
+  * @param translate Service for translations
+  */
   constructor(
     private receiptDataService: ReceiptDataService,
     private fb: FormBuilder,
@@ -296,8 +561,12 @@ export class ClientAllocationComponent {
     this.getAllocations(); // Always fetch latest allocations
     this.confirmPaymentModeSelected();
   }
-  /**
+   /**
    * Initializes the receipt capture form with default values and validators.
+   *
+   * This method sets up the reactive form (`receiptingDetailsForm`) with a FormArray
+   * for managing allocated amounts for each transaction. It also includes a
+   * form control for file descriptions, which is used when uploading files.
    */
   captureReceiptForm() {
     //const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
@@ -306,7 +575,7 @@ export class ClientAllocationComponent {
       description: ['', Validators.required],
     });
   }
-  /**
+   /**
    * Updates the allocated amount for a specific transaction and recalculates the total allocated amount.
    * @param index The index of the transaction in the list
    * @param amount The new allocated amount
@@ -315,7 +584,7 @@ export class ClientAllocationComponent {
     this.receiptDataService.updateAllocatedAmount(index, amount);
     this.calculateTotalAllocatedAmount();
   }
-  /**
+   /**
    * Applies a filter to the transactions based on the specified field and value.
    * @param event The event triggered by the filter input
    * @param field The field to filter by (e.g., 'clientName', 'policyNumber')
@@ -519,8 +788,13 @@ export class ClientAllocationComponent {
     this.totalAllocatedAmount = totalPostedAmount + newAllocatedTotal;
   }
 
-  /**
+ /**
    * Allocates and posts the allocations to the backend.
+   *
+   * This method collects the allocated amounts from the form, validates the input,
+   * and sends the allocation data to the backend for processing. It handles error
+   * cases such as invalid amounts, missing data, and backend errors, displaying
+   * appropriate messages to the user.
    */
   allocateAndPostAllocations(): any {
     const allocatedTransactionsData = this.transactions
@@ -645,8 +919,13 @@ export class ClientAllocationComponent {
       });
   }
 
-  /**
+   /**
    * Fetches the allocations from the backend.
+   *
+   * This method retrieves allocation data from the backend based on the branch
+   * receipt number and user code. It filters the allocations to include only
+   * those with amounts allocated, updates the component's state, and stores the
+   * allocations in session storage.
    */
   getAllocations() {
     this.receiptService
@@ -664,6 +943,8 @@ export class ClientAllocationComponent {
           if (this.getAllocation) {
             this.canShowUploadFileBtn = true;
           }
+          // ✅ Use .length to check if allocations exist
+          this.isAllocationCompleted = this.getAllocation.length > 0;
           this.sessionStorage.setItem(
             'allocations',
             JSON.stringify(this.getAllocation)
@@ -701,7 +982,6 @@ export class ClientAllocationComponent {
             }
           });
 
-          this.isAllocationCompleted = true;
           this.getAllocationStatus = true;
           this.allocationsReturned = true;
           this.globalGetAllocation = this.getAllocation;
@@ -714,7 +994,7 @@ export class ClientAllocationComponent {
         },
       });
   }
-  /**
+   /**
    * Deletes an allocation by its receipt detail code.
    * @param receiptDetailCode The code of the receipt detail to delete
    */
@@ -755,6 +1035,8 @@ export class ClientAllocationComponent {
           );
           // Hide upload button if no allocations exist
           this.canShowUploadFileBtn = this.getAllocation.length > 0;
+          // ✅ Use .length to check if allocations exist
+          this.isAllocationCompleted = this.getAllocation.length > 0;
           // Display success message
           this.globalMessagingService.displaySuccessMessage(
             'Success',
@@ -777,8 +1059,12 @@ export class ClientAllocationComponent {
       },
     });
   }
-  /**
+    /**
    * Saves the file description for the currently selected file.
+   *
+   * This method retrieves the file description from the `receiptingDetailsForm`,
+   * updates the corresponding file description in the `fileDescriptions` array,
+   * and closes the file description modal.
    */
   saveFileDescription(): void {
     const description = this.receiptingDetailsForm.get('description')?.value; // Get the description from the form
