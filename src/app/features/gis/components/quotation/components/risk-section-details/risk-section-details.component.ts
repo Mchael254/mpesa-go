@@ -11,7 +11,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { Calendar } from 'primeng/calendar';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { QuotationDetails, quotationRisk, riskSection, ScheduleDetailsDto } from '../../data/quotationsDTO';
+import { QuotationDetails, quotationRisk, riskSection, scheduleDetails, ScheduleDetailsDto } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
@@ -1298,6 +1298,13 @@ export class RiskSectionDetailsComponent {
           driverRelationInsured: [''],
           driverEmailAddress: ['']
         }),
+        level2: this.fb.group({ // Add level2 form group
+          code: [''],
+          geographicalLimits: [''],
+          deductibleDesc: [''],
+          limitationUse: [''],
+          authorisedDriver: ['']
+        })
       }),
       riskCode: [''],
       transactionType: [''],
@@ -1329,54 +1336,98 @@ export class RiskSectionDetailsComponent {
   }
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
-    schedule.riskCode = this.quotationRiskCode;
-    schedule.transactionType = "Q";
-    schedule.version = 0;
 
+    if (schedule.details?.level2) {
+      // Get the current scheduleList data
+      const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
+      log.debug("schedule item", scheduleItem);
 
+      // Create a properly structured payload with both level1 and level2
+      const updatedPayload = {
+        code: scheduleItem.code,
+        riskCode: scheduleItem.riskCode,
+        transactionType: scheduleItem.transactionType,
+        organizationCode: scheduleItem.organizationCode,
+        version: scheduleItem.version,
+        details: {
+          level1: scheduleItem.details.level1,  // Keep the existing level1 data
+          level2: schedule.details.level2      // Add the new level2 data
+        }
+      };
 
-    // Remove specific fields from the payload
-    delete schedule.details.level1.terrorismApplicable;
-    delete schedule.details.level1.securityDevice1;
-    delete schedule.details.level1.motorAccessories;
-    delete schedule.details.level1.model;
-    delete schedule.details.level1.securityDevice;
-    delete schedule.details.level1.regularDriverName;
-    delete schedule.details.level1.schActive;
-    delete schedule.details.level1.licenceNo;
-    delete schedule.details.level1.driverLicenceDate;
-    delete schedule.details.level1.driverSmsNo;
-    delete schedule.details.level1.driverRelationInsured;
-    delete schedule.details.level1.driverEmailAddress;
+      // Send the updated payload to the backend
+      this.quotationService.updateSchedule(updatedPayload).subscribe(data => {
+        log.debug('Final Updated Schedule:', data);
+        this.updatedScheduleData = data;
+        this.updatedSchedule = this.updatedScheduleData._embedded;
+        this.scheduleList = this.updatedSchedule;
 
-    this.quotationService.updateSchedule(schedule).subscribe(data => {
-      this.updatedScheduleData = data;
-      log.debug('Updated Schedule Data:', this.updatedScheduleData);
-      this.updatedSchedule = this.updatedScheduleData._embedded;
-      log.debug('Updated Schedule  nnnnn:', this.updatedSchedule);
-      this.scheduleList = this.updatedSchedule;
-      sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
+        // Save to session storage
+        sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
 
-      log.debug("UPDATED SCHEDULE LIST:", this.scheduleList)
-      const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
-      if (index !== -1) {
-        this.scheduleList[index] = this.updatedSchedule;
-        this.cdr.detectChanges();
+        // Reset the form
+        this.scheduleDetailsForm.reset();
+        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated');
+      }, (error) => {
+        log.debug("schedule update error", error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error updating schedule with level2 details');
+      });
+    } else {
+      // Handle the case where we're only updating level1 data
+      schedule.riskCode = this.quotationRiskCode;
+      schedule.transactionType = "Q";
+      schedule.version = 0;
+
+      // Remove specific fields from the payload
+      delete schedule.details.level1.terrorismApplicable;
+      delete schedule.details.level1.securityDevice1;
+      delete schedule.details.level1.motorAccessories;
+      delete schedule.details.level1.model;
+      delete schedule.details.level1.securityDevice;
+      delete schedule.details.level1.regularDriverName;
+      delete schedule.details.level1.schActive;
+      delete schedule.details.level1.licenceNo;
+      delete schedule.details.level1.driverLicenceDate;
+      delete schedule.details.level1.driverSmsNo;
+      delete schedule.details.level1.driverRelationInsured;
+      delete schedule.details.level1.driverEmailAddress;
+
+      // Ensure the level2 property exists to maintain the structure,
+      // even if it's empty
+      if (!schedule.details.level2) {
+        schedule.details.level2 = {};
       }
 
-      try {
+      this.quotationService.updateSchedule(schedule).subscribe(data => {
+        this.updatedScheduleData = data;
+        log.debug('Updated Schedule Data:', this.updatedScheduleData);
+        this.updatedSchedule = this.updatedScheduleData._embedded;
+        log.debug('Updated Schedule nnnnn:', this.updatedSchedule);
+        this.scheduleList = this.updatedSchedule;
+        sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
 
-        this.scheduleDetailsForm.reset()
-        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated')
+        log.debug("UPDATED SCHEDULE LIST:", this.scheduleList);
 
-      } catch (error) {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+        // This block seems to assume scheduleList is an array, but based on your JSON
+        // it appears to be an object. You may need to adjust this logic.
+        if (Array.isArray(this.scheduleList)) {
+          const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+          if (index !== -1) {
+            this.scheduleList[index] = this.updatedSchedule;
+            this.cdr.detectChanges();
+          }
+        }
 
-        this.scheduleDetailsForm.reset()
-      }
-    })
+        try {
+          this.scheduleDetailsForm.reset();
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated');
+        } catch (error) {
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          this.scheduleDetailsForm.reset();
+        }
+      });
+    }
     this.cdr.detectChanges();
-
   }
   deleteScheduleForLevel() {
     const levelNumber = this.extractLevelNumber(this.selectedSchedule.details);
