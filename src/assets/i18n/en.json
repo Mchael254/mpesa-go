@@ -2761,7 +2761,7 @@
       "eftNo":"Eft_No",
       "yes":"Yes",
       "no":"No",
-      "editDescription":"edit Description",
+     "Edit Narration":"Edit Narration",
       "accountType":"Account type",
       "searchCriteria":"Search Criteria",
       "search":"Search",
@@ -2776,7 +2776,6 @@
       "entries":"entries",
       "finance":"Finance",
       "receiptPreview":"receipt Preview",
-      
       "clientSearch":"client Search",
       "receiptCapture":"Receipt Capture",
       "allocateReceipt":"Allocate Receipt",

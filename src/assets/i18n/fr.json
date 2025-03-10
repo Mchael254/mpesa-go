@@ -2645,11 +2645,8 @@
       "receipting":"Emission de reçus",
       "cbReceipting":"Livre de caisse-Emission de reçus",
       "receipt_details": "Détails du Reçu",
-     
-        "clientSearch": "Recherche de client",
-    
-    
-      "capture_receipt": "Capturer le reçu",
+     "clientSearch": "Recherche de client",
+    "capture_receipt": "Capturer le reçu",
       "currency": "Devise",
       "payment_mode": "Mode de Paiement",
       "bank_account": "Compte Bancaire",
@@ -2687,8 +2684,8 @@
       "eftNo":"N° de virement",
       "yes":"Oui",
       "no":"Non",
-      "editDescription":"Modifier la description",
-      "uploadFiles": "Télécharger des fichiers",
+     "Edit Narration": "Modifier la narration",
+  "uploadFiles": "Télécharger des fichiers",
       "accountType":"Type de compte",
       "searchCriteria":"Critères de recherche",
       "search":"Rechercher",
