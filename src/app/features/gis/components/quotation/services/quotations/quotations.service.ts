@@ -267,7 +267,7 @@ export class QuotationsService {
    * @param {scheduleDetails[]} data - The data representing the updated schedule details.
    * @return {Observable<any>} - An observable of the response containing the updated schedule details data.
    */
-  updateSchedule(data: scheduleDetails[]) {
+  updateSchedule(data: scheduleDetails) {
     return this.api.PUT(`v2/schedule-details`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
     // return this.api.PUT(`/${this.baseUrl}/quotation//api/v2/schedule-details`, JSON.stringify(data),this.httpOptions)
   }
