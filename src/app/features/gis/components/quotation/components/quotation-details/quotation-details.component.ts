@@ -373,20 +373,21 @@ export class QuotationDetailsComponent {
     } else {
       if (this.isChecked) {
         /**
-       * Creates a new quotation with import risks and navigates to import risks page.
-       * @param {Object} this.quotationForm.value - The form value representing quotation details.
-       * @param {string} this.user - The user associated with the quotation.
-       * @return {Observable<any>} - An observable of the response containing created quotation data.
-       */
+         * Creates a new quotation with import risks and navigates to import risks page.
+         * @param {Object} this.quotationForm.value - The form value representing quotation details.
+         * @param {string} this.user - The user associated with the quotation.
+         * @return {Observable<any>} - An observable of the response containing created quotation data.
+         */
         if (this.quickQuotationDetails) {
-          this.router.navigate(['/home/gis/quotation/import-risks'])
-          this.spinner.hide()
+          this.router.navigate(['/home/gis/quotation/import-risks']);
+          this.spinner.hide();
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
         } else {
-          const fromDate = this.quotationForm.value.wefDate
-          const toDate = this.quotationForm.value.wetDate
-          // const rfqDate = this.quotationForm.value.RFQDate
-          const rawCoverTo = new Date(toDate)
+          const fromDate = this.quotationForm.value.wefDate;
+          const toDate = this.quotationForm.value.wetDate;
+          const rfqDate = this.quotationForm.value.RFQDate; // Added RFQDate
+          const expiryDate = this.quotationForm.value.expiryDate; // Added expiryDate
+          const rawCoverTo = new Date(toDate);
 
           const coverFromDate = fromDate;
           const formattedCoverFromDate = this.formatDate(coverFromDate);
@@ -396,34 +397,50 @@ export class QuotationDetailsComponent {
           const formattedCoverToDate = this.formatDate(covertToDate);
           log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
 
-          // const covertRfqDate = rfqDate;
-          // const formattedRfqDate = this.formatDate(covertRfqDate);
-          // log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
+          const covertRfqDate = rfqDate;
+          const formattedRfqDate = this.formatDate(covertRfqDate); // Added RFQ date formatting
+          log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
+
+          const covertExpiryDate = expiryDate;
+          const formattedExpiryDate = this.formatDate(covertExpiryDate); // Added expiry date formatting
+          log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
 
           const quotationForm = this.quotationForm.value;
-          // quotationForm.RFQDate = formattedRfqDate
-          quotationForm.wefDate = formattedCoverFromDate
-          quotationForm.wetDate = formattedCoverToDate
+          quotationForm.wefDate = formattedCoverFromDate;
+          quotationForm.wetDate = formattedCoverToDate;
+          quotationForm.RFQDate = formattedRfqDate; // Added RFQDate
+          quotationForm.expiryDate = formattedExpiryDate; // Added expiryDate
           quotationForm.user = this.user;
 
-          log.debug("CREATE QUOTATION")
-          this.quotationService.processQuotation(this.quotationForm.value).subscribe(data => {
-            this.quotationNo = data
-            this.spinner.hide()
-            log.debug(this.quotationForm.value)
-            sessionStorage.setItem('quotationNum', this.quotationNum);
-            sessionStorage.setItem('quotationCode', this.quotationCode);
-            sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-            this.router.navigate(['/home/gis/quotation/import-risks'])
-          }, (error: HttpErrorResponse) => {
-            log.info(error);
-            this.spinner.hide()
-            this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          // Added missing fields
+          log.debug("Currency code-quote creation", this.quotationForm.value.currencyCode.id);
+          quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
+          quotationForm.source = this.quotationForm.value.source.code;
+          quotationForm.currencyRate = this.exchangeRate;
+          quotationForm.clientCode = this.clientId;
+          quotationForm.clientType = "I";
 
-          })
+          log.debug("CREATE QUOTATION");
+          this.quotationService.processQuotation(quotationForm).subscribe(
+            (data) => {
+              this.quotationNo = data;
+              this.spinner.hide();
+              log.debug(this.quotationForm.value);
+              log.debug(this.quotationNo, 'quotation number output');
+              this.quotationCode = this.quotationNo._embedded.quotationCode;
+              this.quotationNum = this.quotationNo._embedded.quotationNumber
+              sessionStorage.setItem('quotationNum', this.quotationNum);
+              sessionStorage.setItem('quotationCode', this.quotationCode);
+              sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationForm));
+              this.router.navigate(['/home/gis/quotation/import-risks']);
+            },
+            (error: HttpErrorResponse) => {
+              log.info(error);
+              this.spinner.hide();
+              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+            }
+          );
         }
-
-
       } else {
         /**
         * Creates a new quotation and navigates to risk section details based on user preferences.

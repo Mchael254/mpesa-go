@@ -702,9 +702,9 @@
                   <div class="modal-body">
                     <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.add_other_details' |
                       translate}}</h5>
-                    <form [formGroup]="scheduleDetailsForm">
-                      <div formGroupName="details">
-                        <div formGroupName="level2">
+                    <form [formGroup]="level2DetailsForm">
+                      <!-- <div formGroupName="details">
+                        <div formGroupName="level2"> -->
                            <!-- Level2 Fields -->
                           <label for="code" class="col-5 col-form-label">{{'gis.quotation.code' | translate}}</label>
                           <input type="number" id="code" class="form-control form-control-sm mb-1" formControlName="code">
@@ -725,8 +725,8 @@
                           <label for="authorisedDriver" class="col-5 col-form-label">{{'gis.quotation.authorized_driver' | translate}}</label>
                           <input type="text" id="authorisedDriver" class="form-control form-control-sm mb-1" formControlName="authorisedDriver">
 
-                        </div>
-                      </div>
+                        <!-- </div>
+                      </div> -->
                     </form>
                     <div class="mt-4 d-flex justify-content-end">
                       <button type="button" class="btn btn-primary " id="saveDetails" (click)="updateSchedule()"
@@ -801,34 +801,30 @@
                 </div>
               </div>
             </div>
-            <p-table [value]="scheduleList" [tableStyle]="{ 'min-width': '300px' }" dataKey="code">
+            <p-table [value]="hasAnyLevel2Data() ? scheduleList : []" [tableStyle]="{ 'min-width': '300px' }" dataKey="code">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
-                  <th class="flexible-header">{{'gis.quotation.limitation_use' | translate}}</th>
                   <th class="flexible-header">{{'gis.quotation.geographical_limits' | translate}}</th>
-                  <th class="flexible-header">{{'gis.quotation.authorized_driver' | translate}}</th>
                   <th class="flexible-header">{{'gis.quotation.deductible_description' | translate}}</th>
-
-
+                  <th class="flexible-header">{{'gis.quotation.limitation_use' | translate}}</th>
+                  <th class="flexible-header">{{'gis.quotation.authorized_driver' | translate}}</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-schedule >
+              <ng-template pTemplate="body" let-schedule>
                 <tr>
-                  <td class="flexible-header">{{ schedule.details.level2.code}}</td>
-                  <td class="flexible-header">{{ schedule.details.level2.geographicalLimits}}</td>
-                  <td class="flexible-header">{{ schedule.details.level2.deductibleDesc}}</td>
-                  <td class="flexible-header">{{ schedule.details.level2.limitationUse}}</td>
-                  <td class="flexible-header">{{ schedule.details.level2.authorisedDriver}}</td>
-
+                  <td class="flexible-header">{{ schedule.details?.level2?.code }}</td>
+                  <td class="flexible-header">{{ schedule.details?.level2?.geographicalLimits }}</td>
+                  <td class="flexible-header">{{ schedule.details?.level2?.deductibleDesc }}</td>
+                  <td class="flexible-header">{{ schedule.details?.level2?.limitationUse }}</td>
+                  <td class="flexible-header">{{ schedule.details?.level2?.authorisedDriver }}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8" style="padding: 20px; text-align:center " id="empty">
+                  <td colspan="5" style="padding: 20px; text-align:center" id="empty">
                     {{'gis.quotation.no_data_to_display' | translate}}</td>
                 </tr>
-
               </ng-template>
             </p-table>
           </div>
