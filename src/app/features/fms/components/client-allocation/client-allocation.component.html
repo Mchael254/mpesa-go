@@ -445,17 +445,17 @@
     <div class="save-btns">
       <button
         type="button"
-        *ngIf="showAcknowledgeBtn"
-        [disabled]="!isAllocationComplete && !isAllocationCompleted"
+        *ngIf="showAcknowledgeBtn && isAllocationCompleted"
+        [disabled]="!isAllocationCompleted"
         (click)="handleSaveAndPrint()"
         class="btn btn-outline-primary"
       >
         {{ "fms.receipting.generateAcknowledgement" | translate }}
       </button>
       <button
-        *ngIf="!showAcknowledgeBtn"
+        *ngIf="!showAcknowledgeBtn && isAllocationCompleted"
         type="button"
-        [disabled]="!isAllocationComplete && !isAllocationCompleted"
+        [disabled]="!isAllocationCompleted"
         class="btn btn-outline-primary"
         (click)="saveAndPrint()"
       >
@@ -463,8 +463,9 @@
       </button>
 
       <button
+        *ngIf="isAllocationCompleted"
         type="button"
-        [disabled]="!isAllocationComplete && !isAllocationCompleted"
+        [disabled]="!isAllocationCompleted"
         class="btn btn-primary"
         (click)="submitReceipt()"
       >

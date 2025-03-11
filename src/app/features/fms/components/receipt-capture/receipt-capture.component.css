@@ -91,20 +91,16 @@ body {
   display: none;
 }
 
-
-.chequeTypeText{
-font-size: 13px;
+.chequeTypeText {
+  font-size: 13px;
 }
 .main-form {
   background: white;
-  
+
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
-
-
 
 .required::after {
   content: "*";
@@ -126,14 +122,11 @@ font-size: 13px;
   color: #333;
 }
 
-
 select.form-control {
   width: 100%;
   padding-right: 30px; /* Ensure space for icon */
   appearance: none; /* Removes default dropdown arrow */
 }
-
-
 
 .edit-link {
   cursor: pointer;
@@ -233,7 +226,7 @@ select.form-control {
   background: white;
   border: 1px solid #ccc;
   width: 150px;
-  top: 20px;
+  top: 10px;
   left: 0;
   display: block;
   z-index: 1000;

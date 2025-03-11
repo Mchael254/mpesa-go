@@ -15,19 +15,18 @@ import {
   TransactionDTO,
 } from '../../data/receipting-dto';
 
-import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
 
-import {StaffService} from '../../../../features/entities/services/staff/staff.service';
+import { StaffService } from '../../../../features/entities/services/staff/staff.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import {OrganizationService } from '../../../../features/crm/services/organization.service';
+import { OrganizationService } from '../../../../features/crm/services/organization.service';
 
-
-import {AuthService} from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { TranslateService } from '@ngx-translate/core';
 /**
  * @Component({
@@ -67,8 +66,6 @@ export class ClientSearchComponent implements OnInit {
   /** @property {any} loggedInUser - Stores the currently logged-in user's information.*/
   loggedInUser: any;
 
- 
-
   /** @property {OrganizationDTO[]} organization - Array of organizations. */
   organization: OrganizationDTO[];
 
@@ -87,35 +84,16 @@ export class ClientSearchComponent implements OnInit {
   /** @property {BranchDTO} defaultBranch - The default branch object.*/
   defaultBranch: BranchDTO;
 
-
-
-
-
-  
-
- 
-
   /** @property {number} selectedOrgId - ID of the selected organization.*/
-  selectedOrg:OrganizationDTO;
-  
-
-  
-
-  
-
-  
-
-  
-  
+  selectedOrg: OrganizationDTO;
 
   /** @property {number} selectedBranch - ID of the selected branch.*/
-  selectedBranch:BranchDTO;
+  selectedBranch: BranchDTO;
 
   /** @property {number} userId - ID of the user.*/
   userId: number;
 
   /** @property {number} orgId - ID of the organization.*/
- 
 
   /** @property {any} selectedClient - The selected client object.*/
   selectedClient: any;
@@ -143,7 +121,7 @@ export class ClientSearchComponent implements OnInit {
 
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
-    getAllocation: GetAllocationDTO[] = [];
+  getAllocation: GetAllocationDTO[] = [];
 
   /**
    * Constructor for the ClientSearchComponent.
@@ -167,7 +145,7 @@ export class ClientSearchComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public translate: TranslateService,
-    private sessionStorage:SessionStorageService
+    private sessionStorage: SessionStorageService
   ) {}
 
   /**
@@ -177,49 +155,51 @@ export class ClientSearchComponent implements OnInit {
   ngOnInit(): void {
     this.captureReceiptForm();
     const storedData = this.receiptDataService.getReceiptData();
-    let storedReceiptNumber = this.sessionStorage.getItem('branchReceiptNumber');
+    let storedReceiptNumber = this.sessionStorage.getItem(
+      'branchReceiptNumber'
+    );
     this.loggedInUser = this.authService.getCurrentUser();
     if (storedReceiptNumber) {
       this.branchReceiptNumber = Number(storedReceiptNumber);
     }
-    
+
     this.loggedInUser = this.authService.getCurrentUser();
-    
+
     let users = this.sessionStorage.getItem('user');
     this.users = JSON.parse(users);
 
     // Retrieve organization from localStorage or receiptDataService
-  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
-  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
-  
-  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
-  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+    let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+    let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
 
-   // Ensure only one organization is active at a time
-   if (this.selectedOrg) {
-    this.defaultOrg = null;
-  } else if (this.defaultOrg) {
-    this.selectedOrg = null;
-  }
+    this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+    this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
 
- 
+    // Ensure only one organization is active at a time
+    if (this.selectedOrg) {
+      this.defaultOrg = null;
+    } else if (this.defaultOrg) {
+      this.selectedOrg = null;
+    }
 
     // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
-  
-    this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
-    this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
-  
+
+    this.selectedBranch = storedSelectedBranch
+      ? JSON.parse(storedSelectedBranch)
+      : null;
+    this.defaultBranch = storedDefaultBranch
+      ? JSON.parse(storedDefaultBranch)
+      : null;
+
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
     } else if (this.defaultBranch) {
       this.selectedBranch = null;
     }
-  
-    
-    
+
     this.fetchAccountTypes();
   }
 
@@ -236,7 +216,24 @@ export class ClientSearchComponent implements OnInit {
       allocatedAmount: this.fb.array([]), // FormArray for allocated amounts
     });
   }
+  moveFirst(state: any) {
+    state.first = 0;
+  }
 
+  movePrev(state: any) {
+    state.first = Math.max(state.first - state.rows, 0);
+  }
+
+  moveNext(state: any) {
+    state.first = Math.min(
+      state.first + state.rows,
+      state.totalRecords - state.rows
+    );
+  }
+
+  moveLast(state: any) {
+    state.first = state.totalRecords - state.rows;
+  }
   /**
    * Fetches account types from the `ReceiptService` and populates the `accountTypes` and `accountTypeArray` properties.
    * It also handles setting the 'defaultOrg' in localStorage.
@@ -278,7 +275,10 @@ export class ClientSearchComponent implements OnInit {
         (account) => account.name === accountType
       );
       this.accountTypeShortDesc = this.globalAccountTypeSelected.actTypeShtDesc;
-      this.sessionStorage.setItem('accountTypeShortDesc', this.accountTypeShortDesc);
+      this.sessionStorage.setItem(
+        'accountTypeShortDesc',
+        this.accountTypeShortDesc
+      );
       this.receiptingDetailsForm.get('searchCriteria')?.enable();
       this.receiptingDetailsForm.get('searchQuery')?.enable();
     } else {
@@ -372,10 +372,13 @@ export class ClientSearchComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (!response.data || response.data.length === 0) {
-            this.globalMessagingService.displayErrorMessage('Error:', 'No transactions found!');
+            this.globalMessagingService.displayErrorMessage(
+              'Error:',
+              'No transactions found!'
+            );
             return;
           }
-  
+
           this.transactions = response.data;
           if (this.transactions.length > 0) {
             this.receiptDataService.setTransactions(this.transactions);
@@ -383,7 +386,7 @@ export class ClientSearchComponent implements OnInit {
               this.receiptingDetailsForm.value
             );
             this.router.navigate(['/home/fms/client-allocation']);
-          } 
+          }
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
@@ -447,8 +450,8 @@ export class ClientSearchComponent implements OnInit {
    */
   onNext() {
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
-   // let allocations = this.sessionStorage.getItem('allocations');
-   // this.getAllocation = JSON.parse(allocations);
+    // let allocations = this.sessionStorage.getItem('allocations');
+    // this.getAllocation = JSON.parse(allocations);
     this.router.navigate(['/home/fms/client-allocation']);
   }
 

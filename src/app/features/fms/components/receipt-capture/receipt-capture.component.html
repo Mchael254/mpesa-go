@@ -26,15 +26,6 @@
     </div>
   </div>
 
-  <!-- <div class="breadcrumb-custom">
-    {{ "fms.receipting.finance" | translate }} >
-    {{ "fms.receipting.cbReceipting" | translate }}>
-    {{ "fms.receipting.receipting" | translate }}>
-    <span class="breadcrumb-text">{{
-      "fms.receipting.receiptCapture" | translate
-    }}</span>
-  </div> -->
-
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
@@ -56,7 +47,7 @@
             (change)="onCurrencyChanged($event)"
           >
             <option *ngFor="let currency of currencies" [value]="currency.id">
-              {{ currency?.symbol }}
+              {{ currency?.symbol | uppercase }}
             </option>
           </select>
 
@@ -93,7 +84,7 @@
               *ngFor="let paymentMode of paymentModes"
               [value]="paymentMode.code"
             >
-              {{ paymentMode.code }}
+              {{ paymentMode.code | uppercase }}
             </option>
           </select>
 
@@ -122,10 +113,10 @@
             (change)="onBank($event)"
           >
             <option value="" [disabled]="">
-              {{ "fms.receipting.select" | translate }}
+              {{ "fms.receipting.select" | translate | uppercase }}
             </option>
             <option *ngFor="let bank of bankAccounts" [value]="bank.code">
-              {{ bank.name }}
+              {{ bank.name | uppercase }}
             </option>
           </select>
         </div>
@@ -156,7 +147,7 @@
             formControlName="drawersBank"
           >
             <option *ngFor="let bank of drawersBanks" [value]="bank.name">
-              {{ bank.name }}
+              {{ bank.name | uppercase }}
             </option>
           </select>
         </div>
@@ -285,7 +276,7 @@
                   id="narrationTextarea"
                   formControlName="narration"
                   placeholder="{{
-                    'fms.receipting.editDescription' | translate
+                    'fms.receipting.Edit Narration' | translate
                   }}"
                   (input)="onNarrationTextChange()"
                 ></textarea>

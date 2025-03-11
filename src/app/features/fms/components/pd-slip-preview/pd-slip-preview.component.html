@@ -33,12 +33,11 @@
       [render-text]="true"
       [original-size]="false"
       style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
-      (after-load-complete)="onPdfLoad($event)"
     ></pdf-viewer>
   </div>
 
   <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
-    <button type="button" class="btn btn-primary" (click)="downloadReceipt()">
+    <button type="button" class="btn btn-primary" (click)="download()">
       Download
     </button>
 

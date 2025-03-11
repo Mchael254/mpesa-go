@@ -33,7 +33,6 @@
       [render-text]="true"
       [original-size]="false"
       style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
-      (after-load-complete)="onPdfLoad($event)"
     ></pdf-viewer>
     <!-- <ngx-doc-viewer
       #docViewerIframe
@@ -44,38 +43,8 @@
     </ngx-doc-viewer> -->
   </div>
 
-  <!-- <h6 class="text-secondary fw-400 mt-2 ms-5">
-    {{ "fms.receipting.select" | translate }}
-  </h6> -->
-  <!-- <div class="radiobtn">
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="printStatus"
-        id="printYes"
-        (change)="onPrintStatusChange('yes')"
-      />
-      <label class="form-check-label" for="flexRadioDefault1">{{
-        "fms.receipting.printed" | translate
-      }}</label>
-    </div>
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="printStatus"
-        id="printNo"
-        (change)="onPrintStatusChange('no')"
-      />
-      <label class="form-check-label" for="flexRadioDefault2">
-        {{ "fms.receipting.unPrinted" | translate }}
-      </label>
-    </div>
-   
-</div> -->
   <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
-    <button type="button" class="btn btn-primary" (click)="downloadReceipt()">
+    <button type="button" class="btn btn-primary" (click)="download()">
       Download
     </button>
 
