@@ -1,80 +1,95 @@
 <div class="mx-4 mt-3">
-    <p class="title">Quotations:Client Details </p>
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <p class="title">Quotations:Client Details </p>
+  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
 
-    <div class="card">
-        <div class="card-body">
-            <p class="title">Quotation Details</p>
-            <p>Quotation No: {{quotationNum}}</p>
+  <div class="card">
+    <div class="card-body">
+      <p class="title">Quotation Details</p>
+      <p>Quotation No: {{quotationNum}}</p>
 
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <label for=""class="quote-label">Subclass</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="subclass"  placement="right" >
-                        <option selected="true" disabled="disabled"></option> 
-                        <option *ngFor="let data of subclassList"  [value]="data.code">{{data.description}}</option>
-                    </select> 
-                </div>
-                <div class="col-md-5 mt-3">
-                    <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Upload File</label>
-                    <input type="file" id="inputProfileImg" (change)="onFileChange($event)" formControlName="uploadFile" hidden />
-                    <label  for="inputProfileImg" class="img_upload"  style="margin-right: 15px;margin-top: 5px;">Choose File</label>
-                                    
-                    <button class="btn btn-outline-primary" (click)="exportTemplate()">Export template</button>
-                  
-                </div>
-                <div class="col-md-3">
-                    
-               
-            </div>
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label for="" class="quote-label">Subclass</label>
+          <p-dropdown
+            [options]="subclassList"
+            optionLabel="description"
+            optionValue="code"
+            formControlName="subclass"
+            placeholder="Select Subclass"
+            [style]="{'width':'100%', 'height':'32px'}"
+            [panelStyle]="{'width':'400px', 'max-height':'100%'}"
+            appendTo="body"
+            styleClass="form-select-sm mb-1 compact-dropdown"
+            id="quote-input"
+            [filter]="true"
+            [filterBy]="'description'"
+            filterPlaceholder="Search subclass">
+          </p-dropdown>
         </div>
 
-        <p class="title">Imported risks</p>
-        <p-table 
+        <div class="col-md-5 mt-3">
+          <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Upload File</label>
+          <input type="file" id="inputProfileImg" (change)="onFileChange($event)" formControlName="uploadFile" hidden />
+          <label  for="inputProfileImg" class="img_upload"  style="margin-right: 15px;margin-top: 5px;">Choose File</label>
+
+          <button class="btn btn-outline-primary" (click)="exportTemplate()">Export template</button>
+
+        </div>
+        <div class="col-md-3">
+        </div>
+      </div>
+
+    <p class="title">Imported risks</p>
+    <p-table
         [value]="data"
-        [resizableColumns]="true" 
+        [resizableColumns]="true"
         styleClass="p-datatable-sm"
-        class='ui-datatable' 
-       
+        class='ui-datatable'
+        [(selection)]="selectedRisks"
+        (selectionChange)="onSelectionChange($event)"
         [tableStyle]="{ 'min-width': '50rem' }">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Select</th>
-                    <th>Client Id</th>
-                    <th>Client names</th>
-                    <th>WEF</th>
-                    <th>WET</th>
-                    <th>Premium Band</th>
-                    <th>Risk Id</th>
-                    <th>Risk description</th>
-                    <th>Cover </th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-data>
-                <tr>
-                    <td>
-                        <p-tableCheckbox [value]="data"></p-tableCheckbox>
-                    </td>        
-                    <td>{{ data.ClientCode }}</td>
-                    <td>{{ data.ClientName }}</td>
-                    <td>{{ data.WEF }}</td>
-                    <td>{{ data.WET }}</td>
-                    <td>{{ data.PremiumBind }}</td>
-                    <td>{{data.PropertyId}}</td>
-                    <td>{{ data.ItemDesc }}</td>
-                    <td>{{ data.CoverTypeShortDesc }}</td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="1"></td>
-            
-                  <td colspan="10" style="padding:50px;padding-left: 350px;" id="empty">No records Found</td>
-                </tr>
-            
-              </ng-template>
-        </p-table>
-    </div>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th>Client Id</th>
+            <th>Client names</th>
+            <th>WEF</th>
+            <th>WET</th>
+            <th>Premium Band</th>
+            <th>Risk Id</th>
+            <th>Risk description</th>
+            <th>Cover</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="row"></p-tableCheckbox>
+            </td>
+            <td>{{ row.ClientCode }}</td>
+            <td>{{ row.ClientName }}</td>
+            <td>{{ row.WEF }}</td>
+            <td>{{ row.WET }}</td>
+            <td>{{ row.PremiumBind }}</td>
+            <td>{{ row.PropertyId }}</td>
+            <td>{{ row.ItemDesc }}</td>
+            <td>{{ row.CoverTypeShortDesc }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="9" style="padding:50px; text-align: center;" id="empty">No records found</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary" *ngIf="data && data.length > 0">
+          <div class="d-flex justify-content-end">
+            <span>{{selectedCount}} of {{data.length}} risks selected</span>
+          </div>
+        </ng-template>
+      </p-table>
+  </div>
 </div>
-<button class="btn btn-primary float-end mt-4" (click)="finish()">Finish</button>
+  <button class="btn btn-primary float-end mt-4" (click)="finish()">Finish</button>
 </div>

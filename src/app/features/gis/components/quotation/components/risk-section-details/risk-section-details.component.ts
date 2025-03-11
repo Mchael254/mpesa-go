@@ -130,6 +130,7 @@ export class RiskSectionDetailsComponent {
   selectedSection: any;
 
   scheduleDetailsForm: FormGroup;
+  level2DetailsForm: FormGroup;
   scheduleData: any;
   scheduleList: any;
   selectedSchedule: any;
@@ -1298,17 +1299,18 @@ export class RiskSectionDetailsComponent {
           driverRelationInsured: [''],
           driverEmailAddress: ['']
         }),
-        level2: this.fb.group({ // Add level2 form group
-          code: [''],
-          geographicalLimits: [''],
-          deductibleDesc: [''],
-          limitationUse: [''],
-          authorisedDriver: ['']
-        })
       }),
       riskCode: [''],
       transactionType: [''],
       version: [''],
+    });
+
+    this.level2DetailsForm = this.fb.group({
+      code: [''],
+      geographicalLimits: [''],
+      deductibleDesc: [''],
+      limitationUse: [''],
+      authorisedDriver: ['']
     });
   }
 
@@ -1336,8 +1338,14 @@ export class RiskSectionDetailsComponent {
   }
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
+    const level2Details = this.level2DetailsForm.value;
+    log.debug("schedule form details value", schedule);
+    log.debug(" level2Details value ", level2Details);
 
-    if (schedule.details?.level2) {
+    // Check if level2DetailsForm has been touched or filled
+    const isLevel2FormTouched = this.level2DetailsForm.touched || Object.values(level2Details).some(value => value !== '' && value !== null);
+
+    if (isLevel2FormTouched) {
       // Get the current scheduleList data
       const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
       log.debug("schedule item", scheduleItem);
@@ -1351,7 +1359,7 @@ export class RiskSectionDetailsComponent {
         version: scheduleItem.version,
         details: {
           level1: scheduleItem.details.level1,  // Keep the existing level1 data
-          level2: schedule.details.level2      // Add the new level2 data
+          level2: level2Details                // Add the new level2 data
         }
       };
 
@@ -1365,44 +1373,65 @@ export class RiskSectionDetailsComponent {
         // Save to session storage
         sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
 
-        // Reset the form
+        // Reset the forms
         this.scheduleDetailsForm.reset();
-        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated');
+        this.level2DetailsForm.reset();
+        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated with Level 2 Details');
       }, (error) => {
         log.debug("schedule update error", error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error updating schedule with level2 details');
       });
     } else {
+      log.debug("updating level1 details");
+
+      const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
+      log.debug("schedule item", scheduleItem);
       // Handle the case where we're only updating level1 data
-      schedule.riskCode = this.quotationRiskCode;
-      schedule.transactionType = "Q";
-      schedule.version = 0;
+      schedule.riskCode = scheduleItem.riskCode;
+      schedule.transactionType = scheduleItem.transactionType;
+      schedule.version = scheduleItem.version;
+
+      const removeFields = [
+        "terrorismApplicable", "securityDevice1", "motorAccessories",
+        "model", "securityDevice", "regularDriverName", "schActive",
+        "licenceNo", "driverLicenceDate", "driverSmsNo",
+        "driverRelationInsured", "driverEmailAddress"
+      ];
+
+      // Conditionally remove fields if they exist
+      removeFields.forEach(field => {
+        if (schedule.details.level1[field] !== undefined) {
+          delete schedule.details.level1[field];
+        }
+      });
 
       // Remove specific fields from the payload
-      delete schedule.details.level1.terrorismApplicable;
-      delete schedule.details.level1.securityDevice1;
-      delete schedule.details.level1.motorAccessories;
-      delete schedule.details.level1.model;
-      delete schedule.details.level1.securityDevice;
-      delete schedule.details.level1.regularDriverName;
-      delete schedule.details.level1.schActive;
-      delete schedule.details.level1.licenceNo;
-      delete schedule.details.level1.driverLicenceDate;
-      delete schedule.details.level1.driverSmsNo;
-      delete schedule.details.level1.driverRelationInsured;
-      delete schedule.details.level1.driverEmailAddress;
+      // delete schedule.details.level1.terrorismApplicable;
+      // delete schedule.details.level1.securityDevice1;
+      // delete schedule.details.level1.motorAccessories;
+      // delete schedule.details.level1.model;
+      // delete schedule.details.level1.securityDevice;
+      // delete schedule.details.level1.regularDriverName;
+      // delete schedule.details.level1.schActive;
+      // delete schedule.details.level1.licenceNo;
+      // delete schedule.details.level1.driverLicenceDate;
+      // delete schedule.details.level1.driverSmsNo;
+      // delete schedule.details.level1.driverRelationInsured;
+      // delete schedule.details.level1.driverEmailAddress;
+
+      log.debug("level 1 payload", schedule);
 
       // Ensure the level2 property exists to maintain the structure,
       // even if it's empty
-      if (!schedule.details.level2) {
-        schedule.details.level2 = {};
-      }
+      // if (!schedule.details.level2) {
+      //   schedule.details.level2 = {};
+      // }
 
       this.quotationService.updateSchedule(schedule).subscribe(data => {
         this.updatedScheduleData = data;
         log.debug('Updated Schedule Data:', this.updatedScheduleData);
         this.updatedSchedule = this.updatedScheduleData._embedded;
-        log.debug('Updated Schedule nnnnn:', this.updatedSchedule);
+        log.debug('Updated Schedule:', this.updatedSchedule);
         this.scheduleList = this.updatedSchedule;
         sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
 
@@ -1420,7 +1449,7 @@ export class RiskSectionDetailsComponent {
 
         try {
           this.scheduleDetailsForm.reset();
-          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated');
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated with Level 1 Details');
         } catch (error) {
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
           this.scheduleDetailsForm.reset();
@@ -1429,6 +1458,7 @@ export class RiskSectionDetailsComponent {
     }
     this.cdr.detectChanges();
   }
+
   deleteScheduleForLevel() {
     const levelNumber = this.extractLevelNumber(this.selectedSchedule.details);
     if (levelNumber !== null) {
@@ -1960,6 +1990,22 @@ export class RiskSectionDetailsComponent {
 
     return schedule;
   }
+
+  hasAnyLevel2Data(): boolean {
+    if (!this.scheduleList || this.scheduleList.length === 0) {
+      return false;
+    }
+
+    return this.scheduleList.some(schedule =>
+      schedule.details?.level2 &&
+      (schedule.details.level2.code ||
+       schedule.details.level2.geographicalLimits ||
+       schedule.details.level2.deductibleDesc ||
+       schedule.details.level2.limitationUse ||
+       schedule.details.level2.authorisedDriver)
+    );
+  }
+
   fetchSectionPremiumRates() {
     const subclasscode = this.selectedSubclassCode
     const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
