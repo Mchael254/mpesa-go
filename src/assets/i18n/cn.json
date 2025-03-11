@@ -2100,10 +2100,8 @@
       "receipting": "收据处理",
       "cbReceipting": "现金簿收据处理",
       "capture_receipt": "捕获收据",
-      
-        "clientSearch": "客户搜索",
-   
-      "currency": "货币",
+      "clientSearch": "客户搜索",
+   "currency": "货币",
       "payment_mode": "支付方式",
       "bank_account": "银行账户",
       "receipting_point": "收据点",
@@ -2120,8 +2118,7 @@
       "charges": "收据费用",
       "document_date": "文件日期",
       "manual_ref": "手动参考",
-
-      "saveReceipt": "保存收据",
+"saveReceipt": "保存收据",
       "printReceipt": "打印收据",
       "cancel": "取消",
       "captureReceipt": "捕获收据",
@@ -2137,7 +2134,7 @@
       "eftNo": "电子转账号",
       "yes": "是",
       "no": "不是 ",
-      "editDescription": "编辑描述",
+      "Edit Narration": "编辑叙述",
       "uploadFiles": "上传文件",
       "accountType": "账户选择",
       "searchCriteria": "搜索条件",

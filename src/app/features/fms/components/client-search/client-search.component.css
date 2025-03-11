@@ -15,19 +15,7 @@ body {
   scrollbar-width: none;
   height: 25px; /* Set a fixed height */
 }
-/* Override for dropdowns inside the .top-bar */
-/* .top-bar .dropdown-icon {
-  right: 2px !important; 
-} */
-/* .top-select {
-  display: flex;
-  align-items: center;
-  margin-right: 60px;
 
-  font-size: 13px;
-  color: #333;
-  
-} */
 .org {
   margin-left: 20px;
 }
@@ -79,13 +67,11 @@ body {
   color: #333;
 }
 
-
 select.form-control {
   width: 100%;
   padding-right: 30px; /* Ensure space for icon */
   appearance: none; /* Removes default dropdown arrow */
 }
-
 
 .breadcrumb-custom {
   font-size: 15px;
@@ -177,4 +163,18 @@ select.form-control {
 }
 .header-bg {
   background-color: rgb(186, 208, 228) !important;
+}
+.p-paginator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.p-paginator .p-paginator-current {
+  margin-left: auto;
+}
+
+.p-paginator .p-dropdown {
+  margin-left: 10px;
 }

@@ -680,7 +680,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
           'Error',
           err.error.status
         );
-       // this.showExchangeRateModal2();
+      
       },
     });
   }
@@ -711,10 +711,15 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
               'Success',
               'Exchange rate saved successfully'
             );
+
+             // ✅ After successful save, ensure the UI reflects the new value
+             this.exchangeRate = this.manualExchangeRate;
+             this.receiptingDetailsForm.patchValue({
+                 exchangeRate: this.manualExchangeRate
+             });
+             
             this.closeModal2();
-//             setTimeout(()=>{
-// this.fetchCurrencyRate();
-//             },1000);
+           
           },
           error: (err) => {
             this.globalMessagingService.displayErrorMessage(
