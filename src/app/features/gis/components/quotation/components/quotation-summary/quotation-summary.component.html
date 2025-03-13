@@ -911,9 +911,9 @@
               <ng-template pTemplate="body" let-internalClaim>
                 <tr [class.p-highlight]="internalClaim === selectedIntetnalClaimExp"
                   (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
-                  <td class="flexible-header">{{internalClaim.client_policy_number}}</td>
-                  <td class="flexible-header">{{internalClaim.claim_number}}</td>
-                  <td appCommaFormat class="text-end flexible-header">{{internalClaim.outstanding_reserve}}</td>
+                  <td class="flexible-header">{{internalClaim.cmb_pol_client_policy_no}}</td>
+                  <td class="flexible-header">{{internalClaim.claim_no}}</td>
+                  <td appCommaFormat class="text-end flexible-header">{{internalClaim.ost_reserve}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{internalClaim.total_reserve}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{internalClaim.recoveries}}</td>
                   <td appCommaFormat class="text-end flexible-header">{{internalClaim.salvages}}</td>
