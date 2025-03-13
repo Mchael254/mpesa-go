@@ -2784,6 +2784,7 @@
       "byAccountNumber":"By Account Number",
       "byDebitNote":"By Debit Note",
       "byClientName":"By Client Name",
+      "Debit Note":"Debit Note",
       "EnterSearchTerm":"Enter search term",
       "chargeAmount": "Charge amount",
       "allocations":"Allocations",
@@ -2833,7 +2834,15 @@
     "common": {
       "close": "cancel"
     },
-
+"receiptManagement":{
+  "receiptNumber":"Receipt Number",
+  "receiptDate":"Receipt date",
+  "receivedFrom":"Received from",
+  "amount":"Amount",
+  "paymentMethod":"Payment Method"
+  
+ 
+},
     "receipt_authorization": {
       "title": "Receipt Authorization",
       "normal_tab": "Normal Receipts",
