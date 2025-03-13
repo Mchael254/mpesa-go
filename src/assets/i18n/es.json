@@ -2690,7 +2690,9 @@
       "accountType":"Tipo de cuenta",
       "searchCriteria":"Criterios de búsqueda",
       "search":"Buscar",
- 
+      
+        "Debit Note": "Nota de débito",
+    
        
       "receiptAmount": "Importe del recibo",
       "receiptAllocations":"Asignaciones de recibos",

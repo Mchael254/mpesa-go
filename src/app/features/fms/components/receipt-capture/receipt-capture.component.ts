@@ -353,6 +353,7 @@ export class ReceiptCaptureComponent {
   makeFieldRequired:boolean=false;
   requireDocumentField:boolean=false;
   storedDefaultCurrency:number;
+  showfields:boolean=false;
 
 /**
    * Constructor for the `ReceiptCaptureComponent`.
@@ -486,7 +487,7 @@ export class ReceiptCaptureComponent {
       documentDate: [today, Validators.required],
       manualRef: [''],
       currency: ['', Validators.required], // Default currency is KES
-      paymentMode: ['', Validators.required],
+      paymentMode: ['CASH', Validators.required],
       chequeType: ['', Validators.required],
       bankAccount: ['', Validators.required],
       exchangeRate: ['', [Validators.required, Validators.min(0)]],
@@ -891,8 +892,9 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       drawersBankControl?.setValue(null);
       paymentRefControl?.setValue(null);
       this.makeFieldRequired=false;
+      this.showfields=false;
     } else if (paymentMode === 'CHEQUE') {
-
+      this.showfields=true;
       this.showChequeOptions = true;
       this.makeFieldRequired =true;
 
@@ -905,7 +907,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     }
     
      else {
-      
+      this.showfields=true;
       this.makeFieldRequired=true;
       drawersBankControl?.enable();
       paymentRefControl?.enable();
