@@ -435,6 +435,19 @@ export interface ReceiptParticularDTO {
 export interface AllocationDTO {
   receiptParticulars: ReceiptParticularDTO[];
 }
+export interface ReceiptParticularsDTO{
+  receiptNumber: number;
+  capturedBy: number;
+  systemCode: number;
+  branchCode: number;
+  clientCode: number;
+  clientShortDescription: string;
+  receiptType: string;
+  clientName: string;
+  sslAccountCode: number;
+  accountTypeId: string;
+  referenceNumber: string;
+}
 export interface GetReceiptParticularDetailDTO {
   code: number;
   rctpCode: number;
