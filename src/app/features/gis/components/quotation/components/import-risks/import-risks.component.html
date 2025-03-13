@@ -11,7 +11,7 @@
         <div class="col-md-4">
           <label for="" class="quote-label">Subclass</label>
           <p-dropdown
-            [options]="subclassList"
+            [options]="allMatchingSubclasses"
             optionLabel="description"
             optionValue="code"
             formControlName="subclass"
@@ -23,6 +23,7 @@
             id="quote-input"
             [filter]="true"
             [filterBy]="'description'"
+            (onChange)="onSubclassChange($event)"
             filterPlaceholder="Search subclass">
           </p-dropdown>
         </div>
