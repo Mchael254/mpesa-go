@@ -2141,7 +2141,10 @@
       "search": "搜索",
       "receiptSummary": "收据摘要",
       "isReceiptPrinted?": "收据是否已打印",
-
+      
+        "Debit Note": "借方票据",
+    
+    
       "receiptAmount": "收据金额",
       "receiptAllocations": "收据分配",
       "enterAmount": "输入金额",

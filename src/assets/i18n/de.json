@@ -2158,6 +2158,10 @@
       "transactionNumber":"Transaktionsnummer",
       "batchNumber":"Batch Number",
       "allocatedAmount":"Zugewiesener Betrag",
+    
+      "Debit Note": "Lastschriftanzeige",
+   
+    
       "commissionAmount":"Provisionsbetrag",
      "includeCommission":"Provision einbeziehen",
       "postFile":"Datei posten",
