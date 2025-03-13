@@ -482,7 +482,7 @@ Relationship Management) application. Each object has the following properties: 
         },
         {
           label: this.translate.instant('fms.base-fms.manageReceipt'),
-          link: '/home/fms/',
+          link: '/home/fms/receipt-management',
         },
         {
           label: this.translate.instant('fms.base-fms.receipting'),

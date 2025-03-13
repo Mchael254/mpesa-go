@@ -71,7 +71,7 @@
           <label for="paymentMode" class="form-label required">{{
             "fms.receipting.payment_mode" | translate
           }}</label>
-          <!-- <div class="dropdown-container" (mouseleave)="onLeavePaymentMode()"> -->
+
           <!-- Only hides if no selection is made -->
           <select
             id="paymentMode"
@@ -83,6 +83,7 @@
             <option
               *ngFor="let paymentMode of paymentModes"
               [value]="paymentMode.code"
+              [selected]="paymentMode.code === 'CASH'"
             >
               {{ paymentMode.code | uppercase }}
             </option>
@@ -136,21 +137,7 @@
             readonly
           />
         </div>
-        <div class="col-md-4 mb-2">
-          <label for="drawersBank" class="form-label"
-            >{{ "fms.receipting.drawers_bank" | translate }} </label
-          ><span *ngIf="makeFieldRequired" class="required"></span>
 
-          <select
-            id="drawersBank"
-            class="form-select"
-            formControlName="drawersBank"
-          >
-            <option *ngFor="let bank of drawersBanks" [value]="bank.name">
-              {{ bank.name | uppercase }}
-            </option>
-          </select>
-        </div>
         <div class="col-md-4 mb-2">
           <label for="amountIssued" class="form-label required">{{
             "fms.receipting.amount_issued" | translate
@@ -161,6 +148,17 @@
             class="form-control"
             id="amountIssued"
             formControlName="amountIssued"
+          />
+        </div>
+        <div class="col-md-4 mb-2">
+          <label for="receivedFrom" class="form-label required">{{
+            "fms.receipting.received_from" | translate
+          }}</label>
+          <input
+            type="text"
+            class="form-control"
+            id="receivedFrom"
+            formControlName="receivedFrom"
           />
         </div>
       </div>
@@ -184,36 +182,6 @@
           </div>
         </div>
         <div class="col-md-4 mb-2">
-          <label for="documentDate" class="form-label">{{
-            "fms.receipting.document_date" | translate
-          }}</label
-          ><span *ngIf="makeFieldRequired" class="required"></span>
-          <div class="date-input">
-            <input
-              type="date"
-              class="form-control"
-              id="documentDate"
-              formControlName="documentDate"
-            />
-          </div>
-        </div>
-        <div class="col-md-4 mb-2">
-          <label for="receivedFrom" class="form-label required">{{
-            "fms.receipting.received_from" | translate
-          }}</label>
-          <input
-            type="text"
-            class="form-control"
-            id="receivedFrom"
-            formControlName="receivedFrom"
-          />
-        </div>
-      </div>
-      <!-- </div> -->
-      <!-- Fourth Row -->
-
-      <div class="row mt-1">
-        <div class="col-md-4 mb-2">
           <label for="manualRef" class="form-label">{{
             "fms.receipting.manual_ref" | translate
           }}</label>
@@ -224,27 +192,6 @@
             formControlName="manualRef"
           />
         </div>
-        <div class="col-md-4 mb-2">
-          <label for="paymentRef" class="form-label">{{
-            "fms.receipting.payment_ref" | translate
-          }}</label
-          ><span *ngIf="makeFieldRequired" class="required"></span>
-          <input
-            type="text"
-            class="form-control"
-            id="paymentRef"
-            formControlName="paymentRef"
-            placeholder="{{ 'fms.receipting.mpesaCode' | translate }},{{
-              'fms.receipting.eftNo' | translate
-            }},{{ 'fms.receipting.cheque' | translate }}"
-          />
-        </div>
-        <!-- <div class="col-md-4">
-                      <label for="otherRef" class="form-label">{{'fms.receipting.other_ref' | translate }}</label>
-                      <input type="text" class="form-control" id="otherRef" formControlName="otherRef">
-                       
-                    </div> -->
-        <!-- 5th row -->
         <div class="col-md-4 mb-2">
           <div class="form-group">
             <label for="narration" class="text-dark form-label w-100">
@@ -284,6 +231,62 @@
             </div>
           </div>
         </div>
+      </div>
+      <!-- </div> -->
+      <!-- Fourth Row -->
+
+      <div class="row mt-1" *ngIf="showfields">
+        <div class="col-md-4 mb-2">
+          <label for="drawersBank" class="form-label"
+            >{{ "fms.receipting.drawers_bank" | translate }} </label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
+
+          <select
+            id="drawersBank"
+            class="form-select"
+            formControlName="drawersBank"
+          >
+            <option *ngFor="let bank of drawersBanks" [value]="bank.name">
+              {{ bank.name | uppercase }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-2">
+          <label for="documentDate" class="form-label">{{
+            "fms.receipting.document_date" | translate
+          }}</label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
+          <div class="date-input">
+            <input
+              type="date"
+              class="form-control"
+              id="documentDate"
+              formControlName="documentDate"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-2">
+          <label for="paymentRef" class="form-label">{{
+            "fms.receipting.payment_ref" | translate
+          }}</label
+          ><span *ngIf="makeFieldRequired" class="required"></span>
+          <input
+            type="text"
+            class="form-control"
+            id="paymentRef"
+            formControlName="paymentRef"
+            placeholder="{{ 'fms.receipting.mpesaCode' | translate }},{{
+              'fms.receipting.eftNo' | translate
+            }},{{ 'fms.receipting.cheque' | translate }}"
+          />
+        </div>
+        <!-- <div class="col-md-4">
+                      <label for="otherRef" class="form-label">{{'fms.receipting.other_ref' | translate }}</label>
+                      <input type="text" class="form-control" id="otherRef" formControlName="otherRef">
+                       
+                    </div> -->
+        <!-- 5th row -->
       </div>
 
       <div class="row mt-1">

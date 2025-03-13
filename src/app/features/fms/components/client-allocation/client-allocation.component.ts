@@ -8,6 +8,8 @@ import {
   GetAllocationDTO,
   ReceiptingPointsDTO,
   ReceiptNumberDTO,
+  ReceiptParticularsDTO,
+  
   ReceiptSaveDTO,
   ReceiptUploadRequest,
   TransactionDTO,
@@ -307,6 +309,7 @@ export class ClientAllocationComponent {
   * @description filter for client name
   */
  clientNameFilter: string = '';
+ debitNoteFilter: string = '';
  /**
   * @description filter for policy number
   */
@@ -408,7 +411,7 @@ export class ClientAllocationComponent {
   * @description file path
   */
  filePath: string | null = null;
-
+ isEmptyAllocationPosted:boolean=false;
  /**
   * Constructor for `ClientAllocationComponent`.
   * @param receiptDataService Service for managing receipt data
@@ -600,6 +603,9 @@ export class ClientAllocationComponent {
       case 'policyNumber':
         this.policyNumberFilter = filterValue;
         break;
+      case 'debitNote':
+        this.debitNoteFilter = filterValue;
+        break;
       case 'amount':
         this.amountFilter = filterValue ? Number(filterValue) : null;
         break;
@@ -619,6 +625,7 @@ export class ClientAllocationComponent {
     if (
       !this.clientNameFilter?.trim() &&
       !this.policyNumberFilter?.trim() &&
+      !this.debitNoteFilter?.trim() &&
       this.amountFilter === null &&
       this.balanceFilter === null &&
       this.commissionFilter === null
@@ -646,7 +653,13 @@ export class ClientAllocationComponent {
             .includes(this.policyNumberFilter.toLowerCase());
           if (policyNumberMatch) score += 1;
         }
-
+//debit Note match
+if (this.debitNoteFilter?.trim()) {
+  const debitNoteMatch = String(transaction.referenceNumber)
+    .toLowerCase()
+    .includes(this.debitNoteFilter.toLowerCase());
+  if (debitNoteMatch) score += 1;
+}
         // Amount Match
         if (this.amountFilter !== null) {
           const amountMatch = Number(transaction.amount) === this.amountFilter;
@@ -918,6 +931,42 @@ export class ClientAllocationComponent {
         },
       });
   }
+confirmtotalAllocatedAmount(){
+  if(this.totalAllocatedAmount > 0){
+    this.allocateAndPostAllocations();
+  }else{
+    this.saveEmptyAllocations();
+  }
+}
+saveEmptyAllocations(): any {
+  const receiptParticulars: ReceiptParticularsDTO[] = [
+    {
+      receiptNumber: this.branchReceiptNumber,
+      capturedBy: this.loggedInUser.code,
+      systemCode: this.selectedClient.systemCode,
+      branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
+      clientCode: this.selectedClient.code,
+      clientShortDescription: this.selectedClient.shortDesc,
+      receiptType: this.selectedClient.receiptType,
+      clientName: this.selectedClient.name,
+      sslAccountCode: this.selectedClient.accountCode,
+      accountTypeId: this.accountTypeShortDesc,
+      referenceNumber: null
+    }
+  ];
+
+  // ✅ Now passing an array of ReceiptParticularsDTO
+  this.receiptService.postEmptyAllocation(this.loggedInUser.code, receiptParticulars).subscribe({
+    next: (response) => {
+      this.globalMessagingService.displaySuccessMessage('Success', response.msg);
+      this.isEmptyAllocationPosted=true;
+    },
+    error: (err) => {
+      this.isEmptyAllocationPosted=true;
+      this.globalMessagingService.displayErrorMessage('Failed!', err.error?.msg || 'Unable to post allocations');
+    }
+  });
+}
 
    /**
    * Fetches the allocations from the backend.
@@ -1458,22 +1507,22 @@ export class ClientAllocationComponent {
       return false; // Stop further execution
     }
     // Step 2: Validate the total allocated amount against the issued amount
-    if (this.totalAllocatedAmount < this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Amount issued is not fully allocated.'
-      );
+    // if (this.totalAllocatedAmount < this.amountIssued) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     'Error',
+    //     'Amount issued is not fully allocated.'
+    //   );
 
-      return false; // Stop further execution
-    }
-    if (this.totalAllocatedAmount > this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Total Allocated Amount Exceeds Amount Issued'
-      );
+    //   return false; // Stop further execution
+    // }
+    // if (this.totalAllocatedAmount > this.amountIssued) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     'Error',
+    //     'Total Allocated Amount Exceeds Amount Issued'
+    //   );
 
-      return false;
-    }
+    //   return false;
+    // }
 
     // console.log('receiptDoc>>',this.parameterStatus);
     if (this.parameterStatus == 'Y' && !this.fileUploaded) {
@@ -1666,22 +1715,7 @@ export class ClientAllocationComponent {
     }
 
     // Step 2: Validate the total allocated amount against the issued amount
-    if (this.totalAllocatedAmount < this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Amount issued is not fully allocated.'
-      );
-
-      return false; // Stop further execution
-    }
-    if (this.totalAllocatedAmount > this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Total Allocated Amount Exceeds Amount Issued'
-      );
-
-      return false;
-    }
+  
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
       receiptNo: this.branchReceiptNumber,
@@ -1821,23 +1855,7 @@ export class ClientAllocationComponent {
       return false; // Stop further execution
     }
 
-    // Step 2: Validate the total allocated amount against the issued amount
-    if (this.totalAllocatedAmount < this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Amount issued is not fully allocated.'
-      );
-
-      return false; // Stop further execution
-    }
-    if (this.totalAllocatedAmount > this.amountIssued) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Total Allocated Amount Exceeds Amount Issued'
-      );
-
-      return false;
-    }
+   
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
       receiptNo: this.branchReceiptNumber,

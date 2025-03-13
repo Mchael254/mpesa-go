@@ -28,6 +28,8 @@ import {
   ReceiptUploadRequest,
   acknowledgementSlipDTO,
  
+  ReceiptParticularsDTO,
+ 
 } from '../data/receipting-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
@@ -300,6 +302,15 @@ export class ReceiptService {
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
     );
   }
+  postEmptyAllocation(userCode: number, data: ReceiptParticularsDTO[]): Observable<any> {
+    const endpoint = `allocations/save?userCode=${userCode}`;
+    const payload = { receiptParticulars: data }; // Now 'data' is an array
+    return this.api.POST<any>(
+      endpoint,
+      payload,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+    );
+}
 
   saveReceipt(data: ReceiptSaveDTO): Observable<any> {
     const endpoint = `receipts/save`;
