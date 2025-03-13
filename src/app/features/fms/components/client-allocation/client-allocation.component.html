@@ -117,6 +117,16 @@
                   />
                 </th>
                 <th class="header-bg">
+                  {{ "fms.receipting.Debit Note" | translate }}
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    (keyup.enter)="applyFilter($event, 'debitNote')"
+                    (input)="applyFilter($event, 'debitNote')"
+                    placeholder="{{ 'fms.receipting.filter' | translate }}"
+                  />
+                </th>
+                <th class="header-bg">
                   {{ "fms.receipting.amount" | translate }}
                   <input
                     type="number"
@@ -170,6 +180,7 @@
               <tr [pSelectableRow]="transaction">
                 <td>{{ transaction.clientName }}</td>
                 <td>{{ transaction.clientPolicyNumber }}</td>
+                <td>{{ transaction.referenceNumber }}</td>
                 <td>{{ transaction.amount }}</td>
                 <td>{{ transaction.balance }}</td>
                 <td>
@@ -215,7 +226,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          (click)="allocateAndPostAllocations()"
+          (click)="confirmtotalAllocatedAmount()"
         >
           {{ "fms.receipting.saveAllocation" | translate }}
         </button>
@@ -249,7 +260,7 @@
                   {{ "fms.receipting.policyNumber" | translate }}
                 </th>
                 <th class="header-bg">
-                  {{ "fms.receipting.transactionNumber" | translate }}
+                  {{ "fms.receipting.Debit Note" | translate }}
                 </th>
                 <th class="header-bg">
                   {{ "fms.receipting.batchNumber" | translate }}
@@ -273,7 +284,7 @@
             <ng-template pTemplate="body" let-allocation>
               <tr *ngFor="let detail of allocation.receiptParticularDetails">
                 <td>{{ detail.policyNumber }}</td>
-                <td>{{ detail.transactionNumber }}</td>
+                <td>{{ detail.referenceNumber }}</td>
                 <td>{{ detail.batchNumber }}</td>
                 <td>{{ detail.premiumAmount | number : "1.2-2" }}</td>
                 <td>{{ detail.commissionAmount | number : "1.2-2" }}</td>
@@ -471,6 +482,34 @@
       >
         {{ "fms.receipting.save_receipt" | translate }}
       </button>
+      <!-- save empty allocations -->
+      <div class="save-btns">
+        <button
+          *ngIf="isEmptyAllocationPosted"
+          type="button"
+          class="btn btn-primary"
+          (click)="submitReceipt()"
+        >
+          {{ "fms.receipting.save_receipt" | translate }}
+        </button>
+        <button
+          type="button"
+          *ngIf="isEmptyAllocationPosted && showAcknowledgeBtn"
+          (click)="handleSaveAndPrint()"
+          class="btn btn-outline-primary"
+        >
+          {{ "fms.receipting.generateAcknowledgement" | translate }}
+        </button>
+        <button
+          *ngIf="isEmptyAllocationPosted && !showAcknowledgeBtn"
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="saveAndPrint()"
+        >
+          {{ "fms.receipting.save&print" | translate }}
+        </button>
+      </div>
+      <!-- end -->
     </div>
   </div>
 </div>
