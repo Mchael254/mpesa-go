@@ -1,0 +1,68 @@
+.body-container{
+    width: 1216px;
+    height: 532px;
+    margin: 32px 32px 422px;
+    padding: 40px 0 96px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+.Receipt-management {
+    width: 191px;
+    height: 20px;
+    margin: 0 983px 44px 42px;
+    font-family: Roboto;
+    margin-top: 40px;
+    font-size: 20px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 0.99;
+    letter-spacing: normal;
+    text-align: left;
+    color: #00529b;
+  }
+  .Printing {
+   width: 57px;
+   margin: 0 56px 2px 42px;
+ color: #000;
+  }
+  .Cancellation {
+    width: 90px;
+    margin: 0 971px 2px 56px;
+    color: #00529b;
+  }
+  .d-flex{
+    font-size: 16px;
+    height: 24px;
+    flex-grow: 0;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-top: 40px;
+    text-align: left;
+    font-family: Roboto;
+    font-weight: 500;
+    font-stretch: normal;
+  }
+  .Line-195 {
+    width: 1216px;
+    height: 2px;
+    flex-grow: 0;
+    margin: 2px 0 0;
+    padding: 0 971px 0 155px;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  .Line-194 {
+    width: 90px;
+    height: 2px;
+    flex-grow: 0;
+    transform: rotate(-360deg);
+    background-color: #00529b;
+  }
+  .shaded-Table-row {
+    width: 1104px;
+    height: 40px;
+    flex-grow: 0;
+    padding: 10px 247px 11px 32px;
+    background-color: #bad0e4;
+  }

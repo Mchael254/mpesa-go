@@ -9,6 +9,7 @@ import { ClientSearchComponent } from './components/client-search/client-search.
 import { ClientAllocationComponent } from './components/client-allocation/client-allocation.component';
 import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
 import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-preview.component';
+import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
 
 
 const routes: Routes = [
@@ -47,6 +48,10 @@ const routes: Routes = [
  {
   path:'slip-preview',
   component:PdSlipPreviewComponent
+ },
+ {
+  path:'receipt-management',
+  component:ReceiptManagementComponent
  }
 ];
 
