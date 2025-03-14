@@ -381,9 +381,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   calculateTotalPayablePremium(quotationDetail: QuotationDetails): number {
     let totalPremium = quotationDetail.premium || 0;
 
-    if (quotationDetail.taxInformation && quotationDetail.taxInformation.length > 0) {
+    if (quotationDetail.quotationProducts[0].taxInformation && quotationDetail.quotationProducts[0].taxInformation.length > 0) {
       // Sum up the amounts of all taxes
-      totalPremium += quotationDetail.taxInformation.reduce((total, tax) => total + (tax.amount || 0), 0);
+      totalPremium += quotationDetail.quotationProducts[0].taxInformation.reduce((total, tax) => total + (tax.taxAmount || 0), 0);
     }
 
     return totalPremium;

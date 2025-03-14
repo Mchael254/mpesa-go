@@ -160,7 +160,7 @@
                 <td>{{quotation.quotationNumber}}</td>
                 <td>{{quotation.clientName |sentenceCase}}</td>
                 <td>{{quotation.agentShortDescription |sentenceCase}}</td>
-                <td>{{quotation.premium || 0}}</td>
+                <td>{{quotation.premium || 0 |number}}</td>
                 <td>{{quotation.status}}</td>
                 <td>{{quotation.fromDate}}</td>
                 <td>{{quotation.toDate}}</td>
@@ -226,14 +226,15 @@
               <tr [class.p-highlight]="product === selectedQuotationProduct" style="cursor: pointer">
                 <td>
                   <input type="checkbox" id="productCheckbox{{ product.id }}"
-                    (change)="onProductSelection($event, product)" />
+                    (change)="onProductSelection($event, product)"
+                    [disabled]="product.converted === 'Y' && product.policyNumber"/>
 
                 </td>
-                <td>{{product.productShortDescription}}</td>
+                <td>{{product.productName}}</td>
                 <td>{{product.wef}}</td>
                 <td>{{product.wet}}</td>
-                <td>{{product.premium}}</td>
-                <td>{{product.commission}}</td>
+                <td>{{product.premium|number}}</td>
+                <td>{{product.commission |number}}</td>
                 <td>{{product.fap}}</td>
                 <td>{{product.remarks}}</td>
                 <td>{{product.converted}}</td>

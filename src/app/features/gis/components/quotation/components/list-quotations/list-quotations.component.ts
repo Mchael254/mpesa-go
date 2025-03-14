@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {LazyLoadEvent} from "primeng/api";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {untilDestroyed} from "../../../../../../shared/shared.module";
-import {QuotationsService} from '../../../../../../features/gis/services/quotations/quotations.service'
+import {QuotationsService} from '../../services/quotations/quotations.service';
 import {tap} from "rxjs/operators";
 import {QuotationsDTO} from '../../../../../../features/gis/data/quotations-dto'
 import {Pagination} from '../../../../../../shared/data/common/pagination'
@@ -77,7 +77,7 @@ export class ListQuotationsComponent {
                 dateTo: string,
                           accountCode: number) {
     return this.quotationsService
-      .getQuotations(pageIndex, dateFrom, dateTo, accountCode)
+      .getQuotationsClient(pageIndex, dateFrom, dateTo, accountCode)
       .pipe(
         untilDestroyed(this),
         tap((data) => log.info(`Fetching Quotations>>>`, data))

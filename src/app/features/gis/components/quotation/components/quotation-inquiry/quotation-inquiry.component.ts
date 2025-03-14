@@ -6,7 +6,7 @@ import {Logger} from "../../../../../../shared/services";
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { QuotationList, Sources, Status, StatusEnum, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from '../../../../../../features/gis/services/quotations/quotations.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 import { Products } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SidebarMenu } from '../../../../../../features/base/model/sidebar.menu';

@@ -351,6 +351,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.utilService.clearSessionStorageData()
     let nextPage = '/home/gis/quotation/quick-quote'
     if (type === 'NORMAL') {
+      this.utilService.clearNormalQuoteSessionStorage()
       nextPage = '/home/gis/quotation/quotations-client-details'
     }
     this.router.navigate([nextPage]).then(r => {

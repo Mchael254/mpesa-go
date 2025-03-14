@@ -77,8 +77,9 @@ export class CreateClientComponent {
   convertToPolicy() {
     log.debug("Quotation Details",this.passedQuotation)
     this.quotationCode = this.passedQuotation?.quotationProducts[0]?.quotCode;
+    const quoteProductCode = this.passedQuotation?.quotationProducts[0]?.code
     log.debug("Quotation Code",this.quotationCode)
-    this.quotationService.convertQuoteToPolicy(this.quotationCode).subscribe((data:any) => {
+    this.quotationService.convertQuoteToPolicy(this.quotationCode,quoteProductCode).subscribe((data:any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
       log.debug("Batch number",this.batchNo)

@@ -985,7 +985,8 @@
       "quotations": "Cotizaciones",
       "select_a_policy": "Seleccionar una póliza",
       "policy_ID": "ID de la póliza",
-      "no_policy_found": "No se encontró ninguna póliza"
+      "no_policy_found": "No se encontró ninguna póliza",
+      "rate" : "Tarifa"
 
     },
     "policy": {

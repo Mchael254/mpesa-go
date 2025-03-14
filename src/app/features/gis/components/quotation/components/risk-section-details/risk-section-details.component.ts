@@ -11,7 +11,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { Calendar } from 'primeng/calendar';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { QuotationDetails, quotationRisk, riskSection, scheduleDetails, ScheduleDetailsDto } from '../../data/quotationsDTO';
+import { QuickQuoteData, QuotationDetails, quotationRisk, riskSection, scheduleDetails, ScheduleDetailsDto } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
@@ -27,6 +27,9 @@ import { forkJoin, switchMap } from 'rxjs';
 import { PolicyService } from '../../../policy/services/policy.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { Table } from 'primeng/table';
+
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -56,7 +59,7 @@ const log = new Logger('RiskSectionDetailsComponent');
 export class RiskSectionDetailsComponent {
 
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
-
+  @ViewChild('sectionTable') sectionTable!: Table; 
   steps = quoteStepsData;
 
   quotationCode: any
@@ -89,7 +92,7 @@ export class RiskSectionDetailsComponent {
   riskDetailsForm: FormGroup;
 
   selectProductCode: any;
-  productList: Products[]=[];
+  productList: Products[] = [];
   description: any;
 
   binderList: any;
@@ -103,14 +106,14 @@ export class RiskSectionDetailsComponent {
   coverToDate: string;
 
   clauseList: Clause[];
-  selectedClauseList: Clause[];
-  SubclauseList: subclassClauses[];
+  // selectedClauseList: Clause[];
+  SubclauseList: any;
   selectedSubClauseList: subclassClauses[];
   selectedClauseCode: any;
   // clauseDetail:any;
-  selectedClauses: any
+  selectedClause!: any;
 
-  riskSectionList: riskSection[]=[];
+  riskSectionList: riskSection[] = [];
   sectionList: any;
   selectedSectionList: subclassSection[];
   sectionDetailsForm: FormGroup;
@@ -160,7 +163,7 @@ export class RiskSectionDetailsComponent {
   coverTo: any;
 
   riskClausesList: riskClauses[];
-  selectedRiskClause: Clause;
+  selectedRiskClause: riskClauses;
   selectedRiskClauseCode: any;
 
   selectedSections: any[] = [];
@@ -192,7 +195,7 @@ export class RiskSectionDetailsComponent {
   productDescription: string;
   storedRiskFormDetails: quotationRisk = null
   quotationFormDetails: any = null
-  sectionPremium: Premiums[]=[];
+  sectionPremium: Premiums[] = [];
   storedScheduleDetails: ScheduleDetailsDto;
   storedSectionDetails: riskSection[] = [];
   passedProductCode: number;
@@ -203,7 +206,13 @@ export class RiskSectionDetailsComponent {
   sumInsuredValue: number;
 
   passedClientDetails: any;
-
+  public currencyObj: NgxCurrencyConfig;
+  private typingTimer: any;// Timer reference
+  passedSections: any[] = [];
+  sectionToBeRemoved: number[] = [];
+  inputErrors: { [key: string]: boolean } = {};
+  storedData: QuickQuoteData = null;
+  
   constructor(
     private router: Router,
     private messageService: MessageService,
@@ -245,22 +254,30 @@ export class RiskSectionDetailsComponent {
       // this.motorProduct = false;
     }
     const quotationAction = sessionStorage.getItem("quotationAction");
-    if(!quotationAction) {
+    if (!quotationAction) {
       this.storedRiskFormDetails = JSON.parse(sessionStorage.getItem('riskFormDetails'));
       log.debug("RISK FORM DETAILS", this.storedRiskFormDetails)
       if (this.storedRiskFormDetails) {
         this.loadCovertypeBySubclassCode(this.storedRiskFormDetails?.subclassCode);
       }
+      this.storedRiskFormDetails = JSON.parse(sessionStorage.getItem('riskFormData'));
+      log.debug("RISK FORM DETAILS", this.storedRiskFormDetails)
+      if (this.storedRiskFormDetails) {
+        this.loadCovertypeBySubclassCode(this.storedRiskFormDetails?.subclassCode);
+      }
+      this.storedScheduleDetails = JSON.parse(sessionStorage.getItem('scheduleDetails'));
+      this.scheduleList = this.storedScheduleDetails
+      log.debug("SCHEDULE DETAILS:", this.storedScheduleDetails)
+
+
+
+      this.storedSectionDetails = JSON.parse(sessionStorage.getItem('sectionDetails'));
+      this.sectionDetails = this.storedSectionDetails
+      log.debug("Section DETAILS:", this.storedSectionDetails)
+      this.storedSectionDetails = JSON.parse(sessionStorage.getItem('sectionDetails'));
+      this.sectionDetails = this.storedSectionDetails
+
     }
-    this.storedScheduleDetails = JSON.parse(sessionStorage.getItem('scheduleDetails'));
-    this.scheduleList=this.storedScheduleDetails
-    log.debug("SCHEDULE DETAILS:",this.storedScheduleDetails)
-
-
-    this.storedSectionDetails = JSON.parse(sessionStorage.getItem('sectionDetails'));
-    this.sectionDetails=this.storedSectionDetails
-    log.debug("Section DETAILS:",this.storedSectionDetails)
-
   }
   public isCollapsibleOpen = false;
   public isOtherDetailsOpen = false;
@@ -276,7 +293,7 @@ export class RiskSectionDetailsComponent {
     const clientFormDetails = sessionStorage.getItem('clientDetails') || sessionStorage.getItem('clientPayload');
     const clientData = JSON.parse(clientFormDetails)
     log.debug("Client form details:", clientData)
-    this.clientName = clientData.firstName + ' ' + clientData.lastName;
+    this.clientName = clientData?.firstName + ' ' + clientData?.lastName ;
 
     this.passedClientDetails = sessionStorage.getItem('clientDetails');
 
@@ -290,6 +307,19 @@ export class RiskSectionDetailsComponent {
     log.debug("Date Formart", this.dateFormat)
 
     this.sumInsuredValue = JSON.parse(sessionStorage.getItem('sumInsuredValue'));
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol')
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
 
     this.createRiskDetailsForm();
     this.getVehicleMake();
@@ -370,11 +400,12 @@ export class RiskSectionDetailsComponent {
   loadFormData() {
 
     log.debug(this.sharedService.getQuotationFormDetails(), "Form List")
-    this.selectProductCode = this.formData.productCode;
-    this.insuredCode = this.formData.clientCode;
-    this.town = this.formData.clientCode
+    this.selectProductCode = this.formData?.productCode;
+    this.insuredCode = this.formData?.clientCode;
+    this.town = this.formData?.clientCode
     log.debug(this.selectProductCode, "Selected Product Code")
-    this.getProductByCode();
+    this.selectProductCode && this.getProductByCode();
+
     // this.getProductSubclass(this.selectProductCode);
     // this.getSubclasses();
 
@@ -402,7 +433,7 @@ export class RiskSectionDetailsComponent {
         }
       })
 
-       // Determine the subclass code to use (from storedRiskFormDetails or storedData)
+      // Determine the subclass code to use (from storedRiskFormDetails or storedData)
       const subClassCodeToUse = this.storedRiskFormDetails?.subclassCode || this.passedSubclassCode;
 
       // If a subclass code is found, patch the form with the corresponding subclass
@@ -481,7 +512,7 @@ export class RiskSectionDetailsComponent {
       const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
 
       if (coverTypeCodeToUse) {
-       this.selectedCoverType = this.subclassCoverType.find(coverType => coverType.coverTypeCode === coverTypeCodeToUse);
+        this.selectedCoverType = this.subclassCoverType.find(coverType => coverType.coverTypeCode === coverTypeCodeToUse);
         if (this.selectedCoverType) {
           this.riskDetailsForm.patchValue({ coverTypeDescription: this.selectedCoverType });
 
@@ -507,7 +538,7 @@ export class RiskSectionDetailsComponent {
       this.selectedClientList = this.clientList.filter(client => client.id == this.insuredCode);
       log.debug("Selected Client ", this.selectedClientList)
 
-      this.clientName = this.selectedClientList[0].firstName + ' ' + this.selectedClientList[0].lastName;
+      this.clientName = this.selectedClientList[0]?.firstName + ' ' + this.selectedClientList[0]?.lastName;
 
       log.debug(this.clientName, "Client NAME")
 
@@ -539,6 +570,8 @@ export class RiskSectionDetailsComponent {
       // If a product code is found, patch the form with the corresponding product
       if (productCodeToUse) {
         const selectedProduct = this.productList.find(product => product.code === productCodeToUse);
+        // if (this.storedRiskFormDetails) {
+        //   const selectedProduct = this.productList.find(product => product.code === this.storedRiskFormDetails?.productCode);
         if (selectedProduct) {
           this.riskDetailsForm.patchValue({ productCode: selectedProduct });
         }
@@ -668,34 +701,35 @@ export class RiskSectionDetailsComponent {
       // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
       log.debug('subclass ClauseList#####', this.SubclauseList)
+      // ✅ Ensure all mandatory clauses are selected on load
+      this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
 
-      // log.debug('ClauseList',this.selectedSubClauseList)
-      // log.debug('ClauseCode********',this.selectedClauseCode)
-      this.loadAllClauses();
+      // ✅ Mark mandatory clauses as checked
+      this.SubclauseList.forEach(clause => {
+        clause.checked = clause.isMandatory === 'Y';
+      });
     })
   }
 
-  loadAllClauses() {
-    // Extract clause codes from selectedSubClauseList
-    const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
-    log.debug('Retrived Clause Codes', subClauseCodes)
-
-    // Check if there are any subClauseCodes before making the request
-    if (subClauseCodes.length === 0) {
-      // Handle the case when there are no subClauseCodes
-      return;
+  onClauseSelectionChange(selectedClauseList: any) {
+    if (selectedClauseList.checked) {
+      // ✅ Add to selectedClause if not already included
+      if (!this.selectedClause.includes(selectedClauseList)) {
+        this.selectedClause.push(selectedClauseList);
+      }
+    } else {
+      // ✅ Remove from selectedClause only if NOT mandatory
+      if (selectedClauseList.isMandatory !== 'Y') {
+        this.selectedClause = this.selectedClause.filter(item => item.clauseCode !== selectedClauseList.clauseCode);
+      }
     }
+    log.debug("Selected  Risk clause:", this.selectedClause)
 
-    // Make the request to get all clauses based on the subClauseCodes
-    this.subclassService.getAllClauses().subscribe(data => {
-      this.clauseList = data._embedded.clause_dto_list;
+    // ✅ Call API with updated selection
+    // this.selectedProductClauses(this.quotationCode);
+    this.captureRiskClause();
 
-      // Filter clauseList based on subClauseCodes
-      this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
-      sessionStorage.setItem("riskClauses", JSON.stringify(this.selectedClauseList))
-      log.debug('All ClauseList', this.clauseList);
-      log.debug('ClauseSelectdList', this.selectedClauseList);
-    });
+
   }
 
   /**
@@ -730,7 +764,7 @@ export class RiskSectionDetailsComponent {
       });
       log.debug("VehicleMake", this.vehicleMakeList)
       if (this.storedRiskFormDetails) {
-        const selectedVehicleMake = this.vehicleMakeList.find(make => make.name === this.storedRiskFormDetails?.vehicleMake);
+        const selectedVehicleMake = this.vehicleMakeList.find(make => make.code === this.storedRiskFormDetails?.vehicleMake);
         if (selectedVehicleMake) {
           log.debug("selected vehicle make:", selectedVehicleMake)
           this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
@@ -800,7 +834,7 @@ export class RiskSectionDetailsComponent {
       });
       log.debug("Vehicle Model Details", this.vehicleModelDetails);
       if (this.storedRiskFormDetails) {
-        const selectedVehicleModel = this.vehicleModelDetails.find(model => model.name === this.storedRiskFormDetails?.vehicleModel);
+        const selectedVehicleModel = this.vehicleModelDetails.find(model => model.code === this.storedRiskFormDetails?.vehicleModel);
         if (selectedVehicleModel) {
           this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel });
 
@@ -854,74 +888,93 @@ export class RiskSectionDetailsComponent {
 
   createRiskDetail() {
 
-    const currentFormValues = this.riskDetailsForm ? {...this.riskDetailsForm.value} : null;
+    const currentFormValues = this.riskDetailsForm ? { ...this.riskDetailsForm.value } : null;
 
     log.debug("vehicleMake SELECTED", this.selectedVehicleMakeName)
     log.debug("vehicleMODEL SELECTED", this.selectedVehicleModelName)
-    // const riskForm = this.riskDetailsForm.value;
-    // riskForm.vehicleMake = this.riskDetailsForm.value.vehicleMake.name;
+    if (this.riskDetailsForm.value) {
+      const riskPayload = this.getQuotationRiskPayload();
+      const riskArray = [riskPayload];
 
-    this.riskDetailsForm.controls['vehicleModel'].setValue(this.selectedVehicleModelName)
-    this.riskDetailsForm.controls['vehicleMake'].setValue(this.selectedVehicleMakeName)
-
-    let riskPayload = this.getQuotationRiskPayload();
-    log.debug("risk payload when creating a risk or editing", riskPayload);
-    this.updateRiskDetailsForm(riskPayload);
-
-    const riskArray = [riskPayload];
-    log.debug(riskArray)
-    this.quotationService.createQuotationRisk(this.quotationCode, riskPayload).pipe(
-      switchMap(data => {
-        this.quotationRiskData = data;
-        const quotationRiskDetails = this.quotationRiskData._embedded[0];
-
-        if (quotationRiskDetails) {
-          this.quotationRiskCode = quotationRiskDetails.riskCode;
-          this.quoteProductCode = quotationRiskDetails.quotProductCode;
-        }
-
-        // Determine the success message based on the action
-        const successMessage = riskPayload[0].action === "E"
-          ? 'Risk Edited Successfully'
-          : 'Risk Created Successfully';
-        this.globalMessagingService.displaySuccessMessage('Success', successMessage);
-        sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
-
-        // Prepare schedule payload
-        const schedulePayload = this.prepareSchedulePayload();
-        const subclasscode = this.selectedSubclassCode
-        const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
-        const coverTypeCode =  this.selectedCoverType.coverTypeCode
-
-        return forkJoin([
-          this.quotationService.createSchedule(schedulePayload),
-          this.quotationService.getRiskClauses(this.quotationRiskCode),
-          this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
-        ]);
-      })
-    ).subscribe({
-      next: ([createdSchedule, riskClauses,premiumRates]:any) => {
-        this.scheduleData = createdSchedule;
-        this.scheduleList = this.scheduleData._embedded;
-        sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
-
-        this.riskClausesList = riskClauses;
-        const result = premiumRates;
-        this.sectionPremium= result
-        log.debug("Schedule List:", this.scheduleList);
-        log.debug("Risk Clauses List:", this.riskClausesList);
-        log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
-
-        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
-        this.fetchScheduleRelatedData();
-        this.loadClientQuotation()
-
-      },
-      // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
-      error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', error.message);
+      const formValues = this.riskDetailsForm.getRawValue();
+      log.debug("FORM VALUES to be converted", formValues)
+      const riskFormData: any = {
+        vehicleMake: formValues?.vehicleMake?.code,
+        vehicleModel: formValues?.vehicleModel?.code,
+        coverTypeDescription: formValues?.coverTypeDescription.description,
+        binderCode: formValues?.binderCode.code,
+        coverTypeCode: formValues.coverTypeDescription.coverTypeCode,
+        quotationCode: formValues.quotationCode,
+        productCode: formValues.productCode.code,
+        propertyId: formValues.propertyId,
+        coverTypeShortDescription: formValues.coverTypeShortDescription.coverTypeShortDescription,
+        subclassCode: formValues.subclassCode.code,
+        itemDesc: formValues.itemDesc || this.vehiclemakeModel,
+        wef: riskPayload[0].wef,
+        wet: riskPayload[0].wet,
       }
-    });
+      sessionStorage.setItem('riskFormData', JSON.stringify(riskFormData));
+      log.debug(riskArray)
+      this.quotationService.createQuotationRisk(this.quotationCode, riskPayload).pipe(
+        switchMap(data => {
+          this.quotationRiskData = data;
+          const quotationRiskDetails = this.quotationRiskData._embedded[0];
+
+          if (quotationRiskDetails) {
+            this.quotationRiskCode = quotationRiskDetails.riskCode;
+            this.quoteProductCode = quotationRiskDetails.quotProductCode;
+          }
+
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk Created');
+
+
+          // Prepare schedule payload
+          const schedulePayload = this.prepareSchedulePayload();
+          const subclasscode = this.selectedSubclassCode
+          const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
+          const coverTypeCode = this.selectedCoverType.coverTypeCode
+          // Call services directly
+          return forkJoin([
+            this.quotationService.createSchedule(schedulePayload),
+            this.quotationService.getRiskClauses(this.quotationRiskCode),
+            this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
+          ]);
+        })
+      ).subscribe({
+        next: ([createdSchedule, riskClauses, premiumRates]: any) => {
+          this.scheduleData = createdSchedule;
+          this.scheduleList = this.scheduleData._embedded;
+          sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
+
+          this.riskClausesList = riskClauses;
+          const result = premiumRates;
+          this.sectionPremium = result
+          log.debug("Schedule List:", this.scheduleList);
+          log.debug("Risk Clauses List:", this.riskClausesList);
+          log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
+
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
+          this.fetchScheduleRelatedData();
+
+        },
+        // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+
+    }
+
+
+
+
+    // const riskDetails: any = {
+    //  selectedModel: this.riskDetailsForm.ge
+    // }
+
+    // this.updateRiskDetailsForm(riskPayload);
+
+
 
     // If we had form values, restore them
     if (currentFormValues) {
@@ -947,7 +1000,7 @@ export class RiskSectionDetailsComponent {
 
     // Determine the action based on whether riskInformation has a code
     const action = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.code ? "E" : "A";
-    const existingRisk =  this.quotationDetails.quotationProducts[0]?.riskInformation;
+    const existingRisk = this.quotationDetails.quotationProducts[0]?.riskInformation;
     log.debug("existing risk", existingRisk);
 
     // const coverTypeSections = this.riskLevelPremiums
@@ -1144,7 +1197,7 @@ export class RiskSectionDetailsComponent {
       this.quotationService.createRiskLimits(limitsPayLoad).pipe(
         switchMap(() => this.quotationService.getRiskSection(this.quotationCode))
       ).subscribe({
-        next: (data: any)=> {
+        next: (data: any) => {
           this.riskSectionList = data._embedded[0];
           log.debug("Section List", this.riskSectionList);
           this.sectionDetails = this.riskSectionList;
@@ -1584,7 +1637,7 @@ export class RiskSectionDetailsComponent {
   onSelectRiskClauses(event: any) {
     this.selectedRiskClause = event;
     log.info("Patched Risk Section", this.selectedRiskClause);
-    this.selectedRiskClauseCode = this.selectedRiskClause.code;
+    this.selectedRiskClauseCode = this.selectedRiskClause.clauseCode;
     log.debug("SELECTED RISK CLAUSE CODE:", this.selectedRiskClauseCode);
     log.debug("SELECTED PRODUCT CODE:", this.selectProductCode);
     log.debug("SELECTED RISK CODE:", this.quotationRiskCode);
@@ -1600,29 +1653,44 @@ export class RiskSectionDetailsComponent {
   //   })
   // }
   captureRiskClause() {
-    this.quotationService
-      .captureRiskClauses(this.quotationRiskCode, this.quotationCode, this.selectedRiskClauseCode, this.selectProductCode, this.selectedSubclassCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (data) => {
-          if (data) {
-            log.info(`Response from capture risk endpont`, data);
+    if (this.selectedClause && this.selectedClause.length > 0) {
+      this.selectedClause.forEach(el => {
+        this.quotationService.captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, el.clauseCode, this.selectProductCode).subscribe(res => {
+          if (res) {
+            log.info(`Response from capture risk endpont`, res);
           } else {
             this.globalMessagingService.displayErrorMessage(
               'Error',
               'Something went wrong. Please try Again'
             );
           }
-        },
-        // error: (err) => {
-
-        //   this.globalMessagingService.displayErrorMessage(
-        //     'Error',
-        //     this.errorMessage
-        //   );
-        //   log.info(`error >>>`, err);
-        // },
+        });
+        console.debug(el.clauseCode);
       });
+    }
+    // this.quotationService
+    //   .captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, this.selectedRiskClauseCode, this.selectProductCode)
+    //   .pipe(untilDestroyed(this))
+    //   .subscribe({
+    //     next: (data) => {
+    //       if (data) {
+    //         log.info(`Response from capture risk endpont`, data);
+    //       } else {
+    //         this.globalMessagingService.displayErrorMessage(
+    //           'Error',
+    //           'Something went wrong. Please try Again'
+    //         );
+    //       }
+    //     },
+    //     // error: (err) => {
+
+    //     //   this.globalMessagingService.displayErrorMessage(
+    //     //     'Error',
+    //     //     this.errorMessage
+    //     //   );
+    //     //   log.info(`error >>>`, err);
+    //     // },
+    //   });
   }
   fetchBodyTypes() {
     this.policyService
@@ -1999,17 +2067,17 @@ export class RiskSectionDetailsComponent {
     return this.scheduleList.some(schedule =>
       schedule.details?.level2 &&
       (schedule.details.level2.code ||
-       schedule.details.level2.geographicalLimits ||
-       schedule.details.level2.deductibleDesc ||
-       schedule.details.level2.limitationUse ||
-       schedule.details.level2.authorisedDriver)
+        schedule.details.level2.geographicalLimits ||
+        schedule.details.level2.deductibleDesc ||
+        schedule.details.level2.limitationUse ||
+        schedule.details.level2.authorisedDriver)
     );
   }
 
   fetchSectionPremiumRates() {
     const subclasscode = this.selectedSubclassCode
     const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
-    const coverTypeCode =  this.selectedCoverType.coverTypeCode
+    const coverTypeCode = this.selectedCoverType.coverTypeCode
     this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).pipe(untilDestroyed(this)).subscribe({
       next: (response: any) => {
         const result = response._embedded;
@@ -2025,28 +2093,87 @@ export class RiskSectionDetailsComponent {
     let limitsToSave: any[] = [];
 
     for (let section of this.selectedSections) {
-        limitsToSave.push({
-            calcGroup: 1,
-            code: section.code,
-            compute: "Y",
-            description: section.sectionDescription,
-            freeLimit: section.freeLimit || 0,
-            multiplierDivisionFactor: section.multiplierDivisionFactor,
-            multiplierRate: section.multiplierRate,
-            premiumAmount: section.premiumMinimumAmount || 0,
-            premiumRate: section.rate || 0,
-            rateDivisionFactor: section.divisionFactor || 1,
-            rateType: section.rateType || "FXD",
-            rowNumber: 1, // Assuming unique rowNumber per section
-            sectionType: section.sectionType,
-            sumInsuredLimitType: section.sumInsuredLimitType || null,
-            sumInsuredRate: section.sumInsuredRate,
-            sectionShortDescription: section.sectionShortDescription,
-            sectionCode: section.sectionCode,
-            limitAmount: section.limitAmount,
-        });
+      limitsToSave.push({
+        calcGroup: 1,
+        code: section.code,
+        compute: "Y",
+        description: section.sectionDescription,
+        freeLimit: section.freeLimit || 0,
+        multiplierDivisionFactor: section.multiplierDivisionFactor,
+        multiplierRate: section.multiplierRate,
+        premiumAmount: section.premiumMinimumAmount || 0,
+        premiumRate: section.rate || 0,
+        rateDivisionFactor: section.divisionFactor || 1,
+        rateType: section.rateType || "FXD",
+        rowNumber: 1, // Assuming unique rowNumber per section
+        sectionType: section.sectionType,
+        sumInsuredLimitType: section.sumInsuredLimitType || null,
+        sumInsuredRate: section.sumInsuredRate,
+        sectionShortDescription: section.sectionShortDescription,
+        sectionCode: section.sectionCode,
+        limitAmount: section.limitAmount,
+      });
     }
 
     return limitsToSave;
-}
+  }
+
+  onKeyUp(event: any, section: any): void {
+    clearTimeout(this.typingTimer); // Reset the timer
+
+    this.typingTimer = setTimeout(() => {
+      const inputElement = event.target as HTMLInputElement;
+      const inputValue = inputElement.value.trim(); // Trim spaces
+      const checkbox = document.getElementById('check_section_' + section.sectionCode) as HTMLInputElement;
+      if (section.isChecked && !section.limitAmount) {
+        document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
+      } else {
+        document.getElementById(`section_${section.sectionCode}`)?.classList.remove('error-border');
+      }
+      // Update checkbox state based on input value
+      checkbox.checked = !!(checkbox && inputValue);
+      section.typedWord = parseInt(inputValue, 10);
+      section.isChecked = !!inputValue; // True only if input has a value
+      if (section.isChecked) {
+        // Add section if it's not already included
+        if (!this.passedSections.some(s => s.sectionCode === section.sectionCode)) {
+            this.passedSections.push(section);
+        }
+    
+        this.selectedSections = [...this.passedSections]; // Ensure selectedSections is updated properly
+        log.debug("Section selected", this.passedSections);
+        log.debug("Selected Sections", this.selectedSections);
+    } else {
+        // Remove section from passedSections
+        this.passedSections = this.passedSections.filter(s => s.sectionCode !== section.sectionCode);
+        this.selectedSections = [...this.passedSections]; // Update selectedSections after removal
+        log.debug("Selected Sections after removal", this.selectedSections);
+
+        const removedSectionCode = section.sectionCode;
+    
+        // Ensure sectionToBeRemoved is an array
+        if (!Array.isArray(this.sectionToBeRemoved)) {
+            this.sectionToBeRemoved = [];
+        }
+    
+        // Store multiple removed sections
+        this.sectionToBeRemoved.push(removedSectionCode);
+        console.debug("Sections to be removed", this.sectionToBeRemoved);
+    }
+    
+
+      // Remove error if user types a valid value
+      if (section.limitAmount) {
+        this.inputErrors[section.sectionCode] = false;
+      }
+
+      // this.loadAllPremiums();
+    }, 500); // Trigger after 500ms of no typing
+  }
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (this.sectionTable) {
+      this.sectionTable.filterGlobal(filterValue, 'contains');
+    }
+  }
 }
