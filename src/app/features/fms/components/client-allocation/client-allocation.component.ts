@@ -756,14 +756,19 @@ if (this.debitNoteFilter?.trim()) {
    * @param index The index of the transaction in the list
    * @param event The checkbox change event
    */
-  onCommissionCheckedChange(index: number, event: Event): void {
-    const isChecked = (event.target as HTMLInputElement).checked;
+  // onCommissionCheckedChange(index: number, event: Event): void {
+  //   const isChecked = (event.target as HTMLInputElement).checked;
+  //   const commissionControl = this.getFormControl(index, 'commissionChecked');
+  //   if (commissionControl) {
+  //     commissionControl.setValue(isChecked ? 'Y' : 'N');
+  //   }
+  // }
+  onCommissionCheckedChange(index: number, value: string): void {
     const commissionControl = this.getFormControl(index, 'commissionChecked');
     if (commissionControl) {
-      commissionControl.setValue(isChecked ? 'Y' : 'N');
+      commissionControl.setValue(value);
     }
   }
-
   /**
    * Calculates the remaining amount by subtracting the total allocated amount from the amount issued.
    * @returns The remaining amount
