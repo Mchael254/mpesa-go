@@ -60,8 +60,8 @@ export interface quotationRisk {
   prospectCode: number;
   coverTypeDescription: string;
   taxComputation:taxComputation[];
-  vehicleModel:string;
-  vehicleMake:string;
+  vehicleModel:number;
+  vehicleMake:number;
 
 }
 export interface taxComputation{
@@ -91,62 +91,206 @@ export interface riskSection {
   quotationCode: number;
 }
 export interface QuotationDetails {
-  agentCode: number;
+  code: number;
   clientCode: number;
+  quotationNo: string;
+  revisionNo: number;
+  quotPropHoldingCoPrpCode?: any;
+  agentShortDescription: string;
+  currencyCode: number;
   coverFrom: string;
   coverTo: string;
-  currency: string;
-  expiryDate: string;
-  no: string;
-  premium: number;
-  quotationProducts: QuotationProduct[];
-  riskInformation: RiskInformation[];
+  totalPropertyValue?: any;
+  comments?: any;
   status: string;
-  taxInformation: TaxInformation[];
+  expiryDate: string;
+  ok: string;
+  premium: number;
+  commissionAmount?: any;
+  internalComments?: any;
+  authorisedBy?: any;
+  authorisedDate?: any;
+  confirmed?: any;
+  confirmedBy?: any;
+  confirmedDate?: any;
+  ready: string;
+  madeReadyBy?: any;
+  madeReadyDate?: any;
+  revised?: any;
+  preparedBy: string;
+  quotFactor?: any;
+  quotGspCode?: any;
+  divisionCode?: any;
+  agentWithin: string;
+  newAgent?: any;
+  quotIncsCode?: any;
+  web: string;
+  introducerCode?: any;
+  sourceCode: string;
+  chequeRequisition?: any;
+  parentRevision?: any;
+  subAgentCode?: any;
+  subAgentShortDescription?: any;
+  subCommissionAmount?: any;
+  prospectCode?: any;
+  marketerAgentCode?: any;
+  clientType: string;
+  marketerCommissionAmount?: any;
+  originalQuotationNumber: string;
+  quotTrvDstCouCode?: any;
+  remarks?: any;
+  reasonCancelled?: any;
+  webClientCode?: any;
+  quotTcbCode?: any;
+  clientRef?: any;
+  loanDisbursed: string;
+  tenderNumber?: any;
+  preparedDate: string;
+  quotCancelReason?: any;
+  quotCmpCode?: any;
+  sourceCampaign?: any;
+  frequencyOfPayment: string;
+  currencyRate?: any;
+  webPolId?: any;
+  travelQuote: string;
+  likelihood?: any;
+  quotQscCode: number;
+  quotLtaCommAmt?: any;
+  ginQuotations?: any;
+  quotPipCode?: any;
+  organizationCode?: any;
+  rfqDate?: any;
+  multiUser: string;
+  subQuote: string;
+  premiumFixed: string;
+  dateCreated?: any;
+  agentCode: number;
+  currency: string;
+  quotationProducts: QuotationProduct[];
+  branchCode: number;
+    source: {
+        code: number;
+        description: string;
+        applicableModule: string;
+    };
+    agentName: string;
+    clientName: string;
+    sumInsured: number;
 }
 
 export interface QuotationProduct {
-  WEF: string;
-  WET: string;
-  agentShortDescription: string;
-  binder: string;
   code: number;
-  commission: number;
-  premium: number;
   proCode: number;
-  productShortDescription: string;
   quotCode: number;
-  quotationNo: string;
+  productShortDescription: string;
+  quotationNo?: any;
+  premium: number;
   revisionNo: number;
   totalSumInsured: number;
+  commission?: any;
+  binder?: any;
+  agentShortDescription?: any;
+  productName: string;
   wef: string;
   wet: string;
-}
-
-export interface RiskInformation {
-  code: number;
-  covertypeShortDescription: string;
-  covertypecode: number;
-  quotationCode: number;
-  quotationRiskNo: string;
-  sectionsDetails: SectionDetail[];
-  value: number;
-}
-
-export interface SectionDetail {
-  description: string;
-  freeLimit: number;
-  limitAmount: number;
-  premium: number;
-  rate: number;
+  taxInformation: TaxInformation[];
+  riskInformation: RiskInformation[];
 }
 
 export interface TaxInformation {
-  amount: number;
-  description: string;
+  rateDescription: string;
   quotationRate: number;
   rateType: string;
+  taxAmount?: any;
+  productCode?: any;
 }
+
+export interface RiskInformation {
+  insuredCode?: any;
+  location?: any;
+  town?: any;
+  ncdLevel?: any;
+  schedules?: any;
+  coverTypeCode: number;
+  addEdit?: any;
+  quotationRevisionNumber: number;
+  code: number;
+  quotationProductCode: number;
+  quotationRiskNo: string;
+  quotationCode: number;
+  productCode?: any;
+  propertyId: string;
+  value?: any;
+  coverTypeShortDescription: string;
+  sectionsDetails: SectionDetail[];
+  scheduleDetails: ScheduleDetails;
+  premium: number;
+  subclassCode: number;
+  itemDesc: string;
+  binderCode: number;
+  wef: string;
+  wet: string;
+  commissionRate?: any;
+  commissionAmount?: any;
+  clientCode?: any;
+  clientShortDescription?: any;
+  annualPremium?: any;
+  coverDays: number;
+  clientType: string;
+  prospectCode?: any;
+  coverTypeDescription: string;
+  subclass: SubclassDetails;
+}
+
+export interface SectionDetail {
+  code: number;
+  quotationRiskCode: number;
+  sectionDescription: string;
+  limitAmount: number;
+  freeLimit: number;
+  rate: number;
+  premium: number;
+  rateType: string;
+  sectionShortDescription: string;
+  rowNumber: number;
+  calculationGroup: number;
+  sectionCode: number;
+  rateDivisionFactor: number;
+}
+
+export interface ScheduleDetails {
+  level1: Level1;
+}
+
+export interface Level1 {
+  bodyType?: any;
+  yearOfManufacture?: any;
+  color: string;
+  engineNumber?: any;
+  cubicCapacity?: any;
+  Make: string;
+  coverType: string;
+  registrationNumber: string;
+  chasisNumber?: any;
+  tonnage?: any;
+  carryCapacity?: any;
+  logBook?: any;
+  value?: any;
+  age: string;
+  itemNo: string;
+}
+
+export interface SubclassDetails {
+  code: number;
+  sclNewSclCode?: any;
+  sclClaimPrefix?: any;
+  description: string;
+  shortDescription: string;
+  sclPrgCode?: any;
+  productCode: number;
+  noCertificate: string;
+}
+
 export interface subclassCovertypeSection {
   code: number;
   cover_type_code: number;

@@ -653,4 +653,38 @@ export class UtilService {
     sessionStorage.removeItem('product')
     sessionStorage.removeItem('quoteAction')
   }
+  clearNormalQuoteSessionStorage(){
+    sessionStorage.removeItem('quotationFormDetails')
+    sessionStorage.removeItem('clientPayload')
+    sessionStorage.removeItem('clientCode')
+    sessionStorage.removeItem('quickQuotationCode')
+    sessionStorage.removeItem('quickQuotationNum')
+    sessionStorage.removeItem('sumInsuredValue')
+    sessionStorage.removeItem('currencyDelimiter')
+    sessionStorage.removeItem('currencySymbol')
+    sessionStorage.removeItem('quotationNum')
+    sessionStorage.removeItem('quotationCode')
+    sessionStorage.removeItem('clientDetails')
+    sessionStorage.removeItem('sectionDetails')
+    sessionStorage.removeItem('scheduleDetails')
+    sessionStorage.removeItem('riskFormDetails')
+    sessionStorage.removeItem('quotationAction')
+    sessionStorage.removeItem('motorClassAllowed')
+    sessionStorage.removeItem('dateFormat')
+    sessionStorage.removeItem('conversionFlag')
+    sessionStorage.removeItem('newClientDetails')
+    sessionStorage.removeItem('limitAmount')
+    sessionStorage.removeItem('premiumRate')
+    sessionStorage.removeItem('sectionType')
+    sessionStorage.removeItem('sectionDescription')
+    sessionStorage.removeItem('rateType')
+    sessionStorage.removeItem('coverFrom')
+    sessionStorage.removeItem('coverTo')
+    sessionStorage.removeItem('normalQuoteTimeStamp')
+    sessionStorage.removeItem('passedQuotationCode')
+    sessionStorage.removeItem('riskFormData')
+    
+    
+
+  }
 }
