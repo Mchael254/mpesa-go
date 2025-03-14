@@ -18,6 +18,7 @@ import { ClientAllocationComponent } from './components/client-allocation/client
 import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
 import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-preview.component';
 import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
+import { DynamicBreadcrumbComponent } from 'src/app/shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component';
 
 
 
@@ -29,7 +30,7 @@ import { ReceiptManagementComponent } from './components/receipt-management/rece
     ReceiptComponent,
     ReceiptAuthorizationComponent,
     BaseFmsComponent,
-    
+   
     ReceiptCaptureComponent,
     ClientSearchComponent,
     ClientAllocationComponent,
