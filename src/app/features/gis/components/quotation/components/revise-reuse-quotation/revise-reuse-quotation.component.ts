@@ -5,7 +5,7 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { QuotationList, Sources, UserDetails } from '../../data/quotationsDTO';
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from '../../../../services/quotations/quotations.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { Router } from '@angular/router';

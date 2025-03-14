@@ -21,7 +21,7 @@ import { BankService } from "../../../../../../shared/services/setups/bank/bank.
 import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { LimitsOfLiability, QuotationProduct } from '../../data/quotationsDTO';
+import { Excesses, LimitsOfLiability, QuotationDetails, QuotationProduct, TaxInformation } from '../../data/quotationsDTO';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -44,7 +44,7 @@ export class QuotationSummaryComponent {
   quotationCode: any
   quotationNumber: any;
   quotationDetails: any
-  quotationView: any
+  quotationView: QuotationDetails
   moreDetails: any
   clientDetails: any
   agents: any;
@@ -54,7 +54,7 @@ export class QuotationSummaryComponent {
   prodCode: any
   riskDetails: any
   quotationProducts: any
-  taxDetails: any
+  taxDetails: TaxInformation[] = []
   riskInfo: any = [];
   clauses: any;
   user: any;
@@ -77,7 +77,7 @@ export class QuotationSummaryComponent {
   limits: any;
   limitsList: any[];
   excesses: any;
-  excessesList: any[];
+  excessesList: Excesses[] = []
   subclassList: any;
   productSubclass: any;
   allSubclassList: any;
@@ -119,7 +119,7 @@ export class QuotationSummaryComponent {
   coverFrom: string;
   coverTo: string;
   quotationSources: any;
-  source: number;
+  source: string;
   sourecDescription: string;
   quickQuoteData: any;
   expiryDate: string;
@@ -157,7 +157,7 @@ export class QuotationSummaryComponent {
   public showInternalClaims = false;
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
-      // public cdr: ChangeDetectorRef;
+  // public cdr: ChangeDetectorRef;
   public cdr: ChangeDetectorRef;
 
 
@@ -279,7 +279,7 @@ export class QuotationSummaryComponent {
    * @return {void}
    */
   getQuotationDetails(code: any) {
-    this.quotationService.getQuotationDetails(code).subscribe(res => {
+    this.quotationService.getQuotationDetails(code).subscribe((res: any) => {
       this.quotationView = res;
 
       this.fetchedQuoteNum = this.quotationView.quotationNo;
@@ -293,7 +293,7 @@ export class QuotationSummaryComponent {
       }
 
 
-        this.sumInsured = this.quotationView.sumInsured;
+      this.sumInsured = this.quotationView.sumInsured;
 
 
       if (!this.quotationCodeString) {
@@ -307,21 +307,18 @@ export class QuotationSummaryComponent {
 
       // Assuming `quotationView` is the quotation object
       this.subClassCodes = this.quotationView.quotationProducts
-      .flatMap(product => product.riskInformation) // Flatten the riskInformation arrays
-      .map(risk => risk.subclassCode); // Extract the subclassCode from each risk
+        .flatMap(product => product.riskInformation) // Flatten the riskInformation arrays
+        .map(risk => risk.subclassCode); // Extract the subclassCode from each risk
       log.debug("Subclass Codes:", this.subClassCodes);
 
       this.coverFrom = this.convertDate(this.quotationView.coverFrom)
       this.coverTo = this.convertDate(this.quotationView.coverTo)
       this.expiryDate = this.convertDate(this.quotationDetails?.expiryDate)
-      this.source = this.quotationView.sourceCode
+      this.source = this.quotationView.source.description
 
-      if (this.source) {
-        this.getQuotationSources()
-      }
 
       // Extract product details
-      this.quotationProducts = this.quotationView.quotationProduct;
+      this.quotationProducts = this.quotationView.quotationProducts;
       this.riskDetails = this.quotationView.quotationProducts[0]?.riskInformation;
       log.debug("Risk Details quotation-summary", this.riskDetails);
 
@@ -339,8 +336,9 @@ export class QuotationSummaryComponent {
       this.getExternalClaimsExperience(this.clientCode);
       this.getInternalClaimsExperience(this.clientCode);
 
-      this.taxDetails = this.quotationView.taxInformation;
-      log.debug(this.taxDetails);
+      // this.taxDetails = this.quotationView.taxInformation;
+      // log.debug(this.taxDetails);
+
 
       // Handle risk information and session storage
       if (this.riskDetails && this.riskDetails.length > 0) {
@@ -570,7 +568,7 @@ export class QuotationSummaryComponent {
     log.debug("Quotation code when computing premium", this.quotationCode);
     this.quotationService.quotationUtils(this.quotationCode).subscribe({
       next: (res) => {
-        log.debug("Response before modifyig limits",res)
+        log.debug("Response before modifyig limits", res)
         this.computationDetails = res
         this.computationDetails.underwritingYear = new Date().getFullYear();
         // // Modify the prorata field for all risks
@@ -747,18 +745,21 @@ export class QuotationSummaryComponent {
     })
   }
 
-  getExcesses(riskCode: any) {
-    if (!this.prodCode || !riskCode) {
-      log.debug('Missing required parameters for getExcesses:', { prodCode: this.prodCode, riskCode });
-      return;
-    }
+  getExcesses(subclassCode: number) {
+    const subClassCode = subclassCode
+    log.debug("SUBCLASS CODE:",subClassCode)
+    // if (!this.prodCode || !riskCode) {
+    //   log.debug('Missing required parameters for getExcesses:', { prodCode: this.prodCode, riskCode });
+    //   return;
+    // }
 
-    this.quotationService.getLimits(this.prodCode, 'E', riskCode)
-      .pipe(takeUntil(this.ngUnsubscribe))
+    this.quotationService.getExcesses(subClassCode)
+    .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (res) => {
           this.excesses = res;
-          this.excessesList = this.excesses._embedded;
+          this.excessesList = this.excesses._embedded ?? [];
+
           log.debug("EXCESS LIST", this.excessesList);
           if (this.limits?.message) {
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message);
@@ -780,9 +781,12 @@ export class QuotationSummaryComponent {
 
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
+    const subclassCode = data.subclassCode
+    log.debug("SUBCLASS CODE:",subclassCode)
+
     // Call all methods sequentially
     this.getSections(data.code);
-    this.getExcesses(data.code);
+    this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
   }
 
@@ -801,6 +805,19 @@ export class QuotationSummaryComponent {
 
     const quotationProductCode = data.code;
     log.debug("product quotation Code", quotationProductCode);
+    // Find the matching product in the quotationProducts array
+    const matchingProduct = this.quotationView.quotationProducts.find(
+      product => product.code === quotationProductCode
+    );
+
+    if (matchingProduct) {
+      this.taxDetails = matchingProduct.taxInformation;
+      log.debug("Tax Details:", this.taxDetails);
+    } else {
+      log.debug("No matching product found for the given code.");
+    }
+    // this.taxDetails = this.quotationView.quotationProducts[0].taxInformation;
+    // log.debug(this.taxDetails);
 
     this.getProductClause(proCode);
     this.getProductSubclass(proCode);
@@ -1412,16 +1429,16 @@ export class QuotationSummaryComponent {
     log.debug('Converted date', this.convertedDate);
     return this.convertedDate
   }
-  getQuotationSources() {
-    this.quotationService.getAllQuotationSources().subscribe(res => {
-      const sources = res
-      this.quotationSources = sources.content
-      log.debug("SOURCES", this.quotationSources)
-      const selectedSource = this.quotationSources.filter(source => source.code == this.source)
-      log.debug("Selected Source:", selectedSource)
-      this.sourecDescription = selectedSource[0].description
-    })
-  }
+  // getQuotationSources() {
+  //   this.quotationService.getAllQuotationSources().subscribe(res => {
+  //     const sources = res
+  //     this.quotationSources = sources.content
+  //     log.debug("SOURCES", this.quotationSources)
+  //     const selectedSource = this.quotationSources.filter(source => source.code == this.source)
+  //     log.debug("Selected Source:", selectedSource)
+  //     this.sourecDescription = selectedSource[0].description
+  //   })
+  // }
   updateQuotationPremmium() {
     log.debug("Premium computation Response:", this.premium)
     const selectedProduct = this.quotationView.quotationProducts[0];
@@ -1431,7 +1448,7 @@ export class QuotationSummaryComponent {
     const transformedPayload = {
       premiumAmount: this.premium.premiumAmount,
       productCode: selectedProduct.proCode,
-      quotProductCode: selectedProduct.code,
+      quotProductCode: selectedProduct.code.toString(),
       productPremium: this.premium.premiumAmount,
       riskLevelPremiums: this.premium.riskLevelPremiums.map(risk => ({
         code: risk.code,
@@ -1445,22 +1462,22 @@ export class QuotationSummaryComponent {
     };
     log.debug("Payload to be sent to updatePremium", transformedPayload)
     this.quotationService
-    .updatePremium(this.quotationCode, transformedPayload)
-    .subscribe({
-      next: (response: any) => {
-        const result = response;
-        log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-        result && this.getQuotationDetails(this.quotationNumber);
+      .updatePremium(this.quotationCode, transformedPayload)
+      .subscribe({
+        next: (response: any) => {
+          const result = response;
+          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
+          result && this.getQuotationDetails(this.quotationNumber);
 
-      },
-      error: (error) => {
-        log.error("Failed to update details:", error);
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          error.error.message
-        );
-      }
-    });
+        },
+        error: (error) => {
+          log.error("Failed to update details:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        }
+      });
 
   }
   openRiskDeleteModal() {
@@ -1494,6 +1511,40 @@ export class QuotationSummaryComponent {
         error: (error) => {
 
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
+        }
+      });
+  }
+  openProductDeleteModal() {
+    log.debug("Selected Product", this.selectedProduct)
+    if (!this.selectedProduct) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select Product to continue');
+    } else {
+      document.getElementById("openProductModalButtonDelete").click();
+
+    }
+  }
+  deleteProduct() {
+    log.debug("Selected Product to be deleted", this.selectedProduct)
+    this.quotationService
+      .deleteQuotationProduct(this.quotationCode,this.selectedProduct.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
+
+          // Remove the deleted risk from the riskDetails array
+          const index = this.productDetails.findIndex(product => product.code === this.selectedProduct.code);
+          if (index !== -1) {
+            this.productDetails.splice(index, 1);
+          }
+          // Clear the selected risk
+          this.selectedProduct = null;
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
   }

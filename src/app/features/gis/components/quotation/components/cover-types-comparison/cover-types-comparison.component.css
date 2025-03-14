@@ -9,7 +9,14 @@
     text-decoration-skip-ink: none;
 
 }
-
+.titleMain{
+    color: #000;
+    font-family: Lato;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
 .card {
     border: 1px solid rgba(220, 220, 220, 0.85);
     border-radius: 5px;

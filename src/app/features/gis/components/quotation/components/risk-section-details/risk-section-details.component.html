@@ -15,8 +15,8 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label">{{'gis.quotation.insured' | translate}}</label>
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1" [value]="clientName |sentenceCase"
-              readonly>
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+              [value]="clientName |sentenceCase" readonly>
 
           </div>
         </div>
@@ -25,8 +25,7 @@
             <br>
             <label for="minmax-buttons" id="quote-label">{{'gis.quotation.product' | translate}}</label>
             <p-dropdown formControlName="productCode" [options]="productList" optionLabel="description"
-            [filterBy]="'description'" [filter]="true"
-           ></p-dropdown>
+              [filterBy]="'description'" [filter]="true"></p-dropdown>
 
           </div>
         </div>
@@ -36,8 +35,7 @@
             <label for="minmax-buttons" id="quote-label" class="required">{{'gis.quotation.subclass' |
               translate}}</label>
             <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses" optionLabel="description"
-              [filterBy]="'description'" [filter]="true"
-              (onChange)="onSubclassSelected($event);"></p-dropdown>
+              [filterBy]="'description'" [filter]="true" (onChange)="onSubclassSelected($event);"></p-dropdown>
 
           </div>
         </div>
@@ -47,16 +45,16 @@
             <br>
             <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_make' | translate}}</label>
 
-            <p-dropdown formControlName="vehicleMake" [options]="vehicleMakeList" optionLabel="name" [filterBy]="'name'" [filter]="true"
-              (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
+            <p-dropdown formControlName="vehicleMake" [options]="vehicleMakeList" optionLabel="name" [filterBy]="'name'"
+              [filter]="true" (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
           </div>
         </div>
         <div class="col-sm-4 col-6" *ngIf="showMotorSubclassFields">
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_model' | translate}}</label>
-            <p-dropdown formControlName="vehicleModel" [options]="vehicleModelDetails" optionLabel="name" [filterBy]="'name'" [filter]="true"
-              (onChange)="onVehicleModelSelected($event);"></p-dropdown>
+            <p-dropdown formControlName="vehicleModel" [options]="vehicleModelDetails" optionLabel="name"
+              [filterBy]="'name'" [filter]="true" (onChange)="onVehicleModelSelected($event);"></p-dropdown>
           </div>
         </div>
         <div class="col-sm-4 col-6" *ngIf="showMotorSubclassFields">
@@ -78,8 +76,8 @@
             <br>
             <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.risk_description' |
               translate}}</label>
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-              formControlName="itemDesc" [value]="vehiclemakeModel" readonly>
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="itemDesc"
+              [value]="vehiclemakeModel" readonly>
 
           </div>
         </div>
@@ -89,8 +87,7 @@
             <br>
             <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.risk_id' | translate}}</label>
             <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId"
-             >
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId">
             <div
               *ngIf="riskDetailsForm?.get('propertyId')?.hasError('pattern') && riskDetailsForm?.get('propertyId').touched"
               class="form-text text-danger">
@@ -103,8 +100,7 @@
             <br>
             <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.risk_description' |
               translate}}</label>
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-              formControlName="itemDesc" >
+            <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="itemDesc">
 
           </div>
         </div>
@@ -118,7 +114,7 @@
 
           </div>
         </div>
-         <div class="col-sm-4 col-6">
+        <div class="col-sm-4 col-6">
           <div class="form-group form-group-sm">
             <br>
             <label for="minmax-buttons" id="quote-label" class="required"> {{'gis.quotation.premium_band' |
@@ -136,7 +132,7 @@
             <label for="" id="quote-label"> {{'gis.quotation.cover_from' | translate}}</label>
             <p-calendar formControlName="wef" name="wef" id="coverFromDate" inputId="coverFromDate"
               [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-              (onSelect)="updateCoverToDate($event)" [minDate]="minDate" >
+              (onSelect)="updateCoverToDate($event)" [minDate]="minDate">
             </p-calendar>
 
           </div>
@@ -146,8 +142,7 @@
             <br>
             <label for="" id="quote-label"> {{'gis.quotation.cover_to' | translate}}</label>
             <p-calendar formControlName="wet" name="wet" id="coverToDate" inputId="coverToDate"
-              [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true" [minDate]="minDate"
-              >
+              [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true" [minDate]="minDate">
             </p-calendar>
           </div>
         </div>
@@ -705,27 +700,35 @@
                     <form [formGroup]="level2DetailsForm">
                       <!-- <div formGroupName="details">
                         <div formGroupName="level2"> -->
-                           <!-- Level2 Fields -->
-                          <label for="code" class="col-5 col-form-label">{{'gis.quotation.code' | translate}}</label>
-                          <input type="number" id="code" class="form-control form-control-sm mb-1" formControlName="code">
+                      <!-- Level2 Fields -->
+                      <label for="code" class="col-5 col-form-label">{{'gis.quotation.code' | translate}}</label>
+                      <input type="number" id="code" class="form-control form-control-sm mb-1" formControlName="code">
 
-                          <label for="geographicalLimits" class="col-5 col-form-label">{{'gis.quotation.geographical_limits' | translate}}</label>
-                          <input type="text" id="geographicalLimits" class="form-control form-control-sm mb-1" formControlName="geographicalLimits">
+                      <label for="geographicalLimits" class="col-5 col-form-label">{{'gis.quotation.geographical_limits'
+                        | translate}}</label>
+                      <input type="text" id="geographicalLimits" class="form-control form-control-sm mb-1"
+                        formControlName="geographicalLimits">
 
-                          <label for="deductibleDesc" class="col-5 col-form-label">{{'gis.quotation.deductible_desc' | translate}}</label>
-                          <input type="text" id="deductibleDesc" class="form-control form-control-sm mb-1" formControlName="deductibleDesc">
+                      <label for="deductibleDesc" class="col-5 col-form-label">{{'gis.quotation.deductible_desc' |
+                        translate}}</label>
+                      <input type="text" id="deductibleDesc" class="form-control form-control-sm mb-1"
+                        formControlName="deductibleDesc">
 
-                          <label for="limitationUse" class="col-5 col-form-label">{{'gis.quotation.limitation_use' | translate}}</label>
-                          <select class="form-select form-control-sm mb-1" id="limitationUse" formControlName="limitationUse">
-                            <option value=""></option>
-                            <option value="Option1">Option 1</option>
-                            <option value="Option2">Option 2</option>
-                          </select>
+                      <label for="limitationUse" class="col-5 col-form-label">{{'gis.quotation.limitation_use' |
+                        translate}}</label>
+                      <select class="form-select form-control-sm mb-1" id="limitationUse"
+                        formControlName="limitationUse">
+                        <option value=""></option>
+                        <option value="Option1">Option 1</option>
+                        <option value="Option2">Option 2</option>
+                      </select>
 
-                          <label for="authorisedDriver" class="col-5 col-form-label">{{'gis.quotation.authorized_driver' | translate}}</label>
-                          <input type="text" id="authorisedDriver" class="form-control form-control-sm mb-1" formControlName="authorisedDriver">
+                      <label for="authorisedDriver" class="col-5 col-form-label">{{'gis.quotation.authorized_driver' |
+                        translate}}</label>
+                      <input type="text" id="authorisedDriver" class="form-control form-control-sm mb-1"
+                        formControlName="authorisedDriver">
 
-                        <!-- </div>
+                      <!-- </div>
                       </div> -->
                     </form>
                     <div class="mt-4 d-flex justify-content-end">
@@ -801,7 +804,8 @@
                 </div>
               </div>
             </div>
-            <p-table [value]="hasAnyLevel2Data() ? scheduleList : []" [tableStyle]="{ 'min-width': '300px' }" dataKey="code">
+            <p-table [value]="hasAnyLevel2Data() ? scheduleList : []" [tableStyle]="{ 'min-width': '300px' }"
+              dataKey="code">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="flexible-header">{{'gis.quotation.code' | translate}}</th>
@@ -970,18 +974,17 @@
         <!-- Add Risk Section Modal -->
         <div class="modal fade" id="addSection" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
           aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered " role="document">
+          <div class="modal-dialog modal-dialog-centered" style="min-width: 608px;" role="document">
             <div class="modal-content" id="addSectionModal">
               <div class="modal-body">
                 <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.risk_sections' | translate}}
                 </h5>
-                <div class="search-container mb-3">
+                <!-- <div class="search-container mb-3">
                   <span class="search-icon"><i class="fa fa-search"></i></span>
                   <input type="text" placeholder="Search" id="search-input-Rsection" [(ngModel)]="searchText" />
-                </div>
-                <div class="scrollable-list">
+                </div> -->
+                <!-- <div class="scrollable-list">
                   <div *ngFor="let section of sectionPremium">
-                    <!-- Add a check to see if the section matches the search text -->
                     <div class="form-check" *ngIf="matchesSearch(section.sectionShortDescription)">
                       <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code"
                         (change)="onCheckboxChange(section)" />
@@ -990,7 +993,50 @@
                       </label>
                     </div>
                   </div>
-                </div>
+                </div> -->
+                <!-- <input pInputText type="text" (input)="sectionTable.filterGlobal($event.target.value, 'contains')" placeholder="Search..." #sectionTable> -->
+                <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text" (input)="applyGlobalFilter($event)" placeholder="Search...">
+
+                <p-table   #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
+                  [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
+                  [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+                  [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
+                  [showCurrentPageReport]="true" currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  [globalFilterFields]="['sectionDescription']"
+                  >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th style="width: 2%;" ></th> <!-- Checkbox column -->
+                      <th class="equal-width"> {{ 'gis.quotation.benefit' | translate }}</th>
+                      <th class="equal-width"> {{ 'gis.quotation.free_limit' | translate }}</th>
+                      <th class="equal-width"> {{ 'gis.quotation.value' | translate }}</th>
+                      <th class="equal-width"> {{ 'gis.quotation.rate' | translate }}</th>
+
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-section let-editing="editing" let-i="rowIndex">
+                    <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
+                      <td > 
+                        <input type="checkbox" id="check_section_{{ section.sectionCode }}"
+                          [(ngModel)]="section.isChecked">
+                      </td>
+                      <td class="equal-width">{{ section.sectionDescription |sentenceCase }}</td>
+                      <td class="equal-width">{{ section.freeLimit | number }}</td>
+                      <td class="equal-width"[pEditableColumn]="section.limitAmount" pEditableColumnField="limitAmount">
+                        <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
+                          [options]="currencyObj" currencyMask class="error-border form-control-sm" type="text"
+                          (keydown)="onKeyUp($event, section)"
+                          [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
+                      </td>
+                      <td class="equal-width"[pEditableColumn]="section.rate" pEditableColumnField="rate">
+                        <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate" 
+                           class="error-border form-control-sm" type="number"
+                          (keydown)="onKeyUp($event, section)"
+                          [ngClass]="{'error-border': section.isChecked && !section.rate}">
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
                 <div class="mt-4 d-flex justify-content-end">
                   <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
                     (click)="createRiskSection()">{{'gis.quotation.save_details' | translate}}</button>
@@ -1074,7 +1120,7 @@
                           id="scheduleLabel">{{'gis.quotation.free_limit' | translate}} :</label>
                         <div class="col-7">
                           <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1"
-                            formControlName="freeLimit">
+                            formControlName="freeLimit" >
                         </div>
                       </div>
                     </div>
@@ -1084,7 +1130,7 @@
                           id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
                         <div class="col-7">
                           <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1"
-                            formControlName="limitAmount">
+                            formControlName="limitAmount"   >
                         </div>
                       </div>
                     </div>
@@ -1288,7 +1334,7 @@
               <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
               <td class="flexible-header">{{sectionArray.sectionDescription}}</td>
               <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
-              <td class="flexible-header">{{sectionArray.rate}}</td>
+              <td class="flexible-header">{{sectionArray.premiumRate || sectionArray.rate}}</td>
               <td class="flexible-header">{{sectionArray.rateType}}</td>
               <td class="flexible-header">
                 <!-- Edit Button -->
@@ -1323,8 +1369,90 @@
 
       </div>
       <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2">
+        <p-table [value]="SubclauseList" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
+          styleClass="p-datatable-sm" responsiveLayout="scroll" [(selection)]="selectedClause" class='ui-datatable'
+          selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+          currentPageReportTemplate="{first} to {last} of {totalRecords} entries">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 5%;padding-right: 50px;">
+                select
+              </th>
+              <th style="width: 25%;padding-right: 50px;">Heading</th>
+              <th style="width: 40%;">Wording</th>
+              <th style="width: 5%;"></th>
+              <th style="width: 5%;">Editable</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="selectedClauseList">
+              <td>
+                <!-- <p-tableCheckbox [value]="selectedClauseList"
+          (onChange)="selectedProductClauses($event)"
+          [(ngModel)]="selectedClauseList.checked"
+          [binary]="true">
+          ></p-tableCheckbox> -->
+                <p-checkbox [(ngModel)]="selectedClauseList.checked" [binary]="true"
+                  [disabled]="selectedClauseList.isMandatory === 'Y'"
+                  (onChange)="onClauseSelectionChange(selectedClauseList)">
+                </p-checkbox>
+              </td>
 
-        <p-table [value]="selectedClauseList" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
+              <td style=" white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        overflow-y: auto;
+        max-width: 250px;" pTooltip="{{selectedClauseList.heading }}" tooltipPosition="top">
+                <p-cellEditor>
+                  <ng-template pTemplate="input" *ngIf="selectedClauseList.isEditable  === 'Y'">
+                    <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
+                      class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{selectedClauseList.heading}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" [(ngModel)]="selectedClauseList.wording"
+                      class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{selectedClauseList.wording}}
+                  </ng-template>
+                  <!-- Helper icon added next to the wording column -->
+                </p-cellEditor>
+              </td>
+              <td>
+                <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
+                  icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+              </td>
+              <td *ngIf="selectedClauseList.isEditable  !== 'Y'" style="padding-left: 24px;"> -- </td>
+              <td *ngIf="selectedClauseList.isEditable  === 'Y'">
+                <div class="flex align-items-center justify-content-center gap-2">
+                  <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                    class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                    class="p-button-rounded p-button-text p-button-danger"></button>
+                </div>
+              </td>
+            </tr>
+            <!-- Modal for each row -->
+            <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}">
+              <ng-container *ngIf="selectedClauseList">
+                <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
+                  <p>{{ selectedClauseList.wording }}</p>
+                </div>
+              </ng-container>
+            </p-dialog>
+          </ng-template>
+        </p-table>
+        <!-- <p-table [value]="SubclauseList" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
           responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" selectionMode="multiple"
           [(selection)]="selectedRiskClause" [paginator]="selectedClauseList?.length > 5" [rows]="5"
           [showCurrentPageReport]="selectedClauseList?.length > 5"
@@ -1342,10 +1470,7 @@
             <tr (click)="onSelectRiskClauses(selectedClauseList)" [pEditableRow]="selectedClauseList">
               <td>
                 <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
-                <!-- <p-checkbox [(ngModel)]="selectedClauseList.checked" [binary]="true"
-                              [disabled]="selectedClauseList.is_mandatory === 'Y'"
-                              >
-                          </p-checkbox> -->
+               
               </td>
 
               <td style=" white-space: nowrap;
@@ -1373,15 +1498,14 @@
                   <ng-template pTemplate="output">
                     {{selectedClauseList.wording}}
                   </ng-template>
-                  <!-- Helper icon added next to the wording column -->
                 </p-cellEditor>
               </td>
               <td>
                 <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
                   icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
               </td>
-              <td *ngIf="selectedClauseList.is_editable  !== 'Y'" style="padding-left: 24px;"> -- </td>
-              <td *ngIf="selectedClauseList.is_editable  === 'Y'">
+              <td *ngIf="selectedClauseList.isEditable  !== 'Y'" style="padding-left: 24px;"> -- </td>
+              <td *ngIf="selectedClauseList.isEditable  === 'Y'">
                 <div class="flex align-items-center justify-content-center gap-2">
                   <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                     class="p-button-rounded p-button-text"></button>
@@ -1392,7 +1516,6 @@
                 </div>
               </td>
             </tr>
-            <!-- Modal for each row -->
             <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}">
               <ng-container *ngIf="selectedClauseList">
                 <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}" (onResize)="onResize($event)">
@@ -1401,7 +1524,7 @@
               </ng-container>
             </p-dialog>
           </ng-template>
-        </p-table>
+        </p-table> -->
 
       </div>
     </div>

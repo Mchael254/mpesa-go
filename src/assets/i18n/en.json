@@ -1028,8 +1028,8 @@
       "policy_ID" : "PolicyId",
       "no_policy_found" : "No Policy Found",
       "policy_number": "Policy Number",
-      "batch_number": "Batch No."
-
+      "batch_number": "Batch No.",
+      "rate":"Rate"
   },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",

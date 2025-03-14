@@ -354,7 +354,7 @@ export class QuotationsService {
 
     // Create HttpParams from the paramsObj
     const params = new HttpParams({ fromObject: paramsObj });
-    return this.api.GET(`v2/quotation/convert-to-policy?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.POST(`v2/quotation/convert-to-policy?`,null, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
   convertToNormalQuote(

@@ -957,7 +957,8 @@
       "quotations": "Angebote",
       "select_a_policy": "Wählen Sie eine Police aus",
       "policy_ID": "Police-ID",
-      "no_policy_found": "Keine Police gefunden"
+      "no_policy_found": "Keine Police gefunden",
+      "rate" : "Satz"
 
 
     },

@@ -961,7 +961,8 @@
       "quotations": "Nukuu",
       "select_a_policy": "Chagua sera",
       "policy_ID": "Kitambulisho cha sera",
-      "no_policy_found": "Hakuna sera iliyopatikana"
+      "no_policy_found": "Hakuna sera iliyopatikana",
+      "rate" : "Kiwango"
 
     },
     "policy": {

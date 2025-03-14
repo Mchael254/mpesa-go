@@ -156,7 +156,7 @@
                   <p class="label">Source</p>
                 </div>
                 <div class="col-8">
-                  <p class="content">{{sourecDescription }}</p>
+                  <p class="content">{{source }}</p>
                 </div>
               </div>
             </div>
@@ -224,7 +224,7 @@
             </div>
           </div>
 
-          <p class="cancel float-start" (click)="cancelQuotation()">Cancel Quotation</p>
+          <p class="cancel float-start mt-4" (click)="cancelQuotation()">Cancel Quotation</p>
           <div class="float-end">
             <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit
               Details</button>
@@ -243,22 +243,7 @@
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
-                <!-- <div class="col-sm-3"></div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" title="Add">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" title="Edit">
-                    <i class="fa-solid fa-pencil"></i>
-                  </button>
-                </div>
-                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-danger me-2" title="Delete">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div> -->
+              
                 <div class="col-4" *ngIf="!isCollapsibleOpen">
                   <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                     data-bs-target="#productDetails" (click)="toggleProductDetails()"
@@ -289,9 +274,20 @@
                     </button>
                   </div>
                   <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-danger me-2" title="Delete">
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                  
+                    <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
+                    id="openProductModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
+                    data-bs-target="#deleteProduct">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    title="Delete"
+                    [disabled]="!quotationDetails?.quotationProducts || quotationDetails.quotationProducts.length <= 1">
+                    <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
+                  </button>
                   </div>
 
                 </div>
@@ -317,12 +313,35 @@
                     <td>{{data.wef}}</td>
                     <td>{{data.wet}}</td>
                     <td>{{data.binder || "-" }}</td>
-                    <td appCommaFormat class="text-end">{{data.totalSumInsured || 0.00}}</td>
-                    <td appCommaFormat class="text-end">{{data.commission || 0.00}}</td>
-                    <td appCommaFormat class="text-end">{{data.premium || 0.00}}</td>
+                    <td appCommaFormat class="text-end">{{data.totalSumInsured || 0.00 |number}}</td>
+                    <td appCommaFormat class="text-end">{{data.commission || 0.00 |number}}</td>
+                    <td appCommaFormat class="text-end">{{data.premium || 0.00 | number}}</td>
                   </tr>
                 </ng-template>
               </p-table>
+                <!-- Delete Product Modal -->
+                <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog"
+                aria-labelledby="deleteProduct" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" id="deleteProduct">
+                        <div class="modal-body ">
+                            <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
+                                translate}}</p>
+                            <div class="d-flex justify-content-center mb-3">
+                                <button type="button" class="btn btn-primary px-5" id="delete"
+                                    data-bs-dismiss="modal" (click)="deleteProduct()">{{'gis.policy.yes_delete'
+                                    | translate}}</button>
+                            </div>
+                            <div class="d-flex justify-content-center mb-2">
+                                <button type="button" class="btn btn-outline-primary px-5"
+                                    data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                            </div>
+ 
+ 
+                        </div>
+                    </div>
+                </div>
+            </div>
               <!-- TABS  -->
               <div class="row mt-5 mb-3">
                 <div class="col-7">

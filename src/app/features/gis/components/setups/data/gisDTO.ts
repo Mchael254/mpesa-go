@@ -1105,14 +1105,17 @@ export interface subclassCoverTypeSection {
 }
 
 export interface riskClauses {
-  clause_code: number,
-  clause_description: string,
-  clause_type: string,
-  editable: string,
-  heading: string,
-  sub_class_code: number,
-  sub_class_description: string,
-  wording: string
+  clauseCode: number;
+  clauseExpires: string;
+  heading: string;
+  isEditable: string;
+  isLienClause: string;
+  isMandatory: string;
+  isRescueClause: string;
+  shortDescription: string;
+  subClassCode: number;
+  version: number;
+  wording: string;
 }
 
 export interface introducers {
