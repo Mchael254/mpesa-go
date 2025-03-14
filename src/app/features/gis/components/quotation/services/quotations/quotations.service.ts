@@ -28,6 +28,7 @@ import {ExternalClaimExp} from '../../../policy/data/policy-dto';
 import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {UtilService} from '../../../../../../shared/services/util/util.service';
 import {map} from "rxjs/operators";
+import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -151,6 +152,24 @@ export class QuotationsService {
   getQuotations(clientId, dateFrom, dateTo) {
     return this.api.GET(`v2/quotation?dateFrom=${dateFrom}&dateTo=${dateTo}&clientId=${clientId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
+  getQuotationsClient(
+      pageNo: number = 0,
+      dateFrom: string,
+      dateTo: string,
+      id: number
+    ): Observable<Pagination<QuotationsDTO>> {
+  
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      })
+      const params = new HttpParams()
+        .set('pageNo', `${pageNo}`)
+        .set('dateFrom', `${dateFrom}`)
+        .set('dateTo', `${dateTo}`);
+  
+      return this.api.GET<Pagination<QuotationsDTO>>(`v1/quotations/client/` + id, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    }
 
   /**
    * Creates a new quotation risk using an HTTP POST request.
@@ -711,8 +730,9 @@ export class QuotationsService {
 
   convertQuoteToPolicy(
     quotCode: number,
+    quotationProductCode:number
   ): Observable<any> {
-    return this.api.POST(`v2/quotation/convert-to-policy?quotCode=${quotCode}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.POST(`v2/quotation/convert-to-policy?quotCode=${quotCode}&quotationProductCode=${quotationProductCode}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
 
@@ -762,6 +782,64 @@ export class QuotationsService {
   validateRiskExistence(payload: RiskValidationDto): Observable<any> {
     return this.api.POST<any>(`v2/risks/validate`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
+  deleteQuotationProduct(quotationCode : number,quotationProductCode : number) {
+    return this.api.DELETE(`/v2/quotation-products?quotationCode=${quotationCode}&quotationProductCode=${quotationProductCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  searchQuotations(
+    pageNo: number = 0,        // Default value is 0
+    pageSize: number = 10,     // Default value is 10
+    clientType?: string,
+    clientCode?: number,
+    productCode?: number,
+    dateFrom?: string,
+    dateTo?: string,
+    agentCode?: number,
+    quotationNumber?: string,
+    status?: string,
+    source?: string,
+    clientName?: string
+  ) {
+    const paramsObj: { [param: string]: string | number } = {};
 
+    // Add mandatory parameters with default values
+    paramsObj['pageNo'] = pageNo.toString();
+    paramsObj['pageSize'] = pageSize.toString();
+
+    // Add optional parameters if provided
+    if (clientType) {
+      paramsObj['clientType'] = clientType;
+    }
+    if (clientCode) {
+      paramsObj['clientCode'] = clientCode;
+    }
+    if (productCode) {
+      paramsObj['productCode'] = productCode;
+    }
+    if (dateFrom) {
+      paramsObj['dateFrom'] = dateFrom;
+    }
+    if (dateTo) {
+      paramsObj['dateTo'] = dateTo;
+    }
+    if (agentCode) {
+      paramsObj['agentCode'] = agentCode;
+    }
+    if (quotationNumber) {
+      paramsObj['quotationNumber'] = quotationNumber;
+    }
+    if (status) {
+      paramsObj['status'] = status;
+    }
+    if (source) {
+      paramsObj['source'] = source;
+    }
+    if (clientName) {
+      paramsObj['clientName'] = clientName;
+    }
+
+    // Create HttpParams from the paramsObj
+    const params = new HttpParams({ fromObject: paramsObj });
+    return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
 }
 

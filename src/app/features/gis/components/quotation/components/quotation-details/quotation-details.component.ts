@@ -96,6 +96,7 @@ export class QuotationDetailsComponent {
   editConvertedQuote: string;
   quotationFormDetails: any = null
   motorClassAllowed: string;
+  currencyDelimiter: any;
 
 
   constructor(
@@ -251,6 +252,10 @@ export class QuotationDetailsComponent {
     this.todaysDate = formattedDate;
     log.debug('Todays  Date', this.todaysDate);
     this.updateQuotationExpiryDate(this.todaysDate)
+
+    this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+    log.debug('Organization currency delimeter', this.currencyDelimiter);
+    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
   }
 
   /**
@@ -926,6 +931,8 @@ export class QuotationDetailsComponent {
         this.defaultCurrencySymbol = defaultCurrency.symbol;
         log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
         log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
         this.fetchUserOrgId()
       }
       if (this.quotationFormDetails) {

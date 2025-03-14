@@ -21,7 +21,6 @@ import { RiskSectionDetailsComponent } from './components/risk-section-details/r
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
-import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
@@ -42,7 +41,6 @@ import {  CheckboxModule } from 'primeng/checkbox';
     ListQuotationsComponent,
     QuickQuoteDetailsComponent,
     QuickQuoteFormComponent,
-    CoverTypesDetailsComponent,
     QuoteSummaryComponent,
     QuotationsClientDetailsComponent,
     QuotationDetailsComponent,

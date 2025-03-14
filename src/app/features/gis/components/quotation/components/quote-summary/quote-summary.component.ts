@@ -735,11 +735,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
     log.debug("Quotation Code", quotationCode);
     log.debug("Quotation Details", this.quotationDetails);
+    const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code
 
     const conversionFlag = true;
     sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
-    this.quotationService.convertQuoteToPolicy(quotationCode).subscribe((data: any) => {
+    this.quotationService.convertQuoteToPolicy(quotationCode,quoteProductCode).subscribe((data: any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
       log.debug("Batch number", this.batchNo)

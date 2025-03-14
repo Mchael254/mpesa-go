@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
-import { QuotationsService } from '../../../../../gis/services/quotations/quotations.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 import { QuotationDetails, QuotationList, QuotationProduct, Status, StatusEnum } from '../../data/quotationsDTO';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
@@ -331,12 +331,16 @@ export class QuotationConversionComponent {
   }
   convertToPolicy(){
     log.debug("Selected Quotation Product", this.selectedQuotationProduct)
+    const quoteProductCode = this.selectedQuotationProduct.code
     if(!this.selectedQuotationProduct){
       this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
     }else{
       const selctedQuotationCode = this.selectedQuotationProduct.quotCode
-      this.quotationService.convertQuoteToPolicy(selctedQuotationCode).subscribe(data => {
+      this.quotationService.convertQuoteToPolicy(selctedQuotationCode,quoteProductCode).subscribe(data => {
         log.debug("Response after converting quote to a policy:", data)
+        this.loadClientQuotation();
+        this.globalMessagingService.displaySuccessMessage('Success', 'Quotation successfully converted to Policy');
+
 
       })
     }
