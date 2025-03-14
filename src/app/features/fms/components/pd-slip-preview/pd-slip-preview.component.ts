@@ -22,7 +22,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { ReceiptService } from '../../services/receipt.service';
 import { TranslateService } from '@ngx-translate/core';
-import { saveAs } from 'file-saver';
+
 
 const log = new Logger('ReceiptPreviewComponent');
 

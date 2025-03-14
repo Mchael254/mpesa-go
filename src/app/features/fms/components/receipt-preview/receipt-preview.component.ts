@@ -25,7 +25,7 @@ import { SessionStorageService } from '../../../../shared/services/session-stora
 import { ReceiptService } from '../../services/receipt.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { TranslateService } from '@ngx-translate/core';
-import { saveAs } from 'file-saver';
+
 
 const log = new Logger('ReceiptPreviewComponent');
 
