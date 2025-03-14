@@ -199,7 +199,7 @@
                   </ng-container>
                 </td>
                 <td>{{ transaction.commission }}</td>
-                <td>
+                <!-- <td>
                   <input
                     type="checkbox"
                     class="form-check-input checkbox"
@@ -208,6 +208,42 @@
                     "
                     (change)="onCommissionCheckedChange(i, $event)"
                   />
+                </td> -->
+                <td>
+                  <div class="d-flex">
+                    <div class="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        class="form-check-input"
+                        [checked]="
+                          getFormControl(i, 'commissionChecked')?.value === 'Y'
+                        "
+                        (change)="onCommissionCheckedChange(i, 'Y')"
+                        name="commission_{{ i }}"
+                        id="commissionYes_{{ i }}"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="commissionYes_{{ i }}"
+                        >Yes</label
+                      >
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        type="radio"
+                        class="form-check-input"
+                        [checked]="
+                          getFormControl(i, 'commissionChecked')?.value === 'N'
+                        "
+                        (change)="onCommissionCheckedChange(i, 'N')"
+                        name="commission_{{ i }}"
+                        id="commissionNo_{{ i }}"
+                      />
+                      <label class="form-check-label" for="commissionNo_{{ i }}"
+                        >No</label
+                      >
+                    </div>
+                  </div>
                 </td>
               </tr>
             </ng-template>
