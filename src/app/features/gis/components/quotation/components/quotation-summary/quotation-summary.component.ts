@@ -198,22 +198,23 @@ export class QuotationSummaryComponent {
     if (this.moreDetails) {
       const parsedMoreDetails = JSON.parse(this.moreDetails);
       this.quotationDetails = parsedMoreDetails;
-      this.prodCode = parsedMoreDetails.productCode;
-      this.clientCode = parsedMoreDetails.clientCode;
+      // this.prodCode = parsedMoreDetails.productCode;
+      // this.clientCode = parsedMoreDetails.clientCode;
     } else {
-      this.clientCodeString = sessionStorage.getItem('clientCode');
-      this.clientCode = JSON.parse(this.clientCodeString);
+      // this.clientCodeString = sessionStorage.getItem('clientCode');
+      // this.clientCode = JSON.parse(this.clientCodeString);
     }
 
     this.getQuotationDetails(this.quotationNumber);
     this.getuser();
-    this.getExternalClaimsExperience(this.clientCode);
-    this.getInternalClaimsExperience(this.clientCode);
-    // this.getPremiumComputationDetails();
-    // this.getAgent();
+
     this.createInsurersForm();
     this.fetchInsurers();
-    this.loadClientDetails(this.clientCode);
+    // this.getPremiumComputationDetails();
+    // this.getAgent();
+    // this.loadClientDetails(this.clientCode);
+    // this.getExternalClaimsExperience(this.clientCode);
+    // this.getInternalClaimsExperience(this.clientCode);
 
     log.debug("MORE DETAILS TEST", this.quotationDetails)
 
@@ -329,6 +330,14 @@ export class QuotationSummaryComponent {
       this.getbranch();
       this.getPremiumComputationDetails();
       this.getAgent();
+
+      // extract client-code and productCode
+      this.prodCode = this.quotationView.quotationProducts[0].code;
+      this.clientCode = this.quotationView.clientCode;
+
+      this.loadClientDetails(this.clientCode);
+      this.getExternalClaimsExperience(this.clientCode);
+      this.getInternalClaimsExperience(this.clientCode);
 
       this.taxDetails = this.quotationView.taxInformation;
       log.debug(this.taxDetails);
@@ -544,7 +553,7 @@ export class QuotationSummaryComponent {
   getInternalClaimsExperience(clientCode: number) {
     this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res => {
       this.internalClaims = res;
-      this.internalTable = this.internalClaims.embedded;
+      this.internalTable = this.internalClaims._embedded;
       log.debug("internal-claims table", this.internalTable);
     })
   }
