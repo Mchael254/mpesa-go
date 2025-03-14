@@ -677,6 +677,7 @@ export class QuotationDetailsComponent {
     log.debug("Cover from date:", date)
     const coverFromDate = date;
     const formattedCoverFromDate = this.formatDate(coverFromDate);
+    sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
     // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
     //   this.productDetails = res
@@ -700,6 +701,7 @@ export class QuotationDetailsComponent {
 
           this.coverToDate = formattedDate;
           log.debug('Cover to  Date', this.coverToDate);
+          sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
           this.quotationForm.controls['wetDate'].setValue(this.coverToDate)
         },
         error: (error: HttpErrorResponse) => {
@@ -767,6 +769,7 @@ export class QuotationDetailsComponent {
    */
   getProductClause() {
     this.productCode = this.quotationForm.value.productCode.code
+    sessionStorage.setItem("selectedProductCode", this.productCode);
     this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
