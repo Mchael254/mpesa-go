@@ -739,7 +739,41 @@
     "registrationDate": "注册日期",
     "parentCompany": "母公司",
     "contactPerson": "联系人",
-    "contactPersonTelephone": "联系人电话"
+    "contactPersonTelephone": "联系人电话",
+    "websiteURL": "网站网址",
+    "socialMediaURL": "首选社交媒体链接",
+    "contactPersonDetails": "联系人详细信息",
+    "fullName": "全名",
+    "docIdNo": "证件号码",
+    "payeeDetails": "收款人详情",
+    "swiftCode": "SWIFT代码",
+    "registeredName": "注册名称",
+    "operatingCountry": "运营国家",
+    "cr12Details": "CR12详情",
+    "personType": "人员类型",
+    "companyRegNo": "公司注册号",
+    "companyRegDate": "公司注册日期",
+    "address": "地址",
+    "referenceNo": "参考号",
+    "refNumberYear": "参考号年份",
+    "ownershipStructure": "所有权结构",
+    "percentageOwnership": "所有权百分比",
+    "branchDetails": "分支机构详情",
+    "shortDesc": "简要描述",
+    "cityOrTown": "城市/城镇",
+    "countyOrState": "县/州",
+    "landlineNo": "固定电话",
+    "mobileNo": "手机号码",
+    "addressDetails": "地址详情",
+    "financialDetails": "财务详情",
+    "landlineNumber": "固定电话号码",
+    "documentUpload": "文件上传",
+    "citizenshipCountry": "国籍",
+    "nationalityCountry": "民族国家",
+    "employmentStatus": "就业状况",
+    "premiumPay": "高级支付",
+    "certificateRegNo": "证书注册号",
+    "certificateRegYear": "证书注册年份"
   },
   "gis": {
     "quotation": {
@@ -2142,10 +2176,10 @@
       "search": "搜索",
       "receiptSummary": "收据摘要",
       "isReceiptPrinted?": "收据是否已打印",
-      
+
         "Debit Note": "借方票据",
-    
-    
+
+
       "receiptAmount": "收据金额",
       "receiptAllocations": "收据分配",
       "enterAmount": "输入金额",

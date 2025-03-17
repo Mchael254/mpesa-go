@@ -180,15 +180,15 @@
     "Transactions": "Transactions",
     "Invoices/Cr Notes": "Factures/Notes de Crédit",
     "Invoices/DR Notes": "Factures/Notes de Débit",
-    
-      
+
+
       "Gl-Inquiries": "Requêtes du grand livre",
       "Gl-Transactions": "Transactions du grand livre",
       "Inquires": "Requêtes",
       "GL-Parameters": "Paramètres du grand livre",
-      
 
-  
+
+
     "Inquiries": "Demandes",
     "Requisitions": "Réquisitions",
     "Gl-Final Reports": "Rapports Finaux du Grand Livre",
@@ -768,7 +768,41 @@
     "registrationDate": "Date d'enregistrement",
     "parentCompany": "Société mère",
     "contactPerson": "Personne de contact",
-    "contactPersonTelephone": "Téléphone de la personne de contact"
+    "contactPersonTelephone": "Téléphone de la personne de contact",
+    "websiteURL": "URL du site Web",
+    "socialMediaURL": "Lien vers les réseaux sociaux préférés",
+    "contactPersonDetails": "Détails de la personne de contact",
+    "fullName": "Nom complet",
+    "docIdNo": "Numéro d’identification du document",
+    "payeeDetails": "Détails du bénéficiaire",
+    "swiftCode": "Code SWIFT",
+    "registeredName": "Nom enregistré",
+    "operatingCountry": "Pays d'exploitation",
+    "cr12Details": "Détails CR12",
+    "personType": "Type de personne",
+    "companyRegNo": "Numéro d'enregistrement de l'entreprise",
+    "companyRegDate": "Date d'enregistrement de l'entreprise",
+    "address": "Adresse",
+    "referenceNo": "Numéro de référence",
+    "refNumberYear": "Année du numéro de référence",
+    "ownershipStructure": "Structure de propriété",
+    "percentageOwnership": "Pourcentage de propriété",
+    "branchDetails": "Détails de la succursale",
+    "shortDesc": "Brève description",
+    "cityOrTown": "Ville",
+    "countyOrState": "Département/État",
+    "landlineNo": "Numéro de ligne fixe",
+    "mobileNo": "Numéro de mobile",
+    "addressDetails": "Détails de l’adresse",
+    "financialDetails": "Détails financiers",
+    "landlineNumber": "Numéro de ligne fixe",
+    "documentUpload": "Téléchargement de document",
+    "citizenshipCountry": "Pays de citoyenneté",
+    "nationalityCountry": "Pays de nationalité",
+    "employmentStatus": "Statut professionnel",
+    "premiumPay": "Paiement des primes",
+    "certificateRegNo": "Numéro d'enregistrement du certificat",
+    "certificateRegYear": "Année d'enregistrement du certificat"
   },
   "gis": {
     "quotation": {
@@ -2621,7 +2655,7 @@
     "signSelect": "Signer la sélection",
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
-   
+
       "base-fms": {
           "parameters": "Paramètres",
           "reconciliation": "Rapprochement",
@@ -2640,8 +2674,8 @@
           "premiumSuspense": "Compte d'attente de primes",
           "directDebits": "Prélèvements automatiques"
       },
-  
-  
+
+
     "receipting": {
       "receipting":"Emission de reçus",
       "cbReceipting":"Livre de caisse-Emission de reçus",

@@ -31,6 +31,10 @@ import { DmsService } from "../../../../../shared/services/dms/dms.service";
 import { AppConfigService } from "../../../../../core/config/app-config-service";
 import { PassedClientDto } from '../../../data/PassedClientDTO';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
+import {HttpClient} from "@angular/common/http";
+import {RequiredDocumentsService} from "../../../../crm/services/required-documents.service";
+import {RequiredDocumentDTO} from "../../../../crm/data/required-document";
+import {SessionStorageService} from "../../../../../shared/services/session-storage/session-storage.service";
 
 const log = new Logger("CreateClientComponent")
 
@@ -63,7 +67,7 @@ export class NewClientComponent implements OnInit {
   banksData: BankDTO[];
   bankBranchData: BankBranchDTO[];
   occupationData: OccupationDTO[];
-  clientTitlesData: ClientTitleDTO[];
+  clientTitlesData: ClientTitleDTO[] = [];
   fundSource: FundSourceDTO[];
   clients: ClientDTO[] = [];
   clientID: number;
@@ -110,8 +114,8 @@ export class NewClientComponent implements OnInit {
     physical_address: 'Y',
     road: 'Y',
     house_number: 'Y',
-    utility_address_proof: 'Y',
-    is_utility_address: 'Y',
+    utilityBill: 'Y',
+    uploadUtilityBill: 'Y',
     bank: 'Y',
     branch: 'Y',
     account_number: 'Y',
@@ -120,7 +124,7 @@ export class NewClientComponent implements OnInit {
     effective_from_date: 'Y',
     mpayNo: 'Y',
     Iban: 'Y',
-    is_default_channel: 'Y',
+    preferredChannel: 'Y',
     wealth_citizenship: 'Y',
     marital_status: 'Y',
     funds_source: 'Y',
@@ -181,6 +185,33 @@ export class NewClientComponent implements OnInit {
     CountryISO.UnitedKingdom,
   ];
 
+  selectedCategory = 'I';
+  private formFields: any;
+  postalCodeData: any[];
+  pageSize: 5;
+  contactPersonDetailsData: any[] = [];
+  selectedContactPersonDetails: any;
+  payeeDetailsData: any[] = [];
+  selectedPayeeDetails: any;
+  amlDetailsData: any[] = [];
+  selectedAmlDetails: any;
+  cr12DetailsData: any[] = [];
+  selectedCr12Details: any;
+  ownershipStructureData: any[] = [];
+  selectedOwnershipStructureDetails: any;
+  branchDetailsData: any[] = [];
+  selectedBranchDetails: any;
+
+  editMode: boolean = false;
+  contactPersonDetailsForm: FormGroup;
+  branchDetailsForm: FormGroup;
+  payeeDetailsForm: FormGroup;
+  amlDetailsForm: FormGroup;
+  cr12DetailsForm: FormGroup;
+  ownershipDetailsForm: FormGroup;
+  requiredDocumentsData: RequiredDocumentDTO[];
+  selectedType: string = 'IN';
+
   constructor(
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
@@ -202,6 +233,9 @@ export class NewClientComponent implements OnInit {
     private authService: AuthService,
     private dmsService: DmsService,
     private appConfig: AppConfigService,
+    private http: HttpClient,
+    private requiredDocumentsService: RequiredDocumentsService,
+    private sessionStorageService: SessionStorageService,
   ) {
     this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
   }
@@ -214,7 +248,7 @@ export class NewClientComponent implements OnInit {
    *   client titles, identity types, occupations, client types, and client branches.
    */
   ngOnInit(): void {
-    this.createClientRegistrationForm();
+    // this.createClientRegistrationForm();
     const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
     this.getPartyDetails(partyId)
 
@@ -236,6 +270,23 @@ export class NewClientComponent implements OnInit {
     const normalQuoteTimestampString = sessionStorage.getItem('normalQuoteTimeStamp');
     this.normalQuoteTimeStamp = JSON.parse(normalQuoteTimestampString);
     log.info("Passed Normal QuoteTimestamp (CRM):", this.normalQuoteTimeStamp)
+    this.createClientForm();
+    this.createContactPersonDetailsForm();
+    this.createBranchDetailsForm();
+    this.createPayeeDetailsForm();
+    this.createAMLDetailsForm();
+    this.createCR12DetailsForm();
+    this.createOwnershipDetailsForm();
+
+    this.fetchRequiredDocuments();
+
+    this.contactPersonDetailsData = JSON.parse(this.sessionStorageService.getItem('contactPersonDetailsData'));
+    log.info('error here', this.contactPersonDetailsData)
+    this.branchDetailsData = JSON.parse(this.sessionStorageService.getItem('branchDetailsData'));
+    this.payeeDetailsData = JSON.parse(this.sessionStorageService.getItem('payeeDetailsData'));
+    this.amlDetailsData = JSON.parse(this.sessionStorageService.getItem('amlDetailsData'));
+    this.cr12DetailsData = JSON.parse(this.sessionStorageService.getItem('cr12DetailsData'));
+    this.ownershipStructureData = JSON.parse(this.sessionStorageService.getItem('ownershipDetailsData'));
   }
 
   /**
@@ -371,6 +422,180 @@ export class NewClientComponent implements OnInit {
     this.patchGISClientFormValues();
   }
 
+  createClientForm(): void {
+    this.clientRegistrationForm = this.fb.group({
+      partyTypeShtDesc: "CLIENT",
+      partyId: 16673590,
+      identity_type: [''],
+      citizenship: [''],
+      surname: [''],
+      otherName: [''],
+      dateOfBirth: [''],
+      idNumber: [''],
+      pinNumber: ['', Validators.pattern(this.pinNumberRegex)],
+      gender: [''],
+      clientTypeId: [''],
+
+      contact_details: this.fb.group(
+        {
+          clientBranch: [''],
+          clientTitle: [''],
+          smsNumber: [''],
+          phoneNumber: [''],
+          email: [''],
+          channel: [''],
+          countryCodeSms: [''],
+          countryCodeTel: [''],
+          websiteURL: ['', Validators.pattern('https?://.+')],
+          socialMediaURL: ['', Validators.pattern('https?://.+')],
+        },
+      ),
+
+      address: this.fb.group(
+        {
+          box_number: [''],
+          country: [''],
+          county: [''],
+          town: [''],
+          physical_address: [''],
+          road: [''],
+          house_number: [''],
+          utilityBill: [''],
+          uploadUtilityBill: [''],
+          postalCode: [''],
+        },
+      ),
+
+      payment_details: this.fb.group(
+        {
+          bank: [''],
+          branch: [''],
+          account_number: [''],
+          currency: [''],
+          effective_to_date: [''],
+          effective_from_date: [''],
+          mpayNo: [''],
+          Iban: [''],
+          preferredChannel: [''],
+          swiftCode: ['']
+        },
+      ),
+
+      next_of_kin_details: this.fb.group(
+        {
+          mode_of_identity: [''],
+          identity_number: [''],
+          full_name: [''],
+          relationship: [''],
+          phone_number: [''],
+          email_address: [''],
+          dateofbirth: [''],
+        },
+      ),
+
+      wealth_details: this.fb.group(
+        {
+          wealth_citizenship: [''],
+          marital_status: [''],
+          funds_source: [''],
+          typeOfEmployment: [''],
+          economic_sector: [''],
+          occupation: [''],
+          purposeinInsurance: [''],
+          premiumFrequency: [''],
+          distributeChannel: [''],
+        },
+      ),
+    });
+    // this.defineSmsNumberFormat();
+    // this.defineDisabledFormInputs();
+    this.updateRegex();
+    this.patchGISClientFormValues();
+
+    const fieldPath = '/assets/data/fields.json';
+
+    this.http.get(fieldPath).subscribe((data) => {
+      log.info('Fields JSON content:', data);
+      this.formFields = data;
+
+      // this.categorySubscription?.unsubscribe();
+
+      /*this.categorySubscription = this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
+        this.selectedCategory = value;
+      });*/
+      // this.selectedCategory = this.entityDetails?.categoryName === 'Individual' ? 'I' : 'C';
+      this.selectedCategory = 'C';
+
+      this.processFields(this.formFields, this.selectedCategory);
+    }, (error) => {
+      log.error('Error loading fields.json:', error);
+    });
+  }
+
+  private processFields(data: any, selectedEntityType: string) {
+    const category= selectedEntityType === 'I'? 'individual' : 'corporate';
+    const selectedClient = data.newClient[category];
+
+    if (!selectedClient) {
+      console.warn("No entity found for:", selectedEntityType, category);
+      return;
+    }
+    // const selectedCategoryValue = this.clientRegistrationForm.get('category').value;
+
+    this.clientRegistrationForm.reset();
+    this.clientRegistrationForm.clearValidators();
+    this.visibleStatus = {};
+    // this.clientRegistrationForm.get('category').setValue(selectedCategoryValue);
+
+    selectedClient.forEach((entity: any) => {
+      Object.values(entity).forEach((field: any) => {
+        const fieldId = field.fieldId;
+        console.log("Processing field:", field);
+
+        this.visibleStatus[fieldId] = field.fieldVisibilityStatus;
+
+        // Add or update form controls dynamically
+        if (!this.clientRegistrationForm.contains(fieldId)) {
+          this.clientRegistrationForm.addControl(fieldId, new FormControl(''));
+        }
+
+        const control = this.clientRegistrationForm.controls[fieldId];
+
+        // Handle required validation
+        if (field.fieldVisibilityStatus === 'Y' && field.fieldMandatoryStatus === 'Y') {
+          control.setValidators(Validators.required);
+        } else {
+          control.clearValidators();
+        }
+        control.updateValueAndValidity();
+
+        // Handle disabled fields
+        if (field.fieldDisabledStatus === 'Y') {
+          control.disable();
+        } else {
+          control.enable();
+        }
+
+        const label = document.querySelector(`label[for=${fieldId}]`);
+        if (label) {
+          label.textContent = field.fieldLabel;
+
+          let asterisk = label.querySelector('.required-asterisk');
+          if (!asterisk && field.fieldMandatoryStatus === 'Y') {
+            asterisk = document.createElement('span');
+            asterisk.className = 'required-asterisk';
+            asterisk.innerHTML = ' *';
+            (asterisk as HTMLElement).style.color = 'red';
+            label.appendChild(asterisk);
+          }
+
+          label.setAttribute('title', field.fieldLabel);
+        }
+      });
+    });
+
+    this.cdr.detectChanges();
+  }
 
   /**
    * Gets the SMS number regex format from DB and apply to phone number in client form
@@ -459,12 +684,94 @@ export class NewClientComponent implements OnInit {
     });
   }
 
+  createContactPersonDetailsForm(): void {
+    this.contactPersonDetailsForm = this.fb.group({
+      title: [''],
+      name: [''],
+      docIDNumber: [''],
+      email: [''],
+      mobileNumber: [''],
+      wef: [''],
+      wet: [''],
+    })
+  }
+
+  createBranchDetailsForm(): void {
+    this.branchDetailsForm = this.fb.group({
+      shortDesc: [''],
+      name: [''],
+      country: [''],
+      county: [''],
+      town: [''],
+      physicalAddress: [''],
+      postalAddress: [''],
+      postalCode: [''],
+      email: [''],
+      landlineNumber: [''],
+      mobileNumber: [''],
+    })
+  }
+
+  createPayeeDetailsForm(): void {
+    this.payeeDetailsForm = this.fb.group({
+      name: [''],
+      docIdNo: [''],
+      mobileNumber: [''],
+      email: [''],
+      bank: [''],
+      branch: [''],
+      accountNumber: ['']
+    })
+  }
+
+  createAMLDetailsForm(): void {
+    this.amlDetailsForm = this.fb.group({
+      category: [''],
+      modeOfIdentity: [''],
+      idNumber: [''],
+      citizenship: [''],
+      nationality: [''],
+      maritalStatus: [''],
+      employmentStatus: [''],
+      fundsSource: [''],
+      premiumPay: [''],
+      tradeName: [''],
+      registeredName: [''],
+      certificateRegNo: [''],
+      certificateRegYear: [''],
+      operatingCountry: [''],
+      parentCountry: [''],
+    })
+  }
+
+  createCR12DetailsForm(): void {
+    this.cr12DetailsForm = this.fb.group({
+      category: [''],
+      name: [''],
+      docIdNo: [''],
+      dateOfBirth: [''],
+      address: [''],
+      companyRegNo: [''],
+      companyRegDate: [''],
+      referenceNo: [''],
+      referenceNoYear: ['']
+    })
+  }
+
+  createOwnershipDetailsForm(): void {
+    this.ownershipDetailsForm = this.fb.group({
+      name: [''],
+      docIdNo: [''],
+      contact: [''],
+      percentOwnership: ['']
+    })
+  }
 
   /**
    * After the view has been initialized, this method retrieves mandatory field data
    * and updates the visibility and validation of form fields based on the received data.
    */
-  ngAfterViewInit() {
+  /*ngAfterViewInit() {
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
     )
@@ -473,7 +780,7 @@ export class NewClientComponent implements OnInit {
         response.forEach((field) => {
           for (const key of Object.keys(this.clientRegistrationForm.controls)) {
 
-            /*const value = (Object.keys(this.clientRegistrationForm.getRawValue()));
+            /!*const value = (Object.keys(this.clientRegistrationForm.getRawValue()));
             const index = value.indexOf(field.frontedId);
 
             // log.info('name', field.frontedId)
@@ -482,7 +789,7 @@ export class NewClientComponent implements OnInit {
               // log.info('values', value, value[index], index, field.visibleStatus)
 
               log.info('visible status', this.visibleStatus)
-             }*/
+             }*!/
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y') {
@@ -580,7 +887,7 @@ export class NewClientComponent implements OnInit {
         })
         this.cdr.detectChanges();
       });
-  }
+  }*/
 
 
   /*options = [
@@ -671,22 +978,18 @@ export class NewClientComponent implements OnInit {
             postal_code - no field for it but its on endpoint
             zip - no field for it but its on endpoint
             residential_address - no field for it but its on endpoint*/
-        box_number: clientFormValues.address.box_number,
-        country_id: clientFormValues.address.country,
-        estate: clientFormValues.address.country,
-        fax: null,
-        house_number: clientFormValues.address.house_number,
-        id: 0,
-        is_utility_address: clientFormValues.address.is_utility_address ? clientFormValues.address.is_utility_address : null,
-        physical_address: clientFormValues.address.physical_address,
-        postal_code: null,
-        residential_address: null,
-        road: clientFormValues.address.road,
-        state_id: 2,
-        town_id: clientFormValues.address.town,
-        // utility_address_proof: clientFormValues.address.utility_address_proof,
-        zip: "1022",
-        phoneNumber: clientFormValues.address.phoneNumber
+        postalAddress: clientFormValues.address.box_number,
+        countryId: clientFormValues.address.country,
+        // houseNumber: clientFormValues.address.house_number,
+        // uploadUtilityBill: clientFormValues.address.uploadUtilityBill ? clientFormValues.address.uploadUtilityBill : null,
+        physicalAddress: clientFormValues.address.physical_address,
+        postalCode: clientFormValues.address.postalCode,
+        // road: clientFormValues.address.road,
+        townId: clientFormValues.address.town,
+        countyId: clientFormValues.address.county,
+        // utilityBill: clientFormValues.address.utilityBill,
+        // phoneNumber: clientFormValues.address.phoneNumber,
+        branchDetails: this.branchDetailsData,
       }
 
       //preparing  contact dto
@@ -698,16 +1001,20 @@ export class NewClientComponent implements OnInit {
             EmailFiled- to be provided,
             received Document- Field to be provided*/
         emailAddress: clientFormValues.contact_details.email, /*Todo: To add field for Email*/
-        id: 0,
         // phoneNumber: clientFormValues.contact_details.phoneNumber,
-        receivedDocuments: "N", /*Todo: provide field to capture*/
+        // receivedDocuments: "N", /*Todo: provide field to capture*/
         // smsNumber: clientFormValues.contact_details.smsNumber,
         // titleShortDescription: "DR",
 
-        phoneNumber: clientFormValues.contact_details.phoneNumber.internationalNumber,
-        smsNumber: clientFormValues.contact_details.smsNumber.internationalNumber,
-        titleId: clientFormValues.contact_details.clientTitle
-
+        phoneNumber: null,
+        // phoneNumber: clientFormValues.contact_details.phoneNumber?.internationalNumber,
+        // smsNumber: clientFormValues.contact_details.smsNumber?.internationalNumber,
+        // titleId: clientFormValues.contact_details.clientTitle,
+        // branchId: clientFormValues.contact_details.clientBranch,
+        contactChannel: clientFormValues.contact_details.channel,
+        websiteURL: clientFormValues.contact_details.websiteURL,
+        socialMediaURL: clientFormValues.contact_details.socialMediaURL,
+        contactPersonDetails: this.contactPersonDetailsData,
       }
 
       //preparing next of kin dto
@@ -732,13 +1039,16 @@ export class NewClientComponent implements OnInit {
             bank: not captured in endpoint,
             mpayNo: not captured in endpoint,
             Iban: not captured in endpoint,*/
-        account_number: clientFormValues.payment_details.account_number,
-        bank_branch_id: clientFormValues.payment_details.branch,
-        currency_id: clientFormValues.payment_details.currency?.id,
-        effective_from_date: clientFormValues.payment_details.effective_date_from,
-        effective_to_date: clientFormValues.payment_details.effective_date_to,
-        id: 0,
-        is_default_channel: "N"
+        accountNumber: clientFormValues.payment_details.account_number,
+        bankId: clientFormValues.payment_details.bank,
+        bankBranchId: clientFormValues.payment_details.branch,
+        // currencyId: clientFormValues.payment_details.currency?.id,
+        // effectiveFromDate: clientFormValues.payment_details.effective_date_from,
+        // effectiveFoDate: clientFormValues.payment_details.effective_date_to,
+        preferredChannel: null,
+        iban: clientFormValues.payment_details.Iban,
+        swiftCode: clientFormValues.payment_details.swiftCode,
+        payeeDetails: this.payeeDetailsData,
       }
 
       //preparing wealth dto
@@ -750,70 +1060,59 @@ export class NewClientComponent implements OnInit {
             distributeChannel: not captured in endpoint,
             cr_form_required: not on frontend,
             cr_form_year: not on frontend*/
-        citizenship_country_id: clientFormValues.wealth_details.wealth_citizenship?.id,
-        cr_form_required: "N",
-        cr_form_year: 0,
-        funds_source: clientFormValues.wealth_details.funds_source,
-        id: 0,
-        is_employed: "N",
-        is_self_employed: "N",
-        marital_status: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
-        nationality_country_id: clientFormValues.wealth_details.country,
-        occupation_id: clientFormValues.wealth_details.occupation?.id,
-        sector_id: clientFormValues.wealth_details.economic_sector?.id,
-        certificate_registration_number: null,
-        certificate_year_of_registration: null,
-        distributeChannel: null,
-        insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
-        operating_country_id: null,
-        parent_country_id: null,
-        premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
-        registeredName: null,
-        source_of_wealth_id: null,
-        tradingName: null
+        // wealthCitizenship: clientFormValues.wealth_details.wealth_citizenship?.id,
+        // typeOfEmployment: clientFormValues.wealth_details.typeOfEmployment,
+        // fundsSource: clientFormValues.wealth_details.funds_source,
+        // maritalStatus: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
+        // occupationId: clientFormValues.wealth_details.occupation?.id,
+        // sectorId: clientFormValues.wealth_details.economic_sector?.id,
+        // distributeChannel: clientFormValues.wealth_details.distributeChannel,
+        // insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
+        // premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
+        amlDetails: this.amlDetailsData,
+        cr12Details: this.cr12DetailsData,
+        ownershipDetails: this.ownershipStructureData,
 
       }
 
-      const clientDetails: any = {
-        branchId: clientFormValues.contact_details.clientBranch
-      }
       //preparing Client Dto
       const saveClient: any = {
         address: address,
         contactDetails: contact,
-        effectiveDateFrom: null,
-        effectiveDateTo: null,
-        id: this.selectedMainUser ? this.selectedMainUser.id : null, // Set ID for existing client
-        createdBy: null,
-        partyId: this.entityDetails?.id,
-        partyTypeShortDesc: "CLIENT",
-        paymentDetails: payment,
-        clientDetails: clientDetails,
-        firstName: clientFormValues.surname,
-        gender: clientFormValues.gender ? clientFormValues.gender : null,
-        lastName: clientFormValues.otherName,
+        // effectiveDateFrom: null,
+        // effectiveDateTo: null,
+        // id: this.selectedMainUser ? this.selectedMainUser.id : null, // Set ID for existing client
+        // createdBy: null,
+        // partyId: this.entityDetails?.id,
+        // partyTypeShortDesc: "CLIENT",
+        financialDetails: payment,
+        // surname: clientFormValues.surname,
+        // gender: clientFormValues.gender ? clientFormValues.gender : null,
+        // otherName: clientFormValues.otherName,
+        name: null,
         pinNumber: clientFormValues.pinNumber,
-        category: this.clientType,
-        status: "A",
+        // category: this.clientType,
+        // status: "A",
         wealthAmlDetails: wealth,
-        countryId: clientFormValues.citizenship,
-        dateCreated: null,
+        // countryId: clientFormValues.citizenship,
+        // dateCreated: null,
         accountTypeId: clientFormValues.clientTypeId,
-        dateOfBirth: this.entityDetails?.dateOfBirth,
-        organizationId: 2,
+        dateOfBirth: null,
+        // organizationId: 2,
         modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
         idNumber: clientFormValues.idNumber,
         // system: GIS/LMS
-        nextOfKinDetailsList: null,
-        modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
-        modeOfIdentityNumber: this.entityDetails?.identityNumber,
+        // nextOfKinDetailsList: null,
+        // modeOfIdentity: this.entityDetails?.modeOfIdentity.name,
+        // modeOfIdentityNumber: this.entityDetails?.identityNumber,
 
       }
       log.info(saveClient)
       const clientPayload = JSON.stringify(saveClient);
       sessionStorage.setItem('clientPayload', clientPayload);
+      log.info('payload', clientPayload)
 
-      this.clientsService.saveClientDetails(saveClient)
+      /*this.clientsService.saveClientDetails(saveClient)
         .pipe(
           takeUntil(this.destroyed$),
         )
@@ -853,7 +1152,7 @@ export class NewClientComponent implements OnInit {
 
             //   this.router.navigate(['home/entity/client/list']);
             // }
-          } 
+          }
           // else {
           //   if (this.normalQuoteTimeStamp) {
           //     log.debug("BACK TO GIS - Quotation details screen:")
@@ -870,7 +1169,7 @@ export class NewClientComponent implements OnInit {
           //   }
           // }
 
-        });
+        });*/
 
     });
 
@@ -1292,7 +1591,7 @@ export class NewClientComponent implements OnInit {
         effective_from_date: client?.paymentDetails?.effective_from_date,
         mpayNo: client?.paymentDetails?.mpayno,
         Iban: client?.paymentDetails?.iban,
-        is_default_channel: client?.paymentDetails?.is_default_channel,
+        is_default_channel: client?.paymentDetails?.preferredChannel,
       },
       wealth_details: {
         wealth_citizenship: client?.wealthAmlDetails?.citizenship_country_id,
@@ -1449,5 +1748,430 @@ export class NewClientComponent implements OnInit {
       premiumFrequency: '',
       distributeChannel: ''
     });
+  }
+
+  fetchRequiredDocuments() {
+    this.requiredDocumentsService
+      .getRequiredDocuments(null, 'C')
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.requiredDocumentsData = data;
+            log.info('Fetched Required Documents', this.requiredDocumentsData);
+          } else {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
+  openContactPersonDetailsModal() {
+    const modal = document.getElementById('contactPersonDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openPayeeDetailsModal() {
+    const modal = document.getElementById('payeeDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openAMLDetailsModal() {
+    const modal = document.getElementById('amlDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openCR12DetailsModal() {
+    const modal = document.getElementById('cr12DetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openOwnershipDetailsModal() {
+    const modal = document.getElementById('stakeholderDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openBranchDetailsModal() {
+    const modal = document.getElementById('branchDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+
+  closeContactPersonDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('contactPersonDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  closeBranchDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('branchDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  closePayeeDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('payeeDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  closeAMLDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('amlDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  closeCR12DetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('cr12DetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  closeOwnershipDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('stakeholderDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  editContactPersonDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected contact person', this.selectedContactPersonDetails);
+    if (this.selectedContactPersonDetails) {
+      this.openContactPersonDetailsModal();
+      this.contactPersonDetailsForm.patchValue({
+        title: Number(this.selectedContactPersonDetails.title),
+        name: this.selectedContactPersonDetails.name,
+        docIDNumber: this.selectedContactPersonDetails.docIDNumber,
+        email: this.selectedContactPersonDetails.email,
+        mobileNumber: this.selectedContactPersonDetails.mobileNumber,
+        wef: this.selectedContactPersonDetails.wef,
+        wet: this.selectedContactPersonDetails.wet,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No contact person details is selected!'
+      );
+    }
+  }
+
+  editBranchDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected contact person', this.selectedBranchDetails);
+    if (this.selectedBranchDetails) {
+      this.openBranchDetailsModal();
+      this.branchDetailsForm.patchValue({
+        shortDesc: this.selectedBranchDetails.shortDesc,
+        name: this.selectedBranchDetails.name,
+        country: Number(this.selectedBranchDetails.country),
+        county: Number(this.selectedBranchDetails.county),
+        town: Number(this.selectedBranchDetails.town),
+        physicalAddress: this.selectedBranchDetails.physicalAddress,
+        postalAddress: this.selectedBranchDetails.postalAddress,
+        postalCode: this.selectedBranchDetails.postalCode,
+        email: this.selectedBranchDetails.email,
+        landlineNumber: this.selectedBranchDetails.landlineNumber,
+        mobileNumber: this.selectedBranchDetails.mobileNumber,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No branch details is selected!'
+      );
+    }
+  }
+
+  editPayeeDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected payee', this.selectedPayeeDetails);
+    if (this.selectedPayeeDetails) {
+      this.openPayeeDetailsModal();
+      this.payeeDetailsForm.patchValue({
+        name: this.selectedPayeeDetails.name,
+        docIdNo: this.selectedPayeeDetails.docIdNo,
+        mobileNumber: this.selectedPayeeDetails.mobileNumber,
+        email: this.selectedPayeeDetails.email,
+        bank: Number(this.selectedPayeeDetails.bank),
+        branch: Number(this.selectedPayeeDetails.branch),
+        accountNumber: this.selectedPayeeDetails.accountNumber
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No payee details is selected!'
+      );
+    }
+  }
+
+  editAMLDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected AML', this.selectedAmlDetails);
+    if (this.selectedAmlDetails) {
+      this.openAMLDetailsModal();
+      this.amlDetailsForm.patchValue({
+        category: this.selectedAmlDetails.category,
+        modeOfIdentity: this.selectedAmlDetails.modeOfIdentity,
+        idNumber: this.selectedAmlDetails.idNumber,
+        citizenship: this.selectedAmlDetails.citizenship,
+        nationality: this.selectedAmlDetails.nationality,
+        maritalStatus: this.selectedAmlDetails.maritalStatus,
+        employmentStatus: this.selectedAmlDetails.employmentStatus,
+        fundsSource: this.selectedAmlDetails.fundsSource,
+        premiumPay: this.selectedAmlDetails.premiumPay,
+        tradeName: this.selectedAmlDetails.tradeName,
+        registeredName: this.selectedAmlDetails.registeredName,
+        certificateRegNo: this.selectedAmlDetails.certificateRegNo,
+        certificateRegYear: this.selectedAmlDetails.certificateRegYear,
+        operatingCountry: this.selectedAmlDetails.operatingCountry,
+        parentCountry: this.selectedAmlDetails.parentCountry,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No AML details is selected!'
+      );
+    }
+  }
+
+  editCR12Details() {
+    this.editMode = !this.editMode;
+    log.info('selected CR12', this.selectedCr12Details);
+    if (this.selectedCr12Details) {
+      this.openCR12DetailsModal();
+      this.cr12DetailsForm.patchValue({
+        category: this.selectedCr12Details.category,
+        name: this.selectedCr12Details.name,
+        docIdNo: this.selectedCr12Details.docIdNo,
+        dateOfBirth: this.selectedCr12Details.dateOfBirth,
+        address: this.selectedCr12Details.address,
+        companyRegNo: this.selectedCr12Details.companyRegNo,
+        companyRegDate: this.selectedCr12Details.companyRegDate,
+        referenceNo: this.selectedCr12Details.referenceNo,
+        referenceNoYear: this.selectedCr12Details.referenceNoYear
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No CR12 details is selected!'
+      );
+    }
+  }
+
+  editOwnershipDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected owner', this.selectedOwnershipStructureDetails);
+    if (this.selectedOwnershipStructureDetails) {
+      this.openOwnershipDetailsModal();
+      this.ownershipDetailsForm.patchValue({
+        name: this.selectedOwnershipStructureDetails.name,
+        docIdNo: this.selectedOwnershipStructureDetails.docIdNo,
+        contact: this.selectedOwnershipStructureDetails.contact,
+        percentOwnership: this.selectedOwnershipStructureDetails.percentOwnership
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No ownership details is selected!'
+      );
+    }
+  }
+
+  deleteContactPersonDetails() {
+
+  }
+
+  deletePayeeDetails() {
+
+  }
+
+  deleteAMLDetails() {
+
+  }
+
+  deleteCR12Details() {
+
+  }
+
+  deleteOwnershipDetails() {
+
+  }
+
+  deleteBranchDetails() {
+
+  }
+
+  saveContactPersonDetails() {
+    const contactPersonValues = this.contactPersonDetailsForm.getRawValue();
+    const contactPersonPayload: any = {
+      title: contactPersonValues.title.toString(),
+      name: contactPersonValues.name,
+      docIDNumber: contactPersonValues.docIDNumber,
+      email: contactPersonValues.email,
+      mobileNumber: contactPersonValues.mobileNumber?.internationalNumber,
+      wef: contactPersonValues.wef,
+      wet: contactPersonValues.wet,
+    }
+    log.info('contact person', contactPersonPayload);
+    // this.contactPersonDetailsData = [];
+    this.contactPersonDetailsData.push(contactPersonPayload);
+    this.sessionStorageService.setItem('contactPersonDetailsData', JSON.stringify(this.contactPersonDetailsData));
+
+    log.info('contact person session', this.sessionStorageService.getItem('contactPersonDetailsData'));
+  }
+
+  saveBranchDetails() {
+    const branchValues = this.branchDetailsForm.getRawValue();
+    const branchPayload: any = {
+      shortDesc: branchValues.shortDesc,
+      name: branchValues.name,
+      country: branchValues.country.toString(),
+      county: branchValues.county.toString(),
+      town: branchValues.town.toString(),
+      physicalAddress: branchValues.physicalAddress,
+      postalAddress: branchValues.postalAddress,
+      postalCode: branchValues.postalCode.toString(),
+      email: branchValues.email,
+      landlineNumber: branchValues.landlineNumber?.internationalNumber,
+      mobileNumber: branchValues.mobileNumber?.internationalNumber,
+    }
+    log.info('branch details', branchPayload);
+
+    this.branchDetailsData.push(branchPayload);
+    this.sessionStorageService.setItem('branchDetailsData', JSON.stringify(this.branchDetailsData));
+
+    log.info('branch details session', this.sessionStorageService.getItem('branchDetailsData'));
+  }
+
+  savePayeeDetails() {
+    const payeeFormValues = this.payeeDetailsForm.getRawValue();
+    const payeePayload: any = {
+      name: payeeFormValues.name,
+      docIdNo: payeeFormValues.docIdNo,
+      mobileNumber: payeeFormValues.mobileNumber?.internationalNumber,
+      email: payeeFormValues.email,
+      bank: payeeFormValues.bank,
+      branch: payeeFormValues.branch,
+      accountNumber: payeeFormValues.accountNumber
+    }
+    log.info('payee details', payeePayload);
+
+    this.payeeDetailsData.push(payeePayload);
+    this.sessionStorageService.setItem('payeeDetailsData', JSON.stringify(this.payeeDetailsData));
+
+    log.info('payee details session', this.sessionStorageService.getItem('payeeDetailsData'));
+  }
+
+  saveAMLDetails() {
+    const amlFormValues = this.amlDetailsForm.getRawValue();
+    const amlPayload: any = {
+      category: amlFormValues.category,
+      modeOfIdentity: amlFormValues.modeOfIdentity,
+      idNumber: amlFormValues.idNumber,
+      citizenship: amlFormValues.citizenship,
+      nationality: amlFormValues.nationality,
+      maritalStatus: amlFormValues.maritalStatus,
+      employmentStatus: amlFormValues.employmentStatus,
+      fundsSource: amlFormValues.fundsSource,
+      premiumPay: amlFormValues.premiumPay,
+      tradeName: amlFormValues.tradeName,
+      registeredName: amlFormValues.registeredName,
+      certificateRegNo: amlFormValues.certificateRegNo,
+      certificateRegYear: amlFormValues.certificateRegYear,
+      operatingCountry: amlFormValues.operatingCountry,
+      parentCountry: amlFormValues.parentCountry,
+    }
+    log.info('aml details', amlPayload);
+
+    this.amlDetailsData.push(amlPayload);
+    this.sessionStorageService.setItem('amlDetailsData', JSON.stringify(this.amlDetailsData));
+
+    log.info('aml details session', this.sessionStorageService.getItem('amlDetailsData'));
+  }
+
+  saveCR12Details() {
+    const cr12FormValues = this.cr12DetailsForm.getRawValue();
+    const cr12Payload: any = {
+      category: cr12FormValues.category,
+      name: cr12FormValues.name,
+      docIdNo: cr12FormValues.docIdNo,
+      dateOfBirth: cr12FormValues.dateOfBirth,
+      address: cr12FormValues.address,
+      companyRegNo: cr12FormValues.companyRegNo,
+      companyRegDate: cr12FormValues.companyRegDate,
+      referenceNo: cr12FormValues.referenceNo,
+      referenceNoYear: cr12FormValues.referenceNoYear
+    }
+    log.info('cr12 details', cr12Payload);
+
+    this.cr12DetailsData.push(cr12Payload);
+    this.sessionStorageService.setItem('cr12DetailsData', JSON.stringify(this.cr12DetailsData));
+
+    log.info('cr12 details session', this.sessionStorageService.getItem('cr12DetailsData'));
+  }
+
+  saveOwnershipDetails() {
+    const ownershipFormValues = this.ownershipDetailsForm.getRawValue();
+    const ownershipPayload: any = {
+      name: ownershipFormValues.name,
+      docIdNo: ownershipFormValues.docIdNo,
+      contact: ownershipFormValues.contact,
+      percentOwnership: ownershipFormValues.percentOwnership
+    }
+    log.info('ownership details', ownershipPayload);
+
+    this.ownershipStructureData.push(ownershipPayload);
+    this.sessionStorageService.setItem('ownershipDetailsData', JSON.stringify(this.ownershipStructureData));
+
+    log.info('ownership details session', this.sessionStorageService.getItem('ownershipDetailsData'));
+  }
+
+  onTypeSelect(event: any) {
+    this.selectedType = event.target.value;
   }
 }

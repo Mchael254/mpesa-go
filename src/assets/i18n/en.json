@@ -676,14 +676,14 @@
     "unallocated_cash": "Unallocated Cash",
     "upcoming": "Upcoming",
     "upload_image": "upload image",
-    "upload_utility_bill": "Upload Utitlity Bill",
+    "upload_utility_bill": "Upload Utility Bill",
     "upload_utility_bill_required": "Upload Utility Bill is required",
     "user": "user",
     "user_type": "User Type",
     "username": "Username",
     "username_required": "Username required",
     "users": "Users",
-    "utility_bill": "Utitlity Bill",
+    "utility_bill": "Utility Bill",
     "utility_bill_required": "Utility Bill is required",
     "vat_applicable": "VAT Applicable",
     "vat_applicable_required": "VAT Applicable is required",
@@ -800,7 +800,41 @@
     "registrationDate": "Registration Date",
     "parentCompany": "Parent Company",
     "contactPerson": "Contact Person",
-    "contactPersonTelephone": "Contact Person Telephone"
+    "contactPersonTelephone": "Contact Person Telephone",
+    "websiteURL": "Website URL",
+    "socialMediaURL": "Preferred social media link",
+    "contactPersonDetails": "Contact Person Details",
+    "fullName": "Full Name",
+    "docIdNo": "Doc ID Number",
+    "payeeDetails": "Payee details",
+    "swiftCode": "Swift Code",
+    "registeredName": "Registered Name",
+    "operatingCountry": "Operating Country",
+    "cr12Details": "CR12 Details",
+    "personType": "Person Type",
+    "companyRegNo": "Company Reg No",
+    "companyRegDate": "Company Reg Date",
+    "address": "Address",
+    "referenceNo": "Reference No",
+    "refNumberYear": "Ref number year",
+    "ownershipStructure": "Ownership Structure",
+    "percentageOwnership": "Percentage ownership",
+    "branchDetails": "Branch Details",
+    "shortDesc": "Short desc",
+    "cityOrTown": "City/Town",
+    "countyOrState": "County/State",
+    "landlineNo": "Landline No",
+    "mobileNo": "Mobile No",
+    "addressDetails": "Address details",
+    "financialDetails": "Financial details",
+    "landlineNumber": "Landline Number",
+    "documentUpload": "Document upload",
+    "citizenshipCountry": "Citizenship Country",
+    "nationalityCountry": "Nationality Country",
+    "employmentStatus": "Employment Status",
+    "premiumPay": "Premium Pay",
+    "certificateRegNo": "Certificate Reg No",
+    "certificateRegYear": "Certificate Reg Year"
   },
   "gis": {
     "quotation": {
@@ -2517,7 +2551,7 @@
       "authorizedDate": "Authorized date",
       "receiptNo": "Receipt no",
       "receiptDate": "Receipt date",
-      
+
       "receiptBalance": "Receipt balance",
       "receiptSettlement": "Receipt settlement",
       "debitCredit": "Debit/credit",
@@ -2749,8 +2783,8 @@
       "spoilt_receipt_paper": "Spoilt Receipt Paper",
       "not_printed": "Not Printed",
       "uploadFiles": "Upload file",
-     
-      
+
+
       "capitalInjection": "Capital Injection",
       "deductions": "Deductions",
       "back":"Back",
@@ -2800,7 +2834,7 @@
       "allocated_amount": "Allocated Amount",
       "slipPreview":"Slip preview",
       "acknowledgementSlip":"Acknowledgement Slip Summary"
-     
+
     },
     "allocation": {
       "allocate_funds": "Allocate Funds",
@@ -2808,7 +2842,7 @@
       "policies": "Policies",
       "group_business_accounts": "Group Business Accounts",
       "gl_accounts": "GL Accounts",
-      
+
       "policy_number": "Policy Number",
       "account_number": "Account Number",
       "code": "Code",
@@ -2886,7 +2920,7 @@
 "directDebits":"Direct Debits"
 
       }
-    
+
   },
   "campaignMngmt": {
     "campaigns": "Campaigns",

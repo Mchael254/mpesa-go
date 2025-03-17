@@ -58,7 +58,7 @@
         </ng-container>
         <form [formGroup]="entityRegistrationForm">
           <div class="row">
-            <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
+            <ng-container *ngIf="visibleStatus['assign_role'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="assign_role">{{
                   "entities.select_role" | translate | titlecase
@@ -100,7 +100,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.category === 'Y'">
+            <ng-container *ngIf="visibleStatus['category'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="category">{{
                   "entities.party_type" | translate | titlecase
@@ -108,15 +108,15 @@
                 <select
                   id="category"
                   class="form-select"
-                  placeholder="Select Party Type"
                   formControlName="category"
+                  (change)="onCategorySelect()"
                   [ngClass]="{
                     'is-invalid':
                       f['category'].invalid &&
                       (f['category'].dirty || f['category'].touched)
                   }"
                 >
-                  <option value="" selected>
+                  <option value="" disabled selected>
                     {{ "entities.primary" | translate | titlecase }}
                     {{ "entities.party_type" | translate | titlecase }}
                   </option>
@@ -140,44 +140,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
-              <div class="col-md-4 col-6 md-col-4 pad-1">
-                <label for="date_of_birth">{{
-                  "entities.dob" | translate | titlecase
-                }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="inputDateOfBirth"
-                  onfocus="(this.type='date')"
-                  onblur="(this.type='text')"
-                  id="date_of_birth"
-                  [max]="eighteenYearsAgo | date : 'yyyy-MM-dd'"
-                  formControlName="date_of_birth"
-                  [ngClass]="{
-                    'is-invalid':
-                      f['date_of_birth']?.invalid &&
-                      (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
-                  }"
-                />
-                <div
-                  *ngIf="
-                    f['date_of_birth']?.invalid &&
-                    (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
-                  "
-                  class="form-text text-danger"
-                  [ngClass]="{
-                    'is-invalid': ['submitted'] && f['date_of_birth']?.errors
-                  }"
-                >
-                  <div *ngIf="f['date_of_birth']?.errors['required']">
-                    {{ "entities.dob" | translate | titlecase }}
-                    {{ "entities.required" | translate }}
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
+            <ng-container *ngIf="visibleStatus['entity_name'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="entity_name"
                   >{{ "entities.entity" | translate | titlecase }}
@@ -211,7 +174,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
+            <ng-container *ngIf="visibleStatus['mode_of_identity'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="mode_of_identity">
                   {{ "entities.primary" | translate | titlecase }}
@@ -220,7 +183,6 @@
                 <select
                   id="mode_of_identity"
                   class="form-select"
-                  placeholder="Primary ID Type"
                   formControlName="mode_of_identity"
                   [ngClass]="{
                     'is-invalid':
@@ -260,7 +222,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
+            <ng-container *ngIf="visibleStatus['identity_number'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="identity_number">{{
                   "entities.id_number" | translate
@@ -299,7 +261,7 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
+            <ng-container *ngIf="visibleStatus['pin_number'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
                 <label for="pin_number">{{
                   "entities.pin_number" | translate
@@ -336,9 +298,46 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
+            <ng-container *ngIf="visibleStatus['date_of_birth'] === 'Y'">
+              <div class="col-md-4 col-6 md-col-4 pad-1">
+                <label for="date_of_birth">{{
+                    "entities.dob" | translate | titlecase
+                  }}</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="inputDateOfBirth"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  id="date_of_birth"
+                  [max]="eighteenYearsAgo | date : 'yyyy-MM-dd'"
+                  formControlName="date_of_birth"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['date_of_birth']?.invalid &&
+                      (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['date_of_birth']?.invalid &&
+                    (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['date_of_birth']?.errors
+                  }"
+                >
+                  <div *ngIf="f['date_of_birth']?.errors['required']">
+                    {{ "entities.dob" | translate | titlecase }}
+                    {{ "entities.required" | translate }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus['profilePiture'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="inputProfileImg">{{
+                <label for="profilePiture">{{
                   "entities.profile_photo" | translate | titlecase
                 }}</label>
 
@@ -355,21 +354,21 @@
                     />
                     <input
                       type="file"
-                      id="inputProfileImg"
+                      id="profilePiture"
                       formControlName="profilePiture"
                       accept="image/jpeg, image/png"
                       hidden
                     />
                     <label
                       *ngIf="url === ''"
-                      for="inputProfileImg"
+                      for="profilePiture"
                       class="img_upload"
                     >
                       <i class="fa-solid fa-cloud-arrow-up"></i>
                       {{ "entities.upload_image" | translate | titlecase }}
                     </label>
                     <label
-                      for="inputProfileImg"
+                      for="profilePiture"
                       *ngIf="url !== ''"
                       class="img_edit"
                       >{{ "entities.edit" | translate | titlecase }}</label
@@ -395,92 +394,6 @@
               </div>
             </ng-container>
           </div>
-          <!-- <div class="row">
-            <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
-              <div class="col-md-4 col-6 pad-1">
-                <label for="assign_role"
-                  >{{ "entities.assign_role" | translate | titlecase }} ({{
-                    "entities.optional" | translate
-                  }})</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="assign_role"
-                  placeholder="selected Role"
-                  formControlName="assign_role"
-                  [disabled]="true"
-                />
-              </div>
-
-              <div class="col-md-4 col-6 pad-1">
-                <label for="rolesButton">{{
-                  "entities.select_role" | translate | titlecase
-                }}</label>
-                <button
-                  type="button"
-                  id="rolesButton"
-                  class="btn btn-outline-primary btn-md btn-block"
-                  data-bs-toggle="modal"
-                  data-bs-target="#selectRoleModal"
-                  [disabled]="disableRole"
-                >
-                  {{ "entities.select_role" | translate | titlecase }}
-                </button>
-              </div>
-            </ng-container>
-          </div>
-          <div class="row">
-            <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
-              <div class="col-md-4 col-12 pad-1">
-                <label for="inputProfileImg">{{
-                  "entities.profile_photo" | translate | titlecase
-                }}</label>
-                <p
-                  style="
-                    padding: 7px;
-                    border-left: solid 3px #00529b;
-                    color: #00529b;
-                  "
-                >
-                  <i class="fa-solid fa-info-circle"></i>
-                  <strong>
-                    {{ "entities.note" | translate | titlecase }} -
-                  </strong>
-                  png, jpeg or jpg
-                </p>
-                <div (change)="onFileChange($event)">
-                  <img
-                    *ngIf="url !== '' && url"
-                    [src]="url"
-                    alt=""
-                    id="profile-photo"
-                  />
-                  <input
-                    type="file"
-                    id="inputProfileImg"
-                    formControlName="profilePiture"
-                    accept="image/jpeg, image/png"
-                    hidden
-                  />
-                  <label
-                    *ngIf="url === ''"
-                    for="inputProfileImg"
-                    class="img_upload"
-                  >
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    {{ "entities.upload_image" | translate | titlecase }}</label
-                  >
-                  <label
-                    for="inputProfileImg"
-                    *ngIf="url !== ''"
-                    class="img_edit"
-                    >{{ "entities.edit" | translate | titlecase }}</label
-                  >
-                </div>
-              </div>
-            </ng-container>
-          </div> -->
         </form>
       </div>
     </div>

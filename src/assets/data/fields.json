@@ -1,0 +1,613 @@
+{
+  "newEntity": {
+    "individual": [{
+      "assign_role": {
+        "fieldId": "assign_role",
+        "fieldLabel": "Select a role",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "category": {
+        "fieldId": "category",
+        "fieldLabel": "Party type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "entity_name": {
+        "fieldId": "entity_name",
+        "fieldLabel": "Entity name",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "mode_of_identity": {
+        "fieldId": "mode_of_identity",
+        "fieldLabel": "Primary ID type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "identity_number": {
+        "fieldId": "identity_number",
+        "fieldLabel": "ID Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "pin_number": {
+        "fieldId": "pin_number",
+        "fieldLabel": "Pin Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "date_of_birth": {
+        "fieldId": "date_of_birth",
+        "fieldLabel": "Date of birth",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "profilePiture": {
+        "fieldId": "profilePiture",
+        "fieldLabel": "Profile photo",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      }
+    }],
+
+    "corporate": [{
+      "assign_role": {
+        "fieldId": "assign_role",
+        "fieldLabel": "Select a role",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "category": {
+        "fieldId": "category",
+        "fieldLabel": "Party type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "entity_name": {
+        "fieldId": "entity_name",
+        "fieldLabel": "Entity name",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "identity_number": {
+        "fieldId": "identity_number",
+        "fieldLabel": "Business registration number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "mode_of_identity": {
+        "fieldId": "mode_of_identity",
+        "fieldLabel": "Primary ID type",
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "pin_number": {
+        "fieldId": "pin_number",
+        "fieldLabel": "Pin Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "date_of_birth": {
+        "fieldId": "date_of_birth",
+        "fieldLabel": "Date of incorporation",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "profilePiture": {
+        "fieldId": "profilePiture",
+        "fieldLabel": "Logo photo",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      }
+    }]
+},
+
+  "newClient": {
+    "individual": [{
+      "clientTypeId": {
+        "fieldId": "clientTypeId",
+        "fieldLabel": "Client Type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "identity_type": {
+        "fieldId": "identity_type",
+        "fieldLabel": "Identity type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "citizenship": {
+        "fieldId": "citizenship",
+        "fieldLabel": "Citizenship",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "surname": {
+        "fieldId": "surname",
+        "fieldLabel": "Surname",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "otherName": {
+        "fieldId": "otherName",
+        "fieldLabel": "Other name",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "dateOfBirth": {
+        "fieldId": "dateOfBirth",
+        "fieldLabel": "Date of birth",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "N"
+      },
+      "idNumber": {
+        "fieldId": "idNumber",
+        "fieldLabel": "ID Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "gender": {
+        "fieldId": "gender",
+        "fieldLabel": "Gender",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "pinNumber": {
+        "fieldId": "pinNumber",
+        "fieldLabel": "PIN Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "clientBranch": {
+        "fieldId": "clientBranch",
+        "fieldLabel": "Branch",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "clientTitle": {
+        "fieldId": "clientTitle",
+        "fieldLabel": "Title",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "smsNumber": {
+        "fieldId": "smsNumber",
+        "fieldLabel": "SMS Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "phoneNumber": {
+        "fieldId": "phoneNumber",
+        "fieldLabel": "Telephone number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "email": {
+        "fieldId": "email",
+        "fieldLabel": "Email address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "channel": {
+        "fieldId": "channel",
+        "fieldLabel": "Preferred contact channel",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "country": {
+        "fieldId": "country",
+        "fieldLabel": "Country",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "county": {
+        "fieldId": "county",
+        "fieldLabel": "County",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "town": {
+        "fieldId": "town",
+        "fieldLabel": "Town",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "physical_address": {
+        "fieldId": "physical_address",
+        "fieldLabel": "Physical Address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "box_number": {
+        "fieldId": "box_number",
+        "fieldLabel": "Postal address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "postalCode": {
+        "fieldId": "postalCode",
+        "fieldLabel": "Postal Code",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "road": {
+        "fieldId": "road",
+        "fieldLabel": "Road",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "house_number": {
+        "fieldId": "house_number",
+        "fieldLabel": "House Name/No",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "utilityBill": {
+        "fieldId": "utilityBill",
+        "fieldLabel": "Utility Bill",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "uploadUtilityBill": {
+        "fieldId": "uploadUtilityBill",
+        "fieldLabel": "Upload Utility Bill",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "bank": {
+        "fieldId": "bank",
+        "fieldLabel": "Bank",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "branch": {
+        "fieldId": "branch",
+        "fieldLabel": "Branch",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "account_number": {
+        "fieldId": "account_number",
+        "fieldLabel": "Account Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "currency": {
+        "fieldId": "currency",
+        "fieldLabel": "Currency",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "effective_from_date": {
+        "fieldId": "effective_from_date",
+        "fieldLabel": "With Effect From",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "effective_to_date": {
+        "fieldId": "effective_to_date",
+        "fieldLabel": "With Effect To",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "mpayNo": {
+        "fieldId": "mpayNo",
+        "fieldLabel": "Mobile money number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "Iban": {
+        "fieldId": "Iban",
+        "fieldLabel": "International bank account number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "preferredChannel": {
+        "fieldId": "preferredChannel",
+        "fieldLabel": "Preferred channel",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "wealth_citizenship": {
+        "fieldId": "wealth_citizenship",
+        "fieldLabel": "Citizenship",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "marital_status": {
+        "fieldId": "marital_status",
+        "fieldLabel": "Marital Status",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "funds_source": {
+        "fieldId": "funds_source",
+        "fieldLabel": "Source of Funds",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "typeOfEmployment": {
+        "fieldId": "typeOfEmployment",
+        "fieldLabel": "Type of Employment",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "economic_sector": {
+        "fieldId": "economic_sector",
+        "fieldLabel": "Economic Sector",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "occupation": {
+        "fieldId": "occupation",
+        "fieldLabel": "Occupation",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "purposeinInsurance": {
+        "fieldId": "purposeinInsurance",
+        "fieldLabel": "Purpose in Insurance",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "premiumFrequency": {
+        "fieldId": "premiumFrequency",
+        "fieldLabel": "Premium Frequency",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "distributeChannel": {
+        "fieldId": "distributeChannel",
+        "fieldLabel": "Distribute Channel",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      }
+    }],
+
+    "corporate": [{
+      "clientTypeId": {
+        "fieldId": "clientTypeId",
+        "fieldLabel": "Organization Type",
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "identity_type": {
+        "fieldId": "identity_type",
+        "fieldLabel": "Identity type",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "citizenship": {
+        "fieldId": "citizenship",
+        "fieldLabel": "Citizenship",
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "surname": {
+        "fieldId": "surname",
+        "fieldLabel": "Entity name",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "otherName": {
+        "fieldId": "otherName",
+        "fieldLabel": "Other name",
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "dateOfBirth": {
+        "fieldId": "dateOfBirth",
+        "fieldLabel": "Date of incorporation",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "idNumber": {
+        "fieldId": "idNumber",
+        "fieldLabel": "Business registration number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "gender": {
+        "fieldId": "gender",
+        "fieldLabel": "Gender",
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "pinNumber": {
+        "fieldId": "pinNumber",
+        "fieldLabel": "PIN Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "smsNumber": {
+        "fieldId": "smsNumber",
+        "fieldLabel": "Telephone Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "email": {
+        "fieldId": "email",
+        "fieldLabel": "Email address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "channel": {
+        "fieldId": "channel",
+        "fieldLabel": "Preferred contact channel",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "websiteURL": {
+        "fieldId": "websiteURL",
+        "fieldLabel": "Website URL",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "socialMediaURL": {
+        "fieldId": "socialMediaURL",
+        "fieldLabel": "Preferred social media link",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "country": {
+        "fieldId": "country",
+        "fieldLabel": "Country",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "county": {
+        "fieldId": "county",
+        "fieldLabel": "County",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "town": {
+        "fieldId": "town",
+        "fieldLabel": "Town",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
+      "physical_address": {
+        "fieldId": "physical_address",
+        "fieldLabel": "Physical Address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "box_number": {
+        "fieldId": "box_number",
+        "fieldLabel": "Postal address",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "postalCode": {
+        "fieldId": "postalCode",
+        "fieldLabel": "Postal Code",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "bank": {
+        "fieldId": "bank",
+        "fieldLabel": "Bank",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "branch": {
+        "fieldId": "branch",
+        "fieldLabel": "Branch",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "account_number": {
+        "fieldId": "account_number",
+        "fieldLabel": "Account Number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "Iban": {
+        "fieldId": "Iban",
+        "fieldLabel": "International bank account number",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "swiftCode": {
+        "fieldId": "swiftCode",
+        "fieldLabel": "Swift Code",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "preferredChannel": {
+        "fieldId": "preferredChannel",
+        "fieldLabel": "Preferred payment channel",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      }
+    }]
+  }
+
+}
