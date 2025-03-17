@@ -15,7 +15,7 @@
                         <label for="" class="quote-label">Source<span class="required"></span></label>
                         <p-dropdown id="quote-input-pdropdown" formControlName="source" [options]="quotationSources"
                             optionLabel="description"  placeholder=" " [filterBy]="'description'"
-                            [filter]="true"></p-dropdown>
+                            [filter]="true" (onChange)="onSourceChange($event)"></p-dropdown>
 
 
                         <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"

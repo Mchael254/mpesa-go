@@ -995,4 +995,14 @@ export class QuotationDetailsComponent {
     });
   }
 
+  onSourceChange(event) {
+    const selectedSource = event.value;
+    if (selectedSource && selectedSource.description === 'Walk in') {
+      this.quotationForm.get('quotationType').setValue('D'); // Set to Direct
+    }
+
+    // Manually trigger the onQuotationTypeChange method
+    this.onQuotationTypeChange('D');
+  }
+
 }
