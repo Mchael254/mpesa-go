@@ -5,7 +5,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { DynamicFormButtons } from '../../../../../shared/utils/dynamic.form.button';
 import { DynamicFormFields } from '../../../../../shared/utils/dynamic.form.fields';
 import { EntityService } from '../../../services/entity/entity.service';
@@ -24,6 +24,9 @@ import {
 } from '../../../data/entityDto';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { Pagination } from '../../../../../shared/data/common/pagination';
+import { TranslateService } from "@ngx-translate/core";
+import { HttpClient } from '@angular/common/http';
+import { Subscription } from "rxjs";
 
 const log = new Logger('NewEntityComponent');
 
@@ -98,7 +101,7 @@ export class NewEntityComponent implements OnInit {
     { name: 'profilePiture', message: 'Invalid Profile picture' },
   ];
 
-  visibleStatus: any = {
+  /*visibleStatus: any = {
     category: 'Y',
     date_of_birth: 'Y',
     mode_of_identity: 'Y',
@@ -107,12 +110,20 @@ export class NewEntityComponent implements OnInit {
     pin_number: 'Y',
     assign_role: 'Y',
     profilePiture: 'Y',
-  };
+  };*/
 
   foundEntity: EntityDto;
   isEntityExisting: boolean = false;
   isLoading: boolean = false;
   progressBarWidth: number = 30;
+
+  selectedCategory = 'I';
+  individualFields: any[] = [];
+  corporateFields: any[] = [];
+  visibleStatus: { [key: string]: string } = {};
+  mandatoryStatus: { [key: string]: boolean } = {};
+  private categorySubscription: Subscription | null = null;
+  private formFields: any;
 
   constructor(
     private fb: FormBuilder,
@@ -123,7 +134,9 @@ export class NewEntityComponent implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private appConfig: AppConfigService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private translate: TranslateService,
+    private http: HttpClient
   ) {
     this.selectedRole = {};
     this.passportRegex = this.appConfig.config.organization.passport_regex;
@@ -146,11 +159,12 @@ export class NewEntityComponent implements OnInit {
    * query parameter, and retrieving parties and identity types.
    */
   ngOnInit(): void {
-    this.createEntityRegForm();
+    // this.createEntityRegForm();
     this.createSelectRoleForm();
     this.roleName = this.route.snapshot.queryParamMap.get('entityType');
     this.getPartiesType();
     this.getIdentityType();
+    this.createEntityForm();
   }
 
   ngOnDestroy(): void {}
@@ -201,6 +215,120 @@ export class NewEntityComponent implements OnInit {
         });
         this.cdr.detectChanges();
       });
+  }
+
+  createEntityForm() {
+    this.entityRegistrationForm = this.fb.group({
+      category: [''],
+      date_of_birth: [''],
+      mode_of_identity: [''],
+      entity_name: [''],
+      identity_number: ['', Validators.pattern(this.nationalIDRegex)],
+      pin_number: ['', Validators.pattern(this.pinNumberRegex)],
+      assign_role: [''],
+      profilePiture: ['']
+    });
+
+    const fieldPath = '/assets/data/fields.json';
+
+    this.mandatoryFieldsService.getMockFormFields().subscribe({
+      next: (data) => {
+        this.formFields = data;
+
+        this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
+          this.selectedCategory = value;
+        });
+
+        this.processFields(this.formFields, this.selectedCategory);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error);
+        log.error('Error loading fields.json:', err);
+      }
+    })
+    /*this.http.get(fieldPath).subscribe((data) => {
+      log.info('Fields JSON content:', data);
+      this.formFields = data;
+
+      this.categorySubscription?.unsubscribe();
+
+      this.categorySubscription = this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
+        this.selectedCategory = value;
+      });
+
+      this.processFields(this.formFields, this.selectedCategory);
+    }, (error) => {
+      log.error('Error loading fields.json:', error);
+    });*/
+  }
+
+  onCategorySelect() {
+    this.processFields(this.formFields, this.selectedCategory);
+  }
+
+  private processFields(data: any, selectedEntityType: string) {
+    const category= selectedEntityType === 'I'? 'individual' : 'corporate';
+    const selectedEntity = data.newEntity[category];
+
+    if (!selectedEntity) {
+      console.warn("No entity found for:", selectedEntityType, category);
+      return;
+    }
+    const selectedCategoryValue = this.entityRegistrationForm.get('category').value;
+
+    this.entityRegistrationForm.reset();
+    this.entityRegistrationForm.clearValidators();
+    this.visibleStatus = {};
+    this.entityRegistrationForm.get('category').setValue(selectedCategoryValue);
+
+    selectedEntity.forEach((entity: any) => {
+      Object.values(entity).forEach((field: any) => {
+        const fieldId = field.fieldId;
+        console.log("Processing field:", field);
+
+        this.visibleStatus[fieldId] = field.fieldVisibilityStatus;
+
+        // Add or update form controls dynamically
+        if (!this.entityRegistrationForm.contains(fieldId)) {
+          this.entityRegistrationForm.addControl(fieldId, new FormControl(''));
+        }
+
+        const control = this.entityRegistrationForm.controls[fieldId];
+
+        // Handle required validation
+        if (field.fieldVisibilityStatus === 'Y' && field.fieldMandatoryStatus === 'Y') {
+          control.setValidators(Validators.required);
+        } else {
+          control.clearValidators();
+        }
+        control.updateValueAndValidity();
+
+        // Handle disabled fields
+        if (field.fieldDisabledStatus === 'Y') {
+          control.disable();
+        } else {
+          control.enable();
+        }
+
+        const label = document.querySelector(`label[for=${fieldId}]`);
+        if (label) {
+          label.textContent = field.fieldLabel;
+
+          let asterisk = label.querySelector('.required-asterisk');
+          if (!asterisk && field.fieldMandatoryStatus === 'Y') {
+            asterisk = document.createElement('span');
+            asterisk.className = 'required-asterisk';
+            asterisk.innerHTML = ' *';
+            (asterisk as HTMLElement).style.color = 'red';
+            label.appendChild(asterisk);
+          }
+
+          label.setAttribute('title', field.fieldLabel);
+        }
+      });
+    });
+
+    this.cdr.detectChanges();
   }
 
   /**

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {AppConfigService} from "../../../core/config/app-config-service";
 import {Observable} from "rxjs/internal/Observable";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {MandatoryFieldsDTO} from "../../data/common/mandatory-fields-dto";
+import {ApiService} from "../api/api.service";
+import {API_CONFIG} from "../../../../environments/api_service_config";
 
 /**
  * Service class to get list of mandatory fields for forms
@@ -13,11 +13,8 @@ import {MandatoryFieldsDTO} from "../../data/common/mandatory-fields-dto";
 })
 export class MandatoryFieldsService {
 
-  baseUrl = this.appConfig.config.contextPath.accounts_services;
-  baseUrlSetup = this.appConfig.config.contextPath.setup_services;
   constructor(
-    private appConfig: AppConfigService,
-    private http: HttpClient
+    private api: ApiService
 
   ) { }
 
@@ -27,10 +24,16 @@ export class MandatoryFieldsService {
    * @returns {Observable<MandatoryFieldsDTO[]>} List of mandatory fields
    */
   getMandatoryFieldsByGroupId(groupId: string): Observable<MandatoryFieldsDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.get<MandatoryFieldsDTO[]>(`/${this.baseUrlSetup}/setups/form-fields/group/${groupId}` ,{headers:headers});
+    return this.api.GET<MandatoryFieldsDTO[]>(
+      `form-fields/group/${groupId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  getMockFormFields(): Observable<any> {
+    return this.api.GET<any>(
+      'data/fields.json',
+      API_CONFIG.NONE_BASE_URL
+    );
   }
 }

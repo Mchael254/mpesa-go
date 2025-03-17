@@ -173,3 +173,15 @@
   border-bottom-left-radius: 0px;
 }
 
+::ng-deep .iti--allow-dropdown input,
+.iti--allow-dropdown input[type="tel"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.docsAlign {
+  display: grid;
+  grid-template-columns: 240px 120px;
+  align-items: center;
+}
