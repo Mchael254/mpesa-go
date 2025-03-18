@@ -995,4 +995,24 @@ export class QuotationDetailsComponent {
     });
   }
 
+  onSourceChange(event): void {
+    const selectedSource = event.value;
+    if (selectedSource) {
+      // Check for Walk in - set to Direct
+      if (selectedSource.description === 'Walk in') {
+        this.quotationForm.get('quotationType').setValue('D'); // Set to Direct
+        this.onQuotationTypeChange('D');
+      } 
+      // Check for Agent, Agent/b, or Broker/agent - set to Intermediary
+      else if (
+        selectedSource.description === 'Agent' || 
+        selectedSource.description === 'Agent/b' || 
+        selectedSource.description === 'Broker/agent'
+      ) {
+        this.quotationForm.get('quotationType').setValue('I'); // Set to Intermediary
+        this.onQuotationTypeChange('I');
+      }
+    }
+  }
+
 }
