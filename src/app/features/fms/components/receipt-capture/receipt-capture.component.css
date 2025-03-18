@@ -222,7 +222,8 @@ select.form-control {
   pointer-events: none;
 }
 .cheque-options {
-  position: relative;
+ 
+  position: absolute; /* Changed from relative to absolute */
   background: white;
   border: 1px solid #ccc;
   width: 150px;

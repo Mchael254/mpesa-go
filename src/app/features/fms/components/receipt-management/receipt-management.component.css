@@ -44,6 +44,10 @@
     font-weight: 500;
     font-stretch: normal;
   }
+  .header-bg {
+    background-color:#bad0e4;
+    white-space: nowrap;
+  }
   .Line-195 {
     width: 1216px;
     height: 2px;

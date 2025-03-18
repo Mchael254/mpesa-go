@@ -88,17 +88,18 @@
               {{ paymentMode.code | uppercase }}
             </option>
           </select>
-
-          <div
-            *ngIf="showChequeOptions"
-            class="cheque-options"
-            (mouseleave)="onLeaveChequeOptions()"
-          >
-            <div (click)="setChequeType('open_cheque')">
-              <span class="chequeTypeText">Normal Cheque</span>
-            </div>
-            <div (click)="setChequeType('post_dated_cheque')">
-              <span class="chequeTypeText">Pd Cheque</span>
+          <div style="position: relative">
+            <div
+              *ngIf="showChequeOptions"
+              class="cheque-options"
+              (mouseleave)="onLeaveChequeOptions()"
+            >
+              <div (click)="setChequeType('open_cheque')">
+                <span class="chequeTypeText">Normal Cheque</span>
+              </div>
+              <div (click)="setChequeType('post_dated_cheque')">
+                <span class="chequeTypeText">Pd Cheque</span>
+              </div>
             </div>
           </div>
         </div>
@@ -122,6 +123,7 @@
           </select>
         </div>
       </div>
+
       <!-- Second Row -->
 
       <div class="row mt-1">
