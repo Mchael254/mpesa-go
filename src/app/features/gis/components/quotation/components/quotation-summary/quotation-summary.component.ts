@@ -314,7 +314,7 @@ export class QuotationSummaryComponent {
       this.coverFrom = this.convertDate(this.quotationView.coverFrom)
       this.coverTo = this.convertDate(this.quotationView.coverTo)
       this.expiryDate = this.convertDate(this.quotationDetails?.expiryDate)
-      this.source = this.quotationView.source.description
+      this.source = this.quotationView.source?.description
 
 
       // Extract product details
