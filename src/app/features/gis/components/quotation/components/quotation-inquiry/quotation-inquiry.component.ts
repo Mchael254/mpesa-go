@@ -85,9 +85,9 @@ export class QuotationInquiryComponent {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
     // Ensure that the list has at least 6 elements before accessing index 5
-    if (this.quotationSubMenuList && this.quotationSubMenuList.length > 5) {
-      this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
-    } else if (this.quotationSubMenuList.length < 6) {
+    if (this.quotationSubMenuList && this.quotationSubMenuList.length > 4) {
+      this.dynamicSideBarMenu(this.quotationSubMenuList[4]);
+    } else if (this.quotationSubMenuList.length < 5) {
       log.debug('Insufficient sub-menu items.');
     }
   }

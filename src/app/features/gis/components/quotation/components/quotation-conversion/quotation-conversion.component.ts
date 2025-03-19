@@ -30,7 +30,7 @@ export class QuotationConversionComponent {
   minDate: Date | undefined;
   quotationSubMenuList: SidebarMenu[];
 
-  selectedStatus: Status;
+  selectedStatus: string;
   selectedDateFrom: string;
   selectedDateTo: string;
   selectedSource: string;
@@ -130,7 +130,7 @@ export class QuotationConversionComponent {
     const productCode = this.productCode || null
     const agentCode = this.agentId || null
     const quotationNumber = this.quoteNumber
-    const status = this.selectedStatus?.status || null;
+    const status = this.selectedStatus || null;
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
     const source = this.selectedSource
@@ -268,6 +268,20 @@ export class QuotationConversionComponent {
 
     // Call fetchQuotations when the client code changes
     // this.fetchGISQuotations(); // You can adjust `first` and `rows` as need
+  }
+
+  onStatusSelected(selectedValue: any) {
+
+    this.selectedStatus = selectedValue;
+    log.debug('Selected Status:', this.selectedStatus);
+
+  }
+
+  onQuotationBlur(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    this.quotationNumber = inputElement.value;
+    log.debug('Quotation number:', this.quotationNumber);
+
   }
 
   setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
