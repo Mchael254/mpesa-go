@@ -492,7 +492,11 @@
     <div class="save-btns">
       <button
         type="button"
-        *ngIf="showAcknowledgeBtn && isAllocationCompleted"
+        *ngIf="
+          showAcknowledgeBtn &&
+          isAllocationCompleted &&
+          !isreceiptingOnAccountExist
+        "
         [disabled]="!isAllocationCompleted"
         (click)="handleSaveAndPrint()"
         class="btn btn-outline-primary"
@@ -500,7 +504,11 @@
         {{ "fms.receipting.generateAcknowledgement" | translate }}
       </button>
       <button
-        *ngIf="!showAcknowledgeBtn && isAllocationCompleted"
+        *ngIf="
+          !showAcknowledgeBtn &&
+          isAllocationCompleted &&
+          !isreceiptingOnAccountExist
+        "
         type="button"
         [disabled]="!isAllocationCompleted"
         class="btn btn-outline-primary"
@@ -510,7 +518,7 @@
       </button>
 
       <button
-        *ngIf="isAllocationCompleted"
+        *ngIf="isAllocationCompleted && !isreceiptingOnAccountExist"
         type="button"
         [disabled]="!isAllocationCompleted"
         class="btn btn-primary"
@@ -521,7 +529,7 @@
       <!-- save empty allocations -->
       <div class="save-btns">
         <button
-          *ngIf="isEmptyAllocationPosted"
+          *ngIf="isEmptyAllocationPosted || isreceiptingOnAccountExist"
           type="button"
           class="btn btn-primary"
           (click)="submitReceipt()"
@@ -530,14 +538,20 @@
         </button>
         <button
           type="button"
-          *ngIf="isEmptyAllocationPosted && showAcknowledgeBtn"
+          *ngIf="
+            (isEmptyAllocationPosted || isreceiptingOnAccountExist) &&
+            showAcknowledgeBtn
+          "
           (click)="handleSaveAndPrint()"
           class="btn btn-outline-primary"
         >
           {{ "fms.receipting.generateAcknowledgement" | translate }}
         </button>
         <button
-          *ngIf="isEmptyAllocationPosted && !showAcknowledgeBtn"
+          *ngIf="
+            (isEmptyAllocationPosted || isreceiptingOnAccountExist) &&
+            !showAcknowledgeBtn
+          "
           type="button"
           class="btn btn-outline-primary"
           (click)="saveAndPrint()"
