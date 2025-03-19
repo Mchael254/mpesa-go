@@ -15,6 +15,7 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
+import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,9 @@ const routes: Routes = [
   },
   {
     path:'quotation-inquiry',component:QuotationInquiryComponent
+  },
+  {
+    path:'quotation-management',component:QuotationManagementComponent
   },
   {
     path:'i',component:QuotationInquiryComponent

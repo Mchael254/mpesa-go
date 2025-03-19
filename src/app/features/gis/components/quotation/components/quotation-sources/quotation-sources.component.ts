@@ -42,7 +42,7 @@ export class QuotationSourcesComponent {
 
   ngOnInit() {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
+    this.dynamicSideBarMenu(this.quotationSubMenuList[5]);
 
     this.createSourcesForm();
     this.fetchSources();

@@ -56,8 +56,7 @@ export class MenuService {
             isModal: true,
             target: '#NewQuoteModal',
           },
-          { name: 'Edit Quotation', link: '/home/lms/quotation/list' },
-          { name: 'Revise/Reuse Quotation', link: '/home/gis/quotation/revise-reuse-quote' },
+          { name: 'Quotation Management', link: '/home/gis/quotation/quotation-management' },
           { name: 'Convert Quotation', link: '/home/gis/quotation/quotation-conversion' },
           { name: 'Quotation Inquiry', link: '/home/gis/quotation/quotation-inquiry' },
           { name: 'Quotation Sources', link: '/home/gis/quotation/quotation-sources' },
@@ -858,20 +857,14 @@ export class MenuService {
       },
 
       {
-        name: 'Summary',
-        link: '/home/lms/quotation/list',
-        value: 'DEFAULT'
+        name: 'Management',
+        link: '/home/gis/quotation/quotation-management',
+        value: 'QUOTATION'
       },
 
       {
         name: 'Conversion',
         link: '/home/gis/quotation/quotation-conversion',
-        value: 'QUOTATION'
-      },
-
-      {
-        name: 'Revise/Reuse',
-        link: '/home/gis/quotation/revise-reuse-quote',
         value: 'QUOTATION'
       },
 
@@ -886,14 +879,6 @@ export class MenuService {
         link: '/home/gis/quotation/quotation-sources',
         value: 'QUOTATION'
       },
-
-      // {
-      //   name: 'Create Quotation',
-      //   link: '',
-      //   value: 'QUOTATION',
-      //   isModal: true,
-      //   target: '#NewQuoteModal'
-      // }
     ];
   }
 
