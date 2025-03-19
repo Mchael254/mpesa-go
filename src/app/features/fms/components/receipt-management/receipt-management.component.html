@@ -1,12 +1,16 @@
 <div class="body-container">
   <span class="Receipt-management"> Receipt management </span>
   <div class="d-flex">
-    <span class="Printing"> Printing </span>
-    <span class="Cancellation"> Cancellation </span>
+    <button class="btn-primary" (click)="isPrintingClicked()">Printing</button>
+    <button class="btn btn-outline-primary" (click)="cancleClicked()">
+      Cancellation
+    </button>
   </div>
   <div class="Line-195"></div>
-  <div class="row">
-    <div class="col-md-12">
+
+  <!-- Cancellation Table -->
+  <div class="row" *ngIf="cancellationDeactivated">
+    <div class="col-md-8">
       <p-table
         responsiveLayout="scroll"
         class="table-striped"
@@ -15,38 +19,80 @@
         [rowsPerPageOptions]="[5, 10, 20]"
         selectionMode="single"
         dataKey="code"
+        [value]="filteredtabledata"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       >
         <ng-template pTemplate="header">
-          <div class="shaded-Table-row">
-            <tr>
-              <th class="header-bg">
-                {{ "fms.receiptManagement.receiptNumber" | translate }}
-              </th>
-              <th class="header-bg">
-                {{ "fms.receiptManagement.receiptDate" | translate }}
-              </th>
-              <th class="header-bg">
-                {{ "fms.receiptManagement.receivedFrom" | translate }}
-              </th>
-              <th class="header-bg">
-                {{ "fms.receiptManagement.amount" | translate }}
-              </th>
-              <th class="header-bg">
-                {{ "fms.receiptManagement.paymentMethod" | translate }}
-              </th>
-              <th class="header-bg">
-                {{ "fms.receipting.actions" | translate }}
-              </th>
-            </tr>
-          </div>
+          <tr style="background-color: red">
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receiptNumber" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receiptNumber')"
+                (input)="applyFilter($event, 'receiptNumber')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receiptDate" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receiptDate')"
+                (input)="applyFilter($event, 'receiptDate')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receivedFrom" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receivedFrom')"
+                (input)="applyFilter($event, 'receivedFrom')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.amount" | translate }}
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'amount')"
+                (input)="applyFilter($event, 'amount')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.paymentMethod" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'paymentMethod')"
+                (input)="applyFilter($event, 'paymentMethod')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receipting.actions" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                disabled
+              />
+            </th>
+          </tr>
         </ng-template>
         <ng-template pTemplate="body" let-client let-i="rowIndex">
           <tr>
-            <td>{{ client.systemShortDesc }}</td>
-            <td>{{ client.name }}</td>
-            <td>{{ client.receiptType }}</td>
+            <td>{{ client.receiptNumber }}</td>
+            <td>{{ client.receiptDate }}</td>
+            <td>{{ client.receivedFrom }}</td>
+            <td>{{ client.amount }}</td>
+            <td>{{ client.paymentMethod }}</td>
+            <td>DELETE</td>
           </tr>
         </ng-template>
 
@@ -96,4 +142,146 @@
       </p-table>
     </div>
   </div>
+  <!-- END OF Cancellation Table -->
+  <!-- start of printing table data -->
+  <div class="row" *ngIf="printingEnabled">
+    <div class="col-md-8">
+      <p-table
+        responsiveLayout="scroll"
+        class="table-striped"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        selectionMode="single"
+        dataKey="code"
+        [value]="filteredtabledata"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receiptNumber" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receiptNumber')"
+                (input)="applyFilter($event, 'receiptNumber')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receiptDate" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receiptDate')"
+                (input)="applyFilter($event, 'receiptDate')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.receivedFrom" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'receivedFrom')"
+                (input)="applyFilter($event, 'receivedFrom')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.amount" | translate }}
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'amount')"
+                (input)="applyFilter($event, 'amount')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receiptManagement.paymentMethod" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                (keyup.enter)="applyFilter($event, 'paymentMethod')"
+                (input)="applyFilter($event, 'paymentMethod')"
+                placeholder="{{ 'fms.receipting.filter' | translate }}"
+              />
+            </th>
+            <th class="header-bg">
+              {{ "fms.receipting.actions" | translate }}
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                disabled
+              />
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-client let-i="rowIndex">
+          <tr>
+            <td>{{ client.receiptNumber }}</td>
+            <td>{{ client.receiptDate }}</td>
+            <td>{{ client.receivedFrom }}</td>
+            <td>{{ client.amount }}</td>
+            <td>{{ client.paymentMethod }}</td>
+
+            <td>
+              <div class="d-flex">
+                <button type="btn btn-primary">Print</button>
+                <button type="btn btn-primary">Share</button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Custom paginator template -->
+        <ng-template pTemplate="paginator" let-state>
+          <div class="custom-paginator">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-angle-double-left"
+              (click)="moveFirst(state)"
+              [disabled]="state.first === 0"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-angle-left"
+              (click)="movePrev(state)"
+              [disabled]="state.first === 0"
+            ></button>
+
+            <span
+              >{{ "fms.receipting.showing" | translate }} {{ state.first + 1 }}
+              {{ "fms.receipting.to" | translate }} {{ first + rows }}
+              {{ state.first + state.rows }}
+              {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+              {{ state.totalRecords
+              }}{{ "fms.receipting.entries" | translate }}</span
+            >
+
+            <button
+              pButton
+              type="button"
+              icon="pi pi-angle-right"
+              (click)="moveNext(state)"
+              [disabled]="state.first + state.rows >= state.totalRecords"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-angle-double-right"
+              (click)="moveLast(state)"
+              [disabled]="state.first + state.rows >= state.totalRecords"
+            ></button>
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+  <!-- end of print table data -->
 </div>
