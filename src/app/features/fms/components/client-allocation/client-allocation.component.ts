@@ -412,6 +412,7 @@ export class ClientAllocationComponent {
   */
  filePath: string | null = null;
  isEmptyAllocationPosted:boolean=false;
+ isreceiptingOnAccountExist:boolean=false;
  /**
   * Constructor for `ClientAllocationComponent`.
   * @param receiptDataService Service for managing receipt data
@@ -996,6 +997,7 @@ saveEmptyAllocations(): any {
           );
           if (this.getAllocation) {
             this.canShowUploadFileBtn = true;
+            this.isreceiptingOnAccountExist = true;
           }
           // ✅ Use .length to check if allocations exist
           this.isAllocationCompleted = this.getAllocation.length > 0;
