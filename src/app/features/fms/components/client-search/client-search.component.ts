@@ -122,7 +122,7 @@ export class ClientSearchComponent implements OnInit {
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
   getAllocation: GetAllocationDTO[] = [];
-
+  canShowNextBtn:boolean = false;
   /**
    * Constructor for the ClientSearchComponent.
    *
@@ -159,11 +159,12 @@ export class ClientSearchComponent implements OnInit {
       'branchReceiptNumber'
     );
     this.loggedInUser = this.authService.getCurrentUser();
+    
     if (storedReceiptNumber) {
       this.branchReceiptNumber = Number(storedReceiptNumber);
     }
 
-    this.loggedInUser = this.authService.getCurrentUser();
+  //  this.loggedInUser = this.authService.getCurrentUser();
 
     let users = this.sessionStorage.getItem('user');
     this.users = JSON.parse(users);
@@ -201,6 +202,8 @@ export class ClientSearchComponent implements OnInit {
     }
 
     this.fetchAccountTypes();
+    this.getAllocations();
+
   }
 
   /**
@@ -443,6 +446,35 @@ export class ClientSearchComponent implements OnInit {
         'Invalid account type!'
       );
     }
+  }
+  getAllocations() {
+    this.receiptService
+      .getAllocations(
+        this.branchReceiptNumber, this.loggedInUser.code)
+      .subscribe({
+        next: (response) => {
+          //this.selectedClient;
+
+          // Filter allocations where there are amounts allocated
+          this.getAllocation = response.data.filter((allocation) =>
+            allocation.receiptParticularDetails.some(
+              (detail) => detail.premiumAmount > 0
+            )
+          );
+          if (response.data.length > 0) {
+            this.canShowNextBtn = true;
+          }else{
+            this.canShowNextBtn =false;
+          }
+          
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'error fetched',
+            err.error?.msg || 'Failed to fetch Allocation'
+          );
+        },
+      });
   }
 
   /**
