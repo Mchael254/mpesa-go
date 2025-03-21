@@ -842,6 +842,46 @@ export class MenuService {
     ];
   }
 
+  // quotationSubMenuList(): SidebarMenu[] {
+  //   return [
+  //     {
+  //       name: 'View Quotations',
+  //       link: '/home/lms/quotation/list',
+  //       value: 'DEFAULT'
+  //     },
+
+  //     {
+  //       name: 'View Quotations',
+  //       link: '/home/gis/quotation/quick-quote',
+  //       value: 'QUOTATION'
+  //     },
+
+  //     {
+  //       name: 'Management',
+  //       link: '/home/gis/quotation/quotation-management',
+  //       value: 'QUOTATION'
+  //     },
+
+  //     {
+  //       name: 'Conversion',
+  //       link: '/home/gis/quotation/quotation-conversion',
+  //       value: 'QUOTATION'
+  //     },
+
+  //     {
+  //       name: 'Inquiry',
+  //       link: '/home/gis/quotation/quotation-inquiry',
+  //       value: 'QUOTATION'
+  //     },
+
+  //     {
+  //       name: 'Sources',
+  //       link: '/home/gis/quotation/quotation-sources',
+  //       value: 'QUOTATION'
+  //     },
+  //   ];
+  // }
+
   quotationSubMenuList(): SidebarMenu[] {
     return [
       {
@@ -857,9 +897,9 @@ export class MenuService {
       },
 
       {
-        name: 'Management',
-        link: '/home/gis/quotation/quotation-management',
-        value: 'QUOTATION'
+        name: 'Summary',
+        link: '/home/lms/quotation/list',
+        value: 'DEFAULT'
       },
 
       {
@@ -879,6 +919,13 @@ export class MenuService {
         link: '/home/gis/quotation/quotation-sources',
         value: 'QUOTATION'
       },
+
+      {
+        name: 'Management',
+        link: '/home/gis/quotation/quotation-management',
+        value: 'QUOTATION'
+      },
+
     ];
   }
 
