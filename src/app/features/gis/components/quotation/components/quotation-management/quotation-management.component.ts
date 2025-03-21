@@ -102,7 +102,7 @@ export class QuotationManagementComponent {
 
   ngOnInit(): void {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
     this.fetchGISQuotations();
 
   }
@@ -198,7 +198,7 @@ export class QuotationManagementComponent {
     this.quotationService
       .searchQuotations(
         0,
-        10000,
+        100,
         clientType,
         clientCode,
         productCode,
@@ -285,6 +285,16 @@ export class QuotationManagementComponent {
     }
   }
 
+  get displayAgentName(): string {
+    if (!this.agentName) return '';
+    return this.agentName.length > 15 ? this.agentName.substring(0, 15) + '...' : this.agentName;
+  }
+
+  get displayClientName(): string {
+    if (!this.clientName) return '';
+    return this.clientName.length > 15 ? this.clientName.substring(0, 15) + '...' : this.clientName;
+  }
+
   // onExpiryDateInputChange(date: any) {
   //   log.debug('selected expiry date raaw', date);
   //   const selectedExpiryDate = date;
@@ -308,6 +318,63 @@ export class QuotationManagementComponent {
       totalElements: this.gisQuotationList.length
     };
     this.cdr.detectChanges();
+  }
+
+
+  clearQuotationNo(): void {
+    // Assuming you have a variable to store the quotation number value
+    this.quotationNumber = '';
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearClientName(): void {
+    this.clientName = '';
+    this.clientCode = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearAgentName(): void {
+    this.agentName = '';
+    this.agentId = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearFromDate(): void {
+    this.fromDate = null;
+    // If you need to reset min dates for other fields
+    this.clearDateFilters();
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearToDate(): void {
+    this.toDate = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  // To handle backspace key on each field
+  handleBackspace(field: string): void {
+    switch(field) {
+      case 'quotationNumber':
+        this.clearQuotationNo();
+        break;
+      case 'clientName':
+        this.clearClientName();
+        break;
+      case 'agentName':
+        this.clearAgentName();
+        break;
+      case 'fromDate':
+        this.clearFromDate();
+        break;
+      case 'toDate':
+        this.clearToDate();
+        break;
+    }
   }
 
 }
