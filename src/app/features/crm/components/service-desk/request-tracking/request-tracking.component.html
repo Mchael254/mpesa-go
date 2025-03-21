@@ -1,5 +1,5 @@
 <div class="base-content-section">
-  <div class="row me-4">
+  <div class="row">
     <div class="col-8">
       <app-dynamic-breadcrumb [breadCrumbItems]="[
       {
@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm'
+        url: '/home/crm/service-desk'
       },
       {
         label: 'Request Tracking',
@@ -24,32 +24,69 @@
     <div class="card border-0">
       <div class="card-header bg-transparent float-start border-bottom-0">
 
-        <form [formGroup]="requestTrackingForm">
+        <form [formGroup]="requestTrackingSortingForm">
           <div class="row mb-3">
             <div class="col-sm-12 d-flex justify-content-lg-start">
               <h6 class="my-3 fw-semibold">{{'serviceDesk.serviceRequestTracking' | translate}}</h6>
             </div>
             <div class="col-lg-2 col-sm-4 col-6">
               <label class="float-start">{{ 'serviceDesk.requestStatus' | translate }}:</label><br>
-              <select class="form-select"  formControlName="status">
+              <select class="form-select"  formControlName="status" (change)="requestTrackingFilters()">
                 <option *ngFor="let status of mainStatusData"
-                        [value]="status">{{status}}</option>
+                        [value]="status | titlecase">{{status | titlecase}}</option>
               </select>
             </div>
 
             <div class="col-lg-2 col-sm-6 col-6">
               <label class="float-start">{{ 'serviceDesk.requestOwner' | translate }}: </label>
-              <select id="system" class="form-select" formControlName="owner">
-                <option value="" ></option>
-              </select>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="owner"
+                  value="{{ selectedMainUser?.name }}"
+                  id="owner"
+                  readonly
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon2"
+                  (click)="openAllUsersModal()"
+                >
+                  <i class="fa-solid fa-angle-double-down"></i>
+                </button>
+              </div>
             </div>
 
             <div class="col-lg-2 col-sm-6 col-6">
               <label class="float-start">{{ 'serviceDesk.accType' | translate }}: </label>
-              <select class="form-select" formControlName="accountType">
+              <select class="form-select" formControlName="accountType" (change)="requestTrackingFilters()">
                 <option *ngFor="let accType of requestAccTypesData"
                         [value]="accType">{{accType}}</option>
               </select>
+            </div>
+
+            <div class="col-lg-2 col-sm-6 col-6" *ngIf="requestTrackingSortingForm.get('accountType').value">
+              <label class="float-start">Select entity: </label>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="owner"
+                  value="{{ selectedMainUser?.name }}"
+                  id="owner"
+                  readonly
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon"
+                  (click)="openAllUsersModal()"
+                >
+                  <i class="fa-solid fa-angle-double-down"></i>
+                </button>
+              </div>
             </div>
           </div>
         </form>
@@ -102,6 +139,7 @@
               <th pSortableColumn="campaign.description">{{'serviceDesk.email'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
               <th pSortableColumn="campaign.campaignName">{{'serviceDesk.solutionSMSNumber'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
               <th pSortableColumn="campaign.objective">{{'serviceDesk.owner'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
+              <th>Action</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-requestTracking>
@@ -109,20 +147,32 @@
               <td>
 <!--                not-->
               </td>
-              <td>{{requestTracking?.requestType}}</td>
+              <td>{{requestTracking?.requestType | titlecase}}</td>
               <td>not</td>
-              <td>{{requestTracking?.desc}}</td>
+              <td>
+                <span title="{{requestTracking?.desc}}">
+                    {{requestTracking?.desc.substring(0,10) | titlecase}}...
+                  </span>
+              </td>
               <td>{{requestTracking?.policyNo}}</td>
               <td>{{requestTracking?.captureDate}}</td>
-              <td>{{requestTracking?.summary}}</td>
-              <td>{{requestTracking?.dueDate}}</td>
+              <td>
+                <span title="{{requestTracking?.summary}}">
+                    {{requestTracking?.summary.substring(0,10) | titlecase}}...
+                </span>
+              </td>
+              <td>{{requestTracking?.dueDate | date: 'dd-MM-yyyy'}}</td>
               <td>{{requestTracking?.mainStatus}}</td>
               <td>{{requestTracking?.assignee}}</td>
               <td>{{requestTracking?.closedBy}}</td>
-              <td>{{requestTracking?.closedBy}}</td>
+              <td>{{requestTracking?.initiator}}</td>
               <td>{{requestTracking?.communicationMode}}</td>
               <td>{{requestTracking?.refNumber}}</td>
-              <td>{{requestTracking?.comments}}</td>
+              <td>
+                <span title="{{requestTracking?.comments}}" *ngIf="requestTracking?.comments != null && requestTracking?.comments != ''">
+                    {{requestTracking?.comments.substring(0,10) | titlecase}}...
+                </span>
+              </td>
               <td>
 <!--                not-->
               </td>
@@ -136,7 +186,9 @@
 <!--                not-->
               </td>
               <td>{{requestTracking?.ownerCode}}</td>
-
+              <td (click)="viewRequest(requestTracking)">
+                <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer; color: #00529b"></i>
+              </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -151,162 +203,158 @@
 </div>
 
 <!--Request tracking modal-->
-<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  Launch demo modal
-</button>-->
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" #requestTrackingModal id="requestTrackingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
         <h1 class="modal-title fs-5" id="exampleModalLabel">{{'serviceDesk.serviceRequest' | translate}}</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeServiceRequestTrackingModal()"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form [formGroup]="requestTrackingForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="categoryType" class="form-label">Request category type</label>
               <input
                 type="text"
                 class="form-control"
                 id="categoryType"
-                disabled
+                formControlName="categoryType"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="requestIncidence" class="form-label">Request incidence</label>
               <input
                 type="text"
                 class="form-control"
                 id="requestIncidence"
-                disabled
+                formControlName="requestIncidence"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="requestSource" class="form-label">Request source</label>
               <input
                 type="text"
                 class="form-control"
                 id="requestSource"
-                disabled
+                formControlName="requestSource"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="accType" class="form-label">Account type</label>
               <input
                 type="text"
                 class="form-control"
                 id="accType"
-                disabled
+                formControlName="accType"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="acc" class="form-label">Account</label>
               <input
                 type="text"
                 class="form-control"
                 id="acc"
-                disabled
+                formControlName="acc"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="summary" class="form-label">Summary</label>
               <input
                 type="text"
                 class="form-control"
                 id="summary"
-                disabled
+                formControlName="summary"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="requestDate" class="form-label">Request date</label>
               <input
                 type="text"
                 class="form-control"
                 id="requestDate"
-                disabled
+                formControlName="requestDate"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="dueDate" class="form-label">Due date</label>
               <input
                 type="text"
                 class="form-control"
                 id="dueDate"
-                disabled
+                formControlName="dueDate"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="desc" class="form-label">Description</label>
               <input
                 type="text"
                 class="form-control"
                 id="desc"
-                disabled
+                formControlName="desc"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" mb-3>
               <label for="assignee" class="form-label">Assignee</label>
               <input
                 type="text"
                 class="form-control"
                 id="assignee"
-                disabled
+                formControlName="assignee"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="owner" class="form-label">Owner</label>
               <input
                 type="text"
                 class="form-control"
                 id="owner"
-                disabled
+                formControlName="owner"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="ownerAccType" class="form-label">Owner acc type</label>
               <input
                 type="text"
                 class="form-control"
                 id="ownerAccType"
-                disabled
+                formControlName="ownerAccType"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="status" class="form-label">Status</label>
               <input
                 type="text"
                 class="form-control"
                 id="status"
-                disabled
+                formControlName="status"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="resDate" class="form-label">Resolution date</label>
               <input
                 type="text"
                 class="form-control"
                 id="resDate"
-                disabled
+                formControlName="resDate"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="solution" class="form-label">Solution</label>
               <input
                 type="text"
                 class="form-control"
                 id="solution"
-                disabled
+                formControlName="solution"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="comments" class="form-label">Comments</label>
               <input
                 type="text"
                 class="form-control"
                 id="comments"
-                disabled
+                formControlName="comments"
               />
             </div>
           </div>
@@ -315,3 +363,39 @@
     </div>
   </div>
 </div>
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Okay'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Users'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal
+      [accountType]="'USER'"
+      (userSelected)="getSelectedUser($event)"
+    >
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+
+<!--Modal for Listing all users !-->
+<!--<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Okay'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Users'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)">
+  <div modal-body-content>
+    <app-staff-modal
+      [accountType]="requestTrackingSortingForm.get('accountType').value"
+      (userSelected)="getSelectedUser($event)"
+    >
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>-->

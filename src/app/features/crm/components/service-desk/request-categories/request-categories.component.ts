@@ -340,7 +340,7 @@ export class RequestCategoriesComponent implements OnInit {
     const serviceRequestCategoryFormValues = this.serviceRequestCategoryForm.getRawValue();
     const serviceRequestCategoryCode = !this.editMode ? null : this.selectedRequestCategory?.id;
 
-    const saveRequestStatusPayload: ServiceRequestCategoryDTO = {
+    const saveRequestCategoryPayload: ServiceRequestCategoryDTO = {
       id: serviceRequestCategoryCode,
       desc:serviceRequestCategoryFormValues?.name,
       shtDesc:serviceRequestCategoryFormValues?.shtDesc,
@@ -348,10 +348,10 @@ export class RequestCategoriesComponent implements OnInit {
       sysCode: 0
     };
 
-    console.log(saveRequestStatusPayload)
+    console.log(saveRequestCategoryPayload)
     const serviceRequestServiceCall = this.selectedRequestCategory
-      ? this.serviceRequestService.updateRequestCategory(this.selectedRequestCategory.id, saveRequestStatusPayload)
-      : this.serviceRequestService.createRequestCategory(saveRequestStatusPayload);
+      ? this.serviceRequestService.updateRequestCategory(this.selectedRequestCategory.id, saveRequestCategoryPayload)
+      : this.serviceRequestService.createRequestCategory(saveRequestCategoryPayload);
 
     return serviceRequestServiceCall.toPromise()
       .then(data => {
