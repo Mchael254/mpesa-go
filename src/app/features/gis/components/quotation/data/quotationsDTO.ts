@@ -728,6 +728,37 @@ export interface RiskValidationDto{
   addOrEdit: string
   propertyId: string
 }
+export interface SubclassSectionPeril {
+  code: number;
+  subclassCode: number;
+  sectionCode: number;
+  sectionShortDescription: string;
+  perCode: number;
+  shortDescription: string;
+  description: string;
+  sectionDescription: string;
+  excess: number | null;
+  excessMin: number | null;
+  excessMax: number | null;
+  personLimit: number | null;
+  perilLimit: number | null;
+  claimLimit: number | null;
+  tlExcessType: string | null;
+  plExcessType: string | null;
+  expireOnClaim: string;
+  multiplier: number | null;
+  claimExcessType: string;
+  tlExcess: number | null;
+  tlExcessMin: number | null;
+  tlExcessMax: number | null;
+  plExcess: number | null;
+  plExcessMin: number | null;
+  plExcessMax: number | null;
+  claimExcessMin: number | null;
+  claimExcessMax: number | null;
+  dependLossType: string;
+  benefitPerPeriod: number | null;
+}
 
 
 
