@@ -309,6 +309,8 @@ export class RiskSectionDetailsComponent {
     this.sumInsuredValue = JSON.parse(sessionStorage.getItem('sumInsuredValue'));
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
     const currencySymbol = sessionStorage.getItem('currencySymbol')
+    log.debug("currency Object:",currencySymbol)
+    log.debug("currency Delimeter:",currencyDelimiter)
     this.currencyObj = {
       prefix: currencySymbol + ' ',
       allowNegative: false,

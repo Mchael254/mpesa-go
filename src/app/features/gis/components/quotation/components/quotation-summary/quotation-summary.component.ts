@@ -21,7 +21,7 @@ import { BankService } from "../../../../../../shared/services/setups/bank/bank.
 import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { Excesses, LimitsOfLiability, QuotationDetails, QuotationProduct, TaxInformation } from '../../data/quotationsDTO';
+import { Excesses, LimitsOfLiability, QuotationDetails, QuotationProduct, SubclassSectionPeril, TaxInformation } from '../../data/quotationsDTO';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -77,7 +77,7 @@ export class QuotationSummaryComponent {
   limits: any;
   limitsList: any[];
   excesses: any;
-  excessesList: Excesses[] = []
+  excessesList: SubclassSectionPeril[] = []
   subclassList: any;
   productSubclass: any;
   allSubclassList: any;
@@ -753,7 +753,7 @@ export class QuotationSummaryComponent {
     //   return;
     // }
 
-    this.quotationService.getExcesses(subClassCode)
+    this.quotationService.getSubclassSectionPeril(subClassCode)
     .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (res) => {
@@ -1547,5 +1547,8 @@ export class QuotationSummaryComponent {
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       });
+  }
+  fetchSubclassSectionPeril(){
+
   }
 }
