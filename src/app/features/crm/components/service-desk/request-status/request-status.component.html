@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm'
+        url: '/home/crm/service-desk'
       },
       {
         label: 'Request Status',
@@ -114,7 +114,7 @@
       <div class="modal-body">
         <form [formGroup]="serviceRequestStatusForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">{{ 'serviceDesk.name' | translate }}</label>
               <input
                 type="text"
@@ -123,7 +123,7 @@
                 formControlName="name"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="shtDesc" class="form-label">{{ 'serviceDesk.shortDescription' | translate }}</label>
               <input
                 type="text"
@@ -132,7 +132,7 @@
                 formControlName="shtDesc"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="status" class="form-label">{{ 'serviceDesk.mainStatus' | translate }}</label>
               <select class="form-select" id="status" formControlName="status">
                 <option  *ngFor="let status of mainStatusData"

@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm'
+        url: '/home/crm/service-desk'
       },
       {
         label: 'Request Categories',
@@ -198,7 +198,7 @@
         <form [formGroup]="serviceRequestCategoryForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.name === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="name" class="form-label">{{ 'serviceDesk.name' | translate }}</label>
                 <input
                   type="text"
@@ -213,7 +213,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.shtDesc === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="shtDesc" class="form-label">{{ 'serviceDesk.shortDescription' | translate }}</label>
                 <input
                   type="text"
@@ -228,7 +228,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.assignee === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="assignee" class="form-label">{{ 'serviceDesk.categoryDefaultAssignee' | translate | titlecase }}</label>
                 <div class="input-group mb-3">
                   <input
@@ -287,7 +287,7 @@
         <form [formGroup]="requestEscalationForm">
           <div class="row my-3">
             <ng-container *ngIf="visibleStatus.system === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="system" class="form-label">{{ 'serviceDesk.system' | translate | titlecase }}</label>
                 <p-dropdown
                   [options]="systems"
@@ -309,7 +309,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.requestCategory === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="requestCategory" class="form-label">{{ 'serviceDesk.requestCategory' | translate | titlecase }}</label>
                 <input
                   type="text"
@@ -324,7 +324,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelOneDuration === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="levelOneDuration" class="form-label">{{ 'serviceDesk.levelOneDuration' | translate | titlecase }}</label>
                 <input
                   type="number"
@@ -339,7 +339,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelOneEscalatedTo === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="levelOneEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
                 <input
                   type="text"
@@ -357,7 +357,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelTwoDuration === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="levelTwoDuration" class="form-label">{{ 'serviceDesk.levelTwoDuration' | translate | titlecase }}</label>
                 <input
                   type="number"
@@ -372,7 +372,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelTwoEscalatedTo === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="levelTwoEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
                 <input
                   type="text"
@@ -390,7 +390,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.assignTo === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="assignTo" class="form-label">{{ 'serviceDesk.assignTo' | translate | titlecase }}</label>
                 <input
                   type="text"
@@ -408,7 +408,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.messageTemplate === 'Y'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="messageTemplate" class="form-label">{{ 'serviceDesk.messageTemplate' | translate | titlecase }}</label>
                 <input
                   type="text"

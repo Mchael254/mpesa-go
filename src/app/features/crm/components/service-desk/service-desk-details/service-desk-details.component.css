@@ -23,3 +23,8 @@
   color: #000000;
   margin-left: 5px;
 }
+
+.actionBtn:hover {
+  font-weight: bold;
+  cursor: pointer;
+}

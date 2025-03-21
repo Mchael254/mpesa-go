@@ -1,5 +1,5 @@
 <div class="base-content-section">
-  <div class="row me-4">
+  <div class="row">
     <div class="col-8">
       <app-dynamic-breadcrumb [breadCrumbItems]="[
       {
@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm'
+        url: '/home/crm/service-desk'
       },
       {
         label: 'Service desk',
@@ -39,31 +39,31 @@
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.name' | translate }}:</label>
-              <span class="ticketDesc">John Doe</span>
+              <span class="ticketDesc">{{selectedEntity.firstName | titlecase}} {{selectedEntity.lastName | titlecase}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.telephoneNo' | translate }}:</label>
-              <span class="ticketDesc">John Doe</span>
+              <span class="ticketDesc">{{selectedEntity.mobileNumber}}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.shortDescription' | translate }}:</label>
-              <span class="ticketDesc">John Doe</span>
+              <span class="ticketDesc">{{selectedEntity.shortDescription}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.emailAddress' | translate }}:</label>
-              <span class="ticketDesc">johndoe@turnkey.co.ke</span>
+              <span class="ticketDesc">{{selectedEntity.emailAddress}}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.accountNo' | translate }}.:</label>
-              <span class="ticketDesc">John Doe</span>
+              <span class="ticketDesc">{{selectedEntity.firstName | titlecase}} {{selectedEntity.lastName | titlecase}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.physicalAddress' | translate }}:</label>
-              <span class="ticketDesc">John Doe</span>
+              <span class="ticketDesc">{{selectedEntity.physicalAddress}}</span>
             </p>
           </div>
         </div>
@@ -80,19 +80,21 @@
         <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
         <p-table
           #openRequestsTable
+          (onLazyLoad)="fetchOpenServiceRequests($event)"
+          [lazy]="true"
           [autoLayout]="true"
           [paginator]="true"
           [rowHover]="true"
           [resizableColumns]="true"
           [showCurrentPageReport]="true"
           [rows]="pageSize || 10"
-          [totalRecords]="openRequestsData?.length"
-          [value]="openRequestsData"
+          [totalRecords]="openRequestsData?.totalElements"
+          [value]="openRequestsData.content"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
           selectionMode="single"
-          dataKey="code"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
           [globalFilterFields]="['campaign.campaignName']"
@@ -111,13 +113,17 @@
           </ng-template>
           <ng-template pTemplate="body" let-openRequest>
             <tr class="custom-table">
-              <td>q</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>View</td>
+              <td>{{openRequest?.policyNo}}</td>
+              <td>{{openRequest?.requestType | titlecase}}</td>
+              <td>not</td>
+              <td>{{openRequest?.captureDate | date: 'dd-MM-yyyy'}}</td>
+              <td>{{openRequest?.dueDate | date: 'dd-MM-yyyy'}}</td>
+              <td>{{openRequest?.receiveDate | date: 'dd-MM-yyyy'}}</td>
+              <td>
+                <span class="text-primary actionBtn">
+                  View
+                </span>
+              </td>
 
             </tr>
           </ng-template>
@@ -139,19 +145,21 @@
         <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
         <p-table
           #closedRequestsTable
+          (onLazyLoad)="fetchClosedServiceRequests($event)"
+          [lazy]="true"
           [autoLayout]="true"
           [paginator]="true"
           [rowHover]="true"
           [resizableColumns]="true"
           [showCurrentPageReport]="true"
           [rows]="pageSize || 10"
-          [totalRecords]="closedRequestsData?.length"
-          [value]="closedRequestsData"
+          [totalRecords]="closedRequestsData?.totalElements"
+          [value]="closedRequestsData.content"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
           selectionMode="single"
-          dataKey="code"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
           [globalFilterFields]="['campaign.campaignName']"
@@ -170,13 +178,17 @@
           </ng-template>
           <ng-template pTemplate="body" let-closedRequest>
             <tr class="custom-table">
-              <td>q</td>
-              <td>r</td>
-              <td>54</td>
-              <td>54</td>
-              <td>4</td>
-              <td>54</td>
-              <td>Reopen</td>
+              <td>{{closedRequest?.policyNo}}</td>
+              <td>{{closedRequest?.requestType | titlecase}}</td>
+              <td>not</td>
+              <td>{{closedRequest?.captureDate | date: 'dd-MM-yyyy'}}</td>
+              <td>{{closedRequest?.dueDate | date: 'dd-MM-yyyy'}}</td>
+              <td>{{closedRequest?.receiveDate | date: 'dd-MM-yyyy'}}</td>
+              <td>
+                <span class="text-primary actionBtn">
+                  Reopen
+                </span>
+              </td>
 
             </tr>
           </ng-template>
@@ -471,7 +483,7 @@
       <div class="modal-body">
         <form [formGroup]="clientDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="telNo" class="form-label">{{ 'serviceDesk.telephoneNo' | translate }}.</label>
               <input
                 type="text"
@@ -480,7 +492,7 @@
                 formControlName="telNo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="telNoTwo" class="form-label">{{ 'serviceDesk.TelephoneNoII' | translate }}</label>
               <input
                 type="text"
@@ -489,7 +501,7 @@
                 formControlName="telNoTwo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="emailAddress" class="form-label">{{ 'serviceDesk.emailAddress' | translate }}</label>
               <input
                 type="text"
@@ -498,7 +510,7 @@
                 formControlName="emailAddress"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="emailAddressTwo" class="form-label">{{ 'serviceDesk.emailAddressII' | translate }}</label>
               <input
                 type="text"
@@ -507,21 +519,22 @@
                 formControlName="emailAddressTwo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="gender" class="form-label">{{ 'serviceDesk.gender' | translate }}</label>
               <select class="form-select" id="gender" formControlName="gender">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="marital" class="form-label">{{ 'serviceDesk.maritalStatus' | translate }}</label>
               <select class="form-select" id="marital" formControlName="marital">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let status of maritalStatusData"
+                        [value]="status.value">{{status.name}}
+                </option>
               </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="tinNo" class="form-label">{{ 'serviceDesk.TINno' | translate }}.</label>
               <input
                 type="text"
@@ -530,7 +543,7 @@
                 formControlName="tinNo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="postalAddress" class="form-label">{{ 'serviceDesk.postalAddress' | translate }}</label>
               <input
                 type="text"
@@ -539,7 +552,7 @@
                 formControlName="postalAddress"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="physicalAddress" class="form-label">{{ 'serviceDesk.physicalAddress' | translate }}</label>
               <input
                 type="text"
@@ -581,46 +594,50 @@
         <form [formGroup]="requestDetailsForm">
           <div class="mb-3 row">
             <label for="polNo" class="col-sm-3 form-label">{{ 'serviceDesk.policyNo' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="polNo" formControlName="polNo">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
             <label for="requestCategory" class="col-sm-3 form-label">{{ 'serviceDesk.requestCategory' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="requestCategory" formControlName="requestCategory">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let requestCategory of requestCategoriesData"
+                        [value]="requestCategory.id">{{requestCategory.desc | titlecase}}
+                </option>
               </select>
             </div>
           </div>
           <div class="mb-3 row">
             <label for="incident" class="col-sm-3 form-label">{{ 'serviceDesk.incident' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="incident" formControlName="incident">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let incident of incidentsData"
+                        [value]="incident.id">{{incident.name | titlecase}}
+                </option>
               </select>
             </div>
             <label for="requestCategory" class="col-sm-3 form-label">{{ 'serviceDesk.requestSource' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="requestSource" formControlName="requestSource">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let source of requestSourcesData"
+                        [value]="source.id">{{source | titlecase}}
+                </option>
               </select>
             </div>
           </div>
           <div class="mb-3 row">
             <label for="accountType" class="col-sm-3 form-label">{{ 'serviceDesk.accountType' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="accountType" formControlName="accountType">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let accType of requestAccTypesData"
+                        [value]="accType" [selected]="accType === entity">{{accType}}
+                </option>
               </select>
             </div>
             <label for="account" class="col-sm-3 form-label">{{ 'serviceDesk.account' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="account" formControlName="account">
                 <option value=""></option>
                 <option value=""></option>
@@ -629,7 +646,7 @@
           </div>
           <div class="mb-3 row">
             <label for="summary" class="col-sm-3 form-label">{{ 'serviceDesk.summary' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -638,7 +655,7 @@
               />
             </div>
             <label for="desc" class="col-sm-3 form-label">{{ 'serviceDesk.description' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -649,7 +666,7 @@
           </div>
           <div class="mb-3 row">
             <label for="captureDate" class="col-sm-3 form-label">{{ 'serviceDesk.captureDate' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="date"
                 class="form-control"
@@ -658,7 +675,7 @@
               />
             </div>
             <label for="requestDate" class="col-sm-3 form-label">{{ 'serviceDesk.requestDate' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="date"
                 class="form-control"
@@ -669,7 +686,7 @@
           </div>
           <div class="mb-3 row">
             <label for="receiveDate" class="col-sm-3 form-label">{{ 'serviceDesk.receiveDate' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="date"
                 class="form-control"
@@ -678,7 +695,7 @@
               />
             </div>
             <label for="dueDate" class="col-sm-3 form-label">{{ 'serviceDesk.dueDate' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="date"
                 class="form-control"
@@ -689,14 +706,14 @@
           </div>
           <div class="mb-3 row">
             <label for="assignee" class="col-sm-3 form-label">{{ 'serviceDesk.assignee' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="assignee" formControlName="assignee">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
             <label for="reporter" class="col-sm-3 form-label">{{ 'serviceDesk.reporterInitiator' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="reporter" formControlName="reporter">
                 <option value=""></option>
                 <option value=""></option>
@@ -705,23 +722,24 @@
           </div>
           <div class="mb-3 row">
             <label for="ownerAccountType" class="col-sm-3 form-label">{{ 'serviceDesk.ownerAccountType' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="ownerAccountType" formControlName="ownerAccountType">
                 <option value=""></option>
                 <option value=""></option>
               </select>
             </div>
             <label for="status" class="col-sm-3 form-label">{{ 'serviceDesk.status' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="status" formControlName="status">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let status of requestStatusData"
+                        [value]="status.srsCode">{{status.srsName | titlecase}}
+                </option>
               </select>
             </div>
           </div>
           <div class="mb-3 row">
             <label for="closedBy" class="col-sm-3 form-label">{{ 'serviceDesk.closedBy' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -730,7 +748,7 @@
               />
             </div>
             <label for="resolutionDate" class="col-sm-3 form-label">{{ 'serviceDesk.resolutionDate' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="date"
                 class="form-control"
@@ -741,7 +759,7 @@
           </div>
           <div class="mb-3 row">
             <label for="solution" class="col-sm-3 form-label">{{ 'serviceDesk.solution' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -750,7 +768,7 @@
               />
             </div>
             <label for="comments" class="col-sm-3 form-label">{{ 'serviceDesk.comments' | translate  }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -761,14 +779,15 @@
           </div>
           <div class="mb-3 row">
             <label for="prefCommMode" class="col-sm-3 form-label">{{ 'serviceDesk.preferredCommsMode' | translate }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <select class="form-select" id="prefCommMode" formControlName="prefCommMode">
-                <option value=""></option>
-                <option value=""></option>
+                <option *ngFor="let mode of communicationModesData"
+                        [value]="mode">{{mode | titlecase}}
+                </option>
               </select>
             </div>
             <label for="primaryMode" class="col-sm-3 form-label">{{ 'serviceDesk.primaryMode' | translate }}</label>
-            <div class="col-sm-3">
+            <div class="col-sm-3 mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -808,7 +827,7 @@
       <div class="modal-body">
         <form [formGroup]="clientCommentsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="dateCaptured" class="form-label">{{ 'serviceDesk.dateCaptured' | translate }}</label>
               <input
                 type="date"
@@ -817,7 +836,7 @@
                 formControlName="dateCaptured"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="postedBy" class="form-label">{{ 'serviceDesk.postedBy' | translate }}</label>
               <input
                 type="text"
@@ -826,11 +845,11 @@
                 formControlName="postedBy"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="clientComments" class="form-label">{{ 'serviceDesk.clientComments' | translate }}</label>
               <textarea class="form-control" id="clientComments" rows="3" formControlName="clientComments"></textarea>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="sol" class="form-label">{{ 'serviceDesk.solution' | translate }}</label>
               <textarea class="form-control" id="sol" rows="3" formControlName="solution"></textarea>
             </div>
@@ -866,7 +885,7 @@
       <div class="modal-body">
         <form [formGroup]="requestDocsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="dateCaptured" class="form-label">{{ 'serviceDesk.documentType' | translate }}</label>
               <input
                 type="text"
@@ -875,7 +894,7 @@
                 formControlName="docType"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="referenceNo" class="form-label">{{ 'serviceDesk.referenceNo' | translate }}</label>
               <input
                 type="text"
@@ -885,7 +904,7 @@
                 readonly
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="receivedBy" class="form-label">{{ 'serviceDesk.receivedBy' | translate }}</label>
               <input
                 type="text"
@@ -895,7 +914,7 @@
                 readonly
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="dateCreated" class="form-label">{{ 'serviceDesk.dateCreated' | translate }}</label>
               <input
                 type="date"
@@ -904,7 +923,7 @@
                 formControlName="dateCreated"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="remarks" class="form-label">{{ 'serviceDesk.remarks' | translate }}</label>
               <input
                 type="date"
@@ -913,7 +932,7 @@
                 formControlName="remarks"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="dateCreated" class="form-label">{{ 'serviceDesk.uploadDocument' | translate }}</label>
               <button class="btn btn-primary">Upload file</button>
 
@@ -922,7 +941,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveRequestDocuments()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -950,7 +969,7 @@
       <div class="modal-body">
         <form [formGroup]="serviceProviderFeesForm">
           <div class="row my-3">
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
               <label for="clientName" class="form-label">{{ 'serviceDesk.clientName' | translate }}</label>
               <input
                 type="text"
@@ -959,7 +978,7 @@
                 formControlName="clientName"
               />
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
               <label for="policyNo" class="form-label">{{ 'serviceDesk.policyNo' | translate }}.</label>
               <input
                 type="text"
@@ -968,7 +987,7 @@
                 formControlName="policyNo"
               />
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
               <label for="description" class="form-label">{{ 'serviceDesk.description' | translate }}</label>
               <input
                 type="text"
@@ -977,7 +996,7 @@
                 formControlName="description"
               />
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
               <label for="fee" class="form-label">{{ 'serviceDesk.fee' | translate }}</label>
               <input
                 type="text"

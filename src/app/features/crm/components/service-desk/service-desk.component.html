@@ -1,5 +1,5 @@
 <div class="base-content-section">
-  <div class="row me-4">
+  <div class="row">
     <div class="col-8">
       <app-dynamic-breadcrumb [breadCrumbItems]="[
       {
@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm'
+        url: '/home/crm/service-desk'
       },
       {
         label: 'Service desk',
@@ -70,6 +70,12 @@
               <label class="float-start">{{ 'serviceDesk.searchCriteria' | translate }}:</label><br>
               <select class="form-select" id="searchCriteria" formControlName="searchCriteria">
                 <option value="" selected>All</option>
+                <option value="name">Name</option>
+                <option value="shortDescription">Short description</option>
+                <option value="idNumber">ID number</option>
+                <option value="emailAddress">Email address</option>
+                <option value="mobileNumber">Mobile number</option>
+                <option value="status">Status</option>
               </select>
             </div>
 
@@ -99,8 +105,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 10"
-            [totalRecords]="accountsData?.length"
-            [value]="accountsData"
+            [totalRecords]="clientsData?.totalElements"
+            [value]="clientsData.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -108,33 +114,34 @@
             dataKey="code"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['campaign.campaignName']"
+            [globalFilterFields]="['firstName','lastName','shortDescription','idNumber','emailAddress','mobileNumber','status']"
           >
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.surname' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.otherNames' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.objective">{{ 'serviceDesk.shortDesc' | translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-                <th pSortableColumn="campaign.description">{{ 'serviceDesk.IDNo' | translate }}. <p-sortIcon field="campaign.description"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.email' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.objective">{{ 'serviceDesk.telephone' | translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-                <th pSortableColumn="campaign.description">{{ 'serviceDesk.status' | translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+                <th pSortableColumn="firstName">{{ 'serviceDesk.surname' | translate }} <p-sortIcon field="firstName"></p-sortIcon></th>
+                <th pSortableColumn="lastName">{{ 'serviceDesk.otherNames' | translate }} <p-sortIcon field="lastName"></p-sortIcon></th>
+                <th pSortableColumn="shortDescription">{{ 'serviceDesk.shortDesc' | translate }} <p-sortIcon field="shortDescription"></p-sortIcon></th>
+                <th pSortableColumn="idNumber">{{ 'serviceDesk.IDNo' | translate }}. <p-sortIcon field="idNumber"></p-sortIcon></th>
+                <th pSortableColumn="emailAddress">{{ 'serviceDesk.email' | translate }} <p-sortIcon field="emailAddress"></p-sortIcon></th>
+                <th pSortableColumn="mobileNumber">{{ 'serviceDesk.telephone' | translate }} <p-sortIcon field="mobileNumber"></p-sortIcon></th>
+                <th pSortableColumn="status">{{ 'serviceDesk.status' | translate }} <p-sortIcon field="status"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-client>
-              <tr class="custom-table">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="custom-table" (click)="viewDetailsWithId('client',client)">
+                <td>{{ client.firstName | titlecase }}</td>
+                <td>{{ client.lastName | titlecase }}</td>
+                <td>{{ client.shortDescription }}</td>
+                <td>{{ client.idNumber }}</td>
+                <td>{{ client.emailAddress }}</td>
+                <td>{{ client.mobileNumber }}</td>
+                <td>{{ client.status }}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
               <tr>
-                <td colspan="6">No Client Detail(s) Found.</td>
+                <td colspan="7">No Client Detail(s) Found.</td>
               </tr>
             </ng-template>
           </p-table>
