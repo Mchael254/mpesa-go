@@ -35,6 +35,7 @@ import { QuotationConversionComponent } from './components/quotation-conversion/
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import {  CheckboxModule } from 'primeng/checkbox';
+import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import {  CheckboxModule } from 'primeng/checkbox';
     QuotationConversionComponent,
     QuotationInquiryComponent,
     QuotationSourcesComponent,
+    QuotationManagementComponent,
 
 
   ],

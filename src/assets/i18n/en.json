@@ -241,7 +241,8 @@
     "Convert Quotation": "Convert Quotation",
     "Quotation Inquiry": "Quotation Inquiry",
     "Quotation Sources": "Quotation Sources",
-    "Quotation Numbers": "Quotation Numbers"
+    "Quotation Numbers": "Quotation Numbers",
+    "Quotation Management": "Quotation Management"
   },
   "shared": {
     "quotation_landing_screen": {
@@ -1010,14 +1011,15 @@
       "select_a_product":"Select a product",
       "no_product_found":"No product found",
       "search": "Search",
-      "quotation_inquiry": "Quotations:Quotation inquiry",
+      "quotation_inquiry": "Quotations: Quotation inquiry",
       "filter_by":"Filter by",
       "clear_search":"Clear search",
       "comments":"Comments",
       "expiry_date":"Expiry date",
       "transaction_date":"Transaction date",
       "revise_reuse_quotation": "Quotations:Revise/Reuse Quotation",
-      "quotation_sources": "Quotation sources",
+      "quotation_sources": "Quotations: Quotation sources",
+      "quotation_management": "Quotations: Quotation management",
       "business_sources": "Business sources",
       "define_a_new_quotation_source" : "Define a new Quotation source",
       "applicable_modules" : "Applicable modules",
