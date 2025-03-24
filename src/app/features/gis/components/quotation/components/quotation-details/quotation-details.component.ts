@@ -27,7 +27,7 @@ import { ClientAccountContact } from 'src/app/shared/data/client-account-contact
 import { WebAdmin } from 'src/app/shared/data/web-admin';
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
-import { QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { Products } from '../../../setups/data/gisDTO';
 const log = new Logger('QuotationDetails');
 @Component({
@@ -97,6 +97,8 @@ export class QuotationDetailsComponent {
   quotationFormDetails: any = null
   motorClassAllowed: string;
   currencyDelimiter: any;
+  quotationDetails: any;
+  quoteToEditData: QuotationList;
 
 
   constructor(
@@ -137,8 +139,98 @@ export class QuotationDetailsComponent {
 
     log.debug(this.quotationForm.value)
 
+    this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
+    log.debug("quote data to edit: ", this.quoteToEditData);
+
+    if(this.quoteToEditData) {
+      log.debug("load quotation details: ", this.quoteToEditData);
+      this.loadClientQuotation();
+    }
+
   }
   ngOnDestroy(): void { }
+
+  loadClientQuotation() {
+    log.debug("passed quotation Number:", this.quoteToEditData.quotationNumber);
+    let defaultCode
+    if (this.quoteToEditData.quotationNumber) {
+      defaultCode = this.quoteToEditData.quotationNumber;
+      log.debug("QUOTE Number", defaultCode)
+    }
+
+    this.quotationService.getQuotationDetails(defaultCode).subscribe(data => {
+      this.quotationDetails = data;
+      log.debug("Quotation Details-quotation details screen:", this.quotationDetails);
+
+      this.quotationForm.patchValue({
+        quotationCode: this.quotationDetails.code,
+        quotationNo: this.quotationDetails.quotationNo,
+        user: this.quotationDetails.preparedBy,
+        wefDate: new Date(this.quotationDetails.coverFrom),
+        wetDate: new Date(this.quotationDetails.coverTo),
+        expiryDate: new Date(this.quotationDetails.expiryDate),
+        branchCode: this.quotationDetails.branchCode,
+        currencyCode: this.quotationDetails.currencyCode,
+        agentCode: this.quotationDetails.agentCode,
+        agentShortDescription: this.quotationDetails.agentShortDescription,
+        clientType: this.quotationDetails.clientType,
+        source: this.quotationDetails.source?.code, // Changed from source?.code to sourceCode
+        clientCode: this.quotationDetails.clientCode,
+        comments: this.quotationDetails.comments ? this.quotationDetails.comments : null,
+        internalComments: this.quotationDetails.internalComments ? this.quotationDetails.internalComments : null,
+        RFQDate: this.quotationDetails.preparedDate ? new Date(this.quotationDetails.preparedDate) : null,
+        multiUser: this.quotationDetails.multiUser,
+        currencyRate: this.quotationDetails.currencyRate,
+        introducerCode: this.quotationDetails.introducerCode,
+        polPropHoldingCoPrpCode: this.quotationDetails.quotPropHoldingCoPrpCode,
+        chequeRequisition: this.quotationDetails.chequeRequisition,
+        divisionCode: this.quotationDetails.divisionCode,
+        subAgentCode: this.quotationDetails.subAgentCode,
+        prospectCode: this.quotationDetails.prospectCode,
+        marketerAgentCode: this.quotationDetails.marketerAgentCode,
+        frequencyOfPayment: this.quotationDetails.frequencyOfPayment,
+        web: this.quotationDetails.web,
+        travelQuote: this.quotationDetails.travelQuote,
+        organizationCode: this.quotationDetails.organizationCode,
+        subQuote: this.quotationDetails.subQuote,
+        premiumFixed: this.quotationDetails.premiumFixed,
+        action: 'E'
+      });
+
+      log.debug("patched quotation form", this.quotationForm);
+
+       // Set product code
+       const productCode = this.quotationDetails.quotationProducts[0].proCode;
+       this.productService.getProductDetailsByCode(productCode).subscribe(res => {
+        log.debug("response product", res);
+
+        // Find the matching product object in ProductDescriptionArray
+        const selectedProduct = this.ProductDescriptionArray.find((product: { code: number; }) => product.code === res?.code);
+
+        // Set the entire product object as the form control value
+        if (selectedProduct) {
+          this.quotationForm.controls['productCode'].setValue(selectedProduct);
+          this.getProductClause();
+          this.checkMotorClass();
+        }
+       });
+
+       // Set currency code
+       this.currency.forEach(el => {
+        if (el.symbol === this.quotationDetails.currency) {
+          this.quotationForm.controls['currencyCode'].setValue(el);
+        }
+       });
+
+       // set branch
+       this.branch.forEach(el => {
+        if (el.id === this.quotationDetails.branchCode) {
+          this.quotationForm.controls['branchCode'].setValue(el);
+        }
+       });
+
+    })
+  }
 
   quickQuoteDetails() {
     this.quickQuotationCode = sessionStorage.getItem('quickQuotationCode');
