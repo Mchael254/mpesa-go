@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { tabledataDTO } from '../../data/receipt-management-dto';
-
+import * as bootstrap from 'bootstrap';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -24,6 +24,8 @@ export class ReceiptManagementComponent {
   filteredtabledata:any;
   printingEnabled:boolean=false;
   cancellationDeactivated:boolean=true;
+  isPrinting: boolean = false;
+  isCancellation: boolean = true;
   constructor(){}
   ngOnInit():void{
     // Initialize the table data
@@ -66,10 +68,14 @@ export class ReceiptManagementComponent {
   }
 isPrintingClicked():void{
   this.printingEnabled=true;
+  this.isPrinting = true;
+  this.isCancellation = false;
   this.cancellationDeactivated=false;
 }
 cancleClicked():void{
   this.printingEnabled=false;
+  this.isCancellation = true;
+        this.isPrinting = false;
   this.cancellationDeactivated=true; 
 }
   applyFilter(event: Event, field: string): void {
@@ -108,4 +114,32 @@ cancleClicked():void{
      )} )
 
   }
+  openCancelModal():void{
+
+ const modalElement= new bootstrap.Modal(
+      document.getElementById('staticBackdrop')
+    );
+    modalElement.show();
+
+  }
+  closeModal(): void {
+    const modalElement = document.getElementById('staticBackdrop');
+    if (modalElement) {
+      modalElement.classList.remove('show');
+      modalElement.style.display = 'none';
+    }
+  }
+  openReceiptShareModal():void{
+    const modal= new bootstrap.Modal(document.getElementById('shareReceiptModal'));
+    if(modal){
+      modal.show();
+    }
+  }
+  // closeReceiptModal():void{
+  //   const modal = document.getElementById('shareReceiptModal');
+  //   if(modal){
+  //     modal.classList.remove('show');
+  //     modal.style.display='none';
+  //   }
+  // }
 }
