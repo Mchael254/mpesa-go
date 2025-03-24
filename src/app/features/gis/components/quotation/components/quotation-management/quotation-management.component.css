@@ -149,5 +149,47 @@
     height: 36px !important; /* Keep this but make sure it doesn't conflict */
   }
 
+  :host ::ng-deep .custom-dropdown .p-dropdown-clear-icon {
+  position: absolute;
+  right: 0.75rem;  /* Same position as the dropdown arrow */
+  top: 70%;
+  transform: translateY(-50%);
+}
+
+:host ::ng-deep .custom-dropdown .p-dropdown-trigger {
+  display: none;  /* Hide the entire trigger area when there's a value */
+}
+
+:host ::ng-deep .custom-dropdown.p-dropdown-empty .p-dropdown-clear-icon {
+  display: none;
+}
+
+:host ::ng-deep .custom-dropdown:not(.p-dropdown-empty) .p-dropdown-trigger {
+  display: none;
+}
+
+:host ::ng-deep .custom-dropdown.p-dropdown-empty .p-dropdown-trigger {
+  display: flex;  /* Show trigger only when empty */
+}
+  
+  /* Hide the default caret for the select when content is present */
+.custom-select:not([value=""]) {
+  /* Remove the default dropdown arrow in most browsers */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none !important;
+}
+
+/* Ensure the button doesn't interfere with input clicks */
+.clear-btn {
+  pointer-events: auto;
+}
+
+/* Make sure the input still shows the modal toggle behavior */
+.custom-select {
+  cursor: pointer;
+}
+
   
   
