@@ -290,6 +290,7 @@ export class RiskSectionDetailsComponent {
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     this.formData = JSON.parse(quotationFormDetails);
+    log.debug("quotation form details:", this.formData)
     const clientFormDetails = sessionStorage.getItem('clientDetails') || sessionStorage.getItem('clientPayload');
     const clientData = JSON.parse(clientFormDetails)
     log.debug("Client form details:", clientData)
