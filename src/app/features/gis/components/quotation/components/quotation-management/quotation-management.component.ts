@@ -102,7 +102,7 @@ export class QuotationManagementComponent {
 
   ngOnInit(): void {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
     this.fetchGISQuotations();
 
   }
@@ -115,7 +115,7 @@ export class QuotationManagementComponent {
   }
 
   viewQuote(quotation: any): void {
-    console.log('View quote clicked:', quotation);
+    log.debug('View quote clicked:', quotation);
     this.setQuotationNumber(
       quotation.quotationNumber,
       quotation.productCode,
@@ -153,17 +153,30 @@ export class QuotationManagementComponent {
 
   editQuote(quotation: any) {
     // Implement edit quote functionality
-    console.log('Edit quote:', quotation);
+    log.debug('Edit quote:', quotation);
+    log.debug('View quote clicked on edit quote:', quotation);
+
+    const quoteToEdit = quotation;
+    const status = quoteToEdit.status;
+
+    if(status === "Draft") {
+      // navigate to client creation screen with quote details
+      sessionStorage.setItem("quoteToEditData", JSON.stringify(quoteToEdit));
+      this.router.navigate(['/home/gis/quotation/quotations-client-details']);
+    } else {
+      this.globalMessagingService.displayInfoMessage('Info', 'Can only edit quotes with status Draft');
+    }
+
   }
 
   printQuote(quotation: any) {
     // Implement print quote functionality
-    console.log('Print quote:', quotation);
+    log.debug('Print quote:', quotation);
   }
 
   deleteQuote(quotation: any) {
     // Implement delete quote functionality
-    console.log('Delete quote:', quotation);
+    log.debug('Delete quote:', quotation);
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
@@ -198,7 +211,7 @@ export class QuotationManagementComponent {
     this.quotationService
       .searchQuotations(
         0,
-        10000,
+        100,
         clientType,
         clientCode,
         productCode,
@@ -285,6 +298,16 @@ export class QuotationManagementComponent {
     }
   }
 
+  get displayAgentName(): string {
+    if (!this.agentName) return '';
+    return this.agentName.length > 10 ? this.agentName.substring(0, 15) + '...' : this.agentName;
+  }
+
+  get displayClientName(): string {
+    if (!this.clientName) return '';
+    return this.clientName.length > 10 ? this.clientName.substring(0, 15) + '...' : this.clientName;
+  }
+
   // onExpiryDateInputChange(date: any) {
   //   log.debug('selected expiry date raaw', date);
   //   const selectedExpiryDate = date;
@@ -309,5 +332,71 @@ export class QuotationManagementComponent {
     };
     this.cdr.detectChanges();
   }
+
+
+  clearQuotationNo(): void {
+    // Assuming you have a variable to store the quotation number value
+    this.quotationNumber = '';
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearClientName(): void {
+    this.clientName = '';
+    this.clientCode = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearAgentName(): void {
+    this.agentName = '';
+    this.agentId = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearFromDate(): void {
+    this.fromDate = null;
+    // If you need to reset min dates for other fields
+    this.clearDateFilters();
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearToDate(): void {
+    this.toDate = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearFilters() {
+    // Clear client
+    this.clientName = '';
+    this.clientCode = null;
+
+    // Clear agent
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear source
+    this.selectedSource = null;
+
+    // Clear dates
+    this.clearDateFilters()
+
+    // Clear quotation number
+    this.quotationNumber = '';
+    this.quoteNumber = '';
+
+    // Clear status to null
+    this.selectedStatus = null;
+
+    // Restore the original quotation list
+    this.gisQuotationList = [...this.originalQuotationList];
+
+    // Trigger change detection
+    this.cdr.detectChanges();
+  }
+
 
 }
