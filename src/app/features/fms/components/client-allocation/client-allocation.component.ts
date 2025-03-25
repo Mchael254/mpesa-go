@@ -579,6 +579,24 @@ export class ClientAllocationComponent {
       description: ['', Validators.required],
     });
   }
+  moveFirst(state: any) {
+    state.first = 0;
+  }
+
+  movePrev(state: any) {
+    state.first = Math.max(state.first - state.rows, 0);
+  }
+
+  moveNext(state: any) {
+    state.first = Math.min(
+      state.first + state.rows,
+      state.totalRecords - state.rows
+    );
+  }
+
+  moveLast(state: any) {
+    state.first = state.totalRecords - state.rows;
+  }
    /**
    * Updates the allocated amount for a specific transaction and recalculates the total allocated amount.
    * @param index The index of the transaction in the list
