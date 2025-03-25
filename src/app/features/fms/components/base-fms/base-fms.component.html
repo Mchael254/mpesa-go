@@ -59,10 +59,63 @@
   <div class="base-content-section">
     <div class="card">
       <div class="card-body">
-        <div class="row my-3 mx-3">
-          <div class="col-12 mb-3 col-md-3">
+        <div class="row my-3 mx-0">
+          <!-- <div class="col-12 mb-3 col-md-2"> -->
+          <div class="col-lg-auto col-md-6 col-sm-12 mb-3">
+            <!-- <div class="col-auto"> -->
+            <div class="card fixed-height-card hover-effect">
+              <div class="card-header bg-transparent">
+                {{ "base.setups" | translate }}
+              </div>
+              <div class="card-body">
+                <div class="custom-list list">
+                  <div
+                    *ngFor="let item of setups"
+                    (click)="toggleItem(item)"
+                    [class.active]="item.showSubItems"
+                  >
+                    <a [routerLink]="item.link" *ngIf="item.link">
+                      <i
+                        *ngIf="item.showSubItems"
+                        class="fa fa-chevron-down"
+                      ></i>
+                      <i
+                        *ngIf="!item.showSubItems"
+                        class="fa fa-chevron-right"
+                      ></i>
+                      {{ item.label }}
+                    </a>
+                    <span *ngIf="!item.link">
+                      <i
+                        *ngIf="item.showSubItems"
+                        class="fa fa-chevron-down"
+                      ></i>
+                      <i
+                        *ngIf="!item.showSubItems"
+                        class="fa fa-chevron-right"
+                      ></i>
+                      {{ item.label }}
+                    </span>
+                    <ul *ngIf="item.showSubItems" class="custom-list slist">
+                      <li *ngFor="let subItem of item.subItems">
+                        <a [routerLink]="subItem.link" *ngIf="subItem.link">{{
+                          subItem.label
+                        }}</a>
+                        <span *ngIf="!subItem.link">{{ subItem.label }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="col-2"> -->
+          <div class="col-lg-auto col-md-6 col-sm-12 mb-3">
+            <!-- <div class="col-auto"> -->
+            <!-- <div class="col-12 mb-3 col-md-2"> -->
             <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent header">
+                <!-- <i class="pi pi-book"></i> -->
                 {{ "base.General Ledger" | translate }}
               </div>
               <div class="card-body">
@@ -107,7 +160,10 @@
               </div>
             </div>
           </div>
-          <div class="col-12 mb-3 col-md-3">
+          <!-- <div class="col-2"> -->
+          <div class="col-lg-auto col-md-6 col-sm-12 mb-3">
+            <!-- <div class="col-auto"> -->
+            <!-- <div class="col-12 mb-3 col-md-2"> -->
             <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">
                 {{ "base.Cashbook" | translate }}
@@ -154,7 +210,10 @@
               </div>
             </div>
           </div>
-          <div class="col-12 mb-3 col-md-3">
+          <!-- <div class="col-2"> -->
+          <div class="col-lg-auto col-md-6 col-sm-12 mb-3">
+            <!-- <div class="col-auto"> -->
+            <!-- <div class="col-12 mb-3 col-md-2"> -->
             <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">
                 {{ "base.Creditors" | translate }}
@@ -201,9 +260,13 @@
               </div>
             </div>
           </div>
-          <div class="col-12 mb-3 col-md-3">
+          <!-- <div class="col-2"> -->
+          <div class="col-lg-auto col-md-6 col-sm-12 mb-3">
+            <!-- <div class="col-auto"> -->
+            <!-- <div class="col-12 mb-3 col-md-2"> -->
             <div class="card fixed-height-card hover-effect">
               <div class="card-header bg-transparent">
+                <!-- <i class="fa-solid fa-hand-holding-dollar"></i> -->
                 {{ "base.Debtors" | translate }}
               </div>
               <div class="card-body">
