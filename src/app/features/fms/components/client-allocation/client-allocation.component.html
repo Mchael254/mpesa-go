@@ -92,6 +92,8 @@
             [paginator]="true"
             [rows]="5"
             [rowsPerPageOptions]="[5, 10, 20]"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
           >
             <!-- Table Header -->
             <ng-template pTemplate="header">
@@ -247,14 +249,55 @@
                 </td>
               </tr>
             </ng-template>
+            <ng-template pTemplate="paginator" let-state>
+              <div class="custom-paginator">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-left"
+                  (click)="moveFirst(state)"
+                  [disabled]="state.first === 0"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-left"
+                  (click)="movePrev(state)"
+                  [disabled]="state.first === 0"
+                ></button>
 
+                <span
+                  >{{ "fms.receipting.showing" | translate }}
+                  {{ state.first + 1 }} {{ "fms.receipting.to" | translate }}
+                  {{ first + rows }} {{ state.first + state.rows }}
+                  {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+                  {{ state.totalRecords
+                  }}{{ "fms.receipting.entries" | translate }}</span
+                >
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-right"
+                  (click)="moveNext(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-right"
+                  (click)="moveLast(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+              </div>
+            </ng-template>
             <!-- Pagination -->
-            <ng-template pTemplate="paginatorleft">
+            <!-- <ng-template pTemplate="paginatorleft">
               {{ "fms.receipting.showing" | translate }} {{ first }}
               {{ "fms.receipting.to" | translate }} {{ first + rows }}
               {{ "fms.receipting.of" | translate }} {{ totalRecords }}
               {{ "fms.receipting.entries" | translate }}
-            </ng-template>
+            </ng-template> -->
           </p-table>
         </div>
       </div>
@@ -536,6 +579,7 @@
         >
           {{ "fms.receipting.save_receipt" | translate }}
         </button>
+        <!-- generateAcknowledgement -->
         <button
           type="button"
           *ngIf="
@@ -545,7 +589,7 @@
           (click)="handleSaveAndPrint()"
           class="btn btn-outline-primary"
         >
-          {{ "fms.receipting.generateAcknowledgement" | translate }}
+          {{ "fms.receipting.save&print" | translate }}
         </button>
         <button
           *ngIf="
