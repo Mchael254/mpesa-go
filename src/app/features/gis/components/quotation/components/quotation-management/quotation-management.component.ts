@@ -5,9 +5,9 @@ import { untilDestroyed } from '../../../../../../shared/services/until-destroye
 import { Router } from '@angular/router';
 import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import {MenuItem } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 
 const log = new Logger('QuotationConcersionComponent');
@@ -63,8 +63,9 @@ export class QuotationManagementComponent {
   ];
 
   menuItems: MenuItem[];
+  viewQuoteFlag: Boolean = false;
 
-  constructor (
+  constructor(
     private menuService: MenuService,
     private router: Router,
     public quotationService: QuotationsService,
@@ -73,27 +74,27 @@ export class QuotationManagementComponent {
   ) {
     this.menuItems = [
       {
-        label: 'View Quote',
+        label: 'View quote',
         // icon: 'pi pi-eye',
         command: (event) => this.viewQuote(this.selectedQuotation)
       },
       {
-        label: 'Edit Quote',
+        label: 'Edit quote',
         // icon: 'pi pi-pencil',
         command: (event) => this.editQuote(this.selectedQuotation)
       },
       {
-        label: 'Revise Quote',
+        label: 'Revise quote',
         // icon: 'pi pi-print',
-        command: (event) => this.printQuote(this.selectedQuotation)
+        command: (event) => this.reviseQuote(this.selectedQuotation)
       },
       {
-        label: 'Reuse Quote',
+        label: 'Reuse quote',
         // icon: 'pi pi-trash',
         command: (event) => this.deleteQuote(this.selectedQuotation)
       },
       {
-        label: 'Reassign Quote',
+        label: 'Reassign quote',
         // icon: 'pi pi-trash',
         command: (event) => this.deleteQuote(this.selectedQuotation)
       }
@@ -139,6 +140,11 @@ export class QuotationManagementComponent {
       console.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
       console.debug(`ClientCode ${clientCode} has been saved to session storage.`);
       console.debug(`ProductCode ${productCode} has been saved to session storage.`);
+
+      this.viewQuoteFlag = true;
+      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
+
+
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
     }
   }
@@ -169,10 +175,10 @@ export class QuotationManagementComponent {
 
   }
 
-  printQuote(quotation: any) {
-    // Implement print quote functionality
-    log.debug('Print quote:', quotation);
-  }
+  // printQuote(quotation: any) {
+  //   // Implement print quote functionality
+  //   log.debug('Print quote:', quotation);
+  // }
 
   deleteQuote(quotation: any) {
     // Implement delete quote functionality
@@ -242,7 +248,7 @@ export class QuotationManagementComponent {
         }
       }
       );
-    }
+  }
 
   inputQuotationNo(event) {
     const value = (event.target as HTMLInputElement).value;
@@ -331,6 +337,31 @@ export class QuotationManagementComponent {
       totalElements: this.gisQuotationList.length
     };
     this.cdr.detectChanges();
+  }
+  reviseQuote(selectedQuotation:any){
+    log.debug("Selected Quote to be revised:",selectedQuotation)
+    const quotationCode=selectedQuotation.quotationCode
+    if (quotationCode){
+        this.quotationService
+            .reviseQuotation(quotationCode)
+            .pipe(untilDestroyed(this))
+            .subscribe({
+              next: (response: any) => {
+                const revisedQuoteNumber = response._embedded.quotationNumber
+                log.debug("Revised Quotation number ", revisedQuoteNumber);
+                sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
+                if(revisedQuoteNumber){
+                  
+                  this.router.navigate(['/home/gis/quotation/quotation-summary']);
+                }
+                
+              },
+              error: (error) => {
+                this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+              }
+            });
+    }
+
   }
 
 

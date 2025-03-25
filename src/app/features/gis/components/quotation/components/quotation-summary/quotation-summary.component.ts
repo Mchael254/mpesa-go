@@ -125,6 +125,8 @@ export class QuotationSummaryComponent {
   expiryDate: string;
   selectedRisk: any;
   fetchedQuoteNum: string;
+  viewQuoteFlag: boolean;
+  revisedQuotationNumber: string;
 
 
   constructor(
@@ -146,7 +148,12 @@ export class QuotationSummaryComponent {
     private config: PrimeNGConfig,
     private clientService: ClientService,
 
-  ) { }
+  ) { 
+    this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
+    log.debug("View Quotation Flag", this.viewQuoteFlag)
+    this.revisedQuotationNumber = sessionStorage.getItem('revisedQuotationNo');
+    log.debug("Revised Quotation Number",this.revisedQuotationNumber)
+  }
   public isCollapsibleOpen = false;
   public isRiskCollapsibleOpen = false;
   public makeQuotationReady = true;
@@ -205,7 +212,7 @@ export class QuotationSummaryComponent {
       // this.clientCode = JSON.parse(this.clientCodeString);
     }
 
-    this.getQuotationDetails(this.quotationNumber);
+    this.getQuotationDetails(this.quotationNumber || this.revisedQuotationNumber);
     this.getuser();
 
     this.createInsurersForm();
