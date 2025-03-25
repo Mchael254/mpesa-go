@@ -156,6 +156,14 @@ export class QuotationDetailsComponent {
     if (this.quoteToEditData.quotationNumber) {
       defaultCode = this.quoteToEditData.quotationNumber;
       log.debug("QUOTE Number", defaultCode)
+
+      sessionStorage.setItem("quotationNum", defaultCode);
+    }
+
+    let quotationCode = JSON.stringify(this.quoteToEditData.quotationCode);
+    if(quotationCode) {
+      log.debug("Quotation Code", quotationCode);
+      (sessionStorage.setItem("quotationCode", quotationCode));
     }
 
     this.quotationService.getQuotationDetails(defaultCode).subscribe(data => {
@@ -174,7 +182,7 @@ export class QuotationDetailsComponent {
         agentCode: this.quotationDetails.agentCode,
         agentShortDescription: this.quotationDetails.agentShortDescription,
         clientType: this.quotationDetails.clientType,
-        source: this.quotationDetails.source?.code, // Changed from source?.code to sourceCode
+        source: this.quotationDetails.source?.code, 
         clientCode: this.quotationDetails.clientCode,
         comments: this.quotationDetails.comments ? this.quotationDetails.comments : null,
         internalComments: this.quotationDetails.internalComments ? this.quotationDetails.internalComments : null,
@@ -550,6 +558,9 @@ export class QuotationDetailsComponent {
           this.router.navigate(['/home/gis/quotation/risk-section-details']);
           this.spinner.hide()
 
+        } else if (this.quoteToEditData) {
+          this.router.navigate(['/home/gis/quotation/risk-section-details']);
+          this.spinner.hide()
         } else {
           const fromDate = this.quotationForm.value.wefDate
           const toDate = this.quotationForm.value.wetDate
@@ -678,6 +689,7 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   getExistingQuotations() {
+    log.debug("quotation form being passed", this.quotationForm);
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.wefDate
     const toDate = this.quotationForm.value.wetDate
@@ -708,7 +720,7 @@ export class QuotationDetailsComponent {
     // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
-    this.quotationService.getQuotations(this.clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
+    this.quotationService.getQuotations(clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
       this.quotationsList = data
       this.clientExistingQuotations = this.quotationsList.content
 
