@@ -34,7 +34,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-5">
-                  <p class="label">Quotation Number</p>
+                  <p class="label">Quotation number</p>
                 </div>
                 <div class="col-7">
                   <p class="content">{{ fetchedQuoteNum }}</p>
@@ -77,7 +77,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">Cover From</p>
+                  <p class="label">Cover from</p>
                 </div>
                 <div class="col-8">
                   <p class="content">{{coverFrom}}</p>
@@ -87,7 +87,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">Cover To</p>
+                  <p class="label">Cover to</p>
                 </div>
                 <div class="col-8">
                   <p class="content">{{coverTo}}</p>
@@ -133,7 +133,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-5">
-                  <p class="label">Expiry Date</p>
+                  <p class="label">Expiry date</p>
                 </div>
                 <div class="col-7">
                   <p class="content">{{expiryDate }}</p>
@@ -178,7 +178,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label ">Sum Insured</p>
+                  <p class="label ">Sum insured</p>
                 </div>
                 <div class="col-8">
                   <p class="content" appCommaFormat>{{ sumInsured }}</p>
@@ -202,7 +202,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-5">
-                  <p class="label">Internal Comments</p>
+                  <p class="label">Internal comments</p>
                 </div>
                 <div class="col-7">
                   <p class="content">{{quotationView?.internalComments }}</p>
@@ -212,7 +212,7 @@
             <div class="col-md-4">
               <div class="row">
                 <div class="col-4">
-                  <p class="label">External Comments</p>
+                  <p class="label">External comments</p>
                 </div>
                 <div class="col-8">
                   <p class="content">{{quotationView?.comments }}</p>
@@ -224,11 +224,17 @@
             </div>
           </div>
 
-          <p class="cancel float-start mt-4" (click)="cancelQuotation()">Cancel Quotation</p>
+          <!-- <p class="cancel float-start mt-4" (click)="cancelQuotation()"  [class.disabled]="viewQuoteFlag">Cancel Quotation</p> -->
+          <p class="cancel float-start mt-4" 
+          (click)="!viewQuoteFlag && cancelQuotation()" 
+          [class.disabled]="viewQuoteFlag">
+          Cancel Quotation
+       </p>
+       
           <div class="float-end">
-            <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit
-              Details</button>
-            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
+            <button class="btn btn-outline-primary custom-outline-btn " style="margin-right: 10px;" (click)="editDetails()" [disabled]="viewQuoteFlag">Edit
+              details</button>
+            <button class="btn btn-primary custom-btn-primary" (click)="computePremium()" [disabled]="viewQuoteFlag">Compute Premium</button>
           </div>
         </div>
       </div>
@@ -264,12 +270,12 @@
                 <div class="row">
                   <div class="col-sm-3"></div>
                   <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Add">
+                    <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
                   <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                    <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-pencil"></i>
                     </button>
                   </div>
@@ -285,7 +291,7 @@
                     id="icon"
                     class="btn btn-primary"
                     title="Delete"
-                    [disabled]="!quotationDetails?.quotationProducts || quotationDetails.quotationProducts.length <= 1">
+                    [disabled]="viewQuoteFlag ||!quotationDetails?.quotationProducts || quotationDetails.quotationProducts.length <= 1">
                     <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
                   </button>
                   </div>
@@ -373,17 +379,17 @@
                   <div class="row" *ngIf="activeTab === 'clauses' || activeTab === 'taxes' || activeTab === 'limits'">
                     <div class="col-sm-3"></div>
                     <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-primary" title="Add">
+                      <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
                         <i class="fa-solid fa-plus"></i>
                       </button>
                     </div>
                     <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                      <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
                     </div>
                     <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-danger me-2" title="Delete">
+                      <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" [disabled]="viewQuoteFlag">
                         <i class="fa-solid fa-trash-can"></i>
                       </button>
                     </div>
@@ -578,12 +584,12 @@
                 <div class="row">
                   <div class="col-sm-3"></div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary" title="Add">
+                    <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
                   <div class="col-sm-3" >
-                    <button type="button" id="icon" class="btn btn-primary" title="Edit">
+                    <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-pencil"></i>
                     </button>
                   </div>
@@ -593,26 +599,7 @@
                     </button>
                   </div> -->
                   <div class="col-sm-3">
-                    <!-- <button
-                    type="button"
-                    id="openRiskModalButtonDelete"
-                    class="btn btn-primary"
-                    title="Delete"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteRisk"
-                    [hidden]="true"
-                   >
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                    <button
-                      type="button"
-                      id="icon"
-                      class="btn btn-primary"
-                      title="Delete"
-                      (click)="openRiskDeleteModal()"
-                      [disabled]="quotationDetails?.riskInformation?.length <= 1">
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button> -->
+                  
                     <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
                     id="openRiskModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
                     data-bs-target="#deleteRisk">
@@ -623,7 +610,7 @@
                     id="icon"
                     class="btn btn-primary"
                     title="Delete"
-                    [disabled]="!quotationDetails?.quotationProducts?.[0]?.riskInformation || quotationDetails.quotationProducts[0].riskInformation.length <= 1">
+                    [disabled]="viewQuoteFlag || !quotationDetails?.quotationProducts?.[0]?.riskInformation || quotationDetails.quotationProducts[0].riskInformation.length <= 1">
                     <i class="fa-solid fa-trash-can" (click)="openRiskDeleteModal()"></i>
                   </button>
                   </div>
@@ -846,13 +833,13 @@
               <div class="row">
                 <div class="col-3"></div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal"
+                  <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal"[disabled]="viewQuoteFlag"
                     data-bs-target="#addExternalClaimExperienceModal" [hidden]="!showExternalClaims">
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-primary" title="Edit"
+                  <button type="button" id="icon" class="btn btn-primary" title="Edit"[disabled]="viewQuoteFlag"
                     [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
                     [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
                     (click)="openExternalClaimExpEditModal()" [hidden]="!showExternalClaims">
@@ -860,12 +847,12 @@
                   </button>
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
+                  <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" [disabled]="viewQuoteFlag"
                     id="openClaimModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
                     data-bs-target="#deleteClaim">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
-                  <button type="button" id="icon" class="btn btn-primary" title="Delete" [hidden]="!showExternalClaims">
+                  <button type="button" id="icon" class="btn btn-primary" title="Delete" [hidden]="!showExternalClaims" [disabled]="viewQuoteFlag">
                     <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
                   </button>
                 </div>
@@ -1208,13 +1195,13 @@
         </div>
         <br>
         <div class="float-end mb-3">
-          <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Download</button>
+          <button class="btn btn-primary float-end mr-3 custom-btn-primary" style="margin-right: 13px;" [disabled]="viewQuoteFlag">Download</button>
           <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="makeReady()"
-            *ngIf="makeQuotationReady">Make Quotation Ready</button>
-          <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="confirm()"
-            *ngIf="confirmQuotation">Confirm</button>
-          <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="authorise()"
-            *ngIf="authoriseQuotation">Authorise</button>
+            *ngIf="makeQuotationReady" [disabled]="viewQuoteFlag">Make quotation ready</button>
+          <button class="btn btn-outline-primary float-end custom-outline-btn" style="margin-right: 10px;" (click)="confirm()"
+            *ngIf="confirmQuotation" [disabled]="viewQuoteFlag">Confirm</button>
+          <button class="btn btn-outline-primary float-end custom-outline-btn" style="margin-right: 10px;" (click)="authorise()"
+            *ngIf="authoriseQuotation" [disabled]="viewQuoteFlag">Authorise</button>
         </div>
       </div>
       <div class="card mb-4">

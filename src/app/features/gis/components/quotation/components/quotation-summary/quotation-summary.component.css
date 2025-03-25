@@ -13,13 +13,13 @@
   font-weight: 700;
   line-height: 18px;
 }
-card-title-collapsed{
+/* card-title-collapsed{
   color: red;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
   line-height: 18px;
-}
+} */
 .title {
   color: #000;
   font-size: 14px;
@@ -47,6 +47,8 @@ card-title-collapsed{
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  white-space: nowrap;
+  overflow: visible;
 }
 /* .cancel {
   color: #00529b;
@@ -486,4 +488,35 @@ tr:hover {
   line-height: normal;
   text-align: center;
 }
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+.custom-btn-primary:hover,
+.custom-btn-primary:disabled {
+  background-color: #00529b !important; 
+
+  color: white !important;
+  border-color: #00529b !important;
+}
+
+.custom-btn-primary:disabled {
+  opacity:  0.6 !important;  /* Ensure it doesn't look faded */
+  pointer-events: none; /* Keeps it unclickable */
+}
+.custom-outline-btn:hover {
+  background-color: #00529b !important; /* Primary color on hover */
+  color: white !important;
+  border-color: #00529b !important;
+}
+
+/* Ensure disabled button still looks like an outline */
+.custom-outline-btn:disabled {
+  background-color: transparent !important; /* Keep it as an outline */
+  color: #00529b !important; /* Primary text color */
+  border-color: #00529b !important;
+  opacity: 0.6 !important; /* Prevent fading */
+  pointer-events: none; /* Still unclickable */
+}
+
 

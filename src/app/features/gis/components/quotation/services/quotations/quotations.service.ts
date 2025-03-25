@@ -846,5 +846,8 @@ export class QuotationsService {
     return this.api.GET<any[]>(`/v2/subclass-section-perils?subclassCode=${subclassCode}&pageNumber=${pageNumber}&pageSize=${pageSize}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
 
   }
+ reviseQuotation(quotCode: number,newQuote:string ="N"): Observable<any> {
+    return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  }
 }
 
