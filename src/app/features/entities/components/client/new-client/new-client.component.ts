@@ -31,6 +31,7 @@ import { DmsService } from "../../../../../shared/services/dms/dms.service";
 import { AppConfigService } from "../../../../../core/config/app-config-service";
 import { PassedClientDto } from '../../../data/PassedClientDTO';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
+import { QuotationList } from '../../../../gis/components/quotation/data/quotationsDTO';
 
 const log = new Logger("CreateClientComponent")
 
@@ -181,6 +182,9 @@ export class NewClientComponent implements OnInit {
     CountryISO.UnitedKingdom,
   ];
 
+  quoteToEditData: QuotationList;
+  clientDetails: ClientDTO;
+
   constructor(
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
@@ -236,6 +240,15 @@ export class NewClientComponent implements OnInit {
     const normalQuoteTimestampString = sessionStorage.getItem('normalQuoteTimeStamp');
     this.normalQuoteTimeStamp = JSON.parse(normalQuoteTimestampString);
     log.info("Passed Normal QuoteTimestamp (CRM):", this.normalQuoteTimeStamp)
+
+    this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
+    log.debug("quote data to edit: ", this.quoteToEditData);
+
+    if(this.quoteToEditData) {
+      log.debug("load client details: ", this.quoteToEditData);
+      this.loadClientDetails(this.quoteToEditData.clientCode);
+    }
+
   }
 
   /**
@@ -1322,6 +1335,26 @@ export class NewClientComponent implements OnInit {
         },
       });
     }
+  }
+
+   /**
+   * - Get A specific client's details on select.
+   * - populate the relevant fields with the client details.
+   * - Retrieves and logs client type and country.
+   * - Invokes 'getCountries()' to fetch countries data.
+   * - Calls 'saveClient()' and closes the modal.
+   * @method loadClientDetails
+   * @param {number} id - ID of the client to load.
+   * @return {void}
+   */
+   loadClientDetails(id) {
+    this.clientService.getClientById(id).subscribe((data) => {
+      this.clientDetails = data;
+      log.debug('Selected Client Details:', this.clientDetails);
+      const clientDetailsString = JSON.stringify(this.clientDetails);
+      sessionStorage.setItem('clientDetails', clientDetailsString);
+      this.patchClientFormValues(this.clientDetails)
+    });
   }
 
   parsePhoneNumber(phoneNumber: string): { countryCode: string, number: string } {
