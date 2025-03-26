@@ -981,8 +981,12 @@ export class QuotationDetailsComponent {
           this.userOrgDetails = organization
           log.debug("User Organization Details  ", this.userOrgDetails);
           this.organizationId = this.userOrgDetails.organizationId
+          const currencySymbol = this.quotationForm.value.currencyCode.symbol
           const currencyCode = this.quotationForm.value.currencyCode.id
           log.debug("Cuurency code", currencyCode)
+          log.debug("Cuurency ", currencySymbol)
+          sessionStorage.setItem('currencySymbol', currencySymbol);
+          
           return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
         }),
         untilDestroyed(this))
@@ -1021,9 +1025,10 @@ export class QuotationDetailsComponent {
         this.defaultCurrency = defaultCurrency;
         this.defaultCurrencyName = defaultCurrency.name;
         this.defaultCurrencySymbol = defaultCurrency.symbol;
+        sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
         log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
         log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-        sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
 
         this.fetchUserOrgId()
       }

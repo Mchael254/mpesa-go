@@ -841,5 +841,13 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
+  getSubclassSectionPeril(subclassCode :number,pageNumber:number=0,pageSize:number=10): Observable<any>{
+
+    return this.api.GET<any[]>(`/v2/subclass-section-perils?subclassCode=${subclassCode}&pageNumber=${pageNumber}&pageSize=${pageSize}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+  }
+ reviseQuotation(quotCode: number,newQuote:string ="N"): Observable<any> {
+    return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  }
 }
 
