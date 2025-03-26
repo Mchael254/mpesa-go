@@ -683,6 +683,7 @@ export class UtilService {
     sessionStorage.removeItem('normalQuoteTimeStamp')
     sessionStorage.removeItem('passedQuotationCode')
     sessionStorage.removeItem('riskFormData')
+    sessionStorage.removeItem('quoteToEditData')
     
     
 

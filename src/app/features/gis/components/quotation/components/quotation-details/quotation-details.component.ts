@@ -598,6 +598,7 @@ export class QuotationDetailsComponent {
           quotationForm.currencyRate = this.exchangeRate;
           quotationForm.clientCode = this.clientId
           quotationForm.clientType = "I"
+          // quotationForm.action = "A"
 
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
 
@@ -720,7 +721,7 @@ export class QuotationDetailsComponent {
     // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
-    this.quotationService.getQuotations(clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
+    this.quotationService.getQuotations(this.clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
       this.quotationsList = data
       this.clientExistingQuotations = this.quotationsList.content
 
