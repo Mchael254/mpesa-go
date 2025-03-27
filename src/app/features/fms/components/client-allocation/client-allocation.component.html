@@ -24,14 +24,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <!-- <div class="breadcrumb-custom">
-    {{ "fms.receipting.finance" | translate }} >
-    {{ "fms.receipting.cbReceipting" | translate }}>
-    {{ "fms.receipting.receipting" | translate }}>
-    <span class="breadcrumb-text">{{
-      "fms.receipting.allocateReceipt" | translate
-    }}</span>
-  </div> -->
+  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
   <div class="main-form">
     <div class="allocation-div">
       <!-- Receipt Allocations Section -->
@@ -533,12 +526,15 @@
       </button>
     </div>
     <div class="save-btns">
+      <!-- these buttons will be visible for normal receipting but disappers if receipt on account is on -->
+      <!-- The generateAcknowledgement btn will only be shown if the showAcknowledgeBtn is true -->
       <button
         type="button"
         *ngIf="
           showAcknowledgeBtn &&
           isAllocationCompleted &&
-          !isreceiptingOnAccountExist
+          !isreceiptingOnAccountExist &&
+          getRemainingAmount() === 0
         "
         [disabled]="!isAllocationCompleted"
         (click)="handleSaveAndPrint()"
@@ -550,7 +546,8 @@
         *ngIf="
           !showAcknowledgeBtn &&
           isAllocationCompleted &&
-          !isreceiptingOnAccountExist
+          !isreceiptingOnAccountExist &&
+          getRemainingAmount() === 0
         "
         type="button"
         [disabled]="!isAllocationCompleted"
@@ -561,7 +558,11 @@
       </button>
 
       <button
-        *ngIf="isAllocationCompleted && !isreceiptingOnAccountExist"
+        *ngIf="
+          isAllocationCompleted &&
+          !isreceiptingOnAccountExist &&
+          getRemainingAmount() === 0
+        "
         type="button"
         [disabled]="!isAllocationCompleted"
         class="btn btn-primary"
@@ -570,6 +571,7 @@
         {{ "fms.receipting.save_receipt" | translate }}
       </button>
       <!-- save empty allocations -->
+      <!-- these buttons will only appear if the receipting on account is on and replace their duplicate couterparts dynamically -->
       <div class="save-btns">
         <button
           *ngIf="isEmptyAllocationPosted || isreceiptingOnAccountExist"

@@ -37,7 +37,7 @@ import { DynamicBreadcrumbComponent } from 'src/app/shared/components/dynamic-br
     ReceiptPreviewComponent,
     PdSlipPreviewComponent,
     ReceiptManagementComponent
-    
+
    
   ],
     imports: [
