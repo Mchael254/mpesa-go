@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
@@ -10,6 +10,7 @@ import {SystemsService} from "../../../../../shared/services/setups/systems/syst
 import {ServiceRequestService} from "../../../services/service-request.service";
 import {NgxSpinnerService} from "ngx-spinner";
 import {ServiceRequestCategoryDTO, ServiceRequestIncidentDTO} from "../../../data/service-request-dto";
+import {ReusableInputComponent} from "../../../../../shared/components/reusable-input/reusable-input.component";
 
 const log = new Logger('RequestCategoriesComponent');
 @Component({
@@ -22,6 +23,7 @@ export class RequestCategoriesComponent implements OnInit {
   incidentsData: ServiceRequestIncidentDTO[];
   requestCategoriesData: ServiceRequestCategoryDTO[];
   selectedRequestCategory: ServiceRequestCategoryDTO;
+  selectedIncident: ServiceRequestIncidentDTO;
 
   editMode: boolean = false;
   serviceRequestCategoryForm: FormGroup;
@@ -60,6 +62,9 @@ export class RequestCategoriesComponent implements OnInit {
   public levelOneEscalatedToUser: any;
   public levelTwoEscalatedToUser: any;
   public assignToUser: any;
+
+  @ViewChild('requestCategoryConfirmationModal') requestCategoryConfirmationModal!: ReusableInputComponent;
+  @ViewChild('requestIncidentsConfirmationModal') requestIncidentsConfirmationModal!: ReusableInputComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -314,6 +319,9 @@ export class RequestCategoriesComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the list of service request incidents from the server.
+   */
   fetchServiceIncidents() {
     this.spinner.show();
     this.serviceRequestService.getRequestIncidents()
@@ -393,6 +401,16 @@ export class RequestCategoriesComponent implements OnInit {
    * and then display a success message and fetch the list of service categories again.
    */
   deleteRequestCategory() {
+    this.requestCategoryConfirmationModal.show();
+  }
+
+  /**
+   * Confirm the deletion of a service request category.
+   * If no request category is selected, display an error message.
+   * Otherwise, make a call to the service to delete the request category,
+   * and then display a success message and fetch the list of service categories again.
+   */
+  confirmRequestCategoryDelete() {
     if (this.selectedRequestCategory) {
       const serviceRequestCategoryCode = this.selectedRequestCategory?.id;
       this.serviceRequestService.deleteRequestCategory(serviceRequestCategoryCode).subscribe( {
@@ -421,4 +439,42 @@ export class RequestCategoriesComponent implements OnInit {
   }
 
   ngOnDestroy(): void {}
+
+  /**
+   * Show the confirmation modal for deleting a service request incident.
+   * If no request incident is selected, display an error message.
+   */
+  deleteRequestIncident() {
+    this.requestIncidentsConfirmationModal.show();
+  }
+
+  /**
+   * Confirm the deletion of a service request incident.
+   * If no request incident is selected, display an error message.
+   * Otherwise, make a call to the service to delete the request incident,
+   * and then display a success message and fetch the list of service incidents again.
+   */
+  confirmRequestIncidentsDelete() {
+    if (this.selectedIncident) {
+      const serviceRequestIncidentCode = this.selectedIncident?.id;
+      this.serviceRequestService.deleteRequestIncident(serviceRequestIncidentCode).subscribe({
+        next: () => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted request incident'
+          );
+          this.selectedIncident = null;
+          this.fetchServiceIncidents();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        },
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No request incident is selected.'
+      );
+    }
+  }
 }

@@ -96,7 +96,7 @@ export class ServiceRequestService {
 
   getServiceRequests(
     page: number | null = 1,
-    size: number | null = 5,
+    size: number | null = 10,
     sort: string = 'desc',
     status: string = null,
     statusCode: number = null,
@@ -144,6 +144,32 @@ export class ServiceRequestService {
   getRequestIncidents(): Observable<ServiceRequestIncidentDTO[]> {
     return this.apiService.GET<ServiceRequestIncidentDTO[]>(
       `service-request/incidents`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  createRequestIncident(data: ServiceRequestIncidentDTO): Observable<ServiceRequestIncidentDTO> {
+    return this.apiService.POST<ServiceRequestIncidentDTO>(
+      `service-request/incidents`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  updateRequestIncident(
+    requestIncidentId: number,
+    data: ServiceRequestIncidentDTO
+  ): Observable<ServiceRequestIncidentDTO> {
+    return this.apiService.PUT<ServiceRequestIncidentDTO>(
+      `service-request/incidents/${requestIncidentId}`,
+      data,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  deleteRequestIncident(requestIncidentId: number) {
+    return this.apiService.DELETE<ServiceRequestIncidentDTO>(
+      `service-request/incidents/${requestIncidentId}`,
       API_CONFIG.CRM_SERVICE_REQUEST
     );
   }

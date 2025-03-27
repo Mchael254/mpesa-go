@@ -13,33 +13,33 @@ import {
 
 const mockReportData: ReportFileDTO = {
   bytes: "",
-  data_file: "",
-  error_msg: "",
-  output_file: "",
+  dataFile: "",
+  errorMsg: "",
+  outputFile: "",
   params: [],
-  report_format: "",
-  report_name: "",
-  rpt_code: 0,
-  rpt_prnt_srv_appl: "",
-  rpt_tmpl_code: 0,
-  style_file: "",
-  template_file: ""
+  reportFormat: "",
+  reportName: "",
+  rptCode: 0,
+  rptPrntSrvAppl: "",
+  rptTmplCode: 0,
+  styleFile: "",
+  templateFile: ""
 
 }
 
 const mockSystemReportData: SystemReportDto = {
-  application_level: "",
+  applicationLevel: "",
   code: 0,
   datafile: "",
   description: "",
   name: "",
   order: 0,
-  print_srv_appl: "",
-  print_srvc_appl: "",
-  rsm_code: 0,
-  short_description: "",
+  printSrvAppl: "",
+  printSrvcAppl: "",
+  rsmCode: 0,
+  shortDescription: "",
   status: "",
-  system_code: 0,
+  systemCode: 0,
   type: "",
   update: "",
   visible: ""

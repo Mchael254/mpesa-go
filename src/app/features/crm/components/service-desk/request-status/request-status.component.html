@@ -37,7 +37,7 @@
               ></span>
               <span class="icon-circle"
               ><i
-                class="fa-regular fa-trash-can" (click)="deleteRequestStatus()"></i
+                class="fa-regular fa-trash-can" id="deleteRequestStatus" (click)="deleteRequestStatus()"></i
               ></span>
             </div>
           </div>
@@ -145,8 +145,16 @@
 
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveServiceRequestStatus()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" id="saveRequestStatus"  (click)="saveServiceRequestStatus()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
 </div>
+
+<app-reusable-input
+  [modalId]="'requestStatusConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this service status?'"
+  (confirmed)="confirmRequestStatusDelete()"
+  #requestStatusConfirmationModal
+></app-reusable-input>

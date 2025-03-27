@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Logger} from "../../../../../shared/services";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ServiceRequestService} from "../../../services/service-request.service";
 import {ServiceRequestStatusDTO} from "../../../data/service-request-dto";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {ReusableInputComponent} from "../../../../../shared/components/reusable-input/reusable-input.component";
 
 const log = new Logger('RequestStatusComponent');
 @Component({
@@ -21,6 +22,9 @@ export class RequestStatusComponent implements OnInit {
 
   editMode: boolean = false;
   serviceRequestStatusForm: FormGroup;
+
+  @ViewChild('requestStatusConfirmationModal') requestStatusConfirmationModal!: ReusableInputComponent;
+
   constructor(
     private fb: FormBuilder,
     private serviceRequestService: ServiceRequestService,
@@ -168,6 +172,16 @@ export class RequestStatusComponent implements OnInit {
    * Delete the selected service request status.
    */
   deleteRequestStatus() {
+    this.requestStatusConfirmationModal.show();
+  }
+
+  /**
+   * Confirm the deletion of a service request status.
+   * If no request status is selected, display an error message.
+   * Otherwise, make a call to the service to delete the request status,
+   * and then display a success message and fetch the list of service statuses again.
+   */
+  confirmRequestStatusDelete() {
     if (this.selectedRequestStatus) {
       const serviceRequestStatusCode = this.selectedRequestStatus?.srsCode;
       this.serviceRequestService.deleteRequestStatus(serviceRequestStatusCode).subscribe( {
