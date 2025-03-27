@@ -18,7 +18,8 @@ interface UserDTO {
   id: number,
   name: string,
   username: string,
-  emailAddress: string
+  emailAddress: string,
+  physicalAddress: string
 }
 
 export interface ServiceRequestIncidentDTO {
@@ -29,7 +30,8 @@ export interface ServiceRequestIncidentDTO {
   branchCode: number,
   requestTypeCode: number,
   isDefault: string,
-  user: UserDTO
+  user?: UserDTO
+  escalationLevels?: ServiceRequestEscalationDTO[];
 }
 
 export interface ServiceRequestsDTO {
@@ -59,7 +61,6 @@ export interface ServiceRequestsDTO {
   reopennedDate: string,
   reporter: string,
   requestDate: string,
-  requestType: string
   resolutionDate: string,
   secondaryCommunicationMode: string,
   secondaryCommunicationModeValue: string,
@@ -71,6 +72,13 @@ export interface ServiceRequestsDTO {
   summary: string,
   tcbCode: number,
   timeOfCommunication: string,
+  source: string,
+  statusDto?: ServiceRequestStatusDTO,
+  assigneeDto?: UserDTO,
+  ownerDto?: UserDTO,
+  categoryDto?: ServiceRequestCategoryDTO,
+  accountDto?: AccountDto,
+  incidentDto?: ServiceRequestIncidentDTO
 }
 
 export interface ServiceRequestDocumentsDTO {
@@ -87,4 +95,24 @@ export interface ServiceRequestDocumentsDTO {
   tsrCode: number,
   postedBy: string,
   postedOn: string
+}
+
+export interface AccountDto {
+  id: number,
+  name: string,
+  shortDescription: string,
+  emailAddress: string,
+  physicalAddress: string,
+  smsNumber: string
+}
+
+export interface ServiceRequestEscalationDTO {
+  id: number,
+  level: number,
+  assigneeId: number,
+  duration: number,
+  ccId: number,
+  incidentId: number
+  assignee: UserDTO,
+  cc: UserDTO,
 }

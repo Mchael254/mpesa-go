@@ -463,7 +463,7 @@ export class ServiceDeskDetailsComponent implements OnInit {
       reopennedDate: null,
       reporter: serviceRequestFormValues.reporter,
       requestDate: serviceRequestFormValues.requestDate,
-      requestType: null,
+      source: null,
       resolutionDate: serviceRequestFormValues.resolutionDate,
       secondaryCommunicationMode: null,
       secondaryCommunicationModeValue: null,
