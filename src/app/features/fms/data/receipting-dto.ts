@@ -97,12 +97,6 @@ export interface ManualExchangeRateResponseDTO {
   data: string | object; // Adjust type if necessary (e.g., object or another type)
 }
 
-// export interface DrawersBankDTO {
-//   bankName: string;
-// branchName: string | null;
-// refCode: string | null;
-// code: number;
-// }
 
 export interface NarrationDTO {
   code: number;
@@ -659,3 +653,11 @@ export interface acknowledgementSlipDTO {
   receiptNumbers: number[];
   userCode: number;
 }
+
+
+
+ 
+
+
+ 
+ 

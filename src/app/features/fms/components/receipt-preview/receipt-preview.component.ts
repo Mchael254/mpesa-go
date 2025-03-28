@@ -25,7 +25,7 @@ import { SessionStorageService } from '../../../../shared/services/session-stora
 import { ReceiptService } from '../../services/receipt.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { TranslateService } from '@ngx-translate/core';
-
+import fmsStepsData from '../../data/fms-step.json';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -45,6 +45,10 @@ const log = new Logger('ReceiptPreviewComponent');
   styleUrls: ['./receipt-preview.component.css'],
 })
 export class ReceiptPreviewComponent implements OnInit {
+  /**
+   * @description Step data for the FMS workflow.
+   */
+  steps = fmsStepsData;
   // Reference to the iframe
   @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
 
@@ -52,9 +56,6 @@ export class ReceiptPreviewComponent implements OnInit {
   selectedOrg: OrganizationDTO;
   defaultOrg: OrganizationDTO;
 
-  //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
-  //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
-  // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
   /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
   receiptResponse: any;
 
@@ -190,7 +191,10 @@ export class ReceiptPreviewComponent implements OnInit {
           'success:',
           response.message
         );
+        this.receiptDataService.clearReceiptData();
+        this.router.navigate(['/home/fms/receipt-capture']);
       },
+
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'failed',

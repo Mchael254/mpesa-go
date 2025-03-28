@@ -22,7 +22,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { ReceiptService } from '../../services/receipt.service';
 import { TranslateService } from '@ngx-translate/core';
-
+import fmsStepsData from '../../data/fms-step.json';
 
 const log = new Logger('ReceiptPreviewComponent');
 
@@ -42,13 +42,14 @@ const log = new Logger('ReceiptPreviewComponent');
   styleUrls: ['./pd-slip-preview.component.css'],
 })
 export class PdSlipPreviewComponent implements OnInit {
+  /**
+   * @description Step data for the FMS workflow.
+   */
+  steps = fmsStepsData;
   // Reference to the iframe
 
   filePath: string = '';
 
-  //@ViewChild('docViewer', { static: false }) docViewer!: ElementRef;
-  //@ViewChild('receiptIframe') receiptIframe!: ElementRef;
-  // @ViewChild('docViewer') docViewer: ElementRef; // Reference to ngx-doc-viewer
   /** @property {any} receiptResponse - The receipt response data (likely a receipt number). */
   receiptResponse: any;
 
@@ -189,7 +190,7 @@ export class PdSlipPreviewComponent implements OnInit {
   }
   updatePrintStatus() {
     const receiptId = Number(this.receiptResponse);
-    console.log('reciptid>', receiptId);
+    // console.log('reciptid>', receiptId);
     // Construct the payload as an array of numbers
     const payload: number[] = [receiptId];
     this.receiptService.updateSlipStatus(payload).subscribe({
@@ -198,6 +199,8 @@ export class PdSlipPreviewComponent implements OnInit {
           'success:',
           response.message
         );
+        this.receiptDataService.clearReceiptData();
+        this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
