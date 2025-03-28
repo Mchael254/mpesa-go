@@ -24,21 +24,28 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
+  <app-stepper [currentStep]="4" [stepperData]="steps"></app-stepper>
   <h5 class="text-primary" style="padding-top: 5px">
     {{ "fms.receipting.acknowledgementSlip" | translate }}
   </h5>
   <div class="receipt-section">
-    <pdf-viewer
+    <!-- <pdf-viewer
       [src]="filePath"
       [render-text]="true"
       [original-size]="false"
       style="margin: 20px; margin-top: 10px; width: 80%; height: 600px"
-    ></pdf-viewer>
+    ></pdf-viewer> -->
+    <ngx-doc-viewer
+      [fileName]="documentData?.fileName ?? ''"
+      [srcUrl]="filePath ?? ''"
+      style="margin: 20px; margin-top: 10px; width: 80%"
+    >
+    </ngx-doc-viewer>
   </div>
 
   <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
-    <button type="button" class="btn btn-primary" (click)="download()">
-      Download
+    <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
+      Printed
     </button>
 
     <button
@@ -46,7 +53,7 @@
       class="btn btn-success"
       (click)="navigateToReceiptCapture()"
     >
-      Exit
+      Unprinted
     </button>
   </div>
 </div>
