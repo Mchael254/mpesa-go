@@ -23,7 +23,7 @@ import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-c
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ClientDTO } from "../../../../../entities/data/ClientDTO";
 import { ClientService } from "../../../../../entities/services/client/client.service";
-import { forkJoin, switchMap } from 'rxjs';
+import { forkJoin, Observable, of, switchMap, tap } from 'rxjs';
 import { PolicyService } from '../../../policy/services/policy.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -265,9 +265,9 @@ export class RiskSectionDetailsComponent {
       if (this.storedRiskFormDetails) {
         this.loadCovertypeBySubclassCode(this.storedRiskFormDetails?.subclassCode);
       }
-      this.storedScheduleDetails = JSON.parse(sessionStorage.getItem('scheduleDetails'));
-      this.scheduleList = this.storedScheduleDetails
-      log.debug("SCHEDULE DETAILS:", this.storedScheduleDetails)
+      // this.storedScheduleDetails = JSON.parse(sessionStorage.getItem('scheduleDetails'));
+      // this.scheduleList = this.storedScheduleDetails
+      // log.debug("SCHEDULE DETAILS:", this.storedScheduleDetails)
 
 
 
@@ -966,17 +966,11 @@ export class RiskSectionDetailsComponent {
 
     }
 
-
-
-
     // const riskDetails: any = {
     //  selectedModel: this.riskDetailsForm.ge
     // }
 
     // this.updateRiskDetailsForm(riskPayload);
-
-
-
     // If we had form values, restore them
     if (currentFormValues) {
       // Wait for form to be recreated in ngOnInit
@@ -986,6 +980,7 @@ export class RiskSectionDetailsComponent {
     }
 
   }
+
   getQuotationRiskPayload(): any[] {
     log.debug("quotation code:", this.quotationCode)
 
@@ -1018,7 +1013,7 @@ export class RiskSectionDetailsComponent {
       value: this.sumInsuredValue, // TODO attach this to individual risk
       coverTypeShortDescription: this.selectedCoverType.coverTypeShortDescription,
       // premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
-      premium: existingRisk ? existingRisk[0].premium : null,
+      premium: existingRisk?.[0] ? existingRisk[0].premium : null,
       subclassCode: this.selectedSubclassCode,
       itemDesc: this.riskDetailsForm.value.itemDesc || this.vehiclemakeModel,
       binderCode: this.selectedBinderCode || this.defaultBinder[0].code,
@@ -1445,6 +1440,12 @@ export class RiskSectionDetailsComponent {
       schedule.transactionType = scheduleItem.transactionType;
       schedule.version = scheduleItem.version;
 
+      if(scheduleItem.details.level2) {
+        schedule.details.level2 = scheduleItem.details.level2;
+      } else {
+        schedule.details.level2 = {};
+      }
+
       const removeFields = [
         "terrorismApplicable", "securityDevice1", "motorAccessories",
         "model", "securityDevice", "regularDriverName", "schActive",
@@ -1459,27 +1460,7 @@ export class RiskSectionDetailsComponent {
         }
       });
 
-      // Remove specific fields from the payload
-      // delete schedule.details.level1.terrorismApplicable;
-      // delete schedule.details.level1.securityDevice1;
-      // delete schedule.details.level1.motorAccessories;
-      // delete schedule.details.level1.model;
-      // delete schedule.details.level1.securityDevice;
-      // delete schedule.details.level1.regularDriverName;
-      // delete schedule.details.level1.schActive;
-      // delete schedule.details.level1.licenceNo;
-      // delete schedule.details.level1.driverLicenceDate;
-      // delete schedule.details.level1.driverSmsNo;
-      // delete schedule.details.level1.driverRelationInsured;
-      // delete schedule.details.level1.driverEmailAddress;
-
       log.debug("level 1 payload", schedule);
-
-      // Ensure the level2 property exists to maintain the structure,
-      // even if it's empty
-      // if (!schedule.details.level2) {
-      //   schedule.details.level2 = {};
-      // }
 
       this.quotationService.updateSchedule(schedule).subscribe(data => {
         this.updatedScheduleData = data;
@@ -1491,8 +1472,6 @@ export class RiskSectionDetailsComponent {
 
         log.debug("UPDATED SCHEDULE LIST:", this.scheduleList);
 
-        // This block seems to assume scheduleList is an array, but based on your JSON
-        // it appears to be an object. You may need to adjust this logic.
         if (Array.isArray(this.scheduleList)) {
           const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
           if (index !== -1) {
@@ -1508,6 +1487,8 @@ export class RiskSectionDetailsComponent {
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
           this.scheduleDetailsForm.reset();
         }
+
+        this.loadClientQuotation();
       });
     }
     this.cdr.detectChanges();
@@ -1789,62 +1770,87 @@ export class RiskSectionDetailsComponent {
 
     // }
 
-    this.quotationService.getQuotationDetails(defaultCode).subscribe(data => {
-      this.quotationDetails = data;
-      log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
+    this.quotationService.getQuotationDetails(defaultCode).pipe(
+      tap(data => {
+        this.quotationDetails = data;
+        log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
 
-      this.passedProductCode = this.quotationDetails?.quotationProducts[0]?.proCode;
-      this.passedSubclassCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.subclassCode;
-      this.passedCoverTypeCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.coverTypeCode;
-      this.passedPropertyId = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.propertyId;
-      this.sectionDetails = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.sectionsDetails;
+        this.passedProductCode = this.quotationDetails?.quotationProducts[0]?.proCode;
+        this.passedSubclassCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.subclassCode;
+        this.passedCoverTypeCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.coverTypeCode;
+        this.passedPropertyId = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.propertyId;
+        this.sectionDetails = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.sectionsDetails;
+        const scheduleArray = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.scheduleDetails;
+        this.scheduleList = scheduleArray ? [scheduleArray] : [];
 
-      const passedCoverFromDate = this.quotationDetails.coverFrom;
-      const passedCoverToDate = this.quotationDetails.coverTo;
-      this.passedCoverFromDate = this.convertDate(passedCoverFromDate);
-      this.passedCoverToDate = this.convertDate(passedCoverToDate);
-
-
-      log.debug("passed cover from:", this.passedCoverFromDate)
-      log.debug("passed cover to:", this.passedCoverToDate)
-      log.debug("passed product code:", this.passedProductCode)
-      log.debug("passed product subclass code:", this.passedSubclassCode)
-      log.debug("passed property ID:", this.passedPropertyId)
-      log.debug("passedCoverTypeCode:", this.passedCoverTypeCode)
+        const passedCoverFromDate = this.quotationDetails.coverFrom;
+        const passedCoverToDate = this.quotationDetails.coverTo;
+        this.passedCoverFromDate = this.convertDate(passedCoverFromDate);
+        this.passedCoverToDate = this.convertDate(passedCoverToDate);
 
 
+        log.debug("passed cover from:", this.passedCoverFromDate)
+        log.debug("passed cover to:", this.passedCoverToDate)
+        log.debug("passed product code:", this.passedProductCode)
+        log.debug("passed product subclass code:", this.passedSubclassCode)
+        log.debug("passed property ID:", this.passedPropertyId)
+        log.debug("passedCoverTypeCode:", this.passedCoverTypeCode)
 
-      if (this.storedRiskFormDetails) {
-        if (this.passedCoverFromDate) {
+
+
+        if (this.storedRiskFormDetails) {
+          if (this.passedCoverFromDate) {
+            this.riskDetailsForm.patchValue({
+              wef: this.storedRiskFormDetails?.wef
+                ? new Date(this.storedRiskFormDetails.wef)
+                : this.passedCoverFromDate
+            });
+          }
           this.riskDetailsForm.patchValue({
-            wef: this.storedRiskFormDetails?.wef
-              ? new Date(this.storedRiskFormDetails.wef)
-              : this.passedCoverFromDate
+            wet: this.storedRiskFormDetails?.wet
+              ? new Date(this.storedRiskFormDetails.wet)
+              : this.passedCoverToDate
           });
+        } else {
+          this.riskDetailsForm.patchValue({
+            wef: this.passedCoverFromDate
+          });
+          this.riskDetailsForm.patchValue({
+            wet: this.passedCoverToDate
+          });
+
+          this.riskDetailsForm.patchValue({
+            propertyId: this.passedPropertyId
+          });
+
+          // this.riskDetailsForm.patchValue({
+          //   subclassCode: this.passedSubclassCode
+          // });
+
         }
-        this.riskDetailsForm.patchValue({
-          wet: this.storedRiskFormDetails?.wet
-            ? new Date(this.storedRiskFormDetails.wet)
-            : this.passedCoverToDate
-        });
-      } else {
-        this.riskDetailsForm.patchValue({
-          wef: this.passedCoverFromDate
-        });
-        this.riskDetailsForm.patchValue({
-          wet: this.passedCoverToDate
-        });
-
-        this.riskDetailsForm.patchValue({
-          propertyId: this.passedPropertyId
-        });
-
-        // this.riskDetailsForm.patchValue({
-        //   subclassCode: this.passedSubclassCode
-        // });
-
+      }),
+    switchMap(() => {
+      const quoteToEdit = sessionStorage.getItem("quoteToEditData");
+      if (quoteToEdit !== null && quoteToEdit !== 'undefined') {
+        const riskInfo = this.quotationDetails?.quotationProducts[0]?.riskInformation[0];
+        if (!riskInfo) {
+          return of(null); // Skip if no risk info
+        }
+      
+        const { subclassCode, binderCode, coverTypeCode } = riskInfo;
+        return this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, coverTypeCode)
       }
+      return of(null); // Skip if no quoteToEdit
     })
+    ).subscribe({
+      next: (response) => {
+        this.sectionPremium = response;
+        log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
+      },
+      error: (err) => {
+        log.error("Error in quotation flow:", err);
+      }
+    });
   }
 
 
@@ -2061,17 +2067,18 @@ export class RiskSectionDetailsComponent {
   }
 
   hasAnyLevel2Data(): boolean {
-    if (!this.scheduleList || this.scheduleList.length === 0) {
+    if (!Array.isArray(this.scheduleList) || this.scheduleList.length === 0) {
       return false;
     }
-
-    return this.scheduleList.some(schedule =>
+    return this.scheduleList.some(schedule => 
       schedule.details?.level2 &&
-      (schedule.details.level2.code ||
+      (
+        schedule.details.level2.code ||
         schedule.details.level2.geographicalLimits ||
         schedule.details.level2.deductibleDesc ||
         schedule.details.level2.limitationUse ||
-        schedule.details.level2.authorisedDriver)
+        schedule.details.level2.authorisedDriver
+      )
     );
   }
 
