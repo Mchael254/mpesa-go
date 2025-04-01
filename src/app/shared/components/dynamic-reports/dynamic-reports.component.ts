@@ -235,6 +235,7 @@ export class DynamicReportsComponent implements OnInit {
 
           this.fileName = report?.description;
           this.download(this.filePath, this.fileName);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Report generated successfully');
         },
         error: (err) => {
           if (err.error instanceof Blob) {
