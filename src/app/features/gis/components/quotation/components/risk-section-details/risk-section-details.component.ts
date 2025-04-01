@@ -1781,7 +1781,9 @@ export class RiskSectionDetailsComponent {
         this.passedPropertyId = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.propertyId;
         this.sectionDetails = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.sectionsDetails;
         const scheduleArray = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.scheduleDetails;
+        const vehicleMake = scheduleArray?.details?.level1.Make;
         this.scheduleList = scheduleArray ? [scheduleArray] : [];
+        const itemDesc = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.itemDesc;
 
         const passedCoverFromDate = this.quotationDetails.coverFrom;
         const passedCoverToDate = this.quotationDetails.coverTo;
@@ -1795,6 +1797,7 @@ export class RiskSectionDetailsComponent {
         log.debug("passed product subclass code:", this.passedSubclassCode)
         log.debug("passed property ID:", this.passedPropertyId)
         log.debug("passedCoverTypeCode:", this.passedCoverTypeCode)
+        log.debug("vehicleMake:", vehicleMake)
 
 
 
@@ -1826,6 +1829,19 @@ export class RiskSectionDetailsComponent {
           // this.riskDetailsForm.patchValue({
           //   subclassCode: this.passedSubclassCode
           // });
+
+          if (vehicleMake) {
+            const selectedVehicleMake = this.vehicleMakeList.find(make => make.name === vehicleMake);
+            if (selectedVehicleMake) {
+              log.debug("selected vehicle make after fetch:", selectedVehicleMake)
+              this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
+            }
+            this.getVehicleModel(selectedVehicleMake.code)
+          }
+
+          if (itemDesc) {
+            this.riskDetailsForm.patchValue({ itemDesc: itemDesc });
+          }
 
         }
       }),
