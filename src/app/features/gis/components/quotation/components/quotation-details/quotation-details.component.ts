@@ -205,7 +205,6 @@ export class QuotationDetailsComponent {
         subQuote: this.quotationDetails.subQuote,
         premiumFixed: this.quotationDetails.premiumFixed,
         action: 'E',
-        productCode: this.quotationDetails.quotationProducts[0].productCode
       });
 
       log.debug("patched quotation form", this.quotationForm);
