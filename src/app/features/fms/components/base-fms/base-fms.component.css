@@ -19,6 +19,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: 35px; /* Set a fixed height */
+ 
 }
 /* Responsive Grid for small screens */
 @media screen and (max-width:767px) {
@@ -44,7 +45,10 @@
   .org{
     margin-left: 0 !important;
   }
-  
+  .base-content-section{
+    display: grid;
+    grid-template-columns: 1fr no-repeat;
+  }
 }
 /* Override for dropdowns inside the .top-bar */
 .top-bar .dropdown-icon {
@@ -149,4 +153,11 @@ a {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+}
+.base-content-section{
+  display: grid;
+  grid-template-columns: 5fr no-repeat;
+}
+.fixed-width-card {
+  width: 200px; /* Ensures uniform width */
 }

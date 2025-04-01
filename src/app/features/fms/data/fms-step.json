@@ -1,0 +1,23 @@
+[
+  {
+    "number": 1,
+    "title": "Receipt capture",
+    "link": "/home/fms/receipt-capture"
+  },
+  {
+    "number": 2,
+    "title": "Account selection",
+    "link": "/home/fms/client-search"
+  },
+
+  {
+    "number": 3,
+    "title": "Receipt allocations",
+    "link": "/home/fms/client-allocation"
+  },
+  {
+    "number": 4,
+    "title": "Receipt summary",
+    "link": "/home/fms/"
+  }
+]

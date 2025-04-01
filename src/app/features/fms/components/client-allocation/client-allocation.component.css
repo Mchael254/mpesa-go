@@ -257,3 +257,14 @@ body {
   display: flex;
   gap: 10px;
 }
+.p-paginator-bottom {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.p-paginator-current {
+  order: -1; /* Moves the "Showing X to Y of Z entries" to the center */
+}
