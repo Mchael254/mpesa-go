@@ -19,18 +19,18 @@ import {
   ReceiptNumberDTO,
 } from '../../data/receipting-dto';
 
-import {AuthService}  from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
 
-import {StaffService} from '../../../../features/entities/services/staff/staff.service';
+import { StaffService } from '../../../../features/entities/services/staff/staff.service';
 
-import {OrganizationService} from '../../../../features/crm/services/organization.service';
+import { OrganizationService } from '../../../../features/crm/services/organization.service';
 import { ReceiptService } from '../../services/receipt.service';
 
-import {CurrencyService} from '../../../../shared/services/setups/currency/currency.service';
+import { CurrencyService } from '../../../../shared/services/setups/currency/currency.service';
 
-import {BankService} from '../../../../shared/services/setups/bank/bank.service';
+import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 
-import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 import { FmsService } from '../../services/fms.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
@@ -39,10 +39,13 @@ import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
-import {LocalStorageService} from '../../../../shared/services/local-storage/local-storage.service';
-
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { LocalStorageService } from '../../../../shared/services/local-storage/local-storage.service';
+// import {HorizontalStepperComponent} from '../../../../shared/components/stepper/horizontal-stepper';
+import { HorizontalStepperComponent } from 'src/app/shared/components/stepper/horizontal-stepper/horizontal-stepper.component';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { TranslateService } from '@ngx-translate/core';
+import fmsStepsData from '../../data/fms-step.json';
+
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -59,10 +62,15 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ReceiptCaptureComponent {
    /**
+   * @description Step data for the FMS workflow.
+   */
+  steps = fmsStepsData;
+
+  /**
    * @event formValuesChange - EventEmitter for when receipt details form values changes
    */
   @Output() formValuesChange = new EventEmitter<any>();
-    /**
+  /**
    * @property {FormGroup} receiptingDetailsForm - The reactive form for capturing receipt details.
    */
   receiptingDetailsForm: FormGroup;
@@ -71,20 +79,20 @@ export class ReceiptCaptureComponent {
    */
   // 1.2 User & Organization and Branch Details
   loggedInUser: any;
-    /**
+  /**
    * @property {any} GlobalUser -  Potentially deprecated user data. Consider removing if unused.
    */
   GlobalUser: any;
-   /**
+  /**
    * @property {OrganizationDTO} defaultOrg - The default organization.
    */
   defaultOrg: OrganizationDTO;
-    /**
+  /**
    * @property {OrganizationDTO[]} organization - An array of organizations.
    */
-    orgIdToUse:number;
+  orgIdToUse: number;
   organization: OrganizationDTO[];
-  selectedOrg:OrganizationDTO;
+  selectedOrg: OrganizationDTO;
   /**
    * @property {BranchDTO} defaultBranch - The default branch.
    */
@@ -93,39 +101,37 @@ export class ReceiptCaptureComponent {
    * @property {StaffDto} users - The Staff data to fetch client details
    */
   users: StaffDto;
-    /**
+  /**
    * @property {BranchDTO[]} branches - An array of available branches.
    */
   branches: BranchDTO[] = [];
-   /**
+  /**
    * @property {number} organizationId - The ID of the organization.
    */
   organizationId: number;
-    /**
+  /**
    * @property {number | null} selectedCountryId - The ID of the selected country (nullable).
    */
- 
-  
+
   /**
    * @property {string | null} selectedOrganization - The name of the currently selected organization (nullable).
    */
   selectedOrganization: string | null = null; // Currently selected organization
-    /**
+  /**
    * @property {any} selectedBranchId - ID of the selected branch.
    * @deprecated Consider using defaultBranch.id or selectedBranch directly.
    */
-  
-   /**
+
+  /**
    * @property {string} defaultBranchName - The name of the default branch.
    * @deprecated Consider accessing defaultBranch.name directly.
    */
- 
-   /**
+
+  /**
    * @property {number} selectedOrgId - The ID of the selected organization.
    */
-  
- 
-   isDateRequired:boolean=false;
+
+  isDateRequired: boolean = false;
 
   /**
    * @property {number} receiptigPointId - The ID of the receipting point.
@@ -135,7 +141,7 @@ export class ReceiptCaptureComponent {
    * @property {BanksDTO} selectedBank - The selected bank details.
    */
   selectedBank: BanksDTO;
-/**
+  /**
    * @property {boolean} backdatingEnabled - Flag to enable backdating (adjust this based on business logic).
    */
   //control flags
@@ -144,26 +150,26 @@ export class ReceiptCaptureComponent {
    * @property {boolean} isNarrationFromLov - Flag indicating if narration is selected from the list of values.
    */
   isNarrationFromLov = false;
-   /**
+  /**
    * @property {boolean} isSaveBtnActive - Flag indicating if the save button is active.
    */
   isSaveBtnActive = true;
-  
+
   /**
    * @property {boolean} isSubmitButtonVisible - Flag indicating if the submit button is visible.
    */
   isSubmitButtonVisible: boolean = false;
-   /**
+  /**
    * @property {boolean} exchangeRateText - Flag to control the visibility of exchange rate text.
    */
   exchangeRateText: boolean = false;
-  
+
   /**
    * @property {boolean} exchangeFound - Flag to indicate if an exchange rate was found.
    */
   exchangeFound: boolean = false;
   // 1.3 Receipt capture Details
-/**
+  /**
    * @property {BankDTO[]} drawersBanks - Array of banks for the drawers.
    */
   drawersBanks: BankDTO[] = [];
@@ -172,29 +178,29 @@ export class ReceiptCaptureComponent {
    */
   //currency details
   currencies: CurrencyDTO[] = [];
-   /**
+  /**
    * @property {number | null} defaultCurrencyId - The ID of the default currency (nullable).
    */
   defaultCurrencyId: number | null = null;
-    /**
+  /**
    * @property {number} exchangeRate - The default exchange rate.
-   */i
+   */ i;
   exchangeRate: number = 0; // Default exchange rate
- /**
+  /**
    * @property {PaymentModesDTO[]} paymentModes - An array of available payment modes.
    */
   //payment mode details
   paymentModes: PaymentModesDTO[] = [];
-  
+
   /**
    * @property {boolean} showChequeOptions - Flag to control the visibility of cheque options.
    */
   showChequeOptions: boolean = false;
-    /**
+  /**
    * @property {string} selectedPaymentMode - The currently selected payment mode.
    */
   selectedPaymentMode: string = '';
-    /**
+  /**
    * @property {boolean} isChequeOptionSelected - Flag indicating if a cheque option is selected.
    */
 
@@ -204,43 +210,43 @@ export class ReceiptCaptureComponent {
    * @property {string | undefined} currencySymbolGlobal - The global currency symbol (undefined if not set).
    */
   currencySymbolGlobal: string | undefined;
-  
+
   /**
    * @property {string | undefined} selectedCurrencySymbol - The symbol of the selected currency (undefined if not set).
    */
   selectedCurrencySymbol: string | undefined; // To store the currency symbol for checks
-   /**
+  /**
    * @property {number} selectedCurrencyCode - The code of the selected currency.
    */
   selectedCurrencyCode: number = 0;
-    /**
+  /**
    * @property {number | null} currencyGlobal - Global currency details.
    */
   currencyGlobal: number | null = null;
-    /**
+  /**
    * @property {string | undefined} exchangeRates - Fetched exchange rate (undefined if not set).
    */
   exchangeRates: string | undefined; // Fetched exchange rate
-  
+
   /**
    * @property {any} manualExchangeRate - The manually entered exchange rate.
    */
   manualExchangeRate: any;
-   /**
+  /**
    * @property {any} defaultCurrencyName - The name of the default currency.
    */
   defaultCurrencyName: any;
-  
+
   /**
    * @property {string} minDate - The minimum allowed date for receipt or document date (used to enable backdating).
    */
   //document and receipt date details
   minDate: string; // To enable backdating if necessary
-   /**
+  /**
    * @property {string} maxDate - The maximum allowed date for receipt or document date (used to disable future dates).
    */
   maxDate: string; // To disable future dates
- /**
+  /**
    * @property {ReceiptingPointsDTO[]} receiptingPoints - An array of available receipting points.
    */
   //receipting point details
@@ -249,26 +255,26 @@ export class ReceiptCaptureComponent {
    * @property {number} receiptingPointId - The ID of the receipting point.
    */
   receiptingPointId: number;
-    /**
+  /**
    * @property {string} receiptingPointAutoManual - AutoManual configuration of receipt
    */
   receiptingPointAutoManual: string;
-  
+
   /** @property {string} receiptingPointName - The  name receipting point. */
   receiptingPointName: string;
-    /**
+  /**
    * @property {any} currentReceiptingPoint - The selected receipting point details.
    */
   currentReceiptingPoint: any;
-  
+
   /**
    * @property {number} globalReceiptNumber - The global receipt number.
    */
   //fetchReceiptNumber
   globalReceiptNumber: number;
-   /** @property {string} globalReceiptNo - The global receipt number to be used. */
+  /** @property {string} globalReceiptNo - The global receipt number to be used. */
   globalReceiptNo: string;
-  
+
   /**
    * @property {any} setReceiptNumber - A variable to manage the receipt number.
    */
@@ -277,85 +283,85 @@ export class ReceiptCaptureComponent {
    * @property {string | null} originalNarration - Stores the original narration when selected from the list (nullable).
    */
   originalNarration: string | null = null;
-  
+
   /**
    * @property {boolean} onBankSelected - Flag if a bank was selected.
    */
   //Bank Details
   onBankSelected: boolean = false;
-    /**
+  /**
    * @property {BanksDTO[]} bankAccounts - An array of available bank accounts.
    */
   bankAccounts: BanksDTO[] = [];
-  
+
   /** @property {any} globalBankAccountVariable - The bank details. */
   globalBankAccountVariable: any;
-    /** @property {number} selectedBankCode - The code of the selected bank. */
+  /** @property {number} selectedBankCode - The code of the selected bank. */
   selectedBankCode: number;
-   /**
+  /**
    * @property {BanksDTO[]} filteredBankAccounts - Filtered list of bank accounts based on search criteria.
    */
   filteredBankAccounts: BanksDTO[] = [];
-  
+
   /**
    * @property {string} bankSearchTerm - The search term for filtering bank accounts.
    */
   bankSearchTerm: string = '';
-    /**
+  /**
    * @property {number} globalBankCode - The global bank code.
    */
   globalBankCode: number;
-    /**
+  /**
    * @property {string} globalBankType - The global bank type.
    */
   globalBankType: string;
-    /**
+  /**
    * @property {NarrationDTO[]} narrations - An array of available narrations.
    */
   //narration details
   narrations: NarrationDTO[] = [];
-    /**
+  /**
    * @property {NarrationDTO[]} filteredNarrations - A filtered array of available narrations.
    */
   filteredNarrations: NarrationDTO[] = [];
-   /**
+  /**
    * @property {ChargesDTO[]} charges - An array of available charge types.
    */
   //receipt charges
   charges: ChargesDTO[] = [];
-   /**
+  /**
    * @property {ExistingChargesResponseDTO[]} chargeList - An array of existing charges.
    */
   chargeList: ExistingChargesResponseDTO[];
-  
+
   /**
    * @property {boolean} chargesEnabled - Flag indicating if charges are enabled.
    */
   chargesEnabled: boolean = false;
-  
+
   /**
    * @property {number} chargeAmount - The amount of the charge.
    */
   chargeAmount: number = 0;
-  
+
   /** @property {number} receiptChargeId - Component-level variable to store the selected charge ID.*/
   receiptChargeId!: number; // Component-level variable to store the selected charge ID
-  
+
   /**
    * @property {number} receiptResponse - The receipt response.
    */
   receiptResponse: number;
-  selectedbranchId:number;
+  selectedbranchId: number;
   /** @property {number | null} editReceiptExpenseId - To hold the receiptExpenseId of the edited charge.*/
   editReceiptExpenseId: number | null = null; // To hold the receiptExpenseId of the edited charge
-  selectedBranch:BranchDTO;
-  isdefaultCurrencySelected:boolean=true;
-  makeFieldRequired:boolean=false;
-  requireDocumentField:boolean=false;
-  storedDefaultCurrency:number;
-  showfields:boolean=false;
+  selectedBranch: BranchDTO;
+  isdefaultCurrencySelected: boolean = true;
+  makeFieldRequired: boolean = false;
+  requireDocumentField: boolean = false;
+  storedDefaultCurrency: number;
+  showfields: boolean = false;
 
-/**
+  /**
    * Constructor for the `ReceiptCaptureComponent`.
    *
    * @param {FormBuilder} fb - The form builder for creating reactive forms.
@@ -382,11 +388,11 @@ export class ReceiptCaptureComponent {
     private fmsService: FmsService,
     private receiptDataService: ReceiptDataService,
     private router: Router,
-    private localStorage:LocalStorageService,
-    private sessionStorage:SessionStorageService,
-    public translate: TranslateService 
+    private localStorage: LocalStorageService,
+    private sessionStorage: SessionStorageService,
+    public translate: TranslateService
   ) {}
- /**
+  /**
    * Lifecycle hook called once the component is initialized.
    * It initializes the form, retrieves data from localStorage, and fetches required data from backend services.
    * @returns {void}
@@ -394,65 +400,58 @@ export class ReceiptCaptureComponent {
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
-  //  let my =this.sessionStorage.getItem('user');
-  //  console.log('my>',my);
-  
+    //  let my =this.sessionStorage.getItem('user');
+    //  console.log('my>',my);
+
     // Retrieve organization from localStorage or receiptDataService
-  let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
-  let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
-  
-  this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
-  this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+    let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
+    let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
 
-  // Ensure only one organization is active at a time
-  if (this.selectedOrg) {
-    this.defaultOrg = null;
-  } else if (this.defaultOrg) {
-    this.selectedOrg = null;
-  }
+    this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+    this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
 
- 
+    // Ensure only one organization is active at a time
+    if (this.selectedOrg) {
+      this.defaultOrg = null;
+    } else if (this.defaultOrg) {
+      this.selectedOrg = null;
+    }
 
-  // Retrieve branch from localStorage or receiptDataService
-  let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
-  let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
+    // Retrieve branch from localStorage or receiptDataService
+    let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
+    let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
 
-  this.selectedBranch = storedSelectedBranch ? JSON.parse(storedSelectedBranch) : null;
-  this.defaultBranch = storedDefaultBranch ? JSON.parse(storedDefaultBranch) : null;
+    this.selectedBranch = storedSelectedBranch
+      ? JSON.parse(storedSelectedBranch)
+      : null;
+    this.defaultBranch = storedDefaultBranch
+      ? JSON.parse(storedDefaultBranch)
+      : null;
 
-  // Ensure only one branch is active at a time
-  if (this.selectedBranch) {
-    this.defaultBranch = null;
-  } else if (this.defaultBranch) {
-    this.selectedBranch = null;
-  }
+    // Ensure only one branch is active at a time
+    if (this.selectedBranch) {
+      this.defaultBranch = null;
+    } else if (this.defaultBranch) {
+      this.selectedBranch = null;
+    }
 
-  
-   
-    
     let users = this.sessionStorage.getItem('user');
-    this.users = users? JSON.parse(users) : null;
-    
-
-    
+    this.users = users ? JSON.parse(users) : null;
 
     const currentDate = new Date();
     this.minDate = ''; // Set this based on your business logic (e.g., earliest backdate allowed)
     this.maxDate = this.formatDate(currentDate);
 
-  
-
     // let selectedCountryId = localStorage.getItem('selectedCountryId');
     // this.selectedCountryId = Number(selectedCountryId);
 
     this.fetchDrawersBanks(
-       this.selectedOrg?.country.id || this.defaultOrg?.country.id
+      this.selectedOrg?.country.id || this.defaultOrg?.country.id
     );
     this.fetchCurrencies();
     this.fetchPayments(this.selectedOrg?.id || this.defaultOrg?.id);
     //this.fetchBanks(this.defaultBranchId || this.selectedBranchId,this.defaultCurrencyId);
     this.restoreFormData(); // Restore saved data
-
 
     this.fetchReceiptNumber(
       this.defaultBranch?.id || this.selectedBranch?.id,
@@ -465,6 +464,7 @@ export class ReceiptCaptureComponent {
    * Initializes the `receiptingDetailsForm` with the required form controls and validators.
    * @returns {void}
    */
+
   captureReceiptForm() {
     const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
     this.receiptingDetailsForm = this.fb.group({
@@ -472,8 +472,8 @@ export class ReceiptCaptureComponent {
       organization: ['', Validators.required], // Set default value here as well
       amountIssued: ['', Validators.required],
       receiptingPoint: ['', Validators.required],
-     bankAccountType:['',Validators.required],
-     //bankAccountCode:['',Validators.required],
+      bankAccountType: ['', Validators.required],
+      //bankAccountCode:['',Validators.required],
       receiptNumber: ['', Validators.required],
       // receiptNumber: [{ value: '', disabled: true }],
       ipfFinancier: [''],
@@ -510,7 +510,7 @@ export class ReceiptCaptureComponent {
       this.receiptingDetailsForm.patchValue(savedData);
     }
   }
- /**
+  /**
    * Fetches available payment methods from the `FmsService`.
    * @param {number} orgCode - The organization code.
    * @returns {void}
@@ -536,17 +536,17 @@ export class ReceiptCaptureComponent {
     this.currencyService.getCurrencies().subscribe({
       next: (currencies: CurrencyDTO[]) => {
         this.currencies = currencies;
-  // Check if user has previously selected a currency
-  const savedCurrencyId = this.receiptDataService.getSelectedCurrency();
+        // Check if user has previously selected a currency
+        const savedCurrencyId = this.receiptDataService.getSelectedCurrency();
         // Find the default currency - using string literal 'Y' directly
         if (savedCurrencyId) {
           this.selectedCurrencyCode = savedCurrencyId;
           this.receiptingDetailsForm.patchValue({ currency: savedCurrencyId });
-             // Fetch banks for the selected currency
-             this.fetchBanks(
-              this.defaultBranch?.id || this.selectedBranch?.id,
-              savedCurrencyId
-            );
+          // Fetch banks for the selected currency
+          this.fetchBanks(
+            this.defaultBranch?.id || this.selectedBranch?.id,
+            savedCurrencyId
+          );
           return;
         }
         const defaultCurrency = currencies.find(
@@ -566,7 +566,7 @@ export class ReceiptCaptureComponent {
           this.receiptingDetailsForm.patchValue({
             currency: this.defaultCurrencyId, // Use ID instead of symbol
           });
-        
+
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
             this.defaultCurrencyId
@@ -581,111 +581,109 @@ export class ReceiptCaptureComponent {
       },
     });
   }
- /**
+  /**
    * Handles the currency change event, updating the selected currency code and fetching the corresponding exchange rate.
    * @param {Event} event - The currency change event.
    * @returns {void}
    */
   onCurrencyChanged(event: Event): any {
-    this.receiptingDetailsForm.patchValue({bankAccountType:null}); 
-    this.receiptingDetailsForm.patchValue({bankAccount:null});
-    this.receiptingDetailsForm.patchValue({receiptingPoint:null});
-    this.receiptingDetailsForm.patchValue({receiptNumber:null});
+    this.receiptingDetailsForm.patchValue({ bankAccountType: null });
+    this.receiptingDetailsForm.patchValue({ bankAccount: null });
+    this.receiptingDetailsForm.patchValue({ receiptingPoint: null });
+    this.receiptingDetailsForm.patchValue({ receiptNumber: null });
     this.exchangeRateText = true;
     const selectedCurrencyCodes = (event.target as HTMLSelectElement).value;
     this.selectedCurrencyCode = Number(selectedCurrencyCodes);
-     // Store selected currency in the service
-  this.receiptDataService.setSelectedCurrency(this.selectedCurrencyCode);
+    // Store selected currency in the service
+    this.receiptDataService.setSelectedCurrency(this.selectedCurrencyCode);
     this.fetchBanks(
       this.defaultBranch?.id || this.selectedBranch?.id,
       this.selectedCurrencyCode
     );
-    
+
     // Find the currency from the list
     const selectedCurrency = this.currencies.find(
       (currency) => currency.id === this.selectedCurrencyCode
     );
-    this.receiptingDetailsForm.patchValue({currency:this.selectedCurrencyCode});
-    
+    this.receiptingDetailsForm.patchValue({
+      currency: this.selectedCurrencyCode,
+    });
+
     // Get the symbol of the selected currency
     this.selectedCurrencySymbol = selectedCurrency
       ? selectedCurrency.symbol
       : '';
-// **STOP if the selected currency is the same as the default currency**
-if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
-
-
- this.isdefaultCurrencySelected=false;
-  // this.exchangeRate = 0; // Reset exchange rate
-  // this.exchangeFound = false; // Hide span text
-  this.receiptingDetailsForm.patchValue({ exchangeRate: 0 }); // Clear exchange rate field
-  return; // Stop execution
-}   
- // If another currency is selected, ensure the span is shown
- this.isdefaultCurrencySelected = true;
-  this.fetchCurrencyRate();   
+    // **STOP if the selected currency is the same as the default currency**
+    if (Number(this.selectedCurrencyCode) === Number(this.defaultCurrencyId)) {
+      this.isdefaultCurrencySelected = false;
+      // this.exchangeRate = 0; // Reset exchange rate
+      // this.exchangeFound = false; // Hide span text
+      this.receiptingDetailsForm.patchValue({ exchangeRate: 0 }); // Clear exchange rate field
+      return; // Stop execution
+    }
+    // If another currency is selected, ensure the span is shown
+    this.isdefaultCurrencySelected = true;
+    this.fetchCurrencyRate();
   }
-/**
+  /**
    * Fetches the exchange rate for the selected currency from the `CurrencyService`.
    * @returns {void}
    */
   fetchCurrencyRate() {
-    
-  
-
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
-    this.currencyService.getCurrenciesRate(this.defaultCurrencyId || this.storedDefaultCurrency).subscribe({
-      next: (rates) => {
-        const matchingRates = rates.filter(
-          (rate) => rate.targetCurrencyId === this.selectedCurrencyCode
-        );
+    this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
+    this.currencyService
+      .getCurrenciesRate(this.defaultCurrencyId || this.storedDefaultCurrency)
+      .subscribe({
+        next: (rates) => {
+          const matchingRates = rates.filter(
+            (rate) => rate.targetCurrencyId === this.selectedCurrencyCode
+          );
 
-        if (matchingRates.length === 0) {
-          this.exchangeRate = 0; // Set exchange rate to zero
-          this.exchangeFound = false; // Hide span text
-          this.receiptingDetailsForm.patchValue({ exchangeRate: 0 });
-        } else if (matchingRates.length === 1) {
-          this.exchangeRate = matchingRates[0].rate; // Assign exchange rate
-          this.exchangeFound = true; // Show span text
-          //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
-          this.receiptingDetailsForm.patchValue({
-            exchangeRate: this.exchangeRate,
-          });
-        } else {
-          const validRates = matchingRates
-            .filter((rate) => new Date(rate.withEffectToDate) >= currentDate)
-            .sort(
-              (a, b) =>
-                new Date(b.withEffectToDate).getTime() -
-                new Date(a.withEffectToDate).getTime()
-            );
-
-          if (validRates.length > 0) {
-            this.exchangeRate = validRates[0].rate; // Assign most recent exchange rate
-            //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
+          if (matchingRates.length === 0) {
+            this.exchangeRate = 0; // Set exchange rate to zero
+            this.exchangeFound = false; // Hide span text
+            this.receiptingDetailsForm.patchValue({ exchangeRate: 0 });
+          } else if (matchingRates.length === 1) {
+            this.exchangeRate = matchingRates[0].rate; // Assign exchange rate
             this.exchangeFound = true; // Show span text
+            //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
             this.receiptingDetailsForm.patchValue({
               exchangeRate: this.exchangeRate,
             });
           } else {
-            this.exchangeRate = 0;
-            this.exchangeFound = false;
-            this.receiptingDetailsForm.patchValue({ exchangeRate: 0 });
+            const validRates = matchingRates
+              .filter((rate) => new Date(rate.withEffectToDate) >= currentDate)
+              .sort(
+                (a, b) =>
+                  new Date(b.withEffectToDate).getTime() -
+                  new Date(a.withEffectToDate).getTime()
+              );
+
+            if (validRates.length > 0) {
+              this.exchangeRate = validRates[0].rate; // Assign most recent exchange rate
+              //this.sessionStorage.setItem('exchangeRate', String(this.exchangeRate));
+              this.exchangeFound = true; // Show span text
+              this.receiptingDetailsForm.patchValue({
+                exchangeRate: this.exchangeRate,
+              });
+            } else {
+              this.exchangeRate = 0;
+              this.exchangeFound = false;
+              this.receiptingDetailsForm.patchValue({ exchangeRate: 0 });
+            }
           }
-        }
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status
-        );
-      
-      },
-    });
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err.error.status
+          );
+        },
+      });
   }
-/**
+  /**
    * Confirms the manual exchange rate value and posts it to the backend service.
    * @returns {void}
    */
@@ -713,14 +711,13 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
               'Exchange rate saved successfully'
             );
 
-             // ✅ After successful save, ensure the UI reflects the new value
-             this.exchangeRate = this.manualExchangeRate;
-             this.receiptingDetailsForm.patchValue({
-                 exchangeRate: this.manualExchangeRate
-             });
-             
+            // ✅ After successful save, ensure the UI reflects the new value
+            this.exchangeRate = this.manualExchangeRate;
+            this.receiptingDetailsForm.patchValue({
+              exchangeRate: this.manualExchangeRate,
+            });
+
             this.closeModal2();
-           
           },
           error: (err) => {
             this.globalMessagingService.displayErrorMessage(
@@ -738,7 +735,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       );
     }
   }
-  
+
   /**
    * Confirms the exchange rate.
    * @returns {void}
@@ -746,7 +743,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
   confirmExchangeRate(): void {
     this.closeModal2();
   }
-/**
+  /**
    * Closes the exchange rate modal.
    * @returns {void}
    */
@@ -764,7 +761,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       modal.style.display = 'none';
     }
   }
- /**
+  /**
    * Shows the exchange rate modal.
    * @returns {void}
    */
@@ -798,7 +795,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-  
+
   /**
    * Fetches the list of drawers banks from the `BankService` based on the selected country and subscribes to call it.
    * @param {number} countryId - The ID of the country.
@@ -819,7 +816,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       },
     });
   }
- /**
+  /**
    * Handles hovering over a payment mode, showing cheque options if "Cheque" is selected.
    * @param {any} event - The hover event.
    * @returns {void}
@@ -839,7 +836,7 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       this.showChequeOptions = false;
     }
   }
-/**
+  /**
    * Handles leaving the cheque options, hiding them if no cheque type is selected.
    * @returns {void}
    */
@@ -858,19 +855,19 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     this.receiptingDetailsForm.get('chequeType')?.setValue(type);
     this.showChequeOptions = false; // Hide the options after selection
     this.updateDateRestrictions();
-    this.isDateRequired=true;
+    this.isDateRequired = true;
   }
- /**
+  /**
    * Handles the selection of a payment mode, updating the form fields accordingly.
    * @param {any} event - The payment mode selection event.
    * @returns {void}
    */
   onPaymentModeSelected(event: any): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-   
+
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
-    this.updateDateRestrictions();  
+    this.updateDateRestrictions();
   }
 
   /**
@@ -885,70 +882,70 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
     if (paymentMode === 'CASH') {
       this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-    
-     
+
       drawersBankControl?.disable();
       paymentRefControl?.disable();
       drawersBankControl?.setValue(null);
       paymentRefControl?.setValue(null);
-      this.makeFieldRequired=false;
-      this.showfields=false;
+      this.makeFieldRequired = false;
+      this.showfields = false;
     } else if (paymentMode === 'CHEQUE') {
-      this.showfields=true;
+      this.showfields = true;
       this.showChequeOptions = true;
-      this.makeFieldRequired =true;
+      this.makeFieldRequired = true;
 
-    drawersBankControl?.enable();
-    paymentRefControl?.enable();
-    
-    
-    }else if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque'){
-      this.makeFieldRequired=true;
-    }
-    
-     else {
-      this.showfields=true;
-      this.makeFieldRequired=true;
+      drawersBankControl?.enable();
+      paymentRefControl?.enable();
+    } else if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
+      this.makeFieldRequired = true;
+    } else {
+      this.showfields = true;
+      this.makeFieldRequired = true;
       drawersBankControl?.enable();
       paymentRefControl?.enable();
       //  this.resetChequeFields(chequeTypeModal);
       this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-    
     }
-
   }
   updateDateRestrictions(): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
 
-    const dateInput = document.getElementById('documentDate') as HTMLInputElement;
+    const dateInput = document.getElementById(
+      'documentDate'
+    ) as HTMLInputElement;
 
     if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
-        const today = new Date();
-        today.setDate(today.getDate() + 1);  // Tomorrow
+      const today = new Date();
+      today.setDate(today.getDate() + 1); // Tomorrow
 
-        // Set the `min` attribute on the date input to tomorrow (disables today & past dates)
-        dateInput.min = this.formatDates(today);
+      // Set the `min` attribute on the date input to tomorrow (disables today & past dates)
+      dateInput.min = this.formatDates(today);
 
-        const currentDocumentDate = this.receiptingDetailsForm.get('documentDate')?.value;
-        if (currentDocumentDate) {
-            const selectedDate = new Date(currentDocumentDate);
-            if (selectedDate < today) {
-                this.receiptingDetailsForm.patchValue({ documentDate: this.formatDates(today) });
-            }
-        } else {
-            // If documentDate is empty (initial load), set to tomorrow
-            this.receiptingDetailsForm.patchValue({ documentDate: this.formatDates(today) });
+      const currentDocumentDate =
+        this.receiptingDetailsForm.get('documentDate')?.value;
+      if (currentDocumentDate) {
+        const selectedDate = new Date(currentDocumentDate);
+        if (selectedDate < today) {
+          this.receiptingDetailsForm.patchValue({
+            documentDate: this.formatDates(today),
+          });
         }
+      } else {
+        // If documentDate is empty (initial load), set to tomorrow
+        this.receiptingDetailsForm.patchValue({
+          documentDate: this.formatDates(today),
+        });
+      }
     } else {
-        dateInput.min = '';  // Clear restrictions
+      dateInput.min = ''; // Clear restrictions
     }
-}
+  }
 
   formatDates(date: Date): string {
     return date.toISOString().split('T')[0];
   }
-  
+
   /**
    * Fetches the list of bank accounts from the `ReceiptService` based on the selected branch and currency and subscribes to call it..
    * @param {number} branchCode - The branch code.
@@ -960,30 +957,31 @@ this.storedDefaultCurrency = this.receiptDataService.getDefaultCurrency();
       next: (response) => {
         this.bankAccounts = response.data;
         // Check if user has previously selected a bank
-      const savedBankCode = this.receiptDataService.getSelectedBank();
-      if (savedBankCode && this.bankAccounts.some(bank => bank.code === savedBankCode)) {
-        this.selectedBankCode = savedBankCode;
-        return;
-       
-      }else{
-         // Clear bank selection if previous selection is invalid
-         this.selectedBankCode = null;
-         this.receiptingDetailsForm.patchValue({
-           bankAccount: null,
-         });
-      }
+        const savedBankCode = this.receiptDataService.getSelectedBank();
+        if (
+          savedBankCode &&
+          this.bankAccounts.some((bank) => bank.code === savedBankCode)
+        ) {
+          this.selectedBankCode = savedBankCode;
+          return;
+        } else {
+          // Clear bank selection if previous selection is invalid
+          this.selectedBankCode = null;
+          this.receiptingDetailsForm.patchValue({
+            bankAccount: null,
+          });
+        }
 
-this.selectedBank = null;
+        this.selectedBank = null;
 
-this.receiptingDetailsForm.patchValue({
-  bankAccount: null,
-  bankAccountType: null,
-});
+        this.receiptingDetailsForm.patchValue({
+          bankAccount: null,
+          bankAccountType: null,
+        });
 
-// Ensure `onBankSelected` is reset to false
-this.onBankSelected = false;
+        // Ensure `onBankSelected` is reset to false
+        this.onBankSelected = false;
         //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
-
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -993,7 +991,7 @@ this.onBankSelected = false;
       },
     });
   }
-   /**
+  /**
    * Handles the selection of a bank, fetching receipting points and the receipt number for the selected bank.
    * @param {Event} event - The bank selection event.
    * @returns {void}
@@ -1001,20 +999,21 @@ this.onBankSelected = false;
   onBank(event: Event): void {
     const selectedBankValue = (event.target as HTMLSelectElement).value;
     //const selectedBankCode = +(event.target as HTMLSelectElement).value; // Use '+' to convert string to number
-     // Prevent further processing if "Select" is chosen (value is empty string)
- 
-     // 🚨 Guard clause - Exit immediately if 'Select' option is chosen
-     if (selectedBankValue === '' || selectedBankValue === 'Select') {  // Add 'Select' if that's actually the value in the options
+    // Prevent further processing if "Select" is chosen (value is empty string)
+
+    // 🚨 Guard clause - Exit immediately if 'Select' option is chosen
+    if (selectedBankValue === '' || selectedBankValue === 'Select') {
+      // Add 'Select' if that's actually the value in the options
       this.selectedBankCode = null;
-      this.receiptingDetailsForm.patchValue({receiptingPoint:null});
-      this.receiptingDetailsForm.patchValue({receiptNumber:null});
+      this.receiptingDetailsForm.patchValue({ receiptingPoint: null });
+      this.receiptingDetailsForm.patchValue({ receiptNumber: null });
       this.selectedBank = null;
       this.onBankSelected = false;
 
-      return;  // <=== Critical: Exit and do not fetch receipting points or receipt number
-  }
-  this.selectedBankCode = +selectedBankValue;
-   // this.selectedBankCode = selectedBankCode; // Store the selected bank code
+      return; // <=== Critical: Exit and do not fetch receipting points or receipt number
+    }
+    this.selectedBankCode = +selectedBankValue;
+    // this.selectedBankCode = selectedBankCode; // Store the selected bank code
     this.receiptDataService.setSelectedBank(this.selectedBankCode); // Store selected bank
 
     // Find the selected bank object based on the code
@@ -1024,59 +1023,60 @@ this.onBankSelected = false;
 
     if (this.selectedBank) {
       //this.selectedBank = selectedBank;
-      
-//this.receiptingDetailsForm.patchValue({bankAccountCode:this.selectedBank.code});
-   this.receiptingDetailsForm.patchValue({bankAccountType:this.selectedBank.type});  
-   this.onBankSelected = !!this.selectedBank;
-   this.onBankSelected = true;
+
+      //this.receiptingDetailsForm.patchValue({bankAccountCode:this.selectedBank.code});
+      this.receiptingDetailsForm.patchValue({
+        bankAccountType: this.selectedBank.type,
+      });
+      this.onBankSelected = !!this.selectedBank;
+      this.onBankSelected = true;
     } else {
       // this.onBankSelected = !!this.selectedBank;
-     // this.onBankSelected = false;
+      // this.onBankSelected = false;
     }
-   
- // Only fetch points/receipts if a valid bank is selected
- if (this.onBankSelected) {
-    this.receiptService
-      .getReceiptingPoints(
-        this.defaultBranch?.id || this.selectedBranch?.id,
-        this.loggedInUser.code
-      )
-      .subscribe({
-        next: (response: { data: ReceiptingPointsDTO[] }) => {
-          if (response.data.length > 0) {
-            const receiptingPoint = response.data[0]; // Use the first receipting point
-            this.receiptingDetailsForm
-              .get('receiptingPoint')
-              ?.setValue(receiptingPoint.name);
-            this.receiptingPointId = receiptingPoint.id;
 
-            this.receiptingPointAutoManual = receiptingPoint.autoManual;
+    // Only fetch points/receipts if a valid bank is selected
+    if (this.onBankSelected) {
+      this.receiptService
+        .getReceiptingPoints(
+          this.defaultBranch?.id || this.selectedBranch?.id,
+          this.loggedInUser.code
+        )
+        .subscribe({
+          next: (response: { data: ReceiptingPointsDTO[] }) => {
+            if (response.data.length > 0) {
+              const receiptingPoint = response.data[0]; // Use the first receipting point
+              this.receiptingDetailsForm
+                .get('receiptingPoint')
+                ?.setValue(receiptingPoint.name);
+              this.receiptingPointId = receiptingPoint.id;
 
-            this.sessionStorage.setItem(
-              'receiptingPoint',
-              JSON.stringify(receiptingPoint)
-            );
-          } else {
+              this.receiptingPointAutoManual = receiptingPoint.autoManual;
+
+              this.sessionStorage.setItem(
+                'receiptingPoint',
+                JSON.stringify(receiptingPoint)
+              );
+            } else {
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'No receipting point data found.'
+              );
+            }
+          },
+          error: (err) => {
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              'No receipting point data found.'
+              err.error?.message || 'Failed to fetch receipting points.'
             );
-          }
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error?.message || 'Failed to fetch receipting points.'
-          );
-        },
-      });
+          },
+        });
 
-  
-    this.fetchReceiptNumber(
-      this.defaultBranch?.id || this.selectedBranch?.id,
-      this.loggedInUser.code
-    );
-  }
+      this.fetchReceiptNumber(
+        this.defaultBranch?.id || this.selectedBranch?.id,
+        this.loggedInUser.code
+      );
+    }
   }
   /**
    * Fetches the receipt number from the `ReceiptService` for the selected branch and user.
@@ -1108,16 +1108,16 @@ this.onBankSelected = false;
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-         err.error.msg ||  'Failed to fetch receipt number'
+          err.error.msg || 'Failed to fetch receipt number'
         );
       },
     });
   }
-/**
- * Fetches the list of available narrations from the `ReceiptService`.
- * Populates the `narrations` and `filteredNarrations` arrays.
- * @returns {void}
- */
+  /**
+   * Fetches the list of available narrations from the `ReceiptService`.
+   * Populates the `narrations` and `filteredNarrations` arrays.
+   * @returns {void}
+   */
   fetchNarrations() {
     this.receiptService.getNarrations().subscribe({
       next: (response) => {
@@ -1132,7 +1132,7 @@ this.onBankSelected = false;
       },
     });
   }
- /**
+  /**
    * Handles the narration dropdown change event.
    * Populates the narration field with the selected value, resets the dropdown,
    * and updates the `filteredNarrations` list.
@@ -1158,7 +1158,7 @@ this.onBankSelected = false;
       );
     }
   }
-   /**
+  /**
    * Handles changes in the narration text field.
    * Restores the filtered narrations if the narration text is cleared.
    * @returns {void}
@@ -1173,18 +1173,20 @@ this.onBankSelected = false;
       this.isNarrationFromLov = false; // Reset flag
     }
   }
-    /**
+  /**
    * Fetches charge types from the `ReceiptService` and subscribes to call it.
    * @returns {void}
    */
   // Fetch charge types
   fetchCharges(): void {
     this.receiptService
-      .getCharges(this.selectedOrg?.id || this.defaultOrg?.id, this.defaultBranch?.id || this.selectedBranch?.id)
+      .getCharges(
+        this.selectedOrg?.id || this.defaultOrg?.id,
+        this.defaultBranch?.id || this.selectedBranch?.id
+      )
       .subscribe({
         next: (response) => {
           this.charges = response.data;
-         
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(
@@ -1194,7 +1196,7 @@ this.onBankSelected = false;
         },
       });
   }
-    /**
+  /**
    * Fetches existing charges from the `ReceiptService` for a given receipt number and subscribes to call it.
    * @param {number} receiptNo - The receipt number.
    * @returns {void}
@@ -1203,8 +1205,6 @@ this.onBankSelected = false;
     this.receiptService.getExistingCharges(receiptNo).subscribe({
       next: (response) => {
         this.chargeList = response.data;
-
-       
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1226,9 +1226,9 @@ this.onBankSelected = false;
     if (option === 'yes') {
       this.chargesEnabled = true;
       this.fetchCharges();
-      setTimeout(()=>{
+      setTimeout(() => {
         this.fetchExistingCharges(this.globalReceiptNumber);
-      },1000)
+      }, 1000);
       //this.fetchExistingCharges(this.globalReceiptNumber);
       const chargeType =
         this.receiptingDetailsForm.get('selectedChargeType')?.value;
@@ -1243,7 +1243,7 @@ this.onBankSelected = false;
       }
     }
   }
-   /**
+  /**
    * Edits a selected charge and populates the form with its details.
    * Displays the submit button and hides the save button.
    * @param {number} index - The index of the charge in the `chargeList`.
@@ -1290,12 +1290,13 @@ this.onBankSelected = false;
           modalInstance.hide();
         } else {
         }
-        this.globalMessagingService.displaySuccessMessage('Success:','charges posted successfully');
-        setTimeout(()=>{
+        this.globalMessagingService.displaySuccessMessage(
+          'Success:',
+          'charges posted successfully'
+        );
+        setTimeout(() => {
           this.fetchExistingCharges(this.globalReceiptNumber);
-        },1000)
-
-        
+        }, 1000);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1310,7 +1311,7 @@ this.onBankSelected = false;
    * @param {number} index - The index of the charge to delete in the `chargeList`.
    * @returns {void}
    */
-  
+
   deleteCharge(index: number): void {
     const charge = this.chargeList[index];
 
@@ -1325,10 +1326,11 @@ this.onBankSelected = false;
 
     this.receiptService.postChargeManagement(payload).subscribe({
       next: (response) => {
-      
-this.globalMessagingService.displaySuccessMessage('success','deletion was successful!');
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          'deletion was successful!'
+        );
         this.chargeList.splice(index, 1); // Remove from list
-        
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -1338,7 +1340,7 @@ this.globalMessagingService.displaySuccessMessage('success','deletion was succes
       },
     });
   }
-/**
+  /**
    * Saves charge details.
    * @returns {void}
    */
@@ -1352,7 +1354,7 @@ this.globalMessagingService.displaySuccessMessage('success','deletion was succes
       (charge) => charge.name === chargeType
     );
     this.receiptChargeId = selectedCharge.id; // Fetch the receiptChargeId
-   
+
     if (chargeAmount && chargeType) {
       this.submitChargeManagement();
     } else {
@@ -1361,9 +1363,9 @@ this.globalMessagingService.displaySuccessMessage('success','deletion was succes
         'all fields are required!'
       );
     }
-    setTimeout(()=>{
+    setTimeout(() => {
       this.fetchExistingCharges(this.globalReceiptNumber);
-    },1000)
+    }, 1000);
     //this.fetchExistingCharges(this.globalReceiptNumber);
   }
   /**
@@ -1418,7 +1420,10 @@ this.globalMessagingService.displaySuccessMessage('success','deletion was succes
         // Optionally refresh the charge list or handle other UI updates'
         const modalElement = document.getElementById('chargesModal');
         const modalInstance = bootstrap.Modal.getInstance(modalElement!);
-this.globalMessagingService.displaySuccessMessage('success:','charges successfully saved');
+        this.globalMessagingService.displaySuccessMessage(
+          'success:',
+          'charges successfully saved'
+        );
         if (modalInstance) {
           modalInstance.hide();
         }
@@ -1434,7 +1439,7 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
     this.receiptingDetailsForm.patchValue(chargeAmount);
     this.isSaveBtnActive = true;
   }
-/**
+  /**
    * Displays the charges modal programmatically.
    * @returns {void}
    */
@@ -1459,7 +1464,6 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
       'currency',
       'receiptDate',
       'receivedFrom',
-      
     ];
     let isValid = true;
     const formData = this.receiptingDetailsForm;
@@ -1481,7 +1485,7 @@ this.globalMessagingService.displaySuccessMessage('success:','charges successful
     const paymentRef = formData.get('paymentRef')?.value;
     const drawersBank = formData.get('drawersBank')?.value;
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-const documentDate = formData.get('documentDate')?.value;
+    const documentDate = formData.get('documentDate')?.value;
     if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
       isValid = false;
       this.globalMessagingService.displayErrorMessage(
@@ -1498,7 +1502,11 @@ const documentDate = formData.get('documentDate')?.value;
       );
       return false;
     }
-    if(paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque' && !documentDate){
+    if (
+      paymentMode === 'CHEQUE' &&
+      chequeType === 'post_dated_cheque' &&
+      !documentDate
+    ) {
       isValid = false;
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1509,31 +1517,30 @@ const documentDate = formData.get('documentDate')?.value;
 
     this.onNext();
   }
-   /**
+  /**
    * Resets the form values to the default
    * @returns {void}
    */
   clearForm(): void {
-    
- // Store current values of fields to preserve
- const preservedValues = {
-  currency: this.receiptingDetailsForm.get('currency')?.value,
-  organization: this.receiptingDetailsForm.get('organization')?.value,
-  selectedBranch:this.receiptingDetailsForm.get('selectedBranch')?.value,
-  documentDate: this.receiptingDetailsForm.get('documentDate')?.value,
-  receiptDate: this.receiptingDetailsForm.get('receiptDate')?.value
-};
-this.receiptingDetailsForm.reset();
+    // Store current values of fields to preserve
+    const preservedValues = {
+      currency: this.receiptingDetailsForm.get('currency')?.value,
+      organization: this.receiptingDetailsForm.get('organization')?.value,
+      selectedBranch: this.receiptingDetailsForm.get('selectedBranch')?.value,
+      documentDate: this.receiptingDetailsForm.get('documentDate')?.value,
+      receiptDate: this.receiptingDetailsForm.get('receiptDate')?.value,
+    };
+    this.receiptingDetailsForm.reset();
     // Restore preserved values
     this.receiptingDetailsForm.patchValue({
       currency: preservedValues.currency,
       organization: preservedValues.organization,
-      selectedBranch:preservedValues.selectedBranch,
+      selectedBranch: preservedValues.selectedBranch,
       documentDate: preservedValues.documentDate,
-      receiptDate: preservedValues.receiptDate
+      receiptDate: preservedValues.receiptDate,
     });
   }
-   /**
+  /**
    * Navigates to the previous screen
    *  which in this case is home screen.
    * @returns {void}
@@ -1542,17 +1549,15 @@ this.receiptingDetailsForm.reset();
     //this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     this.router.navigate(['/home/fms/']); // Navigate to the next screen
   }
-   /**
+  /**
    * Navigates to the next screen
    *   which in this case is client screen .
    * @returns {void}
    */
   onNext() {
-
-    
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
-    console.log('form data>>',formData);
+    //console.log('form data>>',formData);
     this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

@@ -6,12 +6,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import fmsStepsData from '../../data/fms-step.json';
 import {
   AccountTypeDTO,
   BranchDTO,
   ClientsDTO,
   GetAllocationDTO,
+ 
   TransactionDTO,
 } from '../../data/receipting-dto';
 
@@ -45,6 +46,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./client-search.component.css'],
 })
 export class ClientSearchComponent implements OnInit {
+  /**
+   * @description Step data for the FMS workflow.
+   */
+  steps = fmsStepsData;
   /** @property {number} globalReceiptNumber - Stores the global receipt number for the application.*/
   branchReceiptNumber: number;
 
@@ -122,7 +127,8 @@ export class ClientSearchComponent implements OnInit {
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
   getAllocation: GetAllocationDTO[] = [];
-  canShowNextBtn:boolean = false;
+  canShowNextBtn: boolean = false;
+
   /**
    * Constructor for the ClientSearchComponent.
    *
@@ -159,12 +165,12 @@ export class ClientSearchComponent implements OnInit {
       'branchReceiptNumber'
     );
     this.loggedInUser = this.authService.getCurrentUser();
-    
+
     if (storedReceiptNumber) {
       this.branchReceiptNumber = Number(storedReceiptNumber);
     }
 
-  //  this.loggedInUser = this.authService.getCurrentUser();
+    //  this.loggedInUser = this.authService.getCurrentUser();
 
     let users = this.sessionStorage.getItem('user');
     this.users = JSON.parse(users);
@@ -203,13 +209,13 @@ export class ClientSearchComponent implements OnInit {
 
     this.fetchAccountTypes();
     this.getAllocations();
-
   }
 
   /**
    * Initializes the `receiptingDetailsForm` with the required form controls and validators.
    * @returns {void}
    */
+
   captureReceiptForm() {
     this.receiptingDetailsForm = this.fb.group({
       allocationType: [''],
@@ -237,6 +243,7 @@ export class ClientSearchComponent implements OnInit {
   moveLast(state: any) {
     state.first = state.totalRecords - state.rows;
   }
+
   /**
    * Fetches account types from the `ReceiptService` and populates the `accountTypes` and `accountTypeArray` properties.
    * It also handles setting the 'defaultOrg' in localStorage.
@@ -332,9 +339,11 @@ export class ClientSearchComponent implements OnInit {
    * @returns {void}
    */
   onClickClient(selectedClient) {
-    if (this.selectedClient?.code === selectedClient.code) {
+    if (this.selectedClient.length < 0) {
       return; // Avoid unnecessary API call
     }
+    this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
+
     this.selectedClient = selectedClient; // Store the selected client
     this.receiptDataService.setSelectedClient(selectedClient); // Save in service
 
@@ -447,10 +456,20 @@ export class ClientSearchComponent implements OnInit {
       );
     }
   }
+  /**
+   * Fetches all allocations for the current branch receipt number and logged-in user.
+   *
+   * This method calls the `getAllocations` method of the `receiptService` to retrieve
+   * allocation data from the backend.  It then filters the allocations to only include
+   * those where at least one `receiptParticularDetail` has a `premiumAmount` greater than 0.
+   * The `canShowNextBtn` flag is set based on whether any allocations are returned.
+   * On error, a message is displayed using the `globalMessagingService`.
+   *
+   * @returns {void}
+   */
   getAllocations() {
     this.receiptService
-      .getAllocations(
-        this.branchReceiptNumber, this.loggedInUser.code)
+      .getAllocations(this.branchReceiptNumber, this.loggedInUser.code)
       .subscribe({
         next: (response) => {
           //this.selectedClient;
@@ -463,10 +482,9 @@ export class ClientSearchComponent implements OnInit {
           );
           if (response.data.length > 0) {
             this.canShowNextBtn = true;
-          }else{
-            this.canShowNextBtn =false;
+          } else {
+            this.canShowNextBtn = false;
           }
-          
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage(

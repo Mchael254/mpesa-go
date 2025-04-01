@@ -380,6 +380,35 @@ export class BaseFmsComponent {
 
   /* The `items` property is an array of objects. Each object represents a menu item in a CRM (Customer
 Relationship Management) application. Each object has the following properties: */
+setups: Array<{
+  label: string;
+  link?: string;
+  showSubItems: boolean;
+  subItems?: Array<{ label: string; link?: string }>;
+}> = [
+  {
+    label: this.translate.instant('base.GL Parameters'),
+    showSubItems: false,
+    subItems: [{ label: '', link: '' }],
+  },
+  {
+    label: this.translate.instant('base.CB Parameters'),
+    showSubItems: false,
+    subItems: [{ label: '', link: '' }],
+  },
+  {
+    label: this.translate.instant('base.DB Parameters'),
+    showSubItems: false,
+    subItems: [{ label: '', link: '' }],
+  },
+  {
+    label: this.translate.instant('base.CR Parameters'),
+    showSubItems: false,
+    subItems: [{ label: '', link: '' }],
+  },
+];
+
+
   GLledger: Array<{
     label: string;
     link?: string;
@@ -407,7 +436,7 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [{ label: '', link: '' }],
     },
   ];
-
+  
   creditors: Array<{
     label: string;
     link?: string;

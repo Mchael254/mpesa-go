@@ -1,5 +1,6 @@
 <div class="container">
   <!-- Main Form -->
+
   <div class="row me-4">
     <div class="col-8">
       <app-dynamic-breadcrumb
@@ -25,7 +26,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-
+  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
@@ -494,8 +495,8 @@
               <button
                 type="button"
                 class="btn-close"
-                data-bs-dismiss="modal"
                 aria-label="Close"
+                (click)="closeModal2()"
               ></button>
             </div>
 
@@ -543,7 +544,7 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer border-0">
+            <!-- <div class="modal-footer border-0">
               <button
                 type="button"
                 class="btn btn-primary"
@@ -551,7 +552,7 @@
               >
                 Okay
               </button>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

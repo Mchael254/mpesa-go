@@ -63,15 +63,15 @@ export class CurrenciesComponent implements OnInit {
     },
     {
       label: 'CRM Setups',
-      url: '/home/dashboard/crm',
+      url: '/home/crm',
     },
     {
       label: 'Org Parameters',
-      url: 'home/crm/country',
+      url: '/home/crm',
     },
     {
       label: 'Currencies',
-      url: 'home/crm/currencies',
+      url: '/home/crm/currencies',
     },
   ];
 

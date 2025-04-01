@@ -178,3 +178,9 @@ select.form-control {
 .p-paginator .p-dropdown {
   margin-left: 10px;
 }
+
+app-horizontal-stepper {
+  min-height: 100px !important;
+  border: 2px solid blue !important;
+  background-color: white !important;
+}
