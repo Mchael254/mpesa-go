@@ -3,8 +3,8 @@ import {ApiService} from "../../../shared/services/api/api.service";
 import {Observable} from "rxjs";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {
-  ServiceRequestCategoryDTO,
-  ServiceRequestIncidentDTO,
+  ServiceRequestCategoryDTO, ServiceRequestDocumentsDTO,
+  ServiceRequestIncidentDTO, ServiceRequestsDTO,
   ServiceRequestStatusDTO
 } from "../data/service-request-dto";
 import {HttpParams} from "@angular/common/http";
@@ -96,18 +96,41 @@ export class ServiceRequestService {
 
   getServiceRequests(
     page: number | null = 1,
-    size: number | null = 5,
-    sort: string = 'asc',
-  ): Observable<Pagination<any>> {
+    size: number | null = 10,
+    sort: string = 'desc',
+    status: string = null,
+    statusCode: number = null,
+    accountType: string = null,
+    accountCode: number = null,
+    assignee: number = null,
+    ownerType: string = null,
+    ownerCode: number = null
+  ): Observable<Pagination<ServiceRequestsDTO>> {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('sort', `${sort}`);
+      .set('sort', `${sort}`)
+      .set('status', `${status}`)
+      .set('statusCode', `${statusCode}`)
+      .set('accountType', `${accountType}`)
+      .set('accountCode', `${accountCode}`)
+      .set('assignee', `${assignee}`)
+      .set('ownerType', `${ownerType}`)
+      .set('ownerCode', `${ownerCode}`)
+    ;
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    return this.apiService.GET<Pagination<any>>(
+    return this.apiService.GET<Pagination<ServiceRequestsDTO>>(
       `service-requests`,
       API_CONFIG.CRM_SERVICE_REQUEST,
       paramObject
+    );
+  }
+
+  createServiceRequest(data: ServiceRequestsDTO): Observable<ServiceRequestsDTO> {
+    return this.apiService.POST<ServiceRequestsDTO>(
+      `service-requests`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SERVICE_REQUEST
     );
   }
 
@@ -121,6 +144,79 @@ export class ServiceRequestService {
   getRequestIncidents(): Observable<ServiceRequestIncidentDTO[]> {
     return this.apiService.GET<ServiceRequestIncidentDTO[]>(
       `service-request/incidents`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  createRequestIncident(data: ServiceRequestIncidentDTO): Observable<ServiceRequestIncidentDTO> {
+    return this.apiService.POST<ServiceRequestIncidentDTO>(
+      `service-request/incidents`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  updateRequestIncident(
+    requestIncidentId: number,
+    data: ServiceRequestIncidentDTO
+  ): Observable<ServiceRequestIncidentDTO> {
+    return this.apiService.PUT<ServiceRequestIncidentDTO>(
+      `service-request/incidents/${requestIncidentId}`,
+      data,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  deleteRequestIncident(requestIncidentId: number) {
+    return this.apiService.DELETE<ServiceRequestIncidentDTO>(
+      `service-request/incidents/${requestIncidentId}`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  getRequestDocuments(): Observable<ServiceRequestDocumentsDTO[]> {
+    return this.apiService.GET<ServiceRequestDocumentsDTO[]>(
+      `service-request/documents`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  createRequestDocument(data: ServiceRequestDocumentsDTO): Observable<ServiceRequestDocumentsDTO> {
+    return this.apiService.POST<ServiceRequestDocumentsDTO>(
+      `service-request/documents`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  updateRequestDocument(
+    requestDocId: number,
+    data: ServiceRequestDocumentsDTO
+  ): Observable<ServiceRequestDocumentsDTO> {
+    return this.apiService.PUT<ServiceRequestDocumentsDTO>(
+      `service-request/documents/${requestDocId}`,
+      data,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  deleteRequestDocument(requestDocId: number) {
+    return this.apiService.DELETE<ServiceRequestDocumentsDTO>(
+      `service-request/documents/${requestDocId}`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  getRequestSources(): Observable<any> {
+    return this.apiService.GET<any>(
+      `service-request/request-sources`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  getRequestCommunicationModes(): Observable<any> {
+    return this.apiService.GET<any>(
+      `service-request/communication-modes`,
       API_CONFIG.CRM_SERVICE_REQUEST
     );
   }
