@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 // import { Modal } from 'bootstrap';
@@ -99,6 +99,8 @@ export class QuotationDetailsComponent {
   currencyDelimiter: any;
   quotationDetails: any;
   quoteToEditData: QuotationList;
+  agentName: string;
+  branchId: number;
 
 
   constructor(
@@ -156,6 +158,14 @@ export class QuotationDetailsComponent {
     if (this.quoteToEditData.quotationNumber) {
       defaultCode = this.quoteToEditData.quotationNumber;
       log.debug("QUOTE Number", defaultCode)
+
+      sessionStorage.setItem("quotationNum", defaultCode);
+    }
+
+    let quotationCode = JSON.stringify(this.quoteToEditData.quotationCode);
+    if(quotationCode) {
+      log.debug("Quotation Code", quotationCode);
+      (sessionStorage.setItem("quotationCode", quotationCode));
     }
 
     this.quotationService.getQuotationDetails(defaultCode).subscribe(data => {
@@ -174,7 +184,7 @@ export class QuotationDetailsComponent {
         agentCode: this.quotationDetails.agentCode,
         agentShortDescription: this.quotationDetails.agentShortDescription,
         clientType: this.quotationDetails.clientType,
-        source: this.quotationDetails.source?.code, // Changed from source?.code to sourceCode
+        source: this.quotationDetails.source?.code, 
         clientCode: this.quotationDetails.clientCode,
         comments: this.quotationDetails.comments ? this.quotationDetails.comments : null,
         internalComments: this.quotationDetails.internalComments ? this.quotationDetails.internalComments : null,
@@ -194,13 +204,13 @@ export class QuotationDetailsComponent {
         organizationCode: this.quotationDetails.organizationCode,
         subQuote: this.quotationDetails.subQuote,
         premiumFixed: this.quotationDetails.premiumFixed,
-        action: 'E'
+        action: 'E',
       });
 
       log.debug("patched quotation form", this.quotationForm);
 
        // Set product code
-       const productCode = this.quotationDetails.quotationProducts[0].proCode;
+       const productCode = this.quotationDetails.quotationProducts[0].productCode;
        this.productService.getProductDetailsByCode(productCode).subscribe(res => {
         log.debug("response product", res);
 
@@ -266,7 +276,7 @@ export class QuotationDetailsComponent {
         });
 
         // Set product code
-        const productCode = this.quickQuotationDetails.quotationProducts[0].proCode;
+        const productCode = this.quickQuotationDetails.quotationProducts[0].productCode;
         this.productService.getProductDetailsByCode(productCode).subscribe(res => {
           log.debug("response product", res);
 
@@ -397,9 +407,23 @@ export class QuotationDetailsComponent {
         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
       expiryDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
-      quotationType: [null]
-
+      quotationType: [null],
+      quotationProducts: this.fb.array([])
     });
+  }
+
+  // Method to add a product to quotationProducts
+  addQuotationProduct(productCode?: number, wefDate?: string, wetDate?: string) {
+    const productsArray = this.quotationForm.get('quotationProducts') as FormArray;
+    productsArray.push(
+      this.fb.group({
+        productCode: [productCode || null],
+        wef: [this.quotationFormDetails ?
+          new Date(this.quotationFormDetails?.wefDate) : wefDate, Validators.required],
+        wet: [this.quotationFormDetails ?
+          new Date(this.quotationFormDetails?.wetDate) : wetDate, Validators.required],
+      }
+    ));
   }
 
 
@@ -550,7 +574,11 @@ export class QuotationDetailsComponent {
           this.router.navigate(['/home/gis/quotation/risk-section-details']);
           this.spinner.hide()
 
+        } else if (this.quoteToEditData) {
+          this.router.navigate(['/home/gis/quotation/risk-section-details']);
+          this.spinner.hide()
         } else {
+          log.debug("quotation form at new quotation creation", this.quotationForm.value);
           const fromDate = this.quotationForm.value.wefDate
           const toDate = this.quotationForm.value.wetDate
           const rfqDate = this.quotationForm.value.RFQDate
@@ -587,6 +615,7 @@ export class QuotationDetailsComponent {
           quotationForm.currencyRate = this.exchangeRate;
           quotationForm.clientCode = this.clientId
           quotationForm.clientType = "I"
+          // quotationForm.action = "A"
 
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
 
@@ -658,6 +687,8 @@ export class QuotationDetailsComponent {
     this.agentService.getAgentById(data).subscribe({
       next: (res) => {
         this.agentDetails = res
+        log.debug("agent selected", this.agentDetails);
+        this.agentName = this.agentDetails.name;
 
         this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
         this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);
@@ -678,11 +709,13 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   getExistingQuotations() {
+    log.debug("quotation form being passed", this.quotationForm);
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.wefDate
     const toDate = this.quotationForm.value.wetDate
     const rawCoverTo = new Date(toDate)
     log.debug('raw cover to DATE:', toDate);
+    
 
 
     const coverFromDate = fromDate;
@@ -692,6 +725,9 @@ export class QuotationDetailsComponent {
     const covertToDate = rawCoverTo;
     const formattedCoverToDate = this.formatDate(covertToDate);
     log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
+
+    const productCode = this.quotationForm.value.productCode.code;
+    this.addQuotationProduct(productCode, formattedCoverFromDate, formattedCoverToDate);
 
 
     // Set currency code in the form
@@ -983,6 +1019,7 @@ export class QuotationDetailsComponent {
           this.organizationId = this.userOrgDetails.organizationId
           const currencySymbol = this.quotationForm.value.currencyCode.symbol
           const currencyCode = this.quotationForm.value.currencyCode.id
+          this.branchId = this.userOrgDetails.branchId;
           log.debug("Cuurency code", currencyCode)
           log.debug("Cuurency ", currencySymbol)
           sessionStorage.setItem('currencySymbol', currencySymbol);
@@ -1032,10 +1069,10 @@ export class QuotationDetailsComponent {
 
         this.fetchUserOrgId()
       }
-      if (this.quotationFormDetails) {
-        const selectedBranch = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
-        if (selectedBranch) {
-          this.quotationForm.patchValue({ currencyCode: selectedBranch });
+      if (this.quotationFormDetails?.currencyCode) {
+        const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+        if (selectedCurrency) {
+          this.quotationForm.patchValue({ currencyCode: selectedCurrency });
         }
       }else{
         this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
@@ -1058,7 +1095,7 @@ export class QuotationDetailsComponent {
 
       log.info(this.branch, 'this is a branch list');
 
-      if (this.quotationFormDetails) {
+      if (this.quotationFormDetails?.branchCode) {
         const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
         if (selectedBranch) {
           this.quotationForm.patchValue({ branchCode: selectedBranch });
@@ -1075,7 +1112,7 @@ export class QuotationDetailsComponent {
         description: this.capitalizeWord(product.description),
       }));
 
-      if (this.quotationFormDetails) {
+      if (this.quotationFormDetails?.productCode) {
         const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
         if (selectedProduct) {
           this.quotationForm.patchValue({ productCode: selectedProduct });

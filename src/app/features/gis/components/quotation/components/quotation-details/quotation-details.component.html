@@ -43,7 +43,7 @@
                         <label for="" class="quote-label">Intermediary<span class="required"></span></label>
                         <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                             formControlName="agentCode" data-bs-toggle="modal" data-bs-target="#selectIntermediary"
-                            autocomplete="off">
+                            autocomplete="off" [value]="agentName">
                         <div *ngIf="quotationForm.get('agentCode').hasError('required') && quotationForm.get('agentCode').touched"
                             class="form-text text-danger">
                             Intermediary is required.

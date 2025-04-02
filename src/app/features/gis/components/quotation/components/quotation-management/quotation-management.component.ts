@@ -72,33 +72,8 @@ export class QuotationManagementComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
   ) {
-    this.menuItems = [
-      {
-        label: 'View quote',
-        // icon: 'pi pi-eye',
-        command: (event) => this.viewQuote(this.selectedQuotation)
-      },
-      {
-        label: 'Edit quote',
-        // icon: 'pi pi-pencil',
-        command: (event) => this.editQuote(this.selectedQuotation)
-      },
-      {
-        label: 'Revise quote',
-        // icon: 'pi pi-print',
-        command: (event) => this.reviseQuote(this.selectedQuotation)
-      },
-      {
-        label: 'Reuse quote',
-        // icon: 'pi pi-trash',
-        command: (event) => this.deleteQuote(this.selectedQuotation)
-      },
-      {
-        label: 'Reassign quote',
-        // icon: 'pi pi-trash',
-        command: (event) => this.deleteQuote(this.selectedQuotation)
-      }
-    ];
+    
+    this.menuItems = [];
   }
 
   ngOnInit(): void {
@@ -112,6 +87,40 @@ export class QuotationManagementComponent {
 
   toggleMenu(event: Event, quotation: any) {
     this.selectedQuotation = quotation;
+    
+    // Create base menu items
+    const items = [
+      {
+        label: 'View Quote',
+        command: () => this.viewQuote(quotation)
+      }
+    ];
+  
+    // Only add Edit Quote if status is Draft
+    if (quotation.status === 'Draft') {
+      items.push({
+        label: 'Edit Quote',
+        command: () => this.editQuote(quotation)
+      });
+    }
+  
+    // Add the rest of the items
+    items.push(
+      {
+        label: 'Revise Quote',
+        command: () => this.printQuote(quotation)
+      },
+      {
+        label: 'Reuse Quote',
+        command: () => this.deleteQuote(quotation)
+      },
+      {
+        label: 'Reassign Quote',
+        command: () => this.deleteQuote(quotation)
+      }
+    );
+  
+    this.menuItems = items;
     this.menu.toggle(event);
   }
 
@@ -313,16 +322,6 @@ export class QuotationManagementComponent {
     if (!this.clientName) return '';
     return this.clientName.length > 10 ? this.clientName.substring(0, 15) + '...' : this.clientName;
   }
-
-  // onExpiryDateInputChange(date: any) {
-  //   log.debug('selected expiry date raaw', date);
-  //   const selectedExpiryDate = date;
-  //   if (selectedExpiryDate) {
-  //     const SelectedFormatedExpiryDate = this.formatDate(selectedExpiryDate)
-  //     this.selectedExpiryDate = SelectedFormatedExpiryDate
-  //     log.debug(" SELECTED FORMATTED EXPIRY DATE:", this.selectedExpiryDate)
-  //   }
-  // }
 
   clearDateFilters(): void {
     this.fromDate = null;
