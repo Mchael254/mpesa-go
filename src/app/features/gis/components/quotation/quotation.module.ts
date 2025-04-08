@@ -36,7 +36,7 @@ import { QuotationInquiryComponent } from './components/quotation-inquiry/quotat
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import {  CheckboxModule } from 'primeng/checkbox';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
-
+import { TagModule } from 'primeng/tag';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -80,7 +80,8 @@ import { QuotationManagementComponent } from './components/quotation-management/
         RadioButtonModule,
         NgxIntlTelInputModule,
         EntitiesModule,
-        CheckboxModule
+        CheckboxModule,
+        TagModule 
     ],
   providers: [DatePipe],
 

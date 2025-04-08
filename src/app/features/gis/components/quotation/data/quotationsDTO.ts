@@ -600,13 +600,46 @@ export interface Sources {
   description: string;
   applicableModule: string;
 }
+// export interface QuotationPayload {
+//   quotationCode: number;
+//   quotationNumber: string;
+//   source: string;
+//   user: string;
+//   clientCode: number;
+//   productCode: number;
+//   currencyCode: number;
+//   currencyRate: number;
+//   agentCode: number;
+//   agentShortDescription: string;
+//   gisPolicyNumber: string;
+//   multiUser: string;
+//   unitCode: number;
+//   locationCode: number;
+//   wefDate: string; // ISO date format (YYYY-MM-DD)
+//   wetDate: string; // ISO date format (YYYY-MM-DD)
+//   bindCode: number;
+//   binderPolicy: string;
+//   divisionCode: number;
+//   subAgentCode: number;
+//   clientType: string;
+//   prospectCode: number;
+//   branchCode: number;
+//   marketerAgentCode: number;
+//   comments: string;
+//   polPipPfCode: number;
+//   endorsementStatus: string;
+//   polEnforceSfParam: string;
+//   creditDateNotified: string; // ISO date format (YYYY-MM-DD)
+//   introducerCode: number;
+//   internalComments: string;
+//   polPropHoldingCoPrpCode: number;
+//   chequeRequisition: boolean;
+// }
 export interface QuotationPayload {
-  quotationCode: number;
   quotationNumber: string;
   source: string;
   user: string;
   clientCode: number;
-  productCode: number;
   currencyCode: number;
   currencyRate: number;
   agentCode: number;
@@ -615,8 +648,8 @@ export interface QuotationPayload {
   multiUser: string;
   unitCode: number;
   locationCode: number;
-  wefDate: string; // ISO date format (YYYY-MM-DD)
-  wetDate: string; // ISO date format (YYYY-MM-DD)
+  wefDate: string; // format: YYYY-MM-DD
+  wetDate: string;
   bindCode: number;
   binderPolicy: string;
   divisionCode: number;
@@ -629,11 +662,41 @@ export interface QuotationPayload {
   polPipPfCode: number;
   endorsementStatus: string;
   polEnforceSfParam: string;
-  creditDateNotified: string; // ISO date format (YYYY-MM-DD)
+  creditDateNotified: string;
   introducerCode: number;
   internalComments: string;
   polPropHoldingCoPrpCode: number;
-  chequeRequisition: boolean;
+  chequeRequisition: string;
+  premium: number;
+  quotationProducts: QuotationProductPayload[];
+}
+
+export interface QuotationProductPayload {
+  code: number;
+  productCode: number;
+  quotationCode: number;
+  productShortDescription: string;
+  quotationNo: string;
+  premium: number;
+  wef: string;
+  wet: string;
+  revisionNo: number;
+  totalSumInsured: number;
+  commission: number;
+  binder: string;
+  agentShortDescription: string;
+  productName: string;
+  converted: string;
+  policyNumber: string;
+  taxInformation: TaxInformationPayload[];
+}
+
+export interface TaxInformationPayload {
+  rateDescription: string;
+  quotationRate: number;
+  rateType: string;
+  taxAmount: number;
+  productCode: number;
 }
 
 

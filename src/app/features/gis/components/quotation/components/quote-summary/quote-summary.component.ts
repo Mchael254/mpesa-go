@@ -217,7 +217,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
         this.productInformation = this.quotationDetails.quotationProducts;
         log.debug("Product Information:", this.productInformation);
-        this.productCode = this.productInformation[0].proCode;
+        this.productCode = this.productInformation[0].productCode;
         log.debug("ProductCode:", this.productCode)
 
         this.quoteDate = this.productInformation[0].wef;
