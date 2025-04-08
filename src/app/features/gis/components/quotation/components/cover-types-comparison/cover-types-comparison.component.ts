@@ -1056,7 +1056,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       source: 37,
       user: this.user,
       clientCode: this.storedData?.selectedClient?.id || null,
-      productCode: this.premiumPayload?.product?.code,
+      // productCode: this.premiumPayload?.product?.code,
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,
       agentCode: 0,
@@ -1066,7 +1066,14 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       wetDate: this.premiumPayload?.dateWithEffectTo,
       bindCode: this.premiumPayload?.risks?.[0]?.binderDto?.code,
       clientType: "C",
-      branchCode: this.userBranchId || 1
+      branchCode: this.userBranchId || 1,
+      quotationProducts: [
+        {
+          wef:this.premiumPayload?.dateWithEffectFrom,
+          wet:this.premiumPayload?.dateWithEffectTo,
+          productCode: this.premiumPayload?.product?.code,
+        }
+      ]
     }
   }
 

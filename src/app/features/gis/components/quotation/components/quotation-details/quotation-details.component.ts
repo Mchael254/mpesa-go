@@ -59,7 +59,7 @@ export class QuotationDetailsComponent {
   quotationNum: string;
   introducers: introducersDTO[] = [];
   productSubclassList: any
-  productDetails: any
+  // productDetails: any
   userDetails: any;
   selected: any;
   quotationSources: QuotationSource[] = [];
@@ -101,8 +101,15 @@ export class QuotationDetailsComponent {
   quoteToEditData: QuotationList;
   agentName: string;
   branchId: number;
-
-
+  productDetails: any[] = [];
+  paymentFrequencies: any[] = [];
+  clonedProducts: { [s: string]: any } = {};
+  formattedToDate: string;
+  selectedEditRow: any = null;
+  selectedEditRowIndex: number | null = null;
+  selectedProduct: any;
+  selectedRow: any;
+  quotationProductForm: FormGroup
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -128,6 +135,9 @@ export class QuotationDetailsComponent {
     const clientCode = sessionStorage.getItem('clientCode');
     this.clientId = JSON.parse(clientCode)
     log.debug("Client Code- session storage", this.clientId)
+    this.productDetails = JSON.parse(sessionStorage.getItem('productFormDetails'));
+
+    log.debug("product Form details", this.productDetails)
   }
 
   ngOnInit(): void {
@@ -137,6 +147,8 @@ export class QuotationDetailsComponent {
     this.getuser();
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
+    this.createQuotationProductForm();
+
     // this.quickQuoteDetails()
 
     log.debug(this.quotationForm.value)
@@ -144,10 +156,18 @@ export class QuotationDetailsComponent {
     this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
     log.debug("quote data to edit: ", this.quoteToEditData);
 
-    if(this.quoteToEditData) {
+    if (this.quoteToEditData) {
       log.debug("load quotation details: ", this.quoteToEditData);
       this.loadClientQuotation();
     }
+    this.paymentFrequencies = [
+      { label: 'Annually', value: 'A' },
+      { label: 'Semi annually', value: 'S' },
+      { label: 'Quaterly', value: 'Q' },
+      { label: 'Monthly', value: 'M' },
+      { label: 'One-off', value: 'O' }
+    ];
+
 
   }
   ngOnDestroy(): void { }
@@ -163,7 +183,7 @@ export class QuotationDetailsComponent {
     }
 
     let quotationCode = JSON.stringify(this.quoteToEditData.quotationCode);
-    if(quotationCode) {
+    if (quotationCode) {
       log.debug("Quotation Code", quotationCode);
       (sessionStorage.setItem("quotationCode", quotationCode));
     }
@@ -184,7 +204,7 @@ export class QuotationDetailsComponent {
         agentCode: this.quotationDetails.agentCode,
         agentShortDescription: this.quotationDetails.agentShortDescription,
         clientType: this.quotationDetails.clientType,
-        source: this.quotationDetails.source?.code, 
+        source: this.quotationDetails.source?.code,
         clientCode: this.quotationDetails.clientCode,
         comments: this.quotationDetails.comments ? this.quotationDetails.comments : null,
         internalComments: this.quotationDetails.internalComments ? this.quotationDetails.internalComments : null,
@@ -209,9 +229,9 @@ export class QuotationDetailsComponent {
 
       log.debug("patched quotation form", this.quotationForm);
 
-       // Set product code
-       const productCode = this.quotationDetails.quotationProducts[0].productCode;
-       this.productService.getProductDetailsByCode(productCode).subscribe(res => {
+      // Set product code
+      const productCode = this.quotationDetails.quotationProducts[0].productCode;
+      this.productService.getProductDetailsByCode(productCode).subscribe(res => {
         log.debug("response product", res);
 
         // Find the matching product object in ProductDescriptionArray
@@ -223,21 +243,21 @@ export class QuotationDetailsComponent {
           this.getProductClause();
           this.checkMotorClass();
         }
-       });
+      });
 
-       // Set currency code
-       this.currency.forEach(el => {
+      // Set currency code
+      this.currency.forEach(el => {
         if (el.symbol === this.quotationDetails.currency) {
           this.quotationForm.controls['currencyCode'].setValue(el);
         }
-       });
+      });
 
-       // set branch
-       this.branch.forEach(el => {
+      // set branch
+      this.branch.forEach(el => {
         if (el.id === this.quotationDetails.branchCode) {
           this.quotationForm.controls['branchCode'].setValue(el);
         }
-       });
+      });
 
     })
   }
@@ -365,53 +385,157 @@ export class QuotationDetailsComponent {
     * @method createQuotationForm
     * @return {void}
     */
+  // createQuotationForm() {
+  //   this.quotationForm = this.fb.group({
+  //     quotationCode: [''],
+  //     quotationNumber: [null],
+  //     user: ['', Validators.required],
+  //     action: [''],
+  //     wefDate: [this.quotationFormDetails ?
+  //       new Date(this.quotationFormDetails?.wefDate) : this.todaysDate, Validators.required],
+  //     wetDate: [this.quotationFormDetails ?
+  //       new Date(this.quotationFormDetails?.wetDate) : this.coverToDate, Validators.required],
+  //     branchCode: [Validators.required],
+  //     currencyCode: [Validators.required],
+  //     agentCode: [null, Validators.required],
+  //     agentShortDescription: [''],
+  //     clientType: [''],
+  //     source: [null, Validators.required],
+  //     productCode: [null, Validators.required],
+  //     bindCode: [null],
+  //     binderPolicy: [null],
+  //     currencyRate: [null],
+  //     introducerCode: [null],
+  //     internalComments: [null],
+  //     clientCode: [null],
+  //     polPropHoldingCoPrpCode: [null],
+  //     chequeRequisition: [null],
+  //     divisionCode: [null],
+  //     subAgentCode: [null],
+  //     prospectCode: [null],
+  //     marketerAgentCode: [null],
+  //     comments: [null],
+  //     gisPolicyNumber: [null],
+  //     polPipPfCode: [null],
+  //     endorsementStatus: [null],
+  //     polEnforceSfParam: [null],
+  //     creditDateNotified: [null],
+  //     multiUser: [null],
+  //     unitCode: [null],
+  //     locationCode: [null],
+  //     RFQDate: [this.quotationFormDetails ?
+  //       new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
+  //     expiryDate: [this.quotationFormDetails ?
+  //       new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
+  //     quotationType: [null],
+  //     quotationProducts: this.fb.array([])
+  //   });
+  // }
   createQuotationForm() {
     this.quotationForm = this.fb.group({
-      quotationCode: [''],
-      quotationNo: [null],
+      quotationNumber: [''],
+      source: ['', Validators.required],
       user: ['', Validators.required],
-      action: [''],
-      wefDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.wefDate) : this.todaysDate, Validators.required],
-      wetDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.wetDate) : this.coverToDate, Validators.required],
-      branchCode: [Validators.required],
-      currencyCode: [Validators.required],
-      agentCode: [null, Validators.required],
+      clientCode: [0],
+      currencyCode: [0, Validators.required],
+      currencyRate: [0],
+      agentCode: [0, Validators.required],
       agentShortDescription: [''],
-      clientType: [''],
-      source: [null, Validators.required],
-      productCode: [null, Validators.required],
-      bindCode: [null],
-      binderPolicy: [null],
-      currencyRate: [null],
-      introducerCode: [null],
-      internalComments: [null],
-      clientCode: [null],
-      polPropHoldingCoPrpCode: [null],
-      chequeRequisition: [null],
-      divisionCode: [null],
-      subAgentCode: [null],
-      prospectCode: [null],
-      marketerAgentCode: [null],
-      comments: [null],
-      gisPolicyNumber: [null],
-      polPipPfCode: [null],
-      endorsementStatus: [null],
-      polEnforceSfParam: [null],
-      creditDateNotified: [null],
-      multiUser: [null],
+      gisPolicyNumber: [''],
+      multiUser: [''],
       unitCode: [null],
       locationCode: [null],
+      wefDate: [
+        this.quotationFormDetails ? new Date(this.quotationFormDetails.wefDate) : this.todaysDate,
+        Validators.required
+      ],
+      wetDate: [
+        this.quotationFormDetails ? new Date(this.quotationFormDetails.wetDate) : this.coverToDate,
+        Validators.required
+      ],
+      bindCode: [null],
+      binderPolicy: [''],
+      divisionCode: [0],
+      subAgentCode: [0],
+      clientType: [''],
+      prospectCode: [0],
+      branchCode: [Validators.required],
+      marketerAgentCode: [0],
+      comments: [''],
+      polPipPfCode: [0],
+      endorsementStatus: [''],
+      polEnforceSfParam: [''],
+      creditDateNotified: [null],
+      introducerCode: [0],
+      internalComments: [''],
+      polPropHoldingCoPrpCode: [0],
+      chequeRequisition: [''],
+      premium: [0],
       RFQDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
       expiryDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
       quotationType: [null],
-      quotationProducts: this.fb.array([])
+      quotationProducts:
+        this.fb.group({
+          code: [0],
+          productCode: [0, Validators.required],
+          quotationCode: [0],
+          productShortDescription: [''],
+          quotationNo: [''],
+          premium: [0],
+          wef: [this.todaysDate, Validators.required],
+          wet: [this.coverToDate, Validators.required],
+          revisionNo: [0],
+          totalSumInsured: [0],
+          commission: [0],
+          binder: [''],
+          agentShortDescription: [''],
+          productName: [''],
+          converted: [''],
+          policyNumber: [''],
+          taxInformation: this.fb.array([
+            this.fb.group({
+              rateDescription: [''],
+              quotationRate: [0],
+              rateType: [''],
+              taxAmount: [0],
+              productCode: [0]
+            })
+          ])
+        })
     });
-  }
 
+  }
+  createQuotationProductForm() {
+    this.quotationProductForm = this.fb.group({
+      code: [0],
+      productCode: [0, Validators.required],
+      quotationCode: [0],
+      productShortDescription: [''],
+      quotationNo: [''],
+      premium: [0],
+      wef: [this.todaysDate, Validators.required],
+      wet: [this.coverToDate, Validators.required],
+      revisionNo: [0],
+      totalSumInsured: [0],
+      commission: [0],
+      binder: [''],
+      agentShortDescription: [''],
+      productName: [''],
+      converted: [''],
+      policyNumber: [''],
+      taxInformation: this.fb.array([
+        this.fb.group({
+          rateDescription: [''],
+          quotationRate: [0],
+          rateType: [''],
+          taxAmount: [0],
+          productCode: [0]
+        })
+      ])
+    })
+  }
   // Method to add a product to quotationProducts
   addQuotationProduct(productCode?: number, wefDate?: string, wetDate?: string) {
     const productsArray = this.quotationForm.get('quotationProducts') as FormArray;
@@ -423,7 +547,7 @@ export class QuotationDetailsComponent {
         wet: [this.quotationFormDetails ?
           new Date(this.quotationFormDetails?.wetDate) : wetDate, Validators.required],
       }
-    ));
+      ));
   }
 
 
@@ -433,6 +557,39 @@ export class QuotationDetailsComponent {
  * @return {void}
  */
   saveQuotationDetails() {
+    const rfqDate = this.quotationForm.value.RFQDate; // Added RFQDate
+    const expiryDate = this.quotationForm.value.expiryDate; // Added expiryDate
+    const covertRfqDate = rfqDate;
+    const formattedRfqDate = this.formatDate(covertRfqDate);
+    log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
+
+    const covertExpiryDate = expiryDate;
+    const formattedExpiryDate = this.formatDate(covertExpiryDate);
+    log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
+
+    let quotationPayload = this.quotationForm.getRawValue();
+    quotationPayload = {
+      ...quotationPayload,
+      user: this.user,
+      RFQDate: formattedRfqDate,
+      expiryDate: formattedExpiryDate,
+      currencyCode: this.quotationForm.value.currencyCode.id || this.defaultCurrency.id,
+      source: this.quotationForm.value.source.code,
+      currencyRate: this.exchangeRate,
+      clientCode: this.clientId,
+      clientType: "I",
+      wefDate: this.formatDate(this.productDetails[0].coverFrom),
+      wetDate: this.formatDate(this.productDetails[0].coverTo),
+      quotationProducts: this.productDetails.map((value) => {
+        return {
+          wef: this.formatDate(value.coverFrom),
+          wet: this.formatDate(value.coverTo),
+          productCode: value.productCode.code,
+          productName: value.productCode.description
+        }
+      })
+    }
+    log.debug("QUotation payload::: ", quotationPayload)
     this.spinner.show()
 
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
@@ -452,31 +609,9 @@ export class QuotationDetailsComponent {
         this.spinner.hide()
 
       } else {
-        const fromDate = this.quotationForm.value.wefDate
-        const toDate = this.quotationForm.value.wetDate
-        // const rfqDate = this.quotationForm.value.RFQDate
-        const rawCoverTo = new Date(toDate)
-
-        const coverFromDate = fromDate;
-        const formattedCoverFromDate = this.formatDate(coverFromDate);
-        log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-
-        const covertToDate = rawCoverTo;
-        const formattedCoverToDate = this.formatDate(covertToDate);
-        log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
-
-        // const covertRfqDate = rfqDate;
-        // const formattedRfqDate = this.formatDate(covertRfqDate);
-        // log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
-
-        const quotationForm = this.quotationForm.value;
-        // quotationForm.RFQDate = formattedRfqDate
-        quotationForm.wefDate = formattedCoverFromDate
-        quotationForm.wetDate = formattedCoverToDate
-        quotationForm.user = this.user;
 
         log.debug("CREATE QUOTATION -Multi user entry is Yes")
-        this.quotationService.processQuotation(quotationForm).subscribe(data => {
+        this.quotationService.processQuotation(quotationPayload).subscribe(data => {
           this.quotationNo = data;
           this.spinner.hide()
           log.debug(this.quotationNo, "Quotation results:")
@@ -502,47 +637,11 @@ export class QuotationDetailsComponent {
         if (this.quickQuotationDetails) {
           this.router.navigate(['/home/gis/quotation/import-risks']);
           this.spinner.hide();
-          sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+          sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
         } else {
-          const fromDate = this.quotationForm.value.wefDate;
-          const toDate = this.quotationForm.value.wetDate;
-          const rfqDate = this.quotationForm.value.RFQDate; // Added RFQDate
-          const expiryDate = this.quotationForm.value.expiryDate; // Added expiryDate
-          const rawCoverTo = new Date(toDate);
-
-          const coverFromDate = fromDate;
-          const formattedCoverFromDate = this.formatDate(coverFromDate);
-          log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-
-          const covertToDate = rawCoverTo;
-          const formattedCoverToDate = this.formatDate(covertToDate);
-          log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
-
-          const covertRfqDate = rfqDate;
-          const formattedRfqDate = this.formatDate(covertRfqDate); // Added RFQ date formatting
-          log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
-
-          const covertExpiryDate = expiryDate;
-          const formattedExpiryDate = this.formatDate(covertExpiryDate); // Added expiry date formatting
-          log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
-
-          const quotationForm = this.quotationForm.value;
-          quotationForm.wefDate = formattedCoverFromDate;
-          quotationForm.wetDate = formattedCoverToDate;
-          quotationForm.RFQDate = formattedRfqDate; // Added RFQDate
-          quotationForm.expiryDate = formattedExpiryDate; // Added expiryDate
-          quotationForm.user = this.user;
-
-          // Added missing fields
-          log.debug("Currency code-quote creation", this.quotationForm.value.currencyCode.id);
-          quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
-          quotationForm.source = this.quotationForm.value.source.code;
-          quotationForm.currencyRate = this.exchangeRate;
-          quotationForm.clientCode = this.clientId;
-          quotationForm.clientType = "I";
 
           log.debug("CREATE QUOTATION");
-          this.quotationService.processQuotation(quotationForm).subscribe(
+          this.quotationService.processQuotation(quotationPayload).subscribe(
             (data) => {
               this.quotationNo = data;
               this.spinner.hide();
@@ -552,7 +651,7 @@ export class QuotationDetailsComponent {
               this.quotationNum = this.quotationNo._embedded.quotationNumber
               sessionStorage.setItem('quotationNum', this.quotationNum);
               sessionStorage.setItem('quotationCode', this.quotationCode);
-              sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationForm));
+              sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
               this.router.navigate(['/home/gis/quotation/import-risks']);
             },
             (error: HttpErrorResponse) => {
@@ -578,51 +677,11 @@ export class QuotationDetailsComponent {
           this.router.navigate(['/home/gis/quotation/risk-section-details']);
           this.spinner.hide()
         } else {
-          log.debug("quotation form at new quotation creation", this.quotationForm.value);
-          const fromDate = this.quotationForm.value.wefDate
-          const toDate = this.quotationForm.value.wetDate
-          const rfqDate = this.quotationForm.value.RFQDate
-          const expiryDate = this.quotationForm.value.expiryDate
-          const rawCoverTo = new Date(toDate)
+          sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
 
-          const coverFromDate = fromDate;
-          const formattedCoverFromDate = this.formatDate(coverFromDate);
-          log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-
-          const covertToDate = rawCoverTo;
-          const formattedCoverToDate = this.formatDate(covertToDate);
-          log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
-
-          const covertRfqDate = rfqDate;
-          const formattedRfqDate = this.formatDate(covertRfqDate);
-          log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
-
-          const covertExpiryDate = expiryDate;
-          const formattedExpiryDate = this.formatDate(covertExpiryDate);
-          log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
-
-          const quotationForm = this.quotationForm.value;
-          // quotationForm.RFQDate = formattedRfqDate
-          quotationForm.wefDate = formattedCoverFromDate
-          quotationForm.wetDate = formattedCoverToDate
-          quotationForm.RFQDate = formattedRfqDate
-          quotationForm.expiryDate = formattedExpiryDate
-          quotationForm.user = this.user;
-          log.debug("Currency code-quote creation", this.quotationForm.value.currencyCode.id)
-          quotationForm.currencyCode = this.quotationForm.value.currencyCode.id || this.defaultCurrency.id;
-          quotationForm.source = this.quotationForm.value.source.code;
-
-          quotationForm.currencyRate = this.exchangeRate;
-          quotationForm.clientCode = this.clientId
-          quotationForm.clientType = "I"
-          // quotationForm.action = "A"
-
-          sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-
-          const quotationFormJson = this.quotationForm.value
-          log.debug("Quotation form details", quotationFormJson)
+          log.debug("Quotation form details", quotationPayload)
           log.debug("CREATE QUOTATION")
-          this.quotationService.processQuotation(this.quotationForm.value).subscribe(data => {
+          this.quotationService.processQuotation(quotationPayload).subscribe(data => {
             this.quotationNo = data;
             this.spinner.hide()
             log.debug(this.quotationNo, 'quotation number output');
@@ -630,7 +689,7 @@ export class QuotationDetailsComponent {
             this.quotationNum = this.quotationNo._embedded.quotationNumber
             sessionStorage.setItem('quotationNum', this.quotationNum);
             sessionStorage.setItem('quotationCode', this.quotationCode);
-            sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+            sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
             this.selectedProductClauses(this.quotationCode)
             this.sharedService.setQuotationDetails(this.quotationNum, this.quotationCode);
 
@@ -715,7 +774,7 @@ export class QuotationDetailsComponent {
     const toDate = this.quotationForm.value.wetDate
     const rawCoverTo = new Date(toDate)
     log.debug('raw cover to DATE:', toDate);
-    
+
 
 
     const coverFromDate = fromDate;
@@ -726,8 +785,8 @@ export class QuotationDetailsComponent {
     const formattedCoverToDate = this.formatDate(covertToDate);
     log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
 
-    const productCode = this.quotationForm.value.productCode.code;
-    this.addQuotationProduct(productCode, formattedCoverFromDate, formattedCoverToDate);
+    const productCode = this.quotationProductForm.value.productCode.code;
+    // this.addQuotationProduct(productCode, formattedCoverFromDate, formattedCoverToDate);
 
 
     // Set currency code in the form
@@ -739,12 +798,12 @@ export class QuotationDetailsComponent {
       this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     }
     // this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-    this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
+    // this.quotationForm.controls['productCode'].setValue(this.quotationProductForm.value.productCode.code);
     this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
     // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
-    this.quotationService.getQuotations(this.clientId, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
+    this.quotationService.getQuotations(221243911, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
       this.quotationsList = data
       this.clientExistingQuotations = this.quotationsList.content
 
@@ -812,11 +871,14 @@ export class QuotationDetailsComponent {
     const formattedCoverFromDate = this.formatDate(coverFromDate);
     sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
+    const productCode = this.quotationProductForm.value.productCode.code || this.selectedProduct?.code
+    log.debug('Product code:', productCode);
+
     // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
     //   this.productDetails = res
     //   log.debug(this.productDetails)
     // if(this.productDetails.expires === 'Y'){
-    this.producSetupService.getCoverToDate(formattedCoverFromDate, this.quotationForm.value.productCode.code)
+    this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
       .subscribe({
         next: (res) => {
           this.midnightexpiry = res;
@@ -835,7 +897,13 @@ export class QuotationDetailsComponent {
           this.coverToDate = formattedDate;
           log.debug('Cover to  Date', this.coverToDate);
           sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
-          this.quotationForm.controls['wetDate'].setValue(this.coverToDate)
+          // this.quotationProductForm.controls['wet'].setValue(this.coverToDate)
+          // 🛠 Delay the patch to avoid UI distortion
+          setTimeout(() => {
+            this.quotationProductForm.get('wet')?.patchValue(coverFromDate);
+          }, 0);
+
+          // Update the specific product's coverTo field
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
@@ -859,36 +927,113 @@ export class QuotationDetailsComponent {
     // })
 
   }
+  updateCoverToDateEdit(date, product) {
+    log.debug("Cover from date:", date)
+    const coverFromDate = date;
+    const formattedCoverFromDate = this.formatDate(coverFromDate);
+    sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
+    log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
+    const productCode = this.quotationForm?.value?.productCode?.code || this.selectedProduct?.code
+    log.debug('Product code:', productCode);
 
+    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
+    //   this.productDetails = res
+    //   log.debug(this.productDetails)
+    // if(this.productDetails.expires === 'Y'){
+    this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
+      .subscribe({
+        next: (res) => {
+          this.midnightexpiry = res;
+          log.debug("midnightexpirydate", this.midnightexpiry);
+          log.debug(this.midnightexpiry)
+          const coverFrom = this.midnightexpiry._embedded[0].coverToDate
+          const coverFromDate = new Date(coverFrom)
+          // Extract the day, month, and year
+          const day = coverFromDate.getDate();
+          const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+          const year = coverFromDate.getFullYear();
+
+          // Format the date in 'dd-Month-yyyy' format
+          const formattedDate = `${day}-${month}-${year}`;
+
+          this.coverToDate = formattedDate;
+          log.debug('Cover to  Date', this.coverToDate);
+          sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
+          this.quotationForm.controls['wetDate'].setValue(this.coverToDate)
+          // Update the specific product's coverTo field
+          product.coverTo = this.formatDate(this.coverToDate);
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error?.message
+          );
+        },
+
+      })
+
+    // }else {
+    //   const selectedDate = new Date(coverFromDate);
+    //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+    //   const coverToDate = selectedDate.toISOString().split('T')[0];
+    //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
+
+
+    // }
+    // })
+
+  }
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
    * @method updateQuotationExpiryDate
    * @param {Event} e - The event containing the target value representing the RFQ date.
    * @return {void}
    */
-  updateQuotationExpiryDate(date) {
-    const RFQDate = date;
-    if (RFQDate) {
-      const selectedDate = new Date(RFQDate);
-      selectedDate.setMonth(selectedDate.getMonth() + 3);
-      const expiryDate = selectedDate.toISOString().split('T')[0];
-      // this.quotationForm.controls['expiryDate'].setValue(expiryDate);
-      log.debug("Quotation Expiry date", expiryDate)
-      // Extract the day, month, and year
-      const expiryDateRaw = new Date(expiryDate)
-      const day = expiryDateRaw.getDate();
-      const month = expiryDateRaw.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-      const year = expiryDateRaw.getFullYear();
+  // updateQuotationExpiryDate(date) {
+  //   const RFQDate = date;
+  //   if (RFQDate) {
+  //     const selectedDate = new Date(RFQDate);
+  //     selectedDate.setMonth(selectedDate.getMonth() + 3);
+  //     const expiryDate = selectedDate.toISOString().split('T')[0];
+  //     // this.quotationForm.controls['expiryDate'].setValue(expiryDate);
+  //     log.debug("Quotation Expiry date", expiryDate)
+  //     // Extract the day, month, and year
+  //     const expiryDateRaw = new Date(expiryDate)
+  //     const day = expiryDateRaw.getDate();
+  //     const month = expiryDateRaw.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+  //     const year = expiryDateRaw.getFullYear();
 
-      // Format the date in 'dd-Month-yyyy' format
-      const formattedDate = `${day}-${month}-${year}`;
+  //     // Format the date in 'dd-Month-yyyy' format
+  //     const formattedDate = `${day}-${month}-${year}`;
 
-      this.expiryDate = formattedDate
-      log.debug("expiry date formatted", this.expiryDate)
+  //     this.expiryDate = formattedDate
+  //     log.debug("expiry date formatted", this.expiryDate)
+  //   }
+  // }
+  updateQuotationExpiryDate(date: any) {
+    if (date) {
+      const selectedDate = new Date(date);
+      selectedDate.setMonth(selectedDate.getMonth() + 3); // Add 3 months
+
+      // 🛠 Delay the patch to avoid UI distortion
+      setTimeout(() => {
+        this.quotationForm.get('expiryDate')?.patchValue(selectedDate);
+      }, 0);
+
+      // Optional: for display/debug
+      const day = selectedDate.getDate();
+      const month = selectedDate.toLocaleString('default', { month: 'long' });
+      const year = selectedDate.getFullYear();
+      this.expiryDate = `${day}-${month}-${year}`;
+
+      log.debug("Expiry Date (formatted):", this.expiryDate);
     }
   }
+
   checkMotorClass() {
-    const productCode = this.quotationForm.value.productCode.code
+    const productCode = this.quotationProductForm.value.productCode.code
     const selectedProductDetails = this.products.find(product => product.code === productCode)
     this.motorClassAllowed = selectedProductDetails.allowMotorClass
     sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
@@ -901,9 +1046,9 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   getProductClause() {
-    this.productCode = this.quotationForm.value.productCode.code
+    this.productCode = this.quotationProductForm.value.productCode.code
     sessionStorage.setItem("selectedProductCode", this.productCode);
-    this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res => {
+    this.quotationService.getProductClauses(this.productCode).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
       this.selectedClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
@@ -1023,7 +1168,7 @@ export class QuotationDetailsComponent {
           log.debug("Cuurency code", currencyCode)
           log.debug("Cuurency ", currencySymbol)
           sessionStorage.setItem('currencySymbol', currencySymbol);
-          
+
           return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
         }),
         untilDestroyed(this))
@@ -1046,87 +1191,87 @@ export class QuotationDetailsComponent {
       this.quotationService.getIntroducers(),
       this.producSetupService.getAllProducts()
     ])
-    .pipe(untilDestroyed(this))
-    .subscribe(([currencies, sources, branches, introducers, products]: any) => {
-      // CURRENCIES
-      this.currency = currencies.map((value) => {
-        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-        return { ...value, name: capitalizedDescription };
-      });
+      .pipe(untilDestroyed(this))
+      .subscribe(([currencies, sources, branches, introducers, products]: any) => {
+        // CURRENCIES
+        this.currency = currencies.map((value) => {
+          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+          return { ...value, name: capitalizedDescription };
+        });
 
-      log.info(this.currency, 'this is a currency list');
+        log.info(this.currency, 'this is a currency list');
 
-      const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
-      if (defaultCurrency) {
-        log.debug('DEFAULT CURRENCY', defaultCurrency);
-        this.defaultCurrency = defaultCurrency;
-        this.defaultCurrencyName = defaultCurrency.name;
-        this.defaultCurrencySymbol = defaultCurrency.symbol;
-        sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+        const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrency = defaultCurrency;
+          this.defaultCurrencyName = defaultCurrency.name;
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
 
-        log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-        log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-        this.fetchUserOrgId()
-      }
-      if (this.quotationFormDetails?.currencyCode) {
-        const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
-        if (selectedCurrency) {
-          this.quotationForm.patchValue({ currencyCode: selectedCurrency });
+          this.fetchUserOrgId()
         }
-      }else{
-        this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+        if (this.quotationFormDetails?.currencyCode) {
+          const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+          if (selectedCurrency) {
+            this.quotationForm.patchValue({ currencyCode: selectedCurrency });
+          }
+        } else {
+          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
 
-      }
-      // QUOTATION SOURCES
-      this.quotationSources = sources?.content || [];
-      this.quotationSources = this.quotationSources.map((value) => {
-        let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
-        return { ...value, description: capitalizedDescription };
-      });
-
-      log.debug("SOURCES", this.quotationSources);
-
-      // BRANCHES
-      this.branch = branches.map((value) => {
-        let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-        return { ...value, name: capitalizedDescription };
-      });
-
-      log.info(this.branch, 'this is a branch list');
-
-      if (this.quotationFormDetails?.branchCode) {
-        const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
-        if (selectedBranch) {
-          this.quotationForm.patchValue({ branchCode: selectedBranch });
         }
-      }
+        // QUOTATION SOURCES
+        this.quotationSources = sources?.content || [];
+        this.quotationSources = this.quotationSources.map((value) => {
+          let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
+          return { ...value, description: capitalizedDescription };
+        });
 
-      // INTRODUCERS
-      this.introducers = introducers;
+        log.debug("SOURCES", this.quotationSources);
 
-      // PRODUCTS
-      this.products = products;
-      this.ProductDescriptionArray = this.products.map(product => ({
-        code: product.code,
-        description: this.capitalizeWord(product.description),
-      }));
+        // BRANCHES
+        this.branch = branches.map((value) => {
+          let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+          return { ...value, name: capitalizedDescription };
+        });
 
-      if (this.quotationFormDetails?.productCode) {
-        const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
-        if (selectedProduct) {
-          this.quotationForm.patchValue({ productCode: selectedProduct });
+        log.info(this.branch, 'this is a branch list');
+
+        if (this.quotationFormDetails?.branchCode) {
+          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
+          if (selectedBranch) {
+            this.quotationForm.patchValue({ branchCode: selectedBranch });
+          }
         }
-      }
 
-      log.info("Quotation form >>>", this.quotationForm);
-      log.info('Modified product description', this.ProductDescriptionArray);
+        // INTRODUCERS
+        this.introducers = introducers;
 
-      this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
-      if (this.quickQuotationNum) {
-        this.quickQuoteDetails();
-      }
-    });
+        // PRODUCTS
+        this.products = products;
+        this.ProductDescriptionArray = this.products.map(product => ({
+          code: product.code,
+          description: this.capitalizeWord(product.description),
+        }));
+
+        if (this.quotationFormDetails?.productCode) {
+          const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
+          if (selectedProduct) {
+            this.quotationForm.patchValue({ productCode: selectedProduct });
+          }
+        }
+
+        log.info("Quotation form >>>", this.quotationForm);
+        log.info('Modified product description', this.ProductDescriptionArray);
+
+        this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
+        if (this.quickQuotationNum) {
+          this.quickQuoteDetails();
+        }
+      });
   }
 
   onSourceChange(event): void {
@@ -1136,11 +1281,11 @@ export class QuotationDetailsComponent {
       if (selectedSource.description === 'Walk in') {
         this.quotationForm.get('quotationType').setValue('D'); // Set to Direct
         this.onQuotationTypeChange('D');
-      } 
+      }
       // Check for Agent, Agent/b, or Broker/agent - set to Intermediary
       else if (
-        selectedSource.description === 'Agent' || 
-        selectedSource.description === 'Agent/b' || 
+        selectedSource.description === 'Agent' ||
+        selectedSource.description === 'Agent/b' ||
         selectedSource.description === 'Broker/agent'
       ) {
         this.quotationForm.get('quotationType').setValue('I'); // Set to Intermediary
@@ -1149,4 +1294,143 @@ export class QuotationDetailsComponent {
     }
   }
 
+  onRowEditInit(index: number, product: any) {
+    // this.clonedProducts[productDetails.id as string] = { ...productDetails };
+    this.selectedEditRowIndex = index;
+    this.selectedEditRow = product;
+    log.debug("product to be edited:", product)
+  }
+  onProductChange(product: any) {
+    console.log("Passed product:", product);
+
+    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === product.code);
+    if (selectedProduct) {
+      this.selectedProduct = selectedProduct; // Store selected product
+    }
+    console.log("Selected product:", this.selectedProduct);
+  }
+
+
+  onRowEditSave(product: any) {
+    log.debug("Before saving - Product:", product);
+    const coverFromDate = this.orgDateFormat(product.coverFrom)
+    const coverToDate = this.orgDateFormat(product.coverTo)
+    log.debug("Cover From Date:", coverFromDate)
+    log.debug("Cover to Date:", coverToDate)
+    product.coverFrom = coverFromDate; // Assign full object
+    product.coverTo = coverToDate; // Assign full object
+
+    if (this.selectedProduct) {
+      product.productCode = { ...this.selectedProduct }; // Assign full object
+    }
+
+    // Ensure the edited product is correctly updated in the array
+    this.productDetails = this.productDetails.map(item =>
+      item.productCode.code === product.productCode.code ? { ...item, ...product } : item
+    );
+
+    log.debug("Updated Product Details:", this.productDetails);
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+    // Reset selected product to avoid unwanted overwrites
+    this.selectedProduct = null;
+    // ✅ Reset the edit state
+    this.selectedEditRowIndex = null;
+    this.selectedEditRow = null;
+  }
+
+
+  onRowEditCancel(product: any) {
+    // this.products[index] = this.clonedProducts[product.id as string];
+    // delete this.clonedProducts[product.id as string];
+  }
+  submitForm() {
+    // if () {
+    const coverFromDate = sessionStorage.getItem('selectedCoverFromDate');
+    const coverToDate = this.quotationProductForm.get('wet')?.value
+    const formattedCoverFromDate = new Date(coverFromDate);
+
+    // Extract the day, month, and year
+    const day = formattedCoverFromDate.getDate();
+    const month = formattedCoverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = formattedCoverFromDate.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const formattedFromDate = `${day}-${month}-${year}`;
+    log.debug("From date formatted:", formattedFromDate)
+    if (coverToDate) {
+      const formattedCoverToDate = new Date(coverToDate);
+
+      // Extract the day, month, and year
+      const day = formattedCoverToDate.getDate();
+      const month = formattedCoverToDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+      const year = formattedCoverToDate.getFullYear();
+
+      // Format the date in 'dd-Month-yyyy' format
+      const formattedToDate = `${day}-${month}-${year}`;
+      this.formattedToDate = formattedToDate
+      log.debug("To date formatted:", formattedToDate)
+    }
+    const selectedProductCode = this.quotationProductForm.value.productCode
+
+    const newProductDetail = {
+      productCode: selectedProductCode,
+      // coverFrom: new Date(coverFromDate),
+      // coverTo: new Date(this.quotationForm.get('wetDate')?.value)
+      coverFrom: formattedFromDate,
+      coverTo: this.formattedToDate
+    }; log.debug("Captured Product Details:", newProductDetail);
+
+    // this.productDetails.push(newProductDetail);
+    if (!this.productDetails) {
+      this.productDetails = [];
+    }
+    this.productDetails.push(newProductDetail);
+
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+    log.debug("Captured Product Details:", this.productDetails);
+    // } else {
+    //   log.debug("Form is invalid. Please fill in all required fields.");
+    // }
+  }
+  orgDateFormat(date: any) {
+    const formattedDate = new Date(date);
+
+    // Extract the day, month, and year
+    const day = formattedDate.getDate();
+    const month = formattedDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const year = formattedDate.getFullYear();
+
+    // Format the date in 'dd-Month-yyyy' format
+    const finalFormatDate = `${day}-${month}-${year}`;
+    log.debug("Date formatted:", finalFormatDate)
+    return finalFormatDate;
+
+  }
+  onRowSelect(product: any) {
+    this.selectedRow = product;
+    log.debug("selected product :", product)
+  }
+  openProductDeleteModal() {
+    log.debug("Selected product to delete", this.selectedRow)
+    if (!this.selectedRow) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a product  to continue');
+    } else {
+      document.getElementById("openProductButtonDelete").click();
+    }
+  }
+  deleteProduct() {
+    log.debug("selected Product:", this.selectedRow)
+    // Find the index of the product
+    const productIndex = this.productDetails.findIndex((product: { code: number }) => product.code === this.selectedRow?.code);
+
+    // If the product is found, remove it from the array
+    if (productIndex !== -1) {
+      this.productDetails.splice(productIndex, 1);
+      log.debug('Product details array after deleting:', this.productDetails)
+      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+    }
+  }
 }

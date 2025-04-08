@@ -184,10 +184,10 @@ export class QuotationManagementComponent {
 
   }
 
-  // printQuote(quotation: any) {
-  //   // Implement print quote functionality
-  //   log.debug('Print quote:', quotation);
-  // }
+  printQuote(quotation: any) {
+    // Implement print quote functionality
+    log.debug('Print quote:', quotation);
+  }
 
   deleteQuote(quotation: any) {
     // Implement delete quote functionality

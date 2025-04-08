@@ -14,8 +14,8 @@
                         <br>
                         <label for="" class="quote-label">Source<span class="required"></span></label>
                         <p-dropdown id="quote-input-pdropdown" formControlName="source" [options]="quotationSources"
-                            optionLabel="description"  placeholder=" " [filterBy]="'description'"
-                            [filter]="true" (onChange)="onSourceChange($event)"></p-dropdown>
+                            optionLabel="description" placeholder=" " [filterBy]="'description'" [filter]="true"
+                            (onChange)="onSourceChange($event)"></p-dropdown>
 
 
                         <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
@@ -29,7 +29,8 @@
                         <br>
                         <label for="" class="quote-label">Quotation type</label>
                         <select class="form-select form-control-sm mb-1" id="quote-input" placement="right"
-                           formControlName="quotationType" #quotationTypeSelect (change)="onQuotationTypeChange(quotationTypeSelect.value)">
+                            formControlName="quotationType" #quotationTypeSelect
+                            (change)="onQuotationTypeChange(quotationTypeSelect.value)">
                             <option selected="true" disabled="disabled"></option>
                             <option value="D">Direct</option>
                             <option value="I">Intermediary</option>
@@ -55,7 +56,8 @@
                         <br>
                         <label for="" class="quote-label">Branch<span class="required"></span></label>
                         <p-dropdown id="quote-input-pdropdown" formControlName="branchCode" [options]="branch"
-                            optionLabel="name" placeholder=" " value="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
+                            optionLabel="name" placeholder=" " value="id" [filterBy]="'name'"
+                            [filter]="true"></p-dropdown>
                         <div *ngIf="quotationForm.get('branchCode').hasError('required') && quotationForm.get('branchCode').touched"
                             class="form-text text-danger">
                             Branch is required.
@@ -68,8 +70,8 @@
                         <br>
                         <label for="" class="quote-label">Currency<span class="required"></span></label><br>
                         <p-dropdown id="quote-input-pdropdown" formControlName="currencyCode" [options]="currency"
-                            optionLabel="name" value="id" [filterBy]="'name'"
-                            [filter]="true" (onChange)="fetchUserOrgId()"></p-dropdown>
+                            optionLabel="name" value="id" [filterBy]="'name'" [filter]="true"
+                            (onChange)="fetchUserOrgId()"></p-dropdown>
                         <div *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
                             class="form-text text-danger">
                             Currency is required.
@@ -96,8 +98,7 @@
                         <br>
                         <label for="expiryDate" class="quote-label">Quotation expiry date</label>
                         <p-calendar id="expiryDate" inputId="expiryDate" [showIcon]="true" [dateFormat]="dateFormat"
-                            formControlName="expiryDate"
-                            [minDate]="minDate">
+                            formControlName="expiryDate" [minDate]="minDate">
                         </p-calendar>
                         <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
                             class="form-text text-danger">
@@ -173,6 +174,16 @@
 
                     </div>
                 </div>
+                <div class="col-sm-4 col-6">
+                    <div class="form-group form-group-sm">
+                        <br>
+                        <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br> 
+
+                        <p-dropdown id="quote-input-pdropdown" [options]="paymentFrequencies" optionLabel="label"
+                        placeholder=" " [filterBy]="'label'" [filter]="true"></p-dropdown>
+                       
+                    </div>
+                </div>
 
 
             </div>
@@ -188,60 +199,251 @@
 
     <div class="card mb-2">
         <div class="card-body">
-            <h6>Product Details </h6>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <h6> {{'gis.quotation.product_details' | translate}}</h6>
+                </div>
+                <div class="col-8 d-flex justify-content-end">
+                    <div class="row">
+                        <div class="col-3">
+
+                        </div>
+                        <div class="col-4">
+                            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addProduct" title="Edit">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <!-- <button type="button" id="openModalButtonEdit" class="btn btn-primary icon" data-bs-toggle="modal" data-bs-target="#editSchedule" title="Edit" >
+                        </button> -->
+                            <!-- <button id="openModalButtonEdit" [hidden]="true" data-bs-toggle="modal"
+                        data-bs-target="#editProduct">edits</button>
+                      <button type="button" class="btn  icon" title="Edit">
+                        <i class="fa-solid fa-pencil " (click)="openEditScheduleModal()"></i>
+        
+                      </button> -->
+
+                        </div>
+                        <div class="col-4">
+                 
+                            <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" 
+                            id="openProductButtonDelete" [hidden]="true" data-bs-toggle="modal"
+                            data-bs-target="#deleteProduct">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
+                          <button type="button" id="icon" class="btn btn-primary" title="Delete" >
+                            <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
+                          </button>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                </div>
+            </div>
+           
+            <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
+                [tableStyle]="{'min-width': '50rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="flexible-header">Product</th>
+                        <th class="flexible-header">Cover from </th>
+                        <th class="flexible-header">Cover to</th>
+                        <th class="flexible-header"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+                    <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRow !== product" 
+                    [ngClass]="{'editing-row': selectedEditRowIndex === ri,'highlighted-row': selectedRow === product}"
+                    (click)="onRowSelect(product)">
+                        <td class="flexible-header">
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <!-- <p>Test</p> -->
+                                    <!-- <p-dropdown [options]="ProductDescriptionArray" appendTo="body"
+                                    [(ngModel)]="product.productCode" [style]="{'width':'100%'}"
+                                        optionLabel="description"  [dataKey]="'code'" /> -->
+                                        <p-dropdown 
+                                        [options]="ProductDescriptionArray" 
+                                        appendTo="body"
+                                        (onChange)="onProductChange($event.value)" 
+                                       
+                                        [style]="{'width':'100%'}"
+                                        optionLabel="description" 
+                                        > 
+                                    </p-dropdown>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+
+                                    <span>{{ product.productCode.description }}</span>
+                                </ng-template>
+                            </p-cellEditor>
+                            <!-- <p>output test</p> -->
+
+                        </td>
+
+                        <td class="flexible-header">
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [showIcon]="true"
+                                        [dateFormat]="dateFormat" [style]="{'width':'100%'}"   (onSelect)="updateCoverToDateEdit($event,product)" >
+                                    </p-calendar>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <span>{{ product.coverFrom }}</span>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+
+                        <td class="flexible-header">
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [showIcon]="true"
+                                        [dateFormat]="dateFormat" [style]="{'width':'100%'}" >
+                                    </p-calendar>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <span>{{ product.coverTo }}</span>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td class="flexible-header">
+                            <div class="flex items-center justify-center gap-2">
+                                <button *ngIf="selectedEditRowIndex !== ri" pButton pRipple type="button"
+                                    pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(ri, product)" text
+                                    rounded severity="secondary"></button>
+
+                                <button *ngIf="selectedEditRowIndex === ri" pButton pRipple type="button"
+                                    pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(product)" text rounded
+                                    severity="secondary"></button>
+
+                                <button *ngIf="selectedEditRowIndex === ri" pButton pRipple type="button"
+                                    pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(product)" text rounded
+                                    severity="secondary"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="padding: 20px; text-align:center " id="empty">
+                            {{'gis.quotation.no_data_to_display'
+                            | translate}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+
+
+            <!-- Add Product Details  Modal -->
+            <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm "style="min-width: 518px;"  role="document">
+                    <div class="modal-content" id="addSectionModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.product_details' |
+                                translate}}
+                                <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+
+                            <div class="row mb-4" [formGroup]='quotationProductForm'>
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-group form-group-sm">
+                                        <br>
+                                        <label for="" class="quote-label">Product</label>
+                                        <p-dropdown id="quote-input-pdropdown" formControlName="productCode"
+                                            value="code" [options]="ProductDescriptionArray" optionLabel="description"
+                                            [filterBy]="'description'"
+                                            (onChange)="getProductClause(); checkMotorClass()" placeholder=" "
+                                            [filter]="true"></p-dropdown>
+
+                                        <div *ngIf="quotationProductForm.get('productCode').hasError('required') && quotationProductForm.get('productCode').touched"
+                                            class="form-text text-danger">
+                                            Product is required.
+                                        </div>
+                                    </div>
+                                </div>
+                           
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-group form-group-sm">
+                                        <br>
+                                        <label for="coverFromDate" class="quote-label">Cover From</label><br>
+
+                                        <p-calendar formControlName="wef" name="wefDate" id="coverFromDate"
+                                            inputId="coverFromDate" [dateFormat]="dateFormat"
+                                            inputStyleClass='form-control' [showIcon]="true"
+                                            (onSelect)="updateCoverToDate($event)" [minDate]="minDate">
+                                        </p-calendar>
+                                        <div *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
+                                            class="form-text text-danger">
+                                            Cover From is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-group form-group-sm">
+                                        <br>
+                                        <label for="coverToDate" class="quote-label">Cover to</label><br>
+                                        <p-calendar formControlName="wet" name="wetDate" id="coverToDate"
+                                            inputId="coverToDate" [dateFormat]="dateFormat"
+                                            inputStyleClass='form-control' [showIcon]="true" [minDate]="minDate">
+                                        </p-calendar>
+
+                                        <div *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
+                                            class="form-text text-danger">
+                                            Cover to is required.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
+                                    (click)="submitForm()">{{'gis.quotation.save_details' | translate}}</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+                    <!-- Delete Product Modal -->
+        <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteSectionLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width: 408px;">
+          <div class="modal-content">
+            <!-- <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div> -->
+            <div class="modal-body">
+             
+              
+              <p class="d-flex justify-content-center mt-4" id="deleteLabel">
+               Are you sure you want to delete product?</p>
+               
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" id="delete"
+                      data-bs-dismiss="modal" (click)="deleteProduct()">{{ 'gis.quotation.yes_delete' | translate }}</button>
+                </div><br>
+                
+              <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">
+                  {{'gis.quotation.no_im_not' | translate}}</button>
+              </div><br>
+            </div>
+          </div>
+        </div>
+      </div>
             <div class="row mb-4" [formGroup]='quotationForm'>
-                <div class="col-sm-4 col-6">
-                    <div class="form-group form-group-sm">
-                        <br>
-                        <label for="" class="quote-label">Product</label>
-                        <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
-                            [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
-                            (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown>
-
-                        <div *ngIf="quotationForm.get('productCode').hasError('required') && quotationForm.get('productCode').touched"
-                            class="form-text text-danger">
-                            Product is required.
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-4 col-6">
-                    <div class="form-group form-group-sm">
-                        <br>
-                        <label for="coverFromDate" class="quote-label">Cover From</label><br>
-
-                        <p-calendar formControlName="wefDate" name="wefDate" id="coverFromDate" inputId="coverFromDate"
-                            [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-                            (onSelect)="updateCoverToDate($event)" [minDate]="minDate">
-                        </p-calendar>
-                        <div *ngIf="quotationForm.get('wefDate').hasError('required') && quotationForm.get('wefDate').touched"
-                            class="form-text text-danger">
-                            Cover From is required.
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-4 col-6">
-                    <div class="form-group form-group-sm">
-                        <br>
-                        <label for="coverToDate" class="quote-label">Cover to</label><br>
-                        <p-calendar formControlName="wetDate" name="wetDate" id="coverToDate" inputId="coverToDate"
-                            [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-                             [minDate]="minDate">
-                        </p-calendar>
-
-                        <div *ngIf="quotationForm.get('wetDate').hasError('required') && quotationForm.get('wetDate').touched"
-                            class="form-text text-danger">
-                            Cover to is required.
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-4 col-6">
+               
+                <!-- <div class="col-sm-4 col-6">
                     <div class="form-group form-group-sm">
                         <br>
                         <p class="mb-4 import_risks">Import risks <input type="checkbox"
                                 (change)="isChecked = !isChecked" id="importRisks" class="ml-3"></p>
                     </div>
-                </div>
+                </div> -->
             </div>
+
             <p class="more" (click)="toggleProduct()" style="cursor: pointer">
                 Product Clauses
                 <span class="ml-1">
