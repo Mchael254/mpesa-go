@@ -1019,8 +1019,8 @@ export class NewClientComponent implements OnInit {
         // smsNumber: clientFormValues.contact_details.smsNumber,
         // titleShortDescription: "DR",
 
-        phoneNumber: clientFormValues?.contact_details.phoneNumber?.internationalNumber,
-        smsNumber: clientFormValues?.contact_details.smsNumber?.internationalNumber,
+        phoneNumber: clientFormValues?.contact_details.phoneNumber?.e164Number,
+        smsNumber: clientFormValues?.contact_details.smsNumber?.e164Number,
         titleId: clientFormValues.contact_details.clientTitle,
         contactChannel: clientFormValues.contact_details.channel,
         websiteUrl: clientFormValues.contact_details.websiteURL,
@@ -1102,9 +1102,9 @@ export class NewClientComponent implements OnInit {
         partyId: this.entityDetails?.id,
         // partyTypeShortDesc: "CLIENT",
         paymentDetails: payment,
-        firstName: clientFormValues.surname,
+        firstName: this.selectedCategory === 'C' ? clientFormValues.surname.substring(0, this.entityDetails?.name.indexOf(' ')) : clientFormValues.surname ,
         gender: clientFormValues.gender ? clientFormValues.gender : null,
-        lastName: clientFormValues.otherName,
+        lastName: this.selectedCategory === 'C' ? clientFormValues.surname.substring(this.entityDetails?.name.indexOf(' ') + 1) : clientFormValues.otherName ,
         // name: null,
         pinNumber: clientFormValues.pinNumber,
         category: this.selectedCategory,
@@ -2038,8 +2038,6 @@ export class NewClientComponent implements OnInit {
         docIdNo: this.selectedCr12Details.directorIdRegNo,
         dateOfBirth: this.selectedCr12Details.directorDob,
         address: this.selectedCr12Details.address,
-        /*companyRegNo: this.selectedCr12Details.companyRegNo,
-        companyRegDate: this.selectedCr12Details.companyRegDate,*/
         referenceNo: this.selectedCr12Details.certificateReferenceNo,
         referenceNoYear: this.selectedCr12Details.certificateRegistrationYear
       });
@@ -2054,20 +2052,6 @@ export class NewClientComponent implements OnInit {
   editOwnershipDetails() {
     this.editMode = !this.editMode;
     log.info('selected owner', this.selectedOwnershipStructureDetails);
-    /*if (this.selectedOwnershipStructureDetails) {
-      this.openOwnershipDetailsModal();
-      this.ownershipDetailsForm.patchValue({
-        name: this.selectedOwnershipStructureDetails.name,
-        docIdNo: this.selectedOwnershipStructureDetails.idNumber,
-        contact: this.selectedOwnershipStructureDetails.contactPersonPhone,
-        percentOwnership: this.selectedOwnershipStructureDetails.percentOwnership
-      });
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No ownership details is selected!'
-      );
-    }*/
     if (
       this.selectedOwnershipIndex !== null &&
       this.selectedOwnershipStructureDetails
@@ -2272,7 +2256,7 @@ export class NewClientComponent implements OnInit {
       name: contactPersonValues.name,
       idNumber: contactPersonValues.docIDNumber,
       email: contactPersonValues.email,
-      mobileNumber: contactPersonValues.mobileNumber?.internationalNumber,
+      mobileNumber: contactPersonValues.mobileNumber?.e164Number,
       wef: contactPersonValues.wef,
       wet: contactPersonValues.wet,
     }
@@ -2317,8 +2301,8 @@ export class NewClientComponent implements OnInit {
       postalAddress: branchValues.postalAddress,
       postalCode: branchValues.postalCode,
       email: branchValues.email,
-      landlineNumber: branchValues.landlineNumber?.internationalNumber,
-      mobileNumber: branchValues.mobileNumber?.internationalNumber,
+      landlineNumber: branchValues.landlineNumber?.e164Number,
+      mobileNumber: branchValues.mobileNumber?.e164Number,
     }
     log.info('branch details', branchPayload);
 
@@ -2354,7 +2338,7 @@ export class NewClientComponent implements OnInit {
     const payeePayload: any = {
       name: payeeFormValues.name,
       idNo: payeeFormValues.docIdNo,
-      mobileNo: payeeFormValues.mobileNumber?.internationalNumber,
+      mobileNo: payeeFormValues.mobileNumber?.e164Number,
       email: payeeFormValues.email,
       // bank: payeeFormValues.bank,
       bankBranchCode: payeeFormValues.branch,
@@ -2397,10 +2381,10 @@ export class NewClientComponent implements OnInit {
       idNumber: amlFormValues.idNumber,
       citizenshipCountryId: amlFormValues.citizenship,
       nationalityCountryId: amlFormValues.nationality,
-      maritalStatus: amlFormValues.maritalStatus,
-      employmentStatus: amlFormValues.employmentStatus,
+      maritalStatus: amlFormValues.maritalStatus === "" ? null : amlFormValues.maritalStatus,
+      employmentStatus: amlFormValues.employmentStatus === "" ? null : amlFormValues.employmentStatus,
       fundsSource: amlFormValues.fundsSource,
-      premiumFrequency: amlFormValues.premiumPay,
+      premiumFrequency: amlFormValues.premiumPay === "" ? null : amlFormValues.premiumPay,
       tradingName: amlFormValues.tradeName,
       registeredName: amlFormValues.registeredName,
       certificateRegistrationNumber: amlFormValues.certificateRegNo,
@@ -2483,7 +2467,7 @@ export class NewClientComponent implements OnInit {
     const ownershipPayload: any = {
       name: ownershipFormValues.name,
       idNumber: ownershipFormValues.docIdNo,
-      contactPersonPhone: ownershipFormValues.contact?.internationalNumber,
+      contactPersonPhone: ownershipFormValues.contact?.e164Number,
       percentOwnership: ownershipFormValues.percentOwnership
     }
     log.info('ownership details', ownershipPayload);
@@ -2561,8 +2545,8 @@ export class NewClientComponent implements OnInit {
     const selectedAml = event.data;
     this.selectedAmlIndex = this.amlDetailsData.findIndex(
       item =>
-        item.category === selectedAml.category &&
-        item.modeOfIdentity === selectedAml.modeOfIdentity
+        item.category === selectedAml.category
+        // item.modeOfIdentity === selectedAml.modeOfIdentity
     );
   }
 
