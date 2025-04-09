@@ -26,7 +26,12 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+  <!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
+  <app-steper
+    [currentStep]="1"
+    [stepperData]="steps"
+    [isFormValid]="isFormValid"
+  ></app-steper>
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
@@ -264,6 +269,7 @@
               type="date"
               class="form-control"
               id="documentDate"
+              #documentDateInput
               formControlName="documentDate"
             />
           </div>
