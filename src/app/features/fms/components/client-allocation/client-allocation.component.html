@@ -24,7 +24,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <app-steper [currentStep]="3" [stepperData]="steps"></app-steper>
   <div class="main-form">
     <div class="allocation-div">
       <!-- Receipt Allocations Section -->
@@ -43,9 +43,10 @@
               type="text"
               id="receiptAmount"
               class="form-control"
-              [value]="amountIssued"
+              [ngModel]="totalAllocatedAmount | number"
               readonly
             />
+            <!-- [value]="amountIssued" -->
           </div>
           <div class="col-md-3">
             <label for="allocatedAmount" class="form-label">{{
@@ -55,9 +56,10 @@
               type="text"
               id="allocatedAmount"
               class="form-control"
-              [value]="totalAllocatedAmount"
+              [ngModel]="totalAllocatedAmount | number"
               readonly
             />
+            <!-- [value]="totalAllocatedAmount" -->
           </div>
           <div class="col-md-3">
             <label for="unallocatedAmount" class="form-label">{{
@@ -67,9 +69,10 @@
               type="text"
               id="unallocatedAmount"
               class="form-control"
-              [value]="getRemainingAmount()"
+              [ngModel]="getRemainingAmount() | number"
               readonly
             />
+            <!-- [value]="getRemainingAmount()" -->
           </div>
         </div>
       </div>
@@ -189,21 +192,13 @@
                       placeholder="{{
                         'fms.receipting.enterAmount' | translate
                       }}"
+                      (change)="calculateTotalAllocatedAmount()"
                       (input)="calculateTotalAllocatedAmount()"
                     />
                   </ng-container>
                 </td>
                 <td>{{ transaction.commission }}</td>
-                <!-- <td>
-                  <input
-                    type="checkbox"
-                    class="form-check-input checkbox"
-                    [checked]="
-                      getFormControl(i, 'commissionChecked')?.value === 'Y'
-                    "
-                    (change)="onCommissionCheckedChange(i, $event)"
-                  />
-                </td> -->
+
                 <td>
                   <div class="d-flex">
                     <div class="form-check form-check-inline">
@@ -284,13 +279,6 @@
                 ></button>
               </div>
             </ng-template>
-            <!-- Pagination -->
-            <!-- <ng-template pTemplate="paginatorleft">
-              {{ "fms.receipting.showing" | translate }} {{ first }}
-              {{ "fms.receipting.to" | translate }} {{ first + rows }}
-              {{ "fms.receipting.of" | translate }} {{ totalRecords }}
-              {{ "fms.receipting.entries" | translate }}
-            </ng-template> -->
           </p-table>
         </div>
       </div>
@@ -303,7 +291,7 @@
           {{ "fms.receipting.saveAllocation" | translate }}
         </button>
       </div>
-      <!-- Allocations Table -->
+      <!-- Allocations transactions Table -->
       <div
         *ngIf="
           isAllocationCompleted && getAllocation && getAllocation.length > 0
@@ -315,15 +303,17 @@
         </h5>
         <!-- <div *ngIf="isAllocationCompleted && getAllocation && getAllocation.length > 0" class="row mt-4"> -->
         <!-- <h3 class="text-primary text-start fs-4">Allocations</h3> -->
-
+        <!-- [value]="getAllocation" -->
         <div class="col-md-12">
           <p-table
-            [value]="getAllocation"
+            [value]="flattenedAllocationDetails"
             responsiveLayout="scroll"
             class="table-striped"
             [paginator]="true"
             [rows]="5"
             [rowsPerPageOptions]="[5, 10, 20]"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
           >
             <!-- Table Header -->
             <ng-template pTemplate="header">
@@ -353,8 +343,9 @@
             </ng-template>
 
             <!-- Table Body -->
-            <ng-template pTemplate="body" let-allocation>
-              <tr *ngFor="let detail of allocation.receiptParticularDetails">
+            <ng-template pTemplate="body" let-detail>
+              <!-- <tr *ngFor="let detail of allocation.receiptParticularDetails" allocation> -->
+              <tr>
                 <td>{{ detail.policyNumber }}</td>
                 <td>{{ detail.referenceNumber }}</td>
                 <td>{{ detail.batchNumber }}</td>
@@ -372,10 +363,52 @@
                 </td>
               </tr>
             </ng-template>
+            <ng-template pTemplate="paginator" let-state>
+              <div class="custom-paginator">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-left"
+                  (click)="moveFirst(state)"
+                  [disabled]="state.first === 0"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-left"
+                  (click)="movePrev(state)"
+                  [disabled]="state.first === 0"
+                ></button>
+
+                <span
+                  >{{ "fms.receipting.showing" | translate }}
+                  {{ state.first + 1 }} {{ "fms.receipting.to" | translate }}
+                  {{ first + rows }} {{ state.first + state.rows }}
+                  {{ "fms.receipting.of" | translate }} {{ totalRecords }}
+                  {{ state.totalRecords
+                  }}{{ "fms.receipting.entries" | translate }}</span
+                >
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-right"
+                  (click)="moveNext(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-angle-double-right"
+                  (click)="moveLast(state)"
+                  [disabled]="state.first + state.rows >= state.totalRecords"
+                ></button>
+              </div>
+            </ng-template>
           </p-table>
         </div>
       </div>
-
+      <!-- upload file logic -->
       <!-- Upload Button and Hidden File Input -->
       <form [formGroup]="receiptingDetailsForm">
         <div
