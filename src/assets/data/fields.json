@@ -435,9 +435,9 @@
       "identity_type": {
         "fieldId": "identity_type",
         "fieldLabel": "Identity type",
-        "fieldVisibilityStatus": "Y",
-        "fieldMandatoryStatus": "Y",
-        "fieldDisabledStatus": "Y"
+        "fieldVisibilityStatus": "N",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
       },
       "citizenship": {
         "fieldId": "citizenship",

@@ -191,7 +191,7 @@
                   <div class="col-sm-4">
                     <label for="gender" class="label col-form-label">{{ 'entities.gender' | translate | titlecase }}</label>
                     <select id="gender" class="form-select" formControlName="gender"
-                            [ngClass]="{ 'is-invalid': f['clientTypeId']?.invalid && (f['clientTypeId']?.dirty || f['clientTypeId']?.touched) }">
+                            [ngClass]="{ 'is-invalid': f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched) }">
                       <option value="" disabled selected>{{ 'entities.select' | translate | titlecase }} {{ 'entities.gender' | translate | titlecase }}</option>
                       <option value="M" aria-selected="true">{{ 'entities.male' | translate | titlecase }}</option>
                       <option value="F">{{ 'entities.female' | translate | titlecase }}</option>
@@ -560,32 +560,32 @@
                         [scrollable]="true"
                         [(selection)]= "selectedContactPersonDetails"
                         selectionMode="single"
-                        dataKey="title"
+                        (onRowSelect)="onSelectContactPerson($event)"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['clientTitleCode', 'name', 'idNumber', 'email', 'mobileNumber', 'wef', 'wet']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.title'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription">{{'entities.fullName'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.docIdNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.email_address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.phone_number'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'crm.WEF'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'crm.WET'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                            <th pSortableColumn="clientTitleCode">{{'entities.title'| translate }} <p-sortIcon field="clientTitleCode"></p-sortIcon></th>
+                            <th pSortableColumn="name">{{'entities.fullName'| translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                            <th pSortableColumn="idNumber">{{'entities.docIdNo'| translate }} <p-sortIcon field="idNumber"></p-sortIcon></th>
+                            <th pSortableColumn="email">{{'entities.email_address'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+                            <th pSortableColumn="mobileNumber">{{'entities.phone_number'| translate }} <p-sortIcon field="mobileNumber"></p-sortIcon></th>
+                            <th pSortableColumn="wef">{{'crm.WEF'| translate }} <p-sortIcon field="wef"></p-sortIcon></th>
+                            <th pSortableColumn="wet">{{'crm.WET'| translate }} <p-sortIcon field="wet"></p-sortIcon></th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-contactPerson>
                           <tr [pSelectableRow]="contactPerson">
-                            <td>{{contactPerson?.title | titlecase}}</td>
+                            <td>{{contactPerson?.clientTitleCode}}</td>
                             <td>{{contactPerson?.name | titlecase}}</td>
-                            <td>{{contactPerson?.docIDNumber | titlecase}}</td>
-                            <td>{{contactPerson?.email | titlecase}}</td>
-                            <td>{{contactPerson?.mobileNumber | titlecase}}</td>
-                            <td>{{contactPerson?.wef | titlecase}}</td>
-                            <td>{{contactPerson?.wet | titlecase}}</td>
+                            <td>{{contactPerson?.idNumber}}</td>
+                            <td>{{contactPerson?.email}}</td>
+                            <td>{{contactPerson?.mobileNumber}}</td>
+                            <td>{{contactPerson?.wef}}</td>
+                            <td>{{contactPerson?.wet}}</td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
@@ -631,7 +631,7 @@
                         filterBy="name"
                         [showClear]="true"
                         appendTo="body"
-                        (onChange)="onCountryChange()"
+                        (onChange)="onCountryChange('headOffice')"
                         [ngClass]="{ 'is-invalid': f['address']['controls']['country']['invalid'] && (f['address']['controls']['country']['dirty'] || f['address']['controls']['country']['touched']) }">
 
                         <ng-template let-selected pTemplate="selectedItem">
@@ -663,7 +663,7 @@
                         name="city" id="county"
                         [filter]="true" filterBy="name" [showClear]="true"
                         placeholder="County"
-                        appendTo="body" (onChange)="onCityChange()"
+                        appendTo="body" (onChange)="onCityChange('headOffice')"
                         [ngClass]="{ 'is-invalid': f['address']['controls']['county']['invalid'] && (f['address']['controls']['county']['dirty'] || f['address']['controls']['county']['touched']) }">
                         <ng-template let-selected pTemplate="selectedItem">
                           <div>{{ selected?.name | titlecase }}</div>
@@ -806,40 +806,40 @@
                         [scrollable]="true"
                         [(selection)]= "selectedBranchDetails"
                         selectionMode="single"
-                        dataKey="srsCode"
+                        (onRowSelect)="onSelectBranch($event)"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['shortDesc', 'branchName', 'countryId', 'stateId', 'townId', 'physicalAddress', 'postalAddress', 'postalCode', 'email', 'landlineNumber', 'mobileNumber']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.shortDesc'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription">{{'entities.name'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.country'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.countyOrState'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.cityOrTown'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.physical_address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.postal_address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.postal_code'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.email_address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.landlineNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.mobileNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                            <th pSortableColumn="shortDesc">{{'entities.shortDesc'| translate }} <p-sortIcon field="shortDesc"></p-sortIcon></th>
+                            <th pSortableColumn="branchName">{{'entities.name'| translate }} <p-sortIcon field="branchName"></p-sortIcon></th>
+                            <th pSortableColumn="countryId">{{'entities.country'| translate }} <p-sortIcon field="countryId"></p-sortIcon></th>
+                            <th pSortableColumn="stateId">{{'entities.countyOrState'| translate }} <p-sortIcon field="stateId"></p-sortIcon></th>
+                            <th pSortableColumn="townId">{{'entities.cityOrTown'| translate }} <p-sortIcon field="townId"></p-sortIcon></th>
+                            <th pSortableColumn="physicalAddress">{{'entities.physical_address'| translate }} <p-sortIcon field="physicalAddress"></p-sortIcon></th>
+                            <th pSortableColumn="postalAddress">{{'entities.postal_address'| translate }} <p-sortIcon field="postalAddress"></p-sortIcon></th>
+                            <th pSortableColumn="postalCode">{{'entities.postal_code'| translate }} <p-sortIcon field="postalCode"></p-sortIcon></th>
+                            <th pSortableColumn="email">{{'entities.email_address'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+                            <th pSortableColumn="landlineNumber">{{'entities.landlineNo'| translate }} <p-sortIcon field="landlineNumber"></p-sortIcon></th>
+                            <th pSortableColumn="mobileNumber">{{'entities.mobileNo'| translate }} <p-sortIcon field="mobileNumber"></p-sortIcon></th>
                           </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-contactPerson>
-                          <tr [pSelectableRow]="contactPerson">
-                            <td>{{contactPerson?.shortDesc | titlecase}}</td>
-                            <td>{{contactPerson?.name | titlecase}}</td>
-                            <td>{{contactPerson?.country }}</td>
-                            <td>{{contactPerson?.county }}</td>
-                            <td>{{contactPerson?.town }}</td>
-                            <td>{{contactPerson?.physicalAddress | titlecase}}
-                            <td>{{contactPerson?.postalAddress }}</td>
-                            <td>{{contactPerson?.postalCode }}</td>
-                            <td>{{contactPerson?.email | titlecase}}</td>
-                            <td>{{contactPerson?.landlineNumber}}</td>
-                            <td>{{contactPerson?.mobileNumber}}</td>
+                        <ng-template pTemplate="body" let-branch>
+                          <tr [pSelectableRow]="branch">
+                            <td>{{branch?.shortDesc | titlecase}}</td>
+                            <td>{{branch?.branchName | titlecase}}</td>
+                            <td>{{branch?.countryId }}</td>
+                            <td>{{branch?.stateId }}</td>
+                            <td>{{branch?.townId }}</td>
+                            <td>{{branch?.physicalAddress | titlecase}}
+                            <td>{{branch?.postalAddress }}</td>
+                            <td>{{branch?.postalCode }}</td>
+                            <td>{{branch?.email}}</td>
+                            <td>{{branch?.landlineNumber}}</td>
+                            <td>{{branch?.mobileNumber}}</td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
@@ -1007,7 +1007,7 @@
                         placeholder="Bank" name="bank" id="bank" appendTo="body"
                         [filter]="true" filterBy="name" [showClear]="true"
                         [(ngModel)]="selectedBank"
-                        (onChange)="onBankSelection()"
+                        (onChange)="onBankSelection('bankInfo')"
                         [ngClass]="{ 'is-invalid': f['payment_details']['controls']['bank']['invalid'] && (f['payment_details']['controls']['bank']['dirty'] || f['payment_details']['controls']['bank']['touched']) }">
                         <ng-template let-selected pTemplate="selectedItem">
                           <div>{{ selected?.name | titlecase }}</div>
@@ -1276,31 +1276,31 @@
                         [scrollable]="true"
                         [(selection)]= "selectedPayeeDetails"
                         selectionMode="single"
-                        dataKey="srsCode"
+                        (onRowSelect)="onSelectPayee($event)"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['name', 'idNo', 'mobileNo', 'email', 'bank', 'bankBranchCode', 'accountNumber']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.name'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription">{{'entities.docIdNo'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.phone_number'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.email_address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.bank'| translate }} {{'entities.name'| translate }}<p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.branch'| translate }} {{'entities.name'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.account_number'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                            <th pSortableColumn="name">{{'entities.name'| translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                            <th pSortableColumn="idNo">{{'entities.docIdNo'| translate }} <p-sortIcon field="idNo"></p-sortIcon></th>
+                            <th pSortableColumn="mobileNo">{{'entities.phone_number'| translate }} <p-sortIcon field="mobileNo"></p-sortIcon></th>
+                            <th pSortableColumn="email">{{'entities.email_address'| translate }} <p-sortIcon field="email"></p-sortIcon></th>
+                            <th pSortableColumn="bank">{{'entities.bank'| translate }} {{'entities.name'| translate }}<p-sortIcon field="bank"></p-sortIcon></th>
+                            <th pSortableColumn="bankBranchCode">{{'entities.branch'| translate }} {{'entities.name'| translate }} <p-sortIcon field="bankBranchCode"></p-sortIcon></th>
+                            <th pSortableColumn="accountNumber">{{'entities.account_number'| translate }} <p-sortIcon field="accountNumber"></p-sortIcon></th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-payee>
                           <tr [pSelectableRow]="payee">
                             <td>{{payee?.name | titlecase}}</td>
-                            <td>{{payee?.docIdNo}}</td>
-                            <td>{{payee?.mobileNumber}}</td>
-                            <td>{{payee?.email | titlecase}}</td>
+                            <td>{{payee?.idNo}}</td>
+                            <td>{{payee?.mobileNo}}</td>
+                            <td>{{payee?.email}}</td>
                             <td>{{payee?.bank}}</td>
-                            <td>{{payee?.branch}}</td>
+                            <td>{{payee?.bankBranchCode}}</td>
                             <td>{{payee?.accountNumber}}</td>
                           </tr>
                         </ng-template>
@@ -1607,35 +1607,37 @@
                         [scrollable]="true"
                         [(selection)]= "selectedAmlDetails"
                         selectionMode="single"
-                        dataKey="srsCode"
+                        (onRowSelect)="onSelectAml($event)"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['category', 'modeOfIdentity', 'idNumber', 'citizenshipCountryId', 'nationalityCountryId', 'maritalStatus', 'employmentStatus',
+                        'tradingName', 'registeredName', 'certificateRegistrationNumber', 'certificateYearOfRegistration', 'operatingCountryId', 'parentCountryId',
+                        'fundsSource', 'premiumFrequency']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.type'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
+                            <th pSortableColumn="category">{{'entities.type'| translate }} <p-sortIcon field="category"></p-sortIcon></th>
                             <ng-container *ngIf="selectedType === 'IN'">
-                              <th pSortableColumn="srsShortDescription">{{'entities.id_type'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsShortDescription">{{'serviceDesk.IDNo'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsShortDescription">{{'entities.citizenshipCountry'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsShortDescription">{{'entities.nationalityCountry'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsShortDescription">{{'entities.marital_status'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsShortDescription">{{'entities.employmentStatus'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
+                              <th pSortableColumn="modeOfIdentity">{{'entities.id_type'| translate }} <p-sortIcon field="modeOfIdentity"></p-sortIcon></th>
+                              <th pSortableColumn="idNumber">{{'serviceDesk.IDNo'| translate }} <p-sortIcon field="idNumber"></p-sortIcon></th>
+                              <th pSortableColumn="citizenshipCountryId">{{'entities.citizenshipCountry'| translate }} <p-sortIcon field="citizenshipCountryId"></p-sortIcon></th>
+                              <th pSortableColumn="nationalityCountryId">{{'entities.nationalityCountry'| translate }} <p-sortIcon field="nationalityCountryId"></p-sortIcon></th>
+                              <th pSortableColumn="maritalStatus">{{'entities.marital_status'| translate }} <p-sortIcon field="maritalStatus"></p-sortIcon></th>
+                              <th pSortableColumn="employmentStatus">{{'entities.employmentStatus'| translate }} <p-sortIcon field="employmentStatus"></p-sortIcon></th>
                             </ng-container>
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <th pSortableColumn="srsShortDescription">{{'entities.trade_name'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.registeredName'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.cert_reg_no'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.cert_reg_year'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.operatingCountry'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.parent_country'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                              <th pSortableColumn="tradingName">{{'entities.trade_name'| translate }} <p-sortIcon field="tradingName"></p-sortIcon></th>
+                              <th pSortableColumn="registeredName">{{'entities.registeredName'| translate }} <p-sortIcon field="registeredName"></p-sortIcon></th>
+                              <th pSortableColumn="certificateRegistrationNumber">{{'entities.cert_reg_no'| translate }} <p-sortIcon field="certificateRegistrationNumber"></p-sortIcon></th>
+                              <th pSortableColumn="certificateYearOfRegistration">{{'entities.cert_reg_year'| translate }} <p-sortIcon field="certificateYearOfRegistration"></p-sortIcon></th>
+                              <th pSortableColumn="operatingCountryId">{{'entities.operatingCountry'| translate }} <p-sortIcon field="operatingCountryId"></p-sortIcon></th>
+                              <th pSortableColumn="parentCountryId">{{'entities.parent_country'| translate }} <p-sortIcon field="parentCountryId"></p-sortIcon></th>
                             </ng-container>
 
-                            <th pSortableColumn="srsMainStatus">{{'entities.source_of_funds'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription" *ngIf="selectedType === 'IN'">
-                              {{'entities.premiumPay'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon>
+                            <th pSortableColumn="fundsSource">{{'entities.source_of_funds'| translate }} <p-sortIcon field="fundsSource"></p-sortIcon></th>
+                            <th pSortableColumn="premiumFrequency" *ngIf="selectedType === 'IN'">
+                              {{'entities.premiumPay'| translate }} <p-sortIcon field="premiumFrequency"></p-sortIcon>
                             </th>
                           </tr>
                         </ng-template>
@@ -1645,21 +1647,21 @@
                             <ng-container *ngIf="selectedType === 'IN'">
                               <td>{{amlDetail?.modeOfIdentity }}</td>
                               <td>{{amlDetail?.idNumber }}</td>
-                              <td>{{amlDetail?.citizenship }}</td>
-                              <td>{{amlDetail?.nationality }}</td>
+                              <td>{{amlDetail?.citizenshipCountryId }}</td>
+                              <td>{{amlDetail?.nationalityCountryId }}</td>
                               <td>{{amlDetail?.maritalStatus | titlecase}}</td>
                               <td>{{amlDetail?.employmentStatus | titlecase}}</td>
                             </ng-container>
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <td>{{amlDetail?.tradeName | titlecase}}</td>
+                              <td>{{amlDetail?.tradingName | titlecase}}</td>
                               <td>{{amlDetail?.registeredName | titlecase}}</td>
-                              <td>{{amlDetail?.certificateRegNo}}</td>
-                              <td>{{amlDetail?.certificateRegYear}}</td>
-                              <td>{{amlDetail?.operatingCountry }}</td>
-                              <td>{{amlDetail?.parentCompany | titlecase}}</td>
+                              <td>{{amlDetail?.certificateRegistrationNumber}}</td>
+                              <td>{{amlDetail?.certificateYearOfRegistration}}</td>
+                              <td>{{amlDetail?.operatingCountryId }}</td>
+                              <td>{{amlDetail?.parentCountryId}}</td>
                             </ng-container>
                             <td>{{amlDetail?.fundsSource }}</td>
-                            <td>{{amlDetail?.premiumPay }}</td>
+                            <td *ngIf="selectedType === 'IN'">{{amlDetail?.premiumFrequency | titlecase}}</td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
@@ -1701,35 +1703,36 @@
                         [resizableColumns]="true"
                         [showCurrentPageReport]="true"
                         [rows]="pageSize || 10"
-                        [totalRecords]="cr12DetailsData?.length"
-                        [value]="cr12DetailsData"
+                        [totalRecords]="selectedAmlDetails?.cr12Details?.length"
+                        [value]="selectedAmlDetails?.cr12Details"
                         [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                         responsiveLayout="stack"
                         [scrollable]="true"
                         [(selection)]= "selectedCr12Details"
                         selectionMode="single"
-                        dataKey="srsCode"
+                        (onRowSelect)="onSelectCr12($event)"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['category', 'directorName', 'directorIdRegNo', 'directorDob', 'directorIdRegNo',
+                        'directorDob', 'address', 'certificateReferenceNo', 'certificateRegistrationYear']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.personType'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription">{{'entities.name'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
+                            <th pSortableColumn="category">{{'entities.personType'| translate }} <p-sortIcon field="category"></p-sortIcon></th>
+                            <th pSortableColumn="directorName">{{'entities.name'| translate }} <p-sortIcon field="directorName"></p-sortIcon></th>
                             <ng-container *ngIf="selectedType === 'IN'">
-                              <th pSortableColumn="srsMainStatus">{{'entities.docIdNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.dob'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                              <th pSortableColumn="directorIdRegNo">{{'entities.docIdNo'| translate }} <p-sortIcon field="directorIdRegNo"></p-sortIcon></th>
+                              <th pSortableColumn="directorDob">{{'entities.dob'| translate }} <p-sortIcon field="directorDob"></p-sortIcon></th>
                             </ng-container>
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <th pSortableColumn="srsMainStatus">{{'entities.companyRegNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.companyRegDate'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                              <th pSortableColumn="directorIdRegNo">{{'entities.companyRegNo'| translate }} <p-sortIcon field="directorIdRegNo"></p-sortIcon></th>
+                              <th pSortableColumn="directorDob">{{'entities.companyRegDate'| translate }} <p-sortIcon field="directorDob"></p-sortIcon></th>
                             </ng-container>
-                            <th pSortableColumn="srsMainStatus">{{'entities.address'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                            <th pSortableColumn="address">{{'entities.address'| translate }} <p-sortIcon field="address"></p-sortIcon></th>
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <th pSortableColumn="srsMainStatus">{{'entities.referenceNo'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                              <th pSortableColumn="srsMainStatus">{{'entities.refNumberYear'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                              <th pSortableColumn="certificateReferenceNo">{{'entities.referenceNo'| translate }} <p-sortIcon field="certificateReferenceNo"></p-sortIcon></th>
+                              <th pSortableColumn="certificateRegistrationYear">{{'entities.refNumberYear'| translate }} <p-sortIcon field="certificateRegistrationYear"></p-sortIcon></th>
                             </ng-container>
 
                           </tr>
@@ -1737,20 +1740,20 @@
                         <ng-template pTemplate="body" let-cr12Detail>
                           <tr [pSelectableRow]="cr12Detail">
                             <td>{{cr12Detail?.category | titlecase}}</td>
-                            <td>{{cr12Detail?.name | titlecase}}</td>
+                            <td>{{cr12Detail?.directorName | titlecase}}</td>
                             <ng-container *ngIf="selectedType === 'IN'">
-                              <td>{{cr12Detail?.docIdNo }}</td>
-                              <td>{{cr12Detail?.dateOfBirth}}</td>
+                              <td>{{cr12Detail?.directorIdRegNo }}</td>
+                              <td>{{cr12Detail?.directorDob}}</td>
                             </ng-container>
 
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <td>{{cr12Detail?.companyRegNo }}</td>
-                              <td>{{cr12Detail?.companyRegDate }}</td>
+                              <td>{{cr12Detail?.directorIdRegNo }}</td>
+                              <td>{{cr12Detail?.directorDob }}</td>
                             </ng-container>
                             <td>{{cr12Detail?.address }}</td>
                             <ng-container *ngIf="selectedType === 'CO'">
-                              <td>{{cr12Detail?.referenceNo}}</td>
-                              <td>{{cr12Detail?.referenceNoYear}}</td>
+                              <td>{{cr12Detail?.certificateReferenceNo}}</td>
+                              <td>{{cr12Detail?.certificateRegistrationYear}}</td>
                             </ng-container>
                           </tr>
                         </ng-template>
@@ -1799,26 +1802,26 @@
                         responsiveLayout="stack"
                         [scrollable]="true"
                         [(selection)]= "selectedOwnershipStructureDetails"
+                        (onRowSelect)="onSelectOwnership($event)"
                         selectionMode="single"
-                        dataKey="srsCode"
                         scrollHeight="400px"
                         currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                        [globalFilterFields]="['srsMainStatus', 'srsShortDescription', 'srsName']"
+                        [globalFilterFields]="['name', 'idNumber', 'contactPersonPhone', 'percentOwnership']"
                       >
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="srsName">{{'entities.name'| translate }} <p-sortIcon field="srsName"></p-sortIcon></th>
-                            <th pSortableColumn="srsShortDescription">{{'entities.docIdNo'| translate }} <p-sortIcon field="srsShortDescription"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.contact'| translate }} <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
-                            <th pSortableColumn="srsMainStatus">{{'entities.percentageOwnership'| translate }} (%) <p-sortIcon field="srsMainStatus"></p-sortIcon></th>
+                            <th pSortableColumn="name">{{'entities.name'| translate }} <p-sortIcon field="name"></p-sortIcon></th>
+                            <th pSortableColumn="idNumber">{{'entities.docIdNo'| translate }} <p-sortIcon field="idNumber"></p-sortIcon></th>
+                            <th pSortableColumn="contactPersonPhone">{{'entities.contact'| translate }} <p-sortIcon field="contactPersonPhone"></p-sortIcon></th>
+                            <th pSortableColumn="percentOwnership">{{'entities.percentageOwnership'| translate }} (%) <p-sortIcon field="percentOwnership"></p-sortIcon></th>
                           </tr>
                         </ng-template>
-                        <ng-template pTemplate="body" let-owner>
-                          <tr [pSelectableRow]="owner">
+                        <ng-template pTemplate="body" let-owner let-rowIndex="rowIndex">
+                          <tr [pSelectableRow]="owner" [pSelectableRowIndex]="rowIndex">
                             <td>{{owner?.name | titlecase}}</td>
-                            <td>{{owner?.docIdNo}}</td>
-                            <td>{{owner?.contact }}</td>
+                            <td>{{owner?.idNumber}}</td>
+                            <td>{{owner?.contactPersonPhone }}</td>
                             <td>{{owner?.percentOwnership }}</td>
                           </tr>
                         </ng-template>
@@ -1915,7 +1918,7 @@
       <div class="modal-body">
         <form [formGroup]="contactPersonDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="title" class="form-label">{{ 'entities.title' | translate }}</label>
               <p-dropdown
                 id="title"
@@ -1943,7 +1946,7 @@
                 formControlName="name"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="docIDNumber" class="form-label">{{ 'entities.docIdNo' | translate }}</label>
               <input
                 type="text"
@@ -1961,7 +1964,7 @@
                 formControlName="email"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="mobileNumber" class="form-label">{{ 'entities.mobile_number' | translate }}</label>
               <ngx-intl-tel-input
                 [cssClass]="'form-control'"
@@ -1980,7 +1983,7 @@
               >
               </ngx-intl-tel-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="wef" class="form-label">{{ 'crm.WEF' | translate }}</label>
               <input
                   type="text"
@@ -1992,7 +1995,7 @@
                   onblur="(this.type='text')"
                 />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="wet" class="form-label">{{ 'crm.WET' | translate }}</label>
               <input
                   type="text"
@@ -2038,7 +2041,7 @@
       <div class="modal-body">
         <form [formGroup]="branchDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="shortDesc" class="form-label">{{ 'crm.short_description' | translate }}</label>
               <input
                 type="text"
@@ -2047,7 +2050,7 @@
                 formControlName="shortDesc"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">{{ 'entities.name' | translate }}</label>
               <input
                 type="text"
@@ -2056,13 +2059,13 @@
                 formControlName="name"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="country" class="form-label">{{ 'entities.country' | translate }}</label>
               <p-dropdown
                 [options]="countryData"
                 optionLabel="name"
                 optionValue="id"
-                [(ngModel)]="selectedCountry"
+                [(ngModel)]="selectedCorporateBranchCountry"
                 [style]="{ width: '100%', height: '38px' }"
                 [panelStyle]="{ width: '400px' }"
                 class="small-dropdown"
@@ -2072,7 +2075,7 @@
                 [filter]="true"
                 filterBy="name"
                 [showClear]="true"
-                (onChange)="onCountryChange()">
+                (onChange)="onCountryChange('branchDetails')">
 
                 <ng-template let-selected pTemplate="selectedItem">
                   <div >{{ selected?.name | titlecase }}</div>
@@ -2084,11 +2087,11 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="county" class="form-label">{{ 'entities.countyOrState' | translate }}</label>
               <p-dropdown
                 [options]="citiesData"
-                [(ngModel)]="selectedCityState"
+                [(ngModel)]="selectedCorporateCityState"
                 optionLabel="name" optionValue="id"
                 formControlName="county"
                 [style]="{ width: '100%', height: '38px' }"
@@ -2097,7 +2100,7 @@
                 name="city" id="county"
                 [filter]="true" filterBy="name" [showClear]="true"
                 placeholder="County"
-                (onChange)="onCityChange()">
+                (onChange)="onCityChange('branchDetails')">
                 <ng-template let-selected pTemplate="selectedItem">
                   <div>{{ selected?.name | titlecase }}</div>
                 </ng-template>
@@ -2108,7 +2111,7 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="town" class="form-label">{{ 'entities.cityOrTown' | translate }}</label>
               <p-dropdown
                 [options]="townData" optionLabel="name"
@@ -2128,7 +2131,7 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="physicalAddress" class="form-label">{{ 'entities.physical_address' | translate }}</label>
               <input
                 type="text"
@@ -2148,7 +2151,7 @@
                 formControlName="postalAddress"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="postalCode" class="form-label">{{ 'entities.postal_code' | translate }}</label>
               <p-dropdown [options]="countryData" optionLabel="zipCodeString"
                           optionValue="zipCode" formControlName="postalCode"
@@ -2167,7 +2170,7 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="email" class="form-label">{{ 'entities.email_address' | translate }}</label>
               <input
                 type="text"
@@ -2177,7 +2180,7 @@
                 formControlName="email"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="landlineNumber" class="form-label">{{ 'entities.landlineNumber' | translate }}</label>
               <ngx-intl-tel-input
                 [cssClass]="'form-control'"
@@ -2196,7 +2199,7 @@
               >
               </ngx-intl-tel-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="mobileNumber" class="form-label">{{ 'entities.mobile_number' | translate }}</label>
               <ngx-intl-tel-input
                 [cssClass]="'form-control'"
@@ -2249,7 +2252,7 @@
       <div class="modal-body">
         <form [formGroup]="payeeDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">{{ 'entities.name' | translate }}</label>
               <input
                 type="text"
@@ -2258,7 +2261,7 @@
                 formControlName="name"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="docIdNo" class="form-label">{{ 'entities.docIdNo' | translate }}</label>
               <input
                 type="text"
@@ -2267,7 +2270,7 @@
                 formControlName="docIdNo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="mobileNumber" class="form-label">{{ 'entities.mobile_number' | translate }}</label>
               <ngx-intl-tel-input
                 [cssClass]="'form-control'"
@@ -2286,7 +2289,7 @@
               >
               </ngx-intl-tel-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="email" class="form-label">{{ 'entities.email_address' | translate }}</label>
               <input
                 type="text"
@@ -2296,7 +2299,7 @@
                 formControlName="email"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="town" class="form-label">{{ 'entities.bank' | translate }}</label>
               <p-dropdown
                 [options]="banksData" optionLabel="name"
@@ -2306,8 +2309,8 @@
                 class="small-dropdown"
                 placeholder="Bank" name="bank" id="bank"
                 [filter]="true" filterBy="name" [showClear]="true"
-                [(ngModel)]="selectedBank"
-                (onChange)="onBankSelection()"
+                [(ngModel)]="selectedPayeeBank"
+                (onChange)="onBankSelection('payeeDetails')"
                 [ngClass]="{ 'is-invalid': f['payment_details']['controls']['bank']['invalid'] && (f['payment_details']['controls']['bank']['dirty'] || f['payment_details']['controls']['bank']['touched']) }">
                 <ng-template let-selected pTemplate="selectedItem">
                   <div>{{ selected?.name | titlecase }}</div>
@@ -2319,7 +2322,7 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="branch" class="form-label">{{ 'entities.branch' | translate }}</label>
               <p-dropdown
                 [options]="bankBranchData" optionLabel="name"
@@ -2340,7 +2343,7 @@
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="accountNumber" class="form-label">{{ 'entities.account_number' | translate }}</label>
               <input
                 type="text"
@@ -2382,7 +2385,7 @@
       <div class="modal-body">
         <form [formGroup]="amlDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="type" class="form-label">{{ 'entities.type' | translate }}</label>
               <select
                 id="type"
@@ -2401,7 +2404,7 @@
               </select>
             </div>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="modeOfIdentity" class="form-label">{{ 'entities.id_type' | translate }}</label>
                 <select
                   id="modeOfIdentity"
@@ -2418,7 +2421,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="idNumber" class="form-label">{{ 'entities.id_number' | translate }}</label>
                 <input
                   type="text"
@@ -2430,7 +2433,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="citizenship" class="form-label">{{ 'entities.citizenshipCountry' | translate }}</label>
                 <p-dropdown
                   [options]="countryData"
@@ -2458,7 +2461,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="nationality" class="form-label">{{ 'entities.nationalityCountry' | translate }}</label>
                 <p-dropdown
                   [options]="countryData"
@@ -2486,7 +2489,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="maritalStatus" class="form-label">{{ 'entities.marital_status' | translate }}</label>
                 <select id="maritalStatus" class="form-select" formControlName="maritalStatus">
                   <option value="" selected>{{ 'entities.select_marital_status' | translate }}</option>
@@ -2498,16 +2501,17 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="employmentStatus" class="form-label">{{ 'entities.employmentStatus' | translate }}</label>
                 <select id="employmentStatus" class="form-select" formControlName="employmentStatus">
-                  <option value="" selected></option>
-
+                  <option value="SELF_EMPLOYED" selected>Self Employed</option>
+                  <option value="EMPLOYED">Employed</option>
+                  <option value="NOT_EMPLOYED">Not Employed</option>
                 </select>
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="tradeName" class="form-label">{{ 'entities.trade_name' | translate }}</label>
                 <input
                   type="text"
@@ -2519,7 +2523,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="registeredName" class="form-label">{{ 'entities.registeredName' | translate }}</label>
                 <input
                   type="text"
@@ -2531,7 +2535,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="certificateRegNo" class="form-label">{{ 'entities.certificateRegNo' | translate }}</label>
                 <input
                   type="text"
@@ -2543,10 +2547,10 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="certificateRegYear" class="form-label">{{ 'entities.certificateRegYear' | translate }}</label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-control"
                   id="certificateRegYear"
                   placeholder="Certificate Reg Year"
@@ -2555,7 +2559,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="operatingCountry" class="form-label">{{ 'entities.operatingCountry' | translate }}</label>
                 <p-dropdown
                   [options]="countryData"
@@ -2569,8 +2573,7 @@
                   id="operatingCountry"
                   [filter]="true"
                   filterBy="name"
-                  [showClear]="true"
-                  appendTo="body">
+                  [showClear]="true">
 
                   <ng-template let-selected pTemplate="selectedItem">
                     <div >{{ selected?.name | titlecase }}</div>
@@ -2584,7 +2587,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="parentCountry" class="form-label">{{ 'entities.parent_country' | translate }}</label>
                 <p-dropdown
                   [options]="countryData"
@@ -2598,8 +2601,7 @@
                   id="parentCountry"
                   [filter]="true"
                   filterBy="name"
-                  [showClear]="true"
-                  appendTo="body">
+                  [showClear]="true">
 
                   <ng-template let-selected pTemplate="selectedItem">
                     <div >{{ selected?.name | titlecase }}</div>
@@ -2613,11 +2615,12 @@
               </div>
             </ng-container>
             <ng-container *ngIf="amlDetailsForm.get('category').value === 'I' || amlDetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="fundsSource" class="form-label">{{ 'entities.source_of_funds' | translate }}</label>
                 <select id="fundsSource" class="form-select" formControlName="fundsSource">
-                  <option value="" selected></option>
-
+                  <option *ngFor="let source of fundSource" [value]="source.code">
+                    {{ source.name | titlecase }}
+                  </option>
                 </select>
               </div>
             </ng-container>
@@ -2625,8 +2628,9 @@
               <div class="col-md-6">
                 <label for="premiumPay" class="form-label">{{ 'entities.premiumPay' | translate }}</label>
                 <select id="premiumPay" class="form-select" formControlName="premiumPay">
-                  <option value="" selected></option>
-
+                  <option value="ad-hoc" selected>Ad-hoc</option>
+                  <option value="Annual">Annual</option>
+                  <option value="Monthly">Monthly</option>
                 </select>
               </div>
             </ng-container>
@@ -2662,7 +2666,7 @@
       <div class="modal-body">
         <form [formGroup]="cr12DetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="type" class="form-label">{{ 'entities.personType' | translate }}</label>
               <select
                 id="type"
@@ -2680,7 +2684,7 @@
                 </option>
               </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">{{ 'entities.name' | translate }}</label>
               <input
                 type="text"
@@ -2689,21 +2693,20 @@
                 formControlName="name"
               />
             </div>
-            <ng-container *ngIf="cr12DetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
-                <label for="docIdNo" class="form-label">{{ 'entities.docIdNo' | translate }}</label>
+            <ng-container>
+              <div class="col-md-6 mb-3">
+                <label for="docIdNo" class="form-label">{{ (cr12DetailsForm.get('category').value === 'I' ? 'entities.docIdNo' : 'entities.companyRegNo') | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
                   id="docIdNo"
-                  placeholder="Doc ID Number"
                   formControlName="docIdNo"
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="cr12DetailsForm.get('category').value === 'I'">
-              <div class="col-md-6">
-                <label for="dob" class="form-label">{{ 'entities.dob' | translate }}</label>
+            <ng-container >
+              <div class="col-md-6 mb-3">
+                <label for="dob" class="form-label">{{ (cr12DetailsForm.get('category').value === 'I' ? 'entities.dob' : 'entities.companyRegDate') | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
@@ -2715,20 +2718,8 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="cr12DetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
-                <label for="companyRegNo" class="form-label">{{ 'entities.companyRegNo' | translate }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="companyRegNo"
-                  placeholder="Company reg no"
-                  formControlName="companyRegNo"
-                />
-              </div>
-            </ng-container>
             <ng-container *ngIf="cr12DetailsForm.get('category').value === 'I' || cr12DetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="address" class="form-label">{{ 'entities.address' | translate }}</label>
                 <input
                   type="text"
@@ -2740,19 +2731,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="cr12DetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
-                <label for="companyRegDate" class="form-label">{{ 'entities.companyRegDate' | translate }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="companyRegDate"
-                  placeholder="Company reg date"
-                  formControlName="companyRegDate"
-                />
-              </div>
-            </ng-container>
-            <ng-container *ngIf="cr12DetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="referenceNo" class="form-label">{{ 'entities.referenceNo' | translate }}</label>
                 <input
                   type="text"
@@ -2764,10 +2743,10 @@
               </div>
             </ng-container>
             <ng-container *ngIf="cr12DetailsForm.get('category').value === 'C'">
-              <div class="col-md-6">
+              <div class="col-md-6 mb-3">
                 <label for="referenceNoYear" class="form-label">{{ 'entities.refNumberYear' | translate }}</label>
                 <input
-                  type="text"
+                  type="date"
                   class="form-control"
                   id="referenceNoYear"
                   placeholder="Reference no year"
@@ -2779,7 +2758,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveCR12Details()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveCR12Details(this.selectedAmlDetails)">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -2807,7 +2786,7 @@
       <div class="modal-body">
         <form [formGroup]="ownershipDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="name" class="form-label">{{ 'entities.name' | translate }}</label>
               <input
                 type="text"
@@ -2816,7 +2795,7 @@
                 formControlName="name"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="docIdNo" class="form-label">{{ 'entities.docIdNo' | translate }}</label>
               <input
                 type="text"
@@ -2826,17 +2805,26 @@
                 formControlName="docIdNo"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="contact" class="form-label">{{ 'entities.contact' | translate }}</label>
-              <input
-                type="text"
-                class="form-control"
+              <ngx-intl-tel-input
+                [cssClass]="'form-control'"
                 id="contact"
-                placeholder="Contact"
+                [preferredCountries]="preferredCountries"
+                [enableAutoCountrySelect]="true"
+                [enablePlaceholder]="true"
+                [searchCountryFlag]="true"
+                [selectFirstCountry]="true"
+                [selectedCountryISO]="CountryISO.Kenya"
+                [searchCountryField]="[
+                    SearchCountryField.Iso2,
+                    SearchCountryField.Name
+                  ]"
                 formControlName="contact"
-              />
+              >
+              </ngx-intl-tel-input>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
               <label for="percentOwnership" class="form-label">{{ 'entities.percentageOwnership' | translate }}</label>
               <input
                 type="number"
