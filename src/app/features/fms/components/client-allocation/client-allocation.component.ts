@@ -958,6 +958,7 @@ export class ClientAllocationComponent {
       );
       return;
     }
+    console.log('amount issued>',this.amountIssued);
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1787,6 +1788,7 @@ export class ClientAllocationComponent {
         );
         //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
+            this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
 
         //prepare receipt upload payload
