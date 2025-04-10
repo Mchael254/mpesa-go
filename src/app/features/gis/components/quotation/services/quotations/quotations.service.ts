@@ -14,7 +14,7 @@ import {
   scheduleDetails,
   Sources
 } from '../../data/quotationsDTO';
-import {catchError, Observable, retry, throwError} from 'rxjs';
+import {catchError, Observable, retry, tap, throwError} from 'rxjs';
 import {introducersDTO} from '../../data/introducersDTO';
 import {AgentDTO} from '../../../../../entities/data/AgentDTO';
 import {Pagination} from '../../../../../../shared/data/common/pagination';
@@ -158,7 +158,7 @@ export class QuotationsService {
       dateTo: string,
       id: number
     ): Observable<Pagination<QuotationsDTO>> {
-  
+
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -167,7 +167,7 @@ export class QuotationsService {
         .set('pageNo', `${pageNo}`)
         .set('dateFrom', `${dateFrom}`)
         .set('dateTo', `${dateTo}`);
-  
+
       return this.api.GET<Pagination<QuotationsDTO>>(`v1/quotations/client/` + id, API_CONFIG.GIS_QUOTATION_BASE_URL);
     }
 
@@ -203,13 +203,13 @@ export class QuotationsService {
    */
   createRiskSection(quotationRiskCode, data: riskSection[]) {
     console.log(data, "QUOTATION RISK SECTION")
-    return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST<any>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
 
 
   createRiskLimits(data: any): Observable<any> {
-    return this.api.POST(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST<any>(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   /**

@@ -1017,7 +1017,7 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-section let-editing="editing" let-i="rowIndex">
                     <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
-                      <td > 
+                      <td >
                         <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                           [(ngModel)]="section.isChecked">
                       </td>
@@ -1030,7 +1030,7 @@
                           [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
                       </td>
                       <td class="equal-width"[pEditableColumn]="section.rate" pEditableColumnField="rate">
-                        <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate" 
+                        <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate"
                            class="error-border form-control-sm" type="number"
                           (keydown)="onKeyUp($event, section)"
                           [ngClass]="{'error-border': section.isChecked && !section.rate}">
@@ -1334,7 +1334,7 @@
               <td class="flexible-header">{{sectionArray.rowNumber}}</td>
               <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
               <td class="flexible-header">{{sectionArray.sectionDescription}}</td>
-              <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
+              <td class="flexible-header">{{sectionArray.limitAmount | number}}</td>
               <td class="flexible-header">{{sectionArray.premiumRate || sectionArray.rate}}</td>
               <td class="flexible-header">{{sectionArray.rateType}}</td>
               <td class="flexible-header">
@@ -1477,7 +1477,7 @@
             <tr (click)="onSelectRiskClauses(selectedClauseList)" [pEditableRow]="selectedClauseList">
               <td>
                 <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
-               
+
               </td>
 
               <td style=" white-space: nowrap;
@@ -1555,7 +1555,3 @@
     </div>
   </div>
 </div>
-
-<!-- apps-fileview.texmex_20250213.01_p1
-risk-section-details.component.html
-Displaying risk-section-details.component.html. -->
