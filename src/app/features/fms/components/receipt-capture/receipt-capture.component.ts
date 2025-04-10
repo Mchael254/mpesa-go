@@ -3,7 +3,14 @@
  * It manages user input through a reactive form, interacts with various services to fetch data,
  * and controls the flow of the receipting process.
  */
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OrganizationDTO } from '../../../crm/data/organization-dto';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
@@ -40,8 +47,7 @@ import * as bootstrap from 'bootstrap';
 import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
 import { LocalStorageService } from '../../../../shared/services/local-storage/local-storage.service';
-// import {HorizontalStepperComponent} from '../../../../shared/components/stepper/horizontal-stepper';
-import { HorizontalStepperComponent } from 'src/app/shared/components/stepper/horizontal-stepper/horizontal-stepper.component';
+
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
@@ -61,11 +67,16 @@ import fmsStepsData from '../../data/fms-step.json';
   styleUrls: ['./receipt-capture.component.css'],
 })
 export class ReceiptCaptureComponent {
-   /**
+  /**
    * @description Step data for the FMS workflow.
    */
   steps = fmsStepsData;
-
+  /**
+   *
+   * @property isFormValid is set to false by default since form is invalid and set to true if form is invalid
+   */
+  @ViewChild('documentDateInput') dateInput: ElementRef<HTMLInputElement>;
+  isFormValid: boolean = false;
   /**
    * @event formValuesChange - EventEmitter for when receipt details form values changes
    */
@@ -400,8 +411,7 @@ export class ReceiptCaptureComponent {
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
-    //  let my =this.sessionStorage.getItem('user');
-    //  console.log('my>',my);
+    // this.initializeFormWithDefaults();
 
     // Retrieve organization from localStorage or receiptDataService
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
@@ -452,6 +462,27 @@ export class ReceiptCaptureComponent {
     this.fetchPayments(this.selectedOrg?.id || this.defaultOrg?.id);
     //this.fetchBanks(this.defaultBranchId || this.selectedBranchId,this.defaultCurrencyId);
     this.restoreFormData(); // Restore saved data
+    // Initialize form with default values first
+
+    // 3. Restore UI state (visibility, requirements)
+    const savedState = this.receiptDataService.getFormState();
+
+    if (savedState) {
+      // Restore UI flags
+      this.showfields = savedState.showfields;
+      this.makeFieldRequired = savedState.makeFieldRequired;
+
+      // Restore form values
+      // this.receiptingDetailsForm.patchValue(savedState.formValues);
+
+      this.selectedPaymentMode = savedState.paymentMode;
+
+      //this.showChequeOptions = savedState.showChequeOptions;
+      // Update fields based on payment mode
+      if (savedState.paymentMode) {
+        this.updatePaymentModeFields(savedState.paymentMode);
+      }
+    }
 
     this.fetchReceiptNumber(
       this.defaultBranch?.id || this.selectedBranch?.id,
@@ -484,7 +515,7 @@ export class ReceiptCaptureComponent {
       narration: ['', [Validators.required, Validators.maxLength(255)]],
       paymentRef: ['', Validators.required],
       otherRef: [''],
-      documentDate: [today, Validators.required],
+      documentDate: ['', Validators.required],
       manualRef: [''],
       currency: ['', Validators.required], // Default currency is KES
       paymentMode: ['CASH', Validators.required],
@@ -500,34 +531,6 @@ export class ReceiptCaptureComponent {
     });
   }
 
-  /**
-   * Restores form data from the ReceiptDataService if available.
-   * @returns {void}
-   */
-  restoreFormData() {
-    const savedData = this.receiptDataService.getReceiptData();
-    if (savedData) {
-      this.receiptingDetailsForm.patchValue(savedData);
-    }
-  }
-  /**
-   * Fetches available payment methods from the `FmsService`.
-   * @param {number} orgCode - The organization code.
-   * @returns {void}
-   */
-  fetchPayments(orgCode: number) {
-    this.fmsService.getPaymentMethods(orgCode).subscribe({
-      next: (response) => {
-        this.paymentModes = response.data;
-      },
-      error: (error) => {
-        this.globalMessagingService.displayErrorMessage(
-          'error',
-          error.error.msg || 'error fetching payments modes'
-        );
-      },
-    });
-  }
   /**
    * Fetches available currencies from the `CurrencyService` and sets the default currency.
    * @returns {void}
@@ -797,24 +800,44 @@ export class ReceiptCaptureComponent {
   }
 
   /**
-   * Fetches the list of drawers banks from the `BankService` based on the selected country and subscribes to call it.
-   * @param {number} countryId - The ID of the country.
+   * Fetches available payment methods from the `FmsService`.
+   * @param {number} orgCode - The organization code.
    * @returns {void}
    */
-
-  fetchDrawersBanks(countryId: number) {
-    // Use the countryId parameter in your API call
-    this.bankService.getBanks(countryId).subscribe({
-      next: (data) => {
-        this.drawersBanks = data;
+  fetchPayments(orgCode: number) {
+    this.fmsService.getPaymentMethods(orgCode).subscribe({
+      next: (response) => {
+        this.paymentModes = response.data;
       },
-      error: (err) => {
+      error: (error) => {
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.msg || 'Failed to fetch drawer banks'
+          'error',
+          error.error.msg || 'error fetching payments modes'
         );
       },
     });
+  }
+  initializeFormWithDefaults() {
+    // Set default payment mode to CASH if not already set
+    if (!this.receiptingDetailsForm.get('paymentMode')?.value) {
+      this.receiptingDetailsForm.patchValue({
+        paymentMode: 'CASH',
+      });
+    }
+
+    // Force update payment mode fields
+    const currentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+    this.updatePaymentModeFields(currentMode || 'CASH');
+  }
+  /**
+   * Restores form data from the ReceiptDataService if available.
+   * @returns {void}
+   */
+  restoreFormData() {
+    const savedData = this.receiptDataService.getReceiptData();
+    if (savedData) {
+      this.receiptingDetailsForm.patchValue(savedData);
+    }
   }
   /**
    * Handles hovering over a payment mode, showing cheque options if "Cheque" is selected.
@@ -875,42 +898,106 @@ export class ReceiptCaptureComponent {
    * @param {string} paymentMode - The selected payment mode.
    * @returns {void}
    */
+  // updatePaymentModeFields(paymentMode: string): void {
+  //   const drawersBankControl = this.receiptingDetailsForm.get('drawersBank')?.value;
+  //   const paymentRefControl = this.receiptingDetailsForm.get('paymentRef')?.value;
+  //   const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
+  //   const documentDateControl = this.receiptingDetailsForm.get('documentDate')?.value;
+
+  //   if (paymentMode === 'CASH') {
+  //     this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
+  //     this.receiptingDetailsForm.get('chequeType')?.setValue(null);
+
+  //     drawersBankControl?.disable();
+  //     paymentRefControl?.disable();
+  //     drawersBankControl?.setValue(null);
+  //     paymentRefControl?.setValue(null);
+  //     this.makeFieldRequired = false;
+  //     this.showfields = false;
+  //   } else if (paymentMode === 'CHEQUE') {
+  //     this.showfields = true;
+  //     this.showChequeOptions = true;
+  //     this.makeFieldRequired = true;
+
+  //     drawersBankControl?.enable();
+  //     paymentRefControl?.enable();
+  //   } else if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
+  //     this.makeFieldRequired = true;
+  //   } else {
+  //     this.showfields = true;
+  //     this.makeFieldRequired = true;
+  //     drawersBankControl?.enable();
+  //     paymentRefControl?.enable();
+  //     //  this.resetChequeFields(chequeTypeModal);
+  //     this.receiptingDetailsForm.get('chequeType')?.setValue(null);
+  //     //this.updateDateRestrictions();
+  //   }
+  // }
+
   updatePaymentModeFields(paymentMode: string): void {
+    if (!paymentMode) {
+      paymentMode = 'CASH'; // Default if undefined
+    }
+
     const drawersBankControl = this.receiptingDetailsForm.get('drawersBank');
     const paymentRefControl = this.receiptingDetailsForm.get('paymentRef');
-    const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-    if (paymentMode === 'CASH') {
-      this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
-      this.receiptingDetailsForm.get('chequeType')?.setValue(null);
+    const chequeTypeControl = this.receiptingDetailsForm.get('chequeType');
+    const documentDateControl = this.receiptingDetailsForm.get('documentDate');
 
-      drawersBankControl?.disable();
-      paymentRefControl?.disable();
+    // Reset all relevant controls first
+    drawersBankControl?.enable();
+    paymentRefControl?.enable();
+    documentDateControl?.enable();
+
+    if (paymentMode.toUpperCase() === 'CASH') {
+      // Clear values for CASH mode
       drawersBankControl?.setValue(null);
       paymentRefControl?.setValue(null);
+      documentDateControl?.setValue(null);
+      chequeTypeControl?.setValue(null);
+
+      // Disable fields for CASH mode
+      drawersBankControl?.disable();
+      paymentRefControl?.disable();
+      documentDateControl?.disable();
+
+      // Update UI flags
       this.makeFieldRequired = false;
       this.showfields = false;
-    } else if (paymentMode === 'CHEQUE') {
+      this.showChequeOptions = false;
+    } else if (paymentMode.toUpperCase() === 'CHEQUE') {
       this.showfields = true;
       this.showChequeOptions = true;
       this.makeFieldRequired = true;
 
+      // Enable fields for CHEQUE mode
       drawersBankControl?.enable();
       paymentRefControl?.enable();
-    } else if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
-      this.makeFieldRequired = true;
+      documentDateControl?.enable();
+
+      // Additional handling for post-dated cheques
+      const chequeType = chequeTypeControl?.value;
+      if (chequeType === 'post_dated_cheque') {
+        this.makeFieldRequired = true;
+      }
     } else {
+      // Handle other payment modes
       this.showfields = true;
       this.makeFieldRequired = true;
+      this.showChequeOptions = false;
+
       drawersBankControl?.enable();
       paymentRefControl?.enable();
-      //  this.resetChequeFields(chequeTypeModal);
-      this.receiptingDetailsForm.get('chequeType')?.setValue(null);
+      documentDateControl?.enable();
+      chequeTypeControl?.setValue(null);
     }
+    // Save the current state
+    this.saveFormState();
   }
   updateDateRestrictions(): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-
+    if (!this.dateInput?.nativeElement) return;
     const dateInput = document.getElementById(
       'documentDate'
     ) as HTMLInputElement;
@@ -918,7 +1005,7 @@ export class ReceiptCaptureComponent {
     if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
       const today = new Date();
       today.setDate(today.getDate() + 1); // Tomorrow
-
+      this.dateInput.nativeElement.min = this.formatDates(today);
       // Set the `min` attribute on the date input to tomorrow (disables today & past dates)
       dateInput.min = this.formatDates(today);
 
@@ -933,12 +1020,16 @@ export class ReceiptCaptureComponent {
         }
       } else {
         // If documentDate is empty (initial load), set to tomorrow
+        // this.receiptingDetailsForm.patchValue({
+        //   documentDate: this.formatDates(today),
+        // });
         this.receiptingDetailsForm.patchValue({
-          documentDate: this.formatDates(today),
+          documentDate: null,
         });
       }
     } else {
-      dateInput.min = ''; // Clear restrictions
+      this.dateInput.nativeElement.min = '';
+      //dateInput.min = ''; // Clear restrictions
     }
   }
 
@@ -984,10 +1075,7 @@ export class ReceiptCaptureComponent {
         //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.error
-        );
+        this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
       },
     });
   }
@@ -1109,6 +1197,26 @@ export class ReceiptCaptureComponent {
         this.globalMessagingService.displayErrorMessage(
           'Error',
           err.error.msg || 'Failed to fetch receipt number'
+        );
+      },
+    });
+  }
+  /**
+   * Fetches the list of drawers banks from the `BankService` based on the selected country and subscribes to call it.
+   * @param {number} countryId - The ID of the country.
+   * @returns {void}
+   */
+
+  fetchDrawersBanks(countryId: number) {
+    // Use the countryId parameter in your API call
+    this.bankService.getBanks(countryId).subscribe({
+      next: (data) => {
+        this.drawersBanks = data;
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.msg || 'Failed to fetch drawer banks'
         );
       },
     });
@@ -1466,6 +1574,7 @@ export class ReceiptCaptureComponent {
       'receivedFrom',
     ];
     let isValid = true;
+    this.isFormValid = true; // Assume valid
     const formData = this.receiptingDetailsForm;
     // Check all required fields first
     for (const field of requiredFields) {
@@ -1488,34 +1597,47 @@ export class ReceiptCaptureComponent {
     const documentDate = formData.get('documentDate')?.value;
     if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
       isValid = false;
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
+      this.isFormValid = false;
+      this.showValidationError(
         'Payment Reference is required for non-cash payment modes'
       );
       return false;
     }
     if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !drawersBank) {
       isValid = false;
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Drawers Bank is required for non-cash payment modes'
+      this.isFormValid = false;
+      this.showValidationError(
+        'Drawer’s Bank is required for non-cash payment modes'
       );
       return false;
     }
+    const selectedDocumentDate =
+      this.receiptingDetailsForm.get('documentDate')?.value;
+    const today = new Date();
+
     if (
       paymentMode === 'CHEQUE' &&
       chequeType === 'post_dated_cheque' &&
       !documentDate
     ) {
       isValid = false;
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'document date is required for pd cheques '
+      this.isFormValid = false;
+      this.showValidationError(
+        'Document Date is required for post-dated cheques'
+      );
+      return false;
+    }
+    if (paymentMode.toLowerCase() !== 'cash' && !documentDate) {
+      this.showValidationError(
+        'Document Date is required for non cash payments'
       );
       return false;
     }
 
     this.onNext();
+  }
+  showValidationError(message: string) {
+    this.globalMessagingService.displayErrorMessage('Error', message);
   }
   /**
    * Resets the form values to the default
@@ -1554,10 +1676,20 @@ export class ReceiptCaptureComponent {
    *   which in this case is client screen .
    * @returns {void}
    */
+  // When saving state (call this before navigation)
+  saveFormState() {
+    this.receiptDataService.setFormState({
+      showfields: this.showfields,
+      makeFieldRequired: this.makeFieldRequired,
+      formValues: this.receiptingDetailsForm.value,
+      paymentMode: this.receiptingDetailsForm.get('paymentMode')?.value,
+    });
+  }
   onNext() {
+    this.saveFormState();
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     const formData = this.receiptDataService.getReceiptData();
-    //console.log('form data>>',formData);
+
     this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
 }

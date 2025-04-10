@@ -12,7 +12,6 @@ import {
   BranchDTO,
   ClientsDTO,
   GetAllocationDTO,
- 
   TransactionDTO,
 } from '../../data/receipting-dto';
 
@@ -224,24 +223,6 @@ export class ClientSearchComponent implements OnInit {
       searchQuery: [{ value: '', disabled: true }, Validators.required],
       allocatedAmount: this.fb.array([]), // FormArray for allocated amounts
     });
-  }
-  moveFirst(state: any) {
-    state.first = 0;
-  }
-
-  movePrev(state: any) {
-    state.first = Math.max(state.first - state.rows, 0);
-  }
-
-  moveNext(state: any) {
-    state.first = Math.min(
-      state.first + state.rows,
-      state.totalRecords - state.rows
-    );
-  }
-
-  moveLast(state: any) {
-    state.first = state.totalRecords - state.rows;
   }
 
   /**
@@ -467,6 +448,42 @@ export class ClientSearchComponent implements OnInit {
    *
    * @returns {void}
    */
+  /**
+   * Moves to the first page of the table.
+   * @param state The state of the paginator.
+  /**
+   *@description These are pagination method to calculates rows and provide entries
+   *
+   * @param {*} state
+   * @memberof ClientAllocationComponent
+   */
+  moveFirst(state: any) {
+    state.first = 0;
+  }
+  /**
+   * Moves to the previous page of the table.
+   * @param state The state of the paginator.
+   */
+  movePrev(state: any) {
+    state.first = Math.max(state.first - state.rows, 0);
+  }
+  /**
+   * Moves to the next page of the table.
+   * @param state The state of the paginator.
+   */
+  moveNext(state: any) {
+    state.first = Math.min(
+      state.first + state.rows,
+      state.totalRecords - state.rows
+    );
+  }
+  /**
+   * Moves to the last page of the table.
+   * @param state The state of the paginator.
+   */
+  moveLast(state: any) {
+    state.first = state.totalRecords - state.rows;
+  }
   getAllocations() {
     this.receiptService
       .getAllocations(this.branchReceiptNumber, this.loggedInUser.code)

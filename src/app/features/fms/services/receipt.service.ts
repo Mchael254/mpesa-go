@@ -60,12 +60,7 @@ export class ReceiptService {
     );
   }
 
-  // getDrawersBanks(): Observable<DrawersBankDTO[]> {
-  //   return this.api.GET<DrawersBankDTO[]>(
-  //     `drawer-banks`,
-  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
-  //   );
-  //   }
+ 
 
   getNarrations(): Observable<{ data: NarrationDTO[] }> {
     return this.api.GET<{ data: NarrationDTO[] }>(
@@ -74,14 +69,7 @@ export class ReceiptService {
     );
   }
 
-  // getCurrencies(branchCode:number): Observable<{data:CurrencyDTO[]}> {
-  //   const params = new HttpParams().set('branchCode',`${branchCode}`);
-  //   return this.api.GET<{data:CurrencyDTO[]}>(
-  //     `currencies`,
-  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-  //     params
-  //   );
-  //   }
+
   getReceiptNumber(
     branchCode: number,
     userCode: number
@@ -109,14 +97,7 @@ export class ReceiptService {
     );
   }
 
-  // getPaymentModes(orgCode: number): Observable<{ data: PaymentModesDTO[] }> {
-  //   const params = new HttpParams().set('orgCode', `${orgCode}`);
-  //   return this.api.GET<{ data: PaymentModesDTO[] }>(
-  //     `payment-methods`,
-  //     API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-  //     params
-  //   );
-  // }
+ 
   getBanks(
     branchCode: number,
     currCode: number
