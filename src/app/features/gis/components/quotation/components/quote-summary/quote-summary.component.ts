@@ -1,8 +1,7 @@
-import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import stepData from '../../data/steps.json';
 import {Logger, untilDestroyed, UtilService} from '../../../../../../shared/shared.module';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ClientService} from '../../../../../entities/services/client/client.service';
 import {AuthService} from '../../../../../../shared/services/auth.service';
 
 import {ProductsService} from '../../../setups/services/products/products.service';
@@ -24,15 +23,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   selectedOption: string = 'email';
   clientName: string = '';
   steps = stepData;
-
-  quickQuotationCode: any;
   coverQuotationNo: any;
   quotationDetails: any;
   quotationNo: any;
   quotationCode: number;
   quoteDate: any;
 
-  productInformation: any;
   taxInformation: any;
 
   insuredCode: any;
@@ -43,19 +39,13 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   clientDetails: ClientDTO;
   selectedClientName: any;
-  clientcode: any;
-  passedNewClientDetails: any;
-
-  productCode: any;
-  quotationproduct: any;
-  productDesc: any;
 
   isAddRisk: boolean = false;
   fieldDisableState: boolean = false;
   passedPremium: any;
   selectedEmail: any;
   selectedPhoneNo: any;
-  passedClientDetails: any;
+  selectedClient: ClientDTO = undefined;
   emailForm: FormGroup;
   smsForm: FormGroup;
   passedClientCode: any;
@@ -93,72 +83,34 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     public subclassService: SubclassesService,
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
-    private clientService: ClientService,
     public router: Router,
-    private ngZone: NgZone,
     public globalMessagingService: GlobalMessagingService,
     public utilService: UtilService
   ) {
-
+    this.coverQuotationNo = sessionStorage.getItem('quotationNumber');
+    this.passedPremium = JSON.parse(sessionStorage.getItem('riskLevelPremium'));
+    this.quickQuoteData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
+    this.selectedClient = this.quickQuoteData.selectedClient;
+    this.selectedSubclassCode = this.quickQuoteData.subClass.code;
+    if (this.selectedClient && this.quickQuoteData.selectedClient) {
+      this.selectedClientName = this.selectedClient.firstName + ' ' + this.selectedClient.lastName
+    } else {
+      this.selectedClientName = this.quickQuoteData.clientName
+    }
   }
 
   ngOnInit(): void {
-
-    const quotationNumberString = sessionStorage.getItem('quotationNumber');
-    this.coverQuotationNo = JSON.parse(quotationNumberString);
-
-
-    const riskLevelPremiumString = sessionStorage.getItem('riskLevelPremium');
-    this.passedPremium = JSON.parse(riskLevelPremiumString);
-    log.debug("Selected Cover Quotation Number:", this.coverQuotationNo);
-    log.debug("Passed Premium :", this.passedPremium);
-
     if (this.coverQuotationNo) {
       this.loadClientQuotation();
-
     }
-
-    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
-    this.passedClientDetails = JSON.parse(storedClientDetailsString);
-    log.debug("Client details", this.passedClientDetails);
-    this.passedClientCode = this.passedClientDetails?.id;
-
-    const newClientDetailsString = sessionStorage.getItem('newClientDetails');
-    this.passedNewClientDetails = JSON.parse(newClientDetailsString);
-    log.debug("New Client Details", this.passedNewClientDetails);
-
-    const quickQuoteDataString = sessionStorage.getItem('quickQuoteData');
-    this.quickQuoteData = JSON.parse(quickQuoteDataString);
-    log.debug("quick quote data", this.quickQuoteData)
-
-    if (this.quickQuoteData.selectedClient?.id) {
-      log.debug("SHOW CONVERT TO POLICY BUTTON")
-      this.showConverToPolicyButton = true
-    } else {
-      log.debug("HIDE CONVERT TO POLICY BUTTON")
-
-      this.showConverToPolicyButton = false
-
-    }
-    const showQuoteActionsString = sessionStorage.getItem("showQuoteActions");
-    this.showQuoteActions = JSON.parse(showQuoteActionsString);
-
+    this.showConverToPolicyButton = this.quickQuoteData.existingClientSelected
+    this.showQuoteActions = JSON.parse(sessionStorage.getItem("showQuoteActions"));
     if (this.quickQuoteData) {
       this.selectedClientName = this.quickQuoteData?.clientName;
-      log.info("Selected Name:", this.selectedClientName)
-
       this.selectedEmail = this.quickQuoteData?.clientEmail;
-      log.info("Selected Email:", this.selectedEmail)
-
       this.selectedPhoneNo = this.quickQuoteData?.clientPhoneNumber;
-      log.info("Selected Phone:", this.selectedPhoneNo)
     }
 
-    this.getuser();
-    this.createEmailForm();
-    this.createSmsForm();
-    const selectedSubclassCodeString = sessionStorage.getItem('selectedSubclassCode');
-    this.selectedSubclassCode = JSON.parse(selectedSubclassCodeString);
     log.debug("Selected subclass code", this.selectedSubclassCode)
 
     this.isAddRisk = false;
@@ -170,8 +122,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     this.fieldDisableState = false;
     const passedFieldDisableStateString = JSON.stringify(this.fieldDisableState);
     sessionStorage.setItem('fieldsDisableState', passedFieldDisableStateString);
-
-
+    this.getuser();
+    this.createEmailForm();
+    this.createSmsForm();
   }
 
   ngOnDestroy(): void {
@@ -182,120 +135,36 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   loadClientQuotation() {
-    log.debug("Load CLient quotation has been called")
-    this.quotationService.getClientQuotations(this.coverQuotationNo)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(data => {
-        this.quotationDetails = data
-        log.debug("Mapped quotation details>>>>", this.quotationDetails)
-        const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
-        sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
-
-        log.debug("Quotation Details:", this.quotationDetails)
-        this.quotationNo = this.quotationDetails.quotationNo;
-        log.debug("Quotation Number:", this.quotationNo)
-        if (this.quotationDetails) {
-          log.info("CALCULATE TAXES XALLED")
-          this.calculateTaxes()
-          this.getPremiumAmount()
-        }
-
-        this.insuredCode = this.quotationDetails.clientCode;
-        log.debug("Insured Code:", this.insuredCode)
-
-        this.coverFrom = this.quotationDetails.coverFrom;
-        log.debug("Cover From:", this.coverFrom)
-
-        this.coverTo = this.quotationDetails.coverTo;
-        log.debug("Cover To:", this.coverTo)
-
-        this.expiryDate = this.quotationDetails.expiryDate;
-        log.debug("Cover To:", this.expiryDate)
-
-
-        this.productInformation = this.quotationDetails.quotationProducts;
-        log.debug("Product Information:", this.productInformation);
-        this.productCode = this.productInformation[0].productCode;
-        log.debug("ProductCode:", this.productCode)
-
-        this.quoteDate = this.productInformation[0].wef;
-
-
-        this.agentDesc = this.productInformation[0].agentShortDescription;
-        log.debug("Agent Description:", this.agentDesc)
-
-        this.riskDetails = this.quotationDetails.quotationProducts[0]?.riskInformation;
-
-        this.getClient();
-        this.getQuotationProduct();
-        if (this.quotationDetails?.riskInformation?.length == 1) {
-          this.selectedRisk = this.quotationDetails.riskInformation[0]
-          this.activeRiskInformation = this.quotationDetails.riskInformation
-          log.debug("Active risks to display >>>", this.activeRiskInformation)
-          this.onRiskSelect(this.selectedRisk)
-        } else {
-          this.selectedProduct = this.quotationDetails.quotationProducts[0];
-          this.riskToDisplay(this.selectedProduct)
-        }
-      })
-  }
-
-  getClient() {
-    if (this.passedNewClientDetails) {
-      log.debug("new client")
-      this.selectedClientName = this.passedNewClientDetails?.inputClientName;
-      log.debug("Selected New Client Name", this.selectedClientName);
-    } else {
-      log.debug("existing client")
-
-      this.clientService.getClientById(this.insuredCode).subscribe(data => {
-        this.clientDetails = data;
-        log.debug("Selected Client Details", this.clientDetails);
-        this.selectedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName
-        log.debug("Selected Client Name", this.selectedClientName);
-      })
-    }
-    this.clientService.getClientById(this.insuredCode).subscribe(data => {
-      this.clientDetails = data;
-      log.debug("Selected Client Details", this.clientDetails);
-      if (this.passedNewClientDetails) {
-        this.selectedClientName = this.passedNewClientDetails?.inputClientName;
-        log.debug("Selected New Client Name", this.selectedClientName);
-
+    this.quotationService.getClientQuotations(this.coverQuotationNo).pipe(
+      untilDestroyed(this)
+    ).subscribe((quotation) => {
+      this.quotationDetails = quotation
+      sessionStorage.setItem('passedQuotationDetails', JSON.stringify(quotation));
+      this.coverFrom = quotation.coverFrom;
+      this.coverTo = quotation.coverTo;
+      this.expiryDate = quotation.expiryDate;
+      const productInformation = this.quotationDetails.quotationProducts;
+      this.quoteDate = productInformation[0].wef;
+      this.agentDesc = productInformation[0].agentShortDescription;
+      this.riskDetails = this.quotationDetails.quotationProducts[0]?.riskInformation;
+      if (this.quotationDetails?.riskInformation?.length == 1) {
+        this.selectedRisk = this.quotationDetails.riskInformation[0]
+        this.activeRiskInformation = this.riskDetails
+        log.debug("Active risks to display >>>", this.activeRiskInformation)
+        this.onRiskSelect(this.selectedRisk)
       } else {
-        this.selectedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName
-        log.debug("Selected Client Name", this.selectedClientName);
+        this.selectedProduct = this.quotationDetails.quotationProducts[0];
+        this.riskToDisplay(this.selectedProduct)
       }
-
-    })
-  }
-
-  getQuotationProduct() {
-    this.productService.getProductByCode(this.productCode).subscribe(data => {
-      this.quotationproduct = data;
-      log.debug(this.quotationproduct, "this is a quotation product")
-      this.productDesc = this.quotationproduct.description;
-      log.debug("PRODUCT Desc:")
-      this.cdr.detectChanges()
     })
   }
 
   addAnotherRisk() {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
-
-    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
-    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
-
-    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
     this.isAddRisk = true;
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
-
-
     sessionStorage.setItem('quoteAction', 'A')
 
 
@@ -311,10 +180,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
     log.debug("Selected Client Details", this.clientDetails);
-    log.debug("Selected New Client Details", this.passedNewClientDetails);
-    this.ngZone.run(() => {
-      this.router.navigate(['/home/gis/quotation/quick-quote']);
-    });
+    this.router.navigate(['/home/gis/quotation/quick-quote'])
   }
 
 
@@ -334,7 +200,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     sessionStorage.removeItem('premiumResponse');
     sessionStorage.removeItem('product');
     sessionStorage.removeItem('quickQuotationCode');
-    sessionStorage.removeItem('quickQuotationNum');
+    sessionStorage.removeItem('quotationNumber');
     sessionStorage.removeItem('quotationSource');
     sessionStorage.removeItem('riskLevelPremium');
     sessionStorage.removeItem('subclassCoverType');
@@ -359,7 +225,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   createEmailForm() {
-
     this.emailForm = this.fb.group({
       from: ['', [Validators.required, Validators.email]],
       clientCode: ['', Validators.required],
@@ -385,8 +250,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
     emailForm.address = [
       this.selectedEmail
-    ],
-      emailForm.clientCode = this.passedClientCode;
+    ], emailForm.clientCode = this.passedClientCode;
     emailForm.emailAggregator = "N";
     emailForm.from = this.userDetails?.emailAddress;
     emailForm.fromName = "Turnkey Africa";
@@ -480,48 +344,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPremiumAmount() {
-    this.totalTaxes = 0;
-    this.premiumAmount = 0;
-    const totalPremiumAmount = this.quotationDetails.quotationProducts[0].premium;
-
-    //subtract the totalPremium and the taxes amount to get the premium
-    if (this.quotationDetails.taxInformation) {
-      this.quotationDetails.taxInformation.forEach((tax: any) => {
-        if (tax.taxAmount) {
-          this.totalTaxes += tax.taxAmount;
-          log.debug("Total Taxes:", this.totalTaxes)
-
-        }
-      });
-    }
-
-    this.premiumAmount = totalPremiumAmount - this.totalTaxes;
-    log.debug("premium amount:", this.premiumAmount)
-  }
-
-  calculateTaxes() {
-    log.info("CALCULATE TAXES XALLED method starts")
-
-    this.totalTaxes = 0;
-    this.taxList = [];
-    if (this.quotationDetails.taxInformation) {
-      this.quotationDetails.taxInformation.forEach((tax: any) => {
-        if (tax.taxAmount) {
-          this.totalTaxes += tax.taxAmount;
-          log.debug("Total Taxes:", this.totalTaxes)
-          this.taxList.push({
-            description: tax.rateDescription,
-            amount: tax.taxAmount,
-            rate: tax.quotationRate,
-            rateType: tax.rateType
-          });
-          log.debug("Total Taxes List:", this.taxList)
-
-        }
-      });
-    }
-  }
 
   getTaxTooltip(product: any): string {
     return product.taxInformation
@@ -619,12 +441,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   editRisk() {
     const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
     sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
-
-    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
-    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
-
-    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
     sessionStorage.setItem('passedSelectedRiskDetails', JSON.stringify(this.selectedRisk));
     this.isEditRisk = true;
     const passedIsEditRiskString = JSON.stringify(this.isEditRisk);
@@ -643,14 +459,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     log.debug("isEditRisk:", this.isEditRisk)
     log.debug("quotation number:", this.quotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
-    log.debug("Selected Client Details", this.passedClientDetails);
-    log.debug("Selected New Client Details", this.passedNewClientDetails);
-
-    // this.router.navigate(['/home/gis/quotation/quick-quote'])
-    // Use NgZone.run to execute the navigation code inside the Angular zone
-    this.ngZone.run(() => {
-      this.router.navigate(['/home/gis/quotation/quick-quote']);
-    });
+    this.router.navigate(['/home/gis/quotation/quick-quote']);
   }
 
   convertToPolicy() {
@@ -671,38 +480,26 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
       const convertToPolicyFlag = "convertToPolicy";
       sessionStorage.setItem('convertToPolicyFlag', convertToPolicyFlag);
-
       this.router.navigate(['/home/gis/quotation/create-client']);
     }
   }
 
   convertToNormalQuote() {
     const selectedClient = this.quickQuoteData?.selectedClient;
-
     if (selectedClient) {
       // NAVIGATE TO QUOTATION summary
       log.debug("existing client convert to normal quote and navigate to quotation summary screen");
       this.convertQuoteToNormalQuote();
-
     } else {
-      //NAVIGATE TO CREATE CLIENT SCREEN
-      // log.debug("Passed new client details:",this.passedNewClientDetails)
-
-      // const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-      // sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-
       const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
       sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
-
       const convertToNormalQuoteFlag = "convertToNormalQuote";
       sessionStorage.setItem('convertToNormalQuoteFlag', convertToNormalQuoteFlag);
-
       this.router.navigate(['/home/gis/quotation/create-client']);
     }
   }
 
   updateQuoteStatus() {
-
     if (!this.reasonCancelled?.trim()) {
       this.globalMessagingService.displayErrorMessage('Error', 'Please provide a reason for cancellation');
       return;
@@ -732,7 +529,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   convertQuoteToPolicy() {
     log.debug("Quotation Details", this.quotationDetails)
-    const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    const quotationCode = this.quotationDetails?.code;
     log.debug("Quotation Code", quotationCode);
     log.debug("Quotation Details", this.quotationDetails);
     const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code
@@ -740,7 +537,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     const conversionFlag = true;
     sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
-    this.quotationService.convertQuoteToPolicy(quotationCode,quoteProductCode).subscribe((data: any) => {
+    this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe((data: any) => {
       log.debug("Response after converting quote to a policy:", data)
       this.batchNo = data._embedded.batchNo
       log.debug("Batch number", this.batchNo)
@@ -763,15 +560,14 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
     // Get the quotCode
-    const quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    const quotationCode = this.quotationDetails?.code;
     log.debug("Quotation Code", this.quotationCode);
 
     // Call the API to convert quote to normal quote
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-          log.debug("Response after converting quote to a normlaQuote:", data)
-
+          log.debug("Response after converting quote to a normalQuote:", data)
           this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
         }

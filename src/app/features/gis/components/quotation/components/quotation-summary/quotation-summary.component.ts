@@ -148,7 +148,7 @@ export class QuotationSummaryComponent {
     private config: PrimeNGConfig,
     private clientService: ClientService,
 
-  ) { 
+  ) {
     this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
     log.debug("View Quotation Flag", this.viewQuoteFlag)
     this.revisedQuotationNumber = sessionStorage.getItem('revisedQuotationNo');
@@ -171,7 +171,7 @@ export class QuotationSummaryComponent {
 
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
-    this.quotationNumber = sessionStorage.getItem('quickQuotationNum') || sessionStorage.getItem('quotationNum');
+    this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
     log.debug("quick Quotation number", this.quotationNumber);
 
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
