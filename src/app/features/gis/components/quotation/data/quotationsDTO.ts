@@ -494,7 +494,7 @@ export interface LimitsOfLiability {
   quotationValueCode: number;
 }
 export interface CreateLimitsOfLiability {
-  code: number;
+  code?: number;
   scheduleValueCode: number;
   quotationProductCode: number;
   value: string;
@@ -502,7 +502,7 @@ export interface CreateLimitsOfLiability {
   type: string;
 }
 export interface Excesses {
-  code: number;
+  code?: number;
   narration: string | null;
   value: string;
   subclassCode: number;

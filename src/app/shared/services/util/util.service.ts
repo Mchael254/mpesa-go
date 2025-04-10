@@ -646,7 +646,6 @@ export class UtilService {
     sessionStorage.removeItem('passedQuotationDetails')
     sessionStorage.removeItem('passedQuotationNumber')
     sessionStorage.removeItem('premiumComputationRequest')
-    sessionStorage.removeItem('quickQuotationNum')
     sessionStorage.removeItem('quickQuotationCode')
     sessionStorage.removeItem('quotationNumber')
     sessionStorage.removeItem('passedSelectedRiskDetails')
@@ -658,7 +657,7 @@ export class UtilService {
     sessionStorage.removeItem('clientPayload')
     sessionStorage.removeItem('clientCode')
     sessionStorage.removeItem('quickQuotationCode')
-    sessionStorage.removeItem('quickQuotationNum')
+    sessionStorage.removeItem('quotationNumber')
     sessionStorage.removeItem('sumInsuredValue')
     sessionStorage.removeItem('currencyDelimiter')
     sessionStorage.removeItem('currencySymbol')
@@ -684,8 +683,8 @@ export class UtilService {
     sessionStorage.removeItem('passedQuotationCode')
     sessionStorage.removeItem('riskFormData')
     sessionStorage.removeItem('quoteToEditData')
-    
-    
+
+
 
   }
 }

@@ -57,7 +57,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {distinctUntilKeyChanged, firstValueFrom, forkJoin, mergeMap, Observable, of, switchMap, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, mergeMap, Observable, of, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
@@ -383,10 +383,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      // url: '/home/entity/view',
       urlIdentifier: 'id',
       viewDetailsOnView: true,
-      // viewMethod: this.viewDetailsWithId.bind(this),
       isLazyLoaded: true,
     };
 
@@ -1026,7 +1024,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     log.debug('Selected Binder:', this.selectedBinder);
     log.debug('Selected Currency Code:', this.currencyCode);
-    // this.fetchExchangeRate();
   }
 
   /**
@@ -1121,12 +1118,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         this.coverTypeCode = this.subclassCoverType[0].coverTypeCode;
         this.coverTypeDesc =
           this.subclassCoverType[0].coverTypeShortDescription;
-
-        // log.debug(this.subclassCoverType,'filtered covertype');
-        // log.debug(this.coverTypeCode,'filtered covertype code');
-        log.debug(this.coverTypeDesc, 'filtered covertype Desc');
-
-        //  this.cdr.detectChanges();
       });
   }
 
@@ -1451,8 +1442,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       coverTypeCode,
       coverTypeSections
     );
-    let limitItems = [];
-    let sectionCodes = [];
     log.debug('Found cover type sections ', coverTypeSections);
     log.debug('Premium rates ', this.allPremiumRate);
     let response: Limit[] = coverTypeSections
@@ -1770,18 +1759,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Selected occupation Code:', this.selectedoccupationCode);
   }
 
-  onCoverToChange(event: Date): void {
-    const selectedCoverToDate = event;
-    log.debug('selected cover to date', selectedCoverToDate);
-
-    if (selectedCoverToDate) {
-      const SelectedFormatedDate = this.formatDate(selectedCoverToDate);
-      log.debug(' SELECTED FORMATTED DATE:', SelectedFormatedDate);
-
-      this.selectedCoverToDate = SelectedFormatedDate;
-      log.debug('Cover  to date  :', this.selectedCoverToDate);
-    }
-  }
 
   /**
    * Fetches vessel types data based on the provided organization ID and
@@ -1859,7 +1836,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
               client.clientTypeName = client.clientType.clientTypeName;
               client.clientFullName =
                 client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
-              // as the null value for lastName is handled  using the logical OR (||) operator
             });
             this.clientsData = data;
             this.tableDetails.rows = this.clientsData?.content;

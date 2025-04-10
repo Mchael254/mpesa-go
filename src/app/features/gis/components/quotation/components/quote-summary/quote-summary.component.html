@@ -74,7 +74,7 @@
                 <p class="summary-label">{{ 'gis.quotation.premium' | translate }}:</p>
               </div>
               <div class="col-8">
-                <p class="summary-value" appCommaFormat>{{ quotationDetails?.quotationProducts[0].premium }}</p>
+                <p class="summary-value">{{ quotationDetails?.quotationProducts[0].premium | number }}</p>
               </div>
             </div>
           </div>
@@ -223,8 +223,8 @@
               </td>
               <td>{{ risk.wef | date: 'MMMM d, yyyy' }}</td>
               <td>{{ risk.wet | date: 'MMMM d, yyyy' }}</td>
-              <td appCommaFormat class="text-end">{{ risk?.value | number }}</td>
-              <td appCommaFormat class="text-end">{{ risk.premium | number }}</td>
+              <td class="text-end">{{ risk?.value | number }}</td>
+              <td class="text-end">{{ risk.premium | number }}</td>
             </tr>
           </ng-template>
 
@@ -317,8 +317,8 @@
                   <td>{{ data.rate }}</td>
                   <td>{{ data.rateType }}</td>
                   <td>{{ data.rateDivisionFactor }}</td>
-                  <td appCommaFormat class="text-end">{{ data.limitAmount | number }}</td>
-                  <td appCommaFormat class="text-end">{{ data.premium | number }}</td>
+                  <td class="text-end">{{ data.limitAmount | number }}</td>
+                  <td class="text-end">{{ data.premium | number }}</td>
                 </tr>
               </ng-template>
             </p-table>

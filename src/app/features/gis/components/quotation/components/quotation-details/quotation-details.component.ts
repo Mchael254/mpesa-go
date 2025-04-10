@@ -67,7 +67,7 @@ export class QuotationDetailsComponent {
   modalHeight: number = 200;
   quickQuotationDetails: any
   quickQuotationCode: any;
-  quickQuotationNum: any
+  quotationNumber: any
   selectedClause!: any;
   selectedAgent!: any
   productCode: any;
@@ -265,9 +265,9 @@ export class QuotationDetailsComponent {
   quickQuoteDetails() {
     this.quickQuotationCode = sessionStorage.getItem('quickQuotationCode');
     if (this.quickQuotationCode) {
-      sessionStorage.setItem('quotationNum', this.quickQuotationNum);
+      sessionStorage.setItem('quotationNumber', this.quotationNumber);
       sessionStorage.setItem('quotationCode', this.quickQuotationCode);
-      this.quotationService.getQuotationDetails(this.quickQuotationNum).subscribe(res => {
+      this.quotationService.getQuotationDetails(this.quotationNumber).subscribe(res => {
         this.quickQuotationDetails = res;
         log.debug("QUICK QUOTE DETAILS", this.quickQuotationDetails);
 
@@ -1267,8 +1267,8 @@ export class QuotationDetailsComponent {
         log.info("Quotation form >>>", this.quotationForm);
         log.info('Modified product description', this.ProductDescriptionArray);
 
-        this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
-        if (this.quickQuotationNum) {
+        this.quotationNumber = sessionStorage.getItem('quotationNumber');
+        if (this.quotationNumber) {
           this.quickQuoteDetails();
         }
       });
