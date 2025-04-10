@@ -28,7 +28,7 @@ export class ReceiptDataService {
   private defaultCurrencySubject = new BehaviorSubject<number | null>(null);
   setReceiptData(data: any) {
     this.receiptData = { ...this.receiptData, ...data
-     // amountIssued: this.receiptData.amountIssued ?? data.amountIssued, // Preserve amountIssued
+     
      };
      this.receiptDataSubject.next(this.receiptData); // Notify subscribers
     
@@ -37,6 +37,22 @@ export class ReceiptDataService {
   getReceiptData() {
     return this.receiptData;
   }
+  private formState = new BehaviorSubject<any>(null);
+formState$ = this.formState.asObservable();
+
+setFormState(state: any) {
+  this.formState.next(state);
+  localStorage.setItem('receiptFormState', JSON.stringify(state)); // Optional persistence
+}
+
+getFormState() {
+  return this.formState.value || JSON.parse(localStorage.getItem('receiptFormState') || '{}');
+}
+
+clearFormState() {
+  this.formState.next(null);
+  localStorage.removeItem('receiptFormState');
+}
    // New methods to store/retrieve currency and bank
    setSelectedCurrency(currencyId: number) {
     this.selectedCurrency = currencyId;
@@ -148,46 +164,7 @@ export class ReceiptDataService {
   getSelectedBranch() {
     return this.selectedBranch || JSON.parse(localStorage.getItem('selectedBranch') || 'null');
   }
-    // Get default organization
-    // getDefaultOrg() {
-    //   return this.receiptData.defaultOrg;
-    // }
-    
-  // Set selected organization
-  // setSelectedOrg(org: any) {
-  //   this.receiptData.selectedOrg = org;
-  //   this.setReceiptData({ selectedOrg: org });
-  // }
-
-  // // Get selected organization
-  // getSelectedOrg() {
-  //   return this.receiptData.selectedOrg;
-  // }
-  // Set default branch
-  // setDefaultBranch(branch: any) {
-  //   console.log('default>',branch);
-  //   this.receiptData.defaultBranch = branch;
-  //   this.setReceiptData({ defaultBranch: branch });
-  // }
- 
-  // Set selected branch
-  // setSelectedBranch(branch: any) {
-  //   this.receiptData.selectedBranch = branch;
-  //   this.setReceiptData({ selectedBranch: branch });
-  // }
-  // setSelectedBranch(branch: any) {
-  //   if (branch) {
-  //     this.receiptData.selectedBranch = branch;
-  //     this.receiptData.defaultBranch = null; // Clear default branch when selecting a branch
-  //   } else {
-  //     this.receiptData.selectedBranch = null;
-  //   }
-  //   this.setReceiptData({ selectedBranch: branch, defaultBranch: null });
-  // }
-  // // Get selected branch
-  // getSelectedBranch() {
-  //   return this.receiptData.selectedBranch;
-  // }
+   
   // Clear organization and branch data
   clearOrgAndBranchData() {
     this.receiptData.defaultOrg = null;
