@@ -7,7 +7,7 @@
     <div class="card mb-4">
         <div class="card-body">
             <h6>Quotation details </h6>
-            <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{quickQuotationNum}}</strong></p>
+            <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{quotationNumber}}</strong></p>
             <div class="row mb-4" [formGroup]='quotationForm'>
                 <div class="col-sm-4 col-6">
                     <div class="form-group form-group-sm">
@@ -177,11 +177,11 @@
                 <div class="col-sm-4 col-6">
                     <div class="form-group form-group-sm">
                         <br>
-                        <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br> 
+                        <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br>
 
                         <p-dropdown id="quote-input-pdropdown" [options]="paymentFrequencies" optionLabel="label"
                         placeholder=" " [filterBy]="'label'" [filter]="true"></p-dropdown>
-                       
+
                     </div>
                 </div>
 
@@ -219,13 +219,13 @@
                         data-bs-target="#editProduct">edits</button>
                       <button type="button" class="btn  icon" title="Edit">
                         <i class="fa-solid fa-pencil " (click)="openEditScheduleModal()"></i>
-        
+
                       </button> -->
 
                         </div>
                         <div class="col-4">
-                 
-                            <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" 
+
+                            <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
                             id="openProductButtonDelete" [hidden]="true" data-bs-toggle="modal"
                             data-bs-target="#deleteProduct">
                             <i class="fa-solid fa-trash-can"></i>
@@ -238,7 +238,7 @@
                     </div>
                 </div>
             </div>
-           
+
             <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
                 [tableStyle]="{'min-width': '50rem'}">
                 <ng-template pTemplate="header">
@@ -250,7 +250,7 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRow !== product" 
+                    <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRow !== product"
                     [ngClass]="{'editing-row': selectedEditRowIndex === ri,'highlighted-row': selectedRow === product}"
                     (click)="onRowSelect(product)">
                         <td class="flexible-header">
@@ -260,14 +260,14 @@
                                     <!-- <p-dropdown [options]="ProductDescriptionArray" appendTo="body"
                                     [(ngModel)]="product.productCode" [style]="{'width':'100%'}"
                                         optionLabel="description"  [dataKey]="'code'" /> -->
-                                        <p-dropdown 
-                                        [options]="ProductDescriptionArray" 
+                                        <p-dropdown
+                                        [options]="ProductDescriptionArray"
                                         appendTo="body"
-                                        (onChange)="onProductChange($event.value)" 
-                                       
+                                        (onChange)="onProductChange($event.value)"
+
                                         [style]="{'width':'100%'}"
-                                        optionLabel="description" 
-                                        > 
+                                        optionLabel="description"
+                                        >
                                     </p-dropdown>
                                 </ng-template>
                                 <ng-template pTemplate="output">
@@ -361,7 +361,7 @@
                                         </div>
                                     </div>
                                 </div>
-                           
+
                                 <div class="col-sm-6 col-12">
                                     <div class="form-group form-group-sm">
                                         <br>
@@ -415,16 +415,16 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div> -->
             <div class="modal-body">
-             
-              
+
+
               <p class="d-flex justify-content-center mt-4" id="deleteLabel">
                Are you sure you want to delete product?</p>
-               
+
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-primary" id="delete"
                       data-bs-dismiss="modal" (click)="deleteProduct()">{{ 'gis.quotation.yes_delete' | translate }}</button>
                 </div><br>
-                
+
               <div class="d-flex justify-content-center">
                 <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">
                   {{'gis.quotation.no_im_not' | translate}}</button>
@@ -434,7 +434,7 @@
         </div>
       </div>
             <div class="row mb-4" [formGroup]='quotationForm'>
-               
+
                 <!-- <div class="col-sm-4 col-6">
                     <div class="form-group form-group-sm">
                         <br>

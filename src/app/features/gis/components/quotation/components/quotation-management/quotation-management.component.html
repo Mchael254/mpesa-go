@@ -29,14 +29,14 @@
                     <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
                       [value]="displayClientName" data-bs-toggle="modal" data-bs-target="#clientSearchModal" readonly
                       (keyup.enter)="fetchGISQuotations();" />
-                    
+
                     <!-- Clear button with X icon - only shows when there's a value -->
-                    <button *ngIf="displayClientName" class="btn btn-sm position-absolute clear-btn" 
-                      style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;" 
+                    <button *ngIf="displayClientName" class="btn btn-sm position-absolute clear-btn"
+                      style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;"
                       (click)="clearClientName()">
                       <i class="pi pi-times"></i>
                     </button>
-                    
+
                     <!-- Client Search Modal Component -->
                     <app-client-search-modal (clientSelected)="onClientSelected($event)"></app-client-search-modal>
                   </div>
@@ -46,14 +46,14 @@
                     <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
                       [value]="displayAgentName" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
                       (keyup.enter)="fetchGISQuotations();" />
-                    
+
                     <!-- Clear button with X icon - only shows when there's a value -->
-                    <button *ngIf="displayAgentName" class="btn btn-sm position-absolute clear-btn" 
-                      style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;" 
+                    <button *ngIf="displayAgentName" class="btn btn-sm position-absolute clear-btn"
+                      style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;"
                       (click)="clearAgentName()">
                       <i class="pi pi-times"></i>
                     </button>
-                    
+
                     <!-- Agent Search Modal Component -->
                     <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
                   </div>
@@ -74,15 +74,15 @@
                   </p-calendar>
                 </th>
                 <th style="background-color: #ffffff;">
-                  <p-dropdown [options]="status" 
-                    optionLabel="status" 
-                    optionValue="status" 
+                  <p-dropdown [options]="status"
+                    optionLabel="status"
+                    optionValue="status"
                     [filter]="true"
-                    filterBy="status" 
-                    [(ngModel)]="selectedStatus" 
+                    filterBy="status"
+                    [(ngModel)]="selectedStatus"
                     appendTo="body"
                     [style]="{ 'width': '100%', 'height': '35px' }"
-                    (onChange)="onStatusSelected($event.value)" 
+                    (onChange)="onStatusSelected($event.value)"
                     (keyup.enter)="fetchGISQuotations();"
                     [showClear]="true"
                     styleClass="custom-dropdown">
@@ -102,7 +102,7 @@
                 <td>{{quotation.fromDate}}</td>
                 <td>{{quotation.toDate}}</td>
                 <td>{{quotation.status}}</td>
-                <td appCommaFormat class="text-end">{{quotation.premium || 0 |number}}</td>
+                <td class="text-end">{{quotation.premium || 0 |number}}</td>
                 <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
                   <span class="action-buttons-container">
                     <button type="button" class="btn btn-sm btn-action" (click)="toggleMenu($event, quotation)" style="line-height: 0; padding: 0;">
@@ -122,7 +122,7 @@
               </tr>
             </ng-template>
           </p-table>
-        </div> 
+        </div>
       </div>
   </div>
 </div>
