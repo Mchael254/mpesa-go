@@ -100,11 +100,13 @@ export class ReceiptService {
  
   getBanks(
     branchCode: number,
-    currCode: number
+    currCode: number,
+    pymentMethodCode?:string
   ): Observable<{ data: BanksDTO[] }> {
     const params = new HttpParams()
       .set('branchCode', `${branchCode}`)
-      .set('currCode', `${currCode}`);
+      .set('currCode', `${currCode}`)
+      .set('pymentMethodCode',`${pymentMethodCode}`);
     return this.api.GET<{ data: BanksDTO[] }>(
       `banks`,
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,

@@ -152,6 +152,7 @@ export class ReceiptCaptureComponent {
    * @property {BanksDTO} selectedBank - The selected bank details.
    */
   selectedBank: BanksDTO;
+  defaultPaymentMethod:string='CASH';
   /**
    * @property {boolean} backdatingEnabled - Flag to enable backdating (adjust this based on business logic).
    */
@@ -202,7 +203,7 @@ export class ReceiptCaptureComponent {
    */
   //payment mode details
   paymentModes: PaymentModesDTO[] = [];
-
+  selectedPaymentMethod:string='';
   /**
    * @property {boolean} showChequeOptions - Flag to control the visibility of cheque options.
    */
@@ -542,6 +543,7 @@ export class ReceiptCaptureComponent {
         this.currencies = currencies;
         // Check if user has previously selected a currency
         const savedCurrencyId = this.receiptDataService.getSelectedCurrency();
+      
         // Find the default currency - using string literal 'Y' directly
         if (savedCurrencyId) {
           this.selectedCurrencyCode = savedCurrencyId;
@@ -549,7 +551,7 @@ export class ReceiptCaptureComponent {
           // Fetch banks for the selected currency
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
-            savedCurrencyId
+            savedCurrencyId,this.defaultPaymentMethod
           );
           return;
         }
@@ -573,7 +575,7 @@ export class ReceiptCaptureComponent {
 
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
-            this.defaultCurrencyId
+            this.defaultCurrencyId,this.defaultPaymentMethod
           );
         }
       },
@@ -602,7 +604,7 @@ export class ReceiptCaptureComponent {
     this.receiptDataService.setSelectedCurrency(this.selectedCurrencyCode);
     this.fetchBanks(
       this.defaultBranch?.id || this.selectedBranch?.id,
-      this.selectedCurrencyCode
+      this.selectedCurrencyCode,this.defaultPaymentMethod || this.selectedPaymentMethod
     );
 
     // Find the currency from the list
@@ -818,18 +820,18 @@ export class ReceiptCaptureComponent {
       },
     });
   }
-  initializeFormWithDefaults() {
-    // Set default payment mode to CASH if not already set
-    if (!this.receiptingDetailsForm.get('paymentMode')?.value) {
-      this.receiptingDetailsForm.patchValue({
-        paymentMode: 'CASH',
-      });
-    }
+  // initializeFormWithDefaults() {
+  //   // Set default payment mode to CASH if not already set
+  //   if (!this.receiptingDetailsForm.get('paymentMode')?.value) {
+  //     this.receiptingDetailsForm.patchValue({
+  //       paymentMode: 'CASH',
+  //     });
+  //   }
 
-    // Force update payment mode fields
-    const currentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-    this.updatePaymentModeFields(currentMode || 'CASH');
-  }
+  //   // Force update payment mode fields
+  //   const currentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+  //   this.updatePaymentModeFields(currentMode || 'CASH');
+  // }
   /**
    * Restores form data from the ReceiptDataService if available.
    * @returns {void}
@@ -888,7 +890,11 @@ export class ReceiptCaptureComponent {
    */
   onPaymentModeSelected(event: any): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-
+    this.selectedPaymentMethod=paymentMode;
+    this.fetchBanks(
+      this.defaultBranch?.id || this.selectedBranch?.id,
+     this.selectedCurrencyCode || this.defaultCurrencyId,this.selectedPaymentMethod
+    );
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
     this.updateDateRestrictions();
@@ -938,6 +944,8 @@ export class ReceiptCaptureComponent {
   updatePaymentModeFields(paymentMode: string): void {
     if (!paymentMode) {
       paymentMode = 'CASH'; // Default if undefined
+      
+      
     }
 
     const drawersBankControl = this.receiptingDetailsForm.get('drawersBank');
@@ -951,6 +959,7 @@ export class ReceiptCaptureComponent {
     documentDateControl?.enable();
 
     if (paymentMode.toUpperCase() === 'CASH') {
+    
       // Clear values for CASH mode
       drawersBankControl?.setValue(null);
       paymentRefControl?.setValue(null);
@@ -967,6 +976,7 @@ export class ReceiptCaptureComponent {
       this.showfields = false;
       this.showChequeOptions = false;
     } else if (paymentMode.toUpperCase() === 'CHEQUE') {
+     
       this.showfields = true;
       this.showChequeOptions = true;
       this.makeFieldRequired = true;
@@ -981,7 +991,9 @@ export class ReceiptCaptureComponent {
       if (chequeType === 'post_dated_cheque') {
         this.makeFieldRequired = true;
       }
-    } else {
+    } 
+    
+    else {
       // Handle other payment modes
       this.showfields = true;
       this.makeFieldRequired = true;
@@ -991,9 +1003,11 @@ export class ReceiptCaptureComponent {
       paymentRefControl?.enable();
       documentDateControl?.enable();
       chequeTypeControl?.setValue(null);
+      
     }
     // Save the current state
     this.saveFormState();
+    
   }
   updateDateRestrictions(): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
@@ -1047,8 +1061,8 @@ export class ReceiptCaptureComponent {
    * @param {number} currCode - The currency code.
    * @returns {void}
    */
-  fetchBanks(branchCode: number, currCode: number) {
-    this.receiptService.getBanks(branchCode, currCode).subscribe({
+  fetchBanks(branchCode: number, currCode: number,paymentMethodCode:string) {
+    this.receiptService.getBanks(branchCode, currCode,paymentMethodCode).subscribe({
       next: (response) => {
         this.bankAccounts = response.data;
         // Check if user has previously selected a bank
