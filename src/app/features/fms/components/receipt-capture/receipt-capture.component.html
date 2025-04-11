@@ -124,7 +124,7 @@
               {{ "fms.receipting.select" | translate | uppercase }}
             </option>
             <option *ngFor="let bank of bankAccounts" [value]="bank.code">
-              {{ bank.name | uppercase }}
+              {{ bank.name | uppercase }}, {{ bank.type }}
             </option>
           </select>
         </div>
