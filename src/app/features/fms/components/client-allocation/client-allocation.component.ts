@@ -52,7 +52,7 @@ import fmsStepsData from '../../data/fms-step.json';
   styleUrls: ['./client-allocation.component.css'],
 })
 export class ClientAllocationComponent {
-   /**
+  /**
    * @description Step data for the FMS workflow.
    */
   steps = fmsStepsData;
@@ -415,8 +415,28 @@ export class ClientAllocationComponent {
    * @description file path
    */
   filePath: string | null = null;
+  /**
+   *@description this boolean is set to true if there is any allocation that has been posted
+   *
+   * @type {boolean}
+   * @memberof ClientAllocationComponent
+   */
   isEmptyAllocationPosted: boolean = false;
+  /**
+   *@description this boolean is true if there an allocation that is 
+   already saved-which is empty allocation or receipting on account
+   
+   *
+   * @type {boolean}
+   * @memberof ClientAllocationComponent
+   */
   isreceiptingOnAccountExist: boolean = false;
+  /**a flattened array that holds a copy of returned/saved allocations
+   *
+   * @type {any[]}
+   * @memberof ClientAllocationComponent
+   */
+  flattenedAllocationDetails: any[] = [];
 
   /**
    * Constructor for `ClientAllocationComponent`.
@@ -439,8 +459,8 @@ export class ClientAllocationComponent {
     private globalMessagingService: GlobalMessagingService,
     private receiptService: ReceiptService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    
+    private changeDetectorRef: ChangeDetectorRef,
+
     private router: Router,
     private dmsService: DmsService,
     private reportService: ReportsService,
@@ -546,9 +566,16 @@ export class ClientAllocationComponent {
     this.globalBankType = globalBankType;
     this.allocatedAmounts = this.receiptDataService.getAllocatedAmounts();
     // Initialize form controls for each transaction
-    this.initializeAllocatedAmountControls();
-    this.calculateTotalAllocatedAmount();
+    setTimeout(() => {
+      this.initializeAllocatedAmountControls();
+    }, 1000);
 
+    //this.calculateTotalAllocatedAmount();
+
+    // Force immediate update after initialization
+    setTimeout(() => {
+      this.calculateTotalAllocatedAmount();
+    });
     this.selectedClient = this.receiptDataService.getSelectedClient(); // Retrieve stored client
     this.globalAccountTypeSelected =
       this.receiptDataService.getGlobalAccountTypeSelected();
@@ -604,47 +631,7 @@ export class ClientAllocationComponent {
       this.steps[3].link = '/home/fms/receipt-preview'; // Normal receipt preview
     }
   }
-   /**
-   * Moves to the first page of the table.
-   * @param state The state of the paginator.
-   */
-  moveFirst(state: any) {
-    state.first = 0;
-  }
-/**
-   * Moves to the previous page of the table.
-   * @param state The state of the paginator.
-   */
-  movePrev(state: any) {
-    state.first = Math.max(state.first - state.rows, 0);
-  }
- /**
-   * Moves to the next page of the table.
-   * @param state The state of the paginator.
-   */
-  moveNext(state: any) {
-    state.first = Math.min(
-      state.first + state.rows,
-      state.totalRecords - state.rows
-    );
-  }
-  /**
-   * Moves to the last page of the table.
-   * @param state The state of the paginator.
-   */
-  moveLast(state: any) {
-    state.first = state.totalRecords - state.rows;
-  }
 
-  /**
-   * Updates the allocated amount for a specific transaction and recalculates the total allocated amount.
-   * @param index The index of the transaction in the list
-   * @param amount The new allocated amount
-   */
-  onAllocatedAmountChange(index: number, amount: number): void {
-    this.receiptDataService.updateAllocatedAmount(index, amount);
-    this.calculateTotalAllocatedAmount();
-  }
   /**
    * Applies a filter to the transactions based on the specified field and value.
    * @param event The event triggered by the filter input
@@ -743,6 +730,52 @@ export class ClientAllocationComponent {
       .filter((transaction) => transaction.score > 0) // Only keep transactions that match at least one filter
       .sort((a, b) => b.score - a.score); // Sort by relevance
   }
+
+  /**
+   * Moves to the first page of the table.
+   * @param state The state of the paginator.
+  /**
+   *@description These are pagination method to calculates rows and provide entries
+   *
+   * @param {*} state
+   * @memberof ClientAllocationComponent
+   */
+  moveFirst(state: any) {
+    state.first = 0;
+  }
+  /**
+   * Moves to the previous page of the table.
+   * @param state The state of the paginator.
+   */
+  movePrev(state: any) {
+    state.first = Math.max(state.first - state.rows, 0);
+  }
+  /**
+   * Moves to the next page of the table.
+   * @param state The state of the paginator.
+   */
+  moveNext(state: any) {
+    state.first = Math.min(
+      state.first + state.rows,
+      state.totalRecords - state.rows
+    );
+  }
+  /**
+   * Moves to the last page of the table.
+   * @param state The state of the paginator.
+   */
+  moveLast(state: any) {
+    state.first = state.totalRecords - state.rows;
+  }
+  /**
+   * Updates the allocated amount for a specific transaction and recalculates the total allocated amount.
+   * @param index The index of the transaction in the list
+   * @param amount The new allocated amount
+   */
+  onAllocatedAmountChange(index: number, amount: number): void {
+    this.receiptDataService.updateAllocatedAmount(index, amount);
+    this.calculateTotalAllocatedAmount();
+  }
   /**
    * Initializes form controls for each transaction in the allocated amounts FormArray.
    */
@@ -750,35 +783,39 @@ export class ClientAllocationComponent {
   private initializeAllocatedAmountControls(): void {
     const allocatedAmountArray = this.allocatedAmountControls;
     allocatedAmountArray.clear(); // Clear existing controls
-
-    this.transactions.forEach(() => {
+    this.transactions.forEach((transaction) => {
       allocatedAmountArray.push(
         this.fb.group({
-          allocatedAmount: [0, Validators.required],
+          allocatedAmount: [transaction.balance, Validators.required],
           commissionChecked: ['N'],
         })
       );
     });
-  }
-  /**
-   * Returns the allocatedAmount FormArray from the form.
-   * @returns The FormArray for allocated amounts
-   */
 
-  get allocatedAmountControls(): FormArray {
-    return this.receiptingDetailsForm.get('allocatedAmount') as FormArray;
-  }
-  /**
-   * Returns a specific form control from the allocatedAmount FormArray.
-   * @param index The index of the control in the FormArray
-   * @param controlName The name of the control
-   * @returns The FormControl or null if not found
-   */
-  getFormControl(index: number, controlName: string): FormControl | null {
-    const formGroup = this.allocatedAmountControls.at(index) as FormGroup;
-    return formGroup ? (formGroup.get(controlName) as FormControl) : null;
-  }
+    // this.transactions.forEach(() => {
+    //   allocatedAmountArray.push(
+    //     this.fb.group({
+    //       allocatedAmount: [0, Validators.required],
+    //       commissionChecked: ['N'],
+    //     })
+    //   );
+    // });
 
+    // ✅ Reactive listener: Automatically update totals when any value changes
+    this.allocatedAmountControls.valueChanges.subscribe(() => {
+      this.calculateTotalAllocatedAmount();
+    });
+
+    // ✅ Tell Angular to update the UI
+    // Force initial calculation
+    this.calculateTotalAllocatedAmount();
+
+    // Set up change listener
+    this.allocatedAmountControls.valueChanges.subscribe(() => {
+      this.calculateTotalAllocatedAmount();
+      this.changeDetectorRef.detectChanges(); // Add this line
+    });
+  }
   calculateTotalAllocatedAmount(): void {
     // Sum previously posted allocations
     const previousAllocations =
@@ -808,37 +845,37 @@ export class ClientAllocationComponent {
       JSON.stringify(this.totalAllocatedAmount)
     );
   }
-
   /**
-   * Handles the change event for the commission checkbox.
-   * @param index The index of the transaction in the list
-   * @param event The checkbox change event
+   * Returns the allocatedAmount FormArray from the form.
+   * @returns The FormArray for allocated amounts
    */
-  // onCommissionCheckedChange(index: number, event: Event): void {
-  //   const isChecked = (event.target as HTMLInputElement).checked;
-  //   const commissionControl = this.getFormControl(index, 'commissionChecked');
-  //   if (commissionControl) {
-  //     commissionControl.setValue(isChecked ? 'Y' : 'N');
-  //   }
-  // }
-  onCommissionCheckedChange(index: number, value: string): void {
-    const commissionControl = this.getFormControl(index, 'commissionChecked');
-    if (commissionControl) {
-      commissionControl.setValue(value);
-    }
+
+  get allocatedAmountControls(): FormArray {
+    return this.receiptingDetailsForm.get('allocatedAmount') as FormArray;
   }
+  /**
+   * Returns a specific form control from the allocatedAmount FormArray.
+   * @param index The index of the control in the FormArray
+   * @param controlName The name of the control
+   * @returns The FormControl or null if not found
+   */
+  getFormControl(index: number, controlName: string): FormControl | null {
+    const formGroup = this.allocatedAmountControls.at(index) as FormGroup;
+    return formGroup ? (formGroup.get(controlName) as FormControl) : null;
+  }
+
   /**
    * Calculates the remaining amount by subtracting the total allocated amount from the amount issued.
    * @returns The remaining amount
    */
   getRemainingAmount(): number {
     return this.amountIssued - this.totalAllocatedAmount;
-    // const remaining = this.amountIssued - this.totalAllocatedAmount
-   
-    // return remaining;
   }
 
-  //
+  /**
+   * @description this method dynamically updated the total allocated amount as the user enters
+   * allocated amount in transactions of a particular index
+   */
   updateTotalAllocatedAmount(): void {
     let totalPostedAmount =
       this.getAllocation?.reduce(
@@ -866,7 +903,29 @@ export class ClientAllocationComponent {
     // Ensure the total includes previous allocations + new allocations
     this.totalAllocatedAmount = totalPostedAmount + newAllocatedTotal;
   }
+  /**
+   * Handles the change event for the commission checkbox.
+   * @param index The index of the transaction in the list
+   * @param event The checkbox change event
+   */
 
+  onCommissionCheckedChange(index: number, value: string): void {
+    const commissionControl = this.getFormControl(index, 'commissionChecked');
+    if (commissionControl) {
+      commissionControl.setValue(value);
+    }
+  }
+  /**
+   * @description if unallocated amount equals receipt amount,we allow the user to do receipt on account by
+   * calling saveEmptyAllocations
+   */
+  confirmtotalAllocatedAmount() {
+    if (this.totalAllocatedAmount > 0) {
+      this.allocateAndPostAllocations();
+    } else {
+      this.saveEmptyAllocations();
+    }
+  }
   /**
    * Allocates and posts the allocations to the backend.
    *
@@ -899,6 +958,7 @@ export class ClientAllocationComponent {
       );
       return;
     }
+    
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -906,8 +966,13 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-
-    if (this.totalAllocatedAmount > this.amountIssued) {
+   
+    //round off the allocated amounts and unallocated amounts to 2 decimal places
+    const issued = Number(this.amountIssued.toFixed(2));
+    const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+    
+    
+    if (allocated > issued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'Total Allocated Amount Exceeds Amount Issued'
@@ -997,13 +1062,7 @@ export class ClientAllocationComponent {
         },
       });
   }
-  confirmtotalAllocatedAmount() {
-    if (this.totalAllocatedAmount > 0) {
-      this.allocateAndPostAllocations();
-    } else {
-      this.saveEmptyAllocations();
-    }
-  }
+
   saveEmptyAllocations(): any {
     const receiptParticulars: ReceiptParticularsDTO[] = [
       {
@@ -1063,10 +1122,25 @@ export class ClientAllocationComponent {
               (detail) => detail.premiumAmount > 0
             )
           );
+
           if (this.getAllocation) {
             this.canShowUploadFileBtn = true;
             this.isreceiptingOnAccountExist = true;
           }
+          // ✅ Insert this block immediately after setting `this.getAllocation`
+          this.flattenedAllocationDetails = []; // reset first
+          this.getAllocation.forEach((allocation) => {
+            allocation.receiptParticularDetails.forEach((detail) => {
+              this.flattenedAllocationDetails.push({
+                ...detail,
+                allocationInfo: {
+                  // batchNumber: allocation.batchNumber, // optional parent fields
+                  // receiptCode: allocation.receiptCode,
+                  // add more parent-level fields if needed
+                },
+              });
+            });
+          });
           // ✅ Use .length to check if allocations exist
           this.isAllocationCompleted = this.getAllocation.length > 0;
           this.sessionStorage.setItem(
@@ -1145,7 +1219,10 @@ export class ClientAllocationComponent {
           this.getAllocation = this.getAllocation.filter(
             (allocation) => allocation.receiptParticularDetails.length > 0
           );
-
+  // 🔥 Remove from flattened list to update UI table
+  this.flattenedAllocationDetails = this.flattenedAllocationDetails.filter(
+    (detail) => detail.code !== receiptDetailCode
+  );
           // Update total allocated amount
           this.totalAllocatedAmount = Math.max(
             0,
@@ -1178,7 +1255,7 @@ export class ClientAllocationComponent {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error?.message || 'Failed to delete allocation'
+          err.error?.msg || 'Failed to delete allocation'
         );
       },
     });
@@ -1520,6 +1597,11 @@ export class ClientAllocationComponent {
       },
     });
   }
+  /**
+   * @description this method is called on ngOnInit
+   * if the parameter is set to 'Y' that means we require user to attach file document
+   * if the user confirms to continue without uploading file,we call save receipt method
+   */
   fetchParamStatus() {
     this.fmsSetupService
       .getParamStatus('TRANSACTION_SUPPORT_DOCUMENTS')
@@ -1535,7 +1617,11 @@ export class ClientAllocationComponent {
         },
       });
   }
-
+  /**
+   * @description this method checks the payment mode selected
+   * if the payment mode selected is pd-cheque,we message>
+   * receipt will be issued upon maturity otherwise we display receipt number
+   */
   confirmPaymentModeSelected(): any {
     if (
       this.paymentMode === 'CHEQUE' &&
@@ -1581,33 +1667,26 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-    // Step 2: Validate the total allocated amount against the issued amount
-    // if (this.totalAllocatedAmount < this.amountIssued) {
-    //   this.globalMessagingService.displayErrorMessage(
-    //     'Error',
-    //     'Amount issued is not fully allocated.'
-    //   );
-
-    //   return false; // Stop further execution
-    // }
-    // if (this.totalAllocatedAmount > this.amountIssued) {
-    //   this.globalMessagingService.displayErrorMessage(
-    //     'Error',
-    //     'Total Allocated Amount Exceeds Amount Issued'
-    //   );
-
-    //   return false;
-    // }
-
-    // console.log('receiptDoc>>',this.parameterStatus);
-
-    if (this.parameterStatus == 'Y' && !this.fileUploaded) {
-      if (
-        confirm('do you want to save receipt without uploading file?') == true
-      ) {
-        return true;
-      } else {
+ // Step 2: Validate the total allocated amount against the issued amount
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
         return false;
+      
+  }
+    if (this.parameterStatus == 'Y' && !this.fileUploaded) {
+      const userConfirmed = confirm(
+        'do you want to save receipt without uploading file?'
+      );
+
+      if (!userConfirmed) {
+        return;
       }
     }
     if (
@@ -1633,13 +1712,9 @@ export class ClientAllocationComponent {
       this.message = 'Receipt will be issued upon cheque maturity';
 
       this.showAcknowledgeBtn = true;
-      //post_dated_cheque open_cheque
-      //console.log('type>',this.chequeType);
-      //return;
     } else {
       this.message = 'success';
       this.showAcknowledgeBtn = false;
-      //this.submitReceipt();
     }
     // Map allocated transactions to receiptParticularDetailUpdateRequests format
     const receiptParticularDetailUpdateRequests = allocatedDetails.map(
@@ -1722,6 +1797,7 @@ export class ClientAllocationComponent {
         );
         //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
+            this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
 
         //prepare receipt upload payload
@@ -1759,13 +1835,14 @@ export class ClientAllocationComponent {
       );
       return;
     }
+
     if (this.parameterStatus == 'Y' && !this.fileUploaded) {
-      if (
-        confirm('do you want to save receipt without uploading file?') == true
-      ) {
-        return true;
-      } else {
-        return false;
+      const userConfirmed = confirm(
+        'do you want to save receipt without uploading file?'
+      );
+
+      if (!userConfirmed) {
+        return;
       }
     }
     if (
@@ -1791,7 +1868,18 @@ export class ClientAllocationComponent {
     }
 
     // Step 2: Validate the total allocated amount against the issued amount
-
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
+        return false;
+      
+  }
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
       receiptNo: this.branchReceiptNumber,
@@ -1899,14 +1987,15 @@ export class ClientAllocationComponent {
       return;
     }
     if (this.parameterStatus == 'Y' && !this.fileUploaded) {
-      if (
-        confirm('do you want to save receipt without uploading file?') == true
-      ) {
-        return true;
-      } else {
-        return false;
+      const userConfirmed = confirm(
+        'do you want to save receipt without uploading file?'
+      );
+
+      if (!userConfirmed) {
+        return;
       }
     }
+
     if (
       !this.amountIssued &&
       !this.receivedFrom &&
@@ -1928,6 +2017,19 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
+     // Step 2: Validate the total allocated amount against the issued amount
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
+        return false;
+      
+  }
 
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process

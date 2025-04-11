@@ -186,6 +186,7 @@ export class PdSlipPreviewComponent implements OnInit {
 
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
+    this.receiptDataService.clearFormState();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
   updatePrintStatus() {
@@ -200,6 +201,7 @@ export class PdSlipPreviewComponent implements OnInit {
           response.message
         );
         this.receiptDataService.clearReceiptData();
+        this.receiptDataService.clearFormState();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
