@@ -958,7 +958,7 @@ export class ClientAllocationComponent {
       );
       return;
     }
-    console.log('amount issued>',this.amountIssued);
+    
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -966,18 +966,12 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-
+   
     //round off the allocated amounts and unallocated amounts to 2 decimal places
     const issued = Number(this.amountIssued.toFixed(2));
     const allocated = Number(this.totalAllocatedAmount.toFixed(2));
-    // if (allocated < issued) {
-    //   this.globalMessagingService.displayErrorMessage(
-    //     'Error',
-    //     'Total Allocated Amount  is less than  Amount Issued'
-    //   );
-
-    //   return false;
-    // }
+    
+    
     if (allocated > issued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1225,7 +1219,10 @@ export class ClientAllocationComponent {
           this.getAllocation = this.getAllocation.filter(
             (allocation) => allocation.receiptParticularDetails.length > 0
           );
-
+  // 🔥 Remove from flattened list to update UI table
+  this.flattenedAllocationDetails = this.flattenedAllocationDetails.filter(
+    (detail) => detail.code !== receiptDetailCode
+  );
           // Update total allocated amount
           this.totalAllocatedAmount = Math.max(
             0,
@@ -1258,7 +1255,7 @@ export class ClientAllocationComponent {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error?.message || 'Failed to delete allocation'
+          err.error?.msg || 'Failed to delete allocation'
         );
       },
     });
@@ -1670,7 +1667,19 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-
+ // Step 2: Validate the total allocated amount against the issued amount
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
+        return false;
+      
+  }
     if (this.parameterStatus == 'Y' && !this.fileUploaded) {
       const userConfirmed = confirm(
         'do you want to save receipt without uploading file?'
@@ -1859,7 +1868,18 @@ export class ClientAllocationComponent {
     }
 
     // Step 2: Validate the total allocated amount against the issued amount
-
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
+        return false;
+      
+  }
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
       receiptNo: this.branchReceiptNumber,
@@ -1997,6 +2017,19 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
+     // Step 2: Validate the total allocated amount against the issued amount
+  //round off the allocated amounts and unallocated amounts to 2 decimal places
+  const issued = Number(this.amountIssued.toFixed(2));
+  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+  if (allocated > 0 && allocated < issued){
+    this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Amount Issued is not fully allocated'
+        );
+  
+        return false;
+      
+  }
 
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process

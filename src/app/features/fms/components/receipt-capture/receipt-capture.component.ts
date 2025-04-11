@@ -489,6 +489,7 @@ export class ReceiptCaptureComponent {
       this.loggedInUser.code
     );
     this.fetchNarrations();
+    this. updateDateRestrictions();
   }
 
   /**
@@ -1028,7 +1029,10 @@ export class ReceiptCaptureComponent {
         });
       }
     } else {
-      this.dateInput.nativeElement.min = '';
+      const todayDate = new Date();
+      todayDate.setDate(todayDate.getDate());
+      
+      this.dateInput.nativeElement.min = this.formatDate(todayDate);
       //dateInput.min = ''; // Clear restrictions
     }
   }

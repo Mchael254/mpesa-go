@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup,FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { ClientAllocationComponent } from './client-allocation.component';
@@ -43,6 +43,7 @@ describe('ClientAllocationComponent', () => {
       updateAllocatedAmount: jest.fn(),
       setReceiptData: jest.fn(),
       clearReceiptData:jest.fn(),
+      clearFormState:jest.fn()
 
     };
     mockGlobalMessagingService = {
@@ -87,7 +88,7 @@ describe('ClientAllocationComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ClientAllocationComponent],
-      imports: [ReactiveFormsModule, RouterTestingModule,HttpClientTestingModule,TranslateModule.forRoot()],
+      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule,HttpClientTestingModule,TranslateModule.forRoot()],
       providers: [
         FormBuilder,
         { provide: ReceiptDataService, useValue: mockReceiptDataService },
@@ -176,17 +177,31 @@ describe('ClientAllocationComponent', () => {
     expect(component.selectedChargeType).toEqual('Type A');
   });
 
-  it('should initialize allocatedAmountControls based on transactions', () => {
-    const mockTransactions = [{ transactionNumber: 1 }, { transactionNumber: 2 }];
-    mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
-    mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({id:123}))
-
-    component.ngOnInit();
-
-    const allocatedAmountArray = component.receiptingDetailsForm.get('allocatedAmount') as FormArray;
-    expect(allocatedAmountArray.length).toEqual(mockTransactions.length);
-  });
-
+ 
+ 
+  it('should initialize allocatedAmountControls based on transactions', fakeAsync(() => { // <-- USE fakeAsync
+     // Arrange
+     const mockTransactions = [
+       { transactionNumber: 1, balance: 100 }, // <-- Make sure mock has properties needed by initializeAllocatedAmountControls
+       { transactionNumber: 2, balance: 200 }
+     ];
+     mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
+     // Assume ngOnInit was called in beforeEach via fixture.detectChanges()
+     // If you call component.ngOnInit() directly here, ensure component state is correctly reset/set before it.
+     // If fixture.detectChanges() ran in beforeEach, ngOnInit is already called.
+ 
+     // Act
+     // Allow the timer queued by ngOnInit's setTimeout to execute
+     tick(1000); // <-- Advance time by the setTimeout duration (or slightly more)
+ 
+     // Assert
+     const allocatedAmountArray = component.receiptingDetailsForm.get('allocatedAmount') as FormArray;
+     expect(allocatedAmountArray.length).toEqual(mockTransactions.length); // Should now be 2
+ 
+     // Optional: Verify the content of the controls added
+     expect(allocatedAmountArray.at(0).get('allocatedAmount')?.value).toEqual(mockTransactions[0].balance);
+     expect(allocatedAmountArray.at(1).get('commissionChecked')?.value).toEqual('N');
+  }));
   // it('should update allocated amount and recalculate total on onAllocatedAmountChange', () => {
   //   const mockTransactions = [{ transactionNumber: 1, clientName: 'ClientA' }];
   //   mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
