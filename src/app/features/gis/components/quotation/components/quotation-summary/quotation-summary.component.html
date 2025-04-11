@@ -171,7 +171,7 @@
                 </div>
                 <div class="col-7">
                   <p class="content " *ngIf="premium">{{ premium.premiumAmount | number }}</p>
-                  <p class="content" *ngIf="!premium">{{ quotationView?.premium | number}}</p>
+                  <p class="content" *ngIf="!premium">{{ quotationView?.premium | number }}</p>
                   <!-- <p class="content" *ngIf="!premium && !quotationView?.premium">0.00</p> -->
                 </div>
               </div>
@@ -312,7 +312,7 @@
                     <th>Product</th>
                     <th>Cover From</th>
                     <th>Cover To</th>
-                    <th>Binder</th>
+                  <!--  <th>Binder</th>-->
                     <th class="text-end">Sum Insured</th>
                     <th class="text-end">Commission</th>
                     <th class="text-end">Premium</th>
@@ -321,10 +321,10 @@
                 <ng-template pTemplate="body" let-data>
                   <tr (click)="handleProductClick(data)" class="point"
                       [ngClass]="{'selected-row': selectedProduct === data}">
-                    <td>{{ data.productName }}</td>
+                    <td>{{ data.productName | sentenceCase }}</td>
                     <td>{{ data.wef }}</td>
                     <td>{{ data.wet }}</td>
-                    <td>{{ data.binder || "-" }}</td>
+                   <!-- <td>{{ data.binder || "-" }}</td>-->
                     <td class="text-end">{{ data.totalSumInsured || 0.00 |number }}</td>
                     <td class="text-end">{{ data.commission || 0.00 |number }}</td>
                     <td class="text-end">{{ data.premium || 0.00 | number }}</td>
@@ -431,9 +431,9 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
                       <tr>
-                        <td class="flexible-header">{{ data.shortDescription }}</td>
-                        <td class="flexible-header">{{ data.heading | sentenceCase }}</td>
-                        <td class="flexible-header" style=" white-space: nowrap;
+                        <td>{{ data.shortDescription }}</td>
+                        <td>{{ data.heading | sentenceCase }}</td>
+                        <td style=" white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         max-width:300px;
@@ -457,10 +457,10 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
                       <tr>
-                        <td class="flexible-header">{{ data.rateDescription }}</td>
-                        <td class="flexible-header">{{ data.quotationRate }}</td>
-                        <td class="flexible-header">{{ data.rateType }}</td>
-                        <td class="flexible-header text-end">{{ data.taxAmount }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.quotationRate }}</td>
+                        <td>{{ data.rateType }}</td>
+                        <td>{{ data.taxAmount }}</td>
                       </tr>
                     </ng-template>
                   </p-table>
@@ -497,14 +497,14 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-data>
                           <tr>
-                            <td class="flexible-header" style=" white-space: nowrap;
+                            <td style=" white-space: nowrap;
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                                 max-width:300px;
                                 overflow-y: auto;">{{ data.narration | sentenceCase }}
                             </td>
-                            <td class="flexible-header">{{ data.subclassCode }}</td>
-                            <td class="flexible-header">{{ data.value }}</td>
+                            <td>{{ data.subclassCode }}</td>
+                            <td>{{ data.value }}</td>
                           </tr>
                         </ng-template>
                       </p-table>
@@ -565,22 +565,6 @@
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
-                <!-- <div class="col-sm-3"></div>
-                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" title="Add">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </div>
-                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" title="Edit">
-                    <i class="fa-solid fa-pencil"></i>
-                  </button>
-                </div>
-                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-danger me-2" title="Delete">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div> -->
                 <div class="col-4" *ngIf="!isRiskCollapsibleOpen">
                   <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                           data-bs-target="#riskDetails" (click)="toggleRiskDetails()"
@@ -655,8 +639,8 @@
                     [class.disabled]="!data?.code">
                   <td>{{ data?.quotationRiskNo || '-' }}</td>
                   <td>{{ data?.propertyId || '-' }}</td>
-                  <td>{{ data?.coverTypeShortDescription || '-' }}</td>
-                  <td>{{ data?.subclass?.description || '-' }}</td>
+                  <td>{{ data?.coverTypeDescription || '-' | sentenceCase }}</td>
+                  <td>{{ data?.subclass?.description || '-' | sentenceCase }}</td>
                   <td class="text-end">{{ data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
                   <td class="text-end">{{ data?.sectionsDetails[0]?.premium || 0 }}</td>
                 </tr>
@@ -731,7 +715,7 @@
                     <tr>
                       <td class="flexible-header">{{ data.calculationGroup }}</td>
                       <td class="flexible-header">{{ data.rowNumber }}</td>
-                      <td class="flexible-header">{{ data.sectionShortDescription }}</td>
+                      <td class="flexible-header">{{ data.sectionDescription | sentenceCase }}</td>
                       <td class="flexible-header">{{ data.rateType }}</td>
                       <td class="flexible-header">{{ data.rate }}</td>
                       <td class="text-end flexible-header">{{ data.limitAmount }}</td>
@@ -761,7 +745,7 @@
                         {{ selectedClauseList.shortDescription }}
                       </td>
                       <td>
-                        {{ selectedClauseList.productDescription }}
+                        {{ selectedClauseList.productDescription | sentenceCase }}
                       </td>
                       <td
                         style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
