@@ -1139,6 +1139,12 @@ export class NewClientComponent implements OnInit {
           this.onClickSaveClient.emit(clientData);
           log.debug("client data", clientData);
           this.clientRegistrationForm.reset();
+
+          /*this.sessionStorageService.removeItem('branchDetailsData');
+          this.sessionStorageService.removeItem('payeeDetailsData');
+          this.sessionStorageService.removeItem('amlDetailsData');
+          this.sessionStorageService.removeItem('ownershipDetailsData');*/
+
           // this.clients = clientData;
           log.debug("Timestamp:", this.timeStamp)
           log.debug("Timestamp:", this.normalQuoteTimeStamp)
@@ -2030,7 +2036,7 @@ export class NewClientComponent implements OnInit {
   editCR12Details() {
     this.editMode = !this.editMode;
     log.info('selected CR12', this.selectedCr12Details);
-    if (this.selectedCr12Details) {
+    if (this.selectedCr12Index !== null && this.selectedCr12Details) {
       this.openCR12DetailsModal();
       this.cr12DetailsForm.patchValue({
         category: this.selectedCr12Details.category,
@@ -2435,10 +2441,16 @@ export class NewClientComponent implements OnInit {
     }
     log.info('cr12 details', cr12Payload);
     // Update the cr12Details for the selected AML record
-    if (!selectedAml.cr12Details) {
-      selectedAml.cr12Details = [];
+    if (selectedAml.cr12Details) {
+      const index = selectedAml.cr12Details.findIndex((cr12) => cr12 === this.selectedCr12Details);
+      if (index !== -1) {
+        selectedAml.cr12Details[index] = cr12Payload;
+      } else {
+        selectedAml.cr12Details.push(cr12Payload);
+      }
+    } else {
+      selectedAml.cr12Details = [cr12Payload];
     }
-    selectedAml.cr12Details.push(cr12Payload);
 
     // Update the amlDetailsData array
     const index = this.amlDetailsData.findIndex((aml) => aml === selectedAml);
@@ -2552,6 +2564,7 @@ export class NewClientComponent implements OnInit {
 
   onSelectCr12(event: any) {
     const selectedCr12 = event.data;
+    log.info('trs', selectedCr12);
     this.selectedCr12Index = this.cr12DetailsData.findIndex(
       item =>
         item.category === selectedCr12.category &&
