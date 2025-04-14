@@ -1516,7 +1516,6 @@ export class NewClientComponent implements OnInit {
     this.allUsersModalVisible = display;
   }
 
-
   processSelectedUser($event: void) {
     this.toggleAllUsersModal(false);
     this.zIndex = 1;
