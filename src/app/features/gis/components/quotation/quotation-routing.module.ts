@@ -16,6 +16,7 @@ import { QuotationConversionComponent } from './components/quotation-conversion/
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
+import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
 
 const routes: Routes = [
   {
@@ -65,6 +66,9 @@ const routes: Routes = [
   },
   {
     path:'quotation-management',component:QuotationManagementComponent
+  },
+  {
+    path:'risk-center',component:RiskCentreComponent
   },
   {
     path:'i',component:QuotationInquiryComponent

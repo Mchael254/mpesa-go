@@ -180,7 +180,7 @@
                         <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br>
 
                         <p-dropdown id="quote-input-pdropdown" [options]="paymentFrequencies" optionLabel="label"
-                        placeholder=" " [filterBy]="'label'" [filter]="true"></p-dropdown>
+                            placeholder=" " [filterBy]="'label'" [filter]="true"></p-dropdown>
 
                     </div>
                 </div>
@@ -226,116 +226,152 @@
                         <div class="col-4">
 
                             <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
-                            id="openProductButtonDelete" [hidden]="true" data-bs-toggle="modal"
-                            data-bs-target="#deleteProduct">
-                            <i class="fa-solid fa-trash-can"></i>
-                          </button>
-                          <button type="button" id="icon" class="btn btn-primary" title="Delete" >
-                            <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
-                          </button>
+                                id="openProductButtonDelete" [hidden]="true" data-bs-toggle="modal"
+                                data-bs-target="#deleteProduct">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                            <button type="button" id="icon" class="btn btn-primary" title="Delete">
+                                <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
+                            </button>
                         </div>
                         <div class="col-1"></div>
                     </div>
                 </div>
             </div>
 
-            <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
-                [tableStyle]="{'min-width': '50rem'}">
+            <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [tableStyle]="{'min-width': '50rem'}">
                 <ng-template pTemplate="header">
                     <tr>
                         <th class="flexible-header">Product</th>
-                        <th class="flexible-header">Cover from </th>
+                        <th class="flexible-header">Cover from</th>
                         <th class="flexible-header">Cover to</th>
                         <th class="flexible-header"></th>
                     </tr>
                 </ng-template>
+        
                 <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRow !== product"
-                    [ngClass]="{'editing-row': selectedEditRowIndex === ri,'highlighted-row': selectedRow === product}"
+                    <tr [pEditableRow]="product" 
+                    [pEditableRowDisabled]="selectedEditRowIndex !== ri" 
+                    [class.p-highlight]="product === selectedRow" 
                     (click)="onRowSelect(product)">
+                        
+                        <!-- Product Dropdown Column -->
                         <td class="flexible-header">
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <!-- <p>Test</p> -->
-                                    <!-- <p-dropdown [options]="ProductDescriptionArray" appendTo="body"
-                                    [(ngModel)]="product.productCode" [style]="{'width':'100%'}"
-                                        optionLabel="description"  [dataKey]="'code'" /> -->
-                                        <p-dropdown
-                                        [options]="ProductDescriptionArray"
+                                    <p-dropdown 
+                                        [options]="ProductDescriptionArray" 
                                         appendTo="body"
-                                        (onChange)="onProductChange($event.value)"
-
-                                        [style]="{'width':'100%'}"
+                                        [(ngModel)]="product.productCode"
                                         optionLabel="description"
-                                        >
+                                        [style]="{'width':'100%'}"
+                                        (onChange)="onProductChange($event.value, ri, product)">
                                     </p-dropdown>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-
-                                    <span>{{ product.productCode.description }}</span>
+                                    {{ product.productCode?.description }}
                                 </ng-template>
                             </p-cellEditor>
-                            <!-- <p>output test</p> -->
-
                         </td>
-
+        
+                        <!-- Cover From Date -->
                         <td class="flexible-header">
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [showIcon]="true"
-                                        [dateFormat]="dateFormat" [style]="{'width':'100%'}"   (onSelect)="updateCoverToDateEdit($event,product)" >
+                                    <p-calendar 
+                                        [(ngModel)]="product.coverFrom" 
+                                        appendTo="body" 
+                                        [showIcon]="true" 
+                                        [dateFormat]="dateFormat" 
+                                        [style]="{'width':'100%'}"
+                                        (ngModelChange)="updateCoverTo(product)">
                                     </p-calendar>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-                                    <span>{{ product.coverFrom }}</span>
+                                    {{ product.coverFrom | date: dateFormat }}
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-
+        
+                        <!-- Cover To Date -->
                         <td class="flexible-header">
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [showIcon]="true"
-                                        [dateFormat]="dateFormat" [style]="{'width':'100%'}" >
+                                    <p-calendar 
+                                        [(ngModel)]="product.coverTo" 
+                                        appendTo="body" 
+                                        [showIcon]="true" 
+                                        [dateFormat]="dateFormat" 
+                                        [style]="{'width':'100%'}">
                                     </p-calendar>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-                                    <span>{{ product.coverTo }}</span>
+                                    {{ product.coverTo | date: dateFormat }}
                                 </ng-template>
                             </p-cellEditor>
                         </td>
+        
+                        <!-- Action Buttons -->
                         <td class="flexible-header">
                             <div class="flex items-center justify-center gap-2">
-                                <button *ngIf="selectedEditRowIndex !== ri" pButton pRipple type="button"
-                                    pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(ri, product)" text
-                                    rounded severity="secondary"></button>
-
-                                <button *ngIf="selectedEditRowIndex === ri" pButton pRipple type="button"
-                                    pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(product)" text rounded
-                                    severity="secondary"></button>
-
-                                <button *ngIf="selectedEditRowIndex === ri" pButton pRipple type="button"
-                                    pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(product)" text rounded
-                                    severity="secondary"></button>
+                                <button 
+                                    *ngIf="!editing" 
+                                    pButton 
+                                    pRipple 
+                                    type="button" 
+                                    pInitEditableRow 
+                                    icon="pi pi-pencil" 
+                                    (click)="onRowEditInits(product)" 
+                                    text 
+                                    rounded 
+                                    severity="secondary">
+                                </button>
+        
+                                <button 
+                                    *ngIf="editing" 
+                                    pButton 
+                                    pRipple 
+                                    type="button" 
+                                    pSaveEditableRow 
+                                    icon="pi pi-check" 
+                                    (click)="onRowEditSaves(product)" 
+                                    text 
+                                    rounded 
+                                    severity="secondary">
+                                </button>
+        
+                                <button 
+                                    *ngIf="editing" 
+                                    pButton 
+                                    pRipple 
+                                    type="button" 
+                                    pCancelEditableRow 
+                                    icon="pi pi-times" 
+                                    (click)="onRowEditCancels(product, ri)" 
+                                    text 
+                                    rounded 
+                                    severity="secondary">
+                                </button>
                             </div>
                         </td>
                     </tr>
                 </ng-template>
+        
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center " id="empty">
-                            {{'gis.quotation.no_data_to_display'
-                            | translate}}</td>
+                        <td colspan="4" style="text-align:center; padding: 20px;">
+                            {{ 'gis.quotation.no_data_to_display' | translate }}
+                        </td>
                     </tr>
                 </ng-template>
             </p-table>
-
+            
 
 
             <!-- Add Product Details  Modal -->
             <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
                 aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-sm "style="min-width: 518px;"  role="document">
+                <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
                     <div class="modal-content" id="addSectionModal">
                         <div class="modal-body">
                             <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.product_details' |
@@ -405,34 +441,30 @@
                     </div>
                 </div>
             </div>
-                    <!-- Delete Product Modal -->
-        <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteSectionLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width: 408px;">
-          <div class="modal-content">
-            <!-- <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div> -->
-            <div class="modal-body">
-
-
-              <p class="d-flex justify-content-center mt-4" id="deleteLabel">
-               Are you sure you want to delete product?</p>
-
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary" id="delete"
-                      data-bs-dismiss="modal" (click)="deleteProduct()">{{ 'gis.quotation.yes_delete' | translate }}</button>
-                </div><br>
-
-              <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">
-                  {{'gis.quotation.no_im_not' | translate}}</button>
-              </div><br>
+            <!-- Delete Product Modal -->
+          
+            <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog"
+            aria-labelledby="deleteProduct" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="deleteProduct">
+                    <div class="modal-body ">
+                        <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
+                            translate}}</p>
+                        <div class="d-flex justify-content-center mb-3">
+                            <button type="button" class="btn btn-primary px-5" id="delete"
+                                data-bs-dismiss="modal" (click)="deleteProduct()">{{'gis.policy.yes_delete'
+                                | translate}}</button>
+                        </div>
+                        <div class="d-flex justify-content-center mb-2">
+                            <button type="button" class="btn btn-outline-primary px-5"
+                                data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                        </div>
+    
+    
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
             <div class="row mb-4" [formGroup]='quotationForm'>
 
                 <!-- <div class="col-sm-4 col-6">

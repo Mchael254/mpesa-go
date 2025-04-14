@@ -177,4 +177,12 @@ export class ProductsService {
 
     return this.api.GET<Products[]>(`api/v1/products?`, API_CONFIG.GIS_SETUPS_BASE_URL, params);
   }
+  getProductDetailsByCode(code: number): Observable<Products>{
+
+    return this.api.GET<Products>(`api/v1/products/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+
+  }
 }
