@@ -449,6 +449,7 @@ export class NewClientComponent implements OnInit {
       pinNumber: ['', Validators.pattern(this.pinNumberRegex)],
       gender: [''],
       clientTypeId: [''],
+      marital_status: [''],
 
       contact_details: this.fb.group(
         {
@@ -510,7 +511,6 @@ export class NewClientComponent implements OnInit {
       wealth_details: this.fb.group(
         {
           wealth_citizenship: [''],
-          marital_status: [''],
           funds_source: [''],
           typeOfEmployment: [''],
           economic_sector: [''],
@@ -994,14 +994,14 @@ export class NewClientComponent implements OnInit {
             residential_address - no field for it but its on endpoint*/
         boxNumber: clientFormValues.address.box_number,
         countryId: clientFormValues.address.country,
-        // houseNumber: clientFormValues.address.house_number,
-        // uploadUtilityBill: clientFormValues.address.uploadUtilityBill ? clientFormValues.address.uploadUtilityBill : null,
+        houseNumber: clientFormValues.address.house_number,
         physicalAddress: clientFormValues.address.physical_address,
         postalCode: clientFormValues.address.postalCode,
-        // road: clientFormValues.address.road,
+        road: clientFormValues.address.road,
         townId: clientFormValues.address.town,
         stateId: clientFormValues.address.county,
-        // utilityBill: clientFormValues.address.utilityBill,
+        utilityAddressProof: clientFormValues.address.utilityBill,
+        isUtilityAddress: clientFormValues.address.uploadUtilityBill ? clientFormValues.address.uploadUtilityBill : null,
         // phoneNumber: clientFormValues.address.phoneNumber,
       }
 
@@ -1047,44 +1047,38 @@ export class NewClientComponent implements OnInit {
       const payment: any = {
         /* Todo:
             bank: not captured in endpoint,
-            mpayNo: not captured in endpoint,
-            Iban: not captured in endpoint,*/
+            */
         accountNumber: clientFormValues.payment_details.account_number,
         // bankId: clientFormValues.payment_details.bank,
         bankBranchId: clientFormValues.payment_details.branch,
-        // currencyId: clientFormValues.payment_details.currency?.id,
-        // effectiveFromDate: clientFormValues.payment_details.effective_date_from,
-        // effectiveFoDate: clientFormValues.payment_details.effective_date_to,
-        preferedChannel: null,
+        currencyId: clientFormValues.payment_details.currency?.id,
+        effectiveFromDate: clientFormValues.payment_details.effective_date_from,
+        effectiveFoDate: clientFormValues.payment_details.effective_date_to,
+        preferedChannel: clientFormValues.payment_details.preferredChannel,
+        mpayno: clientFormValues.payment_details.mpayNo,
         iban: clientFormValues.payment_details.Iban,
         swiftCode: clientFormValues.payment_details.swiftCode,
       }
 
       //preparing wealth dto
-      const wealth: any = {
-        /* Todo:
-            typeOfEmployment: is of type LOV on frontend,
-            purposeinInsurance: not captured in endpoint,
-            premiumFrequency: not captured in endpoint,
-            distributeChannel: not captured in endpoint,
-            cr_form_required: not on frontend,
-            cr_form_year: not on frontend*/
+      const wealth: any = [{
+        fundsSource: clientFormValues.wealth_details.funds_source,
+        employmentStatus: clientFormValues.wealth_details.typeOfEmployment,
+        sectorId: clientFormValues.wealth_details.economic_sector?.id,
+        occupationId: clientFormValues.wealth_details.occupation?.id,
+        insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
+        premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
+        distributeChannel: clientFormValues.wealth_details.distributeChannel,
+
+
         // wealthCitizenship: clientFormValues.wealth_details.wealth_citizenship?.id,
-        // typeOfEmployment: clientFormValues.wealth_details.typeOfEmployment,
-        // fundsSource: clientFormValues.wealth_details.funds_source,
-        // maritalStatus: clientFormValues.wealth_details.marital_status ? clientFormValues.wealth_details.marital_status : null,
-        // occupationId: clientFormValues.wealth_details.occupation?.id,
-        // sectorId: clientFormValues.wealth_details.economic_sector?.id,
-        // distributeChannel: clientFormValues.wealth_details.distributeChannel,
-        // insurancePurpose: clientFormValues.wealth_details.purposeinInsurance,
-        // premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
         /*amlDetails: this.amlDetailsData,
         cr12Details: this.cr12DetailsData,
         ownershipDetails: this.ownershipStructureData,*/
 
-      }
+      }]
 
-      const wealthAml: any = this.amlDetailsData;
+      const wealthAml: any = this.selectedCategory === 'I' ? wealth : this.amlDetailsData;
       const ownership: any = this.ownershipStructureData;
 
       //preparing Client Dto
@@ -1122,6 +1116,7 @@ export class NewClientComponent implements OnInit {
         modeOfIdentity: this.entityDetails?.modeOfIdentity?.name,
         modeOfIdentityNumber: this.entityDetails?.identityNumber,
         branchId: clientFormValues.contact_details?.clientBranch?.id,
+        maritalStatus: clientFormValues.marital_status
 
       }
       log.info(saveClient)
@@ -1133,65 +1128,69 @@ export class NewClientComponent implements OnInit {
         .pipe(
           takeUntil(this.destroyed$),
         )
-        .subscribe((clientData:any) => {
-          this.globalMessagingService.clearMessages();
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
-          this.onClickSaveClient.emit(clientData);
-          log.debug("client data", clientData);
-          this.clientRegistrationForm.reset();
+        .subscribe({
+          next: (clientData: any) => {
+            this.globalMessagingService.clearMessages();
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
+            this.onClickSaveClient.emit(clientData);
+            log.debug("client data", clientData);
+            this.clientRegistrationForm.reset();
 
-          /*this.sessionStorageService.removeItem('branchDetailsData');
-          this.sessionStorageService.removeItem('payeeDetailsData');
-          this.sessionStorageService.removeItem('amlDetailsData');
-          this.sessionStorageService.removeItem('ownershipDetailsData');*/
+            /*this.sessionStorageService.removeItem('branchDetailsData');
+            this.sessionStorageService.removeItem('payeeDetailsData');
+            this.sessionStorageService.removeItem('amlDetailsData');
+            this.sessionStorageService.removeItem('ownershipDetailsData');*/
 
-          // this.clients = clientData;
-          log.debug("Timestamp:", this.timeStamp)
-          log.debug("Timestamp:", this.normalQuoteTimeStamp)
-          if (this.shouldReroute) {
-            if(this.timeStamp){
+            // this.clients = clientData;
+            log.debug("Timestamp:", this.timeStamp)
+            log.debug("Timestamp:", this.normalQuoteTimeStamp)
+            if(this.shouldReroute) {
+              if (this.timeStamp) {
               log.debug("BACK TO GIS-policy product:")
               this.router.navigate(['/home/gis/policy/policy-product']);
-            }else{
-              log.debug("BACK TO CRM:")
-              this.router.navigate(['home/entity/client/list']);
-            }
-            // if (this.timeStamp) {
-            //   log.debug("BACK TO GIS:")
+              } else {
+                log.debug("BACK TO CRM:")
+                this.router.navigate(['home/entity/client/list']);
+              }
+              // if (this.timeStamp) {
+              //   log.debug("BACK TO GIS:")
 
-            //   this.router.navigate(['/home/gis/policy/policy-product']);
+              //   this.router.navigate(['/home/gis/policy/policy-product']);
 
-            // } else if (this.normalQuoteTimeStamp) {
-            //   // log.debug("BACK TO GIS - Quotation details screen:")
+              // } else if (this.normalQuoteTimeStamp) {
+              //   // log.debug("BACK TO GIS - Quotation details screen:")
 
-            //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
+              //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
 
-            //   //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-            //   //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+              //   //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+              //   //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
 
-            // } else {
-            //   this.router.navigate(['/home/gis/policy/policy-product']);
-            //   log.debug("BACK TO CRM:")
+              // } else {
+              //   this.router.navigate(['/home/gis/policy/policy-product']);
+              //   log.debug("BACK TO CRM:")
 
-            //   this.router.navigate(['home/entity/client/list']);
-            // }
+              //   this.router.navigate(['home/entity/client/list']);
+              // }
+              }
+              // else {
+              //   if (this.normalQuoteTimeStamp) {
+              //     log.debug("BACK TO GIS - Quotation details screen:")
+              //     const clientId = clientData.id
+              //     log.debug("Client id", clientId)
+              //     const clientCode = JSON.stringify(clientId);
+              //     sessionStorage.setItem('clientCode', clientCode);
+
+              //     this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+              //     //   this.router.navigate(['/home/lms/grp/quotation/quick']);
+              //     //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
+
+              //   }
+              // }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0]);
           }
-          // else {
-          //   if (this.normalQuoteTimeStamp) {
-          //     log.debug("BACK TO GIS - Quotation details screen:")
-          //     const clientId = clientData.id
-          //     log.debug("Client id", clientId)
-          //     const clientCode = JSON.stringify(clientId);
-          //     sessionStorage.setItem('clientCode', clientCode);
-
-          //     this.router.navigate(['/home/gis/quotation/quotation-details']);
-
-          //     //   this.router.navigate(['/home/lms/grp/quotation/quick']);
-          //     //   http://localhost:4200/home/lms/ind/quotation/client-details - lms client creation screen
-
-          //   }
-          // }
-
         });
 
     });
@@ -1213,28 +1212,6 @@ export class NewClientComponent implements OnInit {
       }
     }
   }
-
-
-
-  uploadNextOfKins() {
-
-  }
-
-  /*toggleData() {
-    this.toDisplay = !this.toDisplay;
-  }*/
-
-  // getCountries() {
-  //   this.countryService.getCountries()
-  //     .pipe(
-  //       takeUntil(this.destroyed$),
-  //     )
-  //     .subscribe(
-  //       (data) => {
-  //         this.countryData = data.sort();
-  //       },
-  //     );
-  // }
 
   /**
    * Fetches sectors data for the specified organization and updates the component's sectorData property.
@@ -1359,11 +1336,6 @@ export class NewClientComponent implements OnInit {
       .subscribe((data) => {
         this.countryData = data;
         log.debug("country data", this.countryData);
-        // if(this.countryData){
-        //   this.newServiceProviderForm.patchValue({
-        //     country: this.entityDetails.countryId
-        //   });
-        // }
       });
   }
   /**
