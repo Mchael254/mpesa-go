@@ -130,7 +130,7 @@
       },
       "identity_type": {
         "fieldId": "identity_type",
-        "fieldLabel": "Identity type",
+        "fieldLabel": "Prime identity type",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -161,7 +161,7 @@
         "fieldLabel": "Date of birth",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
-        "fieldDisabledStatus": "N"
+        "fieldDisabledStatus": "Y"
       },
       "idNumber": {
         "fieldId": "idNumber",
@@ -235,14 +235,14 @@
       },
       "county": {
         "fieldId": "county",
-        "fieldLabel": "County",
+        "fieldLabel": "County/State",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
       "town": {
         "fieldId": "town",
-        "fieldLabel": "Town",
+        "fieldLabel": "City/Town",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -298,14 +298,14 @@
       },
       "bank": {
         "fieldId": "bank",
-        "fieldLabel": "Bank",
+        "fieldLabel": "Bank name",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
       "branch": {
         "fieldId": "branch",
-        "fieldLabel": "Branch",
+        "fieldLabel": "Branch name",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -351,6 +351,13 @@
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
+      },
+      "swiftCode": {
+        "fieldId": "swiftCode",
+        "fieldLabel": "Swift Code",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
       },
       "preferredChannel": {
         "fieldId": "preferredChannel",
@@ -417,7 +424,7 @@
       },
       "distributeChannel": {
         "fieldId": "distributeChannel",
-        "fieldLabel": "Distribute Channel",
+        "fieldLabel": "Distribution Channel",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
