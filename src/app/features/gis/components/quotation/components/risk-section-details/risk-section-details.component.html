@@ -1,6 +1,30 @@
 <div class="mx-4 mt-3">
   <p class="screenTitle">{{'gis.quotation.quotation_risk_detail' | translate}} </p>
   <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <!-- TABS CARDS -->
+  <div class="card ">
+    <div class="card-body">
+      <p class="section-title ms-3 mb-2"> {{'gis.quotation.risk_details' | translate}}</p>
+      <ul class="nav nav-pills">
+        <li class="nav-item" *ngFor="let product of passedProductList">
+          <a class="nav-link" [class.active]="selectedProduct === product" (click)="selectProduct(product)">
+            {{ product.productName | sentenceCase }}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- Dynamic Tab Content -->
+  <div class="tab-content ">
+    <app-risk-details [selectedProduct]="selectedProduct"></app-risk-details>
+   
+    <!-- <app-schedule-details [selectedProduct]="selectedProduct"></app-schedule-details>
+    <app-section-details [selectedProduct]="selectedProduct"></app-section-details>
+    <app-risk-clauses-details [selectedProduct]="selectedProduct"></app-risk-clauses-details> -->
+  </div>
+
+
+
   <!-- Risk detail card -->
   <div class="card mb-3">
     <div class="card-body">
@@ -996,18 +1020,18 @@
                   </div>
                 </div> -->
                 <!-- <input pInputText type="text" (input)="sectionTable.filterGlobal($event.target.value, 'contains')" placeholder="Search..." #sectionTable> -->
-                <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text" (input)="applyGlobalFilter($event)" placeholder="Search...">
+                <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text"
+                  (input)="applyGlobalFilter($event)" placeholder="Search...">
 
-                <p-table   #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
+                <p-table #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
                   [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
                   [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
                   [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
                   [showCurrentPageReport]="true" currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                  [globalFilterFields]="['sectionDescription']"
-                  >
+                  [globalFilterFields]="['sectionDescription']">
                   <ng-template pTemplate="header">
                     <tr>
-                      <th style="width: 2%;" ></th> <!-- Checkbox column -->
+                      <th style="width: 2%;"></th> <!-- Checkbox column -->
                       <th class="equal-width"> {{ 'gis.quotation.benefit' | translate }}</th>
                       <th class="equal-width"> {{ 'gis.quotation.free_limit' | translate }}</th>
                       <th class="equal-width"> {{ 'gis.quotation.value' | translate }}</th>
@@ -1018,12 +1042,14 @@
                   <ng-template pTemplate="body" let-section let-editing="editing" let-i="rowIndex">
                     <tr style="height: 40px; padding: 10px; margin-bottom: 10px;">
                       <td >
+                      
                         <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                           [(ngModel)]="section.isChecked">
                       </td>
                       <td class="equal-width">{{ section.sectionDescription |sentenceCase }}</td>
                       <td class="equal-width">{{ section.freeLimit | number }}</td>
-                      <td class="equal-width"[pEditableColumn]="section.limitAmount" pEditableColumnField="limitAmount">
+                      <td class="equal-width" [pEditableColumn]="section.limitAmount"
+                        pEditableColumnField="limitAmount">
                         <input id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
                           [options]="currencyObj" currencyMask class="error-border form-control-sm" type="text"
                           (keydown)="onKeyUp($event, section)"
@@ -1121,7 +1147,7 @@
                           id="scheduleLabel">{{'gis.quotation.free_limit' | translate}} :</label>
                         <div class="col-7">
                           <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1"
-                            formControlName="freeLimit" >
+                            formControlName="freeLimit">
                         </div>
                       </div>
                     </div>
@@ -1131,7 +1157,7 @@
                           id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
                         <div class="col-7">
                           <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1"
-                            formControlName="limitAmount"   >
+                            formControlName="limitAmount">
                         </div>
                       </div>
                     </div>

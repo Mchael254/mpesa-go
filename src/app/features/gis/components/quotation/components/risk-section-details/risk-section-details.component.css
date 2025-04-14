@@ -50,7 +50,7 @@
 
 ::ng-deep .p-datatable .p-datatable-thead>tr>th {
     /* padding: 0.3rem 1rem;  */
-    padding: 0.1rem 0.1rem;
+    /* padding: 0.1rem 0.1rem; */
     color: #000;
     font-family: Roboto;
     font-size: 14px;
@@ -257,98 +257,221 @@
 #search-input-Rsection {
     /* border: none; */
     background-color: transparent;
-    width:400px;
-  }
-  /* #search-input-Rsection:focus{
+    width: 400px;
+}
+
+/* #search-input-Rsection:focus{
   border-color: transparent;  } */
-  .scrollable-list {
-    max-height: 300px; /* Set the desired height for your scrollable list */
-    overflow-y: auto; /* Enable vertical scrolling */
-  }
-  ::ng-deep .ui-tooltip {
+.scrollable-list {
+    max-height: 300px;
+    /* Set the desired height for your scrollable list */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+}
+
+::ng-deep .ui-tooltip {
     color: white !important;
     background-color: white !important;
-  }
-  ::ng-deep .p-dropdown{
+}
+
+::ng-deep .p-dropdown {
     height: 33px;
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;
-  }
-  ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder{
-  padding:3px;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label.p-placeholder {
+    padding: 3px;
 
 
-  }
+}
 
-  ::ng-deep
-  .p-dropdown .p-dropdown-label {
+::ng-deep .p-dropdown .p-dropdown-label {
     padding: 3px;
     font-size: 14px;
     color: #000;
-  }
+}
 
-  ::ng-deep
-  .p-dropdown-filter {
+::ng-deep .p-dropdown-filter {
     width: 100%;
     height: 30px;
     border-radius: 4px;
-  }
-  ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item{
+}
+
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
     font-size: 14px;
     color: #000;
-    padding:3px 20px;
+    padding: 3px 20px;
     font-family: Roboto;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-  }
-  .card{
+}
+
+.card {
     border: none;
     border-radius: 5px;
 
-  }
-  .flexible-header {
+}
+
+.flexible-header {
     white-space: nowrap;
     width: auto;
     text-align: left;
-  }
+}
 
-  /* .ui-datatable th, .ui-datatable td {
+/* .ui-datatable th, .ui-datatable td {
     white-space: nowrap;
 } */
-  .ui-datatable th,
-  .ui-datatable td {
+.ui-datatable th,
+.ui-datatable td {
     white-space: nowrap;
     /* color: #000; */
-  }
+}
 
-  ::ng-deep .p-calendar{
+::ng-deep .p-calendar {
     height: 33px !important;
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 4px;
-  }
-  ::ng-deep .p-calendar .p-calendar-label.p-placeholder{
-  padding:3px;
+}
+
+::ng-deep .p-calendar .p-calendar-label.p-placeholder {
+    padding: 3px;
 
 
-  }
+}
 
-  ::ng-deep
-  .p-calendar .p-calendar-label {
+::ng-deep .p-calendar .p-calendar-label {
     padding: 3px;
     font-size: 14px;
     color: #000;
-  }
-  .equal-width {
+}
+
+.equal-width {
     width: 20%;
-    min-width: 100px; /* Adjust as needed */
+    min-width: 100px;
+    /* Adjust as needed */
     /* text-align: center; */
-  }
-  .error-border {
+}
+
+.error-border {
     border: 1px solid red !important;
-  }
+}
 
 
+
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+
+
+#icon i {
+    color: #00529B;
+}
+
+.subheading {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: left;
+    color: rgba(0, 82, 155, 1);
+
+
+}
+
+
+#icon {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#icon i {
+    color: #00529B;
+}
+
+.nav-link.active {
+    color: #00529B !important;
+    font-weight: 500;
+}
+
+.scrollable-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+    display: flex;
+}
+
+.scrollable-tabs::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+.scroll-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 10px;
+    z-index: 10;
+    color: #333;
+    transition: opacity 0.3s;
+}
+
+.scroll-btn.left {
+    position: absolute;
+    left: 0;
+}
+
+.scroll-btn.right {
+    position: absolute;
+    right: 0;
+}
+
+.nav-pills .nav-link {
+    color: #495057;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+    color: #00529B;
+    font-weight: 400px;
+}
+
+.nav-pills .nav-link.active {
+    color: #00529B;
+    border-color: #DCDCDCD9;
+    border-bottom: none;
+    background-color: white;
+}
+
+.nav-pills {
+    border-bottom: 2px solid #ddd;
+    /* Add a line under the tabs */
+    /* padding-bottom: 10px;  Optional: Adjust the padding between the tabs and the line */
+}
+
+.section-title {
+    font-family: Roboto;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #000;
+
+}
+.tab-content{
+    background-color: transparent;
+    margin-top: -14px;
+}

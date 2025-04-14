@@ -349,7 +349,7 @@ export class QuotationConversionComponent {
     if(!this.selectedQuotationProduct){
       this.globalMessagingService.displayInfoMessage('Error', 'Select a quotation product to continue');
     }else{
-      const selctedQuotationCode = this.selectedQuotationProduct.quotCode
+      const selctedQuotationCode = this.selectedQuotationProduct.quotationCode
       this.quotationService.convertQuoteToPolicy(selctedQuotationCode,quoteProductCode).subscribe(data => {
         log.debug("Response after converting quote to a policy:", data)
         this.loadClientQuotation();
@@ -395,8 +395,8 @@ export class QuotationConversionComponent {
 
   fetchPolicies() {
     log.debug("fetch policies");
-    const productCode = this.selectedQuotationProduct.proCode;
-    const quotationCode = this.selectedQuotationProduct.quotCode;
+    const productCode = this.selectedQuotationProduct.productCode;
+    const quotationCode = this.selectedQuotationProduct.quotationCode;
 
 
     this.quotationsService.getPolicies(quotationCode, productCode)

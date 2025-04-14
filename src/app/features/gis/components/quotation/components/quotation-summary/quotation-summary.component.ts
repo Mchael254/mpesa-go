@@ -1391,7 +1391,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // Transforming data into the expected payload format
     const transformedPayload = {
       premiumAmount: this.premium.premiumAmount,
-      productCode: selectedProduct.proCode,
+      productCode: selectedProduct.productCode,
       quotProductCode: selectedProduct.code.toString(),
       productPremium: this.premium.premiumAmount,
       riskLevelPremiums: this.premium.riskLevelPremiums.map(risk => ({
