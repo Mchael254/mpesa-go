@@ -181,14 +181,14 @@
     "Invoices/DR Notes": "Ankara/Notisi za Madeni",
     "Cheque signing": "Kusaini hundi",
      "Inquiries": "Maswali",
-    
+
       "Invoices/Cr Notes": "Ankara/Noti za Mkopo",
       "Gl-Inquiries": "Uchunguzi wa Kitabu Kikuu",
       "Gl-Transactions": "Miamala ya Kitabu Kikuu",
       "Inquires": "Uchunguzi",
       "GL-Parameters": "Vigezo vya Kitabu Kikuu",
-      
- 
+
+
      "Parameters": "Vigezo",
      "Transactions": "Miamala",
      "Requisitions": "Maombi",
@@ -743,7 +743,41 @@
     "registrationDate": "Tarehe ya Usajili",
     "parentCompany": "Kampuni Mama",
     "contactPerson": "Mtu wa Mawasiliano",
-    "contactPersonTelephone": "Nambari ya Simu ya Mtu wa Mawasiliano"
+    "contactPersonTelephone": "Nambari ya Simu ya Mtu wa Mawasiliano",
+    "websiteURL": "URL ya Tovuti",
+    "socialMediaURL": "Kiungo cha mitandao ya kijamii kinachopendekezwa",
+    "contactPersonDetails": "Maelezo ya Mtu wa Mawasiliano",
+    "fullName": "Jina Kamili",
+    "docIdNo": "Nambari ya Kitambulisho cha Hati",
+    "payeeDetails": "Maelezo ya Mlipa",
+    "swiftCode": "Msimbo wa SWIFT",
+    "registeredName": "Jina Lililosajiliwa",
+    "operatingCountry": "Nchi ya Uendeshaji",
+    "cr12Details": "Maelezo ya CR12",
+    "personType": "Aina ya Mtu",
+    "companyRegNo": "Nambari ya Usajili wa Kampuni",
+    "companyRegDate": "Tarehe ya Usajili wa Kampuni",
+    "address": "Anwani",
+    "referenceNo": "Nambari ya Marejeo",
+    "refNumberYear": "Mwaka wa Nambari ya Marejeo",
+    "ownershipStructure": "Muundo wa Umiliki",
+    "percentageOwnership": "Asilimia ya Umiliki",
+    "branchDetails": "Maelezo ya Tawi",
+    "shortDesc": "Maelezo mafupi",
+    "cityOrTown": "Jiji/Mji",
+    "countyOrState": "Kaunti/Mkoa",
+    "landlineNo": "Nambari ya Simu ya Mezani",
+    "mobileNo": "Nambari ya Simu ya Mkononi",
+    "addressDetails": "Maelezo ya Anwani",
+    "financialDetails": "Maelezo ya Kifedha",
+    "landlineNumber": "Nambari ya Simu ya Mezani",
+    "documentUpload": "Pakia Hati",
+    "citizenshipCountry": "Nchi ya Uraia",
+    "nationalityCountry": "Nchi ya Utaifa",
+    "employmentStatus": "Hali ya Ajira",
+    "premiumPay": "Malipo ya Bima",
+    "certificateRegNo": "Nambari ya Usajili wa Cheti",
+    "certificateRegYear": "Mwaka wa Usajili wa Cheti"
   },
   "gis": {
     "quotation": {
@@ -2087,7 +2121,7 @@
     "signSelect": "Chagua sahihi",
     "correction": "Tuma kwa marekebisho",
     "reject": "Kataa",
- 
+
   "base-fms": {
     "parameters": "Vigezo",
     "reconciliation": "Upatanisho",

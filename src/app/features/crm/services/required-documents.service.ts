@@ -21,12 +21,17 @@ export class RequiredDocumentsService {
   constructor(private api: ApiService) {}
 
   getRequiredDocuments(
-    organizationId?: number
+    organizationId?: number,
+    accountType?: string,
+    accountSubType?: string
   ): Observable<RequiredDocumentDTO[]> {
     const paramsObj: { [param: string]: string } = {};
-    if (organizationId !== undefined && organizationId !== null) {
-      paramsObj['organizationId'] = organizationId.toString();
-    }
+    const optionalParams = { organizationId, accountType, accountSubType };
+    Object.entries(optionalParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        paramsObj[key] = value.toString();
+      }
+    });
 
     const params = new HttpParams({ fromObject: paramsObj });
 
