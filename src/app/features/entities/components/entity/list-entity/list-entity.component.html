@@ -13,18 +13,18 @@
     </div>
     <!-- Top Buttons !-->
     <div class="d-flex my-4 ms-4">
-      <button 
-        type="button" 
-        class="btn btn-primary rounded-0 px-3 me-3" 
+      <button
+        type="button"
+        class="btn btn-primary rounded-0 px-3 me-3"
         id="newEntityButton" (click)="createEntity()"
       >
         <i class="fa-solid fa-plus"></i> {{ 'entities.new_entity' | translate | titlecase }}
       </button>
 
-      <button 
-        type="button" 
+      <button
+        type="button"
         class="btn filter-btn rounded-0 px-4 me-3"
-      > 
+      >
         <i class="fa fa-filter pe-2"></i> {{ 'entities.filter' | translate | titlecase }}
       </button>
     </div>
@@ -96,11 +96,11 @@
         </ng-template>
         <ng-template pTemplate="body" let-entity>
           <tr>
-            <td>{{ entity.name | titlecase }}</td>
-            <td>{{ entity.modeOfIdentity.name | titlecase }}</td>
-            <td>{{ entity.identityNumber }}</td>
-            <td>{{ entity.pinNumber }}</td>
-            <td>{{ entity.categoryName }}</td>
+            <td>{{ entity?.name | titlecase }}</td>
+            <td>{{ entity?.modeOfIdentity?.name | titlecase }}</td>
+            <td>{{ entity?.identityNumber }}</td>
+            <td>{{ entity?.pinNumber }}</td>
+            <td>{{ entity?.categoryName }}</td>
             <td>
               <div class="actions">
                 <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(entity.id)">
