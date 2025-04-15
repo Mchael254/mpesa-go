@@ -1,0 +1,38 @@
+<div class="mx-4 mt-3">
+    <p class="screenTitle">{{'gis.quotation.quotation_risk_detail' | translate}} </p>
+    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <div class="card">
+        <div class="card-body">
+            <p class="section-title ms-3 mb-4">{{ 'gis.quotation.risk_details' | translate }}</p>
+
+            <div class="position-relative">
+                <!-- Left Arrow -->
+                <button class="scroll-btn left" (click)="scrollLeft()">
+                    &#8249;
+                </button>
+
+                <!-- Scrollable Pills -->
+                <div class="scroll-container mb-2" #scrollContainer>
+                    <ul class="nav nav-pills flex-nowrap">
+                        <li class="nav-item" *ngFor="let product of passedProductList">
+                            <a class="nav-link" [class.active]="selectedProduct === product"
+                                (click)="selectProduct(product)">
+                                {{ product.productName | sentenceCase }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Arrow -->
+                <button class="scroll-btn right" (click)="scrollRight()">
+                    &#8250;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Tab Content -->
+    <div class="tab-content ">
+        <app-risk-details [selectedProduct]="selectedProduct"></app-risk-details>
+
+    </div>
