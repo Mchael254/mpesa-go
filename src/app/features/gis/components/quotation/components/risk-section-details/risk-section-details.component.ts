@@ -11,7 +11,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { Calendar } from 'primeng/calendar';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { QuickQuoteData, QuotationDetails, quotationRisk, riskSection, scheduleDetails, ScheduleDetailsDto } from '../../data/quotationsDTO';
+import { QuickQuoteData, QuotationDetails, QuotationProduct, quotationRisk, riskSection, scheduleDetails, ScheduleDetailsDto } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
@@ -212,6 +212,8 @@ export class RiskSectionDetailsComponent {
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
   storedData: QuickQuoteData = null;
+  passedProductList: QuotationProduct[]=[];
+  selectedProduct: any;
   
   constructor(
     private router: Router,
@@ -286,6 +288,8 @@ export class RiskSectionDetailsComponent {
   public isClausesOpen = false;
 
   ngOnInit(): void {
+     
+      
     this.minDate = new Date();
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
@@ -334,7 +338,7 @@ export class RiskSectionDetailsComponent {
 
   }
   ngOnDestroy(): void { }
-
+ 
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
@@ -1776,7 +1780,13 @@ export class RiskSectionDetailsComponent {
       tap(data => {
         this.quotationDetails = data;
         log.debug("Quotation Details-covertype comparison:", this.quotationDetails)
-
+        this.passedProductList=this.quotationDetails?.quotationProducts
+        log.debug("PASSED PRODUCT LIST:",this.passedProductList)
+   // Set the first product as selected when the page loads
+   if (this.passedProductList && this.passedProductList.length > 0) {
+    this.selectedProduct = this.passedProductList[0];
+    log.debug("Selected Product:",this.selectedProduct)
+  }
         this.passedProductCode = this.quotationDetails?.quotationProducts[0]?.proCode;
         this.passedSubclassCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.subclassCode;
         this.passedCoverTypeCode = this.quotationDetails.quotationProducts[0]?.riskInformation[0]?.coverTypeCode;
@@ -2201,5 +2211,11 @@ export class RiskSectionDetailsComponent {
     if (this.sectionTable) {
       this.sectionTable.filterGlobal(filterValue, 'contains');
     }
+  }
+
+
+  selectProduct(tab: any) {
+    this.selectedProduct = tab;
+    log.debug("selected product tab",this.selectedProduct)
   }
 }

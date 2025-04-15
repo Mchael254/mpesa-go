@@ -37,6 +37,8 @@ import { QuotationSourcesComponent } from './components/quotation-sources/quotat
 import {  CheckboxModule } from 'primeng/checkbox';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { TagModule } from 'primeng/tag';
+import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
+import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -56,6 +58,8 @@ import { TagModule } from 'primeng/tag';
     QuotationInquiryComponent,
     QuotationSourcesComponent,
     QuotationManagementComponent,
+    RiskDetailsComponent,
+    RiskCentreComponent,
 
 
   ],
