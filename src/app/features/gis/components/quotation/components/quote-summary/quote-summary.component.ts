@@ -177,7 +177,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('navigationSource', 'addAnotherRisk');
 
     log.debug("isAddRisk:", this.isAddRisk)
-    log.debug("quotation number:", this.quotationNo)
+    log.debug("quotation number:", this.coverQuotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
     log.debug("Selected Client Details", this.clientDetails);
     this.router.navigate(['/home/gis/quotation/quick-quote'])
@@ -457,7 +457,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
 
     log.debug("isEditRisk:", this.isEditRisk)
-    log.debug("quotation number:", this.quotationNo)
+    log.debug("quotation number:", this.coverQuotationNo)
     log.debug("Quotation Details:", this.quotationDetails)
     this.router.navigate(['/home/gis/quotation/quick-quote']);
   }
