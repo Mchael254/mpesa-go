@@ -24,7 +24,7 @@ export class PolicySummaryComponent {
   computationDetails: Object;
   premiumResponse:any;
   premium:number = 0;
-  selectedItem: number = 1; 
+  selectedItem: number = 1;
   show: boolean = true;
   policySectionDetails:any;
   errorMessage: string;
@@ -51,8 +51,8 @@ export class PolicySummaryComponent {
   ){}
 
   ngOnInit(): void {
-    this.getUtil();
-    this.getPolicyDetails();
+   // this.getUtil();
+   // this.getPolicyDetails();
   }
   ngOnDestroy(): void { }
 
@@ -81,7 +81,7 @@ computePremium(){
       this.globalMessagingService.displaySuccessMessage('Success','Premium computed successfully ')
       console.log(this.premium)
     }, error : (error) => {
-     
+
       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
 
       }
@@ -107,18 +107,6 @@ getPolicy() {
             this.getClient()
           }
 
-          // this.productCode = this.policyDetails.product.code;
-          // log.debug("Product Code", this.productCode)
-          // this.passedCoverFrom = this.policyDetails.wefDt;
-          // log.debug("COVER FROM", this.passedCoverFrom);
-          // this.passedCoverTo = this.policyDetails.wetDt;
-          // log.debug("COVER TO", this.passedCoverTo);
-          // this.passedClientCode = this.policyDetails.clientCode
-          // log.debug("CLIENT CODE", this.passedClientCode);
-
-
-          // Calculate cover days
-       
           this.cdr.detectChanges();
 
         } else {
@@ -153,9 +141,9 @@ getoClient() {
           if (data ) {
             log.debug('Client Details',data)
           this.clientDetails =data;
-            
+
             // Process clientDetails as needed
-            
+
             this.cdr.detectChanges(); // Trigger change detection if needed
           } else {
             // Handle case where client details are not found
@@ -229,10 +217,10 @@ getPolicyDetails(){
       this.productService.getProductByCode(productCode).subscribe({
         next:(res)=>{
           this.product = res
-          
+
         }
       })
-     
+
       console.log(res)
     }
   })

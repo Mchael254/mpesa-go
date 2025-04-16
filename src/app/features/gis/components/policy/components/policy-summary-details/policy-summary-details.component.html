@@ -8,7 +8,7 @@
                 title="Edit">
                 <i class="fa-solid fa-pencil"></i>
             </button>
-           
+
 
             <button class="btn btn-primary">{{ 'gis.policy.reassign' | translate }}</button>
             <button class="btn btn-primary" (click)="generateCoverNote()">{{ 'gis.policy.generate_cover_note' |
@@ -17,12 +17,6 @@
                 }}</button>
 
         </div>
-        <!-- <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
-            <i class="fa-solid fa-pencil"></i>
-            </button>
-            <button class="btn btn-primary me-4">Reassign</button>
-            <button class="btn btn-primary me-4" (click)="generateCoverNote()">Generate cover note</button>
-            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button> -->
     </div>
 </div>
 
@@ -96,7 +90,7 @@
 
             </div>
             <div class="col-6">
-                <p class="detail">{{totalSumInsured}}</p>
+                <p class="detail">{{totalSumInsured | number}}</p>
             </div>
         </div>
     </div>
@@ -108,7 +102,7 @@
                 <p class="label"> {{ 'gis.policy.premium' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail">{{premium}}</p>
+                <p class="detail">{{premium | number}}</p>
 
             </div>
         </div>
@@ -119,7 +113,7 @@
                 <p class="label"> {{ 'gis.policy.expected_premium' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail">{{basicPremium}}</p>
+                <p class="detail">{{basicPremium | number}}</p>
 
             </div>
         </div>
@@ -178,7 +172,7 @@
                 <p class="label">  {{ 'gis.policy.uw_year' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail">{{policyDetailsData.riskInformation[0].underwritingYear}}</p>
+                <p class="detail">{{policyDetailsData?.riskInformation[0].underwritingYear}}</p>
 
             </div>
         </div>
@@ -259,7 +253,7 @@
                 <p class="label">  {{ 'gis.policy.renewable' | translate }}</p>
             </div>
             <div class="col-6">
-                <p class="detail">{{policyDetailsData.product.isRenewable}}</p>
+                <p class="detail">{{policyDetailsData?.product.isRenewable}}</p>
 
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import underwritingSteps from '../../data/underwriting-steps.json';
 import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -7,7 +7,7 @@ import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { PolicyContent, PolicyResponseDTO } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { catchError, forkJoin, map, of } from 'rxjs';
+import {catchError, forkJoin, map, of, tap} from 'rxjs';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { Router } from '@angular/router';
 const log = new Logger("PolicySummaryDetails");
@@ -17,13 +17,13 @@ const log = new Logger("PolicySummaryDetails");
   templateUrl: './policy-summary-details.component.html',
   styleUrls: ['./policy-summary-details.component.css']
 })
-export class PolicySummaryDetailsComponent {
+export class PolicySummaryDetailsComponent implements OnInit, OnDestroy{
   steps = underwritingSteps
   policyDetails:any
   computationDetails: Object;
   premiumResponse:any;
   premium:number = 0;
-  selectedItem: number = 1; 
+  selectedItem: number = 1;
   show: boolean = true;
   policySectionDetails:any;
   errorMessage: string;
@@ -68,9 +68,8 @@ export class PolicySummaryDetailsComponent {
     this.convertedQuotebatchNo = JSON.parse(convertedQuotationBatchNoString);
     log.debug("Converted Quote Batch no:",this.convertedQuotebatchNo)
     this.getUtil();
-    // this.getPolicyDetails();
     this.getPolicy()
-   
+
   }
   ngOnDestroy(): void { }
 
@@ -81,7 +80,7 @@ export class PolicySummaryDetailsComponent {
 
   getUtil(){
    this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
-   this.getPolicy();
+  // this.getPolicy();
 
    this.policyService.policyUtils(this.policyDetails?.batchNumber || this.convertedQuotebatchNo).subscribe({
     next :(res) =>{
@@ -97,28 +96,34 @@ computePremium(){
       this.premiumResponse = res
       this.premium = this.premiumResponse.premiumAmount
       this.globalMessagingService.displaySuccessMessage('Success','Premium computed successfully ')
-      console.log(this.premium)
     }, error : (error) => {
-     
+
       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
 
       }
   })
 }
 getPolicy() {
-  this.batchNo = this.policyDetails?.batchNumber;
   const batchNo = this.batchNo || this.convertedQuotebatchNo
   log.debug("Batch No:", batchNo)
   this.policyService
     .getPolicy(batchNo)
-    .pipe(untilDestroyed(this))
+    .pipe(
+      map(policy => policy.content[0]),
+      tap((policy) =>{
+        const policyType = policy.policyType;
+        if (policyType === 'A'){
+          policy.policyType = 'ACCRUAL'
+        }
+      }),
+      untilDestroyed(this))
     .subscribe({
       next: (data: any) => {
-
-        if (data && data.content && data.content.length > 0) {
+        if (data) {
           this.policyResponse = data;
+          this.premium = data.totalPremium
           log.debug("Get Policy Endpoint Response", this.policyResponse)
-          this.policyDetailsData = this.policyResponse.content[0]
+          this.policyDetailsData = data
           log.debug("Policy Details data get policy", this.policyDetailsData)
           this.policyNumber = this.policyDetailsData.policyNo
           this.endorsementNo = this.policyDetailsData.endorsementNo
@@ -138,7 +143,7 @@ getPolicy() {
           log.debug("Insureds", this.insureds)
           this.insureds = this.insureds.client.firstName + " " + this.insureds.client.lastName
           log.debug("Insureds", this.insureds)
-          this.cdr.detectChanges();
+       //   this.cdr.detectChanges();
 
         } else {
           this.errorOccurred = true;
@@ -173,7 +178,7 @@ getPolicyDetails(){
           this.productDescription = this.product.description
         }
       })
-     
+
       console.log(res)
     }
   })
@@ -212,7 +217,7 @@ generateCoverNote(){
   })
 }
 
-// Method to decode and trigger file download 
+// Method to decode and trigger file download
 downloadBase64File(base64, filename: string): void {
   // Decode the base64 string
   const binaryString = atob(base64);
