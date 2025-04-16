@@ -34,7 +34,7 @@ export interface quotationRisk {
   ncdLevel: number;
   // schedules: Record<string, unknown>;
   coverTypeCode: number;
-  addEdit: string;
+  action: string;
   quotationRevisionNumber: number;
   code: number;
   quotationProductCode: number;
@@ -180,19 +180,21 @@ export interface QuotationDetails {
 
 export interface QuotationProduct {
   code: number;
-  proCode: number;
-  quotCode: number;
+  productCode: number;
+  quotationCode: number;
   productShortDescription: string;
-  quotationNo?: any;
+  quotationNo: string;
   premium: number;
-  revisionNo: number;
-  totalSumInsured: number;
-  commission?: any;
-  binder?: any;
-  agentShortDescription?: any;
-  productName: string;
   wef: string;
   wet: string;
+  revisionNo: number;
+  totalSumInsured: number;
+  commission: number;
+  binder: string;
+  agentShortDescription: string;
+  productName: string;
+  converted: string;
+  policyNumber: string;
   taxInformation: TaxInformation[];
   riskInformation: RiskInformation[];
 }
@@ -259,7 +261,28 @@ export interface SectionDetail {
 }
 
 export interface ScheduleDetails {
-  level1: Level1;
+  code: number;
+  riskCode: number;
+  details: {
+    level1: {
+      bodyType: string | null;
+      yearOfManufacture: number | null;
+      color: string;
+      engineNumber: string | null;
+      cubicCapacity: number | null;
+      Make: string;
+      coverType: string;
+      registrationNumber: string;
+      chasisNumber: string | null;
+      tonnage: number | null;
+      carryCapacity: number | null;
+      logBook: string | null;
+      value: number | null;
+    };
+  };
+  transactionType: string;
+  organizationCode: number;
+  version: number;
 }
 
 export interface Level1 {
