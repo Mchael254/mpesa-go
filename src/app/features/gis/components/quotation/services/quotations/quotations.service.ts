@@ -297,8 +297,8 @@ export class QuotationsService {
    * @param {string} productCode - The product code for which to retrieve clauses.
    * @return {Observable<any>} - An observable of the response containing product clauses.
    */
-  getProductClauses(productCode) {
-    return this.api.GET(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
+  getProductClauses(productCode): Observable<any> {
+    return this.api.GET<any>(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
 
   deleteSchedule(level: any, riskCode: any, code: any) {

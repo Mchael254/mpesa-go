@@ -103,7 +103,7 @@ export class QuotationDetailsComponent {
   branchId: number;
   productDetails: any[] = [];
   paymentFrequencies: any[] = [];
-  clonedProducts: { [s: string]: any } = {};
+  clonedProducts: { [key: string]: any } = {};
   formattedToDate: string;
   selectedEditRow: any = null;
   selectedEditRowIndex: number | null = null;
@@ -136,6 +136,10 @@ export class QuotationDetailsComponent {
     this.clientId = JSON.parse(clientCode)
     log.debug("Client Code- session storage", this.clientId)
     this.productDetails = JSON.parse(sessionStorage.getItem('productFormDetails'));
+    this.productDetails?.forEach(product => {
+      product.coverFrom = new Date(product.coverFrom);
+      product.coverTo = new Date(product.coverTo);
+    });
 
     log.debug("product Form details", this.productDetails)
   }
@@ -432,6 +436,7 @@ export class QuotationDetailsComponent {
   //   });
   // }
   createQuotationForm() {
+   
     this.quotationForm = this.fb.group({
       quotationNumber: [''],
       source: ['', Validators.required],
@@ -472,7 +477,7 @@ export class QuotationDetailsComponent {
       chequeRequisition: [''],
       premium: [0],
       RFQDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
+        new Date(this.quotationFormDetails?.RFQDate) : new Date(this.todaysDate)],
       expiryDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
       quotationType: [null],
@@ -670,11 +675,11 @@ export class QuotationDetailsComponent {
         */
 
         if (this.quickQuotationDetails) {
-          this.router.navigate(['/home/gis/quotation/risk-section-details']);
+          this.router.navigate(['/home/gis/quotation/risk-center']);
           this.spinner.hide()
 
         } else if (this.quoteToEditData) {
-          this.router.navigate(['/home/gis/quotation/risk-section-details']);
+          this.router.navigate(['/home/gis/quotation/risk-center']);
           this.spinner.hide()
         } else {
           sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
@@ -693,7 +698,7 @@ export class QuotationDetailsComponent {
             this.selectedProductClauses(this.quotationCode)
             this.sharedService.setQuotationDetails(this.quotationNum, this.quotationCode);
 
-            this.router.navigate(['/home/gis/quotation/risk-section-details']);
+            this.router.navigate(['/home/gis/quotation/risk-center']);
           }, (error: HttpErrorResponse) => {
             log.info(error);
             this.spinner.hide()
@@ -1294,27 +1299,54 @@ export class QuotationDetailsComponent {
     }
   }
 
-  onRowEditInit(index: number, product: any) {
-    // this.clonedProducts[productDetails.id as string] = { ...productDetails };
+  // onRowEditInit(index: number, product: any) {
+  //   // this.clonedProducts[productDetails.id as string] = { ...productDetails };
+  //   this.selectedEditRowIndex = index;
+  //   this.selectedEditRow = product;
+  //   log.debug("product to be edited:", product)
+  // }
+  onRowEditInit(index: number, row: any) {
+    console.log('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
+    
     this.selectedEditRowIndex = index;
-    this.selectedEditRow = product;
-    log.debug("product to be edited:", product)
+    this.selectedEditRow = row;
+  
+    console.log('onRowEditInit - selectedEditRowIndex after edit:', this.selectedEditRowIndex);
+    console.log('Editing row:', row);
   }
-  onProductChange(product: any) {
-    console.log("Passed product:", product);
+  
+  
+  
+  // onProductChange(product: any) {
+  //   console.log("Passed product:", product);
 
-    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === product.code);
+  //   const selectedProduct = this.ProductDescriptionArray.find(p => p.code === product.code);
+  //   if (selectedProduct) {
+  //     this.selectedProduct = selectedProduct; // Store selected product
+  //   }
+  //   console.log("Selected product:", this.selectedProduct);
+  // }
+  onProductChange(event: any, rowIndex: number, product: any) {
+    // Get the selected product from the event
+    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
+    
     if (selectedProduct) {
-      this.selectedProduct = selectedProduct; // Store selected product
+        // Manually update the product with the selected product
+        product.productCode = selectedProduct;
+        console.log("Updated product:", product);
+
+        // Ensure the row is marked as editable
+        this.selectedEditRowIndex = rowIndex;
     }
-    console.log("Selected product:", this.selectedProduct);
-  }
+}
 
 
   onRowEditSave(product: any) {
     log.debug("Before saving - Product:", product);
-    const coverFromDate = this.orgDateFormat(product.coverFrom)
-    const coverToDate = this.orgDateFormat(product.coverTo)
+    // const coverFromDate = this.orgFormatDate(product.coverFrom,this.dateFormat)
+    // const coverToDate = this.orgFormatDate(product.coverTo,this.dateFormat)
+    const coverFromDate = product.coverFrom
+    const coverToDate = product.coverTo
     log.debug("Cover From Date:", coverFromDate)
     log.debug("Cover to Date:", coverToDate)
     product.coverFrom = coverFromDate; // Assign full object
@@ -1330,6 +1362,10 @@ export class QuotationDetailsComponent {
     );
 
     log.debug("Updated Product Details:", this.productDetails);
+    this.productDetails?.forEach(product => {
+      product.coverFrom = new Date(product.coverFrom);
+      product.coverTo = new Date(product.coverTo);
+    });
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     // Reset selected product to avoid unwanted overwrites
@@ -1343,42 +1379,55 @@ export class QuotationDetailsComponent {
   onRowEditCancel(product: any) {
     // this.products[index] = this.clonedProducts[product.id as string];
     // delete this.clonedProducts[product.id as string];
+    // Reset selected product to avoid unwanted overwrites
+    this.selectedProduct = null;
+    // ✅ Reset the edit state
+    this.selectedEditRowIndex = null;
+    this.selectedEditRow = null;
   }
   submitForm() {
     // if () {
-    const coverFromDate = sessionStorage.getItem('selectedCoverFromDate');
-    const coverToDate = this.quotationProductForm.get('wet')?.value
-    const formattedCoverFromDate = new Date(coverFromDate);
+    // const coverFromDate = sessionStorage.getItem('selectedCoverFromDate');
+    // const coverToDate = this.quotationProductForm.get('wet')?.value
+    // const formattedCoverFromDate = new Date(coverFromDate);
 
     // Extract the day, month, and year
-    const day = formattedCoverFromDate.getDate();
-    const month = formattedCoverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    const year = formattedCoverFromDate.getFullYear();
+    // const day = formattedCoverFromDate.getDate();
+    // const month = formattedCoverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    // const year = formattedCoverFromDate.getFullYear();
 
-    // Format the date in 'dd-Month-yyyy' format
-    const formattedFromDate = `${day}-${month}-${year}`;
-    log.debug("From date formatted:", formattedFromDate)
-    if (coverToDate) {
-      const formattedCoverToDate = new Date(coverToDate);
+    // // Format the date in 'dd-Month-yyyy' format
+    // const formattedFromDate = `${day}-${month}-${year}`;
+    // log.debug("From date formatted:", formattedFromDate)
+    // if (coverToDate) {
+    //   const formattedCoverToDate = new Date(coverToDate);
 
-      // Extract the day, month, and year
-      const day = formattedCoverToDate.getDate();
-      const month = formattedCoverToDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-      const year = formattedCoverToDate.getFullYear();
+    //   // Extract the day, month, and year
+    //   const day = formattedCoverToDate.getDate();
+    //   const month = formattedCoverToDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    //   const year = formattedCoverToDate.getFullYear();
 
-      // Format the date in 'dd-Month-yyyy' format
-      const formattedToDate = `${day}-${month}-${year}`;
-      this.formattedToDate = formattedToDate
-      log.debug("To date formatted:", formattedToDate)
-    }
+    //   // Format the date in 'dd-Month-yyyy' format
+    //   const formattedToDate = `${day}-${month}-${year}`;
+    //   this.formattedToDate = formattedToDate
+    //   log.debug("To date formatted:", formattedToDate)
+    // }
+    const coverFromDate = new Date(sessionStorage.getItem('selectedCoverFromDate'));
+    const formattedCoverFromDate = this.orgFormatDate(coverFromDate, this.dateFormat);
+    log.debug("cover to date formatted:", formattedCoverFromDate)
+
+    const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
+   const formattedCoverTo = this.orgFormatDate(coverToDate, this.dateFormat);
+   log.debug("cover to date formatted:", formattedCoverTo)
+
     const selectedProductCode = this.quotationProductForm.value.productCode
 
     const newProductDetail = {
       productCode: selectedProductCode,
       // coverFrom: new Date(coverFromDate),
       // coverTo: new Date(this.quotationForm.get('wetDate')?.value)
-      coverFrom: formattedFromDate,
-      coverTo: this.formattedToDate
+      coverFrom: coverFromDate,
+      coverTo: coverToDate
     }; log.debug("Captured Product Details:", newProductDetail);
 
     // this.productDetails.push(newProductDetail);
@@ -1386,7 +1435,11 @@ export class QuotationDetailsComponent {
       this.productDetails = [];
     }
     this.productDetails.push(newProductDetail);
-
+    this.productDetails?.forEach(product => {
+      product.coverFrom = new Date(product.coverFrom);
+      product.coverTo = new Date(product.coverTo);
+    });
+    
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     log.debug("Captured Product Details:", this.productDetails);
@@ -1394,19 +1447,31 @@ export class QuotationDetailsComponent {
     //   log.debug("Form is invalid. Please fill in all required fields.");
     // }
   }
-  orgDateFormat(date: any) {
-    const formattedDate = new Date(date);
+  // orgDateFormat(date: any) {
+  //   const formattedDate = new Date(date);
 
-    // Extract the day, month, and year
-    const day = formattedDate.getDate();
-    const month = formattedDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    const year = formattedDate.getFullYear();
+  //   // Extract the day, month, and year
+  //   const day = formattedDate.getDate();
+  //   const month = formattedDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+  //   const year = formattedDate.getFullYear();
 
-    // Format the date in 'dd-Month-yyyy' format
-    const finalFormatDate = `${day}-${month}-${year}`;
-    log.debug("Date formatted:", finalFormatDate)
-    return finalFormatDate;
+  //   // Format the date in 'dd-Month-yyyy' format
+  //   const finalFormatDate = `${day}-${month}-${year}`;
+  //   log.debug("Date formatted:", finalFormatDate)
+  //   return finalFormatDate;
 
+  // }
+  orgFormatDate(date: Date, format: string): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const yearFull = String(date.getFullYear());
+    const yearShort = yearFull.slice(-2);
+  
+    return format
+      .replace('dd', day)
+      .replace('mm', month)
+      .replace('yyyy', yearFull)
+      .replace('yy', yearShort);
   }
   onRowSelect(product: any) {
     this.selectedRow = product;
@@ -1423,14 +1488,96 @@ export class QuotationDetailsComponent {
   deleteProduct() {
     log.debug("selected Product:", this.selectedRow)
     // Find the index of the product
-    const productIndex = this.productDetails.findIndex((product: { code: number }) => product.code === this.selectedRow?.code);
-
+    const productIndex = this.productDetails.findIndex(
+      (product: any) => product.productCode.code === this.selectedRow?.productCode.code
+    );
+    
     // If the product is found, remove it from the array
     if (productIndex !== -1) {
       this.productDetails.splice(productIndex, 1);
+      this.productDetails?.forEach(product => {
+        product.coverFrom = new Date(product.coverFrom);
+        product.coverTo = new Date(product.coverTo);
+      });
       log.debug('Product details array after deleting:', this.productDetails)
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     }
   }
+  updateCoverTo(product:any) {
+    if (product.coverFrom) {
+     
+      const formattedCoverFromDate = this.formatDate(product.coverFrom);
+      this.producSetupService.getCoverToDate(formattedCoverFromDate, product.productCode.code)
+      .subscribe({
+        next: (res) => {
+          this.midnightexpiry = res;
+          log.debug("midnightexpirydate", this.midnightexpiry);
+          log.debug(this.midnightexpiry)
+          const coverFrom = this.midnightexpiry._embedded[0].coverToDate
+          const coverToDate = new Date(coverFrom)
+          product.coverTo = coverToDate
+         
+          // Update the specific product's coverTo field
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error?.message
+          );
+        },
+
+      })
+    }
+  }
+
+
+
+
+  onRowEditInits(product: any) {
+    this.clonedProducts[product.productCode.code] = { ...product };
+    console.log('Editing row:', product);
+  }
+  
+  onRowEditSaves(product: any) {
+    const coverFromDate = product.coverFrom;
+    const coverToDate = product.coverTo;
+  
+    if (coverFromDate && coverToDate && product.productCode?.code) {
+      // Clean assignment (optional, if values are changed before save)
+      product.coverFrom = new Date(coverFromDate);
+      product.coverTo = new Date(coverToDate);
+  
+      this.productDetails = this.productDetails.map(item =>
+        item.productCode.code === product.productCode.code ? { ...item, ...product } : item
+      );
+  
+      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+      delete this.clonedProducts[product.productCode.code];
+  
+      // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Row updated successfully' });
+    } else {
+      // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
+    }
+  }
+  
+  onRowEditCancels(product: any, index: number) {
+    const code = product.productCode.code;
+    this.productDetails[index] = this.clonedProducts[code];
+    delete this.clonedProducts[code];
+  
+    // this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Edit cancelled' });
+  }
+  
+  onProductChanges(event: any, rowIndex: number, product: any) {
+    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
+    if (selectedProduct) {
+      product.productCode = selectedProduct;
+      console.log("Updated product after dropdown change:", product);
+    }
+  }
+  
+  
 }
