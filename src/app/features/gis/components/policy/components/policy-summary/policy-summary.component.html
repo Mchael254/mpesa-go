@@ -1,56 +1,49 @@
 <div class="container ">
-    <p class="titleMain mt-3">{{'gis.policy.underwriting_product_details' | translate}}</p>
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <p class="titleMain mt-3">{{ 'gis.policy.underwriting_product_details' | translate }}</p>
+  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
 
-    <div class="container mt-4">
-        <!-- TABS CARDS -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-home">Policy Details</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-policy-other-details">Policy other details</a>
-                    </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-contact">Risk Details</a>
-                    </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-contact">Reports and documents</a>
-                </ul>
+  <div class="container mt-4">
+    <!-- TABS CARDS -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" id="pills-home-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-home">Policy Details</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-policy-other-details">Policy other details</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+               data-bs-target="#pills-contact">Reports and documents</a>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MAIN PAGE CARDS -->
 
 
-            </div>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+        <div class="card mb-4">
+          <div class="card-body">
+            <app-policy-summary-details
+              [policyDetailsData]="policyDetailsData">
+            </app-policy-summary-details>
+          </div>
         </div>
-
-        <!-- MAIN PAGE CARDS -->
-
-        
-                <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                             <app-policy-summary-details></app-policy-summary-details>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-primary" (click)="previous()">{{'gis.policy.previous' |
-                                translate}}</button>
-                            
-                        </div>
-
-                    </div>
-                <div class="tab-pane fade" id="pills-policy-other-details" role="tabpanel" aria-labelledby="pills-profile-tab">
-
-                    <app-policy-summary-other-details></app-policy-summary-other-details>      
-                    
-                </div>
-            </div>
-           
-        
-</div>
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-primary" (click)="previous()">{{
+              'gis.policy.previous' |
+                translate
+            }}
+          </button>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-policy-other-details" role="tabpanel" aria-labelledby="pills-profile-tab">
+        <app-policy-summary-other-details></app-policy-summary-other-details>
+      </div>
+    </div>
+  </div>
