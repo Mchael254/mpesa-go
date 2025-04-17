@@ -182,15 +182,15 @@
     "FinalReports": "Informes Finales del Libro Mayor",
     "Invoices/DR Notes": "Facturas/Notas de Débito",
     "invoicesCrNotes": "Facturas/Notas de Crédito",
-    
+
       "Invoices/Cr Notes": "Facturas/Notas de crédito",
       "Gl-Inquiries": "Consultas de libro mayor",
       "Gl-Transactions": "Transacciones de libro mayor",
       "Inquires": "Consultas",
       "GL-Parameters": "Parámetros de libro mayor",
       "Gl-Final Reports": "Informes finales de libro mayor",
- 
-  
+
+
     "Requisitions": "Requisiciones",
     "Cheques": "Cheques",
     "Petty cash": "Caja Chica",
@@ -769,7 +769,41 @@
     "registrationDate": "Fecha de registro",
     "parentCompany": "Empresa matriz",
     "contactPerson": "Persona de contacto",
-    "contactPersonTelephone": "Teléfono de la persona de contacto"
+    "contactPersonTelephone": "Teléfono de la persona de contacto",
+    "websiteURL": "URL del sitio web",
+    "socialMediaURL": "Enlace de redes sociales preferido",
+    "contactPersonDetails": "Detalles de la persona de contacto",
+    "fullName": "Nombre completo",
+    "docIdNo": "Número de identificación del documento",
+    "payeeDetails": "Detalles del beneficiario",
+    "swiftCode": "Código SWIFT",
+    "registeredName": "Nombre registrado",
+    "operatingCountry": "País de operación",
+    "cr12Details": "Detalles de CR12",
+    "personType": "Tipo de persona",
+    "companyRegNo": "Número de registro de la empresa",
+    "companyRegDate": "Fecha de registro de la empresa",
+    "address": "Dirección",
+    "referenceNo": "Número de referencia",
+    "refNumberYear": "Año del número de referencia",
+    "ownershipStructure": "Estructura de propiedad",
+    "percentageOwnership": "Porcentaje de propiedad",
+    "branchDetails": "Detalles de la sucursal",
+    "shortDesc": "Descripción corta",
+    "cityOrTown": "Ciudad/Pueblo",
+    "countyOrState": "Condado/Estado",
+    "landlineNo": "Número de teléfono fijo",
+    "mobileNo": "Número de móvil",
+    "addressDetails": "Detalles de la dirección",
+    "financialDetails": "Detalles financieros",
+    "landlineNumber": "Número de teléfono fijo",
+    "documentUpload": "Subir documento",
+    "citizenshipCountry": "País de ciudadanía",
+    "nationalityCountry": "País de nacionalidad",
+    "employmentStatus": "Estado de empleo",
+    "premiumPay": "Pago de prima",
+    "certificateRegNo": "Número de registro del certificado",
+    "certificateRegYear": "Año de registro del certificado"
   },
   "gis": {
     "quotation": {
@@ -2621,7 +2655,7 @@
     "signSelect": "Firmar selección",
     "correction": "Enviar para corrección",
     "reject": "Rechazar",
-    
+
       "base-fms": {
           "parameters": "Parámetros",
           "reconciliation": "Conciliación",
@@ -2640,9 +2674,9 @@
           "premiumSuspense": "Suspensión de prima",
           "directDebits": "Débitos directos"
       },
-  
-  
-  
+
+
+
     "receipting": {
       "receipting":"Emisión de recibos",
       "cbReceipting":"Libro de caja-Emisión de recibos",

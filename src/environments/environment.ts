@@ -39,7 +39,7 @@ export const environment = {
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/report'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
     [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
-    [API_CONFIG.NONE_BASE_URL, 'api'],
+    [API_CONFIG.NONE_BASE_URL, '/assets'],
     [API_CONFIG.FMS_SETUPS_SERVICE_BASE_URL, '/fms/setups/api/v1'],
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/api/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring

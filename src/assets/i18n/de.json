@@ -179,15 +179,15 @@
     "Parameters": "Hauptbuch-Parameter",
     "Transactions": "Hauptbuch-Transaktionen",
     "Inquiries": "Hauptbuch-Anfragen",
-   
+
       "Invoices/Cr Notes": "Rechnungen/Gutschriften",
       "Gl-Inquiries": "Hauptbuch-Anfragen",
       "Gl-Transactions": "Hauptbuch-Transaktionen",
       "Inquires": "Anfragen",
       "GL-Parameters": "Hauptbuch-Parameter",
-  
 
-  
+
+
 
     "Gl-Final Reports": "Hauptbuch-Abschlussberichte",
     "invoicesDrNotes": "Rechnungen/Belastungsanzeigen",
@@ -741,7 +741,41 @@
     "registrationDate": "Registrierungsdatum",
     "parentCompany": "Muttergesellschaft",
     "contactPerson": "Ansprechpartner",
-    "contactPersonTelephone": "Telefon des Ansprechpartners"
+    "contactPersonTelephone": "Telefon des Ansprechpartners",
+    "websiteURL": "Website-URL",
+    "socialMediaURL": "Bevorzugter Social-Media-Link",
+    "contactPersonDetails": "Kontaktdaten der Ansprechperson",
+    "fullName": "Vollständiger Name",
+    "docIdNo": "Dokument-ID-Nummer",
+    "payeeDetails": "Empfängerdetails",
+    "swiftCode": "SWIFT-Code",
+    "registeredName": "Eingetragener Name",
+    "operatingCountry": "Betriebsland",
+    "cr12Details": "CR12-Daten",
+    "personType": "Personentyp",
+    "companyRegNo": "Firmenregisternummer",
+    "companyRegDate": "Firmenregistrierungsdatum",
+    "address": "Adresse",
+    "referenceNo": "Referenznummer",
+    "refNumberYear": "Referenznummer Jahr",
+    "ownershipStructure": "Eigentümerstruktur",
+    "percentageOwnership": "Eigentumsanteil in Prozent",
+    "branchDetails": "Filialdetails",
+    "shortDesc": "Kurzbeschreibung",
+    "cityOrTown": "Stadt/Ort",
+    "countyOrState": "Bezirk/Bundesland",
+    "landlineNo": "Festnetznummer",
+    "mobileNo": "Mobilnummer",
+    "addressDetails": "Adressdetails",
+    "financialDetails": "Finanzielle Details",
+    "landlineNumber": "Festnetznummer",
+    "documentUpload": "Dokumentenupload",
+    "citizenshipCountry": "Staatsangehörigkeitsland",
+    "nationalityCountry": "Nationalitätsland",
+    "employmentStatus": "Beschäftigungsstatus",
+    "premiumPay": "Prämienzahlung",
+    "certificateRegNo": "Zertifikatsregisternummer",
+    "certificateRegYear": "Zertifikatsregisterjahr"
   },
   "gis": {
     "quotation": {
@@ -2085,7 +2119,7 @@
     "signSelect": "Auswahl unterschreiben",
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
- 
+
       "base-fms": {
           "parameters": "Parameter",
           "reconciliation": "Abstimmung",
@@ -2104,15 +2138,15 @@
           "premiumSuspense": "Prämienkonto",
           "directDebits": "Lastschriften"
       },
-  
-  
+
+
     "receipting": {
       "receipting":"Belegerstellung",
       "cbReceipting":"Kassenbuch-Belegerstellung",
-    
+
         "clientSearch": "Kundensuche",
-    
-    
+
+
       "capture_receipt": "Quittung erfassen",
       "receipt_details": "Empfangsdetails",
       "currency": "Währung",
