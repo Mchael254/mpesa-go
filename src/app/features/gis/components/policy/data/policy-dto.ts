@@ -198,6 +198,7 @@ export interface PolicyContent {
   wetDt: string;
   branch?: any
   client?: any
+  currencyRate?: any
 }
 
 
