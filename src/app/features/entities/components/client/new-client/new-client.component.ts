@@ -2,14 +2,14 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReplaySubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {EMPTY, from, Observable, of, ReplaySubject, tap} from 'rxjs';
+import {catchError, concatMap, finalize, map, takeUntil} from 'rxjs/operators';
 import { EntityService } from '../../../services/entity/entity.service';
 import { ClientService } from '../../../services/client/client.service';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { AccountService } from '../../../services/account/account.service';
 import { Logger, UtilService } from "../../../../../shared/services";
-import { CountryDto, StateDto, TownDto } from "../../../../../shared/data/common/countryDto";
+import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
 import { SectorDTO } from "../../../../../shared/data/common/sector-dto";
 import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO } from "../../../../../shared/data/common/bank-dto";
 import { OccupationDTO } from "../../../../../shared/data/common/occupation-dto";
@@ -36,6 +36,8 @@ import {HttpClient} from "@angular/common/http";
 import {RequiredDocumentsService} from "../../../../crm/services/required-documents.service";
 import {RequiredDocumentDTO} from "../../../../crm/data/required-document";
 import {SessionStorageService} from "../../../../../shared/services/session-storage/session-storage.service";
+import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
+import {NgxSpinnerService} from "ngx-spinner";
 
 const log = new Logger("CreateClientComponent")
 
@@ -71,7 +73,6 @@ export class NewClientComponent implements OnInit {
   clientTitlesData: ClientTitleDTO[] = [];
   fundSource: FundSourceDTO[];
   clients: ClientDTO[] = [];
-  clientID: number;
   currenciesData: CurrencyDTO[];
   identityTypeData: IdentityModeDTO[] = [];
   clientTypeData: ClientTypeDTO[];
@@ -82,7 +83,9 @@ export class NewClientComponent implements OnInit {
   selectedCountry: number;
   selectedCorporateBranchCountry: number;
   selectedCityState: number;
+  selectedTown: number;
   selectedCorporateCityState: number;
+  selectedCorporateTown: number;
   selectedBank: number;
   selectedPayeeBank: number;
   utilityBill: string = 'N';
@@ -116,6 +119,7 @@ export class NewClientComponent implements OnInit {
     county: 'Y',
     town: 'Y',
     physical_address: 'Y',
+    postalCode: 'Y',
     road: 'Y',
     house_number: 'Y',
     utilityBill: 'Y',
@@ -128,6 +132,7 @@ export class NewClientComponent implements OnInit {
     effective_from_date: 'Y',
     mpayNo: 'Y',
     Iban: 'Y',
+    swiftCode: 'Y',
     preferredChannel: 'Y',
     wealth_citizenship: 'Y',
     marital_status: 'Y',
@@ -160,6 +165,7 @@ export class NewClientComponent implements OnInit {
 
   isLoading: boolean = false;
   documentPayload: any;
+  documentPayloadMap: { [key: string]: DmsDocument } = {};
   selectedFile: File;
 
   @Input() shouldReroute: boolean = true;
@@ -192,9 +198,9 @@ export class NewClientComponent implements OnInit {
   quoteToEditData: QuotationList;
   clientDetails: ClientDTO;
 
-  selectedCategory = 'I';
+  selectedCategory: any = 'I';
   private formFields: any;
-  postalCodeData: any[];
+  postalCodeData: PostalCodesDTO[] = [];
   pageSize: 5;
   contactPersonDetailsData: any[] = [];
   selectedContactPersonDetails: any;
@@ -225,6 +231,8 @@ export class NewClientComponent implements OnInit {
   ownershipDetailsForm: FormGroup;
   requiredDocumentsData: RequiredDocumentDTO[];
   selectedType: string = 'IN';
+  maritalStatusData: any[];
+  clientSaveResponse: any;
 
   constructor(
     private clientService: ClientService,
@@ -250,6 +258,8 @@ export class NewClientComponent implements OnInit {
     private http: HttpClient,
     private requiredDocumentsService: RequiredDocumentsService,
     private sessionStorageService: SessionStorageService,
+    private maritalStatusService: MaritalStatusService,
+    private spinner: NgxSpinnerService,
   ) {
     this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
   }
@@ -303,6 +313,7 @@ export class NewClientComponent implements OnInit {
 
     this.fetchRequiredDocuments();
     this.fetchFundSource();
+    this.fetchMaritalStatus();
 
     this.contactPersonDetailsData = this.sessionStorageService.getItem('contactPersonDetailsData') ? JSON.parse(this.sessionStorageService.getItem('contactPersonDetailsData')) : [];
     log.info('error here', this.contactPersonDetailsData)
@@ -463,6 +474,7 @@ export class NewClientComponent implements OnInit {
       gender: [''],
       clientTypeId: [''],
       marital_status: [''],
+      newOrExistingClient: [''],
 
       contact_details: this.fb.group(
         {
@@ -998,6 +1010,11 @@ export class NewClientComponent implements OnInit {
 
       const clientFormValues = this.clientRegistrationForm.getRawValue();
       log.debug("Contact details->", clientFormValues)
+
+      if (clientFormValues.newOrExistingClient === 'NEW_CLIENT' && Object.keys(this.documentPayloadMap).length === 0) {
+        this.globalMessagingService.displayErrorMessage('Error', 'Select document(s) to upload.');
+        return;
+      }
       // Preparing address dto
       const address: any = {
         /* Todo:
@@ -1009,7 +1026,7 @@ export class NewClientComponent implements OnInit {
         countryId: clientFormValues.address.country,
         houseNumber: clientFormValues.address.house_number,
         physicalAddress: clientFormValues.address.physical_address,
-        postalCode: clientFormValues.address.postalCode,
+        postalCode: clientFormValues.address.postalCode ? clientFormValues.address.postalCode : null,
         road: clientFormValues.address.road,
         townId: clientFormValues.address.town,
         stateId: clientFormValues.address.county,
@@ -1083,12 +1100,6 @@ export class NewClientComponent implements OnInit {
         premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
         distributeChannel: clientFormValues.wealth_details.distributeChannel,
 
-
-        // wealthCitizenship: clientFormValues.wealth_details.wealth_citizenship?.id,
-        /*amlDetails: this.amlDetailsData,
-        cr12Details: this.cr12DetailsData,
-        ownershipDetails: this.ownershipStructureData,*/
-
       }]
 
       const wealthAml: any = this.selectedCategory === 'I' ? wealth : this.amlDetailsData;
@@ -1120,14 +1131,14 @@ export class NewClientComponent implements OnInit {
         countryId: clientFormValues.citizenship,
         // dateCreated: null,
         clientTypeId: clientFormValues.clientTypeId,
-        dateOfBirth: this.entityDetails?.dateOfBirth,
+        dateOfBirth: this.entityDetails?.dateOfBirth || clientFormValues?.dateOfBirth,
         // organizationId: 2,
         modeOfIdentityId: this.entityDetails?.modeOfIdentity?.id || clientFormValues.identity_type,
         idNumber: clientFormValues.idNumber,
         // system: GIS/LMS
         // nextOfKinDetailsList: null,
         modeOfIdentity: this.entityDetails?.modeOfIdentity?.name,
-        modeOfIdentityNumber: this.entityDetails?.identityNumber,
+        modeOfIdentityNumber: this.entityDetails?.identityNumber || clientFormValues?.idNumber,
         branchId: clientFormValues.contact_details?.clientBranch?.id,
         maritalStatus: clientFormValues.marital_status
 
@@ -1137,7 +1148,7 @@ export class NewClientComponent implements OnInit {
       sessionStorage.setItem('clientPayload', clientPayload);
       log.info('payload', clientPayload)
 
-      this.clientsService.saveClientDetails(saveClient)
+      /*this.clientsService.saveClientDetails(saveClient)
         .pipe(
           takeUntil(this.destroyed$),
         )
@@ -1147,16 +1158,29 @@ export class NewClientComponent implements OnInit {
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
             this.onClickSaveClient.emit(clientData);
             log.debug("client data", clientData);
+            this.clientSaveResponse = clientData;
             this.clientRegistrationForm.reset();
 
-            /*this.sessionStorageService.removeItem('branchDetailsData');
+            this.sessionStorageService.removeItem('branchDetailsData');
             this.sessionStorageService.removeItem('payeeDetailsData');
             this.sessionStorageService.removeItem('amlDetailsData');
-            this.sessionStorageService.removeItem('ownershipDetailsData');*/
+            this.sessionStorageService.removeItem('ownershipDetailsData');
 
             // this.clients = clientData;
             log.debug("Timestamp:", this.timeStamp)
             log.debug("Timestamp:", this.normalQuoteTimeStamp)
+
+            /!*
+            * this.uploadFile().then(() => {
+                if (this.timeStamp) {
+                  log.debug("BACK TO GIS-policy product:")
+                  this.router.navigate(['/home/gis/policy/policy-product']);
+                } else {
+                  log.debug("BACK TO CRM:")
+                  this.router.navigate(['home/entity/client/list']);
+                }
+              })*!/
+
             if(this.shouldReroute) {
               if (this.timeStamp) {
               log.debug("BACK TO GIS-policy product:")
@@ -1169,6 +1193,7 @@ export class NewClientComponent implements OnInit {
               //   log.debug("BACK TO GIS:")
 
               //   this.router.navigate(['/home/gis/policy/policy-product']);
+
 
               // } else if (this.normalQuoteTimeStamp) {
               //   // log.debug("BACK TO GIS - Quotation details screen:")
@@ -1204,8 +1229,51 @@ export class NewClientComponent implements OnInit {
           error: (err) => {
             this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0]);
           }
-        });
+        });*/
 
+
+      if (clientFormValues.newOrExistingClient === 'EXISTING_CLIENT') {
+        log.debug("BACK TO GIS-policy product:");
+        this.router.navigate(['/home/gis/policy/policy-product']);
+      }
+      else {
+        this.clientsService.saveClientDetails(saveClient).pipe(
+          takeUntil(this.destroyed$),
+          concatMap((clientData: any) => {
+            this.globalMessagingService.clearMessages();
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
+            this.onClickSaveClient.emit(clientData);
+            log.debug("client data", clientData);
+            this.clientSaveResponse = clientData;
+            this.clientRegistrationForm.reset();
+
+            this.sessionStorageService.removeItem('branchDetailsData');
+            this.sessionStorageService.removeItem('payeeDetailsData');
+            this.sessionStorageService.removeItem('amlDetailsData');
+            this.sessionStorageService.removeItem('ownershipDetailsData');
+            this.sessionStorageService.removeItem('contactPersonDetailsData');
+
+            return this.uploadFile().pipe(
+              map(() => clientData) // Pass clientData forward after upload
+            );
+          })
+        ).subscribe({
+          next: (clientData: any) => {
+            if (this.shouldReroute) {
+              if (this.timeStamp) {
+                log.debug("BACK TO GIS-policy product:");
+                this.router.navigate(['/home/gis/policy/policy-product']);
+              } else {
+                log.debug("BACK TO CRM:");
+                this.router.navigate(['home/entity/client/list']);
+              }
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0]);
+          }
+        });
+      }
     });
 
   }
@@ -1415,6 +1483,26 @@ export class NewClientComponent implements OnInit {
         this.townData = data;
       })
   }
+
+  onTownChange(formType: 'headOffice' | 'branchDetails') {
+    this.countryService
+      .getPostalCodes(formType === 'headOffice' ? this.selectedTown : this.selectedCorporateTown)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next:(data) => {
+          this.postalCodeData = data;
+          log.info(`postal codes data`, this.postalCodeData);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.message
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
   /**
    * Fetches the list of banks based on the selected country ID and updates the banksData property.
    * It also logs the retrieved bank data for debugging purposes.
@@ -1464,7 +1552,7 @@ export class NewClientComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
+  onFileSelected(event: Event, requiredDoc: any): void {
     const assignee = this.authService.getCurrentUserName();
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -1482,14 +1570,15 @@ export class NewClientComponent implements OnInit {
             userName: assignee,
             docType: this.selectedFile.type,
             docData: base64String,
-            originalFileName: file.name
+            originalFileName: file.name,
+            docDescription: requiredDoc.description,
           }
-          // payload = { ...payload, clientName: this.entityPartyIdDetails?.name, clientCode: this.partyAccountDetails?.accountCode.toString() };
+          payload = { ...payload, clientName: this.entityDetails?.name };
 
-          this.documentPayload = payload;
-          log.info("file upload payload", this.documentPayload);
+          // this.documentPayload = payload;
+          this.documentPayloadMap[requiredDoc.id] = payload;
+          log.info("file upload payload", this.documentPayloadMap[requiredDoc.id]);
 
-          // this.uploadFile();
         };
         // Read the file as data URL
         reader.readAsDataURL(file);
@@ -1497,19 +1586,84 @@ export class NewClientComponent implements OnInit {
     }
   }
 
-  uploadFile() {
-    this.dmsService.saveClientDocs(this.documentPayload).pipe(untilDestroyed(this))
-      .subscribe({
-        next: (res) => {
-          log.info("client file uploaded", res);
-          this.selectedFile = null;
-          this.globalMessagingService.displaySuccessMessage('Success', 'File uploaded successfully!');
-        },
-        error: (err) => {
-          let errorMessage = err?.error?.message ?? err.message;
-          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-        }
-      });
+  /*uploadFile() {
+    const entries = Object.entries(this.documentPayloadMap);
+
+    if (entries.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No files to upload.');
+      return;
+    }
+    // TODO: Make sure required documents are selected before uploading
+    /!*const requiredDocs = entries.filter(([key, payload]) => payload.isRequired);
+    if (requiredDocs.length !== this.requiredDocumentsData.filter(doc => doc.isMandatory === 'Y').length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please upload all required documents.');
+      return;
+    }*!/
+
+    from(entries).pipe(
+      concatMap(([key, payload]) => {
+        const payloadWithClient = {
+          ...payload,
+          clientCode: this.clientSaveResponse?.id.toString()
+        };
+
+        return this.dmsService.saveClientDocs(payloadWithClient).pipe(
+          map(res => ({ res, fileName: payload.actualName }))
+        );
+      }),
+      untilDestroyed(this)
+    ).subscribe({
+      next: (result) => {
+        this.globalMessagingService.displaySuccessMessage('Success', `${result.fileName} uploaded successfully!`);
+      },
+      error: (err) => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', `Upload failed: ${errorMessage}`);
+      },
+      complete: () => {
+        log.info('All documents uploaded successfully');
+      }
+    });
+
+  }*/
+  uploadFile(): Observable<void> {
+    this.spinner.show();
+    const entries = Object.entries(this.documentPayloadMap);
+
+    if (entries.length === 0) {
+      return of(undefined);
+    }
+
+    return from(entries).pipe(
+      concatMap(([key, payload]) => {
+        const payloadWithClient = {
+          ...payload,
+          clientCode: this.clientSaveResponse?.id.toString()
+        };
+
+        return this.dmsService.saveClientDocs(payloadWithClient).pipe(
+          tap(() => {
+            this.globalMessagingService.displaySuccessMessage('Success', `${payload.actualName} uploaded successfully!`);
+          }),
+          catchError((err) => {
+            const errorMessage = err?.error?.message ?? err.message;
+            this.globalMessagingService.displayErrorMessage('Error', `Upload failed: ${errorMessage}`);
+            this.spinner.hide();
+            return EMPTY;
+          })
+        );
+      }),
+      finalize(() => {
+        this.spinner.hide();
+        log.info('All documents uploaded');
+      }),
+      map(() => undefined)
+    );
+  }
+
+
+  removeFile(doc: any) {
+    delete this.documentPayloadMap[doc.id];
   }
 
   private toggleAllUsersModal(display: boolean) {
@@ -1827,6 +1981,19 @@ export class NewClientComponent implements OnInit {
           log.info(`error >>>`, err);
         },
       })
+  }
+
+  fetchMaritalStatus() {
+    this.maritalStatusService.getMaritalStatus()
+      .subscribe({
+        next: (data) => {
+          this.maritalStatusData = data;
+          log.info("marital status>>", data);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.error);
+        }
+      });
   }
 
   openContactPersonDetailsModal() {

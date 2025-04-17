@@ -181,7 +181,7 @@
         "fieldId": "pinNumber",
         "fieldLabel": "PIN Number",
         "fieldVisibilityStatus": "Y",
-        "fieldMandatoryStatus": "N",
+        "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
       },
       "clientBranch": {
