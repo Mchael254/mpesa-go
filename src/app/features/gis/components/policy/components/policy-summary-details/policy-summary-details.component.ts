@@ -19,7 +19,6 @@ const log = new Logger("PolicySummaryDetails");
 export class PolicySummaryDetailsComponent implements OnInit, OnDestroy {
   steps = underwritingSteps
   policyDetails: any
-  computationDetails: Object;
   premiumResponse: any;
   selectedItem: number = 1;
   show: boolean = true;
@@ -84,22 +83,6 @@ export class PolicySummaryDetailsComponent implements OnInit, OnDestroy {
     })
   }
 
-  getPolicyDetails() {
-    this.policyService.getbypolicyNo(this.policyDetails?.policyNumber).subscribe({
-      next: (res) => {
-        this.policySummary = res
-        const productCode = this.policySummary.proCode
-        this.productService.getProductByCode(productCode).subscribe({
-          next: (res) => {
-            this.product = res
-            this.productDescription = this.product.description
-          }
-        })
-
-        console.log(res)
-      }
-    })
-  }
 
   editPolicyDetails() {
     this.router.navigate([`/home/gis/policy/policy-product/edit/${this.policyDetails.batchNumber}`]);
