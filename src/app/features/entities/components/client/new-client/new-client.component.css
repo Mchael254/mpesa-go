@@ -185,3 +185,17 @@
   grid-template-columns: 240px 120px;
   align-items: center;
 }
+
+.file-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.delete-icon {
+  cursor: pointer;
+}

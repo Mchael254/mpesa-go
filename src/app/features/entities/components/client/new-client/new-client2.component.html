@@ -19,12 +19,12 @@
             <div class="row my-4">
               <div class="col-md-4">
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" value="NEW_CLIENT" name="client"
+                  <input class="form-check-input" type="radio" value="NEW_CLIENT" formControlName="newOrExistingClient"
                     id="inlineRadio1" checked (click)="clearClientForm()"/>
                   <label class="form-check-label" for="inlineRadio1">{{ "entities.new_client" | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline" (click)="openAllUsersModal()">
-                  <input class="form-check-input" type="radio" value="EXISTING_CLIENT" name="client"
+                  <input class="form-check-input" type="radio" value="EXISTING_CLIENT" formControlName="newOrExistingClient"
                     id="inlineRadio2"/>
                   <label class="form-check-label" for="inlineRadio2">{{ "entities.existing_client" | translate }}</label>
                 </div>
@@ -227,10 +227,9 @@
                             [ngClass]="{ 'form-control': true, 'is-invalid': f['marital_status']['invalid']
                   && (f['marital_status']['dirty'] || f['marital_status']['touched']) }">
                       <option value="" disabled selected>{{ 'entities.select_marital_status' | translate }}</option>
-                      <option value="SINGLE">{{ 'entities.single' | translate }}</option>
-                      <option value="MARRIED">{{ 'entities.married' | translate }}</option>
-                      <option value="SEPERATED">{{ 'entities.seperated' | translate }}</option>
-                      <option value="WIDOWED">{{ 'entities.widowed' | translate }}</option>
+                      <option
+                        *ngFor="let status of maritalStatusData" [value]="status.value">{{ status.name }}
+                      </option>
                     </select>
                     <div *ngIf="f['marital_status']['invalid'] && (f['marital_status']['dirty']
                   || f['marital_status']['touched'])" class="form-text text-danger">
@@ -512,7 +511,7 @@
                   <ng-container *ngIf="visibleStatus?.channel === 'Y'">
                     <div class="col-sm-4 mb-3">
                       <label for="channel" class="label col-form-label">{{ 'entities.preferred_contact_channel' | translate }}</label>
-                      <select id="channel" class="form-control" formControlName="channel"
+                      <select id="channel" class="form-select" formControlName="channel"
                               [ngClass]="{ 'is-invalid': f['contact_details']['controls']['channel']['invalid']
                   && (f['contact_details']['controls']['channel']['dirty']
                   || f['contact_details']['controls']['channel']['touched']) }">
@@ -557,7 +556,7 @@
                             <span class="icon-circle"><i class="pi pi-pencil" (click)="editContactPersonDetails()"></i>
                             </span>
                             <span class="icon-circle">
-                              <i class="fa-regular fa-trash-can" (click)="deleteContactPersonDetails()"></i>
+                              <i class="fa-regular fa-trash-can" id="deleteContactPerson" (click)="deleteContactPersonDetails()"></i>
                             </span>
                           </div>
                         </div>
@@ -705,13 +704,13 @@
                   <ng-container *ngIf="visibleStatus?.town === 'Y'">
                     <div class="col-sm-4 mb-3">
                       <label for="town" class="label col-form-label">{{ 'entities.cityOrTown' | translate }}</label>
-                      <p-dropdown [options]="townData" optionLabel="name"
+                      <p-dropdown [options]="townData" [(ngModel)]="selectedTown" optionLabel="name"
                         optionValue="id" formControlName="town"
                         [style]="{ width: '100%', height: '38px' }"
                         [panelStyle]="{ width: '400px' }"
                         class="small-dropdown"
                         placeholder="Town" name="townCode" id="town" appendTo="body"
-                        [filter]="true" filterBy="name" [showClear]="true"
+                        [filter]="true" filterBy="name" [showClear]="true" (onChange)="onTownChange('headOffice')"
                         [ngClass]="{ 'is-invalid': f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched']) }">
                         <ng-template let-selected pTemplate="selectedItem">
                           <div>{{ selected?.name | titlecase }}</div>
@@ -1530,25 +1529,6 @@
                       <div class="row mb-3">
                         <div class="col-sm-12 col-md-6">
                           <h5 class="my-3 text-primary text-start">{{'entities.aml_details' | translate}}</h5>
-                          <div class="row">
-                            <label for="category" class="w-auto">{{"entities.type" | translate | titlecase }}</label>
-                            <select
-                              id="category"
-                              class="form-select w-auto"
-                              (change)="onTypeSelect($event)"
-                            >
-                              <option value="" disabled >
-                                {{ "entities.type" | translate | titlecase }}
-                              </option>
-                              <option value="IN" selected>
-                                {{ "entities.individual" | translate | titlecase }}
-                              </option>
-                              <option value="CO">
-                                {{ "entities.corporate" | translate | titlecase }}
-                              </option>
-                            </select>
-                          </div>
-
                         </div>
                         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
                           <div class="float-end">
@@ -1593,7 +1573,7 @@
                         <ng-template pTemplate="header">
                           <tr>
                             <th pSortableColumn="category">{{'entities.type'| translate }} <p-sortIcon field="category"></p-sortIcon></th>
-                            <ng-container *ngIf="selectedType === 'IN'">
+                            <ng-container *ngIf="selectedCategory === 'I'">
                               <th pSortableColumn="modeOfIdentity">{{'entities.id_type'| translate }} <p-sortIcon field="modeOfIdentity"></p-sortIcon></th>
                               <th pSortableColumn="idNumber">{{'serviceDesk.IDNo'| translate }} <p-sortIcon field="idNumber"></p-sortIcon></th>
                               <th pSortableColumn="citizenshipCountryId">{{'entities.citizenshipCountry'| translate }} <p-sortIcon field="citizenshipCountryId"></p-sortIcon></th>
@@ -1601,7 +1581,7 @@
                               <th pSortableColumn="maritalStatus">{{'entities.marital_status'| translate }} <p-sortIcon field="maritalStatus"></p-sortIcon></th>
                               <th pSortableColumn="employmentStatus">{{'entities.employmentStatus'| translate }} <p-sortIcon field="employmentStatus"></p-sortIcon></th>
                             </ng-container>
-                            <ng-container *ngIf="selectedType === 'CO'">
+                            <ng-container *ngIf="selectedCategory === 'C'">
                               <th pSortableColumn="tradingName">{{'entities.trade_name'| translate }} <p-sortIcon field="tradingName"></p-sortIcon></th>
                               <th pSortableColumn="registeredName">{{'entities.registeredName'| translate }} <p-sortIcon field="registeredName"></p-sortIcon></th>
                               <th pSortableColumn="certificateRegistrationNumber">{{'entities.cert_reg_no'| translate }} <p-sortIcon field="certificateRegistrationNumber"></p-sortIcon></th>
@@ -1611,7 +1591,7 @@
                             </ng-container>
 
                             <th pSortableColumn="fundsSource">{{'entities.source_of_funds'| translate }} <p-sortIcon field="fundsSource"></p-sortIcon></th>
-                            <th pSortableColumn="premiumFrequency" *ngIf="selectedType === 'IN'">
+                            <th pSortableColumn="premiumFrequency" *ngIf="selectedCategory === 'I'">
                               {{'entities.premiumPay'| translate }} <p-sortIcon field="premiumFrequency"></p-sortIcon>
                             </th>
                           </tr>
@@ -1619,7 +1599,7 @@
                         <ng-template pTemplate="body" let-amlDetail>
                           <tr [pSelectableRow]="amlDetail">
                             <td>{{amlDetail?.category | titlecase}}</td>
-                            <ng-container *ngIf="selectedType === 'IN'">
+                            <ng-container *ngIf="selectedCategory === 'I'">
                               <td>{{amlDetail?.modeOfIdentity }}</td>
                               <td>{{amlDetail?.idNumber }}</td>
                               <td>{{amlDetail?.citizenshipCountryId }}</td>
@@ -1627,7 +1607,7 @@
                               <td>{{amlDetail?.maritalStatus | titlecase}}</td>
                               <td>{{amlDetail?.employmentStatus | titlecase}}</td>
                             </ng-container>
-                            <ng-container *ngIf="selectedType === 'CO'">
+                            <ng-container *ngIf="selectedCategory === 'C'">
                               <td>{{amlDetail?.tradingName | titlecase}}</td>
                               <td>{{amlDetail?.registeredName | titlecase}}</td>
                               <td>{{amlDetail?.certificateRegistrationNumber}}</td>
@@ -1636,7 +1616,7 @@
                               <td>{{amlDetail?.parentCountryId}}</td>
                             </ng-container>
                             <td>{{amlDetail?.fundsSource }}</td>
-                            <td *ngIf="selectedType === 'IN'">{{amlDetail?.premiumFrequency | titlecase}}</td>
+                            <td *ngIf="selectedCategory === 'I'">{{amlDetail?.premiumFrequency | titlecase}}</td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
@@ -1650,8 +1630,26 @@
                   <div class="card border-0 mt-3">
                     <div class="card-header bg-transparent float-start border-bottom-0">
                       <div class="row mb-3">
-                        <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
-                          <h5 class="my-3 text-primary">{{'entities.cr12Details' | translate}}</h5>
+                        <div class="col-sm-12 col-md-6">
+                          <h5 class="my-3 text-primary text-start">{{'entities.cr12Details' | translate}}</h5>
+                          <div class="row align-items-center">
+                            <label for="category" class="w-auto">{{"entities.type" | translate | titlecase }}</label>
+                            <select
+                              id="category"
+                              class="form-select w-auto"
+                              (change)="onTypeSelect($event)"
+                            >
+                              <option value="" disabled >
+                                {{ "entities.type" | translate | titlecase }}
+                              </option>
+                              <option value="IN" selected>
+                                {{ "entities.individual" | translate | titlecase }}
+                              </option>
+                              <option value="CO">
+                                {{ "entities.corporate" | translate | titlecase }}
+                              </option>
+                            </select>
+                          </div>
                         </div>
                         <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
                           <div class="float-end">
@@ -1823,38 +1821,42 @@
             </h2>
             <div id="flush-collapseDocs" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body mx-2">
-                <div class="col-md-9">
-                  <div class="form-group docsAlign"
-                       *ngFor="let doc of requiredDocumentsData;  let i = index">
-                    <label class="form-label fw-medium text-dark" [for]="'fileInput' + i">
+                <div class="col-sm-12">
+                  <div class="row mb-3 mt-3" *ngFor="let doc of requiredDocumentsData;">
+                    <label class="w-25" [ngClass]="{'required': doc?.isMandatory === 'Y'}">
                       {{ doc?.description | titlecase }}
                     </label>
-                    <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
-                    <button class="btn btn-primary" (click)="fileInput.click()">
-                      <span class="file-text"> {{ 'entities.chooseFile' | translate }}</span>
-                    </button>
-                    <ng-container *ngIf="documentPayload">
-                      {{ documentPayload.actualName }}
-                    </ng-container>
-                    <div class="form-check float-start">
-                      <span *ngIf="!isLoading; else loading"></span>
-                      <ng-template #loading>
-                        <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
-                      </ng-template>
+                    <div class="d-flex align-items-center gap-4 w-auto">
+                      <input type="file" #fileInput style="display: none;" accept=".pdf" (change)="onFileSelected($event, doc)">
+                      <button class="btn btn-primary" (click)="fileInput.click()">
+                        {{ 'entities.chooseFile' | translate }}
+                      </button>
+                      <ng-container *ngIf="documentPayloadMap[doc.id] as uploadedDoc">
+                        <span class="d-flex align-items-center gap-3">
+                          <i class="fa fa-file-pdf text-danger"></i>
+                          <span class="file-link">{{ uploadedDoc.actualName }}</span>
+                          <i class="fa fa-trash text-danger delete-icon" (click)="removeFile(doc)"></i>
+                        </span>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                  <div class="pt-4">
+                    <h5 class="text-dark">
+                      Privacy policy & consent
+                    </h5>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                      <label class="form-check-label" for="checkDefault">
+                        I have read and accept the
+                        <span class="text-primary">Terms of Use</span>
+                        and
+                        <span class="text-primary">Privacy statements</span>.
+                      </label>
                     </div>
                   </div>
                 </div>
-                <div class="row col-md-12">
-                  <h5 class=" text-dark">
-                    Privacy policy & consent
-                  </h5>
-                  <div class="form-check ms-3">
-                    <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-                    <label class="form-check-label" for="checkDefault">
-                      I have read and accept the <span class="text-primary">Terms of Use</span> and <span class="text-primary">Privacy statements</span>.
-                    </label>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>
@@ -2106,13 +2108,16 @@
             <div class="col-md-6 mb-3">
               <label for="town" class="form-label">{{ 'entities.cityOrTown' | translate }}</label>
               <p-dropdown
-                [options]="townData" optionLabel="name"
+                [options]="townData"
+                [(ngModel)]="selectedCorporateTown"
+                optionLabel="name"
                 optionValue="id" formControlName="town"
                 [style]="{ width: '100%', height: '38px' }"
                 [panelStyle]="{ width: '400px' }"
                 class="small-dropdown"
                 placeholder="Town" name="townCode" id="town"
-                [filter]="true" filterBy="name" [showClear]="true">
+                [filter]="true" filterBy="name" [showClear]="true"
+                (onChange)="onTownChange('branchDetails')">
                 <ng-template let-selected pTemplate="selectedItem">
                   <div>{{ selected?.name | titlecase }}</div>
                 </ng-template>
@@ -2145,19 +2150,19 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="postalCode" class="form-label">{{ 'entities.postal_code' | translate }}</label>
-              <p-dropdown [options]="countryData" optionLabel="zipCodeString"
-                          optionValue="zipCode" formControlName="postalCode"
+              <p-dropdown [options]="postalCodeData" optionLabel="name"
+                          optionValue="id" formControlName="postalCode"
                           [style]="{ width: '100%', height: '38px' }"
                           [panelStyle]="{ width: '400px' }"
                           class="small-dropdown"
                           placeholder="Postal Code" name="postalCode" id="postalCode"
                           [filter]="true" filterBy="name" [showClear]="true">
                 <ng-template let-selected pTemplate="selectedItem">
-                  <div>{{ selected?.zipCodeString | titlecase }}</div>
+                  <div>{{ selected?.name | titlecase }}</div>
                 </ng-template>
                 <ng-template let-postalCode pTemplate="item">
                   <div class="flex align-items-center gap-2">
-                    <div>{{ postalCode?.zipCodeString | titlecase }}</div>
+                    <div>{{ postalCode?.name | titlecase }}</div>
                   </div>
                 </ng-template>
               </p-dropdown>
@@ -2386,7 +2391,7 @@
       <div class="modal-body">
         <form [formGroup]="amlDetailsForm">
           <div class="row my-3">
-            <div class="col-md-6 mb-3">
+            <!--<div class="col-md-6 mb-3">
               <label for="type" class="form-label">{{ 'entities.type' | translate }}</label>
               <select
                 id="type"
@@ -2403,8 +2408,8 @@
                   {{ "entities.corporate" | translate | titlecase }}
                 </option>
               </select>
-            </div>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            </div>-->
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="modeOfIdentity" class="form-label">{{ 'entities.id_type' | translate }}</label>
                 <select
@@ -2417,11 +2422,12 @@
                     {{ "entities.id_type" | translate }}
                   </option>
                   <option
-                    *ngFor="let type of identityTypeData" [value]="type.id">{{ type.name }}</option>
+                    *ngFor="let type of identityTypeData" [value]="type.id">{{ type.name }}
+                  </option>
                 </select>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="idNumber" class="form-label">{{ 'entities.id_number' | translate }}</label>
                 <input
@@ -2433,7 +2439,7 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="citizenship" class="form-label">{{ 'entities.citizenshipCountry' | translate }}</label>
                 <p-dropdown
@@ -2461,7 +2467,7 @@
                 </p-dropdown>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="nationality" class="form-label">{{ 'entities.nationalityCountry' | translate }}</label>
                 <p-dropdown
@@ -2489,19 +2495,18 @@
                 </p-dropdown>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="maritalStatus" class="form-label">{{ 'entities.marital_status' | translate }}</label>
                 <select id="maritalStatus" class="form-select" formControlName="maritalStatus">
-                  <option value="" selected>{{ 'entities.select_marital_status' | translate }}</option>
-                  <option value="SINGLE">{{ 'entities.single' | translate }}</option>
-                  <option value="MARRIED">{{ 'entities.married' | translate }}</option>
-                  <option value="SEPERATED">{{ 'entities.seperated' | translate }}</option>
-                  <option value="WIDOWED">{{ 'entities.widowed' | translate }}</option>
+                  <option value="" disabled selected>{{ 'entities.select_marital_status' | translate }}</option>
+                  <option
+                    *ngFor="let status of maritalStatusData" [value]="status.value">{{ status.name }}
+                  </option>
                 </select>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6 mb-3">
                 <label for="employmentStatus" class="form-label">{{ 'entities.employmentStatus' | translate }}</label>
                 <select id="employmentStatus" class="form-select" formControlName="employmentStatus">
@@ -2511,7 +2516,7 @@
                 </select>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="tradeName" class="form-label">{{ 'entities.trade_name' | translate }}</label>
                 <input
@@ -2523,7 +2528,7 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="registeredName" class="form-label">{{ 'entities.registeredName' | translate }}</label>
                 <input
@@ -2535,7 +2540,7 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="certificateRegNo" class="form-label">{{ 'entities.certificateRegNo' | translate }}</label>
                 <input
@@ -2547,7 +2552,7 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="certificateRegYear" class="form-label">{{ 'entities.certificateRegYear' | translate }}</label>
                 <input
@@ -2559,7 +2564,7 @@
                 />
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="operatingCountry" class="form-label">{{ 'entities.operatingCountry' | translate }}</label>
                 <p-dropdown
@@ -2587,7 +2592,7 @@
                 </p-dropdown>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="parentCountry" class="form-label">{{ 'entities.parent_country' | translate }}</label>
                 <p-dropdown
@@ -2615,7 +2620,7 @@
                 </p-dropdown>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I' || amlDetailsForm.get('category').value === 'C'">
+            <ng-container *ngIf="selectedCategory === 'I' || selectedCategory === 'C'">
               <div class="col-md-6 mb-3">
                 <label for="fundsSource" class="form-label">{{ 'entities.source_of_funds' | translate }}</label>
                 <select id="fundsSource" class="form-select" formControlName="fundsSource">
@@ -2625,7 +2630,7 @@
                 </select>
               </div>
             </ng-container>
-            <ng-container *ngIf="amlDetailsForm.get('category').value === 'I'">
+            <ng-container *ngIf="selectedCategory === 'I'">
               <div class="col-md-6">
                 <label for="premiumPay" class="form-label">{{ 'entities.premiumPay' | translate }}</label>
                 <select id="premiumPay" class="form-select" formControlName="premiumPay">
