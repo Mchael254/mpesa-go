@@ -7,6 +7,7 @@ import {PolicyContent} from '../../data/policy-dto';
 import {ClientDTO} from 'src/app/features/entities/data/ClientDTO';
 import {ProductService} from 'src/app/features/gis/services/product/product.service';
 import {Router} from '@angular/router';
+import {mergeMap} from "rxjs";
 
 const log = new Logger("PolicySummaryDetails");
 
@@ -26,6 +27,7 @@ export class PolicySummaryDetailsComponent implements OnInit, OnDestroy {
   errorOccurred: boolean;
   batchNo: any;
   @Input() policyDetailsData: PolicyContent;
+  @Input() batchNumber: number
   product: any
   clientDetails: ClientDTO;
   productDescription: any;
@@ -64,28 +66,20 @@ export class PolicySummaryDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  getUtil() {
-    this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
-    // this.getPolicy();
-
-    this.policyService.policyUtils(this.policyDetails?.batchNumber || this.convertedQuotebatchNo).subscribe({
-      next: (res) => {
-        this.computationDetails = res
-        console.log('computation details', this.computationDetails)
-        log.debug("Policy Details", this.policyDetails);
-      }
-    })
-  }
-
   computePremium() {
-    this.policyService.computePremium(this.computationDetails).subscribe({
-      next: (res) => {
-        this.premiumResponse = res
+    this.policyService.policyUtils(this.batchNumber).pipe(
+      mergeMap((payload) => {
+        return this.policyService.computePremium(payload)
+      })
+    ).subscribe({
+      next: (response) => {
+        this.premiumResponse = response
+        this.policyDetailsData.totalPremium = response.premiumAmount
+        log.debug("Computation result >>>", response)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
-      }, error: (error) => {
-
+      },
+      error: (response) => {
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
       }
     })
   }

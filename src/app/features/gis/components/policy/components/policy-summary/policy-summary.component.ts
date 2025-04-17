@@ -54,7 +54,6 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getUtil();
     this.getPolicy();
   }
 
@@ -65,31 +64,6 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
     this.selectedItem = item;
   }
 
-
-  getUtil() {
-    this.policyService.policyUtils(this.convertedQuotebatchNo).pipe(
-      untilDestroyed(this)
-    ).subscribe({
-      next: (res) => {
-        this.computationDetails = res
-        console.log('computation details', this.computationDetails)
-        log.debug("Policy Details", this.policyDetails);
-      }
-    })
-  }
-
-  computePremium() {
-    this.policyService.computePremium(this.computationDetails).subscribe({
-      next: (res) => {
-        this.premiumResponse = res
-        this.premium = this.premiumResponse.premiumAmount
-        this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
-        console.log(this.premium)
-      }, error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-      }
-    })
-  }
 
   getPolicy() {
     const batchNo = this.batchNo || this.convertedQuotebatchNo
