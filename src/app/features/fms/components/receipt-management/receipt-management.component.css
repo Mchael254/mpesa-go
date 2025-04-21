@@ -1,11 +1,13 @@
+
 .body-container{
-    width: 1216px;
+    /* width: 1216px;
     height: 532px;
-    margin: 32px 32px 422px;
+    margin: 32px 32px 422px; */
     padding: 40px 0 96px;
     border-radius: 5px;
     background-color: #fff;
 }
+
 .main{
   margin-left: 10px;
 }
@@ -30,7 +32,7 @@
 /* Styles for the Receipt management buttons */
 .receipt-buttons .btn-link {
   text-decoration: none;
-  color: #00529b; /* Default color for unselected tabs */
+  color: #00529b ; /* Default color for unselected tabs */
   margin-left: 0; /* Remove default button margin */
   padding-left: 0; /* Remove default button padding */
   font-family: Roboto; /* Ensure font matches design */
@@ -40,9 +42,11 @@
 
 .receipt-buttons .btn-link.active {
   text-decoration: underline;
-  color: #000; /* Color for the selected tab */
+  color: #00529b; /* Color for the selected tab */
 }
-
+.inactive{
+  color: #000 !important;
+}
 /* General styles for other .btn-link buttons (if needed) */
 .btn-link {
   color: #00529b; /* Default color for other buttons */
@@ -54,6 +58,16 @@
   cursor: pointer; /* Ensure pointer cursor for buttons */
 }
 
+.cancelbtn{
+  color:#00529b  !important;
+   
+}
+.printbtn{
+  color:#00529b  !important;
+}
+.sharebtn{
+  color:#00529b  !important;
+}
 .btn-link:hover {
   text-decoration: underline; /* Add underline on hover if needed */
   color: #00529b; /* Ensure color remains consistent on hover */
