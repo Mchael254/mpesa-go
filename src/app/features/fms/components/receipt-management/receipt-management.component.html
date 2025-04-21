@@ -4,17 +4,17 @@
     <div class="d-flex underline receipt-buttons">
       <button
         type="button"
-        class="btn btn-link"
+        class="btn btn-link inactive"
         (click)="isPrintingClicked()"
-        [ngClass]="{ active: isPrinting }"
+        [ngClass]="{ active: isPrinting, inactive: !isPrinting }"
       >
         Printing
       </button>
       <button
         type="button"
-        class="btn btn-link"
+        class="btn btn-link inactive"
         (click)="cancleClicked()"
-        [ngClass]="{ active: isCancellation }"
+        [ngClass]="{ active: isCancellation, inactive: !isCancellation }"
       >
         Cancellation
       </button>
@@ -43,6 +43,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receiptNumber')"
                   (input)="applyFilter($event, 'receiptNumber')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -53,6 +54,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receiptDate')"
                   (input)="applyFilter($event, 'receiptDate')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -63,6 +65,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receivedFrom')"
                   (input)="applyFilter($event, 'receivedFrom')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -73,6 +76,7 @@
                 <input
                   type="number"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'amount')"
                   (input)="applyFilter($event, 'amount')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -83,6 +87,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'paymentMethod')"
                   (input)="applyFilter($event, 'paymentMethod')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -93,6 +98,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   disabled
                 />
               </th>
@@ -109,7 +115,7 @@
               <td>
                 <button
                   type="button"
-                  class="btn btn-link"
+                  class="btn btn-link cancelbtn"
                   (click)="openCancelModal()"
                 >
                   Cancel
@@ -188,6 +194,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receiptNumber')"
                   (input)="applyFilter($event, 'receiptNumber')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -198,6 +205,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receiptDate')"
                   (input)="applyFilter($event, 'receiptDate')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -208,6 +216,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'receivedFrom')"
                   (input)="applyFilter($event, 'receivedFrom')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -218,6 +227,7 @@
                 <input
                   type="number"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'amount')"
                   (input)="applyFilter($event, 'amount')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -228,6 +238,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   (keyup.enter)="applyFilter($event, 'paymentMethod')"
                   (input)="applyFilter($event, 'paymentMethod')"
                   placeholder="{{ 'fms.receipting.filter' | translate }}"
@@ -238,6 +249,7 @@
                 <input
                   type="text"
                   class="form-control form-control-sm"
+                  style="width: 90px"
                   disabled
                 />
               </th>
@@ -253,10 +265,12 @@
 
               <td>
                 <span class="d-flex btns">
-                  <button type="button" class="btn btn-link">Print</button>
+                  <button type="button" class="btn btn-link printbtn">
+                    Print
+                  </button>
                   <button
                     type="button"
-                    class="btn btn-link"
+                    class="btn btn-link sharebtn"
                     (click)="openReceiptShareModal()"
                   >
                     Share
