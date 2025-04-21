@@ -970,7 +970,16 @@ export class ClientAllocationComponent {
     //round off the allocated amounts and unallocated amounts to 2 decimal places
     const issued = Number(this.amountIssued.toFixed(2));
     const allocated = Number(this.totalAllocatedAmount.toFixed(2));
-    
+    // if(this.totalAllocatedAmount > this.amountIssued){
+    //   this.globalMessagingService.displayErrorMessage(
+    //     'Error',
+    //     'Total Allocated Amount Exceeds Amount Issued'
+    //   );
+    // console.log('total allocated amount is:', this.totalAllocatedAmount);
+    // console.log('total amount issues is :' ,this.amountIssued);
+
+    //   return false;
+    // }
     
     if (allocated > issued) {
       this.globalMessagingService.displayErrorMessage(
@@ -1219,7 +1228,7 @@ export class ClientAllocationComponent {
           this.getAllocation = this.getAllocation.filter(
             (allocation) => allocation.receiptParticularDetails.length > 0
           );
-  // 🔥 Remove from flattened list to update UI table
+  //  Remove from flattened list to update UI table
   this.flattenedAllocationDetails = this.flattenedAllocationDetails.filter(
     (detail) => detail.code !== receiptDetailCode
   );
@@ -1799,6 +1808,7 @@ export class ClientAllocationComponent {
         this.router.navigate(['/home/fms/receipt-capture']);
             this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
+        this.sessionStorage.clear();
 
         //prepare receipt upload payload
       },

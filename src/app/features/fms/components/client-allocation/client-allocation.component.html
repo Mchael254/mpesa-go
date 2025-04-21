@@ -43,7 +43,7 @@
               type="text"
               id="receiptAmount"
               class="form-control"
-              [ngModel]="amountIssued | number"
+              [ngModel]="amountIssued | number : '1.2-2'"
               readonly
             />
             <!-- [value]="amountIssued" -->
@@ -56,7 +56,7 @@
               type="text"
               id="allocatedAmount"
               class="form-control"
-              [ngModel]="totalAllocatedAmount | number"
+              [ngModel]="totalAllocatedAmount | number : '1.2-2'"
               readonly
             />
             <!-- [value]="totalAllocatedAmount" -->
@@ -69,7 +69,7 @@
               type="text"
               id="unallocatedAmount"
               class="form-control"
-              [ngModel]="getRemainingAmount() | number"
+              [ngModel]="getRemainingAmount() | number : '1.2-2'"
               readonly
             />
             <!-- [value]="getRemainingAmount()" -->
