@@ -193,6 +193,7 @@ export class ReceiptPreviewComponent implements OnInit {
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
+        this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
 
@@ -208,6 +209,7 @@ export class ReceiptPreviewComponent implements OnInit {
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
+    this.sessionStorage.clear();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
 
