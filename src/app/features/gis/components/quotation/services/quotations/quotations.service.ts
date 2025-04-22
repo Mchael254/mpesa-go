@@ -265,8 +265,8 @@ export class QuotationsService {
   // computePremium(quotationCode){
   //   return this.api.POST(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
   // }
-  computePremium(computationDetails) {
-    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
+  computePremium(computationDetails): Observable<any> {
+    return this.http.post<any>(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
   }
 
   /**

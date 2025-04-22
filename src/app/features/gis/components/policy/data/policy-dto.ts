@@ -196,6 +196,9 @@ export interface PolicyContent {
   underWritingOnly: string;
   wefDt: string;
   wetDt: string;
+  branch?: any
+  client?: any
+  currencyRate?: any
 }
 
 

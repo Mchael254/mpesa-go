@@ -53,8 +53,8 @@ export class PolicyService {
     console.log("Data", JSON.stringify(data))
     return this.api.POST(`v1/policies?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
-  getPolicy(batchNo: number) {
-    return this.api.GET(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  getPolicy(batchNo: number): Observable<any> {
+    return this.api.GET<any>(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
   getAllPolicy() {
@@ -131,8 +131,8 @@ export class PolicyService {
       params: params
     })
   }
-  computePremium(computationDetails) {
-    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
+  computePremium(computationDetails): Observable<any> {
+    return this.http.post<any>(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
   }
   getbypolicyNo(policyNo) {
     return this.api.GET(`v1/policies/filter-policies?policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)

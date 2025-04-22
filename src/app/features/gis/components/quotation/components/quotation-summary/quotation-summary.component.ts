@@ -123,6 +123,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   fetchedQuoteNum: string;
   viewQuoteFlag: boolean;
   revisedQuotationNumber: string;
+  premiumAmount: number
 
 
   constructor(
@@ -277,6 +278,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       )
       .subscribe((res: any) => {
         this.quotationView = res;
+        this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
@@ -579,6 +581,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
         this.premium = res;
+        log.debug("res.riskLevelPremiums >>>", res.riskLevelPremiums)
+        const totalTax =  (res.riskLevelPremiums || [])
+          .map(risk =>
+            (risk.taxComputation || []).reduce(
+              (taxAcc, tax) => taxAcc + (tax.premium || 0),
+              0
+            )
+          )
+          .reduce((sum, taxSum) => sum + taxSum, 0);
+        this.premiumAmount = res.premiumAmount + totalTax
         log.debug("premium", res);
         this.updateQuotationPremmium();
       },
@@ -1390,10 +1402,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     // Transforming data into the expected payload format
     const transformedPayload = {
-      premiumAmount: this.premium.premiumAmount,
+      premiumAmount: this.premiumAmount,
       productCode: selectedProduct.productCode,
       quotProductCode: selectedProduct.code.toString(),
-      productPremium: this.premium.premiumAmount,
+      productPremium: this.premiumAmount,
       riskLevelPremiums: this.premium.riskLevelPremiums.map(risk => ({
         code: risk.code,
         premium: risk.premium,

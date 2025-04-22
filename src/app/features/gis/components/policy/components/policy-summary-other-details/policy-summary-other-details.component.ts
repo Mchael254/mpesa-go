@@ -1,20 +1,19 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import underwritingSteps from '../../data/underwriting-steps.json';
 import { PolicyService } from '../../services/policy.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { Sidebar } from 'primeng/sidebar';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { Insured, PolicyContent, PolicyResponseDTO, RelatedRisk, RiskInformation, RiskService } from '../../data/policy-dto';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { catchError, forkJoin, map, of } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { PersonalDetailsUpdateDTO } from 'src/app/features/entities/data/accountDTO';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
-import { Clause, subclassClauses, subclassCoverTypeSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service'
+import { subclassClauses, subclassCoverTypeSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
@@ -253,14 +252,14 @@ export class PolicySummaryOtherDetailsComponent {
   ngOnInit(): void {
     const convertedQuotationBatchNoString = sessionStorage.getItem('convertedQuoteBatchNo');
     this.convertedQuotebatchNo = JSON.parse(convertedQuotationBatchNoString);
-    
+
     log.debug("Converted Quote Batch no:",this.convertedQuotebatchNo)
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.userDetails = JSON.parse(passedUserDetailsString);
     log.debug("Passed User Details:", this.userDetails);
     this.user = this.authService.getCurrentUserName()
     log.debug("logged in user :", this.user);
-    this.getUtil();
+   // this.getUtil();
     this.loadAllClients();
     this.createScheduleDetailsForm();
     this.getAllSection();
@@ -285,7 +284,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.selectedItem = item;
   }
 
-
+/*
   getUtil() {
     this.policyDetails = JSON.parse(sessionStorage.getItem('passedPolicyDetails'))
     this.getPolicy();
@@ -297,58 +296,10 @@ export class PolicySummaryOtherDetailsComponent {
         log.debug("Policy Details", this.policyDetails);
       }
     })
-  }
+  }*/
 
-  // getPolicy() {
-  //   this.batchNo = this.policyDetails.batchNumber;
-  //   log.debug("Batch No:", this.batchNo)
-  //   if (this.batchNo) {
-  //     log.debug("CALLED GET INSURED")
-  //     this.getInsureds()
-  //   }
-  //   this.policyService
-  //     .getPolicy(this.batchNo)
-  //     .pipe(untilDestroyed(this))
-  //     .subscribe({
-  //       next: (data: any) => {
 
-  //         if (data && data.content && data.content.length > 0) {
-  //           this.policyResponse = data;
-  //           log.debug("Get Policy Endpoint Response", this.policyResponse)
-  //           this.policyDetailsData = this.policyResponse.content[0]
-  //           log.debug("Policy Details data get policy", this.policyDetailsData)
-  //           // this.insureds = this.policyDetailsData.insureds
-  //           // log.debug("Insureds", this.insureds)
-  //           // if (this.insureds) {
-  //           //   this.getClient()
-  //           //   this.getInsureds()
-  //           // }
-  //           this.riskDetails = this.policyDetailsData.riskInformation
-  //           this.sectionsDetails = this.riskDetails[0].sections
-  //           // log.debug("RISK INFORMATION", this.sectionsDetails)
-
-  //           this.cdr.detectChanges();
-
-  //         } else {
-  //           this.errorOccurred = true;
-  //           this.errorMessage = 'Something went wrong. Please try Again';
-  //           this.globalMessagingService.displayErrorMessage(
-  //             'Error',
-  //             'Something went wrong. Please try Again'
-  //           );
-  //         }
-  //       },
-  //       error: (err) => {
-
-  //         this.globalMessagingService.displayErrorMessage(
-  //           'Error',
-  //           this.errorMessage
-  //         );
-  //         log.info(`error >>>`, err);
-  //       },
-  //     });
-  // }
-  async getPolicy() {
+ /* async getPolicy() {
     this.batchNo = this.policyDetails?.batchNumber;
     console.debug("Batch No:", this.batchNo); // Changed from log.debug to console.debug
     if (this.batchNo) {
@@ -396,9 +347,9 @@ export class PolicySummaryOtherDetailsComponent {
       this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
       console.info(`error >>>`, err); // Changed from log.info to console.info
     }
-  }
+  }*/
 
-
+/*
   getClient() {
     const clientRequests = [];
 
@@ -450,7 +401,7 @@ export class PolicySummaryOtherDetailsComponent {
           );
         }
       });
-  }
+  }*/
   onInsuredEditSave(insured) {
     log.debug("SELECTED CLIENT", insured)
     this.selectedInsured = insured
@@ -695,7 +646,7 @@ export class PolicySummaryOtherDetailsComponent {
     this.router.navigate([`/home/gis/policy/risk-details/`]);
 
   }
-  // EDIT SCHEDULE DETAILS FUNCTIONALITY 
+  // EDIT SCHEDULE DETAILS FUNCTIONALITY
 
   // This method Clears the Schedule Detail form by resetting the form model
   clearForm() {
@@ -1260,7 +1211,7 @@ export class PolicySummaryOtherDetailsComponent {
             log.debug("Risk Section Created data:", data);
             this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
 
-            await this.getPolicy(); // Wait for getPolicy() to finish
+           // await this.getPolicy(); // Wait for getPolicy() to finish
 
             if (this.riskDetails) {
               const risk = this.riskDetails.find(risk => risk.riskIpuCode === this.SelectedRiskCode);
@@ -2028,7 +1979,7 @@ export class PolicySummaryOtherDetailsComponent {
 
     })
   }
-  // Method to decode and trigger file download 
+  // Method to decode and trigger file download
   downloadBase64File(base64, filename: string): void {
     // Decode the base64 string
     const binaryString = atob(base64);
@@ -2378,7 +2329,7 @@ export class PolicySummaryOtherDetailsComponent {
           log.debug('Policy  Taxes:', this.policyTaxes);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully populated policy taxes')
 
-          // Remove the deleted tax from the policy tax Details array 
+          // Remove the deleted tax from the policy tax Details array
           const index = this.filteredPolicyTaxes.findIndex(tax => tax.transactionTypeCode === this.selectedPolicyTax.transactionTypeCode);
           if (index !== -1) {
             this.filteredPolicyTaxes.splice(index, 1);

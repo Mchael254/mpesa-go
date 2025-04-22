@@ -423,9 +423,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Quotation Details:', this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.quotationNo ?? null;
     if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.riskInformation?.map(
-        (risk) => risk.propertyId
-      );
+      this.existingPropertyIds = this.passedQuotation.quotationProducts?.flatMap(product =>
+        product.riskInformation?.map(risk => risk.propertyId) || []
+      ) || [];
       log.debug('existing property id', this.existingPropertyIds);
     }
 
@@ -1235,6 +1235,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    */
   validateCarRegNo() {
     const control = this.quickQuoteForm.get('carRegNo');
+    control.removeValidators([this.uniqueValidator]);
     const value = control.value
     log.debug("Keyed In value>>>", value)
     if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
@@ -1255,8 +1256,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         log.debug('Doing validation of ', value, this.existingPropertyIds);
         const isDuplicate = this.existingPropertyIds.some(
           (existingValue) =>
-            existingValue.replace(/\s+/g, '').toUpperCase() === value
+            existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
         );
+        log.debug("Existing risk>>>", isDuplicate)
         if (isDuplicate || !canProceed) {
           control.addValidators([this.uniqueValidator]);
         } else {

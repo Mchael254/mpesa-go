@@ -1,984 +1,980 @@
 <div class="row">
-    <div class="col-sm-4">
-        <p class="title">{{'gis.policy.policy_details' | translate}}</p>
-    </div>
-    <div class="col-sm-8 float-end">
-        <div class="d-flex justify-content-end">
-            <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()"
-                title="Edit">
-                <i class="fa-solid fa-pencil"></i>
-            </button>
-           
+  <div class="col-sm-4">
+    <p class="title">{{ 'gis.policy.policy_details' | translate }}</p>
+  </div>
+  <div class="col-sm-8 float-end">
+    <div class="d-flex justify-content-end">
+      <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()"
+              title="Edit">
+        <i class="fa-solid fa-pencil"></i>
+      </button>
 
-            <button class="btn btn-primary">{{ 'gis.policy.reassign' | translate }}</button>
-            <button class="btn btn-primary" (click)="generateCoverNote()">{{ 'gis.policy.generate_cover_note' |
-                translate }}</button>
-            <button class="btn btn-primary" (click)="computePremium()">{{ 'gis.policy.compute_premium' | translate
-                }}</button>
 
-        </div>
-        <!-- <button type="button" id="icon" class="btn btn-primary me-4 ms-4" (click)="editPolicyDetails()" title="Edit">
-            <i class="fa-solid fa-pencil"></i>
-            </button>
-            <button class="btn btn-primary me-4">Reassign</button>
-            <button class="btn btn-primary me-4" (click)="generateCoverNote()">Generate cover note</button>
-            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button> -->
+      <button class="btn btn-primary">{{ 'gis.policy.reassign' | translate }}</button>
+      <button class="btn btn-primary" (click)="generateCoverNote()">{{
+          'gis.policy.generate_cover_note' |
+            translate
+        }}
+      </button>
+      <button class="btn btn-primary" (click)="computePremium()">{{
+          'gis.policy.compute_premium' | translate
+        }}
+      </button>
+
     </div>
+  </div>
 </div>
-
 
 
 <br class="mb-4">
 <br>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">{{ 'gis.policy.policy_no' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyNumber}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label">{{ 'gis.policy.policy_no' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.policyNo }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">{{ 'gis.policy.endorsement_no' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{endorsementNo}}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label">{{ 'gis.policy.endorsement_no' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.endorsementNo }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">{{ 'gis.policy.product' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label">{{ 'gis.policy.product' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{productDescription}}</p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.product?.description }}</p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.policy_type' | translate }}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.policy_type' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyType}}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.policyType }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.branch' | translate }}</p>
-
-            </div>
-            <div class="col-6">
-                <!-- {{policySummary.endorsementNo}} -->
-            </div>
-        </div>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.branch' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"> {{ policyDetailsData?.branch?.name }}</p>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.quotation.sum_insured' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.quotation.sum_insured' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{totalSumInsured}}</p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.totalSumInsured | number }}</p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.premium' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{premium}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.premium' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.totalPremium | number }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.expected_premium' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{basicPremium}}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.expected_premium' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.basicPremium | number }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.policy_status' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.policy_status' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyStatus}}</p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.policyStatus }}</p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.cover_from' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{wef}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.cover_from' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.wefDt }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.cover_to' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{wet}}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.cover_to' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.wetDt }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.reinsurance_authorized' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.reinsurance_authorized' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{authorizedStatus}}</p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ authorizedStatus }}</p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.uw_year' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyDetailsData.riskInformation[0].underwritingYear}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.uw_year' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.riskInformation[0].underwritingYear }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.uw_only' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{underWritingOnly}}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.uw_only' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.underWritingOnly }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.currency' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.currency' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail">{{currency}}</p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.currency }}</p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.currency_fixed_rate' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.currency_fixed_rate' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.currency_rate' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.currency_rate' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.currencyRate }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.transaction_type' | translate }}</p>
 
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.policyStatus }}</p>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.transaction_type' | translate }}</p>
-
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyStatus}}</p>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.renewal_date' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{renewalDate}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.renewal_date' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.renewalDate }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.renewable' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{policyDetailsData.product.isRenewable}}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.renewable' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.product.isRenewable }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.scheme_policy' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.scheme_policy' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.receive_prem_on' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.receive_prem_on' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">  {{ 'gis.policy.premium_deposit_balance' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.premium_deposit_balance' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4"></div>
+  </div>
+  <div class="col-4"></div>
 </div>
 <p class="title">{{ 'gis.policy.client_information' | translate }}</p>
 
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.quotation.client_name' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail">{{insureds}}</p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.quotation.client_name' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail">{{ policyDetailsData?.client?.clientFullName }}</p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.other_interested_parties' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"> </p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.other_interested_parties' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.policy_joint_client' | translate }}</p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.policy_joint_client' | translate }}</p>
 
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
-            </div>
-        </div>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label"> {{ 'gis.policy.joint_client_name' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"></p>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label"> {{ 'gis.policy.joint_client_name' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
-        <div class="row">
-            <div class="col-6">
-                <p class="label">{{ 'gis.policy.joint_account' | translate }}</p>
-            </div>
-            <div class="col-6">
-                <p class="detail"> </p>
+  </div>
+  <div class="col-4">
+    <div class="row">
+      <div class="col-6">
+        <p class="label">{{ 'gis.policy.joint_account' | translate }}</p>
+      </div>
+      <div class="col-6">
+        <p class="detail"></p>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="col-4">
+  </div>
+  <div class="col-4">
 
-    </div>
+  </div>
 </div>
-
 
 
 <!-- more details -->
 <div class="collapse" id="collapseMoreSummaryDetails">
-    <p class="title"> {{ 'gis.policy.agent_information' | translate }}</p>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.agent' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+  <p class="title"> {{ 'gis.policy.agent_information' | translate }}</p>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.agent' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.sub_agent_name' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"> </p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.sub_agent_allowed' | translate }}</p>
-
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.marketer' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.sub_agent_name' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.introducer' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"> </p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.ri_agent' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"> </p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.commission_allowed' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.sub_agent_allowed' | translate }}</p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.agent_discounted' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"> </p>
-
-                </div>
-            </div>
+        <div class="col-6">
+          <p class="detail"></p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.agent_discount' | translate }} </p>
-
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.expected_comm_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.marketer' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.marketer_commission' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"> </p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.commission' | translate }}</p>
-
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.other_intermediary_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.introducer' | translate }}</p>
         </div>
-        <div class="col-4">
+        <div class="col-6">
+          <p class="detail"></p>
 
         </div>
-        <div class="col-4">
-
-        </div>
+      </div>
     </div>
-
-    <p class="title"> {{ 'gis.policy.financial_information' | translate }}</p>
-
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.policy_holders_fund' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.ri_agent' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.extra' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.stamp_duty' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.future_annual_premium' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.commission_allowed' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.training_levy' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.other_client_charges' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.debited_installment_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.agent_discounted' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.current_installment_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.cashback_applicable' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.certificate_charge' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.agent_discount' | translate }} </p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.financier' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+        <div class="col-6">
+          <p class="detail"></p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.admin_fee_allowed' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.admin_fee_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.expected_comm_amount' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.endoresement_discount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
+        <div class="col-6">
+          <p class="detail"></p>
 
         </div>
+      </div>
     </div>
-
-    <p class="title"> {{ 'gis.policy.coinsurance_information' | translate }}</p>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.coinsured' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.marketer_commission' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.coin_leader_combined' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.coinsurance_premium' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.coinsurance_fap' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.commission' | translate }}</p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.coinsurance_si' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+        <div class="col-6">
+          <p class="detail"></p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.coinsurance_deductible_amount' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-
-    <p class="title"> {{ 'gis.policy.transaction_details' | translate }}</p>
-
-
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.policy_interface_type' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.other_intermediary_amount' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.holding_co' | translate }}.</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.payment_mode' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.policy_level_debit' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+    <div class="col-4">
 
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.payment_reference' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.payment_date' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.binder_policy' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+    <div class="col-4">
 
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.binder_name' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.ref_no' | translate }}.</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.multi_agency_policy' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+  </div>
 
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label">{{ 'gis.policy.payment_frequency' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+  <p class="title"> {{ 'gis.policy.financial_information' | translate }}</p>
 
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.policy_holders_fund' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.debiting_type' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.ipf_installments' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.extra' | translate }}</p>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.check_off_installments' | translate }}</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
+        <div class="col-6">
+          <p class="detail"></p>
 
-                </div>
-            </div>
         </div>
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.old_agent_no' | translate }}.</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
-                <div class="col-6">
-                    <p class="label"> {{ 'gis.policy.old_policy_no' | translate }}.</p>
-                </div>
-                <div class="col-6">
-                    <p class="detail"></p>
-
-                </div>
-            </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.stamp_duty' | translate }}</p>
         </div>
-        <div class="col-4">
+        <div class="col-6">
+          <p class="detail"></p>
 
         </div>
-        <div class="col-4">
-
-        </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.future_annual_premium' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.training_levy' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.other_client_charges' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.debited_installment_amount' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.current_installment_amount' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.cashback_applicable' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.certificate_charge' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.financier' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.admin_fee_allowed' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.admin_fee_amount' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.endoresement_discount' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+
+    </div>
+  </div>
+
+  <p class="title"> {{ 'gis.policy.coinsurance_information' | translate }}</p>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.coinsured' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.coin_leader_combined' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.coinsurance_premium' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.coinsurance_fap' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.coinsurance_si' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.coinsurance_deductible_amount' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="title"> {{ 'gis.policy.transaction_details' | translate }}</p>
+
+
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.policy_interface_type' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.holding_co' | translate }}.</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.payment_mode' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.policy_level_debit' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.payment_reference' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.payment_date' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.binder_policy' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.binder_name' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.ref_no' | translate }}.</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.multi_agency_policy' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label">{{ 'gis.policy.payment_frequency' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.debiting_type' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.ipf_installments' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.check_off_installments' | translate }}</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.old_agent_no' | translate }}.</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <div class="row">
+        <div class="col-6">
+          <p class="label"> {{ 'gis.policy.old_policy_no' | translate }}.</p>
+        </div>
+        <div class="col-6">
+          <p class="detail"></p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+
+    </div>
+    <div class="col-4">
+
+    </div>
+  </div>
 </div>
 
 
-
-
 <p class="more" (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseMoreSummaryDetails"
-    aria-expanded="false" aria-controls="collapseMoreSummaryDetails"> {{'gis.policy.more_details' |
-    translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapseMoreSummaryDetails" aria-expanded="false"
-        aria-controls="collapseMoreSummaryDetails"> <i class="pi pi-angle-double-up" style="font-size:13px"
-            *ngIf="!show" data-toggle="collapse" data-target="#collapseMoreSummaryDetails"></i><i
-            class="pi pi-angle-double-down" style="font-size:13px" *ngIf="show" data-toggle="collapse"
-            data-target="#collapseMoreSummaryDetails"></i></span> </p>
+   aria-expanded="false" aria-controls="collapseMoreSummaryDetails"> {{
+    'gis.policy.more_details' |
+      translate
+  }}<span class="ml-1" data-toggle="collapse" data-target="#collapseMoreSummaryDetails" aria-expanded="false"
+          aria-controls="collapseMoreSummaryDetails"> <i class="pi pi-angle-double-up" style="font-size:13px"
+                                                         *ngIf="!show" data-toggle="collapse"
+                                                         data-target="#collapseMoreSummaryDetails"></i><i
+    class="pi pi-angle-double-down" style="font-size:13px" *ngIf="show" data-toggle="collapse"
+    data-target="#collapseMoreSummaryDetails"></i></span></p>

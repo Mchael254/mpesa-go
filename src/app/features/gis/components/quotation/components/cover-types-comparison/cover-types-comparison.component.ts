@@ -472,7 +472,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
           description: matchingSection?.description,
           freeLimit: databaseLimit?.freeLimit || 0,
           multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
-          multiplierRate: databaseLimit?.multiplierRate,
+          multiplierRate: databaseLimit?.multiplierRate || 1,
           premiumAmount: matchingSection?.premium,
           premiumRate: premiumRate?.premiumRate || 0,
           rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,

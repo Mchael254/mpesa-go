@@ -170,9 +170,7 @@
                   <p class="label ">Premium</p>
                 </div>
                 <div class="col-7">
-                  <p class="content " *ngIf="premium">{{ premium.premiumAmount | number }}</p>
-                  <p class="content" *ngIf="!premium">{{ quotationView?.premium | number }}</p>
-                  <!-- <p class="content" *ngIf="!premium && !quotationView?.premium">0.00</p> -->
+                  <p class="content ">{{ premiumAmount | number }}</p>
                 </div>
               </div>
             </div>
@@ -641,8 +639,8 @@
                   <td>{{ data?.propertyId || '-' }}</td>
                   <td>{{ data?.coverTypeDescription || '-' | sentenceCase }}</td>
                   <td>{{ data?.subclass?.description || '-' | sentenceCase }}</td>
-                  <td class="text-end">{{ data?.sectionsDetails[0]?.limitAmount || 0 }}</td>
-                  <td class="text-end">{{ data?.sectionsDetails[0]?.premium || 0 }}</td>
+                  <td class="text-end">{{ data?.sectionsDetails[0]?.limitAmount || 0 | number }}</td>
+                  <td class="text-end">{{ data?.sectionsDetails[0]?.premium || 0 | number }}</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -718,9 +716,9 @@
                       <td class="flexible-header">{{ data.sectionDescription | sentenceCase }}</td>
                       <td class="flexible-header">{{ data.rateType }}</td>
                       <td class="flexible-header">{{ data.rate }}</td>
-                      <td class="text-end flexible-header">{{ data.limitAmount }}</td>
-                      <td class="text-end flexible-header">{{ data.premium }}</td>
-                      <td class="text-end flexible-header">{{ data.freeLimit }}</td>
+                      <td class="text-end flexible-header">{{ data.limitAmount | number }}</td>
+                      <td class="text-end flexible-header">{{ data.premium | number }}</td>
+                      <td class="text-end flexible-header">{{ data.freeLimit | number }}</td>
                     </tr>
                   </ng-template>
                 </p-table>

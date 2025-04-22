@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 import {
   ClientBranchesDto,
@@ -8,16 +8,17 @@ import {
   ClientTitlesDto,
   ClientTypeDTO,
 } from '../../data/ClientDTO';
-import { Pagination } from '../../../../shared/data/common/pagination';
-import { ApiService } from '../../../../shared/services/api/api.service';
-import { API_CONFIG } from '../../../../../environments/api_service_config';
-import { UtilService } from '../../../../shared/services';
+import {Pagination} from '../../../../shared/data/common/pagination';
+import {ApiService} from '../../../../shared/services/api/api.service';
+import {API_CONFIG} from '../../../../../environments/api_service_config';
+import {UtilService} from '../../../../shared/services';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientService {
-  constructor(private api: ApiService, private utilService: UtilService) {}
+  constructor(private api: ApiService, private utilService: UtilService) {
+  }
 
   getClients(
     page: number | null = 0,
@@ -34,10 +35,6 @@ export class ClientService {
       .set('order', `${order}`)
       .set('columnName', `${columnName}`)
       .set('columnValue', `${columnValue}`);
-
-    /*if (organizationId !== undefined && organizationId !== null) {
-      params['organizationId'] = organizationId.toString();
-    }*/
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<ClientDTO>>(
       `clients`,
@@ -134,7 +131,7 @@ export class ClientService {
       paramsObj['organizationId'] = organizationId.toString();
     }
 
-    const params = new HttpParams({ fromObject: paramsObj });
+    const params = new HttpParams({fromObject: paramsObj});
     return this.api.GET<ClientTypeDTO[]>(
       `client-types`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
@@ -142,7 +139,7 @@ export class ClientService {
     );
   }
 
-    saveClientDetails(clientData: ClientDTO): Observable<ClientDTO[]> {
+  saveClientDetails(clientData: ClientDTO): Observable<ClientDTO[]> {
     return this.api.POST<ClientDTO[]>(
       `v2/api/clients`,
       JSON.stringify(clientData),
@@ -179,12 +176,6 @@ export class ClientService {
     );
   }
 
-  // getAccountByCode(code: number): Observable<ClientDTO> {
-  //   let params = new HttpParams().set('accountCode', code)
-  //   // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
-  //   return this.http.get<ClientDTO>(`/${this.baseUrl}/details`, {params: params});
-  // }
-
   getAccountByCode(code: number): Observable<ClientDTO> {
     return this.api.GET<ClientDTO>(
       `details?accountCode=${code}`,
@@ -204,7 +195,7 @@ export class ClientService {
     if (organizationId !== undefined && organizationId !== null) {
       paramObj['organizationId'] = organizationId.toString();
     }
-    const params = new HttpParams({ fromObject: paramObj });
+    const params = new HttpParams({fromObject: paramObj});
     return this.api.GET<ClientTitlesDto[]>(
       `client-titles`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
