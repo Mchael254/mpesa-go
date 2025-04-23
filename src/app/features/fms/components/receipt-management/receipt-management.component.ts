@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { tabledataDTO } from '../../data/receipt-management-dto';
+import { tabledataDTO, unPrintedReceiptContentDTO, unPrintedReceiptsDTO } from '../../data/receipt-management-dto';
 import * as bootstrap from 'bootstrap';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { ReceiptManagementService } from '../../services/receipt-management.service';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -14,6 +16,8 @@ export class ReceiptManagementComponent {
 
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
+  unPrintedReceiptData:unPrintedReceiptsDTO;
+unPrintedReceiptContent:unPrintedReceiptContentDTO[]=[]; // Stores just the content array
   tabledata: tabledataDTO[] = [];
 
   paymentMethodFilter: string = '';
@@ -26,9 +30,14 @@ export class ReceiptManagementComponent {
   cancellationDeactivated: boolean = true;
   isPrinting: boolean = false;
   isCancellation: boolean = true;
-  constructor() {}
+  constructor(
+    private receiptManagementService:ReceiptManagementService,
+    private globalMessagingService:GlobalMessagingService
+
+  ) {}
   ngOnInit(): void {
     // Initialize the table data
+    this.fetchUnprintedReceipts(1);
     this.tabledata = [
       {
         receiptNumber: 'QXCW33F',
@@ -78,6 +87,24 @@ export class ReceiptManagementComponent {
     this.isPrinting = false;
     this.cancellationDeactivated = true;
   }
+  fetchUnprintedReceipts(branchCode:number){
+    this.receiptManagementService.getUnprintedReceipts(branchCode).subscribe({
+      
+next:(response)=>{
+  this.unPrintedReceiptData=response;
+  this.unPrintedReceiptContent = response.data.content; // Stores just the content array
+  console.log('receipts>>',this.unPrintedReceiptContent);
+
+      },
+     
+      
+error:(err)=>{
+  this.globalMessagingService.displayErrorMessage('Error',err.error.msg || 'failed to load data')
+}
+      }
+    )
+  }
+
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
