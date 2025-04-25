@@ -10,6 +10,7 @@ import { ClientAllocationComponent } from './components/client-allocation/client
 import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-preview.component';
 import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-preview.component';
 import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
+import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
 
 
 const routes: Routes = [
@@ -52,6 +53,10 @@ const routes: Routes = [
  {
   path:'receipt-management',
   component:ReceiptManagementComponent
+ },
+ {
+  path:'receipt-print-preview',
+  component:ReceiptPrintPreviewComponent
  }
 ];
 

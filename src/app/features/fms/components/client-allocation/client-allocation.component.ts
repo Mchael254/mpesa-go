@@ -1808,7 +1808,7 @@ export class ClientAllocationComponent {
         this.router.navigate(['/home/fms/receipt-capture']);
             this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
-        this.sessionStorage.clear();
+        //this.sessionStorage.clear();
 
         //prepare receipt upload payload
       },
