@@ -1,147 +1,93 @@
-export interface tabledataDTO{
-    "receiptNumber":string;
-    "receiptDate":string;
-    "receivedFrom":string;
-    "amount":number;
-    "paymentMethod":string;
-  }
-  export interface unPrintedReceiptsDTO{
-    "message":string;
-    "success":string;
-   "data":{
-      "totalPages": number;
-      "totalElements": number;
-      "pageable": {
-        "pageNumber": number;
-        "pageSize": number;
-        "offset": number;
-        "sort": {
-          "sorted": boolean;
-          "empty": boolean;
-          "unsorted":boolean;
-        },
-        "unpaged":boolean;
-        "paged": boolean;
-      },
-      "first": boolean;
-      "last": boolean;
-      "size": boolean;
-      "content": [
-        {
-          "no":number;
-          "receiptDate": string;
-          "captureDate": string;
-          "capturedBy": number;
-          "amount": number;
-          "paymentMode": string;
-          "paymentMemo": string;
-          "paidBy":string;
-          "documentDate": string;
-          "description": string;
-          "printed": string;
-          "applicationSource":number;
-          "accountCode": number;
-          "accountType": string;
-          "branchCode": number;
-          "accountShortDescription": string;
-          "currencyCode": number;
-          "bankAccCode":number;
-          "cancelled":string;
-          "commission": number;
-          "batchCode": number;
-          "branchReceiptNumber": number;
-          "branchReceiptCode": string;
-          "drawersBank": string;
-          "accountTypeId": string;
-          "bankBranchCode": number;
-          "receiptType": string;
-          "cancelledBy": number;
-          "reference": string;
-          "cbPosted":string;
-          "sourcePosted": string;
-          "netGrossFlag": string;
-          "glAccount": string;
-          "parentNumber":number;
-          "cancelledDate":string;
-          "voucherNumber": number;
-          "reverseVoucherNumber": number;
-          "errorMessage": string;
-          "bankChargeAmount": number;
-          "clientChargeAmount": number;
-          "vatCertificateNumber": string;
-          "policyType": string;
-          "remarks": string;
-          "agentCode": number;
-          "receivedFrom": string;
-          "collectionAccountCode":number;
-          "manualReference": string;
-          "banked": string;
-          "allocation": string;
-          "totalAllocation": number;
-          "totalAllocation2": number;
-        }
-      ],
-      "number":number;
-      "sort": {
-        "sorted": boolean;
-        "empty":boolean;
-        "unsorted": boolean;
-      },
-      "numberOfElements": number;
-      "empty": boolean
-    }
-   
-    }
-    export interface unPrintedReceiptContentDTO{
-      "no":number;
-      "receiptDate": string;
-      "captureDate": string;
-      "capturedBy": number;
-      "amount": number;
-      "paymentMode": string;
-      "paymentMemo": string;
-      "paidBy":string;
-      "documentDate": string;
-      "description": string;
-      "printed": string;
-      "applicationSource":number;
-      "accountCode": number;
-      "accountType": string;
-      "branchCode": number;
-      "accountShortDescription": string;
-      "currencyCode": number;
-      "bankAccCode":number;
-      "cancelled":string;
-      "commission": number;
-      "batchCode": number;
-      "branchReceiptNumber": number;
-      "branchReceiptCode": string;
-      "drawersBank": string;
-      "accountTypeId": string;
-      "bankBranchCode": number;
-      "receiptType": string;
-      "cancelledBy": number;
-      "reference": string;
-      "cbPosted":string;
-      "sourcePosted": string;
-      "netGrossFlag": string;
-      "glAccount": string;
-      "parentNumber":number;
-      "cancelledDate":string;
-      "voucherNumber": number;
-      "reverseVoucherNumber": number;
-      "errorMessage": string;
-      "bankChargeAmount": number;
-      "clientChargeAmount": number;
-      "vatCertificateNumber": string;
-      "policyType": string;
-      "remarks": string;
-      "agentCode": number;
-      "receivedFrom": string;
-      "collectionAccountCode":number;
-      "manualReference": string;
-      "banked": string;
-      "allocation": string;
-      "totalAllocation": number;
-      "totalAllocation2": number;
-    }
+// Interface for the objects within the content array
+export interface unPrintedReceiptContentDTO {
+  no: number;
+  receiptDate: string;
+  captureDate: string;
+  capturedBy: number;
+  amount: number;
+  paymentMode: string;
+  paymentMemo: string | null; // Allow null
+  paidBy: string;
+  documentDate: string | null; // Allow null
+  description: string;
+  printed: string; // Typically 'Y' or 'N'
+  applicationSource: number;
+  accountCode: number;
+  accountType: string | null; // Allow null
+  branchCode: number;
+  accountShortDescription: string;
+  currencyCode: number;
+  bankAccCode: number;
+  cancelled: string; // Typically 'Y' or 'N'
+  commission: number;
+  batchCode: number | null; // Allow null
+  branchReceiptNumber: number;
+  branchReceiptCode: string;
+  drawersBank: string;
+  accountTypeId: string;
+  bankBranchCode: number;
+  receiptType: string;
+  cancelledBy: number | null; // Allow null
+  reference: string | null; // Allow null
+  cbPosted: string; // Typically 'Y' or 'N'
+  sourcePosted: string; // Typically 'Y' or 'N'
+  netGrossFlag: string;
+  glAccount: string;
+  parentNumber: number | null; // Allow null
+  cancelledDate: string | null; // Allow null
+  voucherNumber: number;
+  reverseVoucherNumber: number | null; // Allow null
+  errorMessage: string | null; // Allow null
+  bankChargeAmount: number | null; // Allow null
+  clientChargeAmount: number | null; // Allow null
+  vatCertificateNumber: string | null; // Allow null
+  policyType: string | null; // Allow null
+  remarks: string | null; // Allow null
+  agentCode: number;
+  receivedFrom: string;
+  collectionAccountCode: number | null; // Allow null
+  manualReference: string | null; // Allow null
+  banked: string; // Typically 'Y' or 'N'
+  allocation: string; // Typically 'Y' or 'N'
+  totalAllocation: number;
+  totalAllocation2: number;
+}
+
+// Interface for the sort object within pageable (can be simple if not used)
+export interface PageableSortDTO {
+  // Define properties if needed, e.g., property: string, direction: string
+  // Based on response `sort: []`, it might be an empty array or array of objects.
+  // Using any[] for flexibility if the exact structure isn't crucial for tests.
+  // If you know the structure, define it here.
+}
+
+// Interface for the pageable object
+export interface PageableDTO {
+  pageNumber: number;
+  pageSize: number;
+  sort: PageableSortDTO[]; // Match API response (array)
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
+// Interface for the main response structure
+export interface unPrintedReceiptsDTO {
+  msg: string; // Renamed from message
+  success: boolean; // Changed type to boolean
+  data: {
+    content: unPrintedReceiptContentDTO[]; // Array of content objects
+
+    // Added missing properties from API response
+    pageable: PageableDTO;
+    last: boolean;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    size: number;
+    number: number; // Already existed
+    sort: any[]; // Changed type to array (matches API response `sort: []`)
+    numberOfElements: number; // Already existed
+    empty: boolean; // Already existed
+  };
+}
