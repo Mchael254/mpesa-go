@@ -1034,10 +1034,10 @@ export class ReceiptCaptureComponent {
           });
         }
       } else {
-        // If documentDate is empty (initial load), set to tomorrow
-        // this.receiptingDetailsForm.patchValue({
-        //   documentDate: this.formatDates(today),
-        // });
+        //If documentDate is empty (initial load), set to tomorrow
+        this.receiptingDetailsForm.patchValue({
+          documentDate: this.formatDates(today),
+        });
         this.receiptingDetailsForm.patchValue({
           documentDate: null,
         });
