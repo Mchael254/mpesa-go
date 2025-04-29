@@ -13,6 +13,7 @@ import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
 import { BranchDTO } from '../../data/receipting-dto';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -28,10 +29,6 @@ export class ReceiptManagementComponent {
   // --- PrimeNG Table Pagination Properties ---
   /** @property {number} first - Index of the first row displayed in the current page (used  by custom paginator). */
 
-  first: number = 0;
-  /** @property {number} rows - Number of rows to display per page in pagination.*/
-  rows: number = 10;
-
   /** @property {number} totalRecords - Total number of records matching the search criteria.*/
   totalRecords: number = 0;
   // --- Data Holding Properties ---
@@ -42,7 +39,7 @@ export class ReceiptManagementComponent {
 
   unPrintedReceiptContent: unPrintedReceiptContentDTO[] = []; // Stores just the content array
   /** @property {unPrintedReceiptContentDTO[]} filteredtabledata - Holds the data currently displayed in the table after filtering. Should be typed correctly. */
-
+  tabledata: unPrintedReceiptContentDTO[] = [];
   filteredtabledata: unPrintedReceiptContentDTO[] = [];
   // --- Filtering Properties ---
   /** @property {string} paymentMethodFilter - Filter value for the 'Payment Method' column. */
@@ -74,7 +71,7 @@ export class ReceiptManagementComponent {
     private receiptManagementService: ReceiptManagementService,
     private globalMessagingService: GlobalMessagingService,
     private sessionStorage: SessionStorageService,
-
+    private translate: TranslateService,
     private router: Router
   ) {}
   /**
@@ -84,6 +81,7 @@ export class ReceiptManagementComponent {
    */
   ngOnInit(): void {
     // Retrieve branch from localStorage or receiptDataService
+
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
 
@@ -104,27 +102,11 @@ export class ReceiptManagementComponent {
       this.defaultBranch?.id || this.selectedBranch?.id
     );
   }
-  // --- Custom Paginator Methods  ---
-  /** @method moveFirst - Navigates to the first page (for custom paginator). */
-  moveFirst(state: any) {
-    state.first = 0;
+
+  get currentPageReportTemplate(): string {
+    return this.translate.instant('fms.receipt-management.pageReport');
   }
-  /** @method movePrev - Navigates to the previous page (for custom paginator). */
-  movePrev(state: any) {
-    state.first = Math.max(state.first - state.rows, 0);
-  }
-  /** @method moveNext - Navigates to the next page (for custom paginator). */
-  moveNext(state: any) {
-    state.first = Math.min(
-      state.first + state.rows,
-      state.totalRecords - state.rows
-    );
-  }
-  /** @method moveLast - Navigates to the last page (for custom paginator). */
-  moveLast(state: any) {
-    // Calculate the first index of the last page
-    state.first = state.totalRecords - state.rows;
-  }
+
   // --- UI Mode Switching ---
 
   /**
@@ -215,23 +197,82 @@ export class ReceiptManagementComponent {
    * Converts filters to lowercase for case-insensitive string matching.
    */
   filterReceipts(): void {
-    this.filteredtabledata = this.receiptData.filter((item) => {
-      return (
-        (!this.receiptNumberFilter ||
-          item.branchReceiptCode.includes(this.receiptNumberFilter)) &&
-        (!this.receiptDateFilter ||
-          item.receiptDate.includes(this.receiptDateFilter)) &&
-        (!this.receivedFromFilter ||
-          item.receivedFrom.includes(this.receivedFromFilter)) &&
-        (!this.amountFilter || item.amount === this.amountFilter) &&
-        (!this.paymentMethodFilter ||
-          item.paymentMode.includes(this.paymentMethodFilter))
+    // Always start with the full dataset
+    let filteredData = [...this.unPrintedReceiptContent];
+
+    // Apply filters only if they have values
+    if (this.receiptNumberFilter?.trim()) {
+      const searchTerm = this.receiptNumberFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.branchReceiptCode.toLowerCase().includes(searchTerm)
       );
-    });
-    // After filtering, you might need to reset pagination if desired
-    // this.first = 0;
-    this.totalRecords = this.filteredtabledata.length; // Update total records for pagination display if using custom template
+    }
+
+    if (this.receiptDateFilter?.trim()) {
+      const searchTerm = this.receiptDateFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.receiptDate.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (this.receivedFromFilter?.trim()) {
+      const searchTerm = this.receivedFromFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.receivedFrom.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (this.amountFilter) {
+      filteredData = filteredData.filter(
+        (item) => item.amount === this.amountFilter
+      );
+    }
+
+    if (this.paymentMethodFilter?.trim()) {
+      const searchTerm = this.paymentMethodFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.paymentMode.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    this.filteredtabledata = filteredData;
+    this.totalRecords = this.filteredtabledata.length;
   }
+
+  // Simplified empty check version
+  hasActiveFilters(): boolean {
+    return !!(
+      this.receiptNumberFilter?.trim() ||
+      this.receiptDateFilter?.trim() ||
+      this.receivedFromFilter?.trim() ||
+      this.amountFilter ||
+      this.paymentMethodFilter?.trim()
+    );
+  }
+  //   filterReceipts(): void {
+  //     if(
+  //       !this.receiptNumberFilter?.trim() && !this.receiptDateFilter?.trim() && !this.receivedFromFilter?.trim() && !this.amountFilter && !this.paymentMethodFilter?.trim()
+  //     ){
+  //       this.filteredtabledata = [...this.unPrintedReceiptContent]; // Reset to original receipts
+  // return
+  //     }
+  //     this.filteredtabledata = this.filteredtabledata.filter((item) => {
+  //       return (
+  //         (!this.receiptNumberFilter ||
+  //           item.branchReceiptCode.includes(this.receiptNumberFilter)) &&
+  //         (!this.receiptDateFilter ||
+  //           item.receiptDate.includes(this.receiptDateFilter)) &&
+  //         (!this.receivedFromFilter ||
+  //           item.receivedFrom.includes(this.receivedFromFilter)) &&
+  //         (!this.amountFilter  || item.amount === this.amountFilter) &&
+  //         (!this.paymentMethodFilter ||
+  //           item.paymentMode.includes(this.paymentMethodFilter))
+  //       );
+  //     })
+  //     // After filtering, you might need to reset pagination if desired
+  //     // this.first = 0;
+  //     this.totalRecords = this.filteredtabledata.length; // Update total records for pagination display if using custom template
+  //   }
   /**
    * @method printReceipt
    * @description Stores the selected receipt number in session storage and navigates
@@ -246,6 +287,35 @@ export class ReceiptManagementComponent {
     );
 
     this.router.navigate(['/home/fms/receipt-print-preview']);
+  }
+  //cancellation section
+  cancelReceipt() {
+    const body = {
+      no: 123456,
+      remarks: 'Duplicate entry',
+      isChargeRaised: 'Y',
+      cancellationDate: '2025-04-25T08:22:30.836Z',
+      bankAmount: 100,
+      clientAmount: 500,
+      userCode: 1094,
+      branchCode: 342,
+      bankChargesGlAcc: 101899,
+      otherChargesGlAcc: 101899,
+    };
+    this.receiptManagementService.cancelReceipt(body).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          'receipt successfully cancelled'
+        );
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.msg || 'failed to cancel the receipt'
+        );
+      },
+    });
   }
   // --- Modal Interactions (Using Bootstrap JS ) ---
   /**
