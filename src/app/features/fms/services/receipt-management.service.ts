@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { unPrintedReceiptsDTO } from '../data/receipt-management-dto';
+import { cancelReceiptDTO, unPrintedReceiptsDTO } from '../data/receipt-management-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
 
@@ -20,5 +20,16 @@ export class ReceiptManagementService {
       API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
       params
     );
+  }
+  cancelReceipt(body:cancelReceiptDTO):Observable<any>{
+    
+    return this.api.POST<any>(
+      `receipts/cancel`,
+      body,
+      API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+      
+
+    );
+
   }
 }
