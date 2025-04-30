@@ -55,13 +55,10 @@ export interface unPrintedReceiptContentDTO {
 
 // Interface for the sort object within pageable (can be simple if not used)
 export interface PageableSortDTO {
-  // Define properties if needed, e.g., property: string, direction: string
-  // Based on response `sort: []`, it might be an empty array or array of objects.
-  // Using any[] for flexibility if the exact structure isn't crucial for tests.
-  // If you know the structure, define it here.
+  
 }
 
-// Interface for the pageable object
+
 export interface PageableDTO {
   pageNumber: number;
   pageSize: number;
@@ -77,8 +74,6 @@ export interface unPrintedReceiptsDTO {
   success: boolean; // Changed type to boolean
   data: {
     content: unPrintedReceiptContentDTO[]; // Array of content objects
-
-    // Added missing properties from API response
     pageable: PageableDTO;
     last: boolean;
     totalElements: number;
@@ -90,4 +85,16 @@ export interface unPrintedReceiptsDTO {
     numberOfElements: number; // Already existed
     empty: boolean; // Already existed
   };
+}
+export interface cancelReceiptDTO{
+  receiptNumber: number;
+  remarks:string;
+  isChargeRaised: string;
+  cancellationDate: string;
+  bankAmount: number;
+  clientAmount: number;
+  userCode: number;
+  branchCode: number;
+  bankChargesGlAcc: number;
+  otherChargesGlAcc: number;
 }
