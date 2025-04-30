@@ -219,12 +219,7 @@ describe('ClientAllocationComponent', () => {
        { transactionNumber: 2, balance: 200 }
      ];
      mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
-     // Assume ngOnInit was called in beforeEach via fixture.detectChanges()
-     // If you call component.ngOnInit() directly here, ensure component state is correctly reset/set before it.
-     // If fixture.detectChanges() ran in beforeEach, ngOnInit is already called.
- 
-     // Act
-     // Allow the timer queued by ngOnInit's setTimeout to execute
+     
      tick(1000); // <-- Advance time by the setTimeout duration (or slightly more)
  
      // Assert
@@ -262,56 +257,7 @@ describe('ClientAllocationComponent', () => {
     expect(mockReceiptDataService.updateAllocatedAmount).toHaveBeenCalledWith(index, amount);
     expect(component.totalAllocatedAmount).toBeGreaterThan(0);
   });
-  // it('should apply clientName filter correctly', () => {
-  //   const mockTransactions = [
-  //     { clientName: 'ClientA', clientPolicyNumber: '123', amount: 100, balance: 50, commission: 10 },
-  //     { clientName: 'ClientB', clientPolicyNumber: '456', amount: 200, balance: 100, commission: 20 }
-  //   ];
-  //   component.transactions = mockTransactions;
-  //   component.clientNameFilter = 'ClientA';
-  //   component.filterTransactions();
-  //   expect(component.filteredTransactions.length).toBe(1);
-  //   expect(component.filteredTransactions[0].clientName).toBe('ClientA');
-  // });
-
-  // it('should apply policyNumber filter correctly', () => {
-  //   const mockTransactions = [
-  //     { clientName: 'ClientA', clientPolicyNumber: '123', amount: 100, balance: 50, commission: 10 },
-  //     { clientName: 'ClientB', clientPolicyNumber: '456', amount: 200, balance: 100, commission: 20 }
-  //   ];
-  //   component.transactions = mockTransactions;
-  //   component.policyNumberFilter = '123';
-  //   component.filterTransactions();
-  //   expect(component.filteredTransactions.length).toBe(1);
-  //   expect(component.filteredTransactions[0].clientPolicyNumber).toBe('123');
-  // });
-
-  // it('should apply amount filter correctly', () => {
-  //   const mockTransactions = [
-  //     { clientName: 'ClientA', clientPolicyNumber: '123', amount: 100, balance: 50, commission: 10 },
-  //     { clientName: 'ClientB', clientPolicyNumber: '456', amount: 200, balance: 100, commission: 20 }
-  //   ];
-  //   component.transactions = mockTransactions;
-  //   component.amountFilter = 100;
-  //   component.filterTransactions();
-  //   expect(component.filteredTransactions.length).toBe(1);
-  //   expect(component.filteredTransactions[0].amount).toBe(100);
-  // });
-
-  //  it('should apply multiple filters correctly', () => {
-  //   const mockTransactions = [
-  //     { clientName: 'ClientA', clientPolicyNumber: '123', amount: 100, balance: 50, commission: 10 },
-  //     { clientName: 'ClientB', clientPolicyNumber: '123', amount: 200, balance: 100, commission: 20 },
-  //     { clientName: 'ClientA', clientPolicyNumber: '456', amount: 100, balance: 50, commission: 10 }
-  //   ];
-  //   component.transactions = mockTransactions;
-  //   component.clientNameFilter = 'ClientA';
-  //   component.amountFilter = 100;
-  //   component.filterTransactions();
-  //   expect(component.filteredTransactions.length).toBe(2);
-  //   expect(component.filteredTransactions[0].clientName).toBe('ClientA');
-  //   expect(component.filteredTransactions[0].amount).toBe(100);
-  // });
+ 
    it('should get the allocatedAmountControls', () => {
         component.captureReceiptForm();
         const allocatedAmountControls = component.allocatedAmountControls;
@@ -451,18 +397,7 @@ describe('ClientAllocationComponent', () => {
         component.ngOnInit();
         expect(mockReceiptService.getAllocations).toHaveBeenCalled();
     });
-//      it('should successfully fetch allocations and set related flags', () => {
-//          const mockAllocations = [{ receiptParticularDetails: [{ premiumAmount: 50 }] }];
-//          mockReceiptService.getAllocations.mockReturnValue(of({ data: mockAllocations }));
-// mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({id:123}));
-//          component.ngOnInit();
 
-//         expect(component.getAllocation).toEqual(mockAllocations);
-//          expect(component.canShowUploadFileBtn).toBe(true);
-//         expect(component.isAllocationCompleted).toBe(true);
-//         expect(component.getAllocationStatus).toBe(true);
-//         expect(component.allocationsReturned).toBe(true);
-//      });
      it('should display an error message when getAllocations fails', () => {
         const errorMessage = 'Failed to fetch allocations';
         mockReceiptService.getAllocations.mockReturnValue(throwError(() => ({ error: { msg: errorMessage } })));
@@ -730,18 +665,9 @@ describe('ClientAllocationComponent', () => {
         mockReceiptService.saveReceipt.mockReturnValue(of(mockResponse));
   
         component.saveAndPrint();
-        tick(); // Process the observable
+        tick(); 
   
-        // expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
-        // // Add more specific checks on the payload if needed
-        // const expectedPayload = expect.objectContaining({
-        //     receiptNo: component.branchReceiptNumber,
-        //     receiptCode: component.receiptCode,
-        //     amount: String(component.amountIssued), // Ensure amount is string
-        //     paidBy: component.receivedFrom,
-        //     // ... other fields to verify
-        // });
-        // expect(mockReceiptService.saveReceipt).toHaveBeenCalledWith(expectedPayload);
+      
   
         expect(component.receiptResponse).toEqual(mockResponse.data);
         expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('receiptNo', 'R123');
