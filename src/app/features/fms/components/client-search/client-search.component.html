@@ -120,7 +120,7 @@
             [(selection)]="selectedClient"
             dataKey="code"
             [showCurrentPageReport]="true"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [currentPageReportTemplate]="currentPageReportTemplate"
           >
             <ng-template pTemplate="header">
               <tr>
